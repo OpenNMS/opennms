@@ -26,5 +26,16 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
+    <!-- external dependencies -->
+    <dependencySet>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>org.opennms.protocols:selenium-monitor:tar.gz:lib:${project.version}</include>
+      </includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
   </dependencySets>
 </component>

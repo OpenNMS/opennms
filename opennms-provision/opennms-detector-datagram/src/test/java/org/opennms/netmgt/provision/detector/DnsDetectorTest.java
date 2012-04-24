@@ -44,7 +44,6 @@ import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -89,7 +88,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost"), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
     }
     
     @Test
@@ -98,7 +97,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("localhost"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
 
     }
 }

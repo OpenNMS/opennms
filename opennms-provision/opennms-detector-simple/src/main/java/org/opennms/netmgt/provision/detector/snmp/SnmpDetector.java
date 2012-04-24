@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.exchange.Exchange;
 import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -126,7 +125,7 @@ public class SnmpDetector extends AbstractDetector implements InitializingBean {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    public boolean isServiceDetected(InetAddress address) {
         try {
 
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);

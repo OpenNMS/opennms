@@ -28,24 +28,44 @@
 
 package org.opennms.netmgt.provision.support;
 
-import java.nio.charset.Charset;
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
-import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchangeImpl;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+
+import org.apache.mina.core.filterchain.IoFilterAdapter;
+import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.IoFutureListener;
+import org.apache.mina.core.service.IoHandler;
+import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.core.session.IoSessionInitializer;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.filter.logging.LoggingFilter;
+import org.apache.mina.filter.ssl.SslFilter;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
- * <p>Abstract AsyncBasicDetector class.</p>
+ * <p>AsyncBasicDetectorMinaImpl class.</p>
  *
  * @author Donald Desloge
  * @version $Id: $
  */
-public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstractDetector {
+public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends AsyncBasicDetector<Request, Response> {
     
-    protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-    private int m_idleTime = 1;
-    private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
-    private boolean useSSLFilter = false;
+    private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
+    private IoFilterAdapter m_filterLogging = null;
+    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
+    
+    private final ConnectionFactory m_connectionFactory;
     
     /**
      * <p>Constructor for AsyncBasicDetector.</p>
@@ -55,8 +75,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param <Request> a Request object.
      * @param <Response> a Response object.
      */
-    public AsyncBasicDetector(final String serviceName, final int port) {
+    public AsyncBasicDetectorMinaImpl(final String serviceName, final int port) {
         super(serviceName, port);
+        m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
     }
     
     /**
@@ -67,22 +88,25 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param timeout a int.
      * @param retries a int.
      */
-    public AsyncBasicDetector(final String serviceName, final int port, final int timeout, final int retries){
+    public AsyncBasicDetectorMinaImpl(final String serviceName, final int port, final int timeout, final int retries){
         super(serviceName, port, timeout, retries);
-<<<<<<< HEAD
         m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
     }
     
     /**
-     * <p>onInit</p>
+     * <p>dispose</p>
      */
-    abstract protected void onInit();
+    @Override
+    public void dispose(){
+        LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
+        ConnectionFactory.dispose(m_connectionFactory);
+    }
     
     /** {@inheritDoc} */
     @Override
-    public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) {
+    public final DetectFuture isServiceDetected(final InetAddress address) {
 
-        final DetectFuture detectFuture = new DefaultDetectFuture(this);
+        final DetectFutureMinaImpl detectFuture = new DetectFutureMinaImpl(this);
 
         try {
             // Set this up here because it can throw an Exception, which we want
@@ -124,28 +148,17 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
             detectFuture.setException(e);
         } catch (IOException e) {
             detectFuture.setException(e);
-        } catch (Throwable e) {
-            detectFuture.setException(e);
         }
 
         return detectFuture;
     }
 
     /**
-     * <p>dispose</p>
-     */
-    @Override
-    public void dispose(){
-        LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
-        ConnectionFactory.dispose(m_connectionFactory);
-    }
-    
-    /**
      * @return
      * @throws NoSuchAlgorithmException 
      * @throws KeyManagementException 
      */
-    private SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
+    private static SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
         final TrustManager[] tm = { new RelaxedX509TrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
@@ -162,7 +175,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param retryAttempt
      * @return IoFutureListener<ConnectFuture>
      */
-    private IoFutureListener<ConnectFuture> retryAttemptListener(final ConnectionFactory connector, final DetectFuture detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
+    private IoFutureListener<ConnectFuture> retryAttemptListener(final ConnectionFactory connector, final DetectFutureMinaImpl detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
         return new IoFutureListener<ConnectFuture>() {
 
             public void operationComplete(ConnectFuture future) {
@@ -191,117 +204,71 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
             }
             
         };
-=======
->>>>>>> origin/1.10
     }
     
     /**
-     * <p>expectBanner</p>
+     * <p>setDetectorHandler</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @param detectorHandler a {@link org.opennms.netmgt.provision.support.BaseDetectorHandler} object.
      */
-    protected void expectBanner(final ResponseValidator<Response> bannerValidator) {
-        getConversation().setHasBanner(true);
-        getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(null, bannerValidator));
+    protected void setDetectorHandler(final BaseDetectorHandler<Request, Response> detectorHandler) {
+        m_detectorHandler = detectorHandler;
     }
     
     /**
-     * <p>send</p>
+     * <p>createDetectorHandler</p>
      *
-     * @param request a Request object.
-     * @param responseValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @param future a {@link org.opennms.netmgt.provision.DetectFuture} object.
+     * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
-    protected void send(final Request request, final ResponseValidator<Response> responseValidator) {
-        getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(request, responseValidator));
-    }
-    
-    
-    /**
-     * <p>setIdleTime</p>
-     *
-     * @param idleTime a int.
-     */
-    public void setIdleTime(final int idleTime) {
-        m_idleTime = idleTime;
+    protected IoHandler createDetectorHandler(final DetectFutureMinaImpl future) {
+        m_detectorHandler.setConversation(getConversation());
+        m_detectorHandler.setFuture(future);
+        return m_detectorHandler;
     }
 
     /**
-     * <p>getIdleTime</p>
+     * <p>setLoggingFilter</p>
      *
-     * @return a int.
+     * @param filterLogging a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
      */
-    public int getIdleTime() {
-        return m_idleTime;
+    protected void setLoggingFilter(final IoFilterAdapter filterLogging) {
+        m_filterLogging = filterLogging;
     }
 
     /**
-     * <p>setConversation</p>
+     * <p>getLoggingFilter</p>
      *
-     * @param conversation a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
+     * @return a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
      */
-    protected void setConversation(final AsyncClientConversation<Request, Response> conversation) {
-        m_conversation = conversation;
+    protected IoFilterAdapter getLoggingFilter() {
+        return m_filterLogging;
     }
 
     /**
-     * <p>getConversation</p>
+     * <p>setProtocolCodecFilter</p>
      *
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
+     * @param protocolCodecFilter a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
      */
-    protected AsyncClientConversation<Request, Response> getConversation() {
-        return m_conversation;
-    }
-    
-    /**
-     * <p>startsWith</p>
-     *
-     * @param prefix a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
-     */
-    protected ResponseValidator<Response> startsWith(final String prefix) {
-        return new ResponseValidator<Response>() {
-
-            public boolean validate(final Object message) {
-                final String str = message.toString().trim();
-                return str.startsWith(prefix);
-            }
-            
-        };
-    }
-    
-    /**
-     * <p>find</p>
-     *
-     * @param regex a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
-     */
-    public ResponseValidator<Response> find(final String regex){
-        return new ResponseValidator<Response>() {
-
-            public boolean validate(final Object message) {
-                final String str = message.toString().trim();
-                return Pattern.compile(regex).matcher(str).find();
-            }
-          
-            
-        };
+    protected void setProtocolCodecFilter(final ProtocolCodecFilter protocolCodecFilter) {
+        m_protocolCodecFilter = protocolCodecFilter;
     }
 
     /**
-     * <p>Setter for the field <code>useSSLFilter</code>.</p>
+     * <p>getProtocolCodecFilter</p>
      *
-     * @param useSSLFilter a boolean.
+     * @return a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
      */
-    public void setUseSSLFilter(final boolean useSSLFilter) {
-        this.useSSLFilter = useSSLFilter;
+    protected ProtocolCodecFilter getProtocolCodecFilter() {
+        return m_protocolCodecFilter;
     }
 
     /**
-     * <p>isUseSSLFilter</p>
+     * <p>getDetectorHandler</p>
      *
-     * @return a boolean.
+     * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
-    public boolean isUseSSLFilter() {
-        return useSSLFilter;
+    protected IoHandler getDetectorHandler() {
+        return m_detectorHandler;
     }
 }

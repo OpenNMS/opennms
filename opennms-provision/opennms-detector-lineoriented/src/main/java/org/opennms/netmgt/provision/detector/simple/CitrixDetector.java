@@ -68,7 +68,7 @@ public class CitrixDetector extends AsyncLineOrientedDetector {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        expectBanner(startsWith("ICA"));       
+        expectBanner(startsWith("ICA"));
     }
 
 

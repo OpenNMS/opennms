@@ -42,7 +42,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -93,7 +92,7 @@ public class FtpDetectorTest implements ApplicationContextAware{
         m_server.setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
         m_detector.setPort(m_server.getLocalPort());
         m_detector.setIdleTime(10);
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(),new NullDetectorMonitor()))); 
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
     }
     
     @Test
@@ -103,7 +102,7 @@ public class FtpDetectorTest implements ApplicationContextAware{
         m_detector.setPort(m_server.getLocalPort());
         m_detector.setIdleTime(10);
 
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(),new NullDetectorMonitor()))); 
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
     }
     
     @Test
@@ -113,7 +112,7 @@ public class FtpDetectorTest implements ApplicationContextAware{
         m_detector.setPort(1000); //m_server.getLocalPort()
         m_detector.setIdleTime(10);
         
-        DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+        DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress());
         assertFalse("Test should fail because the server closes before detection takes place", doCheck(df));
     
     }
@@ -126,14 +125,14 @@ public class FtpDetectorTest implements ApplicationContextAware{
         m_detector.setPort(m_server.getLocalPort());
         m_detector.setIdleTime(10);
         
-        DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+        DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress());
         assertFalse("Test should fail because the banner doesn't even get sent", doCheck(df));
     
     }
     
     private boolean doCheck(DetectFuture future) throws InterruptedException {
         
-        future.await();
+        future.awaitFor();
         
         return future.isServiceDetected();
     }

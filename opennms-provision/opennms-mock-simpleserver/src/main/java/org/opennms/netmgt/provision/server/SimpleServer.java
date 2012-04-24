@@ -148,7 +148,9 @@ public class SimpleServer extends SimpleConversationEndPoint {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {} 
+    protected void onInit() {
+        // Do nothing by default
+    } 
     
     /**
      * <p>startServer</p>
@@ -190,7 +192,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * <p>dispose</p>
      */
     public void dispose(){
-        
+        // Do nothing by default
     }
     
     /**

@@ -53,7 +53,7 @@ public class MX4JDetector extends AbstractJsr160Detector {
 
     /** {@inheritDoc} */
     @Override
-    public void onInit() {
+    protected void onInit() {
         expectBeanCount(greatThan(0));
         
     }

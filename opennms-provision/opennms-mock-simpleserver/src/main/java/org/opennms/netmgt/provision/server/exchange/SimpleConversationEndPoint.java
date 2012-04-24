@@ -52,10 +52,12 @@ public class SimpleConversationEndPoint {
             setRequestHandler(requestHandler);
         }
 
+        @Override
         public boolean matchResponseByString(String response) {
             return getResponseHandler().matches(response);
         }
 
+        @Override
         public boolean processResponse(BufferedReader in) throws IOException {
             String input = in.readLine();
             
@@ -65,6 +67,7 @@ public class SimpleConversationEndPoint {
             return matchResponseByString(input);
         }
 
+        @Override
         public boolean sendRequest(OutputStream out) throws IOException {
             if(getRequestHandler() != null) {
                 getRequestHandler().doRequest(out);
@@ -102,11 +105,6 @@ public class SimpleConversationEndPoint {
     };
     
     /**
-     * <p>onInit</p>
-     */
-    public void onInit() {};
-    
-    /**
      * <p>setTimeout</p>
      *
      * @param timeout a int.
@@ -130,7 +128,7 @@ public class SimpleConversationEndPoint {
      * @param prefix a {@link java.lang.String} object.
      * @return ResponseHandler
      */
-    protected ResponseHandler startsWith(final String prefix) {
+    protected static ResponseHandler startsWith(final String prefix) {
         return new ResponseHandler() {
 
             public boolean matches(String input) {
@@ -146,7 +144,7 @@ public class SimpleConversationEndPoint {
      * @param phrase a {@link java.lang.String} object.
      * @return ResponseHandler
      */
-    protected ResponseHandler contains(final String phrase) {
+    protected static ResponseHandler contains(final String phrase) {
         return new ResponseHandler() {
 
             public boolean matches(String input) {
@@ -162,7 +160,7 @@ public class SimpleConversationEndPoint {
      * @param regex a {@link java.lang.String} object.
      * @return ResponseHandler
      */
-    protected ResponseHandler matches(final String regex) {
+    protected static ResponseHandler matches(final String regex) {
         return new ResponseHandler() {
             
             public boolean matches(String input) {
@@ -194,7 +192,7 @@ public class SimpleConversationEndPoint {
      * @param request a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
      */
-    protected RequestHandler singleLineRequest(final String request) {
+    protected static RequestHandler singleLineRequest(final String request) {
       return new RequestHandler() {
 
           public void doRequest(OutputStream out) throws IOException {
@@ -210,7 +208,7 @@ public class SimpleConversationEndPoint {
      * @param request an array of {@link java.lang.String} objects.
      * @return a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
      */
-    protected RequestHandler multilineLineRequest(final String[] request) {
+    protected static RequestHandler multilineLineRequest(final String[] request) {
         return new RequestHandler() {
 
             public void doRequest(OutputStream out) throws IOException {

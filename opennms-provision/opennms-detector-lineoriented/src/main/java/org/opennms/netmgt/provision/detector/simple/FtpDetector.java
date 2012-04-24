@@ -67,7 +67,8 @@ public class FtpDetector extends AsyncMultilineDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {
+    @Override
+    protected void onInit() {
         //setup the correct codec for this Detector
         setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(CHARSET_UTF8, getMultilineIndicator())));
         

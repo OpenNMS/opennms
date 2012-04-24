@@ -180,11 +180,6 @@ public class ConnectionFactory {
                 } catch (Throwable e) {
                     LogUtils.debugf(this, e, "Caught exception on factory %s, retrying: %s", this, e);
                     m_connector.dispose(true);
-                    /*
-                    while(!m_connector.isDisposed()) {
-                        try { Thread.sleep(10); } catch (InterruptedException ex) {}
-                    }
-                    */
                     m_connector = getSocketConnector(m_timeout);
                 }
             }
@@ -204,11 +199,6 @@ public class ConnectionFactory {
     public ConnectFuture reConnect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init) {
         synchronized (m_connectorMutex) {
             m_connector.dispose(true);
-            /*
-            while(!m_connector.isDisposed()) {
-                try { Thread.sleep(10); } catch (InterruptedException e) {}
-            }
-            */
             m_connector = getSocketConnector(m_timeout);
             /*
              * Use the 3-argument call to connect(). If you use the 2-argument version without
@@ -244,11 +234,6 @@ public class ConnectionFactory {
 
             synchronized (factory.m_connectorMutex) {
                 factory.m_connector.dispose(true);
-                /*
-                while(!factory.m_connector.isDisposed()) {
-                    try { Thread.sleep(10); } catch (InterruptedException e) {}
-                }
-                */
             }
         }
     }

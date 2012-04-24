@@ -41,8 +41,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.protocols.nsclient.detector.NsclientDetector;
 import org.opennms.test.mock.MockLogAppender;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -106,20 +104,20 @@ public class NsclientDetectorTest implements InitializingBean {
     public void testServerSuccess() throws Exception{
         m_detector.setCommand("CLIENTVERSION");
         m_detector.init();
-        Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
     public void testBadCommand() throws Exception{
         m_detector.setCommand("UNKNOWN");
         m_detector.init();
-        Assert.assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        Assert.assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
     public void testNoCommand() throws Exception{
         m_detector.init(); // Assumes CLIENTVERSION
-        Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
 }

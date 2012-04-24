@@ -30,7 +30,7 @@ package org.opennms.netmgt.provision.detector.simple;
 
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncBasicDetectorMinaImpl;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
@@ -39,7 +39,7 @@ import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseVali
  * @author Donald Desloge
  * @version $Id: $
  */
-public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
+public abstract class AsyncMultilineDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, MultilineOrientedResponse> {
 
     /**
      * <p>Constructor for AsyncMultilineDetector.</p>
@@ -63,10 +63,6 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
         super(serviceName, port, timeout, retries);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    abstract protected void onInit();
-    
     /**
      * <p>expectCodeRange</p>
      *

@@ -26,47 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple;
+package org.opennms.netmgt.provision;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.util.EventListener;
 
-@Component
 /**
- * <p>MemcachedDetector class.</p>
- *
- * @author agalue
- * @version $Id: $
  */
-@Scope("prototype")
-public class MemcachedDetector extends AsyncLineOrientedDetector {
+public interface DetectFutureListener<F extends DetectFuture> extends EventListener {
 
-    private static final String DEFAULT_SERVICE_NAME = "Memcached";
-    private static final int DEFAULT_PORT = 11211;
-
-    /**
-     * Default constructor
-     */
-    public MemcachedDetector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-    }
-    
-    /**
-     * Constructor for creating a non-default service based on this protocol
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     * @param port a int.
-     */
-    public MemcachedDetector(final String serviceName, final int port) {
-        super(serviceName, port);
-    }
-    
-    /**
-     * <p>onInit</p>
-     */
-    @Override
-    protected void onInit(){
-        send(request("version"), startsWith("VERSION"));
-    }
-    
+    void operationComplete(F future);
 }

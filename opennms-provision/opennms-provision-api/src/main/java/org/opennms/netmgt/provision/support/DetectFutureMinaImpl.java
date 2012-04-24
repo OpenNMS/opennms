@@ -30,8 +30,10 @@
 package org.opennms.netmgt.provision.support;
 
 import org.apache.mina.core.future.DefaultIoFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.DetectFutureListener;
 
 /**
  * <p>DefaultDetectFuture class.</p>
@@ -39,7 +41,7 @@ import org.opennms.netmgt.provision.DetectFuture;
  * @author brozow
  * @version $Id: $
  */
-public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture {
+public class DetectFutureMinaImpl extends DefaultIoFuture implements DetectFuture {
     
     private final AsyncServiceDetector m_detector;
 
@@ -48,7 +50,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      *
      * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
-    public DefaultDetectFuture(final AsyncServiceDetector detector) {
+    public DetectFutureMinaImpl(final AsyncServiceDetector detector) {
         super(null);
         m_detector = detector;
     }
@@ -58,6 +60,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      *
      * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
+    @Override
     public AsyncServiceDetector getServiceDetector() {
         return m_detector;
     }
@@ -67,6 +70,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      *
      * @return a boolean.
      */
+    @Override
     public boolean isServiceDetected() {
         return Boolean.TRUE.equals(getValue());
     }
@@ -76,6 +80,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      *
      * @return a {@link java.lang.Throwable} object.
      */
+    @Override
     public Throwable getException() {
         final Object val = getValue();
         if (val instanceof Throwable) {
@@ -91,7 +96,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
 
     /** {@inheritDoc} */
     public void setException(final Throwable throwable) {
-//        System.err.println("setting exeception to " + throwable);
+//        System.err.println("setting exception to " + throwable);
         setValue(throwable);
     }
 
@@ -102,5 +107,27 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      */
     public Object getObjectValue() {
         return super.getValue();
+    }
+
+    @Override
+    public void awaitFor() throws InterruptedException {
+        super.await();
+    }
+
+    @Override
+    public void awaitForUninterruptibly() {
+        super.awaitUninterruptibly();
+    }
+
+    public DetectFuture addListener(final DetectFutureListener<DetectFuture> listener) {
+        super.addListener(new IoFutureListener<DetectFutureMinaImpl>() {
+
+            @Override
+            public void operationComplete(DetectFutureMinaImpl future) {
+                listener.operationComplete(future);
+            }
+
+        });
+        return this;
     }
 }

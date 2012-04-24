@@ -33,6 +33,7 @@
     <module>jrrd</module>
     <module>liquibase</module>
     <module>mina</module>
+    <module>netty</module>
     <module>quartz</module>
     <module>rancid</module>
     <!-- <module>rrd4j</module> -->

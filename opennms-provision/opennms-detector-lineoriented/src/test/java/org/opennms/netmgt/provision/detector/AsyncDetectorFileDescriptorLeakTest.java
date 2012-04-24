@@ -36,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -48,8 +47,7 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.ConnectionFactory;
-import org.opennms.netmgt.provision.support.DefaultDetectFuture;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.netmgt.provision.support.DetectFutureMinaImpl;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
@@ -126,22 +124,14 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
                 m_detector.setPort(port);
 
-                final DefaultDetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address, new NullDetectorMonitor());
-                /*
-                future.addListener(new IoFutureListener<DetectFuture>() {
-                    public void operationComplete(final DetectFuture future) {
-                        m_detector.dispose();
-                    }
-                });
-                */
+                final DetectFuture future = (DetectFutureMinaImpl)m_detector.isServiceDetected(address);
 
-                future.awaitUninterruptibly();
+                future.awaitForUninterruptibly();
                 assertNotNull(future);
                 if (future.getException() != null) {
                     LogUtils.debugf(this, future.getException(), "got future exception");
                     throw future.getException();
                 }
-                LogUtils.debugf(this, "got value: %s", future.getObjectValue());
                 assertTrue(future.isServiceDetected());
 
                 i++;
@@ -157,18 +147,9 @@ public class AsyncDetectorFileDescriptorLeakTest {
         m_detector.setPort(1999);
         System.err.printf("Starting testNoServerPresent with detector: %s\n", m_detector);
         
-        final DetectFuture future = m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress(), new NullDetectorMonitor());
-        /*
-        future.addListener(new IoFutureListener<DetectFuture>() {
-
-            public void operationComplete(final DetectFuture future) {
-                m_detector.dispose();
-            }
-            
-        });
-        */
+        final DetectFuture future = m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress());
         assertNotNull(future);
-        future.awaitUninterruptibly();
+        future.awaitForUninterruptibly();
         assertFalse(future.isServiceDetected());
         assertNull(future.getException());
         

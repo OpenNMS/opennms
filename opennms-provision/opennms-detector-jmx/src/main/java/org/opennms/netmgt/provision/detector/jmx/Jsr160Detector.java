@@ -53,7 +53,7 @@ public class Jsr160Detector extends AbstractJsr160Detector{
 
     /** {@inheritDoc} */
     @Override
-    public void onInit() {
+    protected void onInit() {
         expectBeanCount(greatThan(0));
     }
 

@@ -39,7 +39,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +72,7 @@ public class GpDetectorTest implements InitializingBean {
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("hello\n");
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
     @Test 
@@ -81,6 +80,6 @@ public class GpDetectorTest implements InitializingBean {
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("world");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 }
