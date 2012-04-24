@@ -31,6 +31,8 @@ package org.opennms.web.controller;
 import org.opennms.web.svclayer.DatabaseReportListService;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.ReportRepositoryDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,8 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>OnlineReportListController class.</p>
@@ -69,7 +69,10 @@ public class ReportListController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         logger.debug("start: reload reporting configuration files");
-        m_reportListService.reloadConfigurationFiles();
+        // TODO indigo: We have to solve this problem on DAO level
+        synchronized (m_reportListService) {
+          m_reportListService.reloadConfigurationFiles();
+        }
         logger.debug("stop : reload reporting configuration files");
 
         Map<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>> repositoryList = new LinkedHashMap<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>>();
