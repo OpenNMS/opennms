@@ -230,7 +230,9 @@ public class CollectorTest {
                 "0s",
                 0.0,
                 "0s",
-                "7.144s"
+                "7.144s",
+                "0s",
+                "0s"
 				);
 		StringWriter out = new StringWriter();
 		c.printServiceStats("24/216.216.217.254/SNMP", new PrintWriter(out, true));
