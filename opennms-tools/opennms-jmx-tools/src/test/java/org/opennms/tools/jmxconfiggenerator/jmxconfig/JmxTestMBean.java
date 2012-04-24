@@ -38,4 +38,8 @@ public interface JmxTestMBean {
     public Integer getInteger();
 
     public Long getLong();
+
+    public void setWritableY(int writable);
+
+    public int getWritableY();
 }

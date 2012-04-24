@@ -28,6 +28,7 @@ package org.opennms.tools.jmxconfiggenerator;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import javax.management.MBeanServerConnection;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -35,9 +36,9 @@ import org.kohsuke.args4j.Option;
 import org.opennms.tools.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.tools.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.tools.jmxconfiggenerator.graphs.Report;
-import org.opennms.tools.jmxconfiggenerator.graphs.SnmpGraphConfigGenerator;
 import org.opennms.tools.jmxconfiggenerator.helper.NameTools;
-import org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfigGenerator;
+import org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -107,12 +108,13 @@ public class Starter {
                 if (dictionaryFile != null) {
                     NameTools.loadExtermalDictionary(dictionaryFile);
                 }
-                JmxDatacollectionConfigGenerator.generateJmxConfig(serviceName, hostName, port, username, password, !skipDefaultVM, runWritableMBeans, outFile);
+                JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
+                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(hostName, port, username, password, false, false);
+                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, runWritableMBeans, runWritableMBeans);
+                jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
                 return;
             }
             if (graph && inputFile != null && outFile != null) {
-                SnmpGraphConfigGenerator.generateGraphs(serviceName, inputFile, "old_" + outFile);
-
                 JmxConfigReader jmxToSnmpGraphConfigGen = new JmxConfigReader();
                 Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig(inputFile);
 
@@ -126,7 +128,7 @@ public class Starter {
                 }
 
                 System.out.println(snmpGraphConfig);
-                FileUtils.writeStringToFile(new File("new_" + outFile), snmpGraphConfig, "UTF-8");
+                FileUtils.writeStringToFile(new File(outFile), snmpGraphConfig, "UTF-8");
                 return;
             }
             throw new CmdLineException(parser, "no valid call found.");
@@ -138,7 +140,7 @@ public class Starter {
             // System.err.println("  Example: java -jar JmxConfigGenerator" +
             // parser.printExample(ALL));
             System.err.println("Examples:");
-            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM] [-dictionary dictionary.properties]");
+            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM] [-runWritableMBeans] [-dictionary dictionary.properties]");
             System.err.println(" Generation of snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
         }
     }
