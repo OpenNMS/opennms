@@ -42,35 +42,35 @@ public interface DetectFuture {
      *
      * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
-    public AsyncServiceDetector getServiceDetector();
+    AsyncServiceDetector getServiceDetector();
     
     /**
      * <p>isServiceDetected</p>
      *
      * @return a boolean.
      */
-    public boolean isServiceDetected();
+    boolean isServiceDetected();
     
     /**
      * <p>getException</p>
      *
      * @return a {@link java.lang.Throwable} object.
      */
-    public Throwable getException();
+    Throwable getException();
     
     /**
      * <p>setServiceDetected</p>
      *
      * @param serviceDetected a boolean.
      */
-    public void setServiceDetected(boolean serviceDetected);
+    void setServiceDetected(boolean serviceDetected);
     
     /**
      * <p>setException</p>
      *
      * @param throwable a {@link java.lang.Throwable} object.
      */
-    public void setException(Throwable throwable);
+    void setException(Throwable throwable);
     
     /**
      * <p>awaitFor</p>

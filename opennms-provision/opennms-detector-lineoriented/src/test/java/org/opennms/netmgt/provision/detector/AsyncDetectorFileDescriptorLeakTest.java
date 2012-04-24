@@ -47,7 +47,7 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.ConnectionFactory;
-import org.opennms.netmgt.provision.support.DefaultDetectFuture;
+import org.opennms.netmgt.provision.support.DetectFutureMinaImpl;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
@@ -124,7 +124,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
                 m_detector.setPort(port);
 
-                final DetectFuture future = (DefaultDetectFuture)m_detector.isServiceDetected(address);
+                final DetectFuture future = (DetectFutureMinaImpl)m_detector.isServiceDetected(address);
 
                 future.awaitForUninterruptibly();
                 assertNotNull(future);

@@ -106,7 +106,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
     @Override
     public final DetectFuture isServiceDetected(final InetAddress address) {
 
-        final DetectFuture detectFuture = new DefaultDetectFuture(this);
+        final DetectFutureMinaImpl detectFuture = new DetectFutureMinaImpl(this);
 
         try {
             // Set this up here because it can throw an Exception, which we want
@@ -175,7 +175,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @param retryAttempt
      * @return IoFutureListener<ConnectFuture>
      */
-    private IoFutureListener<ConnectFuture> retryAttemptListener(final ConnectionFactory connector, final DetectFuture detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
+    private IoFutureListener<ConnectFuture> retryAttemptListener(final ConnectionFactory connector, final DetectFutureMinaImpl detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
         return new IoFutureListener<ConnectFuture>() {
 
             public void operationComplete(ConnectFuture future) {
@@ -221,7 +221,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @param future a {@link org.opennms.netmgt.provision.DetectFuture} object.
      * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
-    protected IoHandler createDetectorHandler(final DetectFuture future) {
+    protected IoHandler createDetectorHandler(final DetectFutureMinaImpl future) {
         m_detectorHandler.setConversation(getConversation());
         m_detectorHandler.setFuture(future);
         return m_detectorHandler;
