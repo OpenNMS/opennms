@@ -60,13 +60,14 @@ public class JmxDatacollectionConfiggenerator {
     private static Rrd rrd = new Rrd();
 
     static {
-
+        // Domanis directly from JVMs
         standardVmBeans.add("JMImplementation");
         standardVmBeans.add("com.sun.management");
         standardVmBeans.add("java.lang");
         standardVmBeans.add("java.nio");
         standardVmBeans.add("java.util.logging");
 
+        // valid numbertyps
         numbers.add("int");
         numbers.add("long");
         numbers.add("double");
@@ -95,9 +96,12 @@ public class JmxDatacollectionConfiggenerator {
         xmlJmxDatacollectionConfig.getJmxCollection().add(xmlJmxCollection);
         xmlJmxCollection.setMbeans(xmlObjectFactory.createMbeans());
 
-        if (!runStandardVmBeans) {
+        if (runStandardVmBeans) {
+            ignores.clear();
+        } else {
             ignores.addAll(standardVmBeans);
         }
+        
         try {
             for (String domainName : mBeanServerConnection.getDomains()) {
 

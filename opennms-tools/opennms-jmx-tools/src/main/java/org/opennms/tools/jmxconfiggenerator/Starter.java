@@ -110,7 +110,7 @@ public class Starter {
                 }
                 JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
                 MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(hostName, port, username, password, false, false);
-                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, runWritableMBeans, runWritableMBeans);
+                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans);
                 jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
                 return;
             }

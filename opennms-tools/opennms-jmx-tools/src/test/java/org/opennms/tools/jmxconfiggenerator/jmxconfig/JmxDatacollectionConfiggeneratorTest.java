@@ -60,19 +60,6 @@ public class JmxDatacollectionConfiggeneratorTest {
         platformMBeanServer = null;
     }
 
-    /***
-     * Run this test first to avoid problems with registering JVM-MBeans
-     */
-    @Test
-    public void testGenerateJmxConfigModelRunJvmMBeans() {
-        //TODO Tak: This test will not include JVM Beans if it runs after one of the other tests. Fix that!
-        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, false);
-        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
-        Assert.assertTrue(10 < jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
-        Assert.assertEquals("org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
-        Assert.assertEquals(3, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getAttrib().size());
-    }
-
     @Test
     public void testGenerateJmxConfigModelSkipJvmMBeans() {
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", false, false);
@@ -89,6 +76,15 @@ public class JmxDatacollectionConfiggeneratorTest {
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
         Assert.assertEquals("org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
         Assert.assertEquals(4, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getAttrib().size());
+    }
+
+    @Test
+    public void testGenerateJmxConfigModelRunJvmMBeans() {
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, false);
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
+        Assert.assertTrue(10 < jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
+        Assert.assertEquals("org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
+        Assert.assertEquals(3, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getAttrib().size());
     }
 
     //@Test
