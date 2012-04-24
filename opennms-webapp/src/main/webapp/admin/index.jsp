@@ -168,18 +168,20 @@
             </p>
         </form>
       </div>    
-<%--
     <h3>Nodes</h3>
     <div class="boxWrapper">
       <ul class="plain">  
+        <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
+<%--
         <li><a href="javascript:addInterfacePost()">Add Interface</a></li>
         <li><a href="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
         <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
-        <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
         <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+--%>
       </ul>
     </div>
 
+<%--
 	<h3>Distributed Monitoring</h3>
     <div class="boxWrapper">
       <ul class="plain">  
