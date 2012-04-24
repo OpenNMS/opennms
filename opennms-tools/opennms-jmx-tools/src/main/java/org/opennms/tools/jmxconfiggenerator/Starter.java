@@ -64,6 +64,12 @@ public class Starter {
     @Option(name = "-port", usage = "Port of JMX-RMI service")
     private String port;
 
+    @Option(name = "-jmxmp", usage = "Use JMXMP and not JMX-RMI")
+    private boolean jmxmp = false;
+
+//    @Option(name = "-ssl", usage = "Use SSL for the connection")
+    private boolean ssl = false;
+
     @Option(name = "-skipDefaultVM", usage = "set to process default JavaVM Beans.")
     private boolean skipDefaultVM = false;
 
@@ -109,7 +115,7 @@ public class Starter {
                     NameTools.loadExtermalDictionary(dictionaryFile);
                 }
                 JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(hostName, port, username, password, false, false);
+                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(hostName, port, username, password, ssl, jmxmp);
                 JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans);
                 jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
                 return;

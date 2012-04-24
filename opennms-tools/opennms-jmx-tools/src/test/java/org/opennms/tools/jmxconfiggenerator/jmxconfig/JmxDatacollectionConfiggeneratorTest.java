@@ -34,6 +34,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -41,6 +43,7 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
  */
 public class JmxDatacollectionConfiggeneratorTest {
 
+    private static Logger logger = LoggerFactory.getLogger(JmxDatacollectionConfiggenerator.class);
     private JmxDatacollectionConfiggenerator jmxConfiggenerator;
     private MBeanServer platformMBeanServer;
 
@@ -91,6 +94,16 @@ public class JmxDatacollectionConfiggeneratorTest {
     public void testGenerateJmxConfigCassandraLocal() {
         MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection("localhost", "7199", null, null, false, false);
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mBeanServerConnection, "cassandra", false, false);
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
+        Assert.assertEquals(35, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
+        Assert.assertEquals("org.apache.cassandra.internal.MemtablePostFlusher", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
+    }
+
+    //@Test
+    public void testGenerateJmxConfigJmxMp() {
+        MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection("connect.opennms-edu.net", "9998", null, null, false, true);
+        logger.debug("MBeanServerConnection: '{}'",mBeanServerConnection);
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mBeanServerConnection, "RemoteRepository", true, true);
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
         Assert.assertEquals(35, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
         Assert.assertEquals("org.apache.cassandra.internal.MemtablePostFlusher", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());

@@ -197,7 +197,11 @@ public class JmxDatacollectionConfiggenerator {
         MBeanServerConnection jmxServerConnection = null;
 
         try {
-            jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
+            if(jmxmp) {
+                jmxServiceURL = new JMXServiceURL("service:jmx:jmxmp://" + hostName + ":" + port);
+            }else {
+                jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
+            }
             if (username != null && password != null) {
                 jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
                 HashMap<String, String[]> env = new HashMap<String, String[]>();
