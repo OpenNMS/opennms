@@ -41,6 +41,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -133,10 +134,30 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         /**
          * Constructor
          */
-        EventListenerExecutor(EventListener listener) {
+        EventListenerExecutor(EventListener listener, Integer handlerQueueLength) {
             m_listener = listener;
             // You could also do Executors.newSingleThreadExecutor() here
-            m_delegateThread = Executors.newFixedThreadPool(1);
+            m_delegateThread = new ThreadPoolExecutor(
+                    1,
+                    1,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(handlerQueueLength),
+                    new ThreadFactory() {
+						
+						@Override
+						public Thread newThread(Runnable r) {
+							return new Thread(r, m_listener.getName()+"-Thread");
+						}
+					},
+					new RejectedExecutionHandler() {
+						
+						@Override
+						public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+							log().warn("Listener " + m_listener.getName() + "'s event queue is full discarding event");
+						}
+					}
+                );
         }
 
         public void addEvent(final Event event) {
@@ -422,7 +443,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
         
-        EventListenerExecutor listenerThread = new EventListenerExecutor(listener);
+        EventListenerExecutor listenerThread = new EventListenerExecutor(listener, m_handlerQueueLength);
         m_listenerThreads.put(listener.getName(), listenerThread);
     }
 
@@ -493,7 +514,16 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 m_handlerPoolSize,
                 0L,
                 TimeUnit.MILLISECONDS,
-                m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
+                m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
+                new ThreadFactory() {
+                	int created = 0;
+					@Override
+					public Thread newThread(Runnable r) {
+						String name = String.format("%sThread-%d-of-%d", EventIpcManagerDefaultImpl.this.getClass().getSimpleName(), ++created, m_handlerPoolSize);
+						return new Thread(r, name);
+					}
+                	
+                }
             );
         } finally {
             ThreadCategory.setPrefix(prefix);
