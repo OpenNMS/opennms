@@ -793,11 +793,11 @@ echo "config-data post: OpenNMS configuration version: $CURRENT_VERSION"
 
 if [ ! -d "$RPM_INSTALL_PREFIX0/etc/.git" ]; then
 	echo "config-data post: $RPM_INSTALL_PREFIX0/etc/.git does not exist, initializing"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" init -v "$CURRENT_VERSION" || exit 151
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" init -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" || exit 151
 fi
 
 echo "config-data post: storing pristine configuration files"
-"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -v "$CURRENT_VERSION" || exit 152
+"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" || exit 152
 
 %pre upgrade
 if [ -n "$DEBUG" ]; then
@@ -831,7 +831,7 @@ UPGRADE_TO_VERSION="%{version}-%{release}"
 
 pushd "$RPM_INSTALL_PREFIX0/etc"
 	echo "upgrade pre: upgrading from $UPGRADE_FROM_VERSION to $UPGRADE_TO_VERSION"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -f "$UPGRADE_FROM_VERSION" -t "$UPGRADE_TO_VERSION" || exit 161
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -o "$RPM_INSTALL_PREFIX0" -f "$UPGRADE_FROM_VERSION" -t "$UPGRADE_TO_VERSION" || exit 161
 	echo "upgrade pre: git branch -D opennms-git-config-work"
 	git branch -D opennms-git-config-work || :
 	echo "upgrade pre: git branch opennms-git-config-work opennms-git-config-pristine-$UPGRADE_TO_VERSION"

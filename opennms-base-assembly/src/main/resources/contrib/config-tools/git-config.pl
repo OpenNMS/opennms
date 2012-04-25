@@ -23,9 +23,42 @@ sub warning(@);
 sub error(@);
 sub usage();
 
+my $me = Cwd::abs_path($0);
+$TOOLDIR = dirname($me);
+
+### Create a temporary working directory
+$TEMPDIR = File::Temp::tempdir( CLEANUP => 1 );
+#$TEMPDIR = '/tmp/git-config';
+
+### Process arguments
+
+our $OPT_HELP         = 0;
+our $OPT_OPENNMS_HOME = undef;
+our $OPT_VERSION      = undef;
+our $OPT_FROM         = undef;
+our $OPT_TO           = undef;
+
+my $results = GetOptions(
+	'h|help'           => \$OPT_HELP,
+	'o|opennms-home=s' => \$OPT_OPENNMS_HOME,
+	'v|version=s'      => \$OPT_VERSION,
+	'f|from=s'         => \$OPT_FROM,
+	't|to=s'           => \$OPT_TO,
+);
+
+if ($OPT_HELP) {
+	usage();
+	exit 1;
+}
+
+if ($OPT_OPENNMS_HOME) {
+	$OPENNMS_HOME = $OPT_OPENNMS_HOME;
+	mkpath(File::Spec->catdir($OPENNMS_HOME, 'etc'));
+}
+
 ### Find $OPENNMS_HOME
 
-if (exists $ENV{'OPENNMS_HOME'}) {
+if (not defined $OPENNMS_HOME and exists $ENV{'OPENNMS_HOME'}) {
 	$OPENNMS_HOME = find_opennms_home($ENV{'OPENNMS_HOME'});
 }
 
@@ -35,32 +68,6 @@ if (not defined $OPENNMS_HOME) {
 
 if (not defined $OPENNMS_HOME) {
 	error 'Unable to locate $OPENNMS_HOME or $OPENNMS_HOME not set.';
-	exit 1;
-}
-
-my $me = Cwd::abs_path($0);
-$TOOLDIR = dirname($me);
-
-### Create a temporary working directory
-#$TEMPDIR = File::Temp::tempdir( CLEANUP => 1 );
-$TEMPDIR = '/tmp/git-config';
-
-### Process arguments
-
-our $OPT_HELP    = 0;
-our $OPT_VERSION = undef;
-our $OPT_FROM    = undef;
-our $OPT_TO      = undef;
-
-my $results = GetOptions(
-	'h|help'      => \$OPT_HELP,
-	'v|version=s' => \$OPT_VERSION,
-	'f|from=s'    => \$OPT_FROM,
-	't|to=s'      => \$OPT_TO,
-);
-
-if ($OPT_HELP) {
-	usage();
 	exit 1;
 }
 
@@ -127,21 +134,22 @@ sub usage() {
 	print <<END;
 usage: $0 [-h] <command>
 
-  -h, --help      This help.
+  -h, --help          This help.
+  -o, --opennms-home  The OpenNMS root directory.
 
 Valid commands:
-* init             Initialize \$OPENNMS_HOME/etc as a Git repository.
-  * -v, --version  The version of the pristine configuration that is being initialized.
+* init                Initialize \$OPENNMS_HOME/etc as a Git repository.
+  * -v, --version     The version of the pristine configuration that is being initialized.
 
-* storepristine    Update the pristine branch with the changes in \$OPENNMS_HOME/bin/config-tools.
-  * -v, --version  The version of the pristine configuration that is being stored.
+* storepristine       Update the pristine branch with the changes in \$OPENNMS_HOME/bin/config-tools.
+  * -v, --version     The version of the pristine configuration that is being stored.
 
-* storecurrent     Store current configuration changes in \$OPENNMS_HOME/etc.
-  * -v, --version  The version of the user configuration that is being stored.
+* storecurrent        Store current configuration changes in \$OPENNMS_HOME/etc.
+  * -v, --version     The version of the user configuration that is being stored.
 
-* upgrade          Upgrade the user's configuration using the latest pristine configs.
-  * -f, --from     The version of the OpenNMS configuration that is being upgraded from.
-  * -t, --to       The version of the OpenNMS configuration that is being upgraded to.
+* upgrade             Upgrade the user's configuration using the latest pristine configs.
+  * -f, --from        The version of the OpenNMS configuration that is being upgraded from.
+  * -t, --to          The version of the OpenNMS configuration that is being upgraded to.
 
 END
 }
@@ -323,7 +331,7 @@ sub _unpack_pristine_tarballs() {
 		exit 1;
 	}
 	chomp($tar);
-	my $pristinedir = File::Temp::tempdir(CLEANUP => 0);
+	my $pristinedir = File::Temp::tempdir(CLEANUP => 1);
 
 	my $rpmnames = _get_current_opennms_rpms();
 
