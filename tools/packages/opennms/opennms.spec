@@ -86,6 +86,7 @@ Group:		Applications/System
 Requires:	jicmp
 Requires:	jicmp6
 Requires:	%{jdk}
+Requires(pre):	opennms-upgrade = %{version}-%{release}
 Requires:	opennms-upgrade = %{version}-%{release}
 Obsoletes:	opennms < 1.3.11
 
@@ -345,6 +346,7 @@ Configuration data (etc-pristine) useful for doing OpenNMS upgrades.
 Summary:       OpenNMS Upgrade Package
 Group:         Applications/System
 Requires(pre): opennms-config-data = %{version}-%{release}
+Requires:      opennms-config-data = %{version}-%{release}
 
 %description upgrade
 Tools to deal with upgrading from a previous OpenNMS release.
