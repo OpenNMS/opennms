@@ -6,6 +6,7 @@ use warnings;
 use Cwd;
 use Data::Dumper;
 use File::Basename;
+use File::Path;
 use File::Spec;
 use Getopt::Long qw(:config gnu_getopt pass_through);
 use Git;
@@ -483,8 +484,16 @@ sub _store_user_configs($) {
 	# commit user configs
 	_git('_store_user_configs', $git, 'commit', '-m', 'user-modified configuration files for OpenNMS, version ' . $version);
 
+	my $tagname = 'opennms-git-config-user-' . $version;
+
+	my $tag = _git('_store_user_configs', $git, 'tag', '-l', $tagname);
+	if ($tag =~ /$tagname/) {
+		main::warning "_store_user_configs: tag $tagname already exists, deleting existing tag and recreating.";
+		_git('_store_user_configs', $git, 'tag', '-d', $tagname);
+	}
+
 	# create a tag for this version
-	_git('_store_user_configs', $git, 'tag', 'opennms-git-config-user-' . $version);
+	_git('_store_user_configs', $git, 'tag', $tagname);
 
 	# copy the updated .git tree back
 	_recursive_copy($tempgitdir, $gitdir, 0);
@@ -704,7 +713,13 @@ sub upgrade(@) {
 	_git('upgrade', $git, 'merge', $PRISTINE_BRANCH);
 
 	# create a tag for this version
-	_git('upgrade', $git, 'tag', 'opennms-git-config-user-' . $to);
+	my $tagname = 'opennms-git-config-user-' . $to;
+	my $tag = _git('upgrade', $git, 'tag', '-l', $tagname);
+	if ($tag =~ /$tagname/) {
+		main::warning "upgrade: tag $tagname already exists, deleting existing tag and recreating.";
+		_git('upgrade', $git, 'tag', '-d', $tagname);
+	}
+	_git('upgrade', $git, 'tag', $tagname);
 
 	# now copy this back to the real tree
 	_recursive_copy($TEMPDIR, $etcdir, 0);

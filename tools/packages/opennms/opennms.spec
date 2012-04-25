@@ -778,11 +778,11 @@ fi
 
 CURRENT_VERSION="%{version}-%{release}"
 OPENNMS_CORE=`rpm -q opennms-core 2>/dev/null`
-if [ -n "$OPENNMS_CORE" ]; then
+if [ $? -eq 0 ] && [ -n "$OPENNMS_CORE" ]; then
 	echo "config-data post: opennms-core is already installed"
 	echo "config-data post: rpm -q --queryformat='%%{version}-%%{release}' opennms-core"
 	CURRENT_VERSION=`rpm -q --queryformat='%%{version}-%%{release}' opennms-core 2>/dev/null`
-	if [ -z "$CURRENT_VERSION" ]; then
+	if [ $? -ne 0 ] || [ -z "$CURRENT_VERSION" ]; then
 		echo "config-data post: unable to determine current version!"
 		exit 150
 	fi
@@ -811,11 +811,11 @@ fi
 
 CURRENT_VERSION="%{version}-%{release}"
 OPENNMS_CORE=`rpm -q opennms-core 2>/dev/null`
-if [ -n "$OPENNMS_CORE" ]; then
+if [ $? -eq 0 ] && [ -n "$OPENNMS_CORE" ]; then
 	echo "upgrade pre: opennms-core is already installed"
 	echo "upgrade pre: rpm -q --queryformat='%%{version}-%%{release}' opennms-core"
 	CURRENT_VERSION=`rpm -q --queryformat='%%{version}-%%{release}' opennms-core 2>/dev/null`
-	if [ -z "$CURRENT_VERSION" ]; then
+	if [ $? -ne 0 ] || [ -z "$CURRENT_VERSION" ]; then
 		echo "upgrade pre: unable to determine current version!"
 		exit 160
 	fi
