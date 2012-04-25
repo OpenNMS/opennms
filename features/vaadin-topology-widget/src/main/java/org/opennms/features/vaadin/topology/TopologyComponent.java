@@ -22,6 +22,65 @@ import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container {
 	
+    public class MapManager {
+
+        private double m_scale = 1;
+        private double m_minScale = 0;
+        private double m_maxScale = 1;
+        private int m_clientX = 0;
+        private int m_clientY = 0;
+        
+        public void setScale(double newScale) {
+            if(m_scale != newScale) {
+                if(newScale > getMaxScale()) {
+                    m_scale = getMaxScale();
+                }else if(newScale < getMinScale()) {
+                    m_scale = getMinScale();
+                }else {
+                    m_scale = newScale;
+                }
+            }
+        }
+
+        public double getScale() {
+            return m_scale;
+        }
+
+        public void setMinScale(double min) {
+            m_minScale = min;
+        }
+
+        private double getMinScale() {
+            return m_minScale;
+        }
+
+        private double getMaxScale() {
+            return m_maxScale;
+        }
+
+        private void setMaxScale(double maxScale) {
+            m_maxScale = maxScale;
+        }
+
+        public void setClientX(int clientX) {
+            m_clientX = clientX;
+        }
+
+        public void setClientY(int clientY) {
+            m_clientY = clientY;
+        }
+
+        public int getClientX() {
+            return m_clientX;
+        }
+
+        public int getClientY() {
+            return m_clientY;
+        }
+        
+        
+    }
+    
 	private KeyMapper m_actionMapper;
 	private Slider m_scaleSlider;
 
@@ -32,8 +91,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
     private Graph m_graph;
-	private double m_scale = 1;
 	private List<Action.Handler> m_actionHandlers = new CopyOnWriteArrayList<Action.Handler>();
+	private MapManager m_mapManager = new MapManager();
 
 	public TopologyComponent() {
 		m_graph = new Graph();
@@ -42,12 +101,16 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	
 	public void setScaleSlider(Slider slider) {
 	    m_scaleSlider = slider;
+	    m_mapManager.setMaxScale(m_scaleSlider.getMax());
+	    m_mapManager.setMinScale(m_scaleSlider.getMin());
 	}
 	
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("scale", getScale());
+        target.addAttribute("scale", m_mapManager.getScale());
+        target.addAttribute("clientX", m_mapManager.getClientX());
+        target.addAttribute("clientY", m_mapManager.getClientY());
         
         Set<Action> actions = new HashSet<Action>();
 		m_actionMapper = new KeyMapper();
@@ -182,18 +245,17 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         if(variables.containsKey("mapScale")) {
             double newScale = (Double)variables.get("mapScale");
-            
-            if(newScale <= m_scaleSlider.getResolution()) {
-                try {
-                    m_scaleSlider.setValue(newScale);
-                    setScale(newScale);
-                } catch (ValueOutOfBoundsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            
-            
+            setScale(newScale);
+        }
+        
+        if(variables.containsKey("clientX")) {
+            int clientX = (Integer) variables.get("clientX");
+            m_mapManager.setClientX(clientX);
+        }
+        
+        if(variables.containsKey("clientY")) {
+            int clientY = (Integer) variables.get("clientY");
+            m_mapManager.setClientY(clientY);
         }
         
     }
@@ -218,17 +280,17 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
 	public void setScale(double scale){
-    	m_scale = scale;
-    	
+    	m_mapManager.setScale(scale);
+    	try {
+            m_scaleSlider.setValue(scale);
+        } catch (ValueOutOfBoundsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     	requestRepaint();
     }
     
-    public double getScale(){
-    	return m_scale;
-    }
-
-	public Graph getGraph() {
-		
+    public Graph getGraph() {
 		return m_graph;
 	}
 
@@ -287,6 +349,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     public void addSwitchVertexTo(Vertex source) {
         m_graph.addSwitchVertex(source);
         requestRepaint();
+    }
+
+    public Double getScale() {
+        return m_mapManager.getScale();
     }
    
 

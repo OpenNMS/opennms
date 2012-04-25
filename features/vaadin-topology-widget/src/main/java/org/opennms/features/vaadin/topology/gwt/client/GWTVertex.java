@@ -96,6 +96,16 @@ public final class GWTVertex extends JavaScriptObject {
     		}
     	};
     }
+    
+    protected static Func<String, GWTVertex> selectionFilter() {
+        return new Func<String, GWTVertex>(){
+
+            public String call(GWTVertex vertex, int index) {
+                return vertex.isSelected() ? "1" : "0";
+            }
+            
+        };
+    }
 
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
@@ -126,7 +136,7 @@ public final class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).select("circle").style("fill", GWTVertex.selectedFill());
+                return selection.attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
@@ -139,6 +149,9 @@ public final class GWTVertex extends JavaScriptObject {
                 D3 vertex = selection.append("g").attr("class", "little");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
+                
+                vertex.append("rect").attr("class", "highlight").attr("fill", "yellow").attr("x", "-26px").attr("y", "-26px").attr("width", "52px").attr("height", "52px").attr("opacity", 0);
+                
                 vertex.append("svg:image").attr("xlink:href", getIconPath())
                       .attr("x", "-24px")
                       .attr("y", "-24px")

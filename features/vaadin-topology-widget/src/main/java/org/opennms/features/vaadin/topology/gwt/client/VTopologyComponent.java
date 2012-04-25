@@ -3,8 +3,10 @@ package org.opennms.features.vaadin.topology.gwt.client;
 import static org.opennms.features.vaadin.topology.gwt.client.d3.TransitionBuilder.fadeIn;
 import static org.opennms.features.vaadin.topology.gwt.client.d3.TransitionBuilder.fadeOut;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3;
 import org.opennms.features.vaadin.topology.gwt.client.d3.D3Behavior;
@@ -360,6 +362,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     private GraphDrawer m_graphDrawer;
     private GraphDrawerNoTransition m_graphDrawerNoTransition;
     protected PanObject m_panObject;
+    private List<Element> m_selectedElements = new ArrayList<Element>();
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -456,9 +459,27 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     	case Event.ONMOUSEWHEEL:
     	    double delta = event.getMouseWheelVelocityY() / 30.0;
     	    double oldScale = m_scale;
-    	    double newScale = oldScale + delta;
-    	     
-    	    setScale(newScale);
+    	    final double newScale = oldScale + delta;
+    	    final int clientX = event.getClientX();
+    	    final int clientY = event.getClientY();
+    	    //broken now need to fix it
+//    	    Command cmd = new Command() {
+//                
+//                public void execute() {
+//                    m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
+//                    m_client.updateVariable(m_paintableId, "clientX", clientX, false);
+//                    m_client.updateVariable(m_paintableId, "clientY", clientY, false);
+//                    
+//                    m_client.sendPendingVariableChanges();
+//                }
+//            };
+//            
+//            if(BrowserInfo.get().isWebkit()) {
+//                Scheduler.get().scheduleDeferred(cmd);
+//            }else {
+//                cmd.execute();
+//            }
+    	    
     	    break;
     	}
 
@@ -542,7 +563,10 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 NativeEvent event = D3.getEvent();
                 Element draggableElement = Element.as(event.getEventTarget()).getParentElement();
                 
+                
+                
                 m_dragObject = new DragObject(draggableElement, m_svgViewPort);
+                
                 
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
@@ -589,7 +613,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         m_client = client;
         m_paintableId = uidl.getId();
         
-        setScale(uidl.getDoubleAttribute("scale"));
+        
+        setScale(uidl.getDoubleAttribute("scale"), uidl.getIntAttribute("clientX"), uidl.getIntAttribute("clientY"));
         setActionKeys(uidl.getStringArrayAttribute("backgroundActions"));
         
         UIDL graph = uidl.getChildByTagName("graph");
@@ -658,17 +683,17 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		
 	}
 
-	private void setScale(double scale) {
+	private void setScale(double scale, int clientX, int clientY) {
 		if(m_scale != scale) {
 		    double oldScale = m_scale;
 			m_scale = scale;
-		    repaintScale(oldScale);
+		    repaintScale(oldScale, clientX, clientY);
 		}
 		
 	}
 	
-    private void repaintScale(double oldScale) {
-		updateScale(oldScale, m_scale);
+    private void repaintScale(double oldScale, int clientX, int clientY) {
+		updateScale(oldScale, m_scale, getSVGElement(), clientX, clientY);
 	}
 
 	private void setGraph(GWTGraph graph) {
@@ -707,10 +732,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	        .translate(p.getX(),p.getY())
 	        .scale(zoomFactor)
 	        .translate(-p.getX(), -p.getY());
-	    
 	    SVGMatrix ctm = g.getCTM().multiply(m);
+	    
 	    consoleLog("zoomFactor: " + zoomFactor + " oldScale: " + oldScale + " newScale:" + newScale);
 		D3.d3().select(m_svgViewPort).transition().duration(1000).attr("transform", matrixTransform(ctm));
+
     }
 	
 	private SVGPoint getPoint(int x, int y) {

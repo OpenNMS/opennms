@@ -10,8 +10,8 @@ public class SVGMatrix extends JavaScriptObject {
         return this.translate(x, y);
     }-*/;
 
-    public final native SVGMatrix scale(double zoomFactor) /*-{
-        return this.scale(zoomFactor);
+    public final native SVGMatrix scale(double newScale) /*-{
+        return this.scale(newScale);
     }-*/;
 
     public final native SVGMatrix multiply(SVGMatrix m) /*-{
@@ -65,4 +65,5 @@ public class SVGMatrix extends JavaScriptObject {
     public final native double getY() /*-{
         return this.y;
     }-*/;
+
 }
