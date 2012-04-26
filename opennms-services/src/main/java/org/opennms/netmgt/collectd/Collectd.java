@@ -709,15 +709,21 @@ public class Collectd extends AbstractServiceDaemon implements
      * UEI.
      */
     public void onEvent(final Event event) {
+    	
+    	String prefix = ThreadCategory.getPrefix();
+    	try {
+    		ThreadCategory.setPrefix(getName());
+    		m_transTemplate.execute(new TransactionCallback<Object>() {
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+    			public Object doInTransaction(TransactionStatus status) {
+    				onEventInTransaction(event);
+    				return null;
+    			}
 
-            public Object doInTransaction(TransactionStatus status) {
-                onEventInTransaction(event);
-                return null;
-            }
-
-        });
+    		});
+    	} finally {
+    		ThreadCategory.setPrefix(prefix);
+    	}
 
     }
 
@@ -1032,8 +1038,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void handleNodeCategoryMembershipChanged(Event event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
-        EventUtils.checkInterface(event);
-
+        
         ThreadCategory log = log();
 
         Long nodeId = event.getNodeid();
