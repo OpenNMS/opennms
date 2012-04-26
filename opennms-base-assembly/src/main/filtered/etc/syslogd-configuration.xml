@@ -27,9 +27,6 @@
           defined in RFC5424).  It has strict parsing that should match the grammar specified in the RFC, although
           it currently discards structured data.  Like the SyslogNGParser, it ignores forwarding-regexp,
           matching-group-host, and matching-group-message in favor of stricter parsing of the known grammer.
-        * org.opennms.netmgt.syslogd.JuniperSyslogParser: Handles the Juniper NCS format, which lacks a PRI field.
-          If an incoming message doesn't match the NCS format, it falls back to letting the CustomSyslogParser
-          attempt to parse it.
 
         *** PERFORMANCE NOTES ***
 
