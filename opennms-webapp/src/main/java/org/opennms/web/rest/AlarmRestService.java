@@ -220,6 +220,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     		builder.offset(0);
 
     		final String ackUser = formProperties.containsKey("ackUser")? formProperties.getFirst("ackUser") : m_securityContext.getUserPrincipal().getName();
+    		formProperties.remove("ackUser");
 			assertUserCredentials(ackUser);
 
     		for (final OnmsAlarm alarm : m_alarmDao.findMatching(builder.toCriteria())) {
