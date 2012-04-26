@@ -3,7 +3,7 @@
     <configuration
             syslog-port="514"
             new-suspect-on-message="false"
-            parser="org.opennms.netmgt.syslogd.JuniperSyslogParser"
+            parser="org.opennms.netmgt.syslogd.Rfc5424SyslogParser"
 
 	    forwarding-regexp="^((.+?) (.*))\r?\n?$"
             matching-group-host="2"
@@ -36,6 +36,9 @@
           defined in RFC5424).  It has strict parsing that should match the grammar specified in the RFC, although
           it currently discards structured data.  Like the SyslogNGParser, it ignores forwarding-regexp,
           matching-group-host, and matching-group-message in favor of stricter parsing of the known grammer.
+        * org.opennms.netmgt.syslogd.JuniperSyslogParser: Handles the Juniper NCS format, which lacks a PRI field.
+          If an incoming message doesn't match the NCS format, it falls back to letting the CustomSyslogParser
+          attempt to parse it.
 
         *** PERFORMANCE NOTES ***
 
@@ -45,20 +48,41 @@
     -->
 
      <ueiList>
-	<!--Nov 17 08:25:41 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_RDI: CFM defect: RDI CCM detected by MEP on Level: 3 MD: customer1 MA: customer-site1 Interface: ge-5/0/2.0-->
+	<!--CFM defect: RDI CCM detected by MEP on Level: 3 MD: customer1 MA: customer-site1 Interface: ge-5/0/2.0-->
         <ueiMatch>
-            <match type="regex" expression="CFMD_CCM_DEFECT_RDI: CFM defect: RDI CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)"/>
+            <match type="regex" expression="CFM defect: RDI CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false"/>
             <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</uei>
+	    <parameter-assignment matching-group="1" parameter-name="cfmLevel"/>
+	    <parameter-assignment matching-group="2" parameter-name="cfmMD"/>
+	    <parameter-assignment matching-group="3" parameter-name="cfmMA"/>
+	    <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface"/>
         </ueiMatch>
-	<!--Nov 17 03:38:24 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_RMEP: CFM defect: Remote CCM timeout detected by MEP on Level: 0 MD: customer MA: customer-site1 Interface: ge-5/0/2.0-->
+	<!--CFM defect: Remote CCM timeout detected by MEP on Level: 0 MD: customer MA: customer-site1 Interface: ge-5/0/2.0-->
         <ueiMatch>
-            <match type="regex" expression="CFMD_CCM_DEFECT_RMEP: CFM defect: Remote CCM timeout detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)"/>
+            <match type="regex" expression="CFM defect: Remote CCM timeout detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false"/>
             <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep</uei>
+	    <parameter-assignment matching-group="1" parameter-name="cfmLevel"/>
+	    <parameter-assignment matching-group="2" parameter-name="cfmMD"/>
+	    <parameter-assignment matching-group="3" parameter-name="cfmMA"/>
+	    <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface"/>
         </ueiMatch>
-	<!--Nov 17 05:14:21 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_ERROR: CFM defect: Error CCM detected by MEP on Level: 6 MD: customer MA: customer-site1 Interface: ge-5/0/2.0-->
+	<!--CFM defect: Error CCM detected by MEP on Level: 6 MD: customer MA: customer-site1 Interface: ge-5/0/2.0-->
         <ueiMatch>
-            <match type="regex" expression="CFMD_CCM_DEFECT_ERROR: CFM defect: Error CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)"/>
+            <match type="regex" expression="CFM defect: Error CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false"/>
             <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_error</uei>
+	    <parameter-assignment matching-group="1" parameter-name="cfmLevel"/>
+	    <parameter-assignment matching-group="2" parameter-name="cfmMD"/>
+	    <parameter-assignment matching-group="3" parameter-name="cfmMA"/>
+	    <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface"/>
+        </ueiMatch>
+	<!--CFM defect: None detected by MEP on Level: 3 MD: MD_service_level MA: PW_126 Interface: ge-1/3/2.1-->
+        <ueiMatch>
+            <match type="regex" expression="CFM defect: None detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false"/>
+            <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none</uei>
+	    <parameter-assignment matching-group="1" parameter-name="cfmLevel"/>
+	    <parameter-assignment matching-group="2" parameter-name="cfmMD"/>
+	    <parameter-assignment matching-group="3" parameter-name="cfmMA"/>
+	    <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface"/>
         </ueiMatch>
         <ueiMatch>
             <match type="regex" expression=".*?foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
