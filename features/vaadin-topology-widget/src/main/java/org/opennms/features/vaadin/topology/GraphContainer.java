@@ -9,7 +9,7 @@ public interface GraphContainer {
 	
 	public Container getVertexContainer();
 	
-	public Container getEdgetContainer();
+	public Container getEdgeContainer();
 	
 	public Collection<?> getVertexIds();
 	
