@@ -46,7 +46,7 @@ import org.opennms.core.utils.LogUtils;
 public class Conversation {    
     
     public static class ErrorExchange implements Exchange{
-        private String m_errorString = "DEFAULT ERROR STRING: YOU HAVE NOT IMPLEMENTED AN ERROR EXCHANGE";
+        private static final String ERROR_STRING = "DEFAULT ERROR STRING: YOU HAVE NOT IMPLEMENTED AN ERROR EXCHANGE";
         
         public boolean matchResponseByString(String response) {
             return false;
@@ -57,7 +57,7 @@ public class Conversation {
         }
 
         public boolean sendRequest(OutputStream out) throws IOException {
-            out.write(String.format("%s\r\n", m_errorString).getBytes());
+            out.write(String.format("%s\r\n", ERROR_STRING).getBytes());
             return true;
         }
         
