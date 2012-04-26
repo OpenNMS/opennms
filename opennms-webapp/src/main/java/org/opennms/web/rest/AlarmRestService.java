@@ -166,9 +166,8 @@ public class AlarmRestService extends AlarmRestServiceBase {
         		throw new IllegalArgumentException("Unable to locate alarm with ID '" + alarmId + "'");
         	}
 
-    		//final String ackUser = ackUserValue == null? m_securityContext.getUserPrincipal().getName() : ackUserValue;
-    		final String ackUser = ackUserValue; 
-    		//assertUserCredentials(ackUser);
+    		final String ackUser = ackUserValue == null? m_securityContext.getUserPrincipal().getName() : ackUserValue;
+    		assertUserCredentials(ackUser);
 
     		final OnmsAcknowledgment acknowledgement = new OnmsAcknowledgment(alarm, ackUser);
     		acknowledgement.setAckAction(AckAction.UNSPECIFIED);
