@@ -2,14 +2,14 @@ package org.opennms.features.vaadin.topology;
 
 import java.util.Collection;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanContainer;
 
 public interface GraphContainer {
 	
-	public <T extends Container,ItemSetChangedListener> T getVertexContainer();
+	public BeanContainer<?, ?> getVertexContainer();
 	
-	public <T extends Container,ItemSetChangedListener> T getEdgeContainer();
+	public BeanContainer<?, ?> getEdgeContainer();
 	
 	public Collection<?> getVertexIds();
 	

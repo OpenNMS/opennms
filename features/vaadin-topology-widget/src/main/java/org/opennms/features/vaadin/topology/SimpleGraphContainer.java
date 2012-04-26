@@ -6,9 +6,14 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
@@ -178,13 +183,13 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Container,ItemSetChangedListener> T getVertexContainer() {
-		return (T) m_vertexContainer;
+	public BeanContainer<?, ?> getVertexContainer() {
+		return m_vertexContainer;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Container,ItemSetChangedListener> T getEdgeContainer() {
-		return (T) m_edgeContainer;
+	public BeanContainer<?, ?> getEdgeContainer() {
+		return m_edgeContainer;
 	}
 
 	public Collection<?> getVertexIds() {
