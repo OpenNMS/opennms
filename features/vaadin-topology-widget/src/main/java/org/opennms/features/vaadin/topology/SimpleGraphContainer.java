@@ -1,8 +1,12 @@
 package org.opennms.features.vaadin.topology;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.xml.bind.JAXB;
+import javax.xml.bind.annotation.*;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -10,7 +14,9 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class SimpleGraphContainer implements GraphContainer {
-	
+
+
+	@XmlRootElement(name="vertex")
 	private static class SimpleVertex {
 		String m_id;
 		int m_x;
@@ -24,6 +30,7 @@ public class SimpleGraphContainer implements GraphContainer {
 			m_y = y;
 		}
 
+		@XmlID
 		public String getId() {
 			return m_id;
 		}
@@ -47,7 +54,8 @@ public class SimpleGraphContainer implements GraphContainer {
 		public void setY(int y) {
 			m_y = y;
 		}
-		
+	
+		@XmlTransient
 		List<SimpleEdge> getEdges() {
 			return m_edges;
 		}
@@ -88,6 +96,8 @@ public class SimpleGraphContainer implements GraphContainer {
 		
 	}
 	
+
+	@XmlRootElement(name="edge")
 	private static class SimpleEdge {
 		String m_id;
 		SimpleVertex m_source;
@@ -103,6 +113,7 @@ public class SimpleGraphContainer implements GraphContainer {
 			m_target.addEdge(this);
 		}
 
+		@XmlID
 		public String getId() {
 			return m_id;
 		}
@@ -110,7 +121,8 @@ public class SimpleGraphContainer implements GraphContainer {
 		public void setId(String id) {
 			m_id = id;
 		}
-
+		
+		@XmlIDREF
 		public SimpleVertex getSource() {
 			return m_source;
 		}
@@ -119,6 +131,7 @@ public class SimpleGraphContainer implements GraphContainer {
 			m_source = source;
 		}
 
+		@XmlIDREF
 		public SimpleVertex getTarget() {
 			return m_target;
 		}
@@ -164,12 +177,14 @@ public class SimpleGraphContainer implements GraphContainer {
 		m_edgeContainer.setBeanIdProperty("id");
 	}
 
-	public Container getVertexContainer() {
-		return m_vertexContainer;
+	@SuppressWarnings("unchecked")
+	public <T extends Container,ItemSetChangedListener> T getVertexContainer() {
+		return (T) m_vertexContainer;
 	}
 
-	public Container getEdgeContainer() {
-		return m_edgeContainer;
+	@SuppressWarnings("unchecked")
+	public <T extends Container,ItemSetChangedListener> T getEdgeContainer() {
+		return (T) m_edgeContainer;
 	}
 
 	public Collection<?> getVertexIds() {
@@ -285,5 +300,56 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 		
 		return item == null ? null : item.getBean();
+	}
+	
+
+	@XmlRootElement(name="graph")
+	@XmlAccessorType(XmlAccessType.FIELD)
+	private static class SimpleGraph {
+		
+		@XmlElement(name="vertex")
+		List<SimpleVertex> m_vertices = new ArrayList<SimpleVertex>();
+		
+		@XmlElement(name="edge")
+		List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
+		
+		public SimpleGraph() {}
+
+		public SimpleGraph(List<SimpleVertex> vertices, List<SimpleEdge> edges) {
+			m_vertices = vertices;
+			m_edges = edges;
+		}
+
+	}
+	
+	public void save() {
+		List<SimpleVertex> vertices = getBeans(m_vertexContainer);
+		List<SimpleEdge> edges = getBeans(m_edgeContainer);
+
+		SimpleGraph graph = new SimpleGraph(vertices, edges);
+		
+		JAXB.marshal(graph, new File("graph.xml"));
+		
+	}
+	
+	public void load() {
+		SimpleGraph graph = JAXB.unmarshal(new File("graph.xml"), SimpleGraph.class);
+		
+		m_vertexContainer.removeAllItems();
+		m_vertexContainer.addAll(graph.m_vertices);
+		
+		m_edgeContainer.removeAllItems();
+		m_edgeContainer.addAll(graph.m_edges);
+	}
+	
+	private <T> List<T> getBeans(BeanContainer<?, T> container) {
+		Collection<?> itemIds = container.getItemIds();
+		List<T> beans = new ArrayList<T>(itemIds.size());
+		
+		for(Object itemId : itemIds) {
+			beans.add(container.getItem(itemId).getBean());
+		}
+		
+		return beans;
 	}
 }

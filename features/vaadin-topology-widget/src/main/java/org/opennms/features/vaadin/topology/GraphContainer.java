@@ -7,9 +7,9 @@ import com.vaadin.data.Item;
 
 public interface GraphContainer {
 	
-	public Container getVertexContainer();
+	public <T extends Container,ItemSetChangedListener> T getVertexContainer();
 	
-	public Container getEdgeContainer();
+	public <T extends Container,ItemSetChangedListener> T getEdgeContainer();
 	
 	public Collection<?> getVertexIds();
 	

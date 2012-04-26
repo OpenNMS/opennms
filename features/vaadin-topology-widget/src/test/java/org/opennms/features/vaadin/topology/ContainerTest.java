@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ContainerTest {
@@ -61,7 +62,10 @@ public class ContainerTest {
 	}
 	
 	
+	
+	
 	@Test
+	@Ignore
 	public void testContainer() {
 		TopologyContainer c = new TestTopologyContainer();
 		Graph g = c.getGraph(0);
@@ -71,9 +75,5 @@ public class ContainerTest {
 		c.createGroup(verticesToGroup);
 	}
 	
-	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
 
 }
