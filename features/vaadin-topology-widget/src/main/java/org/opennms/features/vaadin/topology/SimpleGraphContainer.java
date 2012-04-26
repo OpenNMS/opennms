@@ -22,12 +22,14 @@ public class SimpleGraphContainer implements GraphContainer {
 
 
 	@XmlRootElement(name="vertex")
-	private static class SimpleVertex {
+	public static class SimpleVertex {
 		String m_id;
 		int m_x;
 		int m_y;
 
 		List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
+		
+		public SimpleVertex() {}
 
 		public SimpleVertex(String id, int x, int y) {
 			m_id = id;
@@ -103,10 +105,12 @@ public class SimpleGraphContainer implements GraphContainer {
 	
 
 	@XmlRootElement(name="edge")
-	private static class SimpleEdge {
+	public static class SimpleEdge {
 		String m_id;
 		SimpleVertex m_source;
 		SimpleVertex m_target;
+		
+		public SimpleEdge() {}
 		
 		
 		public SimpleEdge(String id, SimpleVertex source, SimpleVertex target) {
@@ -134,6 +138,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
 		public void setSource(SimpleVertex source) {
 			m_source = source;
+			m_source.addEdge(this);
 		}
 
 		@XmlIDREF
@@ -143,6 +148,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
 		public void setTarget(SimpleVertex target) {
 			m_target = target;
+			m_target.addEdge(this);
 		}
 
 		@Override
