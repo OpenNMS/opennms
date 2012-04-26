@@ -81,6 +81,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
     }
     
+    private KeyMapper m_vertexMapper;
+    private KeyMapper m_edgeMapper;
 	private KeyMapper m_actionMapper;
 	private Slider m_scaleSlider;
 
@@ -95,7 +97,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	private MapManager m_mapManager = new MapManager();
 
 	public TopologyComponent() {
-		m_graph = new Graph();
+		setGraph(new Graph());
 		
 	}
 	
@@ -128,7 +130,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		
 		
         target.startTag("graph");
-        for(Vertex vert : m_graph.getVertices()) {
+        for(Vertex vert : getGraph().getVertices()) {
         	target.startTag("vertex");
         	target.addAttribute("id", vert.getId());
         	target.addAttribute("x", vert.getX());
@@ -149,7 +151,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.endTag("vertex");
         }
         
-        for(Edge edge : m_graph.getEdges()) {
+        for(Edge edge : getGraph().getEdges()) {
         	target.startTag("edge");
         	target.addAttribute("source", edge.getSource().getId());
         	target.addAttribute("target", edge.getTarget().getId());
@@ -217,7 +219,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	String targetId = data[0];
         	String actionKey = data[1];
         	
-        	Vertex vertex = m_graph.getVertexById(targetId);
+        	Vertex vertex = getGraph().getVertexById(targetId);
         	Action action = (Action) m_actionMapper.get(actionKey);
         	
         	for(Handler handler : m_actionHandlers) {
@@ -235,7 +237,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
             boolean selected = vertexProps[3].split(",")[1] == "true" ;
             
-            Vertex vertex = m_graph.getVertexById(id);
+            Vertex vertex = getGraph().getVertexById(id);
             vertex.setX(x);
             vertex.setY(y);
             vertex.setSelected(selected);
@@ -261,7 +263,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
     
     private void singleSelectVertex(String vertexId) {
-        for(Vertex vertex : m_graph.getVertices()) {
+        for(Vertex vertex : getGraph().getVertices()) {
             vertex.setSelected(false);
         }
         
@@ -273,7 +275,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
     private void toggleSelectedVertex(String vertexId) {
-		Vertex vertex = m_graph.getVertexById(vertexId);
+		Vertex vertex = getGraph().getVertexById(vertexId);
 		vertex.setSelected(!vertex.isSelected());
 		
 		requestRepaint();
@@ -307,12 +309,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
     public void resetGraph() {
-        m_graph = new Graph();
+        setGraph(new Graph());
         requestRepaint();
     }
 
     public void removeVertex() {
-        m_graph.removeRandomVertext();
+        getGraph().removeRandomVertext();
         requestRepaint();
     }
 
@@ -327,33 +329,37 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
     public void redoLayout() {
-        m_graph.updateLayout();
+        getGraph().updateLayout();
         requestRepaint();
     }
 
     public void addVertexTo(Vertex target) {
-        m_graph.addVertexTo(target);
+        getGraph().addVertexTo(target);
         requestRepaint();
     }
 
     public void removeVertex(Vertex target) {
-        m_graph.removeVertex(target);
+        getGraph().removeVertex(target);
         requestRepaint();
     }
 
 	public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-		m_graph.setLayoutAlgorithm(layoutAlgorithm);
+		getGraph().setLayoutAlgorithm(layoutAlgorithm);
 		requestRepaint();
 	}
 
     public void addSwitchVertexTo(Vertex source) {
-        m_graph.addSwitchVertex(source);
+        getGraph().addSwitchVertex(source);
         requestRepaint();
     }
 
     public Double getScale() {
         return m_mapManager.getScale();
     }
+
+	private void setGraph(Graph graph) {
+		m_graph = graph;
+	}
    
 
 }

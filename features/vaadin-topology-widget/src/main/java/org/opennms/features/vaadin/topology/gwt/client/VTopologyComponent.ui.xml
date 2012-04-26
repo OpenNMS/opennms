@@ -5,7 +5,7 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-	   <div id="chart-2" style="width: 100%; height: 100% background-color:red;">
+	   <div id="chart-2" style="width: 100%; height: 100%; background-color:red;">
 	       <svg ui:field="m_svg" width="100%" height="100%" style="background-color:white; cursor: move;">
 	           <defs>
 	               <filter id="h200" x="0" y="0" width="1" height="1">

@@ -14,9 +14,11 @@ public class Vertex implements Paintable{
 	private boolean m_selected;
 	private Date m_date = new Date();
     private String m_iconUrl = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
-	
+	private Group m_group = Group.ROOT;
+    
 	public Vertex(String id) {
 		m_id = id;
+		
 	}
 	
 	public Vertex(String id, int x, int y){
@@ -73,4 +75,12 @@ public class Vertex implements Paintable{
     public String getIconUrl() {
         return m_iconUrl;
     }
+
+	public Group getGroup() {
+		return m_group;
+	}
+
+	public void setGroup(Group group) {
+		m_group = group;
+	}
 }
