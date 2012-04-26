@@ -139,10 +139,6 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void messageSent(IoSession session, Object message) throws Exception {}
-
     /**
      * <p>setConversation</p>
      *
