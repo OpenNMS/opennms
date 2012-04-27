@@ -44,11 +44,6 @@
       <artifactId>opennms-dao</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-version</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
