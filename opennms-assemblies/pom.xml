@@ -15,6 +15,7 @@
     <module>remote-poller-standalone</module>
     <module>rxtx-assembly</module>
     <!-- <module>system-report-onejar</module> -->
+    <module>version</module>
     <module>webapp-full</module>
     <module>xsds</module>
   </modules>

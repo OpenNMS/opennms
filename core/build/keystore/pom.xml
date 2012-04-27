@@ -8,9 +8,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.build</groupId>
   <artifactId>org.opennms.core.build.keystore</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>OpenNMS Build Keystore</name>
   <build>
+    <resources>
+      <resource>
+        <directory>${project.build.directory}</directory>
+        <includes><include>*.ks</include></includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
@@ -44,12 +50,6 @@
               </source>
             </configuration>
           </execution>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <!-- <goal>testCompile</goal> -->
-            </goals>
-          </execution>
         </executions>
         <dependencies>
           <dependency>
@@ -79,6 +79,7 @@
           <providerSelection>1.6</providerSelection>
         </configuration>
       </plugin>
+<!--
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -95,6 +96,7 @@
           </execution>
         </executions>
       </plugin>
+-->
     </plugins>
   </build>
 </project>

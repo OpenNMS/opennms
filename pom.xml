@@ -949,6 +949,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.schema</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -978,8 +983,6 @@
         <groupId>org.opennms.core.build</groupId>
         <artifactId>org.opennms.core.build.keystore</artifactId>
         <version>${project.version}</version>
-        <classifier>keystore</classifier>
-        <type>tar.gz</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -1680,6 +1683,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-util</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-version</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

@@ -13,10 +13,6 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/filtered</directory>
-      </resource>
     </resources>
     <testResources>
       <testResource>
@@ -89,6 +85,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-version</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
