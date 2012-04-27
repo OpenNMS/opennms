@@ -336,7 +336,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
      */
-    @XmlTransient
     @ManyToOne
     @JoinColumn(name="serviceid")
     public OnmsServiceType getServiceType() {
