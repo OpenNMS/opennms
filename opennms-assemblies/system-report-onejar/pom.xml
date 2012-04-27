@@ -40,6 +40,11 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-version</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.system-report</artifactId>
     </dependency>

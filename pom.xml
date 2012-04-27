@@ -1688,7 +1688,7 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-version</artifactId>
         <version>${project.version}</version>
-        <scope>runtime</scope>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
