@@ -17,8 +17,8 @@ public class AlternativeLayoutAlgorithm implements LayoutAlgorithm {
 		List<Layer> m_layers = new ArrayList<Layer>();
 		
 		
-		public Layout(Graph graph, int xSpacing, int ySpacing) {
-			m_graph = graph;
+		public Layout(GraphContainer graphContainer, int xSpacing, int ySpacing) {
+			m_graph = new Graph(graphContainer);
 			m_xSpacing = xSpacing;
 			m_ySpacing = ySpacing;
 		}
@@ -105,9 +105,9 @@ public class AlternativeLayoutAlgorithm implements LayoutAlgorithm {
 	}
 	
 
-    public void updateLayout(Graph graph) {
+    public void updateLayout(GraphContainer graphContainer) {
     	
-    	new Layout(graph, 50, 50).doLayout();
+    	new Layout(graphContainer, 50, 50).doLayout();
     	
     }
     

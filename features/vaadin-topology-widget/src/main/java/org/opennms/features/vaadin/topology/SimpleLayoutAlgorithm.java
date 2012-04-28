@@ -5,7 +5,8 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.topology.LayoutAlgorithm#updateLayout(org.opennms.features.vaadin.topology.Graph)
      */
-    public void updateLayout(Graph graph) {
+    public void updateLayout(GraphContainer graphContainer) {
+    	Graph graph = new Graph(graphContainer);
         int r = 100;
         int cx = 500;
         int cy = 500;

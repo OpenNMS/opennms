@@ -103,8 +103,6 @@ public class Graph{
 
 	
 	private GraphContainer m_dataSource;
-	private int m_counter = 0;
-	private LayoutAlgorithm m_layoutAlgorithm = new SimpleLayoutAlgorithm();
 	private ElementHolder<Vertex> m_vertexHolder;
 	private ElementHolder<Edge> m_edgeHolder;
 
@@ -178,23 +176,5 @@ public class Graph{
 	public List<Edge> getEdgesForVertex(Vertex vertex){
 		return m_edgeHolder.getElementsByItemIds(m_dataSource.getEdgeIdsForVertex(vertex.getItemId()));
 	}
-	
-	void updateLayout() {
-        getLayoutAlgorithm().updateLayout(this);
-    }
-	
-	public String getNextId() {
-		return "" + m_counter ++;
-	}
-    
-    public LayoutAlgorithm getLayoutAlgorithm() {
-        return m_layoutAlgorithm;
-    }
-    public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-        m_layoutAlgorithm = layoutAlgorithm;
-        updateLayout();
-    }
-
-       
 	
 }

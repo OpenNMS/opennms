@@ -24,6 +24,10 @@ public class Vertex implements Paintable {
 		return m_itemId;
 	}
 	
+	public boolean isLeaf() {
+		return (Boolean) m_item.getItemProperty("leaf").getValue();
+	}
+	
 	public int getX() {
 		return (Integer) m_item.getItemProperty("x").getValue();
 		
@@ -50,7 +54,7 @@ public class Vertex implements Paintable {
     }
 
 	public void setSelected(boolean selected) {
-		m_selected = selected;
+		m_item.getItemProperty("selected").setValue(selected);
 	}
 	
 	public boolean isSelected() {
@@ -58,8 +62,7 @@ public class Vertex implements Paintable {
 	}
 
 	public Object getItem() {
-		// TODO HACK FOR NOW!!! FIX THIS, WE SAY FIX THIS BUT WHAT IS BROKEN ABOUT IT?
-		return this;
+		return m_item;
 	}
     
     public String getIconUrl() {

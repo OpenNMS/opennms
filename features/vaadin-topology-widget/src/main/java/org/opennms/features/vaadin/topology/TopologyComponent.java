@@ -140,27 +140,27 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		
 		
         target.startTag("graph");
-        System.err.println("Total Vertices: " + getGraph().getVertices().size());
-        System.err.println("Total Vertices from Container: " + m_graphContainer.getVertexContainer().size());
         for(Vertex vert : getGraph().getVertices()) {
-        	target.startTag("vertex");
-        	target.addAttribute("id", vert.getKey());
-        	target.addAttribute("x", vert.getX());
-        	target.addAttribute("y", vert.getY());
-        	target.addAttribute("selected", vert.isSelected());
-        	target.addAttribute("iconUrl", vert.getIconUrl());
-        	
-    		List<String> vertActionList = new ArrayList<String>();
-    		for(Action.Handler handler : m_actionHandlers) {
-    			Action[] vertActions = handler.getActions(vert.getItem(), null);
-    			for(Action action : vertActions) {
-    				vertActionList.add(m_actionMapper.key(action));
-    				actions.add(action);
-    			}
-    		}
+        	if (vert.isLeaf()) {
+        		target.startTag("vertex");
+        		target.addAttribute("id", vert.getKey());
+        		target.addAttribute("x", vert.getX());
+        		target.addAttribute("y", vert.getY());
+        		target.addAttribute("selected", vert.isSelected());
+        		target.addAttribute("iconUrl", vert.getIconUrl());
 
-    		target.addAttribute("actionKeys", vertActionList.toArray());
-        	target.endTag("vertex");
+        		List<String> vertActionList = new ArrayList<String>();
+        		for(Action.Handler handler : m_actionHandlers) {
+        			Action[] vertActions = handler.getActions(vert.getItemId(), null);
+        			for(Action action : vertActions) {
+        				vertActionList.add(m_actionMapper.key(action));
+        				actions.add(action);
+        			}
+        		}
+
+        		target.addAttribute("actionKeys", vertActionList.toArray());
+        		target.endTag("vertex");
+        	}
         }
         
         for(Edge edge : getGraph().getEdges()) {
@@ -171,7 +171,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
     		List<String> edgeActionList = new ArrayList<String>();
     		for(Action.Handler handler : m_actionHandlers) {
-    			Action[] vertActions = handler.getActions(edge.getItem(), null);
+    			Action[] vertActions = handler.getActions(edge.getItemId(), null);
     			for(Action action : vertActions) {
     				edgeActionList.add(m_actionMapper.key(action));
     				actions.add(action);
@@ -236,7 +236,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	Action action = (Action) m_actionMapper.get(actionKey);
         	
         	for(Handler handler : m_actionHandlers) {
-        		handler.handleAction(action, this, vertex);
+        		handler.handleAction(action, this, vertex == null ? null : vertex.getItemId());
         	}
         	
         }

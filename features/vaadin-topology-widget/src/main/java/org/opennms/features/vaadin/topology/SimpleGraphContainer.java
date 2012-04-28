@@ -3,215 +3,38 @@ package org.opennms.features.vaadin.topology;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Container.Hierarchical;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class SimpleGraphContainer implements GraphContainer {
 
 
-	@XmlRootElement(name="vertex")
-	public static class SimpleVertex {
-		String m_id;
-		int m_x;
-		int m_y;
-		boolean m_selected;
-		String m_icon = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
-
-		List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
-		
-		public SimpleVertex() {}
-
-		public SimpleVertex(String id, int x, int y) {
-			m_id = id;
-			m_x = x;
-			m_y = y;
-		}
-
-		@XmlID
-		public String getId() {
-			return m_id;
-		}
-
-		public void setId(String id) {
-			m_id = id;
-		}
-
-		public int getX() {
-			return m_x;
-		}
-
-		public void setX(int x) {
-			m_x = x;
-		}
-
-		public int getY() {
-			return m_y;
-		}
-
-		public void setY(int y) {
-			m_y = y;
-		}
-	
-		public boolean isSelected() {
-			return m_selected;
-		}
-
-		public void setSelected(boolean selected) {
-			m_selected = selected;
-		}
-
-		public String getIcon() {
-			return m_icon;
-		}
-
-		public void setIcon(String icon) {
-			m_icon = icon;
-		}
-
-		@XmlTransient
-		List<SimpleEdge> getEdges() {
-			return m_edges;
-		}
-		
-		void addEdge(SimpleEdge edge) {
-			m_edges.add(edge);
-		}
-		
-		void removeEdge(SimpleEdge edge) {
-			m_edges.remove(edge);
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SimpleVertex other = (SimpleVertex) obj;
-			if (m_id == null) {
-				if (other.m_id != null)
-					return false;
-			} else if (!m_id.equals(other.m_id))
-				return false;
-			return true;
-		}
-		
-		
-	}
-	
-
-	@XmlRootElement(name="edge")
-	public static class SimpleEdge {
-		String m_id;
-		SimpleVertex m_source;
-		SimpleVertex m_target;
-		
-		public SimpleEdge() {}
-		
-		
-		public SimpleEdge(String id, SimpleVertex source, SimpleVertex target) {
-			m_id = id;
-			m_source = source;
-			m_target = target;
-			
-			m_source.addEdge(this);
-			m_target.addEdge(this);
-		}
-
-		@XmlID
-		public String getId() {
-			return m_id;
-		}
-
-		public void setId(String id) {
-			m_id = id;
-		}
-		
-		@XmlIDREF
-		public SimpleVertex getSource() {
-			return m_source;
-		}
-
-		public void setSource(SimpleVertex source) {
-			m_source = source;
-			m_source.addEdge(this);
-		}
-
-		@XmlIDREF
-		public SimpleVertex getTarget() {
-			return m_target;
-		}
-
-		public void setTarget(SimpleVertex target) {
-			m_target = target;
-			m_target.addEdge(this);
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SimpleEdge other = (SimpleEdge) obj;
-			if (m_id == null) {
-				if (other.m_id != null)
-					return false;
-			} else if (!m_id.equals(other.m_id))
-				return false;
-			return true;
-		}
-		
-	}
-	
-	private BeanContainer<String, SimpleVertex> m_vertexContainer = new BeanContainer<String, SimpleVertex>(SimpleVertex.class);
-	private BeanContainer<String, SimpleEdge> m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
+	private VertexContainer m_vertexContainer;
+	private BeanContainer<String, SimpleEdge> m_edgeContainer;
 	private int m_counter = 0;
 	private int m_edgeCounter = 0;
+	private int m_groupCounter = 0;
 	private LayoutAlgorithm m_layoutAlgorithm;
 	private double m_scale = 1;
 	
 	public SimpleGraphContainer() {
-		m_vertexContainer = new BeanContainer<String, SimpleVertex>(SimpleVertex.class);
-		m_vertexContainer.setBeanIdProperty("id");
+		m_vertexContainer = new VertexContainer();
 		m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
 		m_edgeContainer.setBeanIdProperty("id");
 	}
 
-	@SuppressWarnings("unchecked")
-	public BeanContainer<?, ?> getVertexContainer() {
+	public VertexContainer getVertexContainer() {
 		return m_vertexContainer;
 	}
 
@@ -266,15 +89,26 @@ public class SimpleGraphContainer implements GraphContainer {
 
 	}
 	
-	public void addVertex(String id, int x, int y) {
+	public Item addVertex(String id, int x, int y, String icon) {
 		if (m_vertexContainer.containsId(id)) {
-			throw new IllegalArgumentException("A vertex with id " + id + " already exists!");
+			throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
 		}
 		System.err.println("Adding a vertex: " + id);
-		SimpleVertex vertex = new SimpleVertex(id, x, y);
-		m_vertexContainer.addBean(vertex);
+		SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
+		vertex.setIcon(icon);
+		return m_vertexContainer.addBean(vertex);
 	}
 	
+	public Item addGroup(String groupId, String icon) {
+		if (m_vertexContainer.containsId(groupId)) {
+			throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
+		}
+		System.err.println("Adding a group: " + groupId);
+		SimpleVertex vertex = new SimpleGroup(groupId);
+		vertex.setIcon(icon);
+		return m_vertexContainer.addBean(vertex);
+		
+ 	}
 	public void connectVertices(String id, String sourceVertextId, String targetVertextId) {
 		SimpleVertex source = getRequiredVertex(sourceVertextId);
 		SimpleVertex target = getRequiredVertex(targetVertextId);
@@ -382,6 +216,10 @@ public class SimpleGraphContainer implements GraphContainer {
 	public String getNextEdgeId() {
 		return "e" + m_edgeCounter ++;
 	}
+	
+	public String getNextGroupId() {
+		return "g" + m_groupCounter++;
+	}
 
 	public void resetContainer() {
 		getVertexContainer().removeAllItems();
@@ -397,12 +235,30 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	public void redoLayout() {
-		// TODO implement redoLayout
-		
-		
+		m_layoutAlgorithm.updateLayout(this);
+		m_vertexContainer.fireLayoutChange();
 	}
 
 	public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
 		m_layoutAlgorithm = layoutAlgorithm;
+		redoLayout();
 	}
+	
+	public LayoutAlgorithm getLayoutAlgorithm() {
+		return m_layoutAlgorithm;
+	}
+	
+	public Collection<?> getSelectedVertexIds() {
+		List<Object> selectedVertexIds = new LinkedList<Object>();
+		
+	    for(Object vertexId : getVertexIds()) {
+	    	SimpleVertex vertex = m_vertexContainer.getItem(vertexId).getBean();
+	    	if (vertex.isSelected()) {
+	    		selectedVertexIds.add(vertexId);
+	    	}
+	    }
+	    
+	    return selectedVertexIds;
+	}
+
 }

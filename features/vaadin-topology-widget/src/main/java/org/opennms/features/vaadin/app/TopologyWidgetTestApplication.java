@@ -4,11 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.vaadin.topology.AlternativeLayoutAlgorithm;
-import org.opennms.features.vaadin.topology.Edge;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
-import org.opennms.features.vaadin.topology.Vertex;
 
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -28,7 +26,11 @@ import com.vaadin.ui.Window;
 
 public class TopologyWidgetTestApplication extends Application{
 	
-	private static final String CENTER_VERTEX_ID = "center";
+	public static final String ROOT_GROUP_ID = "Network";
+	public static final String CENTER_VERTEX_ID = "center";
+	public static final String GROUP_ICON = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/group.png";
+	public static final String SERVER_ICON = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
+	public static final String SWITCH_ICON = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/srx100.png";
 
     private Window m_window;
     private TopologyComponent m_topologyComponent;
@@ -42,9 +44,7 @@ public class TopologyWidgetTestApplication extends Application{
 
             @Override
             public void doCommand(Object target) {
-                //TODO: Move this to the container
             	m_graphContainer.redoLayout();
-            	
             }
     
             @Override
@@ -62,27 +62,18 @@ public class TopologyWidgetTestApplication extends Application{
         m_commandManager.addCommand(new Command("Add Vertex") {
 
             @Override
-            public boolean appliesToTarget(Object target) {
-                if(target instanceof Edge) {
-                    return false;
-                }
-                return true;
+            public boolean appliesToTarget(Object itemId) {
+            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
             }
 
             @Override
-            public void doCommand(Object target) {
-                if(target instanceof Vertex) {
-                	Vertex v = (Vertex) target;
-                	
-                	addVertexTo(v);
-                    
-                	//m_topologyComponent.addVertexTo((Vertex)target);
-                }else {
-                	addRandomVertex();
-                	
-                    //m_topologyComponent.addRandomNode();
-                }
-                
+            public void doCommand(Object vertexId) {
+            	if (vertexId == null) {
+            		addRandomVertex();
+            	} else {
+            		connectNewVertexTo(vertexId.toString(), SERVER_ICON);
+            	}
+            	m_graphContainer.redoLayout();
             }
 
             @Override
@@ -95,24 +86,18 @@ public class TopologyWidgetTestApplication extends Application{
         m_commandManager.addCommand(new Command("Add Switch Vertex") {
 
             @Override
-            public boolean appliesToTarget(Object target) {
-                if(target instanceof Edge) {
-                    return false;
-                }
-                return true;
+            public boolean appliesToTarget(Object itemId) {
+            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
             }
 
             @Override
-            public void doCommand(Object target) {
-                if(target instanceof Vertex) {
-                	addVertexTo((Vertex) target);
-                	
-                    //m_topologyComponent.addSwitchVertexTo((Vertex)target);
-                }else {
-                    addRandomVertex();
-                	//m_topologyComponent.addRandomNode();
-                }
-                
+            public void doCommand(Object vertexId) {
+            	if (vertexId == null) {
+            		addRandomVertex();
+            	} else {
+            		connectNewVertexTo(vertexId.toString(), SWITCH_ICON);
+            	}
+            	m_graphContainer.redoLayout();
             }
 
             @Override
@@ -125,26 +110,18 @@ public class TopologyWidgetTestApplication extends Application{
         m_commandManager.addCommand(new Command("Remove Vertex") {
 
             @Override
-            public boolean appliesToTarget(Object target) {
-                if(target instanceof Edge) {
-                    return false;
-                }
-                return true;
+            public boolean appliesToTarget(Object itemId) {
+            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
             }
 
             @Override
-            public void doCommand(Object target) {
-                if(target instanceof Vertex) {
-                	Vertex v = (Vertex) target;
-                	m_graphContainer.removeVertex(v.getKey());
-                	
-                    //m_topologyComponent.removeVertex((Vertex)target);
-                }else {
-                	//TODO: Do we even want to remove a random vertex??
-                    //m_topologyComponent.removeVertex();
-                }
-                
-                
+            public void doCommand(Object vertexId) {
+            	if (vertexId == null) {
+            		System.err.println("need to handle selection!!!");
+            	} else {
+            		m_graphContainer.removeVertex(vertexId.toString());
+            		m_graphContainer.redoLayout();
+            	}
             }
 
             @Override
@@ -155,7 +132,33 @@ public class TopologyWidgetTestApplication extends Application{
             
         }, true, "File");
         
-        m_commandManager.addCommand(new Command("Simple Layout") {
+        m_commandManager.addCommand(new Command("Create Group") {
+
+            @Override
+            public boolean appliesToTarget(Object itemId) {
+            	return m_graphContainer.getSelectedVertexIds().size() > 0;
+            }
+
+            @Override
+            public void doCommand(Object vertexId) {
+            	String groupId = m_graphContainer.getNextGroupId();
+            	m_graphContainer.addGroup(groupId, GROUP_ICON);
+            	m_graphContainer.getVertexContainer().setParent(groupId, ROOT_GROUP_ID);
+            	
+            	for(Object itemId : m_graphContainer.getSelectedVertexIds()) {
+            		m_graphContainer.getVertexContainer().setParent(itemId, groupId);
+            	}
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+            
+        }, true, "Edit");
+        
+m_commandManager.addCommand(new Command("Simple Layout") {
 
 			@Override
 			public boolean appliesToTarget(Object target) {
@@ -164,9 +167,7 @@ public class TopologyWidgetTestApplication extends Application{
 
 			@Override
 			public void doCommand(Object target) {
-				//TODO: Move this to the Container
 				m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
-				//m_topologyComponent.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
 			}
 
 			@Override
@@ -184,7 +185,6 @@ public class TopologyWidgetTestApplication extends Application{
 
 			@Override
 			public void doCommand(Object target) {
-				//TODO: Move this into the Container
 				m_graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
 			}
 
@@ -239,7 +239,9 @@ public class TopologyWidgetTestApplication extends Application{
         m_window.setContent(layout);
         setMainWindow(m_window);
         
-        m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50);
+        m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
+        m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
+        m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         
         
         m_topologyComponent = new TopologyComponent(m_graphContainer);
@@ -327,31 +329,30 @@ public class TopologyWidgetTestApplication extends Application{
         return tree;
     }
 
-	private void addVertexTo(Vertex v) {
-		//Add Vertex
-		String targetId = m_graphContainer.getNextVertexId();
-		m_graphContainer.addVertex(targetId, 0, 0);
-		
-		//Connect the source and target with an edge
-		String edgeId = m_graphContainer.getNextEdgeId();
-		m_graphContainer.connectVertices(edgeId, v.getKey(), targetId);
-	}
-
 	private void addRandomVertex() {
 		if (m_graphContainer.getVertexContainer().containsId(CENTER_VERTEX_ID)) {
-			String vertexId = m_graphContainer.getNextVertexId();
-			m_graphContainer.addVertex(vertexId, 0, 0);
-
-			//Right now we are connecting all new vertices to v0
-			m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), CENTER_VERTEX_ID, vertexId);
+			connectNewVertexTo(CENTER_VERTEX_ID, SERVER_ICON);
 		}
 		else {
-			m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50);
+			m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
+			m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
 		}
+	}
+
+	private void connectNewVertexTo(String existingVertexId, String icon) {
+		String vertexId = m_graphContainer.getNextVertexId();
+		m_graphContainer.addVertex(vertexId, 0, 0, icon);
+		m_graphContainer.getVertexContainer().setParent(vertexId, ROOT_GROUP_ID);
+
+		//Right now we are connecting all new vertices to v0
+		m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), existingVertexId, vertexId);
 	}
 
 	private void resetView() {
 		m_graphContainer.resetContainer();
+		m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
+		m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
+		m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
 	}
 
 }

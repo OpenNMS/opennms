@@ -55,7 +55,6 @@ public class Edge{
 	}
 
 	public Object getItem() {
-		// TODO HACK THIS FOR NOW!! FIX THIS
-		return this;
+		return m_item;
 	}
 }
