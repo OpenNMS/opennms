@@ -3,9 +3,12 @@ package org.opennms.features.vaadin.topology;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -20,7 +23,8 @@ public class Graph{
 	
 	private abstract class ElementHolder<T> {
 		Container m_itemContainer;
-		List<T> m_graphElements;
+		List<T> m_graphElements = Collections.emptyList();
+		List<Object> m_itemIds = Collections.emptyList();
 		KeyMapper m_elementKey2ItemId = new KeyMapper();
 		Map<String, T> m_keyToElementMap = new HashMap<String, T>();
 		
@@ -32,7 +36,15 @@ public class Graph{
 		}
 
 		public void update() {
-			Collection<?> itemIds = m_itemContainer.getItemIds();
+			List<Object> itemIds = new ArrayList<Object>(m_itemContainer.getItemIds());
+			
+			Set<Object> newContainerItems = new LinkedHashSet<Object>(itemIds);
+			newContainerItems.removeAll(m_itemIds);
+			
+			Set<Object> removedContainerItems = new LinkedHashSet<Object>(m_itemIds);
+			removedContainerItems.removeAll(itemIds);
+			
+			
 			m_elementKey2ItemId.removeAll();
 			m_keyToElementMap.clear();
 			
