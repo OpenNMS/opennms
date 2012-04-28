@@ -10,7 +10,7 @@
   <name>OpenNMS Installation Utilities</name>
   <build>
     <resources>
-    <resources>
+      <resource>
         <filtering>true</filtering>
         <directory>src/main/filtered</directory>
       </resource>
