@@ -63,4 +63,19 @@
     <include-collection dataCollectionGroup="Zeus"/>
   </snmp-collection>
 
+  <!-- We need a dedicated collection with a different RRD setup for EJN equipment because
+       the data in the EJN SNMP MIB is only updated once every 15 min by default or alternatively
+       once every 3 min with the hidden "set services epg pgw snmp update-every-three-minutes"
+       config option -->
+  <snmp-collection name="ejn" snmpStorageFlag="select">
+    <rrd step="180">
+      <rra>RRA:AVERAGE:0.5:1:3360</rra>
+      <rra>RRA:AVERAGE:0.5:20:1488</rra>
+      <rra>RRA:AVERAGE:0.5:480:366</rra>
+      <rra>RRA:MAX:0.5:480:366</rra>
+      <rra>RRA:MIN:0.5:480:366</rra>
+    </rrd>
+
+    <include-collection dataCollectionGroup="ejn"/>
+  </snmp-collection>
 </datacollection-config>
