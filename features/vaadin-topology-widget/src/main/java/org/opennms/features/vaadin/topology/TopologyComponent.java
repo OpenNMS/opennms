@@ -1,7 +1,5 @@
 package org.opennms.features.vaadin.topology;
 
-import static com.vaadin.data.Container.*
-;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +10,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent;
 
 import com.vaadin.data.Container.ItemSetChangeEvent;
+import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeEvent;
+import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.terminal.KeyMapper;
@@ -140,6 +140,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		
 		
         target.startTag("graph");
+        System.err.println("Total Vertices: " + getGraph().getVertices().size());
+        System.err.println("Total Vertices from Container: " + m_graphContainer.getVertexContainer().size());
         for(Vertex vert : getGraph().getVertices()) {
         	target.startTag("vertex");
         	target.addAttribute("id", vert.getKey());

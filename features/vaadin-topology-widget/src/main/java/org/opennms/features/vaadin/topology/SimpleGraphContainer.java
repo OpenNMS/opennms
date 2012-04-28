@@ -270,6 +270,7 @@ public class SimpleGraphContainer implements GraphContainer {
 		if (m_vertexContainer.containsId(id)) {
 			throw new IllegalArgumentException("A vertex with id " + id + " already exists!");
 		}
+		System.err.println("Adding a vertex: " + id);
 		SimpleVertex vertex = new SimpleVertex(id, x, y);
 		m_vertexContainer.addBean(vertex);
 	}

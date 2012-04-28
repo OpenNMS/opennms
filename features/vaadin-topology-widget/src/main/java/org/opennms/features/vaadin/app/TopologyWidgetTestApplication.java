@@ -1,13 +1,10 @@
 package org.opennms.features.vaadin.app;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.vaadin.topology.AlternativeLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.Edge;
-import org.opennms.features.vaadin.topology.Graph;
-import org.opennms.features.vaadin.topology.GraphContainer;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
@@ -16,7 +13,6 @@ import org.opennms.features.vaadin.topology.Vertex;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;

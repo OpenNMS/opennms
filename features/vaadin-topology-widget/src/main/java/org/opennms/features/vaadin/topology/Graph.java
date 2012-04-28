@@ -33,17 +33,18 @@ public class Graph{
 
 		public void update() {
 			Collection<?> itemIds = m_itemContainer.getItemIds();
+			m_elementKey2ItemId.removeAll();
+			m_keyToElementMap.clear();
 			
 			m_graphElements = new ArrayList<T>(itemIds.size());
 			
 			for(Object itemId : itemIds) {
-
-				String key = m_elementKey2ItemId.key(itemId);
-
+			    String key = m_elementKey2ItemId.key(itemId);
+			    
 				if(!m_keyToElementMap.containsKey(key)) {
 
 					T v = make(key, itemId, m_itemContainer.getItem(itemId));
-
+					System.err.println("make v: " + v);
 					m_graphElements.add(v);
 
 					m_keyToElementMap.put(key, v);
