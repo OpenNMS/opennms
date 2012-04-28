@@ -1,54 +1,48 @@
 package org.opennms.features.vaadin.topology;
 
-import java.util.Date;
-
 import com.google.gwt.user.client.Window;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.data.Item;
 
-public class Vertex implements Paintable{
-	int m_x;
-	int m_y;
-	private String m_id;
-	private boolean m_selected;
-	private Date m_date = new Date();
-    private String m_iconUrl = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
-	private Group m_group = Group.ROOT;
+public class Vertex implements Paintable {
+
+	private String m_key;
+	private Object m_itemId;
+	private Item m_item;
+	
+	private boolean m_selected = false;
     
-	public Vertex(String id) {
-		m_id = id;
-		
+	public Vertex(String key, Object itemId, Item item) {
+		m_key = key;
+		m_itemId = itemId;
+		m_item = item;
 	}
 	
-	public Vertex(String id, int x, int y){
-		this(id);
-		m_x = x;
-		m_y = y;
+	public Object getItemId() {
+		return m_itemId;
 	}
 	
 	public int getX() {
-		return m_x;
+		return (Integer) m_item.getItemProperty("x").getValue();
+		
 	};
 	
 	public int getY(){
-		return m_y;
+		return (Integer) m_item.getItemProperty("y").getValue();
 	}
 	
-	public String getId() {
-		return m_id;
-	}
-
-    public void setX(int x) {
-        m_x = x;
+	public void setX(int x) {
+		m_item.getItemProperty("x").setValue(x);
     }
 
     public void setY(int y) {
-        m_y = y;
+    	m_item.getItemProperty("y").setValue(y);
     }
     
     public String toString() {
-    	return "v" + m_id + "(" + m_x  + "," + m_y + "):" + (m_selected ? "selected" : "unselected") + "ts:" + m_date.getTime();
+    	return "v" + getItemId() + "(" + getX()  + "," + getY() + "):" + (m_selected ? "selected" : "unselected");
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -60,27 +54,19 @@ public class Vertex implements Paintable{
 	}
 	
 	public boolean isSelected() {
-		return m_selected;
+		return (Boolean) m_item.getItemProperty("selected").getValue();
 	}
 
 	public Object getItem() {
 		// TODO HACK FOR NOW!!! FIX THIS, WE SAY FIX THIS BUT WHAT IS BROKEN ABOUT IT?
 		return this;
 	}
-
-    public void setIconUrl(String iconUrl) {
-        m_iconUrl = iconUrl;
-    }
     
     public String getIconUrl() {
-        return m_iconUrl;
+        return (String) m_item.getItemProperty("icon").getValue();
     }
 
-	public Group getGroup() {
-		return m_group;
-	}
-
-	public void setGroup(Group group) {
-		m_group = group;
+	public String getKey() {
+		return m_key;
 	}
 }

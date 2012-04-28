@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.topology;
 
+import static com.vaadin.data.Container.*
+;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.vaadin.topology.gwt.client.VTopologyComponent;
 
+import com.vaadin.data.Container.ItemSetChangeEvent;
+import com.vaadin.data.Container.PropertySetChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.terminal.KeyMapper;
@@ -19,8 +23,9 @@ import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 
+
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements Action.Container {
+public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener {
 	
     public class MapManager {
 
@@ -81,10 +86,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
     }
     
-    private KeyMapper m_vertexMapper;
-    private KeyMapper m_edgeMapper;
 	private KeyMapper m_actionMapper;
 	private Slider m_scaleSlider;
+	private GraphContainer m_graphContainer;
 
     @Override
     public void attach() {
@@ -96,8 +100,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	private List<Action.Handler> m_actionHandlers = new CopyOnWriteArrayList<Action.Handler>();
 	private MapManager m_mapManager = new MapManager();
 
-	public TopologyComponent() {
-		setGraph(new Graph());
+	public TopologyComponent(GraphContainer dataSource) {
+		setGraph(new Graph(dataSource));
+		m_graphContainer = dataSource;
+		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
+		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
+		
+		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
+		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
 		
 	}
 	
@@ -132,7 +142,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.startTag("graph");
         for(Vertex vert : getGraph().getVertices()) {
         	target.startTag("vertex");
-        	target.addAttribute("id", vert.getId());
+        	target.addAttribute("id", vert.getKey());
         	target.addAttribute("x", vert.getX());
         	target.addAttribute("y", vert.getY());
         	target.addAttribute("selected", vert.isSelected());
@@ -153,8 +163,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         for(Edge edge : getGraph().getEdges()) {
         	target.startTag("edge");
-        	target.addAttribute("source", edge.getSource().getId());
-        	target.addAttribute("target", edge.getTarget().getId());
+        	target.addAttribute("key", edge.getKey());
+        	target.addAttribute("source", edge.getSource().getKey());
+        	target.addAttribute("target", edge.getTarget().getKey());
 
     		List<String> edgeActionList = new ArrayList<String>();
     		for(Action.Handler handler : m_actionHandlers) {
@@ -219,7 +230,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	String targetId = data[0];
         	String actionKey = data[1];
         	
-        	Vertex vertex = getGraph().getVertexById(targetId);
+        	Vertex vertex = getGraph().getVertexByKey(targetId);
         	Action action = (Action) m_actionMapper.get(actionKey);
         	
         	for(Handler handler : m_actionHandlers) {
@@ -237,7 +248,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
             boolean selected = vertexProps[3].split(",")[1] == "true" ;
             
-            Vertex vertex = getGraph().getVertexById(id);
+            Vertex vertex = getGraph().getVertexByKey(id);
             vertex.setX(x);
             vertex.setY(y);
             vertex.setSelected(selected);
@@ -275,7 +286,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
     private void toggleSelectedVertex(String vertexId) {
-		Vertex vertex = getGraph().getVertexById(vertexId);
+		Vertex vertex = getGraph().getVertexByKey(vertexId);
 		vertex.setSelected(!vertex.isSelected());
 		
 		requestRepaint();
@@ -292,31 +303,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     	requestRepaint();
     }
     
-    public Graph getGraph() {
+    private Graph getGraph() {
 		return m_graph;
 	}
-
-	public void addRandomNode() {
-		Graph graph = getGraph();
-
-		String id = graph.getNextId();
-		Vertex vertex = new Vertex(id);
-		graph.addVertex(vertex);
-		graph.addEdge(new Edge(graph.getVertices().get(0), vertex));
-		graph.updateLayout();
-		
-		requestRepaint();
-	}
-
-    public void resetGraph() {
-        setGraph(new Graph());
-        requestRepaint();
-    }
-
-    public void removeVertex() {
-        getGraph().removeRandomVertext();
-        requestRepaint();
-    }
 
 	public void addActionHandler(Handler actionHandler) {
 		m_actionHandlers.add(actionHandler);
@@ -327,31 +316,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_actionHandlers.remove(actionHandler);
 		
 	}
-
-    public void redoLayout() {
-        getGraph().updateLayout();
-        requestRepaint();
-    }
-
-    public void addVertexTo(Vertex target) {
-        getGraph().addVertexTo(target);
-        requestRepaint();
-    }
-
-    public void removeVertex(Vertex target) {
-        getGraph().removeVertex(target);
-        requestRepaint();
-    }
-
-	public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-		getGraph().setLayoutAlgorithm(layoutAlgorithm);
-		requestRepaint();
-	}
-
-    public void addSwitchVertexTo(Vertex source) {
-        getGraph().addSwitchVertex(source);
-        requestRepaint();
-    }
+ 
 
     public Double getScale() {
         return m_mapManager.getScale();
@@ -359,6 +324,26 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	private void setGraph(Graph graph) {
 		m_graph = graph;
+	}
+	
+	public void setContainerDataSource(GraphContainer graphContainer) {
+		m_graph.setDataSource(graphContainer);
+		m_graphContainer = graphContainer;
+		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
+		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
+		
+		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
+		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
+	}
+
+	public void containerItemSetChange(ItemSetChangeEvent event) {
+		m_graph.update();
+		requestRepaint();
+	}
+
+	public void containerPropertySetChange(PropertySetChangeEvent event) {
+		m_graph.update();
+		requestRepaint();
 	}
    
 

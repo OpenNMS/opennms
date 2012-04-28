@@ -19,8 +19,8 @@ public interface GraphContainer {
 	
 	public Item getEdgeItem(Object edgeId);
 	
-	public Collection<?> getEdgeEndPoints(Object edgeId);
+	public Collection<?> getEndPointIdsForEdge(Object edgeId);
 	
-	public Collection<?> getEdgesForVertex(Object vertexId);
-	
+	public Collection<?> getEdgeIdsForVertex(Object vertexId);
+ 	
 }

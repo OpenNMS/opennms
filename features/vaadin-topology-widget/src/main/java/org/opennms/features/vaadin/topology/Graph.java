@@ -1,127 +1,170 @@
 package org.opennms.features.vaadin.topology;
 
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.terminal.KeyMapper;
+
 
 public class Graph{
-	private List<Vertex> m_vertices;
-	private List<Edge> m_edges;
-	private Map<String, Vertex> m_vertexMap = new HashMap<String, Vertex>();
-	private int m_counter = 0;
-	private LayoutAlgorithm m_layoutAlgorithm = new SimpleLayoutAlgorithm();
+	
+	public static final String PROP_X = "x";
+	public static final String PROP_Y = "y";
+	public static final String PROP_ICON = "icon";
+	
+	private abstract class ElementHolder<T> {
+		Container m_itemContainer;
+		List<T> m_graphElements;
+		KeyMapper m_elementKey2ItemId = new KeyMapper();
+		Map<String, T> m_keyToElementMap = new HashMap<String, T>();
+		
+		ElementHolder(Container container) {
+			
+			m_itemContainer = container;
+			
+			update();
+		}
+
+		public void update() {
+			Collection<?> itemIds = m_itemContainer.getItemIds();
+			
+			m_graphElements = new ArrayList<T>(itemIds.size());
+			
+			for(Object itemId : itemIds) {
+
+				String key = m_elementKey2ItemId.key(itemId);
+
+				if(!m_keyToElementMap.containsKey(key)) {
+
+					T v = make(key, itemId, m_itemContainer.getItem(itemId));
+
+					m_graphElements.add(v);
+
+					m_keyToElementMap.put(key, v);
+				}
+			}
+		}
+		
+		List<T> getElements(){
+			return m_graphElements;
+		}
+
+		protected abstract T make(String key, Object itemId, Item item);
+
+		public T getElementByKey(String key) {
+			return m_keyToElementMap.get(key);
+		}
+		
+		public T getElementByItemId(Object itemId) {
+			return getElementByKey(m_elementKey2ItemId.key(itemId));
+		}
+		
+		public List<T> getElementsByItemIds(Collection<?> itemIds) {
+			List<T> elements = new ArrayList<T>(itemIds.size());
+			
+			for(Object itemId : itemIds) {
+				elements.add(getElementByItemId(itemId));
+			}
+			
+			return elements;
+		}
+
+		
+		
+	}
 
 	
-	public Graph(){
-		setVertices(new ArrayList<Vertex>(Arrays.asList(new Vertex[] {new Vertex(getNextId(),60,25)})));
-		m_edges = new ArrayList<Edge>();
+	private GraphContainer m_dataSource;
+	private int m_counter = 0;
+	private LayoutAlgorithm m_layoutAlgorithm = new SimpleLayoutAlgorithm();
+	private ElementHolder<Vertex> m_vertexHolder;
+	private ElementHolder<Edge> m_edgeHolder;
+
+	
+	public Graph(GraphContainer dataSource){
 		
-		for(Vertex vert : getVertices()) {
-			m_vertexMap.put(vert.getId(), vert);
+		if(dataSource == null) {
+			throw new NullPointerException("dataSource may not be null");
 		}
+		setDataSource(dataSource);
 		
-		updateLayout();
-	}
-	public Graph(List<Vertex> vertex, List<Edge> edges){
-		setVertices(vertex);
-		m_edges = edges;
-		for(Vertex vert : getVertices()) {
-			m_vertexMap.put(vert.getId(), vert);
-		}
-		updateLayout();
 	}
 	
+	public void setDataSource(GraphContainer dataSource) {
+		if(dataSource == m_dataSource) {
+			return;
+		}
+		
+		m_dataSource = dataSource;
+		
+		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer()) {
+
+			@Override
+			protected Vertex make(String key, Object itemId, Item item) {
+				return new Vertex(key, itemId, item);
+			}
+
+		};
+		
+		m_edgeHolder = new ElementHolder<Edge>(m_dataSource.getEdgeContainer()) {
+
+			@Override
+			protected Edge make(String key, Object itemId, Item item) {
+
+				List<Object> endPoints = new ArrayList<Object>(m_dataSource.getEndPointIdsForEdge(itemId));
+
+				Object sourceId = endPoints.get(0);
+				Object targetId = endPoints.get(1);
+				
+				Vertex source = m_vertexHolder.getElementByItemId(sourceId);
+				Vertex target = m_vertexHolder.getElementByItemId(targetId);
+
+				return new Edge(key, itemId, item, source, target);
+			}
+
+		};
+		
+		
+	}
+	public void update() {
+		m_vertexHolder.update();
+		m_edgeHolder.update();
+	}
+
+	public GraphContainer getDataSource() {
+		return m_dataSource;
+	}
+
 	public List<Vertex> getVertices(){
-		return m_vertices;
+		return m_vertexHolder.getElements();
 	}
 	
 	public List<Edge> getEdges(){
-		return m_edges;
+		return m_edgeHolder.getElements();
 	}
 	
-	public Vertex getVertexById(String id) {
-		return m_vertexMap.get(id);
-	}
-	public void addVertex(Vertex vertex) {
-		getVertices().add(vertex);
-		
-		m_vertexMap.put(vertex.getId(), vertex);
-		updateLayout();
-	}
-	public void addEdge(Edge edge) {
-		m_edges.add(edge);
+	public Vertex getVertexByKey(String key) {
+		return m_vertexHolder.getElementByKey(key);
 	}
 	
 	public List<Edge> getEdgesForVertex(Vertex vertex){
-	    List<Edge> edgeList = new ArrayList<Edge>();
-	    Iterator<Edge> it = m_edges.iterator();
-        while(it.hasNext()) {
-            Edge edge = it.next();
-            if(edge.getSource() == vertex || edge.getTarget() == vertex) {
-                edgeList.add(edge);
-            }
-        }
-	    return edgeList;
+		return m_edgeHolder.getElementsByItemIds(m_dataSource.getEdgeIdsForVertex(vertex.getItemId()));
 	}
 	
 	void updateLayout() {
         getLayoutAlgorithm().updateLayout(this);
     }
-    public void removeRandomVertext() {
-    	if (getVertices().size() <= 0) return;
-    	
-        int index = (int)Math.round(Math.random() * (getVertices().size() - 2)) + 1;
-        
-        if (index >= getVertices().size()) {
-        	return;
-        }
-
-        Vertex vert = getVertices().remove(index);
-        m_vertexMap.remove(vert.getId());
-        
-        removeEdges(vert);
-        
-    }
-    private void removeEdges(Vertex vert) {
-        Iterator<Edge> it = m_edges.iterator();
-        while(it.hasNext()) {
-            Edge edge = it.next();
-            if(edge.getSource() == vert || edge.getTarget() == vert) {
-                it.remove();
-            }
-        }
-    }
+	
 	public String getNextId() {
 		return "" + m_counter ++;
 	}
-    public void addVertexTo(Vertex source) {
-        Vertex target = new Vertex(getNextId());
-        Edge edge = new Edge(source, target);
-        addVertex(target);
-        addEdge(edge);
-    }
     
-    
-    public void removeVertex(Vertex target) {
-        if (getVertices().size() <= 0) return;
-        
-        Iterator<Vertex> it = getVertices().iterator();
-        while(it.hasNext()) {
-            Vertex vertex = it.next();
-            if(vertex == target) {
-                it.remove();
-                
-            }
-        }
-        removeEdges(target);
-    }
-    private void setVertices(List<Vertex> vertices) {
-        m_vertices = vertices;
-    }
     public LayoutAlgorithm getLayoutAlgorithm() {
         return m_layoutAlgorithm;
     }
@@ -129,13 +172,7 @@ public class Graph{
         m_layoutAlgorithm = layoutAlgorithm;
         updateLayout();
     }
-    public void addSwitchVertex(Vertex source) {
-        Vertex target = new Vertex(getNextId());
-        target.setIconUrl("VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/srx100.png");
-        Edge edge = new Edge(source, target);
-        addVertex(target);
-        addEdge(edge);
-    }
-    
+
+       
 	
 }

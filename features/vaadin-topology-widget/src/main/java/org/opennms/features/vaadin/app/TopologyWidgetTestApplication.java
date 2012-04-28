@@ -1,11 +1,14 @@
 package org.opennms.features.vaadin.app;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.vaadin.topology.AlternativeLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.Edge;
 import org.opennms.features.vaadin.topology.Graph;
+import org.opennms.features.vaadin.topology.GraphContainer;
+import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 import org.opennms.features.vaadin.topology.Vertex;
@@ -13,6 +16,7 @@ import org.opennms.features.vaadin.topology.Vertex;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -27,11 +31,14 @@ import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
 public class TopologyWidgetTestApplication extends Application{
+	
+	private static final String CENTER_VERTEX_ID = "center";
 
     private Window m_window;
     private TopologyComponent m_topologyComponent;
     private CommandManager m_commandManager = new CommandManager();
     private Tree m_tree;
+    private SimpleGraphContainer m_graphContainer = new SimpleGraphContainer();
     
     @Override
     public void init() {
@@ -39,7 +46,9 @@ public class TopologyWidgetTestApplication extends Application{
 
             @Override
             public void doCommand(Object target) {
-                m_topologyComponent.redoLayout();
+                //TODO: Move this to the container
+            	m_graphContainer.redoLayout();
+            	
             }
     
             @Override
@@ -67,11 +76,17 @@ public class TopologyWidgetTestApplication extends Application{
             @Override
             public void doCommand(Object target) {
                 if(target instanceof Vertex) {
-                    m_topologyComponent.addVertexTo((Vertex)target);
+                	Vertex v = (Vertex) target;
+                	
+                	addVertexTo(v);
+                    
+                	//m_topologyComponent.addVertexTo((Vertex)target);
                 }else {
-                    m_topologyComponent.addRandomNode();
+                	addRandomVertex();
+                	
+                    //m_topologyComponent.addRandomNode();
                 }
-                updateTree();
+                
             }
 
             @Override
@@ -94,11 +109,14 @@ public class TopologyWidgetTestApplication extends Application{
             @Override
             public void doCommand(Object target) {
                 if(target instanceof Vertex) {
-                    m_topologyComponent.addSwitchVertexTo((Vertex)target);
+                	addVertexTo((Vertex) target);
+                	
+                    //m_topologyComponent.addSwitchVertexTo((Vertex)target);
                 }else {
-                    m_topologyComponent.addRandomNode();
+                    addRandomVertex();
+                	//m_topologyComponent.addRandomNode();
                 }
-                updateTree();
+                
             }
 
             @Override
@@ -121,12 +139,16 @@ public class TopologyWidgetTestApplication extends Application{
             @Override
             public void doCommand(Object target) {
                 if(target instanceof Vertex) {
-                    m_topologyComponent.removeVertex((Vertex)target);
+                	Vertex v = (Vertex) target;
+                	m_graphContainer.removeVertex(v.getKey());
+                	
+                    //m_topologyComponent.removeVertex((Vertex)target);
                 }else {
-                    m_topologyComponent.removeVertex();
+                	//TODO: Do we even want to remove a random vertex??
+                    //m_topologyComponent.removeVertex();
                 }
                 
-                updateTree();
+                
             }
 
             @Override
@@ -146,7 +168,9 @@ public class TopologyWidgetTestApplication extends Application{
 
 			@Override
 			public void doCommand(Object target) {
-				m_topologyComponent.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
+				//TODO: Move this to the Container
+				m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
+				//m_topologyComponent.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
 			}
 
 			@Override
@@ -164,7 +188,8 @@ public class TopologyWidgetTestApplication extends Application{
 
 			@Override
 			public void doCommand(Object target) {
-				m_topologyComponent.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
+				//TODO: Move this into the Container
+				m_graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
 			}
 
 			@Override
@@ -181,8 +206,8 @@ public class TopologyWidgetTestApplication extends Application{
 
             @Override
             public void doCommand(Object target) {
-                m_topologyComponent.resetGraph();
-                updateTree();
+            	
+                resetView();
             }
 
             @Override
@@ -218,9 +243,11 @@ public class TopologyWidgetTestApplication extends Application{
         m_window.setContent(layout);
         setMainWindow(m_window);
         
-        m_topologyComponent = new TopologyComponent();
+        m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50);
+        
+        
+        m_topologyComponent = new TopologyComponent(m_graphContainer);
         m_commandManager.addActionHandlers(m_topologyComponent);
-        //m_topologyComponent.addActionHandler(this);
         m_topologyComponent.setSizeFull();
         
         final Slider slider = new Slider(1, 4);
@@ -232,7 +259,7 @@ public class TopologyWidgetTestApplication extends Application{
 			public void valueChange(ValueChangeEvent event) {
 				double scale = (Double) slider.getValue();
 				
-				m_topologyComponent.setScale(scale);
+				m_graphContainer.setScale(scale);
 			}
 		});
         slider.setImmediate(true);
@@ -291,21 +318,11 @@ public class TopologyWidgetTestApplication extends Application{
         
     }
 
-    protected void updateTree() {
-        m_tree.removeAllItems();
-        for(Vertex vert : m_topologyComponent.getGraph().getVertices()) {
-            m_tree.addItem(vert);
-        }
-    }
-
     private Tree createTree() {
-        Graph graph = m_topologyComponent.getGraph();
         
         Tree tree = new Tree("Vertices");
+        tree.setContainerDataSource(m_graphContainer.getVertexContainer());
         
-        for(Vertex vert : graph.getVertices()) {
-            tree.addItem(vert);
-        }
         tree.setImmediate(true);
         
         for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
@@ -313,5 +330,32 @@ public class TopologyWidgetTestApplication extends Application{
         }
         return tree;
     }
+
+	private void addVertexTo(Vertex v) {
+		//Add Vertex
+		String targetId = m_graphContainer.getNextVertexId();
+		m_graphContainer.addVertex(targetId, 0, 0);
+		
+		//Connect the source and target with an edge
+		String edgeId = m_graphContainer.getNextEdgeId();
+		m_graphContainer.connectVertices(edgeId, v.getKey(), targetId);
+	}
+
+	private void addRandomVertex() {
+		if (m_graphContainer.getVertexContainer().containsId(CENTER_VERTEX_ID)) {
+			String vertexId = m_graphContainer.getNextVertexId();
+			m_graphContainer.addVertex(vertexId, 0, 0);
+
+			//Right now we are connecting all new vertices to v0
+			m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), CENTER_VERTEX_ID, vertexId);
+		}
+		else {
+			m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50);
+		}
+	}
+
+	private void resetView() {
+		m_graphContainer.resetContainer();
+	}
 
 }

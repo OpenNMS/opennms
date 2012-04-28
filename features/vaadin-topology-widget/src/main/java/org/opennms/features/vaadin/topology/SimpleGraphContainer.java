@@ -26,6 +26,8 @@ public class SimpleGraphContainer implements GraphContainer {
 		String m_id;
 		int m_x;
 		int m_y;
+		boolean m_selected;
+		String m_icon = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
 
 		List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
 		
@@ -62,6 +64,22 @@ public class SimpleGraphContainer implements GraphContainer {
 			m_y = y;
 		}
 	
+		public boolean isSelected() {
+			return m_selected;
+		}
+
+		public void setSelected(boolean selected) {
+			m_selected = selected;
+		}
+
+		public String getIcon() {
+			return m_icon;
+		}
+
+		public void setIcon(String icon) {
+			m_icon = icon;
+		}
+
 		@XmlTransient
 		List<SimpleEdge> getEdges() {
 			return m_edges;
@@ -180,6 +198,10 @@ public class SimpleGraphContainer implements GraphContainer {
 	
 	private BeanContainer<String, SimpleVertex> m_vertexContainer = new BeanContainer<String, SimpleVertex>(SimpleVertex.class);
 	private BeanContainer<String, SimpleEdge> m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
+	private int m_counter = 0;
+	private int m_edgeCounter = 0;
+	private LayoutAlgorithm m_layoutAlgorithm;
+	private double m_scale = 1;
 	
 	public SimpleGraphContainer() {
 		m_vertexContainer = new BeanContainer<String, SimpleVertex>(SimpleVertex.class);
@@ -213,46 +235,34 @@ public class SimpleGraphContainer implements GraphContainer {
 	public Item getEdgeItem(Object edgeId) {
 		return m_edgeContainer.getItem(edgeId);
 	}
-
-	public Collection<? extends Item> getEdgeEndPoints(Object edgeId) {
+	
+	public Collection<?> getEndPointIdsForEdge(Object edgeId) {
 		
 		SimpleEdge edge = getRequiredEdge(edgeId);
 
-		List<BeanItem<SimpleVertex>> endPoints = new ArrayList<BeanItem<SimpleVertex>>(2);
+		List<Object> endPoints = new ArrayList<Object>(2);
+		
+		endPoints.add(edge.getSource().getId());
+		endPoints.add(edge.getTarget().getId());
 
-		String sourceId = edge.getSource().getId();
-		String targetId = edge.getTarget().getId();
-		
-		BeanItem<SimpleVertex> source = m_vertexContainer.getItem(sourceId);
-		BeanItem<SimpleVertex> target = m_vertexContainer.getItem(targetId);
-		
-		if (source == null || target == null) {
-			throw new IllegalStateException("edge "+edgeId+" references vertices that do not exist!");
-		}
-		
-		endPoints.add(source);
-		endPoints.add(target);
-		
 		return endPoints;
 	}
 
-	public Collection<? extends Item> getEdgesForVertex(Object vertexId) {
+	public Collection<?> getEdgeIdsForVertex(Object vertexId) {
+		
 		SimpleVertex vertex = getRequiredVertex(vertexId);
 		
-		List<BeanItem<SimpleEdge>> edgeItems = new ArrayList<BeanItem<SimpleEdge>>(vertex.getEdges().size());
+		List<Object> edges = new ArrayList<Object>(vertex.getEdges().size());
 		
 		for(SimpleEdge e : vertex.getEdges()) {
-			String edgeId = e.getId();
-			BeanItem<SimpleEdge> edgeItem = m_edgeContainer.getItem(edgeId);
 			
-			if (edgeItem == null) {
-				throw new IllegalStateException("vertex " + vertexId + " has an edge that does not exist!");
-			}
+			Object edgeId = e.getId();
 			
-			edgeItems.add(edgeItem);
+			edges.add(edgeId);
+
 		}
 		
-		return edgeItems;
+		return edges;
 
 	}
 	
@@ -362,5 +372,36 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 		
 		return beans;
+	}
+
+	public String getNextVertexId() {
+		return "v" + m_counter++;
+	}
+
+	public String getNextEdgeId() {
+		return "e" + m_edgeCounter ++;
+	}
+
+	public void resetContainer() {
+		getVertexContainer().removeAllItems();
+		getEdgeContainer().removeAllItems();
+		
+		m_counter = 0;
+		m_edgeCounter = 0;
+	}
+
+	public void setScale(double scale) {
+		// TODO we need to update listeners when the scale changes;
+		m_scale = scale;
+	}
+
+	public void redoLayout() {
+		// TODO implement redoLayout
+		
+		
+	}
+
+	public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
+		m_layoutAlgorithm = layoutAlgorithm;
 	}
 }

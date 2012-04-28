@@ -9,7 +9,7 @@ public class Group {
 	public static final Group ROOT = new Group(0);
 	
 	public Group(int level) {
-		this(level, Group.ROOT);
+		this(level, null);
 	}
 	
 	public Group(int level, Group parent) {
