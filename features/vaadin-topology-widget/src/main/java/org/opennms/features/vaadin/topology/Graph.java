@@ -36,31 +36,38 @@ public class Graph{
 		}
 
 		public void update() {
-			List<Object> itemIds = new ArrayList<Object>(m_itemContainer.getItemIds());
+			List<Object> oldItemIds = m_itemIds;
+			List<Object> newItemIds = new ArrayList<Object>(m_itemContainer.getItemIds());
+			m_itemIds = newItemIds;
 			
-			Set<Object> newContainerItems = new LinkedHashSet<Object>(itemIds);
-			newContainerItems.removeAll(m_itemIds);
+			Set<Object> newContainerItems = new LinkedHashSet<Object>(newItemIds);
+			newContainerItems.removeAll(oldItemIds);
 			
-			Set<Object> removedContainerItems = new LinkedHashSet<Object>(m_itemIds);
-			removedContainerItems.removeAll(itemIds);
+			Set<Object> removedContainerItems = new LinkedHashSet<Object>(oldItemIds);
+			removedContainerItems.removeAll(newItemIds);
+			
+			m_graphElements = new ArrayList<T>(newItemIds.size());
+
+			
+			for(Object itemId : removedContainerItems) {
+				String key = m_elementKey2ItemId.key(itemId);
+				m_elementKey2ItemId.remove(itemId);
+				m_keyToElementMap.remove(key);
+			}
+			
+			for(T element : m_keyToElementMap.values()) {
+				m_graphElements.add(update(element));
+			}
 			
 			
-			m_elementKey2ItemId.removeAll();
-			m_keyToElementMap.clear();
-			
-			m_graphElements = new ArrayList<T>(itemIds.size());
-			
-			for(Object itemId : itemIds) {
+			for(Object itemId : newContainerItems) {
 			    String key = m_elementKey2ItemId.key(itemId);
 			    
-				if(!m_keyToElementMap.containsKey(key)) {
+			    T v = make(key, itemId, m_itemContainer.getItem(itemId));
+			    System.err.println("make v: " + v);
+			    m_graphElements.add(v);
 
-					T v = make(key, itemId, m_itemContainer.getItem(itemId));
-					System.err.println("make v: " + v);
-					m_graphElements.add(v);
-
-					m_keyToElementMap.put(key, v);
-				}
+			    m_keyToElementMap.put(key, v);
 			}
 		}
 		
@@ -69,6 +76,8 @@ public class Graph{
 		}
 
 		protected abstract T make(String key, Object itemId, Item item);
+		
+		protected T update(T element) { return element; }
 
 		public T getElementByKey(String key) {
 			return m_keyToElementMap.get(key);
