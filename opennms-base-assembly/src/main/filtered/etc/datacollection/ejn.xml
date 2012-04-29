@@ -106,7 +106,6 @@
         <collect>
           <includeGroup>ejn-ggsn</includeGroup>
           <includeGroup>ejn-ggsn-apn</includeGroup>
-          <includeGroup>ejn-ggsn-radius</includeGroup>
           <includeGroup>ejn-ggsn-gtpc</includeGroup>
           <includeGroup>ejn-ggsn-gtpu</includeGroup>
         </collect>
