@@ -123,6 +123,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.addAttribute("scale", m_mapManager.getScale());
         target.addAttribute("clientX", m_mapManager.getClientX());
         target.addAttribute("clientY", m_mapManager.getClientY());
+        target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
         
         Set<Action> actions = new HashSet<Action>();
 		m_actionMapper = new KeyMapper();
@@ -140,6 +141,32 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		
 		
         target.startTag("graph");
+        for (Vertex group : getGraph().getVertices()) {
+        	if (!group.isLeaf()) {
+        		target.startTag("group");
+        		target.addAttribute("key", group.getKey());
+        		target.addAttribute("x", group.getX());
+        		target.addAttribute("y", group.getY());
+        		target.addAttribute("selected", group.isSelected());
+        		target.addAttribute("iconUrl", group.getIconUrl());
+        		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
+
+        		List<String> groupActionList = new ArrayList<String>();
+        		for(Action.Handler handler : m_actionHandlers) {
+        			Action[] groupActions = handler.getActions(group.getItemId(), null);
+        			for(Action action : groupActions) {
+        				groupActionList.add(m_actionMapper.key(action));
+        				actions.add(action);
+        			}
+        		}
+
+        		target.addAttribute("actionKeys", groupActionList.toArray());
+        		target.endTag("group");
+
+        	}
+        }
+        
+        
         for(Vertex vert : getGraph().getVertices()) {
         	if (vert.isLeaf()) {
         		target.startTag("vertex");
@@ -148,6 +175,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("y", vert.getY());
         		target.addAttribute("selected", vert.isSelected());
         		target.addAttribute("iconUrl", vert.getIconUrl());
+        		target.addAttribute("semanticZoomLevel", vert.getSemanticZoomLevel());
+        		if (vert.getGroupId() != null) {
+        			target.addAttribute("groupKey", vert.getGroupKey());
+        		}
 
         		List<String> vertActionList = new ArrayList<String>();
         		for(Action.Handler handler : m_actionHandlers) {
@@ -182,6 +213,20 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("actionKeys", edgeActionList.toArray());
         	target.endTag("edge");
         }
+        
+        for (Vertex group : getGraph().getVertices()) {
+        	if (!group.isLeaf()) {
+        		if (group.getGroupId() != null) {
+        			target.startTag("groupParent");
+        			target.addAttribute("key", group.getKey());
+        			target.addAttribute("parentKey", group.getGroupKey());
+        			
+        			target.endTag("groupParent");
+        		}
+        	}
+        }
+        
+       
         
         target.endTag("graph");
         

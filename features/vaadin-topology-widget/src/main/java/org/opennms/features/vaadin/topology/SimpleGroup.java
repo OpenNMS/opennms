@@ -7,6 +7,7 @@ public class SimpleGroup extends SimpleVertex {
 
 	List<SimpleVertex> m_members = new ArrayList<SimpleVertex>();
 	
+	
 	public SimpleGroup(String id) {
 		super(id);
 	}

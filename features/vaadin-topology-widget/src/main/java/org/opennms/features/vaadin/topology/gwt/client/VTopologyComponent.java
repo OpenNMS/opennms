@@ -363,6 +363,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     private GraphDrawerNoTransition m_graphDrawerNoTransition;
     protected PanObject m_panObject;
     private List<Element> m_selectedElements = new ArrayList<Element>();
+	private int m_semanticZoomLevel;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -615,6 +616,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         
         setScale(uidl.getDoubleAttribute("scale"), uidl.getIntAttribute("clientX"), uidl.getIntAttribute("clientY"));
+        setSemanticZoomLevel(uidl.getIntAttribute("semanticZoomLevel"));
         setActionKeys(uidl.getStringArrayAttribute("backgroundActions"));
         
         UIDL graph = uidl.getChildByTagName("graph");
@@ -624,13 +626,37 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         while(children.hasNext()) {
         	UIDL child = (UIDL) children.next();
         	
-        	if(child.getTag().equals("vertex")) {
+        	if(child.getTag().equals("group")) {
+        		GWTGroup group = GWTGroup.create(child.getStringAttribute("key"), child.getIntAttribute("x"), child.getIntAttribute("y"));
+        		boolean booleanAttribute = child.getBooleanAttribute("selected");
+        		String[] actionKeys = child.getStringArrayAttribute("actionKeys");
+        		
+        		group.setActionKeys(actionKeys);
+        		
+				group.setSelected(booleanAttribute);
+				group.setIcon(child.getStringAttribute("iconUrl"));
+				group.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
+				graphConverted.addGroup(group);
+				
+				if(m_client != null) {
+				    TooltipInfo ttInfo = new TooltipInfo(group.getTooltipText());
+				    m_client.registerTooltip(this, group, ttInfo);
+				}
+        		
+        	}else if(child.getTag().equals("vertex")) {
         		
         		GWTVertex vertex = GWTVertex.create(child.getStringAttribute("id"), child.getIntAttribute("x"), child.getIntAttribute("y"));
         		boolean booleanAttribute = child.getBooleanAttribute("selected");
         		String[] actionKeys = child.getStringArrayAttribute("actionKeys");
+        		vertex.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
         		
         		vertex.setActionKeys(actionKeys);
+        		
+        		if(child.hasAttribute("groupKey")) {
+        			String groupKey = child.getStringAttribute("groupKey");
+        			GWTGroup group = graphConverted.getGroup(groupKey);
+        			vertex.setGroup(group);
+        		}
         		
 				vertex.setSelected(booleanAttribute);
 				vertex.setIcon(child.getStringAttribute("iconUrl"));
@@ -646,6 +672,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         		String[] actionKeys = child.getStringArrayAttribute("actionKeys");
         		edge.setActionKeys(actionKeys);
         		graphConverted.addEdge(edge);
+        	}else if(child.getTag().equals("groupParent")) {
+        		String groupKey = child.getStringAttribute("key");
+        		String parentKey = child.getStringAttribute("parentKey");
+        		GWTGroup group = graphConverted.getGroup(groupKey);
+        		GWTGroup parentGroup = graphConverted.getGroup(parentKey);
+        		
+        		group.setParent(parentGroup);
         	}
         	
         }
@@ -659,7 +692,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
     }
     
-    private void updateActionMap(UIDL c) {
+    private void setSemanticZoomLevel(int level) {
+		m_semanticZoomLevel = level;
+	}
+
+	private void updateActionMap(UIDL c) {
         final Iterator<?> it = c.getChildIterator();
         while (it.hasNext()) {
             final UIDL action = (UIDL) it.next();

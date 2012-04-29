@@ -31,7 +31,22 @@ public final class GWTGraph extends JavaScriptObject {
         put(vertex.getId(), vertex);
     }
     
-    public void removeVertex(GWTVertex vertex) {
+    public void addGroup(GWTGroup group) {
+		getGroups().push(group);
+		putGroup(group.getId(), group);
+		
+	}
+    
+    private final native void putGroup(String id, GWTGroup group) /*-{
+		this.idToGMap[id] = group;
+		
+	}-*/;
+
+	private final native JsArray<GWTGroup> getGroups() /*-{
+		return this.groups;
+	}-*/;
+
+	public void removeVertex(GWTVertex vertex) {
         int index = findIndex(vertex);
         if(index >= 0) {
             splice(getVertices(), index);
@@ -85,10 +100,16 @@ public final class GWTGraph extends JavaScriptObject {
     }
     
     public static final native GWTGraph create() /*-{
-        return {"vertices":[], "edges":[], "idToVMap":{}};
+        return {"vertices":[], "edges":[], "groups":[], "idToVMap":{}, "idToGMap":{}};
     }-*/;
 
     public String json() {
         return "{}";
     }
+
+	public final native GWTGroup getGroup(String groupKey) /*-{
+		return this.idToGMap[id];
+	}-*/;
+
+	
 }

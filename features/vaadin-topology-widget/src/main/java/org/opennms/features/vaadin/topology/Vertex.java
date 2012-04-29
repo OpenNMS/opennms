@@ -11,17 +11,29 @@ public class Vertex implements Paintable {
 	private String m_key;
 	private Object m_itemId;
 	private Item m_item;
+	private Object m_groupId;
+	private String m_groupKey;
 	
 	private boolean m_selected = false;
     
-	public Vertex(String key, Object itemId, Item item) {
+	public Vertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
 		m_key = key;
 		m_itemId = itemId;
 		m_item = item;
+		m_groupKey = groupKey;
+		m_groupId = groupId;
 	}
 	
 	public Object getItemId() {
 		return m_itemId;
+	}
+	
+	public String getGroupKey() {
+		return m_groupKey;
+	}
+	
+	public Object getGroupId() {
+		return m_groupId;
 	}
 	
 	public boolean isLeaf() {
@@ -71,5 +83,9 @@ public class Vertex implements Paintable {
 
 	public String getKey() {
 		return m_key;
+	}
+	
+	public int getSemanticZoomLevel() {
+		return (Integer) m_item.getItemProperty("semanticZoomLevel").getValue();
 	}
 }

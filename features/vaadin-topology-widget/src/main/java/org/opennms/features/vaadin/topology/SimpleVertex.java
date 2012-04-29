@@ -20,6 +20,7 @@ abstract public class SimpleVertex {
 	String m_icon;
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
+	private int m_semanticZoomLevel = -1;
 	
 	public SimpleVertex() {}
 	
@@ -130,6 +131,14 @@ abstract public class SimpleVertex {
 		} else if (!m_id.equals(other.m_id))
 			return false;
 		return true;
+	}
+	
+	public int getSemanticZoomLevel() {
+		return m_semanticZoomLevel >= 0
+				? m_semanticZoomLevel
+				: m_parent == null 
+				? 0 
+				: m_parent.getSemanticZoomLevel() + 1;
 	}
 	
 	

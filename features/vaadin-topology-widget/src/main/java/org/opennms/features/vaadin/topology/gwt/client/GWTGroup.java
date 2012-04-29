@@ -8,9 +8,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
-public final class GWTVertex extends JavaScriptObject {
+public final class GWTGroup extends JavaScriptObject {
 
-    protected GWTVertex() {};
+    protected GWTGroup() {};
     
     public final native String getId()/*-{
         return this.id;
@@ -32,7 +32,7 @@ public final class GWTVertex extends JavaScriptObject {
         return this.selected;
     }-*/;
     
-    public static final native GWTVertex create(String id, int x, int y) /*-{
+    public static final native GWTGroup create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":""};
     }-*/;
 
@@ -90,39 +90,39 @@ public final class GWTVertex extends JavaScriptObject {
         this.iconUrl = iconUrl;
     }-*/;
 
-    static Func<String, GWTVertex> selectedFill() {
-    	return new Func<String, GWTVertex>(){
+    static Func<String, GWTGroup> selectedFill() {
+    	return new Func<String, GWTGroup>(){
     
-    		public String call(GWTVertex vertex, int index) {
+    		public String call(GWTGroup vertex, int index) {
     			return vertex.isSelected() ? "blue" : "black";
     		}
     	};
     }
     
-    protected static Func<String, GWTVertex> selectionFilter() {
-        return new Func<String, GWTVertex>(){
+    protected static Func<String, GWTGroup> selectionFilter() {
+        return new Func<String, GWTGroup>(){
 
-            public String call(GWTVertex vertex, int index) {
+            public String call(GWTGroup vertex, int index) {
                 return vertex.isSelected() ? "1" : "0";
             }
             
         };
     }
 
-    static Func<String, GWTVertex> getTranslation() {
-    	return new Func<String, GWTVertex>() {
+    static Func<String, GWTGroup> getTranslation() {
+    	return new Func<String, GWTGroup>() {
     
-    		public String call(GWTVertex datum, int index) {
+    		public String call(GWTGroup datum, int index) {
     			return "translate( " + datum.getX() + "," + datum.getY() + ")";
     		}
     		
     	};
     }
     
-    static Func<String, GWTVertex> getIconPath(){
-        return new Func<String, GWTVertex>(){
+    static Func<String, GWTGroup> getIconPath(){
+        return new Func<String, GWTGroup>(){
 
-            public String call(GWTVertex datum, int index) {
+            public String call(GWTGroup datum, int index) {
                 if(datum.getIconUrl().equals("")) {
                     return GWT.getModuleBaseURL() + "topologywidget/images/server.png";
                 }else {
@@ -138,7 +138,7 @@ public final class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("transform", GWTGroup.getTranslation()).select(".highlight").attr("opacity", GWTGroup.selectionFilter());
             }
         };
     }
@@ -167,12 +167,12 @@ public final class GWTVertex extends JavaScriptObject {
         };
     }
 
-	public final native void setGroup(GWTGroup group) /*-{
-		this.group = group;
+	public final native void setParent(GWTGroup parentGroup) /*-{
+		this.parent = parentGroup;		
 	}-*/;
 	
-	public final native GWTGroup getGroup() /*-{
-		return this.group;
+	public final native GWTGroup getParent()/*-{
+		return this.parent;
 	}-*/;
 
 	public final native void setSemanticZoomLevel(int semanticZoomLevel) /*-{

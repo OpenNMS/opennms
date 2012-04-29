@@ -3,6 +3,7 @@ package org.opennms.features.vaadin.topology;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,9 +14,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Container.Hierarchical;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.MethodProperty;
 
 public class SimpleGraphContainer implements GraphContainer {
 
@@ -27,11 +30,14 @@ public class SimpleGraphContainer implements GraphContainer {
 	private int m_groupCounter = 0;
 	private LayoutAlgorithm m_layoutAlgorithm;
 	private double m_scale = 1;
+	private int m_semanticZoomLevel;
+	private MethodProperty<Integer> m_zoomLevelProperty;
 	
 	public SimpleGraphContainer() {
 		m_vertexContainer = new VertexContainer();
 		m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
 		m_edgeContainer.setBeanIdProperty("id");
+		m_zoomLevelProperty = new MethodProperty<Integer>(Integer.class, this, "getSemanticZoomLevel", "setSemanticZoomLevel");
 	}
 
 	public VertexContainer getVertexContainer() {
@@ -233,6 +239,14 @@ public class SimpleGraphContainer implements GraphContainer {
 		// TODO we need to update listeners when the scale changes;
 		m_scale = scale;
 	}
+	
+	public void setSemanticZoomLevel(Integer level) {
+		m_semanticZoomLevel = level;
+	}
+	
+	public Integer getSemanticZoomLevel() {
+		return m_semanticZoomLevel;
+	}
 
 	public void redoLayout() {
 		m_layoutAlgorithm.updateLayout(this);
@@ -259,6 +273,14 @@ public class SimpleGraphContainer implements GraphContainer {
 	    }
 	    
 	    return selectedVertexIds;
+	}
+	
+	public Collection<?> getPropertyIds() {
+		return Collections.singletonList("semanticZoomLevel");
+	}
+
+	public Property getProperty(String propertyId) {
+		return m_zoomLevelProperty;
 	}
 
 }

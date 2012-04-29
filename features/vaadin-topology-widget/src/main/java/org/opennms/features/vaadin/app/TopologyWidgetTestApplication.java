@@ -9,6 +9,7 @@ import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 
 import com.vaadin.Application;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
@@ -18,6 +19,8 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Slider;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -158,7 +161,7 @@ public class TopologyWidgetTestApplication extends Application{
             
         }, true, "Edit");
         
-m_commandManager.addCommand(new Command("Simple Layout") {
+        m_commandManager.addCommand(new Command("Simple Layout") {
 
 			@Override
 			public boolean appliesToTarget(Object target) {
@@ -271,6 +274,34 @@ m_commandManager.addCommand(new Command("Simple Layout") {
 		}
         
         m_tree = createTree();
+        Label semanticZoomLabel = new Label();
+        final Property zoomLevel = m_graphContainer.getProperty("semanticZoomLevel");
+		semanticZoomLabel.setPropertyDataSource(zoomLevel);
+        
+        Button zoomInBtn = new Button("Zoom In");
+        zoomInBtn.addListener(new ClickListener() {
+
+			public void buttonClick(ClickEvent event) {
+				int szl = (Integer) zoomLevel.getValue();
+				szl++;
+				System.err.println("zoomIn: Setting szl to " + szl);
+				zoomLevel.setValue(szl);
+				
+			}
+		});
+        
+        Button zoomOutBtn = new Button("Zoom Out");
+        zoomOutBtn.addListener(new ClickListener() {
+
+			public void buttonClick(ClickEvent event) {
+				int szl = (Integer) zoomLevel.getValue();
+				szl--;
+				System.err.println("zoomOut: Setting szl to " + szl);
+				zoomLevel.setValue(szl);
+				
+			}
+		});
+        
         
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setWidth("100%");
@@ -281,6 +312,7 @@ m_commandManager.addCommand(new Command("Simple Layout") {
         
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
         mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
+        mapLayout.addComponent(semanticZoomLabel, "bottom: 10px; right: 10px; z-index: 2000;");
         mapLayout.setSizeFull();
         
         HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
@@ -292,7 +324,12 @@ m_commandManager.addCommand(new Command("Simple Layout") {
         
         VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
         bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
-        bottomLayoutBar.setSecondComponent(new Button("Bottom bar"));
+        
+        VerticalLayout zoomLayout = new VerticalLayout();
+        zoomLayout.addComponent(zoomInBtn);
+        zoomLayout.addComponent(zoomOutBtn);
+        
+		bottomLayoutBar.setSecondComponent(zoomLayout);
         bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
         bottomLayoutBar.setSizeFull();
         

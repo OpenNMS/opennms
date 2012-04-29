@@ -83,6 +83,10 @@ public class Graph{
 			return m_keyToElementMap.get(key);
 		}
 		
+		public String getKeyForItemId(Object itemId) {
+			return m_elementKey2ItemId.key(itemId);
+		}
+		
 		public T getElementByItemId(Object itemId) {
 			return getElementByKey(m_elementKey2ItemId.key(itemId));
 		}
@@ -127,7 +131,9 @@ public class Graph{
 
 			@Override
 			protected Vertex make(String key, Object itemId, Item item) {
-				return new Vertex(key, itemId, item);
+				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
+				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
+				return new Vertex(key, itemId, item, groupKey, groupId);
 			}
 
 		};
