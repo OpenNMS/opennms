@@ -11,6 +11,7 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.vaadin.data.Item;
@@ -169,7 +170,10 @@ public class SimpleGraphContainer implements GraphContainer {
 	@XmlAccessorType(XmlAccessType.FIELD)
 	private static class SimpleGraph {
 		
-		@XmlElement(name="vertex")
+		@XmlElements({
+				@XmlElement(name="vertex", type=SimpleLeafVertex.class),
+				@XmlElement(name="group", type=SimpleGroup.class)
+		})
 		List<SimpleVertex> m_vertices = new ArrayList<SimpleVertex>();
 		
 		@XmlElement(name="edge")

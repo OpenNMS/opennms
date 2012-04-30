@@ -3,10 +3,16 @@ package org.opennms.features.vaadin.topology;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="group")
 public class SimpleGroup extends SimpleVertex {
 
 	List<SimpleVertex> m_members = new ArrayList<SimpleVertex>();
 	
+	
+	public SimpleGroup() {}
 	
 	public SimpleGroup(String id) {
 		super(id);
@@ -17,6 +23,7 @@ public class SimpleGroup extends SimpleVertex {
 		return false;
 	}
 	
+	@XmlIDREF
 	public List<SimpleVertex> getMembers() {
 		return m_members;
 	}

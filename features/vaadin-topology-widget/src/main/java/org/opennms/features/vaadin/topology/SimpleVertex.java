@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 
-@XmlRootElement(name="vertex")
 abstract public class SimpleVertex {
 	String m_id;
 	int m_x;
@@ -34,6 +34,7 @@ abstract public class SimpleVertex {
 		m_y = y;
 	}
 	
+	@XmlIDREF
 	public SimpleGroup getParent() {
 		return m_parent;
 	}
