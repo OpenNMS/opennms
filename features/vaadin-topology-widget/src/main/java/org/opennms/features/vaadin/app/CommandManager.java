@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.vaadin.topology.MenuBarBuilder;
+import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.TopologyComponent;
 
 import com.vaadin.event.Action;
@@ -84,6 +85,10 @@ public class CommandManager  implements Action.Handler {
     
     public List<Command> getHistoryList(){
         return m_commandHistoryList;
+    }
+
+    public void updateMenuBar(SimpleGraphContainer graphContainer) {
+        
     }
     
 }

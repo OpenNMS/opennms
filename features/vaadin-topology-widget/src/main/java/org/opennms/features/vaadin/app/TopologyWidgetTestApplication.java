@@ -2,6 +2,8 @@ package org.opennms.features.vaadin.app;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.opennms.features.vaadin.topology.AlternativeLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
@@ -20,6 +22,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
@@ -40,9 +43,34 @@ public class TopologyWidgetTestApplication extends Application{
     private CommandManager m_commandManager = new CommandManager();
     private Tree m_tree;
     private SimpleGraphContainer m_graphContainer = new SimpleGraphContainer();
+    private Timer m_timer = new Timer();
+    private MenuBar m_menuBar;
     
     @Override
     public void init() {
+        //This timer is a hack at the moment to disable and enable menuItems
+        m_timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                List<MenuItem> items = m_menuBar.getItems();
+                for(MenuItem item : items) {
+                    if(item.getText().equals("Device")) {
+                        List<MenuItem> children = item.getChildren();
+                        for(MenuItem child : children) {
+                            if(m_graphContainer.getSelectedVertexIds().size() > 0) {
+                                child.setEnabled(true);
+                            }else {
+                                child.setEnabled(false);
+                            }
+                        }
+                        
+                        
+                    }
+                }
+            }
+        }, 1000, 1000);
+        
         m_commandManager.addCommand(new Command("Redo Layout") {;
 
             @Override
@@ -61,30 +89,6 @@ public class TopologyWidgetTestApplication extends Application{
                 return target == null;
             }
         }, true);
-        
-        m_commandManager.addCommand(new Command("Add Vertex") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	if (vertexId == null) {
-            		addRandomVertex();
-            	} else {
-            		connectNewVertexTo(vertexId.toString(), SERVER_ICON);
-            	}
-            	m_graphContainer.redoLayout();
-            }
-
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
-        }, true, "File");
         
         m_commandManager.addCommand(new Command("Open") {
 
@@ -113,6 +117,30 @@ public class TopologyWidgetTestApplication extends Application{
                 
             }
         }, false, "File");
+        
+        m_commandManager.addCommand(new Command("Add Vertex") {
+
+            @Override
+            public boolean appliesToTarget(Object itemId) {
+            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
+            }
+
+            @Override
+            public void doCommand(Object vertexId) {
+            	if (vertexId == null) {
+            		addRandomVertex();
+            	} else {
+            		connectNewVertexTo(vertexId.toString(), SERVER_ICON);
+            	}
+            	m_graphContainer.redoLayout();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, true, "File");
         
         m_commandManager.addCommand(new Command("Add Switch Vertex") {
 
@@ -281,6 +309,17 @@ public class TopologyWidgetTestApplication extends Application{
         m_commandManager.addCommand(new Command("Get Info") {
 
             @Override
+            public boolean appliesToTarget(Object target) {
+                if(m_graphContainer.getSelectedVertexIds().size() > 0) {
+                    
+                    return true;
+                }else {
+                    return false;
+                }
+                
+            }
+
+            @Override
             public void doCommand(Object target) {
                 getMainWindow().showNotification("This has not been implemented yet");
             }
@@ -389,9 +428,9 @@ public class TopologyWidgetTestApplication extends Application{
         bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
         bottomLayoutBar.setSizeFull();
         
-        MenuBar menuBar = m_commandManager.getMenuBar();
-        menuBar.setWidth("100%");
-        layout.addComponent(menuBar, "top: 0px; left: 0px; right:0px;");
+        m_menuBar = m_commandManager.getMenuBar();
+        m_menuBar.setWidth("100%");
+        layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
         layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
         
     }
