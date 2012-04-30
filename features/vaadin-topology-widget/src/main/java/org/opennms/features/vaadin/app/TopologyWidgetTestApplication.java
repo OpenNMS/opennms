@@ -15,12 +15,12 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Slider;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -85,6 +85,34 @@ public class TopologyWidgetTestApplication extends Application{
                 
             }
         }, true, "File");
+        
+        m_commandManager.addCommand(new Command("Open") {
+
+            @Override
+            public void doCommand(Object target) {
+                m_graphContainer.load();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, false, "File");
+        
+        m_commandManager.addCommand(new Command("Save") {
+
+            @Override
+            public void doCommand(Object target) {
+                m_graphContainer.save();
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, false, "File");
         
         m_commandManager.addCommand(new Command("Add Switch Vertex") {
 
@@ -232,7 +260,36 @@ public class TopologyWidgetTestApplication extends Application{
             public void undoCommand() {
                 // TODO Auto-generated method stub
                 
-            }}, false, null);
+            }
+        }, false, null);
+        
+        m_commandManager.addCommand(new Command("Show Map") {
+
+            @Override
+            public void doCommand(Object target) {
+                getMainWindow().showNotification("This has not been implemented yet");
+                
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, false, "View");
+        
+        m_commandManager.addCommand(new Command("Get Info") {
+
+            @Override
+            public void doCommand(Object target) {
+                getMainWindow().showNotification("This has not been implemented yet");
+            }
+
+            @Override
+            public void undoCommand() {
+                
+            }
+        }, false, "Device");
         
         
         AbsoluteLayout layout = new AbsoluteLayout();
