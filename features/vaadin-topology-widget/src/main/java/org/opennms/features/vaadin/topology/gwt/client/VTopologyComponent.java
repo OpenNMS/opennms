@@ -174,7 +174,21 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             
             //Exits
             edgeSelection.exit().with(exitTransition()).remove();
-            vertexSelection.exit().with(exitTransition()).remove();
+            vertexSelection.exit().with(new D3Behavior() {
+
+				@Override
+				public D3 run(D3 selection) {
+					return selection.transition().delay(0).duration(500);
+				}
+			}).attr("transform", new Func<String, GWTVertex>(){
+
+				public String call(GWTVertex vertex, int index) {
+					GWTVertex displayVertex = vertex.getDisplayVertex(m_semanticZoomLevel);
+					
+					return "translate(" + displayVertex.getX() + "," +  displayVertex.getY() + ")";
+				}
+				
+			}).attr("opacity", 0).remove();
             
             
             //Updates
