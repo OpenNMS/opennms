@@ -96,4 +96,5 @@ public class Vertex implements Paintable {
 	public void setGroupKey(String groupKey) {
 		m_groupKey = groupKey;
 	}
+
 }

@@ -1,7 +1,9 @@
 package org.opennms.features.vaadin.topology.gwt.client;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -117,9 +119,15 @@ public final class GWTGraph extends JavaScriptObject {
 		JsArray<GWTVertex> vertices = getVertices();
 		JsArray<GWTVertex> visible = JsArray.createArray().cast();
 		
+		Set<GWTVertex> vSet = new LinkedHashSet<GWTVertex>();
 		for(int i = 0; i < vertices.length(); i++){
 			GWTVertex v = vertices.get(i);
-			visible.push(v.getDisplayVertex(semanticZoomLevel));
+			vSet.add(v.getDisplayVertex(semanticZoomLevel));
+			
+		}
+		
+		for(GWTVertex v : vSet) {
+			visible.push(v);
 		}
 		
 		return visible;

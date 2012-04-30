@@ -141,5 +141,14 @@ abstract public class SimpleVertex {
 				: m_parent.getSemanticZoomLevel() + 1;
 	}
 	
+	public SimpleVertex getDisplayVertex(int semanticZoomLevel) {
+		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
+			return this;
+		}else {
+			return getParent().getDisplayVertex(semanticZoomLevel);
+		}
+
+	}
+	
 	
 }

@@ -161,6 +161,17 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             
             D3 vertexSelection = getVertexSelection(graph);
             
+            vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers())
+            	.attr("transform", new Func<String, GWTVertex>() {
+
+					public String call(GWTVertex vertex, int index) {
+						GWTVertex displayVertex = vertex.getDisplayVertex(m_oldSemanticZoomLevel);
+						
+						return "translate(" + displayVertex.getX() + "," +  displayVertex.getY() + ")";
+					}
+            		
+				}).attr("opacity", 1);
+            
             //Exits
             edgeSelection.exit().with(exitTransition()).remove();
             vertexSelection.exit().with(exitTransition()).remove();
@@ -175,7 +186,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             //Enters
             edgeSelection.enter().create(GWTEdge.create()).with(enterTransition());
             
-            vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition());
+            //vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition());
 
         }
 
@@ -364,6 +375,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     protected PanObject m_panObject;
     private List<Element> m_selectedElements = new ArrayList<Element>();
 	private int m_semanticZoomLevel;
+	private int m_oldSemanticZoomLevel;
     
     public VTopologyComponent() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -696,6 +708,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     }
     
     private void setSemanticZoomLevel(int level) {
+    	m_oldSemanticZoomLevel = m_semanticZoomLevel;
 		m_semanticZoomLevel = level;
 	}
 

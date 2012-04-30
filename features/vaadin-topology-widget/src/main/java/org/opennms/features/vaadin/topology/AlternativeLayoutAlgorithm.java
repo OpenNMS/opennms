@@ -25,9 +25,11 @@ public class AlternativeLayoutAlgorithm implements LayoutAlgorithm {
 
 		public void doLayout() {
 			
+			int szl = m_graph.getSemanticZoomLevel();
+			
 			Set<Vertex> included = new LinkedHashSet<Vertex>();
 			
-			List<Vertex> vertices = m_graph.getVertices();
+			List<Vertex> vertices = m_graph.getVertices(szl);
 			if (vertices.size() < 1) return;
 
 			Vertex initialVertex = vertices.get(0);
@@ -90,7 +92,7 @@ public class AlternativeLayoutAlgorithm implements LayoutAlgorithm {
 
 		public Set<Vertex> getNeighbors(Graph graph, Vertex vertex){
 	        Set<Vertex> neighbors = new HashSet<Vertex>();
-	        List<Edge> edges = graph.getEdgesForVertex(vertex);
+	        List<Edge> edges = graph.getEdgesForVertex(vertex, graph.getSemanticZoomLevel());
 	        for(Edge edge : edges) {
 	            if(edge.getSource() != vertex ) {
 	                neighbors.add(edge.getSource());

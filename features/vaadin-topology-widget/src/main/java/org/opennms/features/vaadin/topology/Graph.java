@@ -6,10 +6,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.vaadin.topology.gwt.client.GWTEdge;
+import org.opennms.features.vaadin.topology.gwt.client.GWTVertex;
+
+import com.google.gwt.core.client.JsArray;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.KeyMapper;
@@ -120,6 +125,10 @@ public class Graph{
 		
 	}
 	
+	public int getSemanticZoomLevel() {
+		return m_dataSource.getSemanticZoomLevel();
+	}
+	
 	public void setDataSource(GraphContainer dataSource) {
 		if(dataSource == m_dataSource) {
 			return;
@@ -182,6 +191,19 @@ public class Graph{
 		return m_vertexHolder.getElements();
 	}
 	
+	public List<Vertex> getLeafVertices(){
+		List<Vertex> elements = m_vertexHolder.getElements();
+		List<Vertex> leaves = new ArrayList<Vertex>(elements.size());
+		
+		for(Vertex v : elements) {
+			if (v.isLeaf()) {
+				leaves.add(v);
+			}
+		}
+		
+		return leaves;
+	}
+	
 	public List<Edge> getEdges(){
 		return m_edgeHolder.getElements();
 	}
@@ -192,6 +214,49 @@ public class Graph{
 	
 	public List<Edge> getEdgesForVertex(Vertex vertex){
 		return m_edgeHolder.getElementsByItemIds(m_dataSource.getEdgeIdsForVertex(vertex.getItemId()));
+	}
+
+	public List<Edge> getEdgesForVertex(Vertex vertex, int semanticZoomLevel){
+		List<Edge> edges = getEdgesForVertex(vertex);
+		List<Edge> visible = new LinkedList<Edge>();
+		
+		for(Edge edge : edges) {
+			Vertex source = edge.getSource();
+			Vertex target = edge.getTarget();
+			Vertex displaySource = getDisplayVertex(source, semanticZoomLevel);
+			Vertex displayTarget = getDisplayVertex(target, semanticZoomLevel);
+			
+			if(displaySource == displayTarget) {
+				//skip this one
+			}else if(displaySource == source && displayTarget == target) {
+				visible.add(edge);
+			}else {
+				Edge displayEdge = new Edge("bogus", null, null, displaySource, displayTarget);
+				visible.add(displayEdge);
+			}
+		}
+		
+		return visible;
+	}
+
+	public List<Vertex> getVertices(int semanticZoomLevel) {
+		List<Vertex> vertices = getLeafVertices();
+		Set<Vertex> visible = new LinkedHashSet<Vertex>();
+		
+		for(Vertex vertex : vertices) {
+			visible.add(getDisplayVertex(vertex, semanticZoomLevel));
+		}
+		
+		return new ArrayList<Vertex>(visible);
+	}
+
+	private Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
+		if(vertex.getGroupId() == null || vertex.getSemanticZoomLevel() <= semanticZoomLevel) {
+			return vertex;
+		}else {
+			Vertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());
+			return getDisplayVertex(group, semanticZoomLevel);
+		}
 	}
 	
 }

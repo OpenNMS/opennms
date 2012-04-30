@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.vaadin.topology.gwt.client.GWTEdge;
+import org.opennms.features.vaadin.topology.gwt.client.GWTVertex;
+
 @XmlRootElement(name="edge")
 public class SimpleEdge {
 	String m_id;
@@ -78,5 +81,5 @@ public class SimpleEdge {
 			return false;
 		return true;
 	}
-	
+		
 }
