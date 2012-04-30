@@ -12,10 +12,10 @@ import org.opennms.features.vaadin.topology.GraphContainer;
 import org.opennms.features.vaadin.topology.LayoutAlgorithm;
 import org.opennms.features.vaadin.topology.Vertex;
 
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class SpringLayoutAlgorithm implements LayoutAlgorithm {
+public class ISOMLayoutAlgorithm implements LayoutAlgorithm {
 
 	@Override
 	public void updateLayout(GraphContainer graph) {
@@ -41,8 +41,7 @@ public class SpringLayoutAlgorithm implements LayoutAlgorithm {
 		}
 		
 
-		
-		SpringLayout<Vertex, Edge> layout = new SpringLayout<Vertex, Edge>(jungGraph);
+		ISOMLayout<Vertex, Edge> layout = new ISOMLayout<Vertex, Edge>(jungGraph);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
 			@Override
 			public Point2D transform(Vertex v) {
@@ -50,12 +49,9 @@ public class SpringLayoutAlgorithm implements LayoutAlgorithm {
 			}
 		});
 		layout.setSize(new Dimension(750,750));
-		layout.setRepulsionRange(250);
 		
-		int count = 0;
-		while(!layout.done() && count < 700) {
+		while(!layout.done()) {
 			layout.step();
-			count++;
 		}
 		
 		

@@ -11,6 +11,9 @@ import org.opennms.features.vaadin.topology.ManualLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
+import org.opennms.features.vaadin.topology.jung.FRLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.jung.ISOMLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.jung.KKLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.jung.SpringLayoutAlgorithm;
 
 import com.vaadin.Application;
@@ -304,6 +307,64 @@ public class TopologyWidgetTestApplication extends Application{
         }, false, "Edit|Layout");
 
         
+        m_commandManager.addCommand(new Command("KK Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
+			}
+
+			@Override
+			public void undoCommand() {
+				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
+			}
+        	
+        }, false, "Edit|Layout");
+
+        m_commandManager.addCommand(new Command("ISOM Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new ISOMLayoutAlgorithm());
+			}
+
+			@Override
+			public void undoCommand() {
+				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
+			}
+        	
+        }, false, "Edit|Layout");
+
+        m_commandManager.addCommand(new Command("FR Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+			}
+
+			@Override
+			public void undoCommand() {
+				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
+			}
+        	
+        }, false, "Edit|Layout");
+
+        
         m_commandManager.addCommand(new Command("Other Layout") {
 
 			@Override
@@ -404,7 +465,7 @@ public class TopologyWidgetTestApplication extends Application{
         m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
         m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
         m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
-        m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
+        m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
         
         
         m_topologyComponent = new TopologyComponent(m_graphContainer);
@@ -445,7 +506,7 @@ public class TopologyWidgetTestApplication extends Application{
 				int szl = (Integer) zoomLevel.getValue();
 				szl++;
 				zoomLevel.setValue(szl);
-				m_topologyComponent.requestRepaint();
+				m_graphContainer.redoLayout();
 			}
 		});
         
@@ -456,7 +517,7 @@ public class TopologyWidgetTestApplication extends Application{
 				int szl = (Integer) zoomLevel.getValue();
 				szl--;
 				zoomLevel.setValue(szl);
-				m_topologyComponent.requestRepaint();
+				m_graphContainer.redoLayout();
 			}
 		});
         
