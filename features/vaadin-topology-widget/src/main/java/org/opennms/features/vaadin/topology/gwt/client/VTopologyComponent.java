@@ -657,7 +657,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         		if(child.hasAttribute("groupKey")) {
         			String groupKey = child.getStringAttribute("groupKey");
         			GWTGroup group = graphConverted.getGroup(groupKey);
-        			vertex.setGroup(group);
+        			vertex.setParent(group);
         		}
         		
 				vertex.setSelected(booleanAttribute);

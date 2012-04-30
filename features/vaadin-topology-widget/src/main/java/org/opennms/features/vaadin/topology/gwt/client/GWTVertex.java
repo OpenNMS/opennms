@@ -32,7 +32,7 @@ public class GWTVertex extends JavaScriptObject {
         return this.selected;
     }-*/;
     
-    public static final native GWTVertex create(String id, int x, int y) /*-{
+    public static native GWTVertex create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
     }-*/;
 
@@ -44,17 +44,17 @@ public class GWTVertex extends JavaScriptObject {
         this.y = newY;
     }-*/;
     
-    private final native JsArrayString actionKeys() /*-{
+    public final native JsArrayString actionKeys() /*-{
     	return this.actions;
     }-*/;
     
-    private final native JsArrayString actionKeys(JsArrayString keys) /*-{
+    public final native JsArrayString actionKeys(JsArrayString keys) /*-{
     	this.actions = keys;
     	return this.actions;
     }-*/;
     
-    public String getTooltipText() {
-        return "id: " + getId() + " SZL: " + getSemanticZoomLevel() + "Group: " + (getGroup() == null ? "null" : getGroup().getId());
+    public final String getTooltipText() {
+        return "id: " + getId() + " SZL: " + getSemanticZoomLevel() + " Group: " + (getParent() == null ? "null" : getParent().getId());
     }
     
     
@@ -62,7 +62,7 @@ public class GWTVertex extends JavaScriptObject {
 		return this.semanticZoomLevel;
 	}-*/;
 
-	public void setActionKeys(String[] keys) {
+	public final void setActionKeys(String[] keys) {
     	JsArrayString actionKeys = actionKeys(newStringArray());
     	for(String key : keys) {
     		actionKeys.push(key);
@@ -73,7 +73,7 @@ public class GWTVertex extends JavaScriptObject {
 		return JsArrayString.createArray().<JsArrayString>cast();
 	}
     
-    public String[] getActionKeys() {
+    public final String[] getActionKeys() {
     	JsArrayString actionKeys = actionKeys();
     	String[] keys = new String[actionKeys.length()];
     	for(int i = 0; i < keys.length; i++) {
@@ -167,16 +167,26 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
-	public final native void setGroup(GWTGroup group) /*-{
+	public final native void setParent(GWTGroup group) /*-{
 		this.group = group;
 	}-*/;
 	
-	public final native GWTGroup getGroup() /*-{
+	public final native GWTGroup getParent() /*-{
 		return this.group;
 	}-*/;
 
 	public final native void setSemanticZoomLevel(int semanticZoomLevel) /*-{
 		this.semanticZoomLevel = semanticZoomLevel;
 	}-*/;
+
+	public final GWTVertex getDisplayVertex(int semanticZoomLevel) {
+		
+		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
+			return this;
+		}else {
+			return getParent().getDisplayVertex(semanticZoomLevel);
+		}
+		
+	}
 
 }

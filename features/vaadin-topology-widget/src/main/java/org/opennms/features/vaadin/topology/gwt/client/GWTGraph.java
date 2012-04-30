@@ -119,16 +119,7 @@ public final class GWTGraph extends JavaScriptObject {
 		
 		for(int i = 0; i < vertices.length(); i++){
 			GWTVertex v = vertices.get(i);
-			if(v.getGroup() == null || v.getSemanticZoomLevel() <= semanticZoomLevel) {
-				visible.push(v);
-			}else {
-				GWTGroup parent = v.getGroup();
-				if(parent.getSemanticZoomLevel() <= semanticZoomLevel) {
-					GWTVertex groupVert = GWTVertex.create(parent.getId(), parent.getX(), parent.getY());
-					groupVert.setIcon(parent.getIconUrl());
-					visible.push(groupVert);
-				}
-			}
+			visible.push(v.getDisplayVertex(semanticZoomLevel));
 		}
 		
 		return visible;
@@ -138,7 +129,23 @@ public final class GWTGraph extends JavaScriptObject {
 		JsArray<GWTEdge> visible = JsArray.createArray().cast();
 		JsArray<GWTEdge> edges = getEdges();
 		
+		for(int i = 0; i < edges.length(); i++) {
+			GWTEdge edge = edges.get(i);
+			GWTVertex source = edge.getSource();
+			GWTVertex target = edge.getTarget();
+			GWTVertex displaySource = source.getDisplayVertex(semanticZoomLevel);
+			GWTVertex displayTarget = target.getDisplayVertex(semanticZoomLevel);
+			
+			if(displaySource == displayTarget) {
+				//skip this one
+			}else if(displaySource == source && displayTarget == target) {
+				visible.push(edge);
+			}else {
+				GWTEdge displayEdge = GWTEdge.create(displaySource, displayTarget);
+				visible.push(displayEdge);
+			}
+		}
 		
-		return getEdges();
+		return visible;
 	}
 }
