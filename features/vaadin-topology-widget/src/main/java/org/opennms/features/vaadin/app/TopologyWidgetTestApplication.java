@@ -60,9 +60,14 @@ public class TopologyWidgetTestApplication extends Application{
                         List<MenuItem> children = item.getChildren();
                         for(MenuItem child : children) {
                             if(m_graphContainer.getSelectedVertexIds().size() > 0) {
-                                child.setEnabled(true);
+                                if(!child.isEnabled()) {
+                                    child.setEnabled(true);
+                                }
                             }else {
-                                child.setEnabled(false);
+                                if(child.isEnabled()) {
+                                    child.setEnabled(false);
+                                }
+                                
                             }
                         }
                         
@@ -329,14 +334,8 @@ public class TopologyWidgetTestApplication extends Application{
         m_commandManager.addCommand(new Command("Get Info") {
 
             @Override
-            public boolean appliesToTarget(Object target) {
-                if(m_graphContainer.getSelectedVertexIds().size() > 0) {
-                    
-                    return true;
-                }else {
-                    return false;
-                }
-                
+            public boolean appliesToTarget(Object itemId) {
+                return itemId == null || m_graphContainer.getEdgeContainer().containsId(itemId);
             }
 
             @Override
@@ -348,7 +347,7 @@ public class TopologyWidgetTestApplication extends Application{
             public void undoCommand() {
                 
             }
-        }, false, "Device");
+        }, true, "Device");
         
         
         AbsoluteLayout layout = new AbsoluteLayout();

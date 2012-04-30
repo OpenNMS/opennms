@@ -117,7 +117,7 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.append("line").attr("opacity", 0).style("stroke", "#ccc")
+                return selection.append("line").attr("opacity", 0).style("stroke", "#ccc").style("cursor", "pointer")
                         .call(draw());
             }
         };
