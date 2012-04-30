@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.vaadin.topology.AlternativeLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.ManualLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
@@ -189,6 +190,25 @@ public class TopologyWidgetTestApplication extends Application{
             
         }, true, "Edit");
         
+        m_commandManager.addCommand(new Command("Manual Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new ManualLayoutAlgorithm());
+			}
+
+			@Override
+			public void undoCommand() {
+				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
+			}
+        	
+        }, false, "Edit|Layout");
+
         m_commandManager.addCommand(new Command("Simple Layout") {
 
 			@Override
