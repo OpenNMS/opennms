@@ -1,5 +1,6 @@
 package org.opennms.features.vaadin.app;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -10,6 +11,7 @@ import org.opennms.features.vaadin.topology.ManualLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
+import org.opennms.features.vaadin.topology.jung.SpringLayoutAlgorithm;
 
 import com.vaadin.Application;
 import com.vaadin.data.Property;
@@ -197,6 +199,27 @@ public class TopologyWidgetTestApplication extends Application{
             
         }, true, "File");
         
+        m_commandManager.addCommand(new Command("Connect") {
+
+            @Override
+            public boolean appliesToTarget(Object itemId) {
+            	return m_graphContainer.getSelectedVertexIds().size() == 2;
+            }
+
+            @Override
+            public void doCommand(Object unused) {
+            	List<Object> endPoints = new ArrayList<Object>(m_graphContainer.getSelectedVertexIds());
+            	
+            	m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), (String)endPoints.get(0), (String)endPoints.get(1));
+            }
+
+            @Override
+            public void undoCommand() {
+                // TODO Auto-generated method stub
+                
+            }
+            
+        }, true, "File");
         m_commandManager.addCommand(new Command("Create Group") {
 
             @Override
@@ -260,6 +283,27 @@ public class TopologyWidgetTestApplication extends Application{
 			}
         	
         }, false, "Edit|Layout");
+
+        m_commandManager.addCommand(new Command("Spring Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new SpringLayoutAlgorithm());
+			}
+
+			@Override
+			public void undoCommand() {
+				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
+			}
+        	
+        }, false, "Edit|Layout");
+
+        
         m_commandManager.addCommand(new Command("Other Layout") {
 
 			@Override

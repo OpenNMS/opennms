@@ -258,5 +258,29 @@ public class Graph{
 			return getDisplayVertex(group, semanticZoomLevel);
 		}
 	}
+
+	public List<Edge> getEdges(int semanticZoomLevel) {
+		List<Edge> visible = new ArrayList<Edge>();
+		List<Edge> edges = getEdges();
+		
+		for(Edge edge : edges) {
+			Vertex source = edge.getSource();
+			Vertex target = edge.getTarget();
+			Vertex displaySource = getDisplayVertex(source, semanticZoomLevel);
+			Vertex displayTarget = getDisplayVertex(target, semanticZoomLevel);
+			
+			if(displaySource == displayTarget) {
+				//skip this one
+			}else if(displaySource == source && displayTarget == target) {
+				visible.add(edge);
+			}else {
+				
+				Edge displayEdge = new Edge("bogus", null, null, displaySource, displayTarget);
+				visible.add(displayEdge);
+			}
+		}
+		
+		return visible;
+	}
 	
 }
