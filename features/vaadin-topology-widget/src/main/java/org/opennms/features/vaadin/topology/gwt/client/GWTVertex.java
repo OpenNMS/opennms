@@ -8,7 +8,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
-public final class GWTVertex extends JavaScriptObject {
+public class GWTVertex extends JavaScriptObject {
 
     protected GWTVertex() {};
     
@@ -33,7 +33,7 @@ public final class GWTVertex extends JavaScriptObject {
     }-*/;
     
     public static final native GWTVertex create(String id, int x, int y) /*-{
-        return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":""};
+        return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
     }-*/;
 
     public final native void setX(int newX) /*-{
@@ -54,11 +54,11 @@ public final class GWTVertex extends JavaScriptObject {
     }-*/;
     
     public String getTooltipText() {
-        return "id: " + getId() + " SZL: " + getSemanticZoomLevel();
+        return "id: " + getId() + " SZL: " + getSemanticZoomLevel() + "Group: " + (getGroup() == null ? "null" : getGroup().getId());
     }
     
     
-    private final native int getSemanticZoomLevel() /*-{
+    public final native int getSemanticZoomLevel() /*-{
 		return this.semanticZoomLevel;
 	}-*/;
 

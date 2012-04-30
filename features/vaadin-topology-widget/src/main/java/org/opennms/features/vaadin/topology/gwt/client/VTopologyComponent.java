@@ -217,7 +217,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         private D3 getVertexSelection(GWTGraph graph) {
             return getVertexGroup().selectAll(".little")
-                    .data(graph.getVertices(), new Func<String, GWTVertex>() {
+                    .data(graph.getVertices(m_semanticZoomLevel), new Func<String, GWTVertex>() {
         
         				public String call(GWTVertex param, int index) {
         					return "" + param.getId();
@@ -228,7 +228,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
         private D3 getEdgeSelection(GWTGraph graph) {
             return getEdgeGroup().selectAll("line")
-                    .data(graph.getEdges(), new Func<String, GWTEdge>() {
+                    .data(graph.getEdges(m_semanticZoomLevel), new Func<String, GWTEdge>() {
         
         				public String call(GWTEdge edge, int index) {
         					String edgeId = edge.getId();
@@ -606,6 +606,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
    
     
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+    	
+    	consoleLog("Enter updateFromUIDL");
         
         if(client.updateComponent(this, uidl, true)) {
             return;
@@ -690,6 +692,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         setGraph(graphConverted);
         
+    	consoleLog("Exit updateFromUIDL");
     }
     
     private void setSemanticZoomLevel(int level) {

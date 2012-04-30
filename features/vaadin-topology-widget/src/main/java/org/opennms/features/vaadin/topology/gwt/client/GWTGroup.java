@@ -33,7 +33,7 @@ public final class GWTGroup extends JavaScriptObject {
     }-*/;
     
     public static final native GWTGroup create(String id, int x, int y) /*-{
-        return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":""};
+        return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0};
     }-*/;
 
     public final native void setX(int newX) /*-{
@@ -58,7 +58,7 @@ public final class GWTGroup extends JavaScriptObject {
     }
     
     
-    private final native int getSemanticZoomLevel() /*-{
+    public final native int getSemanticZoomLevel() /*-{
 		return this.semanticZoomLevel;
 	}-*/;
 

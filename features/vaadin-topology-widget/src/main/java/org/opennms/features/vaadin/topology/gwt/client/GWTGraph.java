@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.user.client.Window;
 
 public final class GWTGraph extends JavaScriptObject {
     
@@ -108,8 +109,36 @@ public final class GWTGraph extends JavaScriptObject {
     }
 
 	public final native GWTGroup getGroup(String groupKey) /*-{
-		return this.idToGMap[id];
+		return this.idToGMap[groupKey];
 	}-*/;
 
-	
+
+	public JsArray<GWTVertex> getVertices(int semanticZoomLevel){
+		JsArray<GWTVertex> vertices = getVertices();
+		JsArray<GWTVertex> visible = JsArray.createArray().cast();
+		
+		for(int i = 0; i < vertices.length(); i++){
+			GWTVertex v = vertices.get(i);
+			if(v.getGroup() == null || v.getSemanticZoomLevel() <= semanticZoomLevel) {
+				visible.push(v);
+			}else {
+				GWTGroup parent = v.getGroup();
+				if(parent.getSemanticZoomLevel() <= semanticZoomLevel) {
+					GWTVertex groupVert = GWTVertex.create(parent.getId(), parent.getX(), parent.getY());
+					groupVert.setIcon(parent.getIconUrl());
+					visible.push(groupVert);
+				}
+			}
+		}
+		
+		return visible;
+	}
+
+	public JsArray<GWTEdge> getEdges(int semanticZoomLevel) {
+		JsArray<GWTEdge> visible = JsArray.createArray().cast();
+		JsArray<GWTEdge> edges = getEdges();
+		
+		
+		return getEdges();
+	}
 }

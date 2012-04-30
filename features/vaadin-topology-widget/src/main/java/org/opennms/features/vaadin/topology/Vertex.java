@@ -88,4 +88,12 @@ public class Vertex implements Paintable {
 	public int getSemanticZoomLevel() {
 		return (Integer) m_item.getItemProperty("semanticZoomLevel").getValue();
 	}
+
+	public void setGroupId(Object groupId) {
+		m_groupId = groupId;
+	}
+
+	public void setGroupKey(String groupKey) {
+		m_groupKey = groupKey;
+	}
 }

@@ -244,6 +244,7 @@ public class TopologyWidgetTestApplication extends Application{
         
         m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
         m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
+        m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
         m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         
         
@@ -284,9 +285,8 @@ public class TopologyWidgetTestApplication extends Application{
 			public void buttonClick(ClickEvent event) {
 				int szl = (Integer) zoomLevel.getValue();
 				szl++;
-				System.err.println("zoomIn: Setting szl to " + szl);
 				zoomLevel.setValue(szl);
-				
+				m_topologyComponent.requestRepaint();
 			}
 		});
         
@@ -296,9 +296,8 @@ public class TopologyWidgetTestApplication extends Application{
 			public void buttonClick(ClickEvent event) {
 				int szl = (Integer) zoomLevel.getValue();
 				szl--;
-				System.err.println("zoomOut: Setting szl to " + szl);
 				zoomLevel.setValue(szl);
-				
+				m_topologyComponent.requestRepaint();
 			}
 		});
         

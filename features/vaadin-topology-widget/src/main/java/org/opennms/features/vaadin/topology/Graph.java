@@ -130,9 +130,20 @@ public class Graph{
 		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer()) {
 
 			@Override
+			protected Vertex update(Vertex element) {
+				Object groupId = m_dataSource.getVertexContainer().getParent(element.getItemId());
+				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
+				
+				element.setGroupId(groupId);
+				element.setGroupKey(groupKey);
+				return element;
+			}
+
+			@Override
 			protected Vertex make(String key, Object itemId, Item item) {
 				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
+				System.out.println("Parent of itemId: " + itemId + " groupId: " + groupId);
 				return new Vertex(key, itemId, item, groupKey, groupId);
 			}
 
