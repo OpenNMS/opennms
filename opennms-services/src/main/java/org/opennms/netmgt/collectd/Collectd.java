@@ -998,7 +998,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
+            final ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
                 cSvc = liter.next();
 
