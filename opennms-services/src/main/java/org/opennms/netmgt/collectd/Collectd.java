@@ -758,7 +758,7 @@ public class Collectd extends AbstractServiceDaemon implements
             } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
                 handleReloadDaemonConfig(event);
             } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
-                handleNodeCategoryMembershipChanged(event);
+            	handleNodeCategoryMembershipChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -1023,7 +1023,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         Long nodeId = event.getNodeid();
 
-        unscheduleNode(nodeId);
+        unscheduleNodeAndMarkForDeletion(nodeId);
 
         if (log.isDebugEnabled())
             log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid "
@@ -1037,31 +1037,29 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleNodeCategoryMembershipChanged(Event event)
-            throws InsufficientInformationException {
+    private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         
         ThreadCategory log = log();
 
         Long nodeId = event.getNodeid();
 
-        unscheduleNode(nodeId);
+        unscheduleNodeAndMarkForDeletion(nodeId);
 
         if (log.isDebugEnabled()) {
             log.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
         }
         
-        scheduleNode(nodeId.intValue(), false);
+        scheduleNode(nodeId.intValue(), true);
         
     }
     
-    
-	private void unscheduleNode(Long nodeId) {
+	private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
 		// Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
+            final ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
                 cSvc = liter.next();
 
