@@ -834,7 +834,7 @@ pushd "$RPM_INSTALL_PREFIX0/etc"
 	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -o "$RPM_INSTALL_PREFIX0" -f "$UPGRADE_FROM_VERSION" -t "$UPGRADE_TO_VERSION" || exit 161
 	echo "upgrade pre: git branch -D opennms-git-config-work"
 	git branch -D opennms-git-config-work || :
-	echo "upgrade pre: git branch opennms-git-config-work opennms-git-config-pristine-$UPGRADE_TO_VERSION"
+	echo "upgrade pre: git branch opennms-git-config-work opennms-git-config-pristine-$UPGRADE_FROM_VERSION"
 	git branch opennms-git-config-work "opennms-git-config-pristine-$UPGRADE_TO_VERSION" || exit 162
 popd
 
@@ -871,7 +871,7 @@ done
 %post core
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -982,7 +982,7 @@ fi
 %post remote-poller
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -996,7 +996,7 @@ fi
 %post webapp-jetty
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1010,7 +1010,7 @@ fi
 %post ncs
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1024,7 +1024,7 @@ fi
 %post plugin-provisioning-dns
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1038,7 +1038,7 @@ fi
 %post plugin-provisioning-link
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1052,7 +1052,7 @@ fi
 %post plugin-provisioning-map
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1066,7 +1066,7 @@ fi
 %post plugin-provisioning-rancid
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1080,7 +1080,7 @@ fi
 %post plugin-provisioning-snmp-asset
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1094,7 +1094,7 @@ fi
 %post plugin-protocol-dhcp
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1108,7 +1108,7 @@ fi
 %post plugin-protocol-nsclient
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1122,7 +1122,7 @@ fi
 %post plugin-protocol-radius
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1136,7 +1136,7 @@ fi
 %post plugin-protocol-xml
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1150,7 +1150,7 @@ fi
 %post plugin-protocol-xmp
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
 
@@ -1164,6 +1164,6 @@ fi
 %post plugin-collector-juniper-tca
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
 	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
+		git checkout -f opennms-git-config-local || exit 199
 	popd
 fi
