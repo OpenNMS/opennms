@@ -565,7 +565,7 @@ public class ThresholdController extends AbstractController implements Initializ
             event.setUei(uei);
             event.setEventLabel("User-defined threshold event "+uei);
             event.setDescr("Threshold "+typeDesc+" for %service% datasource " +
-                        "%parm[ds]% on interface %interface%, parms: %parm[all]");
+                        "%parm[ds]% on interface %interface%, parms: %parm[all]%");
             Logmsg logmsg=new Logmsg();
             logmsg.setDest("logndisplay");
             logmsg.setContent("Threshold "+typeDesc+" for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");

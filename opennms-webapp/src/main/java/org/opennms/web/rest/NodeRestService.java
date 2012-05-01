@@ -172,7 +172,7 @@ public class NodeRestService extends OnmsRestService {
             LogUtils.debugf(this, "addNode: Adding node %s", node);
             m_nodeDao.save(node);
             try {
-                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId());
+                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
@@ -236,7 +236,7 @@ public class NodeRestService extends OnmsRestService {
             LogUtils.debugf(this, "deleteNode: deleting node %s", nodeCriteria);
             m_nodeDao.delete(node);
             try {
-                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
+                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
@@ -286,9 +286,10 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(AssetRecordResource.class);
     }
     
-    private void sendEvent(final String uei, final int nodeId) throws EventProxyException {
+    private void sendEvent(final String uei, final int nodeId, String nodeLabel) throws EventProxyException {
         final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
         bldr.setNodeid(nodeId);
+        bldr.addParam("nodelabel", nodeLabel);
         m_eventProxy.send(bldr.getEvent());
     }
     
