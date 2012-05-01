@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.sms.monitor.MobileSequenceSession;
 import org.opennms.sms.monitor.TestMessenger;
@@ -125,7 +126,9 @@ public class MobileMsgAsyncTest {
         m_tracker = new MobileMsgTrackerImpl("test", m_messenger);
         m_tracker.start();
         
-        m_coordinator = new DefaultTaskCoordinator("MobileMsgAsyncTest", Executors.newSingleThreadExecutor());
+        m_coordinator = new DefaultTaskCoordinator("MobileMsgAsyncTest", Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory("MobileMsgAsyncTest", 1, false)
+        ));
 
         System.err.println("=== STARTING TEST ===");
     }
