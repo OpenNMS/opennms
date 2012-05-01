@@ -142,24 +142,23 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     0L,
                     TimeUnit.MILLISECONDS,
                     handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(handlerQueueLength),
-                    new LogPreservingThreadFactory(m_listener.getName(), 1, false),
-					new RejectedExecutionHandler() {
-						
-						@Override
-						public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-							log().warn("Listener " + m_listener.getName() + "'s event queue is full, discarding event");
-						}
-					}
-                );
+                    // This ThreadFactory will ensure that the log prefix of the calling thread
+                    // is used for all events that this listener handles. Therefore, if Notifd
+                    // registers for an event then all logs for handling that event will end up
+                    // inside notifd.log.
+                    new LogPreservingThreadFactory(m_listener.getName(), 1, true),
+                    new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            log().warn("Listener " + m_listener.getName() + "'s event queue is full, discarding event");
+                        }
+                    }
+            );
         }
 
         public void addEvent(final Event event) {
             m_delegateThread.execute(new Runnable() {
                 public void run() {
-                    if (log().isDebugEnabled()) {
-                        log().debug("In ListenerThread " + m_listener.getName() + " run");
-                    }
-
                     try {
                         if (log().isInfoEnabled()) {
                             log().info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
