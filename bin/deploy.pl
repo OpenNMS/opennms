@@ -27,12 +27,12 @@ if ($hostname eq "repo.opennms.org") {
 
 my @command = ($MVN, '-Dmaven.test.skip.exec=true', '-DrepositoryLayout=legacy', @ARGS, 'deploy');
 info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
+handle_errors_and_exit_on_failure(run_command('opennms-deploy.log', @command));
 
 chdir($PREFIX . '/opennms-assemblies');
 @command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', '-DrepositoryLayout=legacy', @ARGS, 'deploy');
 info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
+handle_errors_and_exit_on_failure(run_command('assemblies-deploy.log', @command));
 
 clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
