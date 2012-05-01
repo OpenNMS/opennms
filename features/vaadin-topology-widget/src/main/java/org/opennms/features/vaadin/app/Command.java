@@ -24,7 +24,7 @@ public abstract class Command extends Action implements MenuBar.Command {
     
     public abstract void doCommand(Object target);
 	
-	public abstract void undoCommand();
+	public void undoCommand() {}
 	
     public String getMenuPosition() {
         return !m_menu ? null : m_parentMenu == null ? getCaption() : m_parentMenu + "|" + getCaption();

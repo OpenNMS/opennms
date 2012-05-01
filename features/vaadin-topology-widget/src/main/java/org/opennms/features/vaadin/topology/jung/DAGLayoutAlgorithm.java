@@ -12,15 +12,22 @@ import org.opennms.features.vaadin.topology.GraphContainer;
 import org.opennms.features.vaadin.topology.LayoutAlgorithm;
 import org.opennms.features.vaadin.topology.Vertex;
 
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class KKLayoutAlgorithm implements LayoutAlgorithm {
+public class DAGLayoutAlgorithm implements LayoutAlgorithm {
+	
+	public Object m_rootItemId;
+	
+	public DAGLayoutAlgorithm(Object rootItemId) {
+		m_rootItemId = rootItemId;
+	}
 
 	@Override
 	public void updateLayout(GraphContainer graph) {
 		
 		Graph g = new Graph(graph);
+		Vertex root = g.getVertexByItemId(m_rootItemId);
 		
 		int szl = g.getSemanticZoomLevel();
 		
@@ -41,7 +48,8 @@ public class KKLayoutAlgorithm implements LayoutAlgorithm {
 		}
 		
 
-		KKLayout<Vertex, Edge> layout = new KKLayout<Vertex, Edge>(jungGraph);
+		DAGLayout<Vertex,Edge> layout = new DAGLayout<Vertex, Edge>(jungGraph);
+		layout.setRoot(root);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
 			@Override
 			public Point2D transform(Vertex v) {
@@ -53,6 +61,8 @@ public class KKLayoutAlgorithm implements LayoutAlgorithm {
 		for(Vertex v : vertices) {
 			layout.lock(v, v.isLocked());
 		}
+		
+
 		
 		while(!layout.done()) {
 			layout.step();

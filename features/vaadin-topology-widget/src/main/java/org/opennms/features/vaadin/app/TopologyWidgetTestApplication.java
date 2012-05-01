@@ -11,12 +11,18 @@ import org.opennms.features.vaadin.topology.ManualLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
 import org.opennms.features.vaadin.topology.SimpleLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.TopologyComponent;
+import org.opennms.features.vaadin.topology.jung.BalloonLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.jung.CircleLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.jung.DAGLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.jung.FRLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.jung.ISOMLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.jung.KKLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.jung.RadialTreeLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.jung.SpringLayoutAlgorithm;
+import org.opennms.features.vaadin.topology.jung.TreeLayoutAlgorithm;
 
 import com.vaadin.Application;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -90,11 +96,6 @@ public class TopologyWidgetTestApplication extends Application{
             }
     
             @Override
-            public void undoCommand() {
-                
-            }
-    
-            @Override
             public boolean appliesToTarget(Object target) {
                 //Applies to background as a whole
                 return target == null;
@@ -105,28 +106,18 @@ public class TopologyWidgetTestApplication extends Application{
 
             @Override
             public void doCommand(Object target) {
-                m_graphContainer.load();
+                m_graphContainer.load("graph.xml");
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
         }, false, "File");
         
         m_commandManager.addCommand(new Command("Save") {
 
             @Override
             public void doCommand(Object target) {
-                m_graphContainer.save();
+                m_graphContainer.save("graph.xml");
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
         }, false, "File");
         
         m_commandManager.addCommand(new Command("Add Vertex") {
@@ -146,13 +137,45 @@ public class TopologyWidgetTestApplication extends Application{
             	m_graphContainer.redoLayout();
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
         }, true, "File");
         
+        m_commandManager.addCommand(new Command("Lock") {
+
+            @Override
+            public boolean appliesToTarget(Object itemId) {
+            	if (m_graphContainer.getVertexContainer().containsId(itemId)) {
+            		Item v = m_graphContainer.getVertexContainer().getItem(itemId);
+            		return !(Boolean)v.getItemProperty("locked").getValue();
+            	}
+            	return false;
+            }
+
+            @Override
+            public void doCommand(Object vertexId) {
+            	Item v = m_graphContainer.getVertexContainer().getItem(vertexId);
+            	v.getItemProperty("locked").setValue(true);
+            }
+
+        }, true);
+        
+        m_commandManager.addCommand(new Command("Unlock") {
+
+            @Override
+            public boolean appliesToTarget(Object itemId) {
+            	if (m_graphContainer.getVertexContainer().containsId(itemId)) {
+            		Item v = m_graphContainer.getVertexContainer().getItem(itemId);
+            		return (Boolean)v.getItemProperty("locked").getValue();
+            	}
+            	return false;
+            }
+
+            @Override
+            public void doCommand(Object vertexId) {
+            	Item v = m_graphContainer.getVertexContainer().getItem(vertexId);
+            	v.getItemProperty("locked").setValue(false);
+            }
+
+        }, true);
         m_commandManager.addCommand(new Command("Add Switch Vertex") {
 
             @Override
@@ -170,11 +193,7 @@ public class TopologyWidgetTestApplication extends Application{
             	m_graphContainer.redoLayout();
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
+
         }, true);
         
         m_commandManager.addCommand(new Command("Remove Vertex") {
@@ -194,12 +213,7 @@ public class TopologyWidgetTestApplication extends Application{
             	}
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
-            
+
         }, true, "File");
         
         m_commandManager.addCommand(new Command("Connect") {
@@ -216,12 +230,6 @@ public class TopologyWidgetTestApplication extends Application{
             	m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), (String)endPoints.get(0), (String)endPoints.get(1));
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
-            
         }, true, "File");
         m_commandManager.addCommand(new Command("Create Group") {
 
@@ -241,12 +249,6 @@ public class TopologyWidgetTestApplication extends Application{
             	}
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
-            
         }, true, "Edit");
         
         m_commandManager.addCommand(new Command("Manual Layout") {
@@ -261,12 +263,76 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new ManualLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}
-        	
         }, false, "Edit|Layout");
+
+        m_commandManager.addCommand(new Command("Balloon Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new BalloonLayoutAlgorithm(CENTER_VERTEX_ID));
+			}
+
+        }, false, "Edit|Layout|JUNG");
+        
+        m_commandManager.addCommand(new Command("Circle Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new CircleLayoutAlgorithm());
+			}
+
+        }, false, "Edit|Layout|JUNG");
+
+        m_commandManager.addCommand(new Command("DAG Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new DAGLayoutAlgorithm(CENTER_VERTEX_ID));
+			}
+
+        }, false, "Edit|Layout|JUNG");
+
+        m_commandManager.addCommand(new Command("Radial Tree Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new RadialTreeLayoutAlgorithm());
+			}
+
+        }, false, "Edit|Layout|JUNG");
+        m_commandManager.addCommand(new Command("Tree Layout") {
+
+			@Override
+			public boolean appliesToTarget(Object target) {
+				return true;
+			}
+
+			@Override
+			public void doCommand(Object target) {
+				m_graphContainer.setLayoutAlgorithm(new TreeLayoutAlgorithm());
+			}
+
+        }, false, "Edit|Layout|JUNG");
 
         m_commandManager.addCommand(new Command("Simple Layout") {
 
@@ -280,11 +346,6 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}
-        	
         }, false, "Edit|Layout");
 
         m_commandManager.addCommand(new Command("Spring Layout") {
@@ -299,12 +360,7 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new SpringLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}
-        	
-        }, false, "Edit|Layout");
+        }, false, "Edit|Layout|JUNG");
 
         
         m_commandManager.addCommand(new Command("KK Layout") {
@@ -319,12 +375,7 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}
-        	
-        }, false, "Edit|Layout");
+        }, false, "Edit|Layout|JUNG");
 
         m_commandManager.addCommand(new Command("ISOM Layout") {
 
@@ -338,12 +389,7 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new ISOMLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}
-        	
-        }, false, "Edit|Layout");
+        }, false, "Edit|Layout|JUNG");
 
         m_commandManager.addCommand(new Command("FR Layout") {
 
@@ -357,12 +403,7 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}
-        	
-        }, false, "Edit|Layout");
+        }, false, "Edit|Layout|JUNG");
 
         
         m_commandManager.addCommand(new Command("Other Layout") {
@@ -377,10 +418,7 @@ public class TopologyWidgetTestApplication extends Application{
 				m_graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
 			}
 
-			@Override
-			public void undoCommand() {
-				throw new UnsupportedOperationException("Command.undoCommand is not yet implemented.");
-			}}, false, "Edit|Layout");
+		}, false, "Edit|Layout");
         
         m_commandManager.addCommand(new Command("Reset") {
 
@@ -395,11 +433,6 @@ public class TopologyWidgetTestApplication extends Application{
                 resetView();
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
         }, false, null);
         
         m_commandManager.addCommand(new Command("History") {
@@ -414,11 +447,6 @@ public class TopologyWidgetTestApplication extends Application{
                 showHistoryList(m_commandManager.getHistoryList());
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
         }, false, null);
         
         m_commandManager.addCommand(new Command("Show Map") {
@@ -429,11 +457,6 @@ public class TopologyWidgetTestApplication extends Application{
                 
             }
 
-            @Override
-            public void undoCommand() {
-                // TODO Auto-generated method stub
-                
-            }
         }, false, "View");
         
         m_commandManager.addCommand(new Command("Get Info") {
@@ -448,10 +471,6 @@ public class TopologyWidgetTestApplication extends Application{
                 getMainWindow().showNotification("This has not been implemented yet");
             }
 
-            @Override
-            public void undoCommand() {
-                
-            }
         }, true, "Device");
         
         

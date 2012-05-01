@@ -96,5 +96,13 @@ public class Vertex implements Paintable {
 	public void setGroupKey(String groupKey) {
 		m_groupKey = groupKey;
 	}
+	
+	public boolean isLocked() {
+		return (Boolean) m_item.getItemProperty("locked").getValue();
+	}
+	
+	public void setLocked(boolean locked) {
+		m_item.getItemProperty("locked").setValue(locked);
+	}
 
 }

@@ -188,18 +188,17 @@ public class SimpleGraphContainer implements GraphContainer {
 
 	}
 	
-	public void save() {
+	public void save(String filename) {
 		List<SimpleVertex> vertices = getBeans(m_vertexContainer);
 		List<SimpleEdge> edges = getBeans(m_edgeContainer);
 
 		SimpleGraph graph = new SimpleGraph(vertices, edges);
 		
-		JAXB.marshal(graph, new File("graph.xml"));
-		
+		JAXB.marshal(graph, new File(filename));
 	}
 	
-	public void load() {
-		SimpleGraph graph = JAXB.unmarshal(new File("graph.xml"), SimpleGraph.class);
+	public void load(String filename) {
+		SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
 		
 		m_vertexContainer.removeAllItems();
 		m_vertexContainer.addAll(graph.m_vertices);
