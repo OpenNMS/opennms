@@ -63,7 +63,7 @@
 <script type="text/javascript">
 function doReload() {
     if (confirm("Are you sure you want to do this?")) {
-        document.location = "admin/thresholds/index.htm?reloadThreshdConfig";
+        document.location = "<%= Util.calculateUrlBase(request, "admin/thresholds/index.htm") %>?reloadThreshdConfig";
     }
 }
 </script>
