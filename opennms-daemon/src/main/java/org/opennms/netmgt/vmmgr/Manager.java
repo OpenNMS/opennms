@@ -249,18 +249,27 @@ public class Manager implements ManagerMBean {
         final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4", "detect");
         final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6", "detect");
         
+        String errorMessage = null;
         if ("true".equalsIgnoreCase(requireV4String) && !hasV4) {
-            throw new IllegalStateException("org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.");
+            errorMessage = "org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.";
         }
         if ("true".equalsIgnoreCase(requireV6String) && !hasV6) {
-            throw new IllegalStateException("org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.");
+            errorMessage = "org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.";
         }
         
         // If they don't specify any preference, start up as long as one available.
         if ("detect".equals(requireV4String) || "detect".equals(requireV6String)) {
             if (!hasV4 && !hasV6) {
-                throw new IllegalStateException("Unable to initialize any ICMP support.  Bailing out.");
+                errorMessage = "Unable to initialize any ICMP support.  Bailing out.";
             }
+        }
+        
+        if (errorMessage != null) {
+            final String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.contains("win")) {
+                errorMessage += " On Windows, you can see this error if you are not running OpenNMS in an Administrator shell.";
+            }
+            throw new IllegalStateException(errorMessage);
         }
     }
 
