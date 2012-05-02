@@ -442,7 +442,7 @@ public class ThresholdingSet {
 
     private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         if (log().isDebugEnabled()) {
-            log().debug("getEntityMap: checking if the resourceType " + resourceType + " exists on threshold group " + thresholdGroup);
+            log().debug("getEntityMap: checking if the resourceType '" + resourceType + "' exists on threshold group " + thresholdGroup);
         }
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {

@@ -383,7 +383,7 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getLabelValue(String ds) {
-        if (ds == null)
+        if (ds == null || ds.equals(""))
             return null;
         if (log().isDebugEnabled()) {
             log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
@@ -408,6 +408,12 @@ public class CollectionResourceWrapper {
             }
         } catch (Throwable e) {
             log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
+        }
+        if (value == null) {
+            log().debug("getLabelValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
+            Double d = getAttributeValue(ds);
+            if (d != null)
+                value = d.toString();
         }
         return value;
     }
