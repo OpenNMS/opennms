@@ -151,7 +151,7 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
     @Override
 	public void setMinPool(final int minPool) {
-		LogUtils.warnf(this, "Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
+		LogUtils.debugf(this, "Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
 	}
 
     @Override
@@ -162,6 +162,6 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
     @Override
 	public void setMaxSize(final int maxSize) {
-		LogUtils.warnf(this, "C3P0 has no equivalent to setMaxSize.  Ignoring.");
+		LogUtils.debugf(this, "C3P0 has no equivalent to setMaxSize.  Ignoring.");
 	}
 }
