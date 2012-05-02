@@ -442,6 +442,9 @@ public class ThresholdingSet {
     }
 
     private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
+        if (log().isDebugEnabled()) {
+            log().debug("getEntityMap: checking if the resourceType " + resourceType + " exists on threshold group " + thresholdGroup);
+        }
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
@@ -450,12 +453,12 @@ public class ThresholdingSet {
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
             if (typeMap == null) {
-                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen).");
+                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen) for threshold group " + thresholdGroup.getName());
                 return null;
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
+                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + " in threshold group " + thresholdGroup.getName() + ". Skipping this group.");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();
