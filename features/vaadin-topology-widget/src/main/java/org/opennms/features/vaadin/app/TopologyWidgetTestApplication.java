@@ -472,21 +472,20 @@ public class TopologyWidgetTestApplication extends Application{
         m_commandManager.addActionHandlers(m_topologyComponent);
         m_topologyComponent.setSizeFull();
         
+        final Property scale = m_graphContainer.getProperty("scale");
         final Slider slider = new Slider(1, 4);
         slider.setResolution(2);
         slider.setHeight("300px");
         slider.setOrientation(Slider.ORIENTATION_VERTICAL);
+        slider.setPropertyDataSource(scale);
         slider.addListener(new ValueChangeListener(){
 
 			public void valueChange(ValueChangeEvent event) {
-				double scale = (Double) slider.getValue();
-				
-				m_graphContainer.setScale(scale);
+				scale.setValue((Double) slider.getValue());
 			}
 		});
-        slider.setImmediate(true);
         
-        m_topologyComponent.setScaleSlider(slider);
+        slider.setImmediate(true);
         
         try {
 			slider.setValue(m_topologyComponent.getScale());

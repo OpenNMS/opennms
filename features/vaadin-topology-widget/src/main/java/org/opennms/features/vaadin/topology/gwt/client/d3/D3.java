@@ -220,6 +220,10 @@ public class D3 extends JavaScriptObject {
 	    return $wnd.d3.transform(transform);
 	}-*/;
 
+    public final native D3Brush getBrush() /*-{
+        return this.svg.brush();
+    }-*/;
+
     
 	
 	

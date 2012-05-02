@@ -13,6 +13,9 @@ import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeEvent;
 import com.vaadin.data.Container.PropertySetChangeListener;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.terminal.KeyMapper;
@@ -21,11 +24,10 @@ import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Slider;
-import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener {
+public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 	
     public class MapManager {
 
@@ -89,6 +91,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	private KeyMapper m_actionMapper;
 	private Slider m_scaleSlider;
 	private GraphContainer m_graphContainer;
+	private Property m_scale;
 
     @Override
     public void attach() {
@@ -109,18 +112,34 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
 		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
 		
+		Property scale = m_graphContainer.getProperty("scale");
+		setScaleDataSource(scale);
+		
 	}
 	
-	public void setScaleSlider(Slider slider) {
-	    m_scaleSlider = slider;
-	    m_mapManager.setMaxScale(m_scaleSlider.getMax());
-	    m_mapManager.setMinScale(m_scaleSlider.getMin());
-	}
+	private void setScaleDataSource(Property scale) {
+	    // Stops listening the old data source changes
+        if (m_scale != null
+                && Property.ValueChangeNotifier.class
+                        .isAssignableFrom(m_scale.getClass())) {
+            ((Property.ValueChangeNotifier) m_scale).removeListener(this);
+        }
+
+        // Sets the new data source
+        m_scale = scale;
+
+        // Listens the new data source if possible
+        if (m_scale != null
+                && Property.ValueChangeNotifier.class
+                        .isAssignableFrom(m_scale.getClass())) {
+            ((Property.ValueChangeNotifier) m_scale).addListener(this);
+        }
+    }
 	
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("scale", m_mapManager.getScale());
+        target.addAttribute("scale", (Double)m_scale.getValue());
         target.addAttribute("clientX", m_mapManager.getClientX());
         target.addAttribute("clientY", m_mapManager.getClientY());
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
@@ -340,14 +359,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
 	public void setScale(double scale){
-    	m_mapManager.setScale(scale);
-    	try {
-            m_scaleSlider.setValue(scale);
-        } catch (ValueOutOfBoundsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    	requestRepaint();
+	    m_scale.setValue(scale);
     }
     
     private Graph getGraph() {
@@ -366,7 +378,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
  
 
     public Double getScale() {
-        return m_mapManager.getScale();
+        return (Double) m_scale.getValue();
     }
 
 	private void setGraph(Graph graph) {
@@ -392,6 +404,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_graph.update();
 		requestRepaint();
 	}
+
+    public void valueChange(ValueChangeEvent event) {
+        //Request repaint when a value changes, currently we are only listening to the scale property
+        //requestRepaint();
+    }
    
 
 }

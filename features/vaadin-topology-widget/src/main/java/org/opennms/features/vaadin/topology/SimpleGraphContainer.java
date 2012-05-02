@@ -2,8 +2,8 @@ package org.opennms.features.vaadin.topology;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Container.Hierarchical;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.MethodProperty;
@@ -33,12 +32,14 @@ public class SimpleGraphContainer implements GraphContainer {
 	private double m_scale = 1;
 	private int m_semanticZoomLevel;
 	private MethodProperty<Integer> m_zoomLevelProperty;
+	private MethodProperty<Double> m_scaleProperty;
 	
 	public SimpleGraphContainer() {
 		m_vertexContainer = new VertexContainer();
 		m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
 		m_edgeContainer.setBeanIdProperty("id");
 		m_zoomLevelProperty = new MethodProperty<Integer>(Integer.class, this, "getSemanticZoomLevel", "setSemanticZoomLevel");
+		m_scaleProperty = new MethodProperty<Double>(Double.class, this, "getScale", "setScale");
 	}
 
 	public VertexContainer getVertexContainer() {
@@ -239,9 +240,12 @@ public class SimpleGraphContainer implements GraphContainer {
 		m_edgeCounter = 0;
 	}
 
-	public void setScale(double scale) {
-		// TODO we need to update listeners when the scale changes;
+	public void setScale(Double scale) {
 		m_scale = scale;
+	}
+	
+	public Double getScale() {
+	    return m_scale;
 	}
 	
 	public void setSemanticZoomLevel(Integer level) {
@@ -280,11 +284,16 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 	
 	public Collection<?> getPropertyIds() {
-		return Collections.singletonList("semanticZoomLevel");
+	    return Arrays.asList(new String[] {"semanticZoomLevel", "scale"});
 	}
 
 	public Property getProperty(String propertyId) {
-		return m_zoomLevelProperty;
+	    if(propertyId.equals("semanticZoomLevel")) {
+	        return m_zoomLevelProperty;
+	    }else if(propertyId.equals("scale")) {
+	        return m_scaleProperty;
+	    }
+		return null;
 	}
 
 }
