@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -149,6 +150,7 @@ public class JniPinger implements Pinger {
 	    try {
 	        initialize();
 	    } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv4");
 	    }
 	    if (s_pingTracker != null && m_error == null) return true;
 	    return false;

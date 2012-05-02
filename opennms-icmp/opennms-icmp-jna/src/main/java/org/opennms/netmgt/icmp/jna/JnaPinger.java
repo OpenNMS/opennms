@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
@@ -70,6 +71,7 @@ public class JnaPinger implements Pinger {
         try {
             initialize();
         } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv4");
         }
         if (m_messenger == null) return false;
         return m_messenger.isV4Available();
@@ -79,6 +81,7 @@ public class JnaPinger implements Pinger {
         try {
             initialize();
         } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv6");
         }
         if (m_messenger == null) return false;
         return m_messenger.isV6Available();
