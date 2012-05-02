@@ -43,8 +43,9 @@ public class LogPreservingThreadFactory implements ThreadFactory {
     public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveLogPrefix) {
          m_name = poolName;
          m_poolSize = poolSize;
-         // Make the bitset of thread numbers one larger so that we can 1-index it
-         m_slotNumbers = new BitSet(poolSize + 1);
+         // Make the bitset of thread numbers one larger so that we can 1-index it.
+         // If pool size is Integer.MAX_VALUE, then the BitSet will not be used.
+         m_slotNumbers = poolSize < Integer.MAX_VALUE ? new BitSet(poolSize + 1) : new BitSet(1);
          if (preserveLogPrefix) {
              m_logPrefix = ThreadCategory.getPrefix();
          }
