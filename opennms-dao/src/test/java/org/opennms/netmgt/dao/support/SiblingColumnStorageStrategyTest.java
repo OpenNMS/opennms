@@ -117,6 +117,23 @@ public class SiblingColumnStorageStrategyTest {
         strategy.setParameters(params);
     }
 
+    @Test
+    public void testMatchIndex() throws Exception {
+        strategy.setResourceTypeName("macIndex");
+
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(createParameter("sibling-column-name", "_index"));
+        params.add(createParameter("replace-first", "s/^(([\\d]{1,3}\\.){8,8}).*$/$1/"));
+        params.add(createParameter("replace-first", "s/\\.$//"));
+
+        strategy.setParameters(params);
+
+        String parentResource = "1";
+        MockCollectionResource resource = new MockCollectionResource(parentResource, "0.132.43.51.76.89.2.144.10.1.1.1", "macIndex");
+        String resourceName = strategy.getResourceNameFromIndex(resource);
+        Assert.assertEquals("0.132.43.51.76.89.2.144", resourceName);
+    }
+
     private Parameter createParameter(String key, String value) {
         Parameter p = new Parameter();
         p.setKey(key);

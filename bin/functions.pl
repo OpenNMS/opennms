@@ -282,6 +282,9 @@ sub run_command {
 	my $outfile = shift;
 	my @command = @_;
 
+	my $start = time;
+	my $count = 0;
+
 	my $read   = IO::Handle->new();
 	my $write  = IO::Handle->new();
 	my $output = IO::Handle->new();
@@ -296,8 +299,13 @@ sub run_command {
 
 	close($write);
 
+	my $elapsed = 0;
 	while (<$read>) {
 		print $output $_;
+		if (($count++ % 1000) == 0) {
+			$elapsed = time - $start;
+			info(sprintf("elapsed time: %.2f minutes", ($elapsed / 60.0)));
+		}
 	}
 
 	close($read);
