@@ -23,7 +23,6 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Slider;
 
 
 @ClientWidget(VTopologyComponent.class)
@@ -31,44 +30,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	
     public class MapManager {
 
-        private double m_scale = 1;
-        private double m_minScale = 0;
-        private double m_maxScale = 1;
         private int m_clientX = 0;
         private int m_clientY = 0;
         
-        public void setScale(double newScale) {
-            if(m_scale != newScale) {
-                if(newScale > getMaxScale()) {
-                    m_scale = getMaxScale();
-                }else if(newScale < getMinScale()) {
-                    m_scale = getMinScale();
-                }else {
-                    m_scale = newScale;
-                }
-            }
-        }
-
-        public double getScale() {
-            return m_scale;
-        }
-
-        public void setMinScale(double min) {
-            m_minScale = min;
-        }
-
-        private double getMinScale() {
-            return m_minScale;
-        }
-
-        private double getMaxScale() {
-            return m_maxScale;
-        }
-
-        private void setMaxScale(double maxScale) {
-            m_maxScale = maxScale;
-        }
-
         public void setClientX(int clientX) {
             m_clientX = clientX;
         }
@@ -89,7 +53,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
     
 	private KeyMapper m_actionMapper;
-	private Slider m_scaleSlider;
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
 
@@ -375,11 +338,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_actionHandlers.remove(actionHandler);
 		
 	}
- 
-
-    public Double getScale() {
-        return (Double) m_scale.getValue();
-    }
 
 	private void setGraph(Graph graph) {
 		m_graph = graph;
@@ -406,6 +364,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
     public void valueChange(ValueChangeEvent event) {
+        
         //Request repaint when a value changes, currently we are only listening to the scale property
         requestRepaint();
     }

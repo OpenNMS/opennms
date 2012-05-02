@@ -12,15 +12,12 @@ import org.opennms.features.vaadin.topology.GraphContainer;
 import org.opennms.features.vaadin.topology.LayoutAlgorithm;
 import org.opennms.features.vaadin.topology.Vertex;
 
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.SparseGraph;
 
 public class TreeLayoutAlgorithm implements LayoutAlgorithm {
 
-	@Override
 	public void updateLayout(GraphContainer graph) {
 		
 		Graph g = new Graph(graph);
@@ -47,7 +44,6 @@ public class TreeLayoutAlgorithm implements LayoutAlgorithm {
 
 		RadialTreeLayout<Vertex,Edge> layout = new RadialTreeLayout<Vertex, Edge>(forest);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
-			@Override
 			public Point2D transform(Vertex v) {
 				return new Point(v.getX(), v.getY());
 			}

@@ -36,7 +36,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
-import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -505,12 +504,6 @@ public class TopologyWidgetTestApplication extends Application{
 		});
         
         slider.setImmediate(true);
-        
-        try {
-			slider.setValue(m_topologyComponent.getScale());
-		} catch (ValueOutOfBoundsException e) {
-			e.printStackTrace();
-		}
         
         m_tree = createTree();
         Label semanticZoomLabel = new Label();

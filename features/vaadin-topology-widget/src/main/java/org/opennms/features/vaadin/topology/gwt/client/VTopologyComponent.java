@@ -867,6 +867,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	    // (x in new coord system - x in old coord system)/x coordinate
 	    SVGGElement g = m_svgViewPort.cast();
 	    
+	    if(cx == 0 ) {
+	        cx = (int) (Math.ceil(svg.getOffsetWidth() / 2.0) - 1);
+	    }
+	    
+	    if(cy == 0) {
+	        cy = (int) (Math.ceil(svg.getOffsetHeight() / 2.0) -1);
+	    }
+	    
 	    SVGPoint p = svg.createSVGPoint();
 	    p.setX(cx);
 	    p.setY(cy);
