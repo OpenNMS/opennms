@@ -39,7 +39,9 @@
         		<threshold type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
         		<threshold type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
         		<expression type="high" expression="loadavg5 / 100.0" ds-type="node" ds-label="" value="10.0" rearm="7.5" trigger="2"/>
-        		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0" ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="2"/> 
+        		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0" ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="2"> 
+        		    <resource-filter field="memTotalSwap">^[1-9]+[.0-9]*$</resource-filter>
+        		</expression>
         </group>
         
         <group name="netsnmp-memory-linux"
