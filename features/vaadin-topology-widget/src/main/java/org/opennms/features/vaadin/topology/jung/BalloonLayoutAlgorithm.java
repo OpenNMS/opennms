@@ -27,7 +27,6 @@ public class BalloonLayoutAlgorithm implements LayoutAlgorithm {
 		m_rootItemId = rootItemId;
 	}
 
-	@Override
 	public void updateLayout(GraphContainer graph) {
 		
 		Graph g = new Graph(graph);
@@ -60,7 +59,6 @@ public class BalloonLayoutAlgorithm implements LayoutAlgorithm {
 		
 		BalloonLayout<Vertex, Edge> layout = new BalloonLayout<Vertex, Edge>(tree);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
-			@Override
 			public Point2D transform(Vertex v) {
 				return new Point(v.getX(), v.getY());
 			}

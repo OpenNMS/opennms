@@ -407,7 +407,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
     public void valueChange(ValueChangeEvent event) {
         //Request repaint when a value changes, currently we are only listening to the scale property
-        //requestRepaint();
+        requestRepaint();
     }
    
 

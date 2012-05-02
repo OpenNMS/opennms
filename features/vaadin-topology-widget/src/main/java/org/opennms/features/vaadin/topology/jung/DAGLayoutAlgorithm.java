@@ -23,7 +23,6 @@ public class DAGLayoutAlgorithm implements LayoutAlgorithm {
 		m_rootItemId = rootItemId;
 	}
 
-	@Override
 	public void updateLayout(GraphContainer graph) {
 		
 		Graph g = new Graph(graph);
@@ -51,7 +50,6 @@ public class DAGLayoutAlgorithm implements LayoutAlgorithm {
 		DAGLayout<Vertex,Edge> layout = new DAGLayout<Vertex, Edge>(jungGraph);
 		layout.setRoot(root);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
-			@Override
 			public Point2D transform(Vertex v) {
 				return new Point(v.getX(), v.getY());
 			}

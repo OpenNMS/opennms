@@ -496,7 +496,7 @@ public class TopologyWidgetTestApplication extends Application{
         slider.setResolution(2);
         slider.setHeight("300px");
         slider.setOrientation(Slider.ORIENTATION_VERTICAL);
-        slider.setPropertyDataSource(scale);
+        
         slider.addListener(new ValueChangeListener(){
 
 			public void valueChange(ValueChangeEvent event) {
