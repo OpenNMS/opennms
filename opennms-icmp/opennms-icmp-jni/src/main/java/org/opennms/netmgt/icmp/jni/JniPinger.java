@@ -130,7 +130,7 @@ public class JniPinger implements Pinger {
 	 *
 	 * @throws java.io.IOException if any.
 	 */
-	public synchronized void initialize() throws IOException {
+	private synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
 	    try {
     	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
@@ -144,6 +144,14 @@ public class JniPinger implements Pinger {
 	        s_pingTracker = null;
 	        throw rte;
 	    }
+	}
+	
+	public void initialize4() throws Exception {
+	    initialize();
+	}
+
+	public void initialize6() throws Exception {
+	    throw new IllegalStateException("This pinger does not support IPv6.");
 	}
 
 	public boolean isV4Available() {

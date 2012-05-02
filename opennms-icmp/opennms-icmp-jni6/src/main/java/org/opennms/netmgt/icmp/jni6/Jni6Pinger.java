@@ -131,21 +131,18 @@ public class Jni6Pinger implements Pinger {
 
     public Jni6Pinger() {}
 
-    private synchronized void initialize4() throws IOException {
+    public synchronized void initialize4() throws Exception {
         if (m_jniPinger != null) return;
         try {
             m_jniPinger = new JniPinger();
-            m_jniPinger.initialize();
-        } catch (final IOException ioe) {
-            m_v4Error = ioe;
-            throw ioe;
-        } catch (final RuntimeException rte) {
-            m_v4Error = rte;
-            throw rte;
+            m_jniPinger.initialize4();
+        } catch (final Exception e) {
+            m_v4Error = e;
+            throw e;
         }
     }
 
-    private synchronized void initialize6() throws IOException {
+    public synchronized void initialize6() throws Exception {
 	    if (s_pingTracker != null) return;
 
 	    final String name = "JNI-ICMPv6-"+m_pingerId;

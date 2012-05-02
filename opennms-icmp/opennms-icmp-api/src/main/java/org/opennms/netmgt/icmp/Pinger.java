@@ -90,6 +90,18 @@ public interface Pinger {
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
 	
 	/**
+	 * Initialize IPv4 in this Pinger implementation.
+	 * @throws Exception
+	 */
+	public void initialize4() throws Exception;
+
+	/**
+	 * Initialize IPv6 in this Pinger implementation.
+	 * @throws Exception
+	 */
+	public void initialize6() throws Exception;
+	
+	/**
 	 * Whether or not IPv4 is initialized and available for this implementation.
 	 */
 	public boolean isV4Available();

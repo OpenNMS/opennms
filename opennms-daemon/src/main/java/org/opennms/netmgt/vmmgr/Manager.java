@@ -229,6 +229,23 @@ public class Manager implements ManagerMBean {
         log().info("IPv4 ICMP available? " + hasV4);
         log().info("IPv6 ICMP available? " + hasV6);
 
+        if (!hasV4) {
+            try {
+                pinger.initialize4();
+            } catch (final Exception e) {
+                log().warn("Failed to initialize IPv4 stack.", e);
+            }
+        }
+
+        if (!hasV6) {
+            try {
+                pinger.initialize6();
+            } catch (final Exception e) {
+                log().warn("Failed to initialize IPv6 stack.", e);
+            }
+
+        }
+
         final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4", "detect");
         final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6", "detect");
         

@@ -60,11 +60,19 @@ public class JnaPinger implements Pinger {
 	 * Initializes this singleton
 	 * @throws Exception 
 	 */
-	public synchronized void initialize() throws Exception {
+	private synchronized void initialize() throws Exception {
 		if (m_pingTracker != null) return;
 		m_messenger = new JnaIcmpMessenger(m_pingerId);
         m_pingTracker = new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
 		m_pingTracker.start();
+	}
+	
+	public void initialize4() throws Exception {
+	    initialize();
+	}
+	
+	public void initialize6() throws Exception {
+	    initialize();
 	}
 
     public boolean isV4Available() {
