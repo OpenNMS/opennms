@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 
@@ -17,6 +16,7 @@ abstract public class SimpleVertex {
 	int m_x;
 	int m_y;
 	boolean m_selected;
+	boolean m_locked = false;
 	String m_icon;
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
@@ -49,6 +49,14 @@ abstract public class SimpleVertex {
 		}
 	}
 	
+	public boolean isLocked() {
+		return m_locked;
+	}
+
+	public void setLocked(boolean locked) {
+		m_locked = locked;
+	}
+
 	public abstract boolean isLeaf();
 	
 	public boolean isRoot() {

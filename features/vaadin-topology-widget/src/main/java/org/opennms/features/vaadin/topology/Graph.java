@@ -217,25 +217,20 @@ public class Graph{
 	}
 
 	public List<Edge> getEdgesForVertex(Vertex vertex, int semanticZoomLevel){
-		List<Edge> edges = getEdgesForVertex(vertex);
-		List<Edge> visible = new LinkedList<Edge>();
+		Vertex displayVertex = getDisplayVertex(vertex, semanticZoomLevel);
+		List<Edge> edges = getEdges(semanticZoomLevel);
+		List<Edge> visible = new ArrayList<Edge>(edges.size());
 		
-		for(Edge edge : edges) {
-			Vertex source = edge.getSource();
-			Vertex target = edge.getTarget();
-			Vertex displaySource = getDisplayVertex(source, semanticZoomLevel);
-			Vertex displayTarget = getDisplayVertex(target, semanticZoomLevel);
+		for(Edge e : edges) {
 			
-			if(displaySource == displayTarget) {
-				//skip this one
-			}else if(displaySource == source && displayTarget == target) {
-				visible.add(edge);
-			}else {
-				Edge displayEdge = new Edge("bogus", null, null, displaySource, displayTarget);
-				visible.add(displayEdge);
+			if (e.getSource() == displayVertex) {
+				visible.add(e);
+			} else if (e.getTarget() == displayVertex) {
+				visible.add(e);
 			}
+			
 		}
-		
+
 		return visible;
 	}
 
@@ -250,7 +245,7 @@ public class Graph{
 		return new ArrayList<Vertex>(visible);
 	}
 
-	private Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
+	public Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
 		if(vertex.getGroupId() == null || vertex.getSemanticZoomLevel() <= semanticZoomLevel) {
 			return vertex;
 		}else {
@@ -281,6 +276,10 @@ public class Graph{
 		}
 		
 		return visible;
+	}
+
+	public Vertex getVertexByItemId(Object itemId) {
+		return m_vertexHolder.getElementByItemId(itemId);
 	}
 	
 }

@@ -32,9 +32,9 @@ public class SimpleGraphContainerTest {
 		container.connectVertices("e6", "a", "e");
 		container.connectVertices("e7", "d", "e");
 		
-		container.save();
+		container.save("test-graph.xml");
 		
-		container.load();
+		container.load("test-graph.xml");
 		
 	}
 	

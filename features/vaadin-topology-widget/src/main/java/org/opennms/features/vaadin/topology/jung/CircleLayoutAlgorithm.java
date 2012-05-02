@@ -12,11 +12,13 @@ import org.opennms.features.vaadin.topology.GraphContainer;
 import org.opennms.features.vaadin.topology.LayoutAlgorithm;
 import org.opennms.features.vaadin.topology.Vertex;
 
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class KKLayoutAlgorithm implements LayoutAlgorithm {
+public class CircleLayoutAlgorithm implements LayoutAlgorithm {
 
+	@Override
 	public void updateLayout(GraphContainer graph) {
 		
 		Graph g = new Graph(graph);
@@ -40,22 +42,14 @@ public class KKLayoutAlgorithm implements LayoutAlgorithm {
 		}
 		
 
-		KKLayout<Vertex, Edge> layout = new KKLayout<Vertex, Edge>(jungGraph);
+		CircleLayout<Vertex, Edge> layout = new CircleLayout<Vertex, Edge>(jungGraph);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
+			@Override
 			public Point2D transform(Vertex v) {
 				return new Point(v.getX(), v.getY());
 			}
 		});
 		layout.setSize(new Dimension(750,750));
-		
-		for(Vertex v : vertices) {
-			layout.lock(v, v.isLocked());
-		}
-		
-		while(!layout.done()) {
-			layout.step();
-		}
-		
 		
 		for(Vertex v : vertices) {
 			v.setX((int)layout.getX(v));
