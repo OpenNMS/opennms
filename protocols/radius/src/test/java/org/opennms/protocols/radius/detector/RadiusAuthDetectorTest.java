@@ -43,6 +43,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -68,6 +69,25 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware{
 	    m_detector.setUser("1273849127348917234891720348901234789012374");
 	    m_detector.onInit();
 		assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
+	}
+
+	@Test
+	@Ignore
+	public void testRunDetectorInTempThread() throws InterruptedException {
+		for(int i = 0; i < 1000; i++) {
+			Thread t = new Thread() {
+				public void run() {
+					try {
+						testDetectorFail();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			t.start();
+			t.join();
+		}
 	}
 
 	@Test
