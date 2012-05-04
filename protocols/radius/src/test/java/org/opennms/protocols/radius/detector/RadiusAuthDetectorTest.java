@@ -45,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -78,6 +79,25 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 	}
 
 	@Test
+	@Ignore
+	public void testRunDetectorInTempThread() throws InterruptedException {
+		for(int i = 0; i < 1000; i++) {
+			Thread t = new Thread() {
+				public void run() {
+					try {
+						testDetectorFail();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			t.start();
+			t.join();
+		}
+	}
+
+	@Test
 	@Ignore("have to have a radius server set up")
 	public void testDetectorPass() throws UnknownHostException{
 	    m_detector.setTimeout(1);
@@ -95,4 +115,5 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         
     }
+	
 }
