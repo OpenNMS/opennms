@@ -74,7 +74,7 @@ public class JRobinRrdStrategyTest {
         // Make sure that AWT headless mode is enabled
         System.setProperty("java.awt.headless", "true");
         
-        MockLogAppender.setupLogging(true, "DEBUG");
+        MockLogAppender.setupLogging();
         
         m_strategy = new JRobinRrdStrategy();
 
@@ -145,11 +145,9 @@ public class JRobinRrdStrategyTest {
         	t = e;
         }
         assertNotNull(t);
-        
-    	assertTrue("message was " + t.getMessage(), t.getMessage().contains("Could not open "));
-    	assertTrue("message was " + t.getMessage(), t.getMessage().contains("fe80:0000:0000:0000:0000:0000:0000:0000%5"));
+    	assertTrue(t.getMessage().contains("Could not open /response/fe80:0000:0000:0000:0000:0000:0000:0000%5/dns.jrb"));
     }
-
+    
     @Test
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
@@ -220,7 +218,7 @@ public class JRobinRrdStrategyTest {
         command = new String[] {
                 "--start=" + (startTime - 300),
                 "--end=" + (endTime + 300),
-                "DEF:baz=" + rrdFile.getAbsolutePath().replace("\\", "\\\\") + ":bar:AVERAGE",
+                "DEF:baz=" + rrdFile.getAbsolutePath() + ":bar:AVERAGE",
                 "VDEF:avg=baz,AVERAGE",
                 "VDEF:min=baz,MIN",
                 "VDEF:max=baz,MAX",
@@ -252,7 +250,7 @@ public class JRobinRrdStrategyTest {
         command = new String[] {
                 "--start=" + (startTime - 300),
                 "--end=" + (endTime + 300),
-                "DEF:baz=" + rrdFile.getAbsolutePath().replace("\\", "\\\\") + ":bar:AVERAGE",
+                "DEF:baz=" + rrdFile.getAbsolutePath() + ":bar:AVERAGE",
                 "CDEF:bazX1=baz,1,*",
                 "CDEF:bazX1P0=bazX1,0,+",
                 "VDEF:avg=bazX1,AVERAGE",
