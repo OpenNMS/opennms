@@ -43,8 +43,16 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  */
 public class RrdFileConstants extends Object {
-
-    private static final Pattern IPV6_INVALID_CHARACTERS_PATTERN = Pattern.compile("([\\:\\%])");
+    private static final Pattern GRAPHING_ESCAPE_PATTERN;
+    static {
+        // IPv6: ':' and '%'
+        if (File.separatorChar == '\\') {
+            // If Windows, escape '\' as well
+            GRAPHING_ESCAPE_PATTERN = Pattern.compile("([\\:\\%\\\\])");
+        } else {
+            GRAPHING_ESCAPE_PATTERN = Pattern.compile("([\\:\\%])");
+        }
+    }
 
 	/** The longest an RRD filename can be, currently 1024 characters. */
     public static final int MAX_RRD_FILENAME_LENGTH = 1024;
@@ -259,7 +267,7 @@ public class RrdFileConstants extends Object {
     }
 
     public static String escapeForGraphing(final String path) {
-    	final Matcher matcher = IPV6_INVALID_CHARACTERS_PATTERN.matcher(path);
+    	final Matcher matcher = GRAPHING_ESCAPE_PATTERN.matcher(path);
     	return matcher.replaceAll("\\\\$1");
     }
     
