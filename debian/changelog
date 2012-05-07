@@ -1,17 +1,17 @@
-opennms (1.10.2-1) unstable; urgency=high
+opennms (1.10.2-1) stable; urgency=high
 
   * New upstream release.  Includes a fix to reduce the number of open filehandles
   when using provisiond.
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 10:53:00 -0400
 
-opennms (1.10.1-1) unstable; urgency=medium
+opennms (1.10.1-1) stable; urgency=medium
 
   * New upstream release.
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 09 Apr 2012 09:42:00 -0400
 
-opennms (1.10.0-2) unstable; urgency=low
+opennms (1.10.0-2) stable; urgency=low
 
   * Fix inclusion of etc-pristine in -core package
 
