@@ -26,7 +26,7 @@
 		<title>Release 1.10.2</title>
 
 		<para>
-			Release 1.10.2 is the second in the latest series of stable releases.
+			Release 1.10.2 is the latest in the stable series of OpenNMS releases.
 			It contains bugfixes, including a fix for a filehandle leak regression,
          Windows installer fixes, and some minor enhancements.
 		</para>
