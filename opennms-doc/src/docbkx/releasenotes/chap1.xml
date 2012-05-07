@@ -4,6 +4,22 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<!-- Start 1.11 -->
+
+	<section id="introduction-1.11.0">
+		<title>Release 1.11.0</title>
+
+		<para>
+			Release 1.11.0 is the first in the latest unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.0 is <emphasis>MCA</emphasis>
+		</para>
+	</section>
+
+
 	<!-- Start 1.10 -->
 
 	<section id="introduction-1.10.2">
