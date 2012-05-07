@@ -6,6 +6,50 @@
 
 	<!-- Start 1.10 -->
 
+
+	<section id="opennms-1.10.2">
+		<title>Changes in OpenNMS 1.10.2</title>
+
+		<section id="opennms-1.10.2-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Path-Outage: parent-foreign-id is not recognized when defined in another requisition (Issue <ulink url='http://issues.opennms.org/browse/NMS-4109'>NMS-4109</ulink>)</para></listitem>
+				<listitem><para>nodeAdded event create when POSTing to REST api does not include nodeLabel (Issue <ulink url='http://issues.opennms.org/browse/NMS-4891'>NMS-4891</ulink>)</para></listitem>
+				<listitem><para>POST for node/&lt;nodeId&gt;/ipinterface creates interface does not returns its data  (Issue <ulink url='http://issues.opennms.org/browse/NMS-4892'>NMS-4892</ulink>)</para></listitem>
+				<listitem><para>Unable to add custom poller with capsd disabled. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4924'>NMS-4924</ulink>)</para></listitem>
+				<listitem><para>Deletion of surveillance categories via WebUI is broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-4927'>NMS-4927</ulink>)</para></listitem>
+				<listitem><para>handle bad SNMP ranges gracefully (Issue <ulink url='http://issues.opennms.org/browse/NMS-4947'>NMS-4947</ulink>)</para></listitem>
+				<listitem><para>collectd does not unschedule deleted nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-5105'>NMS-5105</ulink>)</para></listitem>
+				<listitem><para>Graphing Fails on Windows (Issue <ulink url='http://issues.opennms.org/browse/NMS-5139'>NMS-5139</ulink>)</para></listitem>
+				<listitem><para>DO_NOT_PERSIST fails on explicitly defined interface when matching any IP address (Issue <ulink url='http://issues.opennms.org/browse/NMS-5154'>NMS-5154</ulink>)</para></listitem>
+				<listitem><para>Some XSDs are missing after installing opennms-core (Issue <ulink url='http://issues.opennms.org/browse/NMS-5220'>NMS-5220</ulink>)</para></listitem>
+				<listitem><para>Show interfaces at search for nodes causes crash (Issue <ulink url='http://issues.opennms.org/browse/NMS-5230'>NMS-5230</ulink>)</para></listitem>
+				<listitem><para>Correlator lacks its own log appender (Issue <ulink url='http://issues.opennms.org/browse/NMS-5250'>NMS-5250</ulink>)</para></listitem>
+				<listitem><para>OpenNMS can&#39;t load JICMP and/or JICMP6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5253'>NMS-5253</ulink>)</para></listitem>
+				<listitem><para>OpenNMS-remote-poller debian package requires sun-java6-jre (Issue <ulink url='http://issues.opennms.org/browse/NMS-5295'>NMS-5295</ulink>)</para></listitem>
+				<listitem><para>You cannot start OpenNMS with a configured Selenium-Monitor (Issue <ulink url='http://issues.opennms.org/browse/NMS-5299'>NMS-5299</ulink>)</para></listitem>
+				<listitem><para>[Main] C3P0ConnectionFactory: C3P0 has no equivalent to setMaxSize.  Ignoring. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5300'>NMS-5300</ulink>)</para></listitem>
+				<listitem><para>Copy of jdhcp-1.1.1.jar Not Included in the opennms-plugin-protocol-dhcp Debian Package (Issue <ulink url='http://issues.opennms.org/browse/NMS-5305'>NMS-5305</ulink>)</para></listitem>
+				<listitem><para>Exception when installing OpenNMS 1.10.1 on Windows 2008 Server (Issue <ulink url='http://issues.opennms.org/browse/NMS-5306'>NMS-5306</ulink>)</para></listitem>
+				<listitem><para>Debian package libopennms-java does not depend on libpostgresql-jdbc-java (Issue <ulink url='http://issues.opennms.org/browse/NMS-5308'>NMS-5308</ulink>)</para></listitem>
+				<listitem><para>clicking on Nodelist throws an error  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5316'>NMS-5316</ulink>)</para></listitem>
+				<listitem><para>Threshold Groups page &quot;Request a reload threshold packages configuration&quot; button produces 404 error on IE9 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5323'>NMS-5323</ulink>)</para></listitem>
+				<listitem><para>log messages show up in wrong log file (Issue <ulink url='http://issues.opennms.org/browse/NMS-5331'>NMS-5331</ulink>)</para></listitem>
+				<listitem><para>Automatically created threshold event description missing % at %parm[all]% (Issue <ulink url='http://issues.opennms.org/browse/NMS-5336'>NMS-5336</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.2-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Default netsnmp group memAvailSwap / memTotalSwap threshold raises alerts for devices that have no swap space allocated (Issue <ulink url='http://issues.opennms.org/browse/NMS-5115'>NMS-5115</ulink>)</para></listitem>
+				<listitem><para>Events file for websense appliance (Issue <ulink url='http://issues.opennms.org/browse/NMS-5314'>NMS-5314</ulink>)</para></listitem>
+				<listitem><para>Add the ability to apply the SiblingColumnStorageStrategy to resource&#39;s instance (Issue <ulink url='http://issues.opennms.org/browse/NMS-5339'>NMS-5339</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.1">
 		<title>Changes in OpenNMS 1.10.1</title>
 

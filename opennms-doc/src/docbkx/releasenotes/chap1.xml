@@ -6,6 +6,19 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.2">
+		<title>Release 1.10.2</title>
+
+		<para>
+			Release 1.10.2 is the second in the latest series of stable releases.
+			It contains bugfixes, including a fix for a filehandle leak regression,
+         Windows installer fixes, and some minor enhancements.
+		</para>
+		<para>
+			The codename for 1.10.2 is <emphasis>Charango</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.10.1">
 		<title>Release 1.10.1</title>
 
