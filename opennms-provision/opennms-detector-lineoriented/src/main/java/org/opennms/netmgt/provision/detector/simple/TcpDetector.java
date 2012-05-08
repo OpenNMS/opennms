@@ -35,6 +35,7 @@ import org.opennms.netmgt.provision.detector.simple.support.TcpDetectorHandler;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchange;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
+import org.opennms.netmgt.provision.support.codec.TcpLineDecoder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -89,8 +90,9 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         
         return new AsyncExchange<LineOrientedRequest, LineOrientedResponse>(){
 
+            @Override
             public boolean validateResponse(final LineOrientedResponse response) {
-                return response.equals("TCP Failed to send Banner");
+                return response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
             }
 
             public LineOrientedRequest getRequest() {
@@ -108,9 +110,11 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         return new ResponseValidator<LineOrientedResponse>() {
 
             public boolean validate(final LineOrientedResponse response) {
-                
-                return response.matches(regex);
+                // Make sure that the response matches the regex and that it is not an instance of the
+                // special token that represents that no banner was received.
+                return response.matches(regex) && !response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
             }
+
         };
     }
 

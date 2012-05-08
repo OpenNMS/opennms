@@ -213,8 +213,10 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         getServerSocket().setSoTimeout(getTimeout());
                     }
                     while (!m_stopped && getServerThread() != null) {
+                        long startTime = 0;
                         try {
                             setSocket(getServerSocket().accept());
+                            startTime = System.currentTimeMillis();
                             if (m_threadSleepLength > 0) {
                                 Thread.sleep(m_threadSleepLength);
                             }
@@ -229,6 +231,12 @@ public class SimpleServer extends SimpleConversationEndPoint {
                             in = new BufferedReader(isr);
                             attemptConversation(in, out);
                         } finally {
+                            // Sleep to make sure we connect at least as long as the timeout that is set
+                            long sleepMore = startTime + getTimeout() - System.currentTimeMillis();
+                            if (sleepMore > 0) {
+                                try { Thread.sleep(sleepMore); } catch (InterruptedException e) {}
+                            }
+                            
                             IOUtils.closeQuietly(in);
                             IOUtils.closeQuietly(isr);
                             IOUtils.closeQuietly(out);
