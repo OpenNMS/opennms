@@ -34,7 +34,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.AsyncBasicDetectorMinaImpl;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
 
 /**
@@ -43,7 +43,7 @@ import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
  * @author Donald Desloge
  * @version $Id: $
  */
-public abstract class AsyncLineOrientedDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, LineOrientedResponse> {
+public abstract class AsyncLineOrientedDetectorMinaImpl extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, LineOrientedResponse> {
 
     protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
@@ -53,7 +53,7 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetectorMinaIm
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public AsyncLineOrientedDetector(final String serviceName, final int port) {
+    public AsyncLineOrientedDetectorMinaImpl(final String serviceName, final int port) {
         super(serviceName, port);
         setProtocolCodecFilter(new ProtocolCodecFilter(new LineOrientedCodecFactory(CHARSET_UTF8)));
     }
@@ -66,12 +66,13 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetectorMinaIm
      * @param retries a int.
      * @param serviceName a {@link java.lang.String} object.
      */
-    public AsyncLineOrientedDetector(final String serviceName, final int port, final int timeout, final int retries) {
+    public AsyncLineOrientedDetectorMinaImpl(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
         setProtocolCodecFilter(new ProtocolCodecFilter(new LineOrientedCodecFactory(CHARSET_UTF8)));
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
         return new ResponseValidator<LineOrientedResponse>() {
 

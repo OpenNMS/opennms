@@ -47,8 +47,8 @@ import net.jradius.packet.attribute.AttributeList;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.RequestBuilder;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.radius.detector.client.RadiusDetectorClient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -135,7 +135,7 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     /**
      * @return
      */
-    private ResponseValidator<RadiusPacket> expectValidResponse(final Class<?> accept, final Class<?> challenge, final Class<?> reject) {
+    private static ResponseValidator<RadiusPacket> expectValidResponse(final Class<?> accept, final Class<?> challenge, final Class<?> reject) {
         
         return new ResponseValidator<RadiusPacket>() {
 
@@ -146,12 +146,12 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
         };
     }
 
-    private RequestBuilder<AttributeList> request(final String nasID, final String user, final String password) {
-    	LogUtils.debugf(this, "request: nasID = %s, user = %s, password = %s", nasID, user, password);
+    private static RequestBuilder<AttributeList> request(final String nasID, final String user, final String password) {
+    	LogUtils.debugf(RadiusAuthDetector.class, "request: nasID = %s, user = %s, password = %s", nasID, user, password);
     	
         return new RequestBuilder<AttributeList>() {
 
-            public AttributeList getRequest() throws Exception {
+            public AttributeList getRequest() {
     	    	final AttributeList attributes = new AttributeList();
     	    	attributes.add(new Attr_UserName(user));
     	    	attributes.add(new Attr_NASIdentifier(nasID));

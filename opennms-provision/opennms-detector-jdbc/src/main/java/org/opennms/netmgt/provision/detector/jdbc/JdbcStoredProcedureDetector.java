@@ -30,8 +30,8 @@ package org.opennms.netmgt.provision.detector.jdbc;
 
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
-import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.RequestBuilder;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -67,20 +67,20 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
         send(storedProcedure(createProcedureCall(getSchema(), getStoredProcedure())), isValidProcedureCall());
     }
     
-    private ResponseValidator<JDBCResponse> isValidProcedureCall() {
+    private static ResponseValidator<JDBCResponse> isValidProcedureCall() {
         return new ResponseValidator<JDBCResponse>(){
 
-            public boolean validate(JDBCResponse response) throws Exception {
+            public boolean validate(JDBCResponse response) {
                 return response.isValidProcedureCall();
             }
             
         };
     }
 
-    private RequestBuilder<JDBCRequest> storedProcedure(final String storedProcedure) {
+    private static RequestBuilder<JDBCRequest> storedProcedure(final String storedProcedure) {
         return new RequestBuilder<JDBCRequest>(){
 
-            public JDBCRequest getRequest() throws Exception {
+            public JDBCRequest getRequest() {
                 JDBCRequest request = new JDBCRequest();
                 request.setStoredProcedure(storedProcedure);
                 return request;

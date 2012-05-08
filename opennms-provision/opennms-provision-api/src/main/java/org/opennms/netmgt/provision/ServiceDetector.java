@@ -45,14 +45,14 @@ public interface ServiceDetector {
     /**
      * Perform any necessary initialization after construction and before detecting.
      */
-    public void init();
+    void init();
     
     /**
      * Requires that all implementations of this API return a service name.
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getServiceName();
+    String getServiceName();
 
     /**
      * Service name is mutable so that we can create new instances of each implementation
@@ -60,12 +60,35 @@ public interface ServiceDetector {
      *
      * @param serviceName a {@link java.lang.String} object.
      */
-    public void setServiceName(String serviceName);
+    void setServiceName(String serviceName);
 
-    
+    /**
+     * Get the port where this service will be detected.
+     */
+    int getPort();
+
+    /**
+     * Set the port where the service will be detected.
+     *
+     * @param port
+     */
+    void setPort(int port);
+
+    /**
+     * Get the timeout for detecting the service.
+     */
+    int getTimeout();
+
+    /**
+     * Set the timeout for detecting the service.
+     *
+     * @param port
+     */
+    void setTimeout(int timeout);
+
     /**
      * The detector should clean up after itself in this method if necessary.
      */
-    public void dispose();
+    void dispose();
 
 }

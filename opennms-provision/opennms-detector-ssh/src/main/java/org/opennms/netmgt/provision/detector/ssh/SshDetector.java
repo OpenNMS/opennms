@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
 import org.opennms.netmgt.provision.detector.ssh.response.SshResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.ssh.Ssh;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -90,11 +90,11 @@ public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
     /**
      * @return
      */
-    private ResponseValidator<SshResponse> sshIsAvailable() {
+    private static ResponseValidator<SshResponse> sshIsAvailable() {
         
         return new ResponseValidator<SshResponse>(){
 
-            public boolean validate(SshResponse response) throws Exception {
+            public boolean validate(SshResponse response) {
                 return response.isAvailable();
             }
             

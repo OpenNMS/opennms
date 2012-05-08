@@ -26,47 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple;
+package org.opennms.netmgt.provision.support;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.net.InetAddress;
+
+import org.opennms.netmgt.provision.SyncServiceDetector;
 
 /**
- * <p>MemcachedDetector class.</p>
+ * <p>SyncAbstractDetector class.</p>
  *
- * @author agalue
- * @version $Id: $
+ * @author ranger
  */
-@Component
-@Scope("prototype")
-public class MemcachedDetector extends AsyncLineOrientedDetectorMinaImpl {
-
-    private static final String DEFAULT_SERVICE_NAME = "Memcached";
-    private static final int DEFAULT_PORT = 11211;
-
-    /**
-     * Default constructor
-     */
-    public MemcachedDetector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-    }
+public abstract class SyncAbstractDetector extends AbstractDetector implements SyncServiceDetector {
     
     /**
-     * Constructor for creating a non-default service based on this protocol
+     * <p>Constructor for SyncAbstractDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     */
+    protected SyncAbstractDetector(final String serviceName, final int port, final int timeout, final int retries) {
+        super(serviceName, port, timeout, retries);
+    }
+
+    /**
+     * <p>Constructor for SyncAbstractDetector.</p>
      *
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public MemcachedDetector(final String serviceName, final int port) {
+    protected SyncAbstractDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
-    
-    /**
-     * <p>onInit</p>
-     */
+
+    /** {@inheritDoc} */
     @Override
-    protected void onInit(){
-        send(request("version"), startsWith("VERSION"));
-    }
-    
+    abstract public boolean isServiceDetected(final InetAddress address);
 }

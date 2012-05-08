@@ -31,9 +31,6 @@ package org.opennms.netmgt.provision.support;
 import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchangeImpl;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
-
 /**
  * <p>Abstract AsyncBasicDetector class.</p>
  *
@@ -67,7 +64,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param timeout a int.
      * @param retries a int.
      */
-    public AsyncBasicDetector(final String serviceName, final int port, final int timeout, final int retries){
+    public AsyncBasicDetector(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
     }
     
@@ -77,8 +74,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param bannerValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
     protected void expectBanner(final ResponseValidator<Response> bannerValidator) {
-        getConversation().setHasBanner(true);
-        getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(null, bannerValidator));
+        m_conversation.setHasBanner(true);
+        m_conversation.addExchange(new ConversationExchangeDefaultImpl<Request, Response>(null, bannerValidator));
     }
     
     /**
@@ -88,7 +85,12 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param responseValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
     protected void send(final Request request, final ResponseValidator<Response> responseValidator) {
-        getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(request, responseValidator));
+        m_conversation.addExchange(new ConversationExchangeDefaultImpl<Request, Response>(new RequestBuilder<Request>() {
+            @Override
+            public Request getRequest() {
+                return request;
+            }
+        }, responseValidator));
     }
     
     
@@ -97,7 +99,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param idleTime a int.
      */
-    public void setIdleTime(final int idleTime) {
+    public final void setIdleTime(final int idleTime) {
         m_idleTime = idleTime;
     }
 
@@ -106,17 +108,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @return a int.
      */
-    public int getIdleTime() {
+    public final int getIdleTime() {
         return m_idleTime;
-    }
-
-    /**
-     * <p>setConversation</p>
-     *
-     * @param conversation a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
-     */
-    protected void setConversation(final AsyncClientConversation<Request, Response> conversation) {
-        m_conversation = conversation;
     }
 
     /**
@@ -124,10 +117,10 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
      */
-    protected AsyncClientConversation<Request, Response> getConversation() {
+    protected final AsyncClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }
-    
+
     /**
      * <p>startsWith</p>
      *
@@ -151,7 +144,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param regex a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
-    public ResponseValidator<Response> find(final String regex){
+    protected ResponseValidator<Response> find(final String regex){
         return new ResponseValidator<Response>() {
 
             public boolean validate(final Object message) {
@@ -168,7 +161,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param useSSLFilter a boolean.
      */
-    public void setUseSSLFilter(final boolean useSSLFilter) {
+    public final void setUseSSLFilter(final boolean useSSLFilter) {
         this.useSSLFilter = useSSLFilter;
     }
 
@@ -177,7 +170,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @return a boolean.
      */
-    public boolean isUseSSLFilter() {
+    public final boolean isUseSSLFilter() {
         return useSSLFilter;
     }
 }

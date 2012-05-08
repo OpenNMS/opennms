@@ -33,7 +33,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineHttpResponse;
 import org.opennms.netmgt.provision.support.AsyncBasicDetectorMinaImpl;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.MultilineHttpProtocolFactory;
 
 
