@@ -213,20 +213,29 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         getServerSocket().setSoTimeout(getTimeout());
                     }
                     while (!m_stopped && getServerThread() != null) {
-                        setSocket(getServerSocket().accept());
-                        if (m_threadSleepLength > 0) {
-                            Thread.sleep(m_threadSleepLength);
+                        try {
+                            setSocket(getServerSocket().accept());
+                            if (m_threadSleepLength > 0) {
+                                Thread.sleep(m_threadSleepLength);
+                            }
+                            if (getTimeout() > 0) {
+                                getSocket().setSoTimeout(getTimeout());
+                            }
+                            out = getSocket().getOutputStream();
+                            if (getBanner() != null) {
+                                sendBanner(out);
+                            }
+                            isr = new InputStreamReader(getSocket().getInputStream());
+                            in = new BufferedReader(isr);
+                            attemptConversation(in, out);
+                        } finally {
+                            IOUtils.closeQuietly(in);
+                            IOUtils.closeQuietly(isr);
+                            IOUtils.closeQuietly(out);
+                            // TODO: Upgrade IOUtils so that we can use this function
+                            // IOUtils.closeQuietly(getSocket());
+                            getSocket().close();
                         }
-                        if (getTimeout() > 0) {
-                            getSocket().setSoTimeout(getTimeout());
-                        }
-                        out = getSocket().getOutputStream();
-                        if (getBanner() != null) {
-                            sendBanner(out);
-                        }
-                        isr = new InputStreamReader(getSocket().getInputStream());
-                        in = new BufferedReader(isr);
-                        attemptConversation(in, out);
                     }
                 } catch (final InterruptedException e) {
                     if (m_stopped) {
@@ -244,9 +253,6 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         LogUtils.infof(this, e, "error during conversation");
                     }
                 } finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(isr);
-                    IOUtils.closeQuietly(out);
                     try {
                         // just in case we're stopping because of an exception
                         stopServer();
