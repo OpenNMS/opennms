@@ -114,10 +114,6 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void init() {}
-
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_agentConfigFactory);
