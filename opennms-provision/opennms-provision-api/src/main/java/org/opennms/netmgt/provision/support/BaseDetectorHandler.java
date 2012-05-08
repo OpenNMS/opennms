@@ -112,7 +112,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {
-            LogUtils.debugf(this, "Client Receiving: %s\n", message.toString().trim());
+            LogUtils.debugf(this, "Client Receiving: %s", message.toString().trim());
             
             if(getConversation().hasExchanges() && getConversation().validate((Response)message)) {
                

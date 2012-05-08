@@ -80,7 +80,7 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
             buffer.putString(request.getRequest(), encoder);
 
             buffer.flip();
-            LogUtils.debugf(this, "Client sending: %s\n", value);
+            LogUtils.debugf(this, "Client sending: %s", value.trim());
             out.write(buffer);
         } finally {
             if (buffer != null) {

@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.provision.support.Client;
 
 /**
  * <p>ClientConversation class.</p>
@@ -42,54 +41,24 @@ import org.opennms.netmgt.provision.support.Client;
  * @version $Id: $
  */
 public class ClientConversation<Request, Response> {
-    
-    public static interface RequestBuilder<T> {
-        T getRequest() throws Exception;
-    }
-    
-    public static interface ResponseValidator<T> {
-        boolean validate(T response)throws Exception; 
-    }
-    
-    public static interface ClientExchange<Request, Response> extends RequestBuilder<Request>, ResponseValidator<Response> {
-    }
-    
-    public static class SimpleClientExchange<Request, RespType> implements ClientExchange<Request, RespType> {
-        private RequestBuilder<Request> m_requestBuilder;
-        private ResponseValidator<RespType> m_responseValidator;
-        
-        public SimpleClientExchange(RequestBuilder<Request> reqBuilder, ResponseValidator<RespType> respValidator) {
-            m_requestBuilder = reqBuilder;
-            m_responseValidator = respValidator;
-        }
-        
-        public Request getRequest() throws Exception {
-            return m_requestBuilder.getRequest();
-        }
-        
-        public boolean validate(RespType response) throws Exception {
-            return m_responseValidator.validate(response);
-        }
-        
-    }
 
     private ResponseValidator<Response> m_bannerValidator;
-    private List<ClientExchange<Request, Response>> m_conversation = new ArrayList<ClientExchange<Request, Response>>();
-    
+    private final List<ConversationExchange<Request, Response>> m_conversation = new ArrayList<ConversationExchange<Request, Response>>();
+
     /**
      * <p>expectBanner</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     public void expectBanner(ResponseValidator<Response> bannerValidator) {
         m_bannerValidator = bannerValidator;
     }
-    
+
     /**
      * <p>addExchange</p>
      *
      * @param request a Request object.
-     * @param validator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param validator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     public void addExchange(final Request request, ResponseValidator<Response> validator) {
         RequestBuilder<Request> builder = new RequestBuilder<Request>() {
@@ -99,26 +68,26 @@ public class ClientConversation<Request, Response> {
         };
         addExchange(builder, validator);
     }
-    
+
     /**
      * <p>addExchange</p>
      *
-     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder} object.
-     * @param validator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.RequestBuilder} object.
+     * @param validator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     public void addExchange(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> validator) {
-        addExchange(new SimpleClientExchange<Request, Response>(requestBuilder, validator));
+        addExchange(new ConversationExchangeDefaultImpl<Request, Response>(requestBuilder, validator));
     }
-    
+
     /**
      * <p>addExchange</p>
      *
-     * @param exchange a {@link org.opennms.netmgt.provision.support.ClientConversation.ClientExchange} object.
+     * @param exchange a {@link org.opennms.netmgt.provision.support.ClientConversation.ConversationExchange} object.
      */
-    public void addExchange(ClientExchange<Request, Response> exchange) {
+    public void addExchange(ConversationExchange<Request, Response> exchange) {
         m_conversation.add(exchange); 
     }
-    
+
     /**
      * <p>attemptConversation</p>
      *
@@ -128,7 +97,7 @@ public class ClientConversation<Request, Response> {
      * @throws java.lang.Exception if any.
      */
     public boolean attemptConversation(Client<Request, Response> client) throws IOException, Exception { 
-        
+
         if (m_bannerValidator != null) {
             Response banner = client.receiveBanner();
             if (!m_bannerValidator.validate(banner)) {
@@ -136,24 +105,20 @@ public class ClientConversation<Request, Response> {
                 return false;
             }
         }
-        
-        for(ClientExchange<Request, Response> ex : m_conversation) {
-            
+
+        for(ConversationExchange<Request, Response> ex : m_conversation) {
+
             Request request = ex.getRequest();
-            
+
             LogUtils.infof(this, "Sending Request %s\n", request);
             Response response = client.sendRequest(request);
-            
+
             LogUtils.infof(this, "Received Response %s\n", response);
             if (!ex.validate(response)) {
                 return false;
             }
         }
-        
-        
-        
+
         return true;
-        
     }
-    
 }

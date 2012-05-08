@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.exchange.Exchange;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 @Scope("prototype")
-public class SnmpDetector extends AbstractDetector {
+public class SnmpDetector extends SyncAbstractDetector {
     
     /** Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
@@ -111,10 +111,6 @@ public class SnmpDetector extends AbstractDetector {
     public SnmpDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void init() {}
 
     /** {@inheritDoc} */
     @Override
@@ -280,16 +276,10 @@ public class SnmpDetector extends AbstractDetector {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        // TODO Auto-generated method stub
-        
     }
 
     /** {@inheritDoc} */
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-        
     }
-    
-
 }

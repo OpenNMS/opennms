@@ -35,7 +35,7 @@ import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.adapters.link.EndPointImpl;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -44,15 +44,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>EndPointDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class EndPointDetector extends AbstractDetector {
+public class EndPointDetector extends SyncAbstractDetector {
     
     /** Constant <code>DEFAULT_SERVICE_NAME="EndPoint"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "EndPoint";
@@ -91,10 +91,6 @@ public class EndPointDetector extends AbstractDetector {
     public EndPointDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void init() {}
 
     /** {@inheritDoc} */
     @Override

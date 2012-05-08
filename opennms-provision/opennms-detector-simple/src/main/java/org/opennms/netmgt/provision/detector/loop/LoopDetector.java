@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.loop.response.LoopResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -73,11 +73,11 @@ public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopRespons
         expectBanner(ipMatches(getIpMatch()));
     }
 
-    private ResponseValidator<LoopResponse> ipMatches(final String ipAddr) {
+    private static ResponseValidator<LoopResponse> ipMatches(final String ipAddr) {
         
         return new ResponseValidator<LoopResponse>(){
 
-            public boolean validate(LoopResponse response) throws Exception {
+            public boolean validate(LoopResponse response) {
                 return response.validateIPMatch(ipAddr);
             }
             

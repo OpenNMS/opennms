@@ -36,7 +36,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.DatagramClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.dns.DNSAddressRequest;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

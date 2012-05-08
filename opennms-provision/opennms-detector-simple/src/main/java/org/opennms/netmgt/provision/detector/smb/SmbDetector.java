@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.smb.client.SmbClient;
 import org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -88,10 +88,10 @@ public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressRe
         
     }
     
-    private ResponseValidator<NbtAddressResponse> validateAddressIsNotSame(){
+    private static ResponseValidator<NbtAddressResponse> validateAddressIsNotSame(){
         return new ResponseValidator<NbtAddressResponse>() {
 
-            public boolean validate(NbtAddressResponse response) throws Exception {
+            public boolean validate(NbtAddressResponse response) {
                 return response.validateAddressIsNotSame();
             }
             

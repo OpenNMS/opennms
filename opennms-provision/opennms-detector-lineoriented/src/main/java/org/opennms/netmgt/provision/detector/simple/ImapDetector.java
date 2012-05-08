@@ -32,15 +32,15 @@ import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>ImapDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class ImapDetector extends AsyncLineOrientedDetector {
+public class ImapDetector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "IMAP";
     private static final int DEFAULT_PORT = 143;
