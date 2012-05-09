@@ -75,8 +75,8 @@ public abstract class AbstractDetector implements ServiceDetector {
      */
     @Override
     public final void init() {
-        if (m_serviceName == null || m_timeout <= 0) {
-            throw new IllegalStateException(String.format("ServiceName is null or timeout of %d is invalid. Timeout must be > 0", m_timeout));
+        if (m_serviceName == null || m_timeout < -1) {
+            throw new IllegalStateException(String.format("ServiceName is null or timeout of %d is invalid. Timeout must be > -1", m_timeout));
         }
         onInit();
     }
