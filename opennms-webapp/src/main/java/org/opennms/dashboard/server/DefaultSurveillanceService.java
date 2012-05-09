@@ -214,6 +214,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         addCriteriaForSurveillanceSet(nodeCriteria, set);
         nodeCriteria.add(Restrictions.ne("type", "D"));
         criteria.addOrder(Order.desc("alarm.severity"));
+        criteria.setMaxResults(100);
         
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
