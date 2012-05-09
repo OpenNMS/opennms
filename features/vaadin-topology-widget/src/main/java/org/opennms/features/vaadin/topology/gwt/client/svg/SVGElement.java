@@ -22,4 +22,16 @@ public class SVGElement extends Element{
         return this.createSVGPoint();
     }-*/;
 
+    public final native void setX(int x) /*-{
+        this.x = x;
+    }-*/;
+    
+    public final native void setY(int y) /*-{
+        this.y = y;
+    }-*/;
+
+    public final native SVGRect getBBox() /*-{
+        return this.getBBox();
+    }-*/;
+
 }

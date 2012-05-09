@@ -19,6 +19,7 @@ import org.opennms.features.vaadin.topology.gwt.client.svg.SVGElement;
 import org.opennms.features.vaadin.topology.gwt.client.svg.SVGGElement;
 import org.opennms.features.vaadin.topology.gwt.client.svg.SVGMatrix;
 import org.opennms.features.vaadin.topology.gwt.client.svg.SVGPoint;
+import org.opennms.features.vaadin.topology.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -313,11 +314,61 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         @Override
         public void move() {
-            SVGPoint p = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf);
-            getDraggableElement().setAttribute("transform", matrixTransform( m_stateTf.inverse().translate(p.getX() - m_stateOrigin.getX(), p.getY() - m_stateOrigin.getY() )));
+            Event event = D3.getEvent().cast();
+            SVGPoint p = getEventPoint(event).matrixTransform(m_stateTf);
             
+            SVGElement svg = getContainerElement().cast();
+            SVGGElement g = getDraggableElement().cast();
+            SVGRect gBox = g.getBBox();
+            
+            SVGMatrix m = m_stateTf.inverse().translate(p.getX() - m_stateOrigin.getX(), p.getY() - m_stateOrigin.getY() );
+            
+            double mapWidth = gBox.getWidth() * m.getA();
+            double mapHeight = gBox.getHeight() * m.getA();
+            
+            double boundaryX = calculateBoundsX(mapWidth, svg.getOffsetWidth(), m.getE());
+            
+            double boundaryY = calculateBoundsY(mapHeight, svg.getOffsetHeight(), m.getF());
+            
+            String matrixTransform = "matrix(" + m.getA() +
+                    ", " + m.getB() +
+                    ", " + m.getC() + 
+                    ", " + m.getD() +
+                    ", " + boundaryX + 
+                    ", " + boundaryY + ")";
+            
+            getDraggableElement().setAttribute("transform", matrixTransform);
+            
+            //Updating the reference map
+            //TODO: this needs to be reworked a little its off
+            double viewPortWidth = (getContainerElement().getOffsetWidth() / m.getA()) * 0.4;
+            double viewPortHeight = (getContainerElement().getOffsetHeight() / m.getA()) * 0.4;
+            m_referenceMapViewport.setAttribute("width", "" + viewPortWidth);
+            m_referenceMapViewport.setAttribute("height", "" + viewPortHeight);
+            m_referenceMapViewport.setAttribute("x", "" + (-boundaryX * 0.4));
+            m_referenceMapViewport.setAttribute("y", "" + (-boundaryY * 0.4));
         }
-        
+
+        private double calculateBoundsY(double mapHeight, int offsetHeight,
+                double y) {
+            double boundaryY;
+            if(mapHeight > offsetHeight) {
+                boundaryY = Math.min(0, Math.max(offsetHeight - mapHeight, y));
+            }else {
+                boundaryY = Math.max(0, Math.min(offsetHeight - mapHeight, y));
+            }
+            return boundaryY;
+        }
+
+        private double calculateBoundsX(double mapWidth, int offsetWidth, double x) {
+            double boundaryX;
+            if(mapWidth > offsetWidth) {
+                return Math.min(0, Math.max(offsetWidth - mapWidth, x));
+            }else {
+                return Math.max(0, Math.min(offsetWidth - mapWidth, x));
+            }
+        }
+
     }
     
     public class DragObject{
@@ -406,6 +457,18 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     @UiField
     Element m_vertexGroup;
     
+    @UiField
+    Element m_scaledMap;
+    
+    @UiField
+    Element m_referenceMap;
+    
+    @UiField
+    Element m_referenceMapViewport;
+    
+    @UiField
+    Element m_referenceMapBorder;
+    
     /**
      * This map contains captions and icon urls for actions like: * "33_c" ->
      * "Edit" * "33_i" -> "http://dom.com/edit.png"
@@ -433,6 +496,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     protected void onLoad() {
         super.onLoad();
         
+       
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
         
         setupPanningBehavior(m_svg);
@@ -491,6 +555,30 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	    }else {
 	        m_graphDrawer.updateGraph(g);
 	    }
+	    
+	    //TODO: working here
+	    SVGRect bbox = getSVGElement().getBBox();
+        SVGGElement map = m_svgViewPort.cast();
+        SVGRect mapBbox = map.getBBox();
+        double referenceScale = 0.4;
+        int x = bbox.getX();
+        int y = bbox.getY();
+        int width = (int) (mapBbox.getWidth() * referenceScale);
+        int height = (int) (mapBbox.getHeight() * referenceScale);
+       
+        int viewPortWidth = (int) (m_svg.getOffsetWidth() * referenceScale);
+        int viewPortHeight = (int) (m_svg.getOffsetHeight() * referenceScale);
+        
+        m_referenceMapViewport.setAttribute("width", "" + viewPortWidth);
+        m_referenceMapViewport.setAttribute("height", "" + viewPortHeight);
+        
+        m_referenceMap.setAttribute("transform", "translate(" + (m_svg.getOffsetWidth() - width) + " " + (m_svg.getOffsetHeight() - height) + ")");
+        
+	    
+	    //TODO: Fix this calc
+	    
+        m_scaledMap.setAttribute("viewBox", x + " " + y + " " + mapBbox.getWidth() + " " + mapBbox.getHeight());
+        
 	    
 	}
 

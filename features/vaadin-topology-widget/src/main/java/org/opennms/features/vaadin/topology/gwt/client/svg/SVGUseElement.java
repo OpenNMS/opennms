@@ -2,16 +2,11 @@ package org.opennms.features.vaadin.topology.gwt.client.svg;
 
 import com.google.gwt.dom.client.Element;
 
-public class SVGGElement extends Element {
+public class SVGUseElement extends Element {
 
-    protected SVGGElement() {}
-
-    public final native SVGMatrix getCTM() /*-{
-        return this.getCTM();
-    }-*/;
+    protected SVGUseElement() {}
 
     public final native SVGRect getBBox() /*-{
         return this.getBBox();
     }-*/;
-
 }
