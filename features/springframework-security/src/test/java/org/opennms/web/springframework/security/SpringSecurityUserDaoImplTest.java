@@ -98,7 +98,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Test
     public void testGetByUsernameAdmin() {
-        OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("admin");
+        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("admin");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "admin", user.getUsername());
         assertEquals("Full name", "Administrator", user.getFullName());
@@ -140,7 +140,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
         m_userManager.save(newUser);
 
-        final OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("tempuser");
+        final OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("tempuser");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "tempuser", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -160,7 +160,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
         m_userManager.save(newUser);
 
-        OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "dashboard", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -199,7 +199,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             OnmsUser user;
             Collection<? extends GrantedAuthority> authorities;
             
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -216,7 +216,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
             writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
 
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -269,7 +269,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             OnmsUser user;
             Collection<? extends GrantedAuthority> authorities;
             
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -286,7 +286,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
             writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
 
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);

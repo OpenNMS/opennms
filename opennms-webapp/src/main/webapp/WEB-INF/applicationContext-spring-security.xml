@@ -68,12 +68,6 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-  <authentication-manager>
-    <authentication-provider user-service-ref="openNMSUserDetailsService">
-      <password-encoder ref="upperCaseMd5PasswordEncoder" />
-    </authentication-provider>
-  </authentication-manager>
-  
   <!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
   <beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
     <beans:property name="filterManager" ref="filterManager" />
@@ -90,11 +84,11 @@
     <beans:property name="groupManager" ref="groupManager" />
   </beans:bean>
 
-  <beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">
+  <beans:bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
+    <custom-authentication-provider />
     <beans:property name="userDao" ref="userDao" />
+    <beans:property name="userManager" ref="userManager" />
   </beans:bean>
-
-  <beans:bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder"/>
 
   <!-- ====================== RADIUS AUTHENTICATION ===================== -->
   <!--

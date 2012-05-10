@@ -181,7 +181,7 @@ public class UserFactory extends UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (isUpdateNeeded()) {
             reload();
         }

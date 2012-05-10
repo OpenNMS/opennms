@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>dependencies</artifactId>
+    <version>1.11.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>jasypt-dependencies</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS Jasypt Dependencies</name>
+  <description>
+    This module is used to provide a single artifact that the opennms project
+    can depend on to use the Jasypt encryption library.
+  </description>
+  <dependencies>
+    <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt</artifactId>
+      <version>1.9.0</version>
+    </dependency>
+  </dependencies>
+</project>
