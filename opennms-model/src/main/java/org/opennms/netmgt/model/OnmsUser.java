@@ -29,7 +29,9 @@
 package org.opennms.netmgt.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -44,6 +46,8 @@ import org.springframework.security.userdetails.UserDetails;
 @XmlRootElement(name="user")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OnmsUser implements UserDetails {
+    private static final GrantedAuthority[] EMPTY_AUTHORITY_ARRAY = new GrantedAuthority[0];
+
     private static final long serialVersionUID = -5750203994158854220L;
 
     @XmlElement(name="user-id", required=true)
@@ -227,5 +231,16 @@ public class OnmsUser implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
+    public void addAuthority(GrantedAuthority authority) {
+        final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        authorities.add(authority);
+        if (m_authorities != null) {
+            for (final GrantedAuthority existing : m_authorities) {
+                authorities.add(existing);
+            }
+        }
+        m_authorities = authorities.toArray(EMPTY_AUTHORITY_ARRAY);
+    }
 
 }

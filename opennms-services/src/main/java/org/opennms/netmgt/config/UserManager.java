@@ -1116,13 +1116,17 @@ public abstract class UserManager {
             final String password = user.getPassword().getContent().trim();
             final boolean isSalted = user.getPassword().getSalt();
             if (isSalted) {
-                return m_passwordEncryptor.checkPassword(aPassword, password);
+                return checkSaltedPassword(aPassword, password);
             } else {
                 return password.equals(encryptedPassword(aPassword, false));
             }
         } finally {
             m_readLock.unlock();
         }
+    }
+
+    public boolean checkSaltedPassword(final String raw, final String encrypted) {
+        return m_passwordEncryptor.checkPassword(raw, encrypted);
     }
     
     /**

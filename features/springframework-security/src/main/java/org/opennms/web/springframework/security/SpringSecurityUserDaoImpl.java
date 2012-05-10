@@ -68,8 +68,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     private GroupManager m_groupManager;
 
-    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
-
     private String m_usersConfigurationFile;
     
     private String m_groupsConfigurationFile;
