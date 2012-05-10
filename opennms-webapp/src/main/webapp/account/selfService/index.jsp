@@ -35,7 +35,9 @@
 	import="org.opennms.netmgt.config.UserFactory,
 	org.opennms.netmgt.config.UserManager,
 	org.opennms.netmgt.config.users.User,
-	org.opennms.web.springframework.security.Authentication"
+    org.springframework.web.context.WebApplicationContext,
+    org.springframework.web.context.support.WebApplicationContextUtils,
+    org.opennms.web.springframework.security.Authentication"
 %>
 
 <%
@@ -45,7 +47,8 @@
         canEdit = true;
     } else {
 	    try {
-       		UserManager userFactory = UserFactory.getInstance();
+            final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+            final UserManager userFactory = webAppContext.getBean("userManager", org.opennms.netmgt.config.UserManager.class);
        		User user = userFactory.getUser(userid);
        		if (!user.isReadOnly()) {
        		    canEdit = true;

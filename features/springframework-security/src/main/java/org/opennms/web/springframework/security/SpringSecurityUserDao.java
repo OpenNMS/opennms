@@ -29,12 +29,16 @@
 package org.opennms.web.springframework.security;
 
 import org.opennms.netmgt.model.OnmsUser;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
 
 /**
  * <p>SpringSecurityUserDao interface.</p>
  */
 public interface SpringSecurityUserDao {
-	/**
+	public static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
+
+    /**
 	 * <p>getByUsername</p>
 	 *
 	 * @param username a {@link java.lang.String} object.
