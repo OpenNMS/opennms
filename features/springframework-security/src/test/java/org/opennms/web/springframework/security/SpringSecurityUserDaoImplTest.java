@@ -125,7 +125,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         assertEquals("OnmsUser name", "rtc", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
         assertEquals("Comments", null, user.getComments());
-        assertEquals("Password", "68154466F81BFB532CD70F8C71426356", user.getPassword());
+        assertTrue("Password", m_userManager.checkSaltedPassword("rtc", user.getPassword()));
 
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);

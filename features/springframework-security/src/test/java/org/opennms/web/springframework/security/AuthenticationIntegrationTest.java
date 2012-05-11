@@ -50,7 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -72,7 +72,7 @@ public class AuthenticationIntegrationTest implements InitializingBean {
     private UserManager m_userManager;
 
 	@Autowired
-	private DaoAuthenticationProvider m_provider; 
+	private AuthenticationProvider m_provider; 
 
 	@Before
 	public void setUp() {
