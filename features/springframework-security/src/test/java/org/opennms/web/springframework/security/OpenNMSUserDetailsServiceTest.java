@@ -55,18 +55,6 @@ public class OpenNMSUserDetailsServiceTest extends TestCase {
 		assertEquals("getUsersDao returned what we passed to setUsersDao", userDao, detailsService.getUserDao());
 	}
 	
-	public void testLoadUserWithoutDao() {
-		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
-		ThrowableAnticipator ta = new ThrowableAnticipator();
-		ta.anticipate(new IllegalStateException("usersDao parameter must be set to a UsersDao bean"));
-		try {
-			detailsService.loadUserByUsername("test_user");
-		} catch (Throwable t) {
-			ta.throwableReceived(t);
-		}
-		ta.verifyAnticipated();
-	}
-	
 	public void testGetUser() {
 		SpringSecurityUserDao userDao = createMock(SpringSecurityUserDao.class);
 		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
@@ -95,7 +83,7 @@ public class OpenNMSUserDetailsServiceTest extends TestCase {
 		replay(userDao);
 		
 		ThrowableAnticipator ta = new ThrowableAnticipator();
-		ta.anticipate(new UsernameNotFoundException("User test_user is not a valid user"));
+		ta.anticipate(new UsernameNotFoundException("Unable to locate test_user in the userDao"));
 		
 		try {
 			detailsService.loadUserByUsername("test_user");

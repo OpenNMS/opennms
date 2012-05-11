@@ -44,18 +44,18 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
         final String password = authentication.getCredentials().toString();
         final OnmsUser user = m_userDao.getByUsername(username);
 
-        System.err.println("authenticate: " + authentication);
-        System.err.println("  username = " + username);
-        System.err.println("  password = " + password);
-
         boolean hasUser = false;
+
+        if (user == null) {
+            throw new BadCredentialsException("Bad credentials");
+        }
+
         try {
             hasUser = m_userManager.hasUser(user.getUsername());
         } catch (final Exception e) {
-            throw new AuthenticationServiceException("Unable to retrieve " + username + " from the UserManager", e);
+            throw new AuthenticationServiceException("An error occurred while checking for " + username + " in the UserManager", e);
         }
         if (hasUser) {
-            System.err.println("HybridOpenNMSUserAuthenticationProvider: additionalAuthenticationChecks: credentials = " + authentication.getCredentials());
             if (!m_userManager.comparePasswords(username, password)) {
                 throw new BadCredentialsException("Bad credentials");
             }
