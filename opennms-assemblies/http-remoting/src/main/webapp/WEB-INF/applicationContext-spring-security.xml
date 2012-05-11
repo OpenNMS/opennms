@@ -25,7 +25,9 @@
 	</beans:bean>
 
 	<!-- use our custom authentication provider; to use RADIUS instead, change this to "radiusAuthenticationProvider" and uncomment below -->
-	<authentication-provider ref="hybridAuthenticationProvider" />
+	<authentication-manager>
+		<authentication-provider ref="hybridAuthenticationProvider" />
+	</authentication-manager>
 
 	<!-- ===================== USER DAO AUTHENTICATION ==================== -->
 	<beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
@@ -42,7 +44,6 @@
 	</beans:bean>
 
 	<beans:bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
-		<custom-authentication-provider />
 		<beans:property name="userDao" ref="userDao" />
 		<beans:property name="userManager" ref="userManager" />
 	</beans:bean>
