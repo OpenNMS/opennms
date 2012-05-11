@@ -74,6 +74,9 @@
     <beans:property name="groupDao" ref="groupDao" />
   </beans:bean>
 
+  <!-- use our custom authentication provider; to use RADIUS instead, change this to "radiusAuthenticationProvider" and uncomment below -->
+  <authentication-provider ref="hybridAuthenticationProvider" />
+
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
     <beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
@@ -119,7 +122,6 @@
    -->
   <!-- 
   <beans:bean id="radiusAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
-    <custom-authentication-provider />
     <beans:constructor-arg value="%%% Radius Server %%%"/>
     <beans:constructor-arg value="%%% Shared Secret %%%"/>
   -->
