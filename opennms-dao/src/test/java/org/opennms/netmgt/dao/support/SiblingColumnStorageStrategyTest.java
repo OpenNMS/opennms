@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class SiblingColumnStorageStrategyTest {
         Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath - hrStorageTable
-        Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
+        Assert.assertEquals("1" + File.separator + "hrStorageIndex" + File.separator + "_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
     }
 
     @Test(expected=IllegalArgumentException.class)
