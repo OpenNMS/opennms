@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,8 +45,9 @@ import java.util.Random;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ProcessExec;
 
 /**
  * File anticipator.
@@ -101,17 +103,22 @@ public class FileAnticipator extends Assert {
         }
         
         try {
+        	// Windows is really picky about filehandle reaping, triggering a GC
+        	// keeps it from holding on to files when we're trying to delete them
             deleteExpected(true);
             
             for (ListIterator<File> i = m_deleteMe.listIterator(m_deleteMe.size()); i.hasPrevious(); ) {
                 File f = i.previous();
-                if (!f.delete()) {
-                    StringBuffer b = new StringBuffer();
+                if (!f.exists()) continue;
+                if (!FileUtils.deleteQuietly(f)) {
+                    final StringBuffer b = new StringBuffer();
                     b.append("Could not delete " + f.getAbsolutePath() + ": is it a non-empty directory?");
                     b.append("\nDirectory listing:");
-                    for (File file : f.listFiles()) {
-                        b.append("\n\t");
-                        b.append(file.getName());
+                    if (f.listFiles() != null) {
+	                    for (File file : f.listFiles()) {
+	                        b.append("\n\t");
+	                        b.append(file.getName());
+	                    }
                     }
                     fail(b.toString());
                 }
@@ -121,23 +128,14 @@ public class FileAnticipator extends Assert {
             }
         } catch (Throwable t) {
             if (m_tempDir != null && m_tempDir.exists()) {
-                ProcessExec ex = new ProcessExec(System.out, System.err);
-                String[] cmd = new String[3];
-                cmd[0] = "rm";
-                cmd[1] = "-r";
-                cmd[2] = m_tempDir.getAbsolutePath();
-                
-                try {
-                    ex.exec(cmd);
-                } catch (Throwable innerThrowable) {
-                    StringBuffer command = new StringBuffer();
-                    command.append(cmd[0]);
-                    for (int i = 1; i < cmd.length; i++) {
-                        command.append(" ");
-                        command.append(cmd[i]);
-                    }
+            	try {
+            		FileUtils.forceDelete(m_tempDir);
+            		return;
+            	} catch (final IOException innerThrowable) {
                     LogUtils.warnf(this, innerThrowable, "an error occurred while forcibly removing temporary directory %s", m_tempDir);
                 }
+            } else {
+            	LogUtils.warnf(this, t, "does not exist? %s", m_tempDir);
             }
             if (t instanceof RuntimeException) {
                 throw (RuntimeException) t;
@@ -331,9 +329,19 @@ public class FileAnticipator extends Assert {
 
     private File internalTempFile(File parent, String name, String contents) throws IOException {
         File f = internalTempFile(parent, name);
-        PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
-        w.print(contents);
-        w.close();
+        FileOutputStream out = null;
+        Writer writer = null;
+        PrintWriter printWriter = null;
+        try {
+        	out = new FileOutputStream(f);
+        	writer = new OutputStreamWriter(out, "UTF-8");
+        	printWriter = new PrintWriter(writer);
+        	printWriter.print(contents);
+        } finally {
+        	IOUtils.closeQuietly(printWriter);
+        	IOUtils.closeQuietly(writer);
+        	IOUtils.closeQuietly(out);
+        }
         return f;
     }
 
