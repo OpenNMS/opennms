@@ -64,18 +64,16 @@ import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager
 public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends AsyncBasicDetector<Request, Response> {
 
     private static final ChannelFactory m_factory = new NioClientSocketChannelFactory(
-        /*
-        Executors.newCachedThreadPool(
+        Executors.newFixedThreadPool(
+          Runtime.getRuntime().availableProcessors()
           // TODO: Should be uncommented when merging to master
           //new LogPreservingThreadFactory(getClass().getSimpleName() + ".boss", Integer.MAX_VALUE, false)
         ),
-        Executors.newCachedThreadPool(
+        Executors.newFixedThreadPool(
+          Runtime.getRuntime().availableProcessors()
           // TODO: Should be uncommented when merging to master
           //new LogPreservingThreadFactory(getClass().getSimpleName() + ".worker", Integer.MAX_VALUE, false)
         )
-        */
-        Executors.newSingleThreadExecutor(),
-        Executors.newSingleThreadExecutor()
     ); 
 
     /**
@@ -118,13 +116,6 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
         DetectFuture detectFuture = new DetectFutureFailedImpl(this, new IllegalStateException());
 
         try {
-            /*
-            ChannelFactory factory = new NioClientSocketChannelFactory(
-                Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool()
-            );
-            */
-
             ClientBootstrap bootstrap = new ClientBootstrap(m_factory);
 
             bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
@@ -147,7 +138,7 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
             });
 
             bootstrap.setOption("tcpNoDelay", true);
-            //bootstrap.setOption("keepAlive", true);
+            bootstrap.setOption("keepAlive", true);
 
             SocketAddress remoteAddress = new InetSocketAddress(address, getPort());
             ChannelFuture future = bootstrap.connect(remoteAddress);
@@ -172,27 +163,11 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
         return handler;
     }
 
-    /*
-    private static class TimeClientHandler extends SimpleChannelHandler {
-        @Override
-        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-            ChannelBuffer buf = (ChannelBuffer) e.getMessage();
-            long currentTimeMillis = buf.readInt() * 1000L;
-            System.out.println(new Date(currentTimeMillis));
-            e.getChannel().close();
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-            e.getCause().printStackTrace();
-            e.getChannel().close();
-        }
-    }
-    */
-
     /**
      * Upstream handler that will reattempt connections if an exception is generated on the
      * channel.
+     * 
+     * TODO: This doesn't work yet... need to figure out how to do retries with Netty
      */
     private class RetryChannelFutureListener implements ChannelFutureListener {
         private final SocketAddress m_remoteAddress;

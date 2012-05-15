@@ -30,12 +30,7 @@ package org.opennms.netmgt.provision.detector.simple;
 
 import java.nio.charset.Charset;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.codec.frame.Delimiters;
 import org.jboss.netty.handler.codec.string.StringDecoder;
@@ -61,7 +56,7 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
     protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
     /**
-     * <p>Constructor for AsyncLineOrientedDetector.</p>
+     * <p>Constructor for AsyncLineOrientedDetectorNettyImpl.</p>
      *
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
@@ -72,7 +67,7 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
     }
 
     /**
-     * <p>Constructor for AsyncLineOrientedDetector.</p>
+     * <p>Constructor for AsyncLineOrientedDetectorNettyImpl.</p>
      *
      * @param port a int.
      * @param timeout a int.
@@ -92,10 +87,10 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
             public boolean validate(final LineOrientedResponse response) {
                 return response.startsWith(prefix);
             }
-            
+
         };
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public ResponseValidator<LineOrientedResponse> find(final String regex){
@@ -104,11 +99,10 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
             public boolean validate(final LineOrientedResponse response) {
                 return response.find(regex);
             }
-          
-            
+
         };
     }
-    
+
     /**
      * <p>request</p>
      *
@@ -122,31 +116,10 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
     @Override
     protected void appendToPipeline(ChannelPipeline retval) {
         // Upstream handlers
-        retval.addLast("timestamp1", new SimpleChannelHandler() {
-            @Override
-            public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-                System.err.println("HELLOOOOO1 " + System.currentTimeMillis());
-                ctx.sendUpstream(e);
-            }
-        });
         retval.addLast("frameDecoder", new DelimiterBasedFrameDecoder(1024, Delimiters.lineDelimiter()));
-        retval.addLast("timestamp2", new SimpleChannelHandler() {
-            @Override
-            public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-                System.err.println("HELLOOOOO2 " + System.currentTimeMillis());
-                ctx.sendUpstream(e);
-            }
-        });
         retval.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
-        retval.addLast("timestamp3", new SimpleChannelHandler() {
-            @Override
-            public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-                System.err.println("HELLOOOOO3 " + System.currentTimeMillis());
-                ctx.sendUpstream(e);
-            }
-        });
         retval.addLast("lineDecoder", new LineOrientedResponseDecoder());
-        
+
         // Downstream handlers
         retval.addLast("stringEncoder", new StringEncoder(CharsetUtil.UTF_8));
         retval.addLast("lineEncoder", new LineOrientedRequestEncoder());
