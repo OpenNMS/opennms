@@ -194,11 +194,6 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
 
                         //TODO indigo: Add e.message to error message
                         e.printStackTrace();
-                    } catch (IOException e) {
-                        logger.error("Template file '{}' at folder '{}' not available.", report.getTemplate(), reportTemplateFolder);
-
-                        //TODO indigo: Add e.message to error message
-                        e.printStackTrace();
                     }
                 }
             }
