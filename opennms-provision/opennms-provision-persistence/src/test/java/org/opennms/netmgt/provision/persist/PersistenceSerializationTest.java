@@ -174,7 +174,7 @@ public class PersistenceSerializationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private DetailedDiff getDiff(StringWriter objectXML,
+    private static DetailedDiff getDiff(StringWriter objectXML,
             StringBuffer exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();
