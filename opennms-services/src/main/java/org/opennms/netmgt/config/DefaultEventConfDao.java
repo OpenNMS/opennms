@@ -447,7 +447,21 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
     private class EventResourceLoader extends DefaultResourceLoader {
         @Override
         public Resource getResource(final String location) {
-            if (location.contains(":")) {
+        	location = StringUtils.cleanPath(location);
+
+        	// Check if this is a spring classpath:foo style resource
+        	// but first make sure if we're on windows that it's not
+        	// just a C:\foo path.
+        	
+        	boolean uriResource = false;
+        	if (org.opennms.core.utils.StringUtils.isLocalWindowsPath(location)) {
+        		uriResource = false;
+        	} else if (location.contains(":")) {
+        		// otherwise, something with a : is probably a spring URI resource
+        		uriResource = true;
+        	}
+
+            if (uriResource) {
                 return super.getResource(location);
             } else {
             	final File file = new File(location);
