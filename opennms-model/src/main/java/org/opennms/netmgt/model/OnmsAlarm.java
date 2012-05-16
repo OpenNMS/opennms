@@ -180,8 +180,17 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     private int m_x733ProbableCause = 0;
     
-	private Map<String, String> m_details;
+    private Map<String, String> m_details;
 
+    /** SickyNote Feature */
+    private String m_stickyNote;
+    
+    private String m_stickyNoteUser;
+    
+    private Date m_stickyNoteUpdate;
+    
+    private Date m_stickyNoteCreate;
+    
     /**
      * default constructor
      */
@@ -1028,6 +1037,51 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_ifIndex = ifIndex;
     }
 
+    /** StickyNote Feature */
+    @Column(name="stickyNote")
+    @XmlAttribute(name="stickyNote")
+    public String getStickyNote() {
+        return m_stickyNote;
+    }
+
+    public void setStickyNote(String stickyNote) {
+        this.m_stickyNote = stickyNote;
+    }
+
+    @Column(name="stickyNoteCreate")
+    @XmlAttribute(name="stickyNoteCreate")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getStickyNoteCreate() {
+        return m_stickyNoteCreate;
+    }
+
+    public void setStickyNoteCreate(Date stickyNoteCreate) {
+        this.m_stickyNoteCreate = stickyNoteCreate;
+    }
+
+    @Column(name="stickyNoteUpdate")
+    @XmlAttribute(name="stickyNoteUpdate")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getStickyNoteUpdate() {
+        return m_stickyNoteUpdate;
+    }
+
+    public void setStickyNoteUpdate(Date stickyNoteUpdate) {
+        this.m_stickyNoteUpdate = stickyNoteUpdate;
+    }
+
+    @Column(name="stickyNoteUser")
+    @XmlAttribute(name="stickyNoteUser")
+    public String getStickyNoteUser() {
+        return m_stickyNoteUser;
+    }
+
+    public void setStickyNoteUser(String stickyNoteUser) {
+        this.m_stickyNoteUser = stickyNoteUser;
+    }
+    
+    
+    
     /** {@inheritDoc} */
     public void acknowledge(String user) {
         if (m_alarmAckTime == null || m_alarmAckUser == null) {
