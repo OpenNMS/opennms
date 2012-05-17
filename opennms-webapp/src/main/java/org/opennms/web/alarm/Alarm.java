@@ -160,15 +160,6 @@ public class Alarm extends Object {
     /** The human-readable name of the node of this alarm. Can be null. */
     protected String nodeLabel;
 
-    /** sticky note feature */
-    protected String stickyNote;
-    
-    protected Date stickyNoteCreate;
-    
-    protected Date stickyNoteUpdate;
-    
-    protected String stickyNoteUser;
-    
     /**
      * Empty constructor to create an empty <code>Alarm</code> instance. All
      * fields will hold the default values.
@@ -547,38 +538,6 @@ public class Alarm extends Object {
         return (this.serviceName);
     }
 
-    public String getStickyNote() {
-        return stickyNote;
-    }
-
-    public void setStickyNote(String stickyNote) {
-        this.stickyNote = stickyNote;
-    }
-
-    public Date getStickyNoteCreate() {
-        return stickyNoteCreate;
-    }
-
-    public void setStickyNoteCreate(Date stickyNoteCreate) {
-        this.stickyNoteCreate = stickyNoteCreate;
-    }
-
-    public Date getStickyNoteUpdate() {
-        return stickyNoteUpdate;
-    }
-
-    public void setStickyNoteUpdate(Date stickyNoteUpdate) {
-        this.stickyNoteUpdate = stickyNoteUpdate;
-    }
-
-    public String getStickyNoteUser() {
-        return stickyNoteUser;
-    }
-
-    public void setStickyNoteUser(String stickyNoteUser) {
-        this.stickyNoteUser = stickyNoteUser;
-    }
-    
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -606,10 +565,6 @@ public class Alarm extends Object {
             .append("suppressedTime", suppressedTime)
             .append("acknowledgedUser", acknowledgeUser)
             .append("acknowledgedTime", acknowledgeTime)
-            .append("stickyNote", stickyNote)
-            .append("stickyNoteCreate", stickyNoteCreate)
-            .append("stickyNoteUpdate", stickyNoteUpdate)
-            .append("stickyNoteUser", stickyNoteUser)
             .append("parms", parms)
             .toString();
     }
