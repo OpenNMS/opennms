@@ -17,4 +17,4 @@ build.properties
 .launch
 .*launch
 bin/
-nb-configuration.xml
+
