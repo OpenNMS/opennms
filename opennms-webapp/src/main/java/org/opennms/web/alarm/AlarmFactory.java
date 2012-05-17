@@ -1159,11 +1159,6 @@ public class AlarmFactory extends Object {
                 alarm.acknowledgeTime = new Date(alarmAckTime.getTime());
             }
 
-            alarm.stickyNote = rs.getString("stickyNote");
-            alarm.stickyNoteCreate = rs.getTimestamp("stickyNoteCreate");
-            alarm.stickyNoteUpdate = rs.getTime("stickyNoteUpdate");
-            alarm.stickyNoteUser = rs.getString("stickyNoteUser");
-            
             alarm.nodeLabel = rs.getString("nodeLabel");
 
             alarm.serviceName = rs.getString("serviceName");

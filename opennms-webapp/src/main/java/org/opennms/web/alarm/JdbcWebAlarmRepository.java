@@ -180,10 +180,6 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
             alarm.nodeLabel = rs.getString("nodeLabel");
             alarm.serviceName = rs.getString("serviceName");
             
-            alarm.stickyNote = rs.getString("stickyNote");
-            alarm.stickyNoteCreate = getTimestamp("stickyNoteCreate", rs);
-            alarm.stickyNoteUpdate = getTimestamp("stickyNoteUpdate", rs);
-            alarm.stickyNoteUser = rs.getString("stickyNoteUser");
             return alarm;
             
         }

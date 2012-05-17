@@ -195,11 +195,6 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         alarm.acknowledgeTime = onmsAlarm.getAckTime();
         alarm.parms = onmsAlarm.getEventParms();
 
-        alarm.stickyNote = onmsAlarm.getStickyNote();
-        alarm.stickyNoteCreate = onmsAlarm.getStickyNoteCreate();
-        alarm.stickyNoteUpdate = onmsAlarm.getStickyNoteUpdate();
-        alarm.stickyNoteUser = onmsAlarm.getStickyNoteUser();
-        
         alarm.nodeLabel = onmsAlarm.getNode() != null ? onmsAlarm.getNode().getLabel() : ""; 
         alarm.serviceName = onmsAlarm.getServiceType() != null ? onmsAlarm.getServiceType().getName() : "";
         return alarm;
