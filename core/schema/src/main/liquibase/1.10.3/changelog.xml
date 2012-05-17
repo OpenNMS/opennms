@@ -10,17 +10,17 @@
     <!-- Add fields to alarms table to add sticky notes -->
     <changeSet author="derTak" id="1.10.3-alarm-note-feature">
         <addColumn tableName="alarms">
-            <column name="stickynote" type="text"/>
-            <column name="stickynotecreate" type="DATETIME"/>
-            <column name="stickynoteupdate" type="DATETIME"/>
-            <column name="stickynoteuser" type="varchar(256)"/> 
+            <column name="stickyNote" type="text"/>
+            <column name="stickyNoteCreate" type="DATETIME"/>
+            <column name="stickyNoteUpdate" type="DATETIME"/>
+            <column name="stickyNoteUser" type="varchar(64)"/> 
         </addColumn>
         
         <rollback>
-            <dropColumn tableName="alarms" columnName="stickynote" />
-            <dropColumn tableName="alarms" columnName="stickynotecreate" />
-            <dropColumn tableName="alarms" columnName="stickynoteupdate" />
-            <dropColumn tableName="alarms" columnName="stickynoteuser" />
+            <dropColumn tableName="alarms" columnName="stickyNote" />
+            <dropColumn tableName="alarms" columnName="stickyNoteCreate" />
+            <dropColumn tableName="alarms" columnName="stickyNoteUpdate" />
+            <dropColumn tableName="alarms" columnName="stickyNoteUser" />
         </rollback>
     </changeSet>
 

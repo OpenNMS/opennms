@@ -1039,7 +1039,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     /** StickyNote Feature */
     @Column(name="stickyNote")
-    @XmlElement(name="stickyNote")
+    @XmlAttribute(name="stickyNote")
     public String getStickyNote() {
         return m_stickyNote;
     }
@@ -1049,7 +1049,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="stickyNoteCreate")
-    @XmlElement(name="stickyNoteCreate")
+    @XmlAttribute(name="stickyNoteCreate")
     @Temporal(TemporalType.TIMESTAMP)
     public Date getStickyNoteCreate() {
         return m_stickyNoteCreate;
@@ -1060,7 +1060,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="stickyNoteUpdate")
-    @XmlElement(name="stickyNoteUpdate")
+    @XmlAttribute(name="stickyNoteUpdate")
     @Temporal(TemporalType.TIMESTAMP)
     public Date getStickyNoteUpdate() {
         return m_stickyNoteUpdate;
@@ -1071,7 +1071,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="stickyNoteUser")
-    @XmlElement(name="stickyNoteUser")
+    @XmlAttribute(name="stickyNoteUser")
     public String getStickyNoteUser() {
         return m_stickyNoteUser;
     }
