@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.easymock.EasyMock;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -80,6 +81,8 @@ public class SnmpThresholderTest {
     private IfInfoGetter m_ifInfoGetter;
     
     private EasyMockUtils m_mocks = new EasyMockUtils();
+    
+    private FileOutputStream m_out = null;
         
     @SuppressWarnings("deprecation")
     @Before
@@ -109,6 +112,9 @@ public class SnmpThresholderTest {
     
     @After
     public void tearDown() {
+    	IOUtils.closeQuietly(m_out);
+    	m_out = null;
+    	System.gc();
         m_fileAnticipator.tearDown();
     }
     
@@ -335,7 +341,7 @@ public class SnmpThresholderTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testThresholdWithGenericResourceTypes() throws Exception {
-        System.err.println("--------------------------------------------------------");
+    	System.err.println("--------------------------------------------------------");
         // Set storeByGroup, because JRBs will be created with this feature
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
 
@@ -365,7 +371,9 @@ public class SnmpThresholderTest {
         strings.setProperty("frDlci", "100");
         strings.setProperty("frIntf", "0");
         File sFile1 = m_fileAnticipator.tempFile(r1Dir, "strings.properties");
-        strings.store(new FileOutputStream(sFile1), null);
+        m_out = new FileOutputStream(sFile1);
+		strings.store(m_out, null);
+		m_out.close();
         
         // Creating JRB content for Resource 1
         List<String> data1 = new ArrayList<String>();
@@ -381,7 +389,9 @@ public class SnmpThresholderTest {
         strings.setProperty("frDlci", "200");
         strings.setProperty("frIntf", "1");
         File sFile2 = m_fileAnticipator.tempFile(r2Dir, "strings.properties");
-        strings.store(new FileOutputStream(sFile2), null);
+        m_out = new FileOutputStream(sFile2);
+		strings.store(m_out, null);
+		m_out.close();
         
         // Creating JRB content for Resource 2        
         List<String> data2 = new ArrayList<String>();
@@ -431,7 +441,9 @@ public class SnmpThresholderTest {
         // Creating strings.properties for Resource 1
         strings.setProperty("hrStorageDescr", "/opt");
         File sFile1 = m_fileAnticipator.tempFile(r1Dir, "strings.properties");
-        strings.store(new FileOutputStream(sFile1), null);
+        m_out = new FileOutputStream(sFile1);
+        strings.store(m_out, null);
+        m_out.close();
         
         // Creating JRB content for Resource 1
         List<String> data1 = new ArrayList<String>();
@@ -457,7 +469,9 @@ public class SnmpThresholderTest {
             ds.setProperty(source, group);
         }
         File dsFile = m_fileAnticipator.tempFile(dir, "ds.properties");
-        ds.store(new FileOutputStream(dsFile), null);
+        m_out = new FileOutputStream(dsFile);
+        ds.store(m_out, null);
+        m_out.close();
     }
     
     private void createAndUpdateRrd(File rrdPath, long start, List<String> sources, List<String> values) throws Exception {

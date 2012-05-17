@@ -447,17 +447,31 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
     private class EventResourceLoader extends DefaultResourceLoader {
         @Override
         public Resource getResource(final String location) {
-            if (location.contains(":")) {
-                return super.getResource(location);
+        	final String cleanLocation = StringUtils.cleanPath(location);
+
+        	// Check if this is a spring classpath:foo style resource
+        	// but first make sure if we're on windows that it's not
+        	// just a C:\foo path.
+        	
+        	boolean uriResource = false;
+        	if (org.opennms.core.utils.StringUtils.isLocalWindowsPath(cleanLocation)) {
+        		uriResource = false;
+        	} else if (cleanLocation.contains(":")) {
+        		// otherwise, something with a : is probably a spring URI resource
+        		uriResource = true;
+        	}
+
+            if (uriResource) {
+                return super.getResource(cleanLocation);
             } else {
-            	final File file = new File(location);
+            	final File file = new File(cleanLocation);
                 if (file.isAbsolute()) {
                     return new FileSystemResource(file);
                 } else {
                     try {
-                        return getConfigResource().createRelative(location);
+                        return getConfigResource().createRelative(cleanLocation);
                     } catch (final IOException e) {
-                        throw new ObjectRetrievalFailureException(Resource.class, location, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + location, null);
+                        throw new ObjectRetrievalFailureException(Resource.class, cleanLocation, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + cleanLocation, null);
                     }
                 }
             }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
@@ -40,10 +41,11 @@ import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.ByteArrayResource;
 
 public class DataCollectionConfigFactoryTest {
+	private static File m_rrdRepository = new File(System.getProperty("java.io.tmpdir") + File.separator + "wonka" + File.separator + "rrd" + File.separator + "snmp");
 
     private static String m_xml = "<?xml version=\"1.0\"?>\n" + 
             "<datacollection-config\n" + 
-            "   rrdRepository = \"/wonka/rrd/snmp/\">\n" + 
+            "   rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">\n" + 
             "   <snmp-collection name=\"default\"\n" + 
             "       snmpStorageFlag = \"select\">\n" + 
             "       <rrd step = \"300\">\n" + 
@@ -104,7 +106,7 @@ public class DataCollectionConfigFactoryTest {
     @Test
     public void testSetInstance() throws MarshalException, ValidationException, IOException {
         initDataCollectionFactory(m_xml);
-        assertEquals("/wonka/rrd/snmp", DataCollectionConfigFactory.getInstance().getRrdPath());
+        assertEquals(m_rrdRepository.getAbsolutePath(), DataCollectionConfigFactory.getInstance().getRrdPath());
     }
     
     @Test
