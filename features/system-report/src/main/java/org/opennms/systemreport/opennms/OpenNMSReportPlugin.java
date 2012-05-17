@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
@@ -40,10 +41,11 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
-public class OpenNMSReportPlugin extends AbstractSystemReportPlugin {
+public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements InitializingBean {
     @Autowired
     public NodeDao m_nodeDao;
 
@@ -58,6 +60,11 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin {
     
     @Autowired
     public AlarmDao m_alarmDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     public String getName() {
         return "OpenNMS";

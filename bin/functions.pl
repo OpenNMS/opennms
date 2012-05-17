@@ -4,6 +4,8 @@ use Cwd;
 use File::Basename;
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
+use IO::Handle;
+use IPC::Open2;
 
 use vars qw(
 	$BUILD_PROFILE
@@ -274,6 +276,43 @@ sub handle_errors_and_exit_on_failure {
 sub handle_errors_and_exit {
 	my $exit = handle_errors(@_);
 	exit ($exit >> 8);
+}
+
+sub run_command {
+	my $outfile = shift;
+	my @command = @_;
+
+	my $start = time;
+	my $count = 0;
+
+	my $read   = IO::Handle->new();
+	my $write  = IO::Handle->new();
+	my $output = IO::Handle->new();
+
+	if (not defined $outfile) {
+		$outfile = 'output.log';
+	}
+	open($output, '>' . $outfile) or die "unable to write to $outfile: $!";
+	$output->autoflush(1);
+
+	my $pid = open2($read, $write, @command);
+
+	close($write);
+
+	my $elapsed = 0;
+	while (<$read>) {
+		print $output $_;
+		if (($count++ % 1000) == 0) {
+			$elapsed = time - $start;
+			info(sprintf("elapsed time: %.2f minutes", ($elapsed / 60.0)));
+		}
+	}
+
+	close($read);
+	close($output);
+
+	waitpid($pid, 0);
+	return $?;
 }
 
 sub debug {

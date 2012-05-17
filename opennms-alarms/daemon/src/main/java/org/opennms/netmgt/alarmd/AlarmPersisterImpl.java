@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.springframework.util.Assert;
 
 /**
@@ -63,6 +64,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
         //TODO: Understand why we use Assert
         Assert.notNull(event, "Incoming event was null, aborting"); 
         Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
+        
+        
+        //for some reason when we get here the event from the DB doesn't have the LogMsg (in my tests anyway)
         OnmsEvent e = m_eventDao.get(event.getDbid());
         Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
     
@@ -79,7 +83,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             m_eventDao.saveOrUpdate(e);
         } else {
             log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" found, reducing event to existing alarm: "+alarm.getIpAddr());
-            reduceEvent(e, alarm);
+            reduceEvent(e, alarm, event);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
     
@@ -91,14 +95,73 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
 
-    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {
+    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
+        
+        //Always set these
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
-        // Update any dynamic fields that the user will want to see the latest 
-        // values for to values from the latest event 
-        alarm.setLogMsg(e.getEventLogMsg());
-        alarm.setEventParms(e.getEventParms());
         alarm.setCounter(alarm.getCounter() + 1);
+        
+        if (!event.getAlarmData().hasUpdateFields()) {
+            
+            //We always set these even if there are not update fields specified
+            alarm.setLogMsg(e.getEventLogMsg());
+            alarm.setEventParms(e.getEventParms());
+        } else {
+            
+            for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
+                
+                //Always set these, unless specified not to, in order to maintain current behavior
+                if (field.getFieldName().equalsIgnoreCase("LogMsg") && field.isUpdateOnReduction() == false) {
+                    continue;
+                } else {
+                    alarm.setLogMsg(e.getEventLogMsg());
+                }
+                
+                if (field.getFieldName().equalsIgnoreCase("Parms") && field.isUpdateOnReduction() == false) {
+                    continue;
+                } else {
+                    alarm.setEventParms(e.getEventParms());
+                }
+                
+
+                //Set these others
+                if (field.isUpdateOnReduction()) {
+                    
+                    if (field.getFieldName().toLowerCase().startsWith("distpoller")) {
+                        alarm.setDistPoller(e.getDistPoller());
+                    } else if (field.getFieldName().toLowerCase().startsWith("ipaddr")) {
+                        alarm.setIpAddr(e.getIpAddr());
+                    } else if (field.getFieldName().toLowerCase().startsWith("mouseover")) {
+                        alarm.setMouseOverText(e.getEventMouseOverText());
+                    } else if (field.getFieldName().toLowerCase().startsWith("operinstruct")) {
+                        alarm.setOperInstruct(e.getEventOperInstruct());
+                    } else if (field.getFieldName().equalsIgnoreCase("severity")) {
+                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                    } else if (field.getFieldName().toLowerCase().contains("descr")) {
+                        alarm.setDescription(e.getEventDescr());
+                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                    } else {
+                        log().warn("reduceEvent: The specified field: "+field.getFieldName()+", is not supported.");
+                    }
+
+                    /* This doesn't work because the properties are not consistent from OnmsEvent to OnmsAlarm
+                    try {
+                        final BeanWrapper ew = PropertyAccessorFactory.forBeanPropertyAccess(e);
+                        final BeanWrapper aw = PropertyAccessorFactory.forBeanPropertyAccess(alarm);
+                        aw.setPropertyValue(field.getFieldName(), ew.getPropertyValue(field.getFieldName()));
+                    } catch (BeansException be) {
+                        System.out.println(be);
+                        log().error("reduceEvent:", be);
+                        continue;
+                    }
+                    */
+                    
+                }
+            }
+            
+        }
+        
         e.setAlarm(alarm);
     }
 

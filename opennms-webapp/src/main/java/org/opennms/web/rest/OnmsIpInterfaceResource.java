@@ -105,24 +105,30 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeCriteria") final String nodeCriteria) {
-        LogUtils.debugf(this, "getIpInterfaces: reading interfaces for node %s", nodeCriteria);
-
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        readLock();
         
-        final MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
-        
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
-        builder.ne("isManaged", "D");
-        builder.limit(20);
-        applyQueryFilters(params, builder);
-        builder.alias("node", "node");
-        builder.eq("node.id", node.getId());
-        
-        final OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(builder.toCriteria()));
-
-        interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(builder.count().toCriteria()));
-        
-        return interfaceList;
+        try {
+            LogUtils.debugf(this, "getIpInterfaces: reading interfaces for node %s", nodeCriteria);
+    
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            
+            final MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+            
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
+            builder.ne("isManaged", "D");
+            builder.limit(20);
+            applyQueryFilters(params, builder);
+            builder.alias("node", "node");
+            builder.eq("node.id", node.getId());
+            
+            final OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(builder.toCriteria()));
+    
+            interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(builder.count().toCriteria()));
+            
+            return interfaceList;
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -136,11 +142,17 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddress}")
     public OnmsIpInterface getIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "getIpInterface: can't find node " + nodeCriteria);
+        readLock();
+        
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "getIpInterface: can't find node " + nodeCriteria);
+            }
+            return node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
+        } finally {
+            readUnlock();
         }
-        return node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
     }
 
     /**
@@ -153,31 +165,37 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "addIpInterface: can't find node " + nodeCriteria);
-        } else if (ipInterface == null) {
-            throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface object cannot be null");
-        } else if (ipInterface.getIpAddress() == null) {
-            throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress cannot be null");
-        } else if (ipInterface.getIpAddress().getAddress() == null) {
-            throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress bytes cannot be null");
-        }
-        LogUtils.debugf(this, "addIpInterface: adding interface %s", ipInterface);
-        node.addIpInterface(ipInterface);
-        m_ipInterfaceDao.save(ipInterface);
+        writeLock();
         
-        final EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, getClass().getName());
-
-        bldr.setNodeid(node.getId());
-        bldr.setInterface(ipInterface.getIpAddress());
-
         try {
-            m_eventProxy.send(bldr.getEvent());
-        } catch (final EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "addIpInterface: can't find node " + nodeCriteria);
+            } else if (ipInterface == null) {
+                throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface object cannot be null");
+            } else if (ipInterface.getIpAddress() == null) {
+                throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress cannot be null");
+            } else if (ipInterface.getIpAddress().getAddress() == null) {
+                throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress bytes cannot be null");
+            }
+            LogUtils.debugf(this, "addIpInterface: adding interface %s", ipInterface);
+            node.addIpInterface(ipInterface);
+            m_ipInterfaceDao.save(ipInterface);
+            
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, getClass().getName());
+    
+            bldr.setNodeid(node.getId());
+            bldr.setInterface(ipInterface.getIpAddress());
+    
+            try {
+                m_eventProxy.send(bldr.getEvent());
+            } catch (final EventProxyException ex) {
+                throw getException(Status.BAD_REQUEST, ex.getMessage());
+            }
+            return Response.ok(ipInterface).build();
+        } finally {
+            writeUnlock();
         }
-        return Response.ok().build();
     }
     
     /**
@@ -192,28 +210,34 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
     public Response updateIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "deleteIpInterface: can't find node " + nodeCriteria);
-        }
-        final OnmsIpInterface ipInterface = node.getIpInterfaceByIpAddress(ipAddress);
-        if (ipInterface == null) {
-            throw getException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
-        }
-        LogUtils.debugf(this, "updateIpInterface: updating ip interface %s", ipInterface);
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(ipInterface);
-
-        for(final String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                final String stringValue = params.getFirst(key);
-                final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+        writeLock();
+        
+        try {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteIpInterface: can't find node " + nodeCriteria);
             }
+            final OnmsIpInterface ipInterface = node.getIpInterfaceByIpAddress(ipAddress);
+            if (ipInterface == null) {
+                throw getException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
+            }
+            LogUtils.debugf(this, "updateIpInterface: updating ip interface %s", ipInterface);
+    
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(ipInterface);
+    
+            for(final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+                    final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
+            }
+            LogUtils.debugf(this, "updateIpInterface: ip interface %s updated", ipInterface);
+            m_ipInterfaceDao.saveOrUpdate(ipInterface);
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        LogUtils.debugf(this, "updateIpInterface: ip interface %s updated", ipInterface);
-        m_ipInterfaceDao.saveOrUpdate(ipInterface);
-        return Response.ok().build();
     }
 
     /**
@@ -226,29 +250,35 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @DELETE
     @Path("{ipAddress}")
     public Response deleteIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            throw getException(Status.BAD_REQUEST, "deleteIpInterface: can't find node " + nodeCriteria);
-        }
-        final OnmsIpInterface intf = node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
-        if (intf == null) {
-            throw getException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
-        }
-        LogUtils.debugf(this, "deleteIpInterface: deleting interface %s from node %s", ipAddress, nodeCriteria);
-        node.getIpInterfaces().remove(intf);
-        m_nodeDao.save(node);
+        writeLock();
         
-        final EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, getClass().getName());
-
-        bldr.setNodeid(node.getId());
-        bldr.setInterface(addr(ipAddress));
-
         try {
-            m_eventProxy.send(bldr.getEvent());
-        } catch (final EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteIpInterface: can't find node " + nodeCriteria);
+            }
+            final OnmsIpInterface intf = node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
+            if (intf == null) {
+                throw getException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
+            }
+            LogUtils.debugf(this, "deleteIpInterface: deleting interface %s from node %s", ipAddress, nodeCriteria);
+            node.getIpInterfaces().remove(intf);
+            m_nodeDao.save(node);
+            
+            final EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, getClass().getName());
+    
+            bldr.setNodeid(node.getId());
+            bldr.setInterface(addr(ipAddress));
+    
+            try {
+                m_eventProxy.send(bldr.getEvent());
+            } catch (final EventProxyException ex) {
+                throw getException(Status.BAD_REQUEST, ex.getMessage());
+            }
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        return Response.ok().build();
     }
     
     /**
@@ -258,7 +288,12 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @Path("{ipAddress}/services")
     public OnmsMonitoredServiceResource getServices() {
-        return m_context.getResource(OnmsMonitoredServiceResource.class);
+        readLock();
+        try {
+            return m_context.getResource(OnmsMonitoredServiceResource.class);
+        } finally {
+            readUnlock();
+        }
     }
 
 }

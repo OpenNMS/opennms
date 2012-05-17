@@ -36,7 +36,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.DatagramClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.dns.DNSAddressRequest;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -78,7 +78,8 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {
+    @Override
+    protected void onInit() {
         final DNSAddressRequest req = addrRequest(getLookup());
         send(encode(req), verifyResponse(req));
     }
@@ -87,7 +88,7 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      * @param request
      * @return
      */
-    private ResponseValidator<DatagramPacket> verifyResponse(final DNSAddressRequest request) {
+    private static ResponseValidator<DatagramPacket> verifyResponse(final DNSAddressRequest request) {
         
         return new ResponseValidator<DatagramPacket>() {
 
@@ -106,11 +107,11 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
         };
     }
     
-    private DNSAddressRequest addrRequest(final String host) {
+    private static DNSAddressRequest addrRequest(final String host) {
         return new DNSAddressRequest(host);
     }
     
-    private DatagramPacket encode(final DNSAddressRequest dnsPacket) {
+    private static DatagramPacket encode(final DNSAddressRequest dnsPacket) {
         final byte[] data = buildRequest(dnsPacket);
         return new DatagramPacket(data, data.length);
     }
@@ -120,7 +121,7 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      * @return
      * @throws IOException
      */
-    private byte[] buildRequest(final DNSAddressRequest request) {
+    private static byte[] buildRequest(final DNSAddressRequest request) {
         try {
             return request.buildRequest();
         } catch (final IOException e) {

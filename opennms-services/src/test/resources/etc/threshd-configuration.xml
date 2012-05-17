@@ -37,6 +37,7 @@
                 </service>
 
        <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+       <outage-calendar>junit outage</outage-calendar>
    </package>
    
    <thresholder service="SNMP"   class-name="org.opennms.netmgt.threshd.SnmpThresholder"/>

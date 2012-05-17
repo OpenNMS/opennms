@@ -214,6 +214,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         addCriteriaForSurveillanceSet(nodeCriteria, set);
         nodeCriteria.add(Restrictions.ne("type", "D"));
         criteria.addOrder(Order.desc("alarm.severity"));
+        criteria.setMaxResults(100);
         
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
@@ -491,6 +492,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
         Assert.state(m_resourceDao != null, "resourceDao property must be set and cannot be null");

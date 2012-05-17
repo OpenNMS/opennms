@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.eventd;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -71,7 +71,7 @@ public class EventdSpringTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_daemon);
+        BeanUtils.assertAutowiring(this);
     }
 
     /**

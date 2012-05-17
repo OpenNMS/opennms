@@ -166,9 +166,10 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     			" GPRINT:value3:MAX:\"Max \\: %10.2lf\\n\"" + 
     			"";
     	
-    	File workDir = new File("src/test/resources");
-    	RrdGraphDetails details = m_rrdStrategy.createGraphReturnDetails(command, workDir);
-    	IOUtils.copy(details.getInputStream(), new FileOutputStream("/tmp/img.png"));
+    	final File workDir = new File("src/test/resources");
+    	final RrdGraphDetails details = m_rrdStrategy.createGraphReturnDetails(command, workDir);
+    	final File outputFile = File.createTempFile("img", "png");
+    	IOUtils.copy(details.getInputStream(), new FileOutputStream(outputFile));
     	
     	
     }

@@ -56,6 +56,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -73,7 +74,6 @@ import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -83,6 +83,7 @@ import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
@@ -93,7 +94,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -2467,8 +2467,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
     }
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(m_nodeDao, "NodeDao must not be null");
-		Assert.notNull(m_ipInterfaceDao, "IpinterfaceDao must not be null");
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

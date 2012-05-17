@@ -47,6 +47,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -397,13 +398,16 @@ public class CustomViewController extends AbstractController implements Initiali
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");
         Assert.state(m_resourceService != null, "property resourceService must be set");
         Assert.state(m_defaultGraphsPerLine != 0, "property defaultGraphsPerLine must be set");
         
-        m_executor = Executors.newSingleThreadExecutor();
+        m_executor = Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+        );
     }
 
 }

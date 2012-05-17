@@ -2,12 +2,11 @@ package org.opennms.netmgt.snmp.mock;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
@@ -79,7 +78,9 @@ public class MockSnmpWalker extends SnmpWalker {
         m_agentAddress = agentAddress;
         m_snmpVersion = snmpVersion;
         m_container = container;
-        m_executor = Executors.newSingleThreadExecutor();
+        m_executor = Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+        );
     }
 
     @Override

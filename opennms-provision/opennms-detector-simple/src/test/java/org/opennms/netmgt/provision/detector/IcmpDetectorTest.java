@@ -42,7 +42,6 @@ import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.TestExecutionListeners;
@@ -70,7 +69,7 @@ public class IcmpDetectorTest {
     public void testDetectorSuccessJni() throws Exception {
         PingerFactory.setInstance(new JniPinger());
         m_icmpDetector = new IcmpDetector();
-        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
@@ -78,7 +77,7 @@ public class IcmpDetectorTest {
     public void testDetectorFailJni() throws Exception {
         PingerFactory.setInstance(new JniPinger());
         m_icmpDetector = new IcmpDetector();
-        assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS, new NullDetectorMonitor()));
+        assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }
 
     @Test
@@ -86,7 +85,7 @@ public class IcmpDetectorTest {
     public void testDetectorSuccess() throws Exception {
         PingerFactory.setInstance(new JnaPinger());
         m_icmpDetector = new IcmpDetector();
-        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
@@ -94,6 +93,6 @@ public class IcmpDetectorTest {
     public void testDetectorFail() throws Exception {
         PingerFactory.setInstance(new JnaPinger());
         m_icmpDetector = new IcmpDetector();
-        assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS, new NullDetectorMonitor()));
+        assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }
 }

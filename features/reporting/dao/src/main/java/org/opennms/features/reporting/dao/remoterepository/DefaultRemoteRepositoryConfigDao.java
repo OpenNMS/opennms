@@ -53,7 +53,7 @@ import java.util.List;
  * @author Markus Neumann <markus@opennms.com>
  * @author Ronny Trommer <ronny@opennms.com>
  * @version $Id: $
- * @since 1.8.1
+ * @since 1.10.1
  */
 @ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class DefaultRemoteRepositoryConfigDao implements
@@ -106,7 +106,7 @@ public class DefaultRemoteRepositoryConfigDao implements
         File file = null;
         try {
             file = m_configResource.getFile();
-            Assert.notNull(file, "config file must be sot to a non-null value");
+            Assert.notNull(file, "config file must be set to a non-null value");
         } catch (IOException e) {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }

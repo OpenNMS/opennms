@@ -62,7 +62,7 @@ public class JBossDetector extends JMXDetector {
 
     /** {@inheritDoc} */
     @Override
-    public void onInit() {
+    protected void onInit() {
         expectBeanCount(greatThan(0));
     }
 

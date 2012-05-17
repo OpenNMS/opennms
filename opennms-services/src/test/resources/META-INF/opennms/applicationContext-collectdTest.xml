@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<!-- Override the collectd-configuration with one that includes the HttpCollector -->
+	<bean id="collectdConfigStream" class="org.opennms.test.ConfigurationTestUtils" factory-method="getInputStreamForResource">
+		<!-- Dummy string value that will fetch the current classloader -->
+		<constructor-arg value="SOME_JAVA_LANG_STRING"/>
+		<!-- Classpath resource that contains a minimal capsd configuration -->
+		<constructor-arg value="/org/opennms/netmgt/capsd/collectd-configuration.xml"/>
+	</bean>
+
+	<bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory">
+		<constructor-arg ref="collectdConfigStream"/>
+		<constructor-arg value="nms1"/>
+		<constructor-arg value="false"/>
+	</bean>
+
+	<bean name="collectorConfigDao" class="org.opennms.netmgt.collectd.CollectorConfigDaoImpl" depends-on="collectdConfig"/>
+
+	<!-- Initialize the PollOutagesConfigFactory -->
+	<bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+	</bean>
+
+	<!-- <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/> -->
+
+	<bean id="daemon" class="org.opennms.netmgt.collectd.Collectd" depends-on="init-pollOutagesConfig-factory">
+		<property name="collectorConfigDao" ref="collectorConfigDao" />
+		<property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+		<property name="nodeDao" ref="nodeDao"/>
+		<!-- Override Eventd with the mock version -->
+		<property name="eventIpcManager" ref="mockEventIpcManager"/>
+		<property name="transactionTemplate" ref="transactionTemplate"/>
+	</bean>
+
+	<tx:annotation-driven/>
+
+</beans>

@@ -76,6 +76,7 @@ public class IncludeBoxController extends AbstractController implements Initiali
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportService != null, "property kscReportService must be set");
     }

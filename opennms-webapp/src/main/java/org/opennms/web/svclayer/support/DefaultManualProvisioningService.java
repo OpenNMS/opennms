@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -45,11 +46,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -80,6 +83,8 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     private ForeignSourceRepository m_pendingForeignSourceRepository;
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
+    private ServiceTypeDao m_serviceTypeDao;
+    private CapsdConfig m_capsdConfig;
     
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -154,6 +159,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
      * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(final ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
+    }
+    
+    public void setCapsdConfig(final CapsdConfig capsdConfig) {
+        m_capsdConfig = capsdConfig;
     }
 
     /** {@inheritDoc} */
@@ -509,12 +519,20 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
      * @return a {@link java.util.Collection} object.
      */
     public Collection<String> getServiceTypeNames(String groupName) {
+        final SortedSet<String> serviceNames = new TreeSet<String>();
+
         m_readLock.lock();
         try {
         	final ForeignSource pendingForeignSource = m_pendingForeignSourceRepository.getForeignSource(groupName);
             final ForeignSource deployedForeignSource = m_deployedForeignSourceRepository.getForeignSource(groupName);
-            
-            return (pendingForeignSource.isDefault())? deployedForeignSource.getDetectorNames() : pendingForeignSource.getDetectorNames();
+
+            serviceNames.addAll(deployedForeignSource.getDetectorNames());
+            serviceNames.addAll(pendingForeignSource.getDetectorNames());
+            for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
+                serviceNames.add(type.getName());
+            }
+            serviceNames.addAll(m_capsdConfig.getConfiguredProtocols());
+            return serviceNames;
         } finally {
             m_readLock.unlock();
         }

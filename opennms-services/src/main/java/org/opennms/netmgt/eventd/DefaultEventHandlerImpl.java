@@ -140,6 +140,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventProcessors != null, "property eventPersisters must be set");
     }

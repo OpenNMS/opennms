@@ -32,15 +32,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 
-@Component
 /**
  * <p>Pop3Detector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class Pop3Detector extends AsyncLineOrientedDetector {
+public class Pop3Detector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final int DEFAULT_PORT = 110;
     private static final String DEFAULT_SERVICE_NAME = "POP3";
@@ -65,6 +65,7 @@ public class Pop3Detector extends AsyncLineOrientedDetector {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit(){
         expectBanner(startsWith("+OK"));
         send(request("QUIT"), startsWith("+OK"));

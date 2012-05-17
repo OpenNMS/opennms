@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -36,6 +36,7 @@
     <module>opennms-gwt-theme</module>
     <module>gwt-suggestion-combobox</module>
     <module>gwt-ksc-combobox</module>
+    <module>gwt-ksc-add</module>
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>

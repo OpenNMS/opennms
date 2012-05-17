@@ -101,16 +101,16 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		NCSComponent svc = new NCSBuilder("Service", "NA-Service", "123")
 		.setName("CokeP2P")
 		.pushComponent("ServiceElement", "NA-ServiceElement", "8765")
-			.setName("PE1:SE1")
+			.setName("PE1,SE1")
 			.setNodeIdentity("space", "1111-PE1")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setNodeIdentity("space", "1111-PE1")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-1/0/2.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,link")
 					.setName("link")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
@@ -118,7 +118,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 					.setAttribute("linkName", "ge-1/0/2")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setNodeIdentity("space", "1111-PE1")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
@@ -126,14 +126,14 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-1/0/2.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspA-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspA-PE1-PE2")
 					.setName("lspA-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
 					.setAttribute("mplsLspName", "lspA-PE1-PE2")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765:lspB-PE1-PE2")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "8765,lspB-PE1-PE2")
 					.setName("lspB-PE1-PE2")
 					.setNodeIdentity("space", "1111-PE1")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
@@ -143,16 +143,16 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 			.popComponent()
 		.popComponent()
 		.pushComponent("ServiceElement", "NA-ServiceElement", "9876")
-			.setName("PE2:SE1")
+			.setName("PE2,SE1")
 			.setNodeIdentity("space", "2222-PE2")
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnIf")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnIf")
 				.setName("jnxVpnIf")
 				.setNodeIdentity("space", "2222-PE2")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp")
 				.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown")
 				.setAttribute("jnxVpnIfVpnType", "5")
 				.setAttribute("jnxVpnIfVpnName", "ge-3/1/4.50")
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:link")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,link")
 					.setName("link")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/linkUp")
@@ -160,7 +160,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 					.setAttribute("linkName", "ge-3/1/4")
 				.popComponent()
 			.popComponent()
-			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)")
+			.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)")
 				.setName("jnxVpnPw-vcid(50)")
 				.setNodeIdentity("space", "2222-PE2")
 				.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp")
@@ -168,14 +168,14 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 				.setAttribute("jnxVpnPwVpnType", "5")
 				.setAttribute("jnxVpnPwVpnName", "ge-3/1/4.50")
 				.setDependenciesRequired(DependencyRequirements.ANY)
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspA-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspA-PE2-PE1")
 					.setName("lspA-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
 					.setDownEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown")
 					.setAttribute("mplsLspName", "lspA-PE2-PE1")
 				.popComponent()
-				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:lspB-PE2-PE1")
+				.pushComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,lspB-PE2-PE1")
 					.setName("lspB-PE2-PE1")
 					.setNodeIdentity("space", "2222-PE2")
 					.setUpEventUei("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp")
@@ -189,7 +189,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		m_repository.save(svc);
 		
 		m_pwCompId = svc.getSubcomponent("NA-ServiceElement", "9876")
-		                 .getSubcomponent("NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)")
+		                 .getSubcomponent("NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)")
 		                 .getId();
 		
 		// Get engine
@@ -231,14 +231,14 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         resetEvents();
         
         // component to request dependencies for
-        Component c = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component c = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         Event downEvent = createVpnPwDownEvent(17, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50");
         
         ComponentDownEvent cde = new ComponentDownEvent(c, downEvent);
         
         anticipateFacts(cde, new ComponentImpacted(c, cde), new DependenciesNeeded(c, cde), new ImpactEventSent(c, cde));
         
-        anticipateEvent(createComponentImpactedEvent("ServiceElementComponent", "jnxVpnPw-vcid(50)", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)", 17));
+        anticipateEvent(createComponentImpactedEvent("ServiceElementComponent", "jnxVpnPw-vcid(50)", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)", 17));
         
         // pretend to be a using rule that inserts the DependenciesNeeded fact
 		insertFactAndFireRules(cde);
@@ -251,7 +251,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		resetFacts();
 		resetEvents();
 		
-		anticipateEvent(createComponentResolvedEvent("ServiceElementComponent", "jnxVpnPw-vcid(50)", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)", 17));
+		anticipateEvent(createComponentResolvedEvent("ServiceElementComponent", "jnxVpnPw-vcid(50)", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)", 17));
 		
 		// expect all facts to be resolved
 		anticipateFacts();
@@ -281,7 +281,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         resetEvents();
         
         // component to request dependencies for
-        Component c = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)");
+        Component c = createComponent("ServiceElementComponent", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)");
         Event downEvent = createVpnPwDownEvent(17, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50");
         
         ComponentDownEvent cde = new ComponentDownEvent(c, downEvent);
@@ -295,7 +295,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         
 		anticipateFacts( dep, componentImpacted, eventSent, new ComponentImpacted( parent, cde ), new DependenciesNeeded(parent, cde), new ImpactEventSent(parent, cde));
         
-        anticipateEvent(createComponentImpactedEvent("ServiceElement", "PE2:SE1", "NA-SvcElement", "9876", 17));
+        anticipateEvent(createComponentImpactedEvent("ServiceElement", "PE2,SE1", "NA-SvcElement", "9876", 17));
         
         // Insert facts and fire rules
 		FactHandle impactHandle = m_engine.getWorkingMemory().insert( componentImpacted );
@@ -312,8 +312,8 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		resetFacts();
 		resetEvents();
 		
-		//anticipateEvent(createComponentResolvedEvent("ServiceElementComponent", "jnxVpnPw-vcid(50)", "NA-SvcElemComp", "9876:jnxVpnPw-vcid(50)", 17));
-		anticipateEvent(createComponentResolvedEvent("ServiceElement", "PE2:SE1", "NA-SvcElement", "9876", 17));
+		//anticipateEvent(createComponentResolvedEvent("ServiceElementComponent", "jnxVpnPw-vcid(50)", "NA-SvcElemComp", "9876,jnxVpnPw-vcid(50)", 17));
+		anticipateEvent(createComponentResolvedEvent("ServiceElement", "PE2,SE1", "NA-SvcElement", "9876", 17));
 		
 		// expect all facts to be resolved
 		anticipateFacts();
@@ -365,6 +365,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         .getEvent();
     }
 
+	@SuppressWarnings("unused")
     private Event createMplsLspPathDownEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
         Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown", "Test")
@@ -377,6 +378,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		return event;
     }
     
+	@SuppressWarnings("unused")
     private Event createMplsLspPathUpEvent( int dbId, int nodeid, String ipaddr, String lspname ) {
         
         Event event = new EventBuilder("uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp", "Drools")

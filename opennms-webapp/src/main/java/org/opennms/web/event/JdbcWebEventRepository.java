@@ -35,6 +35,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
@@ -42,6 +43,7 @@ import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.event.filter.EventCriteria.BaseEventCriteriaVisitor;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
@@ -61,11 +63,16 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @version $Id: $
  * @since 1.8.1
  */
-public class JdbcWebEventRepository implements WebEventRepository {
+public class JdbcWebEventRepository implements WebEventRepository, InitializingBean {
     
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     private String getSql(final String selectClause, final EventCriteria criteria) {
         final StringBuilder buf = new StringBuilder(selectClause);
         

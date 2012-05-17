@@ -48,6 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.acl.domain.Group;
 import org.opennms.acl.factory.GroupFactory;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -59,7 +61,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * @since jdk 1.5.0
  * @version $Id: $
  */
-public class GroupInterceptor extends HandlerInterceptorAdapter {
+public class GroupInterceptor extends HandlerInterceptorAdapter implements InitializingBean {
 
     /** {@inheritDoc} */
     @Override
@@ -75,4 +77,9 @@ public class GroupInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private GroupFactory groupFactory;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

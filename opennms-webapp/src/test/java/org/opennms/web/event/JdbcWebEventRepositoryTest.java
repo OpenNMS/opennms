@@ -37,10 +37,11 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.EventCriteria;
@@ -48,6 +49,7 @@ import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.NegativeSeverityFilter;
 import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JdbcWebEventRepositoryTest {
+public class JdbcWebEventRepositoryTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -69,9 +71,13 @@ public class JdbcWebEventRepositoryTest {
     @Autowired
     WebEventRepository m_eventRepo;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+    
     @Before
     public void setUp(){
-        assertNotNull(m_eventRepo);
         m_dbPopulator.populateDatabase();
     }
     

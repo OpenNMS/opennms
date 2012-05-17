@@ -85,6 +85,7 @@ public class AcknowledgeNotificationController extends AbstractController implem
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webNotificationRepository, "webNotificationRepository must be set");

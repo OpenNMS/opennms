@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.daemon;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -36,11 +37,11 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public interface SpringServiceDaemon extends InitializingBean {
+public interface SpringServiceDaemon extends InitializingBean, DisposableBean {
     /**
      * <p>start</p>
      *
      * @throws java.lang.Exception if any.
      */
-    public void start() throws Exception;
+    void start() throws Exception;
 }

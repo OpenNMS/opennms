@@ -29,10 +29,11 @@
 package org.opennms.sms.reflector.smsservice;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,14 +45,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath:/testGatewayContext.xml"
 }
 )
-public class SmsServiceTest {
+public class SmsServiceTest implements InitializingBean {
 	
 	@Autowired
 	SmsService m_service;
-	
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	    BeanUtils.assertAutowiring(this);
+	}
+
 	@Test
 	public void testInitialization() {
-		assertNotNull(m_service);
 		assertEquals("must have one gateway", 1, m_service.getGateways().size());
 		assertEquals("gateway ID must be 'ACM0'", "ACM0", m_service.getGateways().iterator().next().getGatewayId());
 	}

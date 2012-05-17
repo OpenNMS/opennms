@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AtInterfaceDao;
@@ -626,16 +627,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_atInterfaceDao);
-        Assert.notNull(m_dataLinkInterfaceDao);
-        Assert.notNull(m_ipInterfaceDao);
-        Assert.notNull(m_ipRouteInterfaceDao);
-        Assert.notNull(m_nodeDao);
-        Assert.notNull(m_snmpInterfaceDao);
-        Assert.notNull(m_stpInterfaceDao);
-        Assert.notNull(m_stpNodeDao);
-        Assert.notNull(m_transactionManager);
-        Assert.notNull(m_vlanDao);
+        BeanUtils.assertAutowiring(this);
         LogUtils.debugf(this, "Initialized %s", this.getClass().getSimpleName());
     }
 

@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.netmgt.provision.detector.jmx.client.JMXClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 
 
@@ -64,22 +63,12 @@ public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integ
         super(serviceName, port, timeout, retries);
     }
 
-    
-    /** {@inheritDoc} */
-    @Override
-    protected abstract JMXClient getClient();
-
-    
-    /** {@inheritDoc} */
-    @Override
-    protected abstract void onInit();
-    
     /**
      * <p>expectBeanCount</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
-    protected void expectBeanCount(ResponseValidator<Integer> bannerValidator) {
+    protected final void expectBeanCount(ResponseValidator<Integer> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
     }
     
@@ -87,12 +76,12 @@ public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integ
      * <p>greatThan</p>
      *
      * @param count a int.
-     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
-    protected ResponseValidator<Integer> greatThan(final int count){
+    protected static final ResponseValidator<Integer> greatThan(final int count){
         return new ResponseValidator<Integer>() {
 
-            public boolean validate(Integer response) throws Exception {
+            public boolean validate(Integer response) {
                 
                 return (response >= count);
             }

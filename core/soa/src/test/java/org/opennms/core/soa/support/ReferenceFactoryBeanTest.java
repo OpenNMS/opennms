@@ -36,6 +36,8 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,7 +52,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-public class ReferenceFactoryBeanTest {
+public class ReferenceFactoryBeanTest implements InitializingBean {
     
     @Autowired
     ServiceRegistry serviceRegistry;
@@ -61,14 +63,17 @@ public class ReferenceFactoryBeanTest {
     @Autowired
     Goodbye goodbye;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        assertNotNull(serviceRegistry);
+        assertNotNull(hello);
+        assertNotNull(goodbye);
+    }
+    
     @Test
     @DirtiesContext
     public void testFindReference() throws IOException {
         
-        assertNotNull(serviceRegistry);
-        assertNotNull(hello);
-        assertNotNull(goodbye);
-
         MyProvider provider = new MyProvider();
         
         serviceRegistry.register(provider, Hello.class, Goodbye.class);

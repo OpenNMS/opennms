@@ -42,6 +42,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -51,6 +55,7 @@ import org.springframework.core.style.ToStringCreator;
  * <p>OnmsUserNotification class.</p>
  */
 @Table(name="usersNotified")
+@XmlRootElement(name="userNotification")
 public class OnmsUserNotification implements Serializable {
 
     private static final long serialVersionUID = -1750912427062821742L;
@@ -111,6 +116,7 @@ public class OnmsUserNotification implements Serializable {
     @Column(nullable=false)
     @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId")
     @GeneratedValue(generator="userNotificationSequence")
+    @XmlAttribute(name="id")
     public Integer getId() {
         return m_id;
     }
@@ -130,6 +136,7 @@ public class OnmsUserNotification implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="userId", length=256)
+    @XmlElement(name="userId")
     public String getUserId() {
         return m_userId;
     }
@@ -150,6 +157,7 @@ public class OnmsUserNotification implements Serializable {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="notifyTime")
+    @XmlElement(name="notifyTime")
     public Date getNotifyTime() {
         return m_notifyTime;
     }
@@ -169,6 +177,7 @@ public class OnmsUserNotification implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="media", length=32)
+    @XmlElement(name="media")
     public String getMedia() {
         return m_media;
     }
@@ -188,6 +197,7 @@ public class OnmsUserNotification implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="contactInfo", length=64)
+    @XmlElement(name="contactInfo")
     public String getContactInfo() {
         return m_contactInfo;
     }
@@ -207,6 +217,7 @@ public class OnmsUserNotification implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="autoNotify", length=1)
+    @XmlAttribute(name="autoNotify")
     public String getAutoNotify() {
         return m_autoNotify;
     }
@@ -227,6 +238,7 @@ public class OnmsUserNotification implements Serializable {
      */
     @ManyToOne(fetch=FetchType.LAZY, optional=false)
     @JoinColumn(name="notifyId")
+    @XmlTransient
     public OnmsNotification getNotification() {
         return m_notification;
     }

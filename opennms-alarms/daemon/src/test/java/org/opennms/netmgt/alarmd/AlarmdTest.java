@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
@@ -58,13 +59,18 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.StringUtils;
@@ -82,7 +88,7 @@ import org.springframework.util.StringUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
+public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
 
@@ -133,8 +139,14 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     private MockNorthbounder m_northbounder;
 
+    @Override
     public void setTemporaryDatabase(final MockDatabase database) {
         m_database = database;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before
@@ -192,8 +204,10 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
         });
     }
+    
 
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
         int numberOfAlarmsToReduce = 10;
 
@@ -348,6 +362,184 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         }
         ta.verifyAnticipated();
     }
+    
+    @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+    public void changeFields() throws InterruptedException, SQLException {
+        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        
+        String reductionKey = "testUpdateField";
+        
+        int alarmCount = m_jdbcTemplate.queryForInt("select count(*) from alarms");
+        
+        assertEquals(0, alarmCount);
+        
+        MockNode node1 = m_mockNetwork.getNode(1);
+        
+        //Verify we have the default alarm
+        sendNodeDownEvent(reductionKey, node1);
+        int severity = m_jdbcTemplate.queryForInt("select severity from alarms a where a.reductionKey = ?", reductionKey);
+        assertEquals(OnmsSeverity.MAJOR, OnmsSeverity.get(severity));
+        
+        //Store the original logmsg from the original alarm (we are about to test changing it with subsequent alarm reduction)
+        String defaultLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
+
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                int row = results.getRow();
+                boolean isLast = results.isLast();
+                boolean isFirst = results.isFirst();
+                
+                if (row != 1 && !isLast && !isFirst) {
+                    throw new SQLException("Row count is not = 1.  There should only be one row returned from the query: \n"+ results.getStatement());
+                }
+                
+                return results.getString(1);
+            }
+            
+        });
+        
+        assertTrue("The logmsg column should not be null", defaultLogMsg != null);
+
+        //Duplicate the alarm but change the severity and verify the change
+        sendNodeDownEventWithUpdateFieldSeverity(reductionKey, node1, OnmsSeverity.CRITICAL);
+        severity = m_jdbcTemplate.queryForInt("select severity from alarms");
+        assertEquals("Severity should now be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
+        
+        //Duplicate the alarm but don't force the change of severity
+        sendNodeDownEvent(reductionKey, node1);
+        severity = m_jdbcTemplate.queryForInt("select severity from alarms");
+        assertEquals("Severity should still be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
+
+        //Duplicate the alarm and change the logmsg
+        sendNodeDownEventChangeLogMsg(reductionKey, node1, "new logMsg");
+        String newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("new logMsg", newLogMsg);
+        assertTrue(!newLogMsg.equals(defaultLogMsg));
+        
+        //Duplicate the alarm but force logmsg to not change (lggmsg field is updated by default)
+        sendNodeDownEventDontChangeLogMsg(reductionKey, node1, "newer logMsg");
+        newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertTrue("The logMsg should not have changed.", !"newer logMsg".equals(newLogMsg));
+        assertEquals("The logMsg should still be equal to the previous update.", "new logMsg", newLogMsg);
+
+        
+        //Duplicate the alarm with the default configuration and verify the logmsg has changed (as is the default behavior
+        //for this field)
+        sendNodeDownEvent(reductionKey, node1);
+        newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertTrue("The logMsg should have changed.", !"new logMsg".equals(newLogMsg));
+        assertEquals("The logMsg should new be the default logMsg.", newLogMsg, defaultLogMsg);
+        
+    }
+
+    //Supporting method for test
+    private void sendNodeDownEventDontChangeLogMsg(String reductionKey, MockNode node, String logMsg) {
+        
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            
+            List<UpdateField> fields = new ArrayList<UpdateField>();
+            
+            UpdateField field = new UpdateField();
+            field.setFieldName("logMsg");
+            field.setUpdateOnReduction(Boolean.FALSE);
+            fields.add(field);
+            
+            data.setUpdateField(fields);
+            
+            event.setAlarmData(data);
+        } else {
+            event.setAlarmData(null);
+        }
+
+        event.setLogDest("logndisplay");
+        event.setLogMessage(logMsg);
+
+        m_eventdIpcMgr.sendNow(event.getEvent());
+    }
+    
+    private void sendNodeDownEventChangeLogMsg(String reductionKey, MockNode node, String logMsg) {
+        
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            
+            List<UpdateField> fields = new ArrayList<UpdateField>();
+            
+            UpdateField field = new UpdateField();
+            field.setFieldName("logMsg");
+            field.setUpdateOnReduction(Boolean.TRUE);
+            fields.add(field);
+            
+            data.setUpdateField(fields);
+            
+            event.setAlarmData(data);
+        } else {
+            event.setAlarmData(null);
+        }
+
+        event.setLogDest("logndisplay");
+        event.setLogMessage(logMsg);
+
+        m_eventdIpcMgr.sendNow(event.getEvent());
+    }
+
+    private void sendNodeDownEventWithUpdateFieldSeverity(String reductionKey, MockNode node, OnmsSeverity severity) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            
+            List<UpdateField> fields = new ArrayList<UpdateField>();
+            
+            UpdateField field = new UpdateField();
+            field.setFieldName("Severity");
+            field.setUpdateOnReduction(Boolean.TRUE);
+            fields.add(field);
+            
+            data.setUpdateField(fields);
+            
+            event.setAlarmData(data);
+        } else {
+            event.setAlarmData(null);
+        }
+
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+        
+        event.setSeverity(severity.getLabel());
+
+        m_eventdIpcMgr.sendNow(event.getEvent());
+    }
 
     private void sendNodeDownEvent(String reductionKey, MockNode node) throws SQLException {
         EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
@@ -355,7 +547,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
             data.setAlarmType(1);
-            data.setReductionKey(reductionKey);
+            data.setReductionKey(reductionKey);            
             event.setAlarmData(data);
         } else {
             event.setAlarmData(null);

@@ -28,8 +28,8 @@
 
 package org.opennms.sms.reflector.smsservice;
 
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.and;
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isUssd;
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.textMatches;
@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.protocols.rt.Messenger;
@@ -225,7 +226,9 @@ public class MobileMsgTrackerTest {
         
         m_session = new Properties();
         
-        m_coordinator = new DefaultTaskCoordinator("MobileMsgTrackerTest", Executors.newSingleThreadExecutor());
+        m_coordinator = new DefaultTaskCoordinator("MobileMsgTrackerTest", Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory("MobileMsgTrackerTest", 1, false)
+        ));
 
         System.err.println("=== STARTING TEST ===");
     }

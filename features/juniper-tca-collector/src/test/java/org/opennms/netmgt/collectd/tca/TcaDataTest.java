@@ -35,16 +35,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.test.mock.MockLogAppender;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitSnmpAgent(port=TcaDataTest.TEST_SNMP_PORT, host=TcaDataTest.TEST_IP_ADDRESS, resource="classpath:juniperTcaSample.properties")
-public class TcaDataTest  {
+public class TcaDataTest implements InitializingBean {
 
 	static final int TEST_SNMP_PORT = 9161;
 	static final String TEST_IP_ADDRESS = "127.0.0.1";
@@ -67,6 +67,11 @@ public class TcaDataTest  {
 	/** The SNMP peer factory. */
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
 	/**
 	 * Sets the up.

@@ -923,6 +923,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @throws java.io.IOException
      *             if any.
      */
+    @Override
     public void afterPropertiesSet() throws IOException {
         Assert.notNull(m_prefabConfigs,
                        "property prefabConfigs must be set to a non-null value");

@@ -72,10 +72,6 @@ public class CategoryController extends AbstractController {
         String nodeIdString = request.getParameter("node");
 
         RedirectView redirect = new RedirectView("/admin/categories.htm", true);
-        String referer = request.getHeader("Referer");
-        if (referer != null && referer.length() > 0) {
-            redirect = new RedirectView(referer, false);
-        }
 
         if (removeCategoryIdString != null) {
             m_adminCategoryService.removeCategory(removeCategoryIdString);

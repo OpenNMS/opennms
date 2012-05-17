@@ -85,6 +85,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_scheduler, "scheduler");
 		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");

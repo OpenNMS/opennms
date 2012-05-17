@@ -29,7 +29,6 @@
 package org.opennms.netmgt.trapd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -48,6 +47,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -111,10 +111,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_eventMgr);
-        assertNotNull(m_trapd);
-        assertNotNull(m_trapdIpMgr);
-        assertNotNull(m_snmpTrapPort);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

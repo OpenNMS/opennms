@@ -156,8 +156,11 @@ public class NCSComponent {
 
     @XmlElement(name="component")
     private Set<NCSComponent> m_subcomponents = new LinkedHashSet<NCSComponent>();
+
+    @XmlTransient
+	private Set<NCSComponent> m_parents = new LinkedHashSet<NCSComponent>();
     
-    public NCSComponent(String type, String foreignSource, String foreignId) {
+    public NCSComponent(final String type, final String foreignSource, final String foreignId) {
     	this();
     	m_type = type;
     	m_foreignSource = foreignSource;
@@ -254,6 +257,16 @@ public class NCSComponent {
 		m_dependenciesRequired = dependenciesRequired;
 	}
 
+	@ManyToMany
+	@JoinTable(name="subcomponents", joinColumns = { @JoinColumn(name="subcomponent_id") }, inverseJoinColumns = { @JoinColumn(name="component_id") })
+	public Set<NCSComponent> getParentcomponents() {
+		return m_parents ;
+	}
+
+	public void setParentcomponents(final Set<NCSComponent> parents) {
+		m_parents = parents;
+	}
+
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name="subcomponents", joinColumns = { @JoinColumn(name="component_id") }, inverseJoinColumns = { @JoinColumn(name="subcomponent_id") })
 	public Set<NCSComponent> getSubcomponents() {
@@ -317,5 +330,4 @@ public class NCSComponent {
 	    // complete visiting this component
 	    visitor.completeComponent(this);
 	}
-
 }

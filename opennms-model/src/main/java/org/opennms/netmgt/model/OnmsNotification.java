@@ -50,6 +50,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -347,7 +348,6 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
      */
-    @XmlTransient
     @ManyToOne
     @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
@@ -428,6 +428,17 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     }
 
     /**
+     * <p>getSeverityLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlAttribute(name="severity")
+    public String getSeverityLabel() {
+        return m_event.getSeverityLabel();
+    }
+
+    /**
      * <p>getNode</p>
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
@@ -437,6 +448,20 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
+    }
+
+    @Transient
+    @XmlElement(name="nodeId", required=false)
+    public Integer getNodeId() {
+        if (m_node == null) return null;
+        return m_node.getId();
+    }
+
+    @Transient
+    @XmlElement(name="nodeLabel", required=false)
+    public String getNodeLabel() {
+        if (m_node == null) return null;
+        return m_node.getLabel();
     }
 
     /**
@@ -453,7 +478,8 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.util.Set} object.
      */
-    @XmlTransient
+    @XmlElement(name="destination")
+    @XmlElementWrapper(name="destinations")
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
     public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;
@@ -493,7 +519,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      *
      * @param notifConfigName a {@link java.lang.String} object.
      */
-    @XmlElement(name="notificationCommand")
+    @XmlElement(name="notificationName")
     @Column(name="notifConfigName", length=63 )
     public void setNotifConfigName(String notifConfigName) {
         m_notifConfigName = notifConfigName;

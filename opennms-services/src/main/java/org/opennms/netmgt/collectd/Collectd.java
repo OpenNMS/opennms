@@ -62,6 +62,7 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -230,6 +231,9 @@ public class Collectd extends AbstractServiceDaemon implements
         // daemon configuration change
         ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
         
+        // node category membership changes
+        ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+        
         getEventIpcManager().addEventListener(this, ueiList);
     }
 
@@ -261,6 +265,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             public void run() {
+                final String prefix = ThreadCategory.getPrefix();
                 try {
                     ThreadCategory.setPrefix(LOG4J_CATEGORY);
                     scheduleExistingInterfaces();
@@ -270,6 +275,7 @@ public class Collectd extends AbstractServiceDaemon implements
                                 e);
                 } finally {
                     setSchedulingCompleted(true);
+                    ThreadCategory.setPrefix(prefix);
                 }
 
             }
@@ -415,6 +421,21 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleInterface(iface, svc.getServiceType().getName(),
                           existing);
     }
+    
+	private void scheduleNode(final int nodeId, final boolean existing) {
+		
+        getCollectorConfigDao().rebuildPackageIpListMap();
+		
+		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
+		node.visit(new AbstractEntityVisitor() {
+
+			@Override
+			public void visitMonitoredService(OnmsMonitoredService monSvc) {
+				scheduleInterface(monSvc.getIpInterface(), monSvc.getServiceName(), existing);
+			}
+			
+		});
+	}
 
 	private OnmsIpInterface getIpInterface(int nodeId, String ipAddress) {
 		OnmsNode node = m_nodeDao.load(nodeId);
@@ -690,15 +711,21 @@ public class Collectd extends AbstractServiceDaemon implements
      * UEI.
      */
     public void onEvent(final Event event) {
+    	
+    	String prefix = ThreadCategory.getPrefix();
+    	try {
+    		ThreadCategory.setPrefix(getName());
+    		m_transTemplate.execute(new TransactionCallback<Object>() {
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+    			public Object doInTransaction(TransactionStatus status) {
+    				onEventInTransaction(event);
+    				return null;
+    			}
 
-            public Object doInTransaction(TransactionStatus status) {
-                onEventInTransaction(event);
-                return null;
-            }
-
-        });
+    		});
+    	} finally {
+    		ThreadCategory.setPrefix(prefix);
+    	}
 
     }
 
@@ -730,6 +757,8 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleServiceDeleted(event);
             } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
                 handleReloadDaemonConfig(event);
+            } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
+            	handleNodeCategoryMembershipChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -994,11 +1023,43 @@ public class Collectd extends AbstractServiceDaemon implements
 
         Long nodeId = event.getNodeid();
 
-        // Iterate over the collectable service list and mark any entries
+        unscheduleNodeAndMarkForDeletion(nodeId);
+
+        if (log.isDebugEnabled())
+            log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid "
+                    + nodeId + " completed.");
+    }
+
+    /**
+     * This method is responsible for handling nodeDeleted events.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        
+        ThreadCategory log = log();
+
+        Long nodeId = event.getNodeid();
+
+        unscheduleNodeAndMarkForDeletion(nodeId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
+        }
+        
+        scheduleNode(nodeId.intValue(), true);
+        
+    }
+    
+	private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
+		// Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
+            final ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
                 cSvc = liter.next();
 
@@ -1025,11 +1086,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 liter.remove();
             }
         }
-
-        if (log.isDebugEnabled())
-            log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid "
-                    + nodeId + " completed.");
-    }
+	}
 
     /**
      * Process the event, construct a new CollectableService object

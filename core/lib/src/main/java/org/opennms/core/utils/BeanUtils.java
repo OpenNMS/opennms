@@ -28,8 +28,15 @@
 
 package org.opennms.core.utils;
 
+import static org.springframework.util.Assert.notNull;
+
+import java.lang.reflect.Field;
+
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
@@ -91,5 +98,24 @@ public abstract class BeanUtils {
     @SuppressWarnings("unchecked")
     public static <T> T getFactory(String contextId, Class<T> clazz) {
         return (T) getBeanFactory(contextId).getFactory();
+    }
+
+    /**
+     * Check that all fields that are marked with @Autowired are not null.
+     */
+    public static <T> void assertAutowiring(T instance) {
+        for (Field field : instance.getClass().getDeclaredFields()) {
+            Autowired autowired = field.getAnnotation(Autowired.class);
+            Resource resource = field.getAnnotation(Resource.class);
+            if ((autowired != null && autowired.required()) || (resource != null)) {
+                try {
+                    field.setAccessible(true);
+                    notNull(field.get(instance), "@Autowired/@Resource field " + field.getName() + " cannot be null");
+                    LogUtils.debugf(instance, "%s is not null", field.getName());
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException("Illegal access to @Autowired/@Resource field " + field.getName());
+                }
+            }
+        }
     }
 }

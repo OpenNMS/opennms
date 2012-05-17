@@ -48,6 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.acl.domain.GenericUser;
 import org.opennms.acl.factory.AclUserFactory;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -61,7 +63,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * @version $Id: $
  */
 @Service
-public class UserInterceptor extends HandlerInterceptorAdapter {
+public class UserInterceptor extends HandlerInterceptorAdapter implements InitializingBean {
 
     /** {@inheritDoc} */
     @Override
@@ -77,4 +79,9 @@ public class UserInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private AclUserFactory aclUserFactory;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

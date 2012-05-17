@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="capsdConfigStream" class="org.opennms.test.ConfigurationTestUtils" factory-method="getInputStreamForResource">
+		<!-- Dummy string value that will fetch the current classloader -->
+		<constructor-arg value="SOME_JAVA_LANG_STRING"/>
+		<!-- Classpath resource that contains a minimal capsd configuration -->
+		<constructor-arg value="/org/opennms/netmgt/capsd/capsd-configuration.xml"/>
+	</bean>
+
+	<bean id="capsdConfig" class="org.opennms.netmgt.config.DefaultCapsdConfigManager">
+		<constructor-arg ref="capsdConfigStream"/>
+	</bean>
+
+</beans>

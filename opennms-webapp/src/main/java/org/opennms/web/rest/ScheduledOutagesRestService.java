@@ -52,7 +52,6 @@ import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -104,25 +103,36 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Outages getOutages() {
-        Outages outages = new Outages();
-        outages.setOutage(m_configFactory.getOutages());
-        return outages;
+        readLock();
+        try {
+            Outages outages = new Outages();
+            outages.setOutage(m_configFactory.getOutages());
+            return outages;
+        } finally {
+            readUnlock();
+        }
     }
 
     @GET
     @Path("{outageName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
-        Outage outage = m_configFactory.getOutage(outageName);
-        if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
-        return outage;
+        readLock();
+        try {
+            Outage outage = m_configFactory.getOutage(outageName);
+            if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
+            return outage;
+        } finally {
+            readUnlock();
+        }
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response saveOrUpdateOutage(Outage newOutage) {
-        if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
+    public Response saveOrUpdateOutage(final Outage newOutage) {
+        writeLock();
         try {
+            if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
             Outage oldOutage = m_configFactory.getOutage(newOutage.getName());
             if (oldOutage == null) {
                 log().debug("saveOrUpdateOutage: adding outage " + newOutage.getName());
@@ -136,12 +146,15 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage " + newOutage.getName() + " because, " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @DELETE
     @Path("{outageName}")
     public Response deleteOutage(@PathParam("outageName") String outageName) {
+        writeLock();
         try {
             log().debug("deleteOutage: deleting outage " + outageName);
             updateCollectd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
@@ -154,102 +167,128 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't delete the scheduled outage " + outageName + " because, " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @PUT
     @Path("{outageName}/collectd/{packageName}")
     public Response addOutageToCollector(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+        writeLock();
         try {
             updateCollectd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to collector package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @DELETE
     @Path("{outageName}/collectd/{packageName}")
     public Response removeOutageFromCollector(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+        writeLock();
         try {
             updateCollectd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from collector package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @PUT
     @Path("{outageName}/pollerd/{packageName}")
     public Response addOutageToPoller(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+        writeLock();
         try {
             updatePollerd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to poller package " + packageName  + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @DELETE
     @Path("{outageName}/pollerd/{packageName}")
     public Response removeOutageFromPoller(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+        writeLock();
         try {
             updatePollerd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from poller package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @PUT
     @Path("{outageName}/threshd/{packageName}")
     public Response addOutageToThresholder(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+        writeLock();
         try {
             updateThreshd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to threshold package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @DELETE
     @Path("{outageName}/threshd/{packageName}")
     public Response removeOutageFromThresholder(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+        writeLock();
         try {
             updateThreshd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from threshold package " + packageName + ", because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @PUT
     @Path("{outageName}/notifd")
     public Response addOutageToNotifications(@PathParam("outageName") String outageName) {
+        writeLock();
         try {
             updateNotifd(ConfigAction.ADD, outageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to notifications because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
     @DELETE
     @Path("{outageName}/notifd")
     public Response removeOutageFromNotifications(@PathParam("outageName") String outageName) {
+        writeLock();
         try {
             updateNotifd(ConfigAction.REMOVE, outageName);
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from notifications because: " + e.getMessage());
+        } finally {
+            writeUnlock();
         }
     }
 
@@ -257,43 +296,63 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("{outageName}/nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
-        Outage outage = getOutage(outageName);
-        Boolean inOutage = m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage);
-        return inOutage.toString();
+        readLock();
+        try {
+            Outage outage = getOutage(outageName);
+            Boolean inOutage = m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage);
+            return inOutage.toString();
+        } finally {
+            readUnlock();
+        }
     }
 
     @GET
     @Path("nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("nodeId") Integer nodeId) {
-        for (Outage outage : m_configFactory.getOutages()) {
-            if (m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage)) {
-                return Boolean.TRUE.toString();
+        readLock();
+        try {
+            for (Outage outage : m_configFactory.getOutages()) {
+                if (m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+                    return Boolean.TRUE.toString();
+                }
             }
+            return Boolean.FALSE.toString();
+        } finally {
+            readUnlock();
         }
-        return Boolean.FALSE.toString();
     }
 
     @GET
     @Path("{outageName}/interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("outageName") String outageName, @PathParam("ipAddr") String ipAddr) {
-        validateAddress(ipAddr);
-        Outage outage = getOutage(outageName);
-        Boolean inOutage = m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage);
-        return inOutage.toString();
+        readLock();
+        try {
+            validateAddress(ipAddr);
+            Outage outage = getOutage(outageName);
+            Boolean inOutage = m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage);
+            return inOutage.toString();
+        } finally {
+            readUnlock();
+        }
     }
 
     @GET
     @Path("interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
-        for (Outage outage : m_configFactory.getOutages()) {
-            if (m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage)) {
-                return Boolean.TRUE.toString();
+        readLock();
+        try {
+            for (Outage outage : m_configFactory.getOutages()) {
+                if (m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+                    return Boolean.TRUE.toString();
+                }
             }
+            return Boolean.FALSE.toString();
+        } finally {
+            readUnlock();
         }
-        return Boolean.FALSE.toString();
     }
 
     private void validateAddress(String ipAddress) {

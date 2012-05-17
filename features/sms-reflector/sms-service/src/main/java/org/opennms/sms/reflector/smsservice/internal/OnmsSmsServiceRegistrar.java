@@ -85,6 +85,7 @@ public class OnmsSmsServiceRegistrar implements SmsServiceRegistrar, Initializin
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(m_serviceRegistry);
 	}

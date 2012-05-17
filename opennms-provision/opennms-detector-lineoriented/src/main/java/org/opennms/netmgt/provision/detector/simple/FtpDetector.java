@@ -33,15 +33,15 @@ import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>FtpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class FtpDetector extends AsyncMultilineDetector {
+public class FtpDetector extends AsyncMultilineDetectorMinaImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "FTP";
     private static final int DEFAULT_PORT = 21;
@@ -67,7 +67,8 @@ public class FtpDetector extends AsyncMultilineDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {
+    @Override
+    protected void onInit() {
         //setup the correct codec for this Detector
         setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(CHARSET_UTF8, getMultilineIndicator())));
         

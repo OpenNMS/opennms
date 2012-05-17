@@ -104,8 +104,13 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMonitoredServiceList getServices(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        return new OnmsMonitoredServiceList(node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServices());
+        readLock();
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            return new OnmsMonitoredServiceList(node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServices());
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -120,8 +125,13 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{service}")
     public OnmsMonitoredService getService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
+        readLock();
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
+        } finally {
+            readUnlock();
+        }
     }
     
     /**
@@ -135,32 +145,38 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, OnmsMonitoredService service) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
-        OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
-        if (intf == null) throw getException(Status.BAD_REQUEST, "addService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
-        if (service == null) throw getException(Status.BAD_REQUEST, "addService: service object cannot be null");
-        if (service.getServiceName() == null) throw getException(Status.BAD_REQUEST, "addService: service must have a name");
-        OnmsServiceType serviceType = m_serviceTypeDao.findByName(service.getServiceName());
-        if (serviceType == null)  {
-            log().info("addService: creating service type " + service.getServiceName());
-            serviceType = new OnmsServiceType(service.getServiceName());
-            m_serviceTypeDao.save(serviceType);
-        }
-        service.setServiceType(serviceType);
-        service.setIpInterface(intf);
-        log().debug("addService: adding service " + service);
-        m_serviceDao.save(service);
-        
-        Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getIpAddress(), 
-                service.getServiceName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
+        writeLock();
         
         try {
-            m_eventProxy.send(e);
-        } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
+            OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
+            if (intf == null) throw getException(Status.BAD_REQUEST, "addService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
+            if (service == null) throw getException(Status.BAD_REQUEST, "addService: service object cannot be null");
+            if (service.getServiceName() == null) throw getException(Status.BAD_REQUEST, "addService: service must have a name");
+            OnmsServiceType serviceType = m_serviceTypeDao.findByName(service.getServiceName());
+            if (serviceType == null)  {
+                log().info("addService: creating service type " + service.getServiceName());
+                serviceType = new OnmsServiceType(service.getServiceName());
+                m_serviceTypeDao.save(serviceType);
+            }
+            service.setServiceType(serviceType);
+            service.setIpInterface(intf);
+            log().debug("addService: adding service " + service);
+            m_serviceDao.save(service);
+            
+            Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getIpAddress(), 
+                    service.getServiceName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
+            
+            try {
+                m_eventProxy.send(e);
+            } catch (EventProxyException ex) {
+                throw getException(Status.BAD_REQUEST, ex.getMessage());
+            }
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        return Response.ok().build();
     }
     
     /**
@@ -176,25 +192,30 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
     public Response updateService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
-        OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
-        if (intf == null) throw getException(Status.BAD_REQUEST, "addService: can't find ip interface on " + nodeCriteria + "@" + ipAddress);
-        OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
-        if (service == null) throw getException(Status.BAD_REQUEST, "addService: can't find service " + serviceName + " on " + nodeCriteria + "@" + ipAddress);
-
-        log().debug("updateService: updating service " + service);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
-        for(String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
+        writeLock();
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
+            OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
+            if (intf == null) throw getException(Status.BAD_REQUEST, "addService: can't find ip interface on " + nodeCriteria + "@" + ipAddress);
+            OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
+            if (service == null) throw getException(Status.BAD_REQUEST, "addService: can't find service " + serviceName + " on " + nodeCriteria + "@" + ipAddress);
+    
+            log().debug("updateService: updating service " + service);
+            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
+            for(String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    String stringValue = params.getFirst(key);
+                    Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
             }
+            log().debug("updateSservice: service " + service + " updated");
+            m_serviceDao.saveOrUpdate(service);
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        log().debug("updateSservice: service " + service + " updated");
-        m_serviceDao.saveOrUpdate(service);
-        return Response.ok().build();
     }
 
     /**
@@ -208,27 +229,33 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @DELETE
     @Path("{service}")
     public Response deleteService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) throw getException(Status.BAD_REQUEST, "deleteService: can't find node " + nodeCriteria);
-        OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
-        if (intf == null) throw getException(Status.BAD_REQUEST, "deleteService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
-        OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
-        if (service == null) throw getException(Status.CONFLICT, "deleteService: service " + serviceName + " not found on interface " + intf);
-        log().debug("deleteService: deleting service " + serviceName + " from node " + nodeCriteria);
-        intf.getMonitoredServices().remove(service);
-        m_ipInterfaceDao.saveOrUpdate(intf);
+        writeLock();
         
-        EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, getClass().getName());
-        bldr.setNodeid(node.getId());
-        bldr.setInterface(addr(ipAddress));
-        bldr.setService(serviceName);
-
         try {
-            m_eventProxy.send(bldr.getEvent());
-        } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "deleteService: can't find node " + nodeCriteria);
+            OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
+            if (intf == null) throw getException(Status.BAD_REQUEST, "deleteService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
+            OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
+            if (service == null) throw getException(Status.CONFLICT, "deleteService: service " + serviceName + " not found on interface " + intf);
+            log().debug("deleteService: deleting service " + serviceName + " from node " + nodeCriteria);
+            intf.getMonitoredServices().remove(service);
+            m_ipInterfaceDao.saveOrUpdate(intf);
+            
+            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, getClass().getName());
+            bldr.setNodeid(node.getId());
+            bldr.setInterface(addr(ipAddress));
+            bldr.setService(serviceName);
+    
+            try {
+                m_eventProxy.send(bldr.getEvent());
+            } catch (EventProxyException ex) {
+                throw getException(Status.BAD_REQUEST, ex.getMessage());
+            }
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
-        return Response.ok().build();
     }
     
 }

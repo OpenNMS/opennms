@@ -41,9 +41,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServiceDaemon> implements BaseOnmsMBean {
 

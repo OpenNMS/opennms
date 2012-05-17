@@ -92,6 +92,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_alarmDao != null, "alarmDao property must be set");
         Assert.state(m_ticketerPlugin != null, "ticketPlugin property must be set");

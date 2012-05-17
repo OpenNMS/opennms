@@ -43,9 +43,11 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.NotificationCriteria;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JdbcWebNotificationRepositoryTest {
+public class JdbcWebNotificationRepositoryTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -67,9 +69,13 @@ public class JdbcWebNotificationRepositoryTest {
     @Autowired
     WebNotificationRepository m_notificationRepo;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+    
     @Before
     public void setUp(){
-        assertNotNull(m_notificationRepo);
         m_dbPopulator.populateDatabase();
     }
     

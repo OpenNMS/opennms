@@ -72,6 +72,7 @@ public class InventoryService implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
             RWSClientApi.init();
             m_cp = m_rwsConfig.getBase();

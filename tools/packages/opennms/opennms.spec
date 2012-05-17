@@ -510,11 +510,14 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'ncs-' | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
+	grep -v 'jdhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
+	grep -v 'jradius' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'Xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
@@ -528,7 +531,7 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/META-INF/opennms/component-service.xml' | \
+	grep -v '/WEB-INF/lib/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
@@ -573,13 +576,13 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
+%{jettydir}/%{servletdir}/WEB-INF/lib/ncs*
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd
 %config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
-%config %{jettydir}/%{servletdir}/META-INF/opennms/component-service.xml
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
@@ -623,6 +626,7 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/dhcp*.xml
+%{instprefix}/lib/jdhcp-*.jar
 %{instprefix}/lib/org.opennms.protocols.dhcp*.jar
 %{sharedir}/etc-pristine/dhcp*.xml
 %{sharedir}/xsds/dhcp*.xsd
@@ -638,6 +642,7 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-radius
 %defattr(664 root root 775)
 %{instprefix}/lib/gnu-crypto*.jar
+%{instprefix}/lib/jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
 %files plugin-protocol-xml
@@ -655,6 +660,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
+%{instprefix}/lib/Xmp-*.jar
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
 

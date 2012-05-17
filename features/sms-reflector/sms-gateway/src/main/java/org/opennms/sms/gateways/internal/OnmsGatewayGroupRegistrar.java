@@ -89,6 +89,7 @@ public class OnmsGatewayGroupRegistrar implements GatewayGroupRegistrar, Disposa
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(m_serviceRegistry, "serviceRegistry must not be null");
 	}

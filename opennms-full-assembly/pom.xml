@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -185,6 +185,7 @@
     </plugins>
   </build>
   <modules>
+    <module>../core/build/keystore</module>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
     <module>../opennms-doc</module>
@@ -332,6 +333,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.dhcp</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -380,6 +388,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xmp</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -389,6 +404,13 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>selenium-monitor</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>

@@ -1,203 +1,180 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.support;
 
-import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.Semaphore;
 
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IoSessionInitializer;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.opennms.core.utils.LogUtils;
 
 /**
  * <p>
- * Factory for encapsulating a NioSocketConnector in such a way as to allow us
- * to have a Semaphore limiting the number of active Connections across all
- * Connectors.
+ * Factory that controls creation of MINA {@link NioSocketConnector} connections.
+ * This will allow us to reuse {@link NioSocketConnector} instances to improve
+ * performance and avoid file handle leaks caused by using too many {@link NioSocketConnector}
+ * instances simultaneously.
  * </p>
+ * 
  * <p>
- * There will be one ConnectionFactory for each discrete connection timeout
- * value.
- * </p>
- * <p>
- *  Adapted from original ConnectorFactory.
+ * Because of the way that the MINA API works, there will be one {@link ConnectionFactory} 
+ * for each discrete connection timeout value.
  * </p>
  *
+ * @author Seth
  * @author ranger
  * @author Duncan Mackintosh
- * @version $Id: $
  */
-public class ConnectionFactory {
+public abstract class ConnectionFactory {
     
 	/** Map of timeoutInMillis to a ConnectionFactory with that timeout */
-    private static ConcurrentHashMap<Integer, ConnectionFactory> s_connectorPool 
-    	= new ConcurrentHashMap<Integer, ConnectionFactory>();
+    private static final ConcurrentHashMap<Integer, ConnectionFactory> s_connectorPool = new ConcurrentHashMap<Integer, ConnectionFactory>();
 	
-    
-    // Semaphore for number of connections (large, in the hundreds).
-    private static Semaphore s_availableConnections;
-    private static int s_connectionExecutionRetries = 3;
-    
-    static{
-        if(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections") != null){
-            
-            if(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections")) == 0){
-                s_availableConnections = null;
-            }else{
-                s_availableConnections = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnections", "2000")));
-            }
-        }
-        
-        s_connectionExecutionRetries = Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "3"));
-    }
-    
     /**
-     * Count the number of references to this Factory so we can dispose it
-     * when there are no active references
+     * Count the number of references to this factory so we can dispose it
+     * when there are no active references.
      */
     private int m_references = 0;
-    /**
-     * The actual connector
-     */
-    private NioSocketConnector m_connector;
-    
-    private final long m_timeout;
-    
-    /**
-     * Create a new factory. Private because one should use {@link #getFactory(int)}
-     */
-    private ConnectionFactory(int timeoutInMillis) {
-        m_timeout = timeoutInMillis;
-        m_connector = getSocketConnector();
-    }
-    
-    private final NioSocketConnector getSocketConnector() {
-        NioSocketConnector connector = new NioSocketConnector();
-        connector.setHandler(new SessionDelegateIoHandler());
-        connector.setConnectTimeoutMillis(m_timeout);
-        return connector;
-    }
 
-    public long getTimeout() {
+    private final long m_timeout;
+
+    /**
+     * @return the timeout
+     */
+    public final long getTimeout() {
         return m_timeout;
     }
 
     /**
-     * Get a new ConnectionFactory. If there is already a Factory with the
-     * desired timeout, you will get that one; otherwise a new one is created.
-     * <p>
-     * If org.opennms.netmgt.provision.maxConcurrentConnectors is set, this may
-     * block until a connector is available.
+     * Create a new factory. Private because one should use {@link #getFactory(int)}
+     */
+    protected ConnectionFactory(int timeoutInMillis) {
+        m_timeout = timeoutInMillis;
+    }
+    
+    /**
+     * <p>Get a new ConnectionFactory. If there is already a Factory with the
+     * desired timeout, you will get that one; otherwise a new one is created.</p>
+     * 
+     * <p>If org.opennms.netmgt.provision.maxConcurrentConnectors is set, this may
+     * block until a connector is available.</p>
      * 
      * @param timeoutInMillis
      * 		Connection timeout
      * @return
      * 		An appropriate Factory
      */
-    public static ConnectionFactory getFactory(int timeoutInMillis) {
-        ConnectionFactory factory = s_connectorPool.get(timeoutInMillis);
-        if (factory == null) {
-            LogUtils.debugf(ConnectionFactory.class, "Creating a ConnectionFactory for timeout %d, there are already %d factories", timeoutInMillis, s_connectorPool.size());
-            ConnectionFactory newFactory = new ConnectionFactory(timeoutInMillis);
-            factory = s_connectorPool.putIfAbsent(timeoutInMillis, newFactory);
-            // If there was no previous value for the factory in the map...
+    public static final ConnectionFactory getFactory(int timeoutInMillis) {
+        synchronized (s_connectorPool) {
+            ConnectionFactory factory = s_connectorPool.get(timeoutInMillis);
             if (factory == null) {
-                // ...then use the new value.
-                factory = newFactory;
-            } else {
-                LogUtils.debugf(ConnectionFactory.class, "ConnectionFactory for timeout %d was already created in another thread!", timeoutInMillis);
+                LogUtils.debugf(ConnectionFactoryConnectorPoolImpl.class, "Creating a ConnectionFactory for timeout %d, there are %d factories total", timeoutInMillis, s_connectorPool.size());
+                ConnectionFactory newFactory = createConnectionFactory(timeoutInMillis);
+                factory = s_connectorPool.putIfAbsent(timeoutInMillis, newFactory);
+                // If there was no previous value for the factory in the map...
+                if (factory == null) {
+                    // ...then use the new value.
+                    factory = newFactory;
+                } else {
+                    LogUtils.debugf(ConnectionFactoryConnectorPoolImpl.class, "ConnectionFactory for timeout %d was already created in another thread!", timeoutInMillis);
+                    // Dispose of the new unused factory
+                    dispose(newFactory);
+                }
             }
+            factory.m_references++;
+            return factory;
         }
-        factory.m_references++;
-        return factory;
+    }
+
+    private static final ConnectionFactory createConnectionFactory(int timeout) {
+        //return new ConnectionFactoryConnectorPoolImpl(timeout);
+        return new ConnectionFactoryNewConnectorImpl(timeout);
     }
 
     /**
-     * Connect to a remote socket. If org.opennms.netmgt.provision.maxConcurrentConnections
-     * is set, this may block until a connection slot is available.
-     * <p>
-     * You must dispose both the ConnectionFactory and ConncetFuture when done
-     * by calling {@link #dispose(ConnectionFactory, ConnectFuture)}.
+     * <p>Connect to a remote socket. If org.opennms.netmgt.provision.maxConcurrentConnections
+     * is set, this may block until a connection slot is available.</p>
      * 
-     * @param destination
+     * <p>You must dispose the {@link ConnectionFactory} when done
+     * by calling {@link #dispose(ConnectionFactory)}.</p>
+     * 
+     * @param remoteAddress
      * 		Destination address
      * @param init
      * 		Initialiser for the IoSession
      * @return
      * 		ConnectFuture from a Mina connect call
-     * @throws IOException 
      */
-    public ConnectFuture connect(SocketAddress destination, IoSessionInitializer<? extends ConnectFuture> init) throws IOException {
-        if (s_availableConnections != null) {
-            s_availableConnections.acquireUninterruptibly();
-        }
-        for (int retries = 0; retries < s_connectionExecutionRetries; retries++) { 
-            try {
-                synchronized (m_connector) {
-                    return m_connector.connect(destination, init);
-                }
-            } catch (RejectedExecutionException e) {
-                LogUtils.debugf(this, "Caught exception, retrying: %s", e);
-                synchronized (m_connector) {
-                    m_connector.dispose();
-                    m_connector = getSocketConnector();
-                    try { Thread.sleep(10); } catch (InterruptedException ex) {}
-                }
-            } catch (IllegalStateException e) {
-                LogUtils.debugf(this, "Caught exception, retrying: %s", e);
-                synchronized (m_connector) {
-                    m_connector.dispose();
-                    m_connector = getSocketConnector();
-                    try { Thread.sleep(10); } catch (InterruptedException ex) {}
-                }
-            }
-        }
-        throw new IOException("Could not connect to socket because of excessive RejectedExecutionExceptions");
-    }
+    public abstract ConnectFuture connect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler);
 
     /**
      * Retry a connection. This does not consume a connection slot, so will not
      * block or throw {@link InterruptedException}. Use only if you have already
      * acquired a connection slot using {@link #connect(SocketAddress, IoSessionInitializer)}.
      * 
-     * @param destination
+     * @param remoteAddress
      * @param init
      * @return
      */
-    public ConnectFuture reConnect(SocketAddress destination, IoSessionInitializer<? extends ConnectFuture> init) {
-        synchronized (m_connector) {
-            m_connector.dispose();
-            m_connector = getSocketConnector();
-            return m_connector.connect(destination, init);
-        }
-    }
-    
+    public abstract ConnectFuture reConnect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler);
+
+    /**
+     * Dispose of any resources that are held by the connection.
+     */
+    protected abstract void dispose();
+
     /**
      * Free up the resources used by a connection and connection factory.
      * @param factory
      * @param connection
      */
-    public static void dispose(ConnectionFactory factory) {
-        if (s_availableConnections != null) {
-            s_availableConnections.release();
-        }
-
+    public static final void dispose(ConnectionFactory factory) {
+        // If the reference count on the factory is zero...
         if (--factory.m_references <= 0) {
-            LogUtils.debugf(factory, "Disposing of factory for interval %d", factory.getTimeout());
-            Iterator<Entry<Integer, ConnectionFactory>> i = s_connectorPool.entrySet().iterator();
-            while(i.hasNext()) {
-                if(i.next().getValue() == factory) {
-                    i.remove();
+            // ... then remove it from the map of available connectors 
+            synchronized (s_connectorPool) {
+                LogUtils.debugf(factory, "Disposing of factory %s for interval %d", factory, factory.m_timeout);
+                Iterator<Entry<Integer, ConnectionFactory>> i = s_connectorPool.entrySet().iterator();
+                while(i.hasNext()) {
+                    if(i.next().getValue() == factory) {
+                        i.remove();
+                    }
                 }
             }
 
-            synchronized (factory.m_connector) {
-                factory.m_connector.dispose();
-            }
+            // Call dispose on the factory itself now that there are no references to it
+            factory.dispose();
         }
     }
 

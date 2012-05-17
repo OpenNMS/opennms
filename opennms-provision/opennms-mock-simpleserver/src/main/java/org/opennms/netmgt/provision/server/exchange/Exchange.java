@@ -46,7 +46,7 @@ public interface Exchange {
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
-    public boolean sendRequest(OutputStream out) throws IOException;
+    boolean sendRequest(OutputStream out) throws IOException;
     /**
      * <p>processResponse</p>
      *
@@ -54,12 +54,12 @@ public interface Exchange {
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
-    public boolean processResponse(BufferedReader in) throws IOException;
+    boolean processResponse(BufferedReader in) throws IOException;
     /**
      * <p>matchResponseByString</p>
      *
      * @param input a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean matchResponseByString(String input);
+    boolean matchResponseByString(String input);
 }

@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -55,11 +54,12 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class OpenNmsDaemonApplicationContextTest implements InitializingBean {
     @Autowired
+    @SuppressWarnings("unused")
     private EventIpcManager m_eventIpcManager;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_eventIpcManager);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Test

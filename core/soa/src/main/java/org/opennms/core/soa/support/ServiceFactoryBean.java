@@ -114,6 +114,7 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         
         boolean hasText = StringUtils.hasText(m_targetBeanName);

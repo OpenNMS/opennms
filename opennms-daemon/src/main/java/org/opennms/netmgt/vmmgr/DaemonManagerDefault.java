@@ -84,7 +84,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	public Map<String, String> status() {
         Map<String, String> stati = new HashMap<String, String>();
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
-			stati.put(serviceDaemon.getName(), serviceDaemon.status());
+			stati.put(serviceDaemon.getName(), serviceDaemon.getStatusText());
 		}
 		return Collections.unmodifiableMap(stati);
 	}

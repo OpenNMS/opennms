@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
@@ -47,6 +48,7 @@ import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DaoWebAlarmRepository implements WebAlarmRepository {
+public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBean {
     
     @Autowired
     AlarmDao m_alarmDao;
@@ -65,6 +67,11 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     @Autowired
     AckService m_ackService;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     private OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.createAlias("node", "node",  OnmsCriteria.LEFT_JOIN);

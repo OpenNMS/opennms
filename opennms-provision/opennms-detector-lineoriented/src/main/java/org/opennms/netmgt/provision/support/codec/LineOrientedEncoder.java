@@ -61,27 +61,32 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
     /** {@inheritDoc} */
     public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
         final LineOrientedRequest request = (LineOrientedRequest) message;
-        
+
         if(request.getRequest().contains("null")) {
 
             return;
         }
-        
+
         CharsetEncoder encoder = (CharsetEncoder) session.getAttribute(ENCODER);
         if (encoder == null) {
             encoder = m_charset.newEncoder();
             session.setAttribute(ENCODER, encoder);
         }
-        
-        final String value = request.getRequest();
-        final IoBuffer buffer = IoBuffer.allocate(value.length()).setAutoExpand(true);
-        
-        buffer.putString(request.getRequest(), encoder);
-        
-        buffer.flip();
-        LogUtils.debugf(this, "Client sending: %s\n", value);
-        out.write(buffer);
 
+        final String value = request.getRequest();
+        IoBuffer buffer = null;
+        try {
+            buffer = IoBuffer.allocate(value.length()).setAutoExpand(true);
+            buffer.putString(request.getRequest(), encoder);
+
+            buffer.flip();
+            LogUtils.debugf(this, "Client sending: %s", value.trim());
+            out.write(buffer);
+        } finally {
+            if (buffer != null) {
+                buffer.free();
+            }
+        }
     }
 
 }

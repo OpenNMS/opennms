@@ -29,15 +29,15 @@
 package org.opennms.web.svclayer.support;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
@@ -66,9 +66,9 @@ public class DefaultSurveillanceServiceIntegrationTest implements InitializingBe
     @Autowired
     private DatabasePopulator m_databasePopulator; 
 
+    @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_surveillanceService);
-        assertNotNull(m_databasePopulator);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

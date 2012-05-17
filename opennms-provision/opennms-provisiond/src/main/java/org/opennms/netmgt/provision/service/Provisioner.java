@@ -42,6 +42,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -65,7 +66,6 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.util.Assert;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -184,24 +184,32 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
         m_manager.initializeAdapters();
         scheduleRescanForExistingNodes();
         m_importSchedule.start();
     }
-	
+
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public void destroy() throws Exception {
+        m_importSchedule.stop();
+        m_scheduledExecutor.shutdown();
+    }
+
     /**
      * <p>afterPropertiesSet</p>
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(getProvisionService(), "provisionService property must be set");
-        Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
-        Assert.notNull(m_lifeCycleRepository, "lifeCycleRepository property must be set");
-        Assert.notNull(m_importActivities, "importActivities property must be set");
-        Assert.notNull(m_taskCoordinator, "taskCoordinator property must be set");
-        Assert.notNull(m_agentConfigFactory, "agentConfigFactory property must be set");
+        BeanUtils.assertAutowiring(this);
         
 
         //since this class depends on the Import Schedule, the UrlFactory should already

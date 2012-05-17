@@ -63,6 +63,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_pluginRegistry, "pluginRegistry must be set");
         m_adapters =  m_pluginRegistry.getAllPlugins(ProvisioningAdapter.class);

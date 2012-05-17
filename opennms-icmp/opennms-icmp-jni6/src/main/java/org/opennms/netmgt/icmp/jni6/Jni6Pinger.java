@@ -38,6 +38,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -131,21 +132,18 @@ public class Jni6Pinger implements Pinger {
 
     public Jni6Pinger() {}
 
-    private synchronized void initialize4() throws IOException {
+    public synchronized void initialize4() throws Exception {
         if (m_jniPinger != null) return;
         try {
             m_jniPinger = new JniPinger();
-            m_jniPinger.initialize();
-        } catch (final IOException ioe) {
-            m_v4Error = ioe;
-            throw ioe;
-        } catch (final RuntimeException rte) {
-            m_v4Error = rte;
-            throw rte;
+            m_jniPinger.initialize4();
+        } catch (final Exception e) {
+            m_v4Error = e;
+            throw e;
         }
     }
 
-    private synchronized void initialize6() throws IOException {
+    public synchronized void initialize6() throws Exception {
 	    if (s_pingTracker != null) return;
 
 	    final String name = "JNI-ICMPv6-"+m_pingerId;
@@ -167,6 +165,7 @@ public class Jni6Pinger implements Pinger {
         try {
             initialize4();
         } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv4");
         }
         if (m_jniPinger != null && m_v4Error == null) return m_jniPinger.isV4Available();
         return false;
@@ -176,6 +175,7 @@ public class Jni6Pinger implements Pinger {
         try {
             initialize6();
         } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv6");
         }
         if (s_pingTracker != null && m_v6Error == null) return true;
         return false;

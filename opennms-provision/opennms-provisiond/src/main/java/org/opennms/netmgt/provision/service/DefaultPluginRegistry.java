@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -51,7 +52,6 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.Assert;
 
 /**
  * DefaultPluginRegistry
@@ -83,12 +83,9 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     @Autowired
     private ApplicationContext m_applicationContext;
     
-    //@PostConstruct
-    /**
-     * <p>afterPropertiesSet</p>
-     */
-    public void afterPropertiesSet() {
-        Assert.notNull(m_serviceRegistry, "ServiceRegistry must not be null");
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
         addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_syncDetectors, SyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_nodePolicies, NodePolicy.class, OnmsPolicy.class);

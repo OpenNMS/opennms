@@ -34,12 +34,14 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.OutageCriteria.BaseOutageCriteriaVisitor;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
@@ -58,11 +60,15 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @version $Id: $
  * @since 1.8.1
  */
-public class JdbcWebOutageRepository implements WebOutageRepository {
+public class JdbcWebOutageRepository implements WebOutageRepository, InitializingBean {
 
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /** {@inheritDoc} */
     public int countCurrentOutages() {

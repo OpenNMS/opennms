@@ -67,6 +67,7 @@ public class ListController extends AbstractController implements InitializingBe
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_statisticsReportService != null, "property statisticsReportService must be set to a non-null value");
     }

@@ -71,6 +71,7 @@ public class NodeListController extends AbstractCommandController implements Ini
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_successView != null, "successView property cannot be null");
         Assert.state(m_nodeListService != null, "nodeListService property cannot be null");

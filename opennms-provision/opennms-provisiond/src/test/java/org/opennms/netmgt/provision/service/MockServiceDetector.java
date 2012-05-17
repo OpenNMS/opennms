@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
 /**
@@ -42,25 +41,45 @@ public class MockServiceDetector implements SyncServiceDetector {
     
     private String m_serviceName;
 
+    @Override
     public void init() {
     }
     
+    @Override
     public String getServiceName() {
         return m_serviceName;
     }
 
+    @Override
     public void setServiceName(String serviceName) {
         m_serviceName = serviceName;
     }
 
 
-
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    @Override
+    public boolean isServiceDetected(InetAddress address) {
         return true;
     }
 
+    @Override
     public void dispose() {
-        
     }
 
+    @Override
+    public int getPort() {
+        return 12345;
+    }
+
+    @Override
+    public void setPort(int port) {
+    }
+
+    @Override
+    public int getTimeout() {
+        return 2000;
+    }
+
+    @Override
+    public void setTimeout(int timeout) {
+    }
 }

@@ -31,6 +31,7 @@ package org.opennms.netmgt.ackd.readers;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -84,7 +85,9 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
         boolean state = (m_ackProcessor != null);
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
     }

@@ -40,12 +40,14 @@ import javax.annotation.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.sms.reflector.smsservice.SmsService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
@@ -58,7 +60,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath*:/META-INF/opennms/bundle-context-opennms.xml",
         "classpath:/testContext.xml"
 })
-public class SMSPingMonitorTest {
+public class SMSPingMonitorTest implements InitializingBean {
 	@Autowired
 	ApplicationContext m_context;
 	
@@ -67,6 +69,11 @@ public class SMSPingMonitorTest {
 
 	MonitoredService m_service;
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	    BeanUtils.assertAutowiring(this);
+	}
+
 	@Before
 	public void setUp() {
 		

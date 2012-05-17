@@ -62,7 +62,7 @@ public class MockUserManager extends UserManager {
         updateNeeded = true;
     }
 
-    public void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    protected void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }

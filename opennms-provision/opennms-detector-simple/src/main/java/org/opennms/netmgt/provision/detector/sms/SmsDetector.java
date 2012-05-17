@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.sms.response.SmsResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -73,11 +73,11 @@ public class SmsDetector extends BasicDetector<LineOrientedRequest, SmsResponse>
         expectBanner(ipMatches(getIpMatch()));
     }
 
-    private ResponseValidator<SmsResponse> ipMatches(final String ipAddr) {
+    private static ResponseValidator<SmsResponse> ipMatches(final String ipAddr) {
         
         return new ResponseValidator<SmsResponse>(){
 
-            public boolean validate(SmsResponse response) throws Exception {
+            public boolean validate(SmsResponse response) {
                 return response.isSms(ipAddr);
             }
             

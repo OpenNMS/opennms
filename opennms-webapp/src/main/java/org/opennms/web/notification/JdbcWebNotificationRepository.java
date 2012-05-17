@@ -35,11 +35,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
 import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
@@ -58,11 +60,16 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @version $Id: $
  * @since 1.8.1
  */
-public class JdbcWebNotificationRepository implements WebNotificationRepository {
+public class JdbcWebNotificationRepository implements WebNotificationRepository, InitializingBean {
     
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     private String getSql(final String selectClause, final NotificationCriteria criteria) {
         final StringBuilder buf = new StringBuilder(selectClause);
         

@@ -316,15 +316,15 @@ public class SyslogMessageTest {
 
     @Test
     public void testJuniperCFMFault() throws Exception {
-        final SyslogParser parser = JuniperSyslogParser.getParser("<7>Nov 17 03:38:24 junos-mx480-space cfmd[1461]: CFMD_CCM_DEFECT_RMEP: CFM defect: Remote CCM timeout detected by MEP on Level: 0 MD: customer MA: customer-site1 Interface: ge-5/0/2.0");
+        final SyslogParser parser = Rfc5424SyslogParser.getParser("<27>1 2012-04-20T12:33:13.946Z junos-mx80-2-space cfmd 1317 CFMD_CCM_DEFECT_RMEP - CFM defect: Remote CCM timeout detected by MEP on Level: 6 MD: MD_service_level MA: PW_126 Interface: ge-1/3/2.1");
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
         assertNotNull(message);
-        assertEquals(SyslogFacility.KERNEL, message.getFacility());
-        assertEquals(SyslogSeverity.DEBUG, message.getSeverity());
-        assertEquals("junos-mx480-space", message.getHostName());
+        assertEquals(SyslogFacility.SYSTEM, message.getFacility());
+        assertEquals(SyslogSeverity.ERROR, message.getSeverity());
+        assertEquals("junos-mx80-2-space", message.getHostName());
         assertEquals("cfmd", message.getProcessName());
-        assertEquals(Integer.valueOf(1461), message.getProcessId());
-        assertEquals(null, message.getMessageID());
+        assertEquals(Integer.valueOf(1317), message.getProcessId());
+        assertEquals("CFMD_CCM_DEFECT_RMEP", message.getMessageID());
     }
 }

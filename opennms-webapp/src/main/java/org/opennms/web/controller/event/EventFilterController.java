@@ -245,6 +245,7 @@ public class EventFilterController extends AbstractController implements Initial
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
         Assert.isTrue(m_defaultShortLimit > 0, "property defaultShortLimit must be set to a value greater than 0");

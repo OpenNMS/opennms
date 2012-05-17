@@ -37,11 +37,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -57,10 +59,15 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultPollServiceIntegrationTest {
+public class DefaultPollServiceIntegrationTest implements InitializingBean {
 
     @Autowired
     private DemandPollService m_demandPollService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     /**
      * this is a feature that has not been written yet

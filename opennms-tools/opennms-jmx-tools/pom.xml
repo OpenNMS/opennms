@@ -87,6 +87,13 @@
             <version>2.0.16</version>
         </dependency>
 
+        <!-- JMXMP -->
+        <dependency>
+            <groupId>org.jvnet.opendmk</groupId>
+            <artifactId>jmxremote_optional</artifactId>
+            <version>1.0_01-ea</version>
+        </dependency>
+
         <!-- Helpers -->
         <dependency>
             <groupId>org.apache.commons</groupId>

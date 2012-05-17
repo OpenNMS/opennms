@@ -37,13 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
@@ -133,19 +133,32 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         /**
          * Constructor
          */
-        EventListenerExecutor(EventListener listener) {
+        EventListenerExecutor(EventListener listener, Integer handlerQueueLength) {
             m_listener = listener;
             // You could also do Executors.newSingleThreadExecutor() here
-            m_delegateThread = Executors.newFixedThreadPool(1);
+            m_delegateThread = new ThreadPoolExecutor(
+                    1,
+                    1,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(handlerQueueLength),
+                    // This ThreadFactory will ensure that the log prefix of the calling thread
+                    // is used for all events that this listener handles. Therefore, if Notifd
+                    // registers for an event then all logs for handling that event will end up
+                    // inside notifd.log.
+                    new LogPreservingThreadFactory(m_listener.getName(), 1, true),
+                    new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            log().warn("Listener " + m_listener.getName() + "'s event queue is full, discarding event");
+                        }
+                    }
+            );
         }
 
         public void addEvent(final Event event) {
             m_delegateThread.execute(new Runnable() {
                 public void run() {
-                    if (log().isDebugEnabled()) {
-                        log().debug("In ListenerThread " + m_listener.getName() + " run");
-                    }
-
                     try {
                         if (log().isInfoEnabled()) {
                             log().info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
@@ -422,7 +435,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
         
-        EventListenerExecutor listenerThread = new EventListenerExecutor(listener);
+        EventListenerExecutor listenerThread = new EventListenerExecutor(listener, m_handlerQueueLength);
         m_listenerThreads.put(listener.getName(), listenerThread);
     }
 
@@ -471,24 +484,34 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventHandlerPool == null, "afterPropertiesSet() has already been called");
 
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
 
-        /**
-         * Create a fixed-size thread pool. The number of threads can be configured by using
-         * the "receivers" attribute in the config. The queue length for the pool can be configured
-         * with the "queueLength" attribute in the config.
-         */
-        m_eventHandlerPool = new ThreadPoolExecutor(
-            m_handlerPoolSize,
-            m_handlerPoolSize,
-            0L,
-            TimeUnit.MILLISECONDS,
-            m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength)
-        );
+        final String prefix = ThreadCategory.getPrefix();
+        try {
+            
+            ThreadCategory.setPrefix(Eventd.LOG4J_CATEGORY);
+
+            /**
+             * Create a fixed-size thread pool. The number of threads can be configured by using
+             * the "receivers" attribute in the config. The queue length for the pool can be configured
+             * with the "queueLength" attribute in the config.
+             */
+            m_eventHandlerPool = new ThreadPoolExecutor(
+                m_handlerPoolSize,
+                m_handlerPoolSize,
+                0L,
+                TimeUnit.MILLISECONDS,
+                m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
+                new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize, true)
+            );
+        } finally {
+            ThreadCategory.setPrefix(prefix);
+        }
 
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {

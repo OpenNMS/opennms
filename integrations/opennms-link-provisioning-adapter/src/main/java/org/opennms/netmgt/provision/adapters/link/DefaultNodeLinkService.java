@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +64,7 @@ import org.springframework.util.Assert;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultNodeLinkService implements NodeLinkService {
+public class DefaultNodeLinkService implements NodeLinkService, InitializingBean {
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -82,6 +84,11 @@ public class DefaultNodeLinkService implements NodeLinkService {
     @Autowired
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     /** {@inheritDoc} */
     @Transactional

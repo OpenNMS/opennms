@@ -33,6 +33,10 @@ die() {
 	exit 1
 }
 
+do_log() {
+	echo "=== $@ ==="
+}
+
 banner() {
 	echo "=============================================================================="
 	echo "$@"
@@ -56,6 +60,7 @@ clean_maven() {
 
 	# delete things older than a week
 	if [ -d "$HOME/.m2/repository" ]; then
+		do_log "$HOME/.m2/repository exists; cleaning"
 		find "${HOME}/.m2/repository" -depth -ctime +7 -type f -print -exec rm {} \; >/dev/null
 		find "${HOME}/.m2/repository" -depth -type d -print | while read LINE; do
 			rmdir "$LINE" 2>/dev/null || :
@@ -71,42 +76,59 @@ clean_maven() {
 clean_yum() {
 	banner "Cleaning out old YUM RPMs."
 
+	do_log "yum clean metadata"
 	yum clean metadata
+
 	# find RPMs more than a few days old and delete them
+	do_log "removing old RPMs"
 	find /var/cache/yum -type f -name \*.rpm -mtime +1 -print0 | xargs -0 rm -v -f
 }
 
 reset_database() {
 	banner "Resetting OpenNMS Database"
 
+	do_log "dropdb -U postgres opennms"
 	dropdb -U postgres opennms
 }
 
 reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
-	/etc/init.d/opennms stop
+	do_log "opennms stop"
+	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
+	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
 
+	do_log "removing existing opennms RPMs"
 	REPO=`cat $ME/../.nightly | grep -E '^repo:' | sed -e 's,^repo: *,,'`
 	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
+
+	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
+
+	do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
 	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
+
+	do_log "yum -y install $PACKAGES"
 	yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
 }
 
 get_source() {
 	banner "Getting OpenNMS Source"
 
+	do_log "rsync source from $ME to $SOURCEDIR"
 	rsync -avr --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
+
 	pushd "$SOURCEDIR"
+		do_log "cleaning git"
 		git clean -fdx || die "Unable to clean source tree."
 		git reset --hard HEAD
 
 		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
 		case $MATCH_RPM in
 			yes|y)
+				do_log "resetting git hash"
 				git reset --hard `get_hash_from_rpm` || die "Unable to reset git tree."
 				;;
 		esac
@@ -116,6 +138,7 @@ get_source() {
 configure_opennms() {
 	banner "Configuring OpenNMS"
 
+	do_log "replacing configuration files"
 	pushd opennms-home
 		find * -type f | sort -u | while read FILE; do
 			dir=`dirname "$FILE"`
@@ -127,13 +150,17 @@ configure_opennms() {
 		done
 	popd
 
+	do_log "runjava -s"
 	/opt/opennms/bin/runjava -s || die "'runjava -s' failed."
+
+	do_log "install -dis"
 	/opt/opennms/bin/install -dis || die "Unable to run OpenNMS install."
 }
 
 start_opennms() {
 	banner "Starting OpenNMS"
 
+	do_log "opennms start"
 	/etc/init.d/opennms start || die "Unable to start OpenNMS."
 }
 
@@ -154,6 +181,7 @@ run_tests() {
 #		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
 #	popd
 
+	do_log "bamboo.pl test"
 	pushd "$SOURCEDIR/smoke-test"
 		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
@@ -164,8 +192,11 @@ run_tests() {
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
+	do_log "opennms stop"
 	/etc/init.d/opennms stop
-	yum clean all || :
+
+	#do_log "yum clean all"
+	#yum clean all || :
 }
 
 

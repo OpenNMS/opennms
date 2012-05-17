@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
   <packaging>jar</packaging>
-  <name>instrumentationLogReader</name>
+  <name>OpenNMS Instrumentation Log Reader</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

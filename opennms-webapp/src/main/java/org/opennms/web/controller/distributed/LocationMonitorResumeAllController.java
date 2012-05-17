@@ -92,6 +92,7 @@ public class LocationMonitorResumeAllController extends AbstractController imple
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (m_distributedPollerService == null) {
             throw new IllegalStateException("distributedPollerService property has not been set");

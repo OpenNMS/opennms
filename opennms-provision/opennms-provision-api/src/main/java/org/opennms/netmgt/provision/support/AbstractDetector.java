@@ -28,19 +28,15 @@
 
 package org.opennms.netmgt.provision.support;
 
-import java.net.InetAddress;
-
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.SyncServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetector;
 
 /**
- * <p>Abstract AbstractDetector class.</p>
+ * <p>AbstractDetector class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
-public abstract class AbstractDetector implements SyncServiceDetector {
+public abstract class AbstractDetector implements ServiceDetector {
     
     private static final int DEFAULT_TIMEOUT = 2000;
     private static final int DEFAULT_RETRIES = 1;
@@ -48,15 +44,6 @@ public abstract class AbstractDetector implements SyncServiceDetector {
     private int m_retries;
     private int m_timeout;
     private String m_serviceName;
-    
-    
-    /**
-     * <p>Constructor for AbstractDetector.</p>
-     */
-    @Deprecated
-    protected AbstractDetector() {
-        
-    }
     
     /**
      * <p>Constructor for AbstractDetector.</p>
@@ -66,7 +53,7 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      * @param timeout a int.
      * @param retries a int.
      */
-    protected AbstractDetector(String serviceName, int port, int timeout, int retries) {
+    protected AbstractDetector(final String serviceName, final int port, final int timeout, final int retries) {
         m_serviceName = serviceName;
         m_port = port;
         m_timeout = timeout;
@@ -79,17 +66,17 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public AbstractDetector(String serviceName, int port) {
+    protected AbstractDetector(final String serviceName, final int port) {
         this(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
-        m_port = port;
     }
 
     /**
      * <p>init</p>
      */
-    public void init() {
-        if (m_serviceName == null || m_timeout <= 0) {
-            throw new IllegalStateException(String.format("ServiceName and/or timeout of %d is invalid.  ServiceName can't be null and timeout must be > 0", m_timeout));
+    @Override
+    public final void init() {
+        if (m_serviceName == null || m_timeout < -1) {
+            throw new IllegalStateException(String.format("ServiceName is null or timeout of %d is invalid. Timeout must be > -1", m_timeout));
         }
         onInit();
     }
@@ -98,13 +85,11 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      * <p>onInit</p>
      */
     abstract protected void onInit();
-
-    /** {@inheritDoc} */
-    abstract public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
     
     /**
      * <p>dispose</p>
      */
+    @Override
     abstract public void dispose();
     
     /**
@@ -112,7 +97,8 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      *
      * @param port a int.
      */
-    public void setPort(int port) {
+    @Override
+    public final void setPort(final int port) {
         m_port = port;
     }
 
@@ -121,7 +107,8 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      *
      * @return a int.
      */
-    public int getPort() {
+    @Override
+    public final int getPort() {
         return m_port;
     }
 
@@ -130,7 +117,7 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      *
      * @param retries a int.
      */
-    public void setRetries(int retries) {
+    public void setRetries(final int retries) {
         m_retries = retries;
     }
 
@@ -148,7 +135,8 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      *
      * @param timeout a int.
      */
-    public void setTimeout(int timeout) {
+    @Override
+    public final void setTimeout(final int timeout) {
         m_timeout = timeout;
     }
 
@@ -157,12 +145,14 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      *
      * @return a int.
      */
-    public int getTimeout() {
+    @Override
+    public final int getTimeout() {
         return m_timeout;
     }
 
     /** {@inheritDoc} */
-    public void setServiceName(String serviceName) {
+    @Override
+    public final void setServiceName(final String serviceName) {
         m_serviceName = serviceName;
     }
 
@@ -171,7 +161,8 @@ public abstract class AbstractDetector implements SyncServiceDetector {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getServiceName() {
+    @Override
+    public final String getServiceName() {
         return m_serviceName;
     }
     

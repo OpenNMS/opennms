@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
@@ -127,17 +128,9 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
         END_POINT3_ID = m_dbPopulator.getNode3().getId();
     }
     
-    public void afterPropertiesSet() {
-        assertNotNull(m_dbPopulator);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_linkStateDao);
-        assertNotNull(m_dataLinkDao);
-        assertNotNull(m_monitoredServiceDao);
-        assertNotNull(m_jdbcTemplate);
-        assertNotNull(m_nodeLinkService);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_transactionTemplate);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
     
     @Test

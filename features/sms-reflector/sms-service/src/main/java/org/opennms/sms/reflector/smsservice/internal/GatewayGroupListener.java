@@ -193,6 +193,7 @@ public class GatewayGroupListener implements InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_smsServiceRegistrar, "the smsServiceRegistrar must not be null");
 

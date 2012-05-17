@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -120,10 +121,8 @@ public class Linkd extends AbstractServiceDaemon {
 	 * <p>onInit</p>
 	 */
 	protected void onInit() {
+        BeanUtils.assertAutowiring(this);
 
-        Assert.state(m_queryMgr != null, "must set the queryManager property");
-        Assert.state(m_linkdConfig != null, "must set the linkdConfig property");
-        Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
 
         // FIXME: circular dependency

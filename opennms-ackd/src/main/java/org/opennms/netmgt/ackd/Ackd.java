@@ -99,7 +99,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             //fairly arbitrary time (grin)
             m_executor.awaitTermination(10, TimeUnit.SECONDS);
         } catch (Throwable e) {
-            log().error("destroy: error destorying readers."+e, e);
+            log().error("destroy: error destroying readers."+e, e);
             m_executor.shutdownNow();
         }
         log().info("destroy: readers shutdown.");
@@ -456,6 +456,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
     }
 

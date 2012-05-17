@@ -31,11 +31,11 @@ package org.opennms.reporting.core.svclayer.support;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
@@ -76,13 +76,11 @@ public class DefaultReportStoreServiceTest implements InitializingBean {
         System.setProperty("opennms.home", "src/test/resources");
     }
     
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_reportStoreService);
-        Assert.assertNotNull(m_reportCatalogDao);
-        Assert.assertNotNull(m_reportServiceLocator);
-        Assert.assertNotNull(m_databaseReportConfigDao);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     @Test
     public void testSave(){
         

@@ -62,7 +62,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
  */
 public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListener {
-	private static final Boolean useMockSnmpStrategyDefault = true;
+	private static final Boolean useMockSnmpStrategyDefault = false;
 	
 	private static final String USE_STRATEGY_PROPERTY = "org.opennms.core.test-api.snmp.useMockSnmpStrategy";
 	private static final String STRATEGY_CLASS_PROPERTY = "org.opennms.snmp.strategyClass";

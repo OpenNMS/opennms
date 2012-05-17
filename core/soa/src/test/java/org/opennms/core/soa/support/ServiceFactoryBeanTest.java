@@ -67,6 +67,7 @@ public class ServiceFactoryBeanTest {
         
         assertNotNull(m_provider);
         assertNotNull(m_registration);
+        assertNotNull(m_registry);
         
         assertSame(m_provider, m_registration.getProvider(Hello.class));
         assertSame(m_provider, m_registration.getProvider(Goodbye.class));
