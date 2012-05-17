@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.eventd.processor;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.EventConfDao;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
@@ -126,6 +129,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
     }
@@ -715,8 +719,6 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setMouseovertext(econf.getMouseovertext());
             }
 
-            // TODO Do we need an isSecureTag() check here to see if any AlarmData fields 
-            // should be overridden?
             if (e.getAlarmData() == null && econf.getAlarmData() != null) {
                 AlarmData alarmData = new AlarmData();
                 alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
@@ -725,10 +727,22 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
                 alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
                 alarmData.setClearKey(econf.getAlarmData().getClearKey());
+                
+                List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econf.getAlarmData().getUpdateFieldList();
+                if (updateFieldList.size() > 0) {
+                    List<UpdateField> updateFields = new ArrayList<UpdateField>();
+                    for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
+                        UpdateField eventField = new UpdateField();
+                        eventField.setFieldName(econfUpdateField.getFieldName());
+                        eventField.setUpdateOnReduction(econfUpdateField.isUpdateOnReduction());
+                        updateFields.add(eventField);
+                    }
+                    alarmData.setUpdateField(updateFields);
+                }
+                
                 e.setAlarmData(alarmData);
             }
-
-        } 
+        }
         
         Map<String, Map<String, String>> decode = new HashMap<String, Map<String,String>>();
         if (econf != null && econf.getVarbindsdecode() != null) {

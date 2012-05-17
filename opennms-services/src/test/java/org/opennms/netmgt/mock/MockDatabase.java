@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -48,8 +49,9 @@ import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * In memory database comparable to the postgres database that can be used for unit
- * testing.  Can be populated from a MockNetwork
+ * This class provides additional utility methods on top of the basic {@link TemporaryDatabase}
+ * class. For instance, it can be populated from a {@link MockNetwork}.
+ * 
  * @author brozow
  */
 public class MockDatabase extends TemporaryDatabase implements EventWriter {
@@ -119,24 +121,20 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
 
     public void writeService(MockService svc) {
         String svcName = svc.getSvcName();
-        if (!serviceDefined(svcName)) {
-            Object[] svcValues = { new Integer(svc.getId()), svcName };
-            //Object[] svcValues = { getNextServiceId(), svcName };
-            getNextServiceId();
+        Integer serviceId = getServiceID(svcName);
+        if (serviceId == null) {
+            svc.setId(getNextServiceId());
+            Object[] svcValues = { svc.getId(), svcName };
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
+            LogUtils.infof(this, "Inserting service \"%s\" into database with ID %d", svcName, svc.getId());
+        } else {
+            svc.setId(serviceId);
         }
-        
         String status = svc.getMgmtStatus().toDbString();
         Object[] values = { new Integer(svc.getNodeId()), str(svc.getAddress()), new Integer(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
-    
-    private boolean serviceDefined(String svcName) {
-        Querier querier = new Querier(this, "select serviceId from service where serviceName = ?");
-        querier.execute(svcName);
-        return querier.getCount() > 0;
-    }
-    
+
     public String getNextOutageIdStatement() {
         return getNextSequenceValStatement("outageNxtId");
     }
@@ -240,6 +238,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     /**
      * @param e
      */
+    @Override
     public void writeEvent(Event e) {
         Integer eventId = getNextEventId();
         
@@ -261,14 +260,15 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
-                Parameter.format(e)
+                Parameter.format(e),
+                e.getLogmsg() == null? null : e.getLogmsg().getContent()
         };
         e.setDbid(eventId.intValue());
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, eventDpName, " +
-                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms, eventlogmsg) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {

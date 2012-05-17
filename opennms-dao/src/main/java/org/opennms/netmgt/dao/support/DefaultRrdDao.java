@@ -120,7 +120,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         double[] values = new double[printLines.length];
         
         for (int i = 0; i < printLines.length; i++) {
-            if ("nan".equals(printLines[i])) {
+            if (printLines[i].endsWith("nan")) {
                 values[i] = Double.NaN;
             } else {
                 try {
@@ -139,6 +139,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_rrdStrategy != null, "property rrdStrategy must be set and be non-null");
         Assert.state(m_rrdBaseDirectory != null, "property rrdBaseDirectory must be set and be non-null");

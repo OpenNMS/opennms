@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -83,15 +83,11 @@ public class UpsertTest implements InitializingBean {
     @Autowired
     TransactionTemplate m_transTemplate;
     
-    public void afterPropertiesSet() {
-        assertNotNull(m_upsertService);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_snmpIfaceDao);
-        assertNotNull(m_jdbcTemplate);
-        assertNotNull(m_populator);
-        assertNotNull(m_transTemplate);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     @Before
     public void setUp() {
         m_populator.populateDatabase();

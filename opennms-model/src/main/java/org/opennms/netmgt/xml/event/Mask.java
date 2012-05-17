@@ -62,6 +62,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="mask")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Mask implements Serializable {
 	private static final long serialVersionUID = 6553429078798831778L;
 

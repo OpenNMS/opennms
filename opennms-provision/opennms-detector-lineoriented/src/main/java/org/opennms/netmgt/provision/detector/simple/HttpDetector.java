@@ -32,21 +32,21 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.HttpStatusResponse;
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.AsyncBasicDetectorMinaImpl;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>HttpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpStatusResponse> {
+public class HttpDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, HttpStatusResponse> {
     
     private static final String DEFAULT_SERVICE_NAME = "HTTP";
     private static final int DEFAULT_PORT = 80;
@@ -85,6 +85,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         send(request(httpCommand("GET")), contains(DEFAULT_SERVICE_NAME, getUrl(), isCheckRetCode(), getMaxRetCode()));
     }
@@ -106,7 +107,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    protected LineOrientedRequest request(final String command) {
+    protected static LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
     
@@ -119,7 +120,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      * @param maxRetCode a int.
      * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
-    protected ResponseValidator<HttpStatusResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
+    protected static ResponseValidator<HttpStatusResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<HttpStatusResponse>(){
 
             public boolean validate(final HttpStatusResponse message) {

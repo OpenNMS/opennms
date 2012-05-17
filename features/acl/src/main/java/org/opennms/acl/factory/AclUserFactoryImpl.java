@@ -44,13 +44,12 @@ package org.opennms.acl.factory;
 
 import org.opennms.acl.domain.GenericUser;
 import org.opennms.acl.model.UserAuthoritiesDTO;
-import org.opennms.acl.service.AuthorityService;
 import org.opennms.acl.service.GroupService;
 import org.opennms.acl.service.UserService;
+import org.opennms.core.utils.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 /**
  * Acl user factory, retrieve users by id or username
@@ -79,15 +78,13 @@ public class AclUserFactoryImpl implements AclUserFactory, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(authorityService != null, "authorityService property must be set and cannot be null");
-        Assert.state(userService != null, "userService property must be set and cannot be null");
+        BeanUtils.assertAutowiring(this);
     }
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private AuthorityService authorityService;
     @Autowired
     private GroupService groupService;
 }

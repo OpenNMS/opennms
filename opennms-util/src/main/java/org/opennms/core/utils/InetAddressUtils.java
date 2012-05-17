@@ -51,6 +51,7 @@ import org.xbill.DNS.Type;
  */
 abstract public class InetAddressUtils {
 
+    private static final ByteArrayComparator s_BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     public static final InetAddress UNPINGABLE_ADDRESS;
     public static final InetAddress UNPINGABLE_ADDRESS_IPV6;
 
@@ -358,17 +359,16 @@ abstract public class InetAddressUtils {
         // Start with the highest conceivable IP address value
         final byte[] originalBytes = toIpAddrBytes("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
         byte[] lowestBytes = originalBytes;
-        final ByteArrayComparator comparator = new ByteArrayComparator();
         for (final InetAddress temp : addresses) {
             byte[] tempBytes = temp.getAddress();
 
-            if (comparator.compare(tempBytes, lowestBytes) < 0) {
+            if (s_BYTE_ARRAY_COMPARATOR.compare(tempBytes, lowestBytes) < 0) {
                 lowestBytes = tempBytes;
                 lowest = temp;
             }
         }
 
-        return comparator.compare(originalBytes, lowestBytes) == 0 ? null : lowest;
+        return s_BYTE_ARRAY_COMPARATOR.compare(originalBytes, lowestBytes) == 0 ? null : lowest;
     }
 
     public static BigInteger difference(final String addr1, final String addr2) {
@@ -386,17 +386,16 @@ abstract public class InetAddressUtils {
 	}
 
 	public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
-        final ByteArrayComparator comparator = new ByteArrayComparator();
         final byte[] addr = InetAddressUtils.toIpAddrBytes(addrString);
         final byte[] begin = InetAddressUtils.toIpAddrBytes(beginString);
-        if (comparator.compare(addr, begin) > 0) {
+        if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) > 0) {
             final byte[] end = InetAddressUtils.toIpAddrBytes(endString);
-            if (comparator.compare(addr, end) <= 0) {
+            if (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0) {
                 return true;
             } else { 
                 return false;
             }
-        } else if (comparator.compare(addr, begin) == 0) {
+        } else if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) == 0) {
             return true;
         } else { 
             return false;
@@ -421,14 +420,13 @@ abstract public class InetAddressUtils {
     }
 
     public static boolean isInetAddressInRange(final byte[] addr, final byte[] begin, final byte[] end) {
-        final ByteArrayComparator comparator = new ByteArrayComparator();
-        if (comparator.compare(addr, begin) > 0) {
-            if (comparator.compare(addr, end) <= 0) {
+        if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) > 0) {
+            if (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0) {
                 return true;
             } else { 
                 return false;
             }
-        } else if (comparator.compare(addr, begin) == 0) {
+        } else if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) == 0) {
             return true;
         } else { 
             return false;

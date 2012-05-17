@@ -818,7 +818,7 @@ public final class RescanProcessor implements Runnable {
                       + str(target) + ")");
             if (doesSnmp) {
                 log().debug("updateInterface: the SNMP collection passed in is "
-                          + "collected via"
+                          + "collected via "
                           + (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : str(snmpc.getCollectorTargetAddress())));
             }
         }
@@ -1352,7 +1352,7 @@ public final class RescanProcessor implements Runnable {
                 // No ifIndex found
                 log().debug("updateInterfaceInfo:  No ifIndex found for "
                           + ifaddrString
-                          + ". Not eligible for primary SNMP interface");
+                          + ". Not eligible for primary SNMP interface.");
             }
             currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
         } else if (doesSnmp) {
@@ -3013,7 +3013,7 @@ public final class RescanProcessor implements Runnable {
             gotSnmpCollection = true;
             collectorMap.put(ifaddrString, collector);
             if (log().isDebugEnabled()) {
-                log().debug("SNMP data collected from DB primary SNMP interface" + ifaddrString);
+                log().debug("SNMP data collected from DB primary SNMP interface " + ifaddrString);
             }
             if (!snmpc.hasIfTable()) {
                 log().debug("SNMP Collector has no IfTable");

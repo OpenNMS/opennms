@@ -187,6 +187,7 @@ public class OutageListController extends AbstractController implements Initiali
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_filterView, "filterView property must be set");
         Assert.notNull(m_outageListBuilder, "outageListBuilder property must be set");

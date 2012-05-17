@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
@@ -49,7 +50,9 @@ import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerProxy;
 import org.opennms.netmgt.eventd.processor.EventExpander;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -57,7 +60,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
-public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
+public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster, InitializingBean {
 
     static class ListenerKeeper {
     	final EventListener m_listener;
@@ -271,7 +274,9 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     
     ScheduledExecutorService getScheduler() {
         if (m_scheduler == null) {
-            m_scheduler = Executors.newSingleThreadScheduledExecutor();
+            m_scheduler = Executors.newSingleThreadScheduledExecutor(
+                new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+            );
         }
         return m_scheduler;
     }
@@ -323,6 +328,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_proxy = proxy;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_proxy, "expected to have proxy set");
         m_proxy.setDelegate(this);

@@ -117,6 +117,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "property resourceService must be set");
     }

@@ -9,6 +9,7 @@ import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
 
 public class ResourceQueryExecuterFactory implements JRQueryExecuterFactory {
 
+    @SuppressWarnings("unchecked")
     public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map parameters) throws JRException {
         return new ResourceQueryExecuter(dataset, parameters);
     }

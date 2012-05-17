@@ -30,7 +30,9 @@ package org.opennms.netmgt.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,7 +47,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @XmlRootElement(name="user")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OnmsUser implements UserDetails {
-    private static final long serialVersionUID = 9178300257028646237L;
+    private static final long serialVersionUID = -5750203994158854220L;
 
     @XmlElement(name="user-id", required=true)
     private String m_username;
@@ -58,7 +60,10 @@ public class OnmsUser implements UserDetails {
     
     @XmlElement(name="password", required=false)
 	private String m_password;
-    
+
+    @XmlElement(name="passwordSalt", required=false)
+    private boolean m_passwordSalted = false;
+
     @XmlTransient
 	private Collection<? extends GrantedAuthority> m_authorities;
 
@@ -105,6 +110,14 @@ public class OnmsUser implements UserDetails {
 	 */
 	public void setPassword(String password) {
 		m_password = password;
+	}
+	
+	public boolean getPasswordSalted() {
+	    return m_passwordSalted;
+	}
+	
+	public void setPasswordSalted(final boolean passwordSalted) {
+	    m_passwordSalted = passwordSalted;
 	}
 	
 	/**
@@ -161,7 +174,6 @@ public class OnmsUser implements UserDetails {
             .append("username", m_username)
             .append("full-name", m_fullName)
             .append("comments", m_comments)
-            .append("password", m_password)
             .toString();
     }
 
@@ -218,5 +230,12 @@ public class OnmsUser implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
+    public void addAuthority(final GrantedAuthority authority) {
+    	final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+    	if (m_authorities != null) authorities.addAll(m_authorities);
+    	authorities.add(authority);
+    	m_authorities = authorities;
+    }
 
 }

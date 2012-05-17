@@ -1,401 +1,267 @@
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.xml.eventconf;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.ValidateUsing;
+import org.xml.sax.ContentHandler;
 
 /**
  * This element is used for converting events into alarms.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name="alarm-data")
 @XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("serial")
-public class AlarmData implements java.io.Serializable {
+@ValidateUsing("eventconf.xsd")
+public class AlarmData implements Serializable {
+	private static final long serialVersionUID = -4111377873947389525L;
 
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * Field reductionKey.
-     */
-	@XmlAttribute(name="reduction-key")
+	// @NotNull
+	@XmlAttribute(name="reduction-key", required=true)
     private String m_reductionKey;
 
-    /**
-     * Field _alarmType.
-     */
+	// @Min(1)
 	@XmlAttribute(name="alarm-type")
     private Integer m_alarmType;
 
-    /**
-     * Field _clearKey.
-     */
     @XmlAttribute(name="clear-key")
     private String m_clearKey;
 
-    /**
-     * Field _autoClean.
-     */
     @XmlAttribute(name="auto-clean")
     private Boolean m_autoClean;
 
-    /**
-     * Field _x733AlarmType.
-     */
+    // @Pattern(regexp="(CommunicationsAlarm|ProcessingErrorAlarm|EnvironmentalAlarm|QualityOfServiceAlarm|EquipmentAlarm|IntegrityViolation|SecurityViolation|TimeDomainViolation|OperationalViolation|PhysicalViolation)")
     @XmlAttribute(name="x733-alarm-type")
     private String m_x733AlarmType;
 
-    /**
-     * Field _x733ProbableCause.
-     */
     @XmlAttribute(name="x733-probable-cause")
     private Integer m_x733ProbableCause;
+    
+    @XmlElement(name="update-field", required=false)
+    private List<UpdateField> m_updateFields = new ArrayList<UpdateField>();
 
 
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
-    public AlarmData() {
-        super();
-    }
-
-
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     */
-    public void deleteAlarmType(
-    ) {
+    public void deleteAlarmType() {
         m_alarmType = null;
     }
 
-    /**
-     */
-    public void deleteX733ProbableCause(
-    ) {
+    public void deleteX733ProbableCause() {
         m_x733ProbableCause= null;
     }
 
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (obj instanceof AlarmData) {
-        
-            AlarmData temp = (AlarmData)obj;
-            if (this.m_reductionKey != null) {
-                if (temp.m_reductionKey == null) return false;
-                else if (!(this.m_reductionKey.equals(temp.m_reductionKey))) 
-                    return false;
-            }
-            else if (temp.m_reductionKey != null)
-                return false;
-            if (this.m_alarmType != temp.m_alarmType)
-                return false;
-            if (this.m_clearKey != null) {
-                if (temp.m_clearKey == null) return false;
-                else if (!(this.m_clearKey.equals(temp.m_clearKey))) 
-                    return false;
-            }
-            else if (temp.m_clearKey != null)
-                return false;
-            if (this.m_autoClean != temp.m_autoClean)
-                return false;
-            if (this.m_x733AlarmType != null) {
-                if (temp.m_x733AlarmType == null) return false;
-                else if (!(this.m_x733AlarmType.equals(temp.m_x733AlarmType))) 
-                    return false;
-            }
-            else if (temp.m_x733AlarmType != null)
-                return false;
-            if (this.m_x733ProbableCause != temp.m_x733ProbableCause)
-                return false;
-            return true;
-        }
-        return false;
+    public Integer getAlarmType() {
+        return m_alarmType;
     }
 
-    /**
-     * Returns the value of field 'alarmType'.
-     * 
-     * @return the value of field 'AlarmType'.
-     */
-    public Integer getAlarmType(
-    ) {
-        return this.m_alarmType;
+    public Boolean getAutoClean() {
+        return m_autoClean == null? Boolean.FALSE : m_autoClean; // XSD default is false
     }
 
-    /**
-     * Returns the value of field 'autoClean'.
-     * 
-     * @return the value of field 'AutoClean'.
-     */
-    public Boolean getAutoClean(
-    ) {
-        return this.m_autoClean;
+    public String getClearKey() {
+        return m_clearKey;
     }
 
-    /**
-     * Returns the value of field 'clearKey'.
-     * 
-     * @return the value of field 'ClearKey'.
-     */
-    public String getClearKey(
-    ) {
-        return this.m_clearKey;
+    public String getReductionKey() {
+        return m_reductionKey;
     }
 
-    /**
-     * Returns the value of field 'reductionKey'.
-     * 
-     * @return the value of field 'ReductionKey'.
-     */
-    public String getReductionKey(
-    ) {
-        return this.m_reductionKey;
+    public String getX733AlarmType() {
+        return m_x733AlarmType;
     }
 
-    /**
-     * Returns the value of field 'x733AlarmType'.
-     * 
-     * @return the value of field 'X733AlarmType'.
-     */
-    public String getX733AlarmType(
-    ) {
-        return this.m_x733AlarmType;
+    public Integer getX733ProbableCause() {
+        return m_x733ProbableCause;
     }
 
-    /**
-     * Returns the value of field 'x733ProbableCause'.
-     * 
-     * @return the value of field 'X733ProbableCause'.
-     */
-    public Integer getX733ProbableCause(
-    ) {
-        return this.m_x733ProbableCause;
-    }
-
-    /**
-     * Method hasAlarmType.
-     * 
-     * @return true if at least one AlarmType has been added
-     */
-    public boolean hasAlarmType(
-    ) {
+    public boolean hasAlarmType() {
         return m_alarmType != null;
     }
 
-    /**
-     * Method hasX733ProbableCause.
-     * 
-     * @return true if at least one X733ProbableCause has been added
-     */
-    public boolean hasX733ProbableCause(
-    ) {
+    public boolean hasX733ProbableCause() {
         return m_x733ProbableCause != null;
     }
 
-    public boolean hasAutoClean(
-    ) {
+    public boolean hasAutoClean() {
         return m_autoClean != null;
     }
 
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        return new HashCodeBuilder(17,37).append(getAlarmType()).append(getAutoClean()).append(getX733ProbableCause()).
-        	append(getClearKey()).append(getReductionKey()).append(getX733AlarmType()).toHashCode();
+    public boolean isAutoClean() {
+        return m_autoClean;
     }
 
     /**
-     * Returns the value of field 'autoClean'.
-     * 
-     * @return the value of field 'AutoClean'.
-     */
-    public boolean isAutoClean(
-    ) {
-        return this.m_autoClean;
-    }
-
-    /**
-     * Method isValid.
-     * 
      * @return true if this object is valid according to the schema
      */
-    public boolean isValid(
-    ) {
+    public boolean isValid() {
         try {
             validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
     }
 
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
 
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
 
-    /**
-     * Sets the value of field 'alarmType'.
-     * 
-     * @param alarmType the value of field 'alarmType'.
-     */
-    public void setAlarmType(
-            final Integer alarmType) {
-        this.m_alarmType = alarmType;
+    public void setAlarmType(final Integer alarmType) {
+        m_alarmType = alarmType;
     }
 
-    /**
-     * Sets the value of field 'autoClean'.
-     * 
-     * @param autoClean the value of field 'autoClean'.
-     */
-    public void setAutoClean(
-            final Boolean autoClean) {
-        this.m_autoClean = autoClean;
+    public void setAutoClean(final Boolean autoClean) {
+        m_autoClean = autoClean;
     }
 
-    /**
-     * Sets the value of field 'clearKey'.
-     * 
-     * @param clearKey the value of field 'clearKey'.
-     */
-    public void setClearKey(
-            final String clearKey) {
-        this.m_clearKey = clearKey;
+    public void setClearKey(final String clearKey) {
+        m_clearKey = clearKey == null? null : clearKey.intern();
     }
 
-    /**
-     * Sets the value of field 'reductionKey'.
-     * 
-     * @param reductionKey the value of field 'reductionKey'.
-     */
-    public void setReductionKey(
-            final String reductionKey) {
-        this.m_reductionKey = reductionKey;
+    public void setReductionKey(final String reductionKey) {
+        m_reductionKey = reductionKey == null? null : reductionKey.intern();
     }
 
-    /**
-     * Sets the value of field 'x733AlarmType'.
-     * 
-     * @param x733AlarmType the value of field 'x733AlarmType'.
-     */
-    public void setX733AlarmType(
-            final String x733AlarmType) {
-        this.m_x733AlarmType = x733AlarmType;
+    public void setX733AlarmType(final String x733AlarmType) {
+        m_x733AlarmType = x733AlarmType == null? null : x733AlarmType.intern();
     }
 
-    /**
-     * Sets the value of field 'x733ProbableCause'.
-     * 
-     * @param x733ProbableCause the value of field
-     * 'x733ProbableCause'.
-     */
-    public void setX733ProbableCause(
-            final Integer x733ProbableCause) {
-        this.m_x733ProbableCause = x733ProbableCause;
+    public void setX733ProbableCause(final Integer x733ProbableCause) {
+        m_x733ProbableCause = x733ProbableCause;
     }
 
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.xml.eventconf.AlarmData
-     */
-    public static org.opennms.netmgt.xml.eventconf.AlarmData unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.AlarmData) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.AlarmData.class, reader);
+    public static AlarmData unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (AlarmData) Unmarshaller.unmarshal(AlarmData.class, reader);
     }
 
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
+    public void validate() throws ValidationException {
+        new Validator().validate(this);
     }
 
 	public void deleteAutoClean() {
 		m_autoClean = null;
 	}
 
+	public boolean hasUpdateFields() {
+	    return m_updateFields.isEmpty() ? false : true;
+	}
 
+    public List<UpdateField> getUpdateFieldList() {
+        return Collections.unmodifiableList(m_updateFields);
+    }
+
+    public void setUpdateFieldList(List<UpdateField> updateFields) {
+    	m_updateFields.clear();
+    	m_updateFields.addAll(updateFields);
+    }
+    
+    public void deleteUpdateFieldList() {
+        m_updateFields.clear();
+    }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m_alarmType == null) ? 0 : m_alarmType.hashCode());
+		result = prime * result + ((m_autoClean == null) ? 0 : m_autoClean.hashCode());
+		result = prime * result + ((m_clearKey == null) ? 0 : m_clearKey.hashCode());
+		result = prime * result + ((m_reductionKey == null) ? 0 : m_reductionKey.hashCode());
+		result = prime * result + ((m_updateFields == null) ? 0 : m_updateFields.hashCode());
+		result = prime * result + ((m_x733AlarmType == null) ? 0 : m_x733AlarmType.hashCode());
+		result = prime * result + ((m_x733ProbableCause == null) ? 0 : m_x733ProbableCause.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof AlarmData)) return false;
+		final AlarmData other = (AlarmData) obj;
+		if (m_alarmType == null) {
+			if (other.m_alarmType != null) return false;
+		} else if (!m_alarmType.equals(other.m_alarmType)) {
+			return false;
+		}
+		if (m_autoClean == null) {
+			if (other.m_autoClean != null) return false;
+		} else if (!m_autoClean.equals(other.m_autoClean)) {
+			return false;
+		}
+		if (m_clearKey == null) {
+			if (other.m_clearKey != null) return false;
+		} else if (!m_clearKey.equals(other.m_clearKey)) {
+			return false;
+		}
+		if (m_reductionKey == null) {
+			if (other.m_reductionKey != null) return false;
+		} else if (!m_reductionKey.equals(other.m_reductionKey)) {
+			return false;
+		}
+		if (m_updateFields == null) {
+			if (other.m_updateFields != null) return false;
+		} else if (!m_updateFields.equals(other.m_updateFields)) {
+			return false;
+		}
+		if (m_x733AlarmType == null) {
+			if (other.m_x733AlarmType != null) return false;
+		} else if (!m_x733AlarmType.equals(other.m_x733AlarmType)) {
+			return false;
+		}
+		if (m_x733ProbableCause == null) {
+			if (other.m_x733ProbableCause != null) return false;
+		} else if (!m_x733ProbableCause.equals(other.m_x733ProbableCause)) {
+			return false;
+		}
+		return true;
+	}
+
+    
 }

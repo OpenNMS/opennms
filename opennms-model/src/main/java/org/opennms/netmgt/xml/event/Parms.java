@@ -57,6 +57,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlRootElement(name="parms")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Deprecated
+//@ValidateUsing("event.xsd")
 public class Parms implements Serializable {
 	private static final long serialVersionUID = 1361348948961582446L;
 

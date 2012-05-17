@@ -28,9 +28,9 @@
 
 package org.opennms.reporting.svclayer;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculator;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
@@ -63,13 +63,10 @@ public class AvailabilityReportServiceTest implements InitializingBean {
     ParameterConversionService m_parameterConversionService;
     
     @Override
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_classicCalculator);
-        Assert.assertNotNull(m_calendarCalculator);
-        Assert.assertNotNull(m_configDao);
-        Assert.assertNotNull(m_parameterConversionService);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     /**
      * TODO: Write a test
      */

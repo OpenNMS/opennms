@@ -31,6 +31,7 @@ package org.opennms.core.xml;
 import org.opennms.core.utils.LogUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 public class SimpleNamespaceFilter extends XMLFilterImpl {
@@ -61,7 +62,22 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
     	if (m_addNamespace) {
         	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, m_namespaceUri, localName, qName, attributes);
-    		super.startElement(m_namespaceUri, localName, qName, attributes);
+
+        	final String type = attributes.getValue("http://www.w3.org/2001/XMLSchema-instance", "type");
+
+        	// we found an xsi:type annotation, ignore to avoid, eg:
+			// org.xml.sax.SAXParseException: cvc-elt.4.2: Cannot resolve 'events' to a type definition for element 'events'.
+        	if (type != null) {
+    			final AttributesImpl att = new AttributesImpl();
+            	for (int i = 0; i < attributes.getLength(); i++) {
+            		if (!attributes.getLocalName(i).equals("type") || !attributes.getURI(i).equals("http://www.w3.org/2001/XMLSchema-instance")) {
+            			att.addAttribute(attributes.getURI(i), attributes.getLocalName(i), attributes.getQName(i), attributes.getType(i), attributes.getValue(i));
+            		}
+            	}
+        		super.startElement(m_namespaceUri, localName, qName, att);
+        	} else {
+            	super.startElement(m_namespaceUri, localName, qName, attributes);
+        	}
     	}  else {
         	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, uri, localName, qName, attributes);
     		super.startElement(uri, localName, qName, attributes);

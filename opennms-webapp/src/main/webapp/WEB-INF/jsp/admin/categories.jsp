@@ -28,7 +28,7 @@
  *******************************************************************************/
 
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="org.opennms.web.api.Util" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
@@ -61,10 +61,10 @@
    function deleteCategory(categoryName, categoryId){
 	   if(surveillanceCategories.hasOwnProperty(categoryName)){
            if(confirm("This Surveillance Category is also in your surveillance-views.xml config.\nPlease edit surveillance-views.xml to reflect changes.")){
-               location = "admin/categories.htm?removeCategoryId=" + categoryId;
+               location = "<%= Util.calculateUrlBase(request, "admin/categories.htm") %>?removeCategoryId=" + categoryId;
            }
        }else{
-           location = "admin/categories.htm?removeCategoryId=" + categoryId;
+           location = "<%= Util.calculateUrlBase(request, "admin/categories.htm") %>?removeCategoryId=" + categoryId;
        }
    }
 </script>

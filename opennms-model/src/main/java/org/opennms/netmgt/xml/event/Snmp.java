@@ -56,6 +56,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="snmp")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Snmp implements Serializable {
 	private static final long serialVersionUID = -3623082421217325379L;
 

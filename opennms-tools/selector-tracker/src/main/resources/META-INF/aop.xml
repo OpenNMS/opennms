@@ -1,0 +1,5 @@
+<aspectj>
+  <aspect name="org.opennms.debug.SelectorTracker2" />
+  <weaver options="-verbose">
+  </weaver>
+</aspectj>

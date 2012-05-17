@@ -56,6 +56,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -76,6 +77,7 @@ import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -94,7 +96,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SyslogdEventdLoadTest {
+public class SyslogdEventdLoadTest implements InitializingBean {
 
     private EventCounter m_eventCounter;
     private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
@@ -134,6 +136,11 @@ public class SyslogdEventdLoadTest {
             ueiMatch.setUei(String.format("uei.example.org/syslog/loadTest/foo%d", i));
             UEI_LIST.addUeiMatch(ueiMatch);
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

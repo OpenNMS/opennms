@@ -87,6 +87,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean<List<Correlatio
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_applicationContext != null, "applicationContext must be set");
         

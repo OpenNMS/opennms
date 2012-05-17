@@ -85,17 +85,21 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
                     in.limit(position);
                     // The bytes between in.position() and in.limit()
                     // now contain a full CRLF terminated line.
-                    
-                   if(!checkIndicator(in.slice())) { 
-                       response.addLine(in.getString(getCharset().newDecoder()));
-                       out.write(response);
-                       session.removeAttribute(CURRENT_RESPONSE);
-                       return true;
-                    }else {
-                       response.addLine(in.getString(getCharset().newDecoder()));
+
+                    // If the multiline indicator is on this line then add the line to
+                    // the response object and continue to process the next line
+                    if(checkIndicator(in.slice())) { 
+                        response.addLine(in.getString(getCharset().newDecoder()));
+                    } else {
+                        // Otherwise, add the current line and then submit the response
+                        // to the ProtocolDecoderOutput instance
+                        response.addLine(in.getString(getCharset().newDecoder()));
+                        out.write(response);
+                        session.removeAttribute(CURRENT_RESPONSE);
+                        return true;
                     }
-                    
-                    
+
+
                 } finally {
                     // Set the position to point right after the
                     // detected line and set the limit to the old

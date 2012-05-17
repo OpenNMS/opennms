@@ -242,7 +242,7 @@ public class DefaultResourceDaoTest extends TestCase {
     
     public void testGetTopLevelResourceDomainDoesNotExistInCollectdConfig() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new ObjectRetrievalFailureException(OnmsResource.class, "bogus", "Domain not found due to domain RRD directory not existing or not a directory: " + m_fileAnticipator.getTempDir() + "/snmp/bogus", null));
+        ta.anticipate(new ObjectRetrievalFailureException(OnmsResource.class, "bogus", "Domain not found due to domain RRD directory not existing or not a directory: " + m_fileAnticipator.getTempDir() + File.separator + "snmp" + File.separator + "bogus", null));
         
         m_easyMockUtils.replayAll();
         try {

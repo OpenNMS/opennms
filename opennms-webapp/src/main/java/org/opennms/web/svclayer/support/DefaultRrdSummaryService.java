@@ -392,6 +392,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_filterDao != null, "filterDao property must be set");
         Assert.state(m_resourceDao != null, "resourceDao property must be set");

@@ -120,6 +120,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_dataSource != null, "property dataSource must be set");
     }

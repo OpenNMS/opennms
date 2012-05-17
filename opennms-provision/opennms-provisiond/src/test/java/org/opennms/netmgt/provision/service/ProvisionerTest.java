@@ -60,6 +60,7 @@ import org.opennms.core.test.snmp.MockSnmpDataProvider;
 import org.opennms.core.test.snmp.MockSnmpDataProviderAware;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -191,22 +192,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
 	private MockSnmpDataProvider m_mockSnmpDataProvider;
 
-    public void afterPropertiesSet() {
-        assertNotNull(m_mockEventIpcManager);
-        assertNotNull(m_provisioner);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_monitoredServiceDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_snmpInterfaceDao);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_distPollerDao);
-        assertNotNull(m_assetRecordDao);
-        assertNotNull(m_resourceLoader);
-        assertNotNull(m_provisionService);
-        assertNotNull(m_pausibleExecutor);
-        assertNotNull(m_importSchedule);
-        assertNotNull(m_snmpPeerFactory);
-        assertNotNull(m_populator);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @BeforeClass
@@ -404,7 +392,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     }
 
     private void importFromResource(final String path, final Boolean rescanExisting) throws Exception {
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), true);
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
     }
     
     private void anticpateCreationEvents(final MockElement element) {
@@ -1313,64 +1301,6 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             }
         }
         assertTrue(String.format("Did not find anticipated %s event", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI), foundEvent);
-    }
-
-    // fail if we take more than five minutes
-    @Test(timeout=300000)
-    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-    @Transactional
-    @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.2.201", port=161, resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="172.20.2.202", port=161, resource="classpath:snmpTestData4.properties"),
-        @JUnitSnmpAgent(host="172.20.2.204", port=161, resource="classpath:snmpTestData4.properties")
-    })
-    public void testNoRescanOnImport() throws Exception {
-        importFromResource("classpath:/requisition_then_scan2.xml", true);
-
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
-        runScan(scan);
-        
-        m_nodeDao.flush();
-        
-        assertEquals(2, getInterfaceDao().countAll());
-
-        System.err.println("-------------------------------------------------------------------------");
-
-        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("172.20.2.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
-        
-        importFromResource("classpath:/requisition_primary_addr_changed.xml", false);
-
-        m_nodeDao.flush();
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        LogUtils.debugf(this, "found: %s", getInterfaceDao().findAll());
-        
-        //Import without rescan *only* adds interfaces, it does not delete them
-        assertEquals(3, getInterfaceDao().countAll());
-        
-        //Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 3, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
-
-        //Verify snmpInterface count
-        assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
-        
-        // Node Delete
-        importFromResource("classpath:/nonodes.xml", true);
-
-        //Verify node count
-        assertEquals(0, getNodeDao().countAll());
     }
 
     private static Event nodeDeleted(int nodeid) {

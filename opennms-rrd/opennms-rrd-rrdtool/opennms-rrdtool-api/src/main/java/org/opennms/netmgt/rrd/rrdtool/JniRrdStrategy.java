@@ -93,7 +93,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      */
     public void closeFile(StringBuffer rrd) throws Exception {
         String command = rrd.toString();
-        log().debug("Executing: rrdtool "+command);
         String[] results = Interface.launch(command);
         if (results[0] != null) {
             throw new Exception(results[0]);
@@ -432,7 +431,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      *
      * @return a {@link org.opennms.core.utils.ThreadCategory} object.
      */
-    public ThreadCategory log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

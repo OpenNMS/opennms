@@ -73,20 +73,30 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     private static final Log logger = LogFactory.getLog(RadiusAuthenticationProvider.class);
     private String server, secret;
     private int port = 1812, timeout = 5, retries = 3;
-    private RadiusAuthenticator authTypeClass = new PAPAuthenticator();
+
+    /**
+     * There is a bug in {@link net.jradius.client.auth.PAPAuthenticator#processRequest(RadiusPacket)} that prevents 
+     * instances of the class from being reused. Set the authenticator class to null to work 
+     * around this problem (while still using the {@link net.jradius.client.auth.PAPAuthenticator}
+     * class).
+     * 
+     * @see net.jradius.client.RadiusClient#authenticate(AccessRequest, RadiusAuthenticator, int)
+     */
+    private RadiusAuthenticator authTypeClass = null;
+
     private String defaultRoles = Authentication.ROLE_USER, rolesAttribute;
 
     /**
      * Create an instance using the supplied server and shared secret.
      *
      * @param server a {@link java.lang.String} object.
-     * @param secret a {@link java.lang.String} object.
+     * @param sharedSecret a {@link java.lang.String} object.
      */
-    public RadiusAuthenticationProvider(String server, String secret) {
+    public RadiusAuthenticationProvider(String server, String sharedSecret) {
         Assert.hasLength(server, "A server must be specified");
         this.server = server;
-        Assert.hasLength(secret, "A shared secret must be specified");
-        this.secret = secret;
+        Assert.hasLength(sharedSecret, "A shared secret must be specified");
+        this.secret = sharedSecret;
     }
 
     /**
@@ -94,11 +104,12 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     protected void doAfterPropertiesSet() throws Exception {
         Assert.notNull(this.port, "A port number must be specified");
         Assert.notNull(this.timeout, "A timeout must be specified");
         Assert.notNull(this.retries, "A retry count must be specified");
-        Assert.notNull(this.authTypeClass, "A RadiusAuthenticator object must be supplied in authTypeClass");
+        //Assert.notNull(this.authTypeClass, "A RadiusAuthenticator object must be supplied in authTypeClass");
         Assert.notNull(this.defaultRoles, "Default Roles must be supplied in defaultRoles");
     }
 
@@ -135,7 +146,14 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * @param authTypeClass An instance of net.jradius.client.auth.RadiusAuthenticator (defaults to PAPAuthenticator)
      */
     public void setAuthTypeClass(RadiusAuthenticator authTypeClass) {
-        this.authTypeClass = authTypeClass;
+        if (authTypeClass instanceof PAPAuthenticator) {
+            // There is a bug in PAPAuthenticator() that prevents instances of the class
+            // from being reused. Set the authenticator class to null to work around this
+            // problem.
+            this.authTypeClass = null;
+        } else {
+            this.authTypeClass = authTypeClass;
+        }
     }
 
     /**
@@ -214,7 +232,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             RadiusClient radiusClient = new RadiusClient(serverIP, secret, port, port+1, timeout);
             AccessRequest request = new AccessRequest(radiusClient, attributeList);
 
-            logger.debug("Sending AccessRequest message to "+InetAddressUtils.str(serverIP)+":"+port+" using "+authTypeClass.getAuthName()+" protocol with timeout = "+timeout+", retries = "+retries+", attributes:\n"+attributeList.toString());
+            logger.debug("Sending AccessRequest message to "+InetAddressUtils.str(serverIP)+":"+port+" using "+(authTypeClass == null ? "PAP" : authTypeClass.getAuthName())+" protocol with timeout = "+timeout+", retries = "+retries+", attributes:\n"+attributeList.toString());
             reply = radiusClient.authenticate(request, authTypeClass, retries);
         } catch (RadiusException e) {
             logger.error("Error connecting to radius server "+server+" : "+e);

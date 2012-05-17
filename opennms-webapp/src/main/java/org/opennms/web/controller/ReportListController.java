@@ -31,6 +31,8 @@ package org.opennms.web.controller;
 import org.opennms.web.svclayer.DatabaseReportListService;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.ReportRepositoryDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -50,6 +52,8 @@ import java.util.Map;
  */
 public class ReportListController extends AbstractController {
 
+    private Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + ReportListController.class.getName());
+
     /**
      * Service provides report templates from different repositories
      */
@@ -63,16 +67,23 @@ public class ReportListController extends AbstractController {
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
-                                                 HttpServletResponse response) throws Exception {
-        Map<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>> repositoryList = new LinkedHashMap<ReportRepositoryDescription, PagedListHolder <DatabaseReportDescription>>();
+            HttpServletResponse response) throws Exception {
+        logger.debug("start: reload reporting configuration files");
+        // TODO indigo: We have to solve this problem on DAO level
+        synchronized (m_reportListService) {
+          m_reportListService.reloadConfigurationFiles();
+        }
+        logger.debug("stop : reload reporting configuration files");
+
+        Map<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>> repositoryList = new LinkedHashMap<ReportRepositoryDescription, PagedListHolder<DatabaseReportDescription>>();
         for (ReportRepositoryDescription reportRepositoryDescription : m_reportListService.getActiveRepositories()) {
             PagedListHolder<DatabaseReportDescription> pageListholder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getReportsByRepositoryId(reportRepositoryDescription.getId()));
             pageListholder.setPageSize(m_pageSize);
-            int page = ServletRequestUtils.getIntParameter(request,"p_" + reportRepositoryDescription.getId(),0);
+            int page = ServletRequestUtils.getIntParameter(request, "p_" + reportRepositoryDescription.getId(), 0);
             pageListholder.setPage(page);
             repositoryList.put(reportRepositoryDescription, pageListholder);
         }
-        return new ModelAndView("report/database/reportList","repositoryList", repositoryList);
+        return new ModelAndView("report/database/reportList", "repositoryList", repositoryList);
     }
 
     /**

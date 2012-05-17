@@ -43,6 +43,12 @@ public class AlarmRestServiceBase extends OnmsRestService {
         cb.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
         cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
 
+        if (params.containsKey("alarmId")) {
+        	if (params.containsKey("id")) {
+        		throw new IllegalArgumentException("Form parameters contain both the 'alarmId' and 'id' properties!  Pick a side!");
+        	}
+        	params.put("id", params.remove("alarmId"));
+        }
     	applyQueryFilters(params, cb);
     	if (stripOrdering) {
     		cb.clearOrder();

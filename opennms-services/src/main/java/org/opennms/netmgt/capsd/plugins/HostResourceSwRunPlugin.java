@@ -140,7 +140,7 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
             for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
-                if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName)) {
+                if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + InetAddressUtils.str(ipaddr) + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     status = true;
                     break;
@@ -159,13 +159,15 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         
     }
 
-    private static String stripExtraQuotes(String string) {
-        String retString = "";
-        if(string.startsWith("\"")){
-            String temp = StringUtils.stripFront(string, '"');
-            retString = StringUtils.stripBack(temp, '"');
+    private boolean match(String expectedText, String currentText) {
+        if (expectedText.startsWith("~")) {
+            return currentText.matches(expectedText.replaceFirst("~", ""));
         }
-        return retString;
+        return currentText.equalsIgnoreCase(expectedText);
+    }
+
+    private String stripExtraQuotes(String string) {
+        return StringUtils.stripFrontBack(string, "\"", "\"");
     }
 
         /**

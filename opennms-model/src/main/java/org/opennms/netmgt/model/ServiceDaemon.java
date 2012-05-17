@@ -40,6 +40,6 @@ public interface ServiceDaemon extends PausableFiber {
 	  *
 	  * @return a {@link java.lang.String} object.
 	  */
-	 public String status();
+	 String getStatusText();
 
 }

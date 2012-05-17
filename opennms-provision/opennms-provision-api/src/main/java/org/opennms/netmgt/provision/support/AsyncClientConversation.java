@@ -31,67 +31,31 @@ package org.opennms.netmgt.provision.support;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 
 /**
- * <p>AsyncClientConversation class.</p>
+ * <p>
+ * A Conversation is a sequence of {@link ConversationExchange} instances that are used to 
+ * describe the sequence of messages that are passed back and forth during a network
+ * transaction.
+ * </p>
  *
  * @author Donald Desloge
- * @version $Id: $
  */
 public class AsyncClientConversation<Request, Response> {
-    
-    public static interface ResponseValidator<Response>{
-        boolean validate(Response message);
-    }
-    
-    public static interface AsyncExchange<Request, Response>{
 
-        /**
-         * @param message
-         * @return
-         */
-        boolean validateResponse(final Response response);
-
-        /**
-         * @return
-         */
-        Request getRequest();
-        
-       
-        
-    }
-    
-    public static class AsyncExchangeImpl<Request, Response> implements AsyncExchange<Request, Response>{
-        
-        private final Request m_request;
-        private final ResponseValidator<Response> m_responseValidator;
-
-        public AsyncExchangeImpl(final Request request, final ResponseValidator<Response> responseValidator) {
-            m_request = request;
-            m_responseValidator = responseValidator;
-        }
-        
-        public Request getRequest() {
-            return m_request;
-        }
-
-        public boolean validateResponse(final Response message) {
-            return m_responseValidator.validate(message);
-        }
-        
-    }
-    
-    private final List<AsyncExchange<Request, Response>> m_conversation = new ArrayList<AsyncExchange<Request, Response>>();
+    private final List<ConversationExchange<Request, Response>> m_conversation = new ArrayList<ConversationExchange<Request, Response>>();
     private boolean m_isComplete = false;
     private boolean m_hasBanner = false;
     
     /**
      * <p>addExchange</p>
      *
-     * @param request a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchange} object.
+     * @param request a {@link org.opennms.netmgt.provision.support.ConversationExchange} object.
      */
-    public void addExchange(final AsyncExchange<Request, Response> request) {
+    public void addExchange(final ConversationExchange<Request, Response> request) {
         m_conversation.add(request);
     }
     
@@ -139,13 +103,13 @@ public class AsyncClientConversation<Request, Response> {
      * @return a boolean.
      */
     public boolean validate(final Response message) {
-        final AsyncExchange<Request, Response> ex = m_conversation.remove(0);
+        final ConversationExchange<Request, Response> ex = m_conversation.remove(0);
 
         if(m_conversation.isEmpty()) {
             m_isComplete = true;
         }
         
-        return ex.validateResponse(message);
+        return ex.validate(message);
     }
 
     /**
@@ -160,6 +124,13 @@ public class AsyncClientConversation<Request, Response> {
     private Request extracted() {
         return m_conversation.isEmpty() ? null : m_conversation.get(0).getRequest();
     }
-    
-   
+
+    @Override
+    public String toString() {
+        ToStringBuilder builder = new ToStringBuilder(this);
+        builder.append("hasBanner", m_hasBanner);
+        builder.append("isComplete", m_isComplete);
+        builder.append("conversation", m_conversation.toArray());
+        return builder.toString();
+    }
 }

@@ -59,6 +59,7 @@ public class AttributeMatchingResourceVisitor implements ResourceVisitor, Initia
      *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_attributeVisitor != null, "property attributeVisitor must be set to a non-null value");
         Assert.state(m_attributeMatch != null, "property attributeMatch must be set to a non-null value");

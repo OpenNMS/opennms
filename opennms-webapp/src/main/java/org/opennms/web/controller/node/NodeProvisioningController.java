@@ -149,6 +149,7 @@ public class NodeProvisioningController extends AbstractController implements
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_successView, "successView must be set");

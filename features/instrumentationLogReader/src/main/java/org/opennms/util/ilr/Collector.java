@@ -50,8 +50,8 @@ import static org.opennms.util.ilr.Filter.*;
 public class Collector {
 
     
-    public static final String SERVICE_TITLE_FORMAT = "%-40s%20s%15s%25s%15s%25s%15s%20s%25s\n";
-    public static final String SERVICE_DATA_FORMAT = "%-40s%20s%15s%25s%15.1f%25s%15.1f%20s%25s\n";
+    public static final String SERVICE_TITLE_FORMAT = "%-40s%20s%15s%25s%15s%25s%15s%20s%25s%15s%15s\n";
+    public static final String SERVICE_DATA_FORMAT = "%-40s%20s%15s%25s%15.1f%25s%15.1f%20s%25s%15s%15s\n";
     private String m_searchString = null;
 
 
@@ -400,13 +400,14 @@ public class Collector {
                    Collector.formatDuration(serviceCollector.getAverageSuccessfulCollectionTime()), serviceCollector.getSuccessPercentage(), 
                    Collector.formatDuration(serviceCollector.getAverageErrorCollectionTime()), serviceCollector.getErrorPercentage(),
                    Collector.formatDuration(serviceCollector.getAverageTimeBetweenCollections()),
-                   Collector.formatDuration(serviceCollector.getTotalCollectionTime()));
-        Collector.formatDuration(serviceCollector.getTotalPersistTime());
+                   Collector.formatDuration(serviceCollector.getTotalCollectionTime()),
+                   Collector.formatDuration(serviceCollector.getAveragePersistTime()),
+                   Collector.formatDuration(serviceCollector.getTotalPersistTime()));
     }
     //	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
     //	19/172.10.1.21/SNMP       13.458s             .002s              5m27s                    3                 45.98s           .010s
     public void printServiceHeader(PrintWriter out) {
-        out.printf(SERVICE_TITLE_FORMAT, "Service", "Avg Collect Time", "# Collections",  "Avg Success Time", "% Success", "Avg Error Time", "% Errors", "Avg Time Between", "Total Collection Time", "Total Persist Time");
+        out.printf(SERVICE_TITLE_FORMAT, "Service", "Avg Collect Time", "# Collections",  "Avg Success Time", "% Success", "Avg Error Time", "% Errors", "Avg Time Between", "Total Collection Time", "Avg Persist Time", "Total Persist Time");
 
     }
     public void printReport(PrintWriter out) {

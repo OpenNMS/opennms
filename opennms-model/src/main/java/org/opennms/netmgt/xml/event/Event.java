@@ -57,6 +57,7 @@ import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class Event implements Serializable {
 	private static final long serialVersionUID = 3928732070467015212L;
 

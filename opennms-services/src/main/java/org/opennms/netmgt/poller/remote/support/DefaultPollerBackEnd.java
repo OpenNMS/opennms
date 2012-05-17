@@ -128,6 +128,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
@@ -146,8 +147,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
         // Nothing to do: job scheduling and RMI export is done externally
+    }
+
+    /**
+     * <p>destroy</p>
+     */
+    @Override
+    public void destroy() {
+        // Nothing to do
     }
 
     /**

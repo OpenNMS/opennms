@@ -43,8 +43,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
  */
 public class MultilineOrientedCodecFactory implements ProtocolCodecFactory {
     
-    private LineOrientedEncoder m_encoder;
-    private MultiLineDecoder m_decoder;
+    private final LineOrientedEncoder m_encoder;
+    private final MultiLineDecoder m_decoder;
     
     /**
      * <p>Constructor for MultilineOrientedCodecFactory.</p>
@@ -65,11 +65,13 @@ public class MultilineOrientedCodecFactory implements ProtocolCodecFactory {
     }
     
     /** {@inheritDoc} */
+    @Override
     public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }

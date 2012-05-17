@@ -39,6 +39,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
@@ -52,6 +53,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerListener;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -69,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ImportSchedulerTest {
+public class ImportSchedulerTest implements InitializingBean {
     
     @Autowired
     ImportJobFactory m_factory;
@@ -83,20 +85,16 @@ public class ImportSchedulerTest {
     @Autowired
     ProvisiondConfigurationDao m_dao;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
     }
 
-    @Before
-    public void verifyWiring() {
-        Assert.assertNotNull(m_importScheduler);
-        Assert.assertNotNull(m_factory);
-        Assert.assertNotNull(m_provisioner);
-        Assert.assertNotNull(m_dao);
-    }
-
-    
     @Test
     public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException {
         

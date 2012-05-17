@@ -30,7 +30,7 @@ package org.opennms.protocols.dhcp.detector;
 
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.dhcp.detector.client.DhcpClient;
 import org.opennms.protocols.dhcp.detector.request.DhcpRequest;
 import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
@@ -65,10 +65,10 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
         expectBanner(responseTimeGreaterThan(-1));
     }
 
-    private ResponseValidator<DhcpResponse> responseTimeGreaterThan(final long num) {
+    private static ResponseValidator<DhcpResponse> responseTimeGreaterThan(final long num) {
         return new ResponseValidator<DhcpResponse>(){
 
-            public boolean validate(DhcpResponse response) throws Exception {
+            public boolean validate(DhcpResponse response) {
                 return response.validate(num);
             }
             

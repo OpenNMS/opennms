@@ -298,7 +298,7 @@ public class DefaultAdminCategoryService implements
         OnmsCategory category = findCategory(categoryIdString);
         CategoryAndMemberNodes cat = getCategory(categoryIdString);
         for (OnmsNode adriftNode : cat.getMemberNodes()) {
-        	notifyCategoryChange(adriftNode.getId());
+        	notifyCategoryChange(adriftNode);
         }
         m_categoryDao.delete(category);
     }
@@ -377,7 +377,7 @@ public class DefaultAdminCategoryService implements
             }
             
             getNodeDao().save(node);
-            notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
+            notifyCategoryChange(node);
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
@@ -409,7 +409,7 @@ public class DefaultAdminCategoryService implements
             }
 
             getNodeDao().save(node);
-            notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
+            notifyCategoryChange(node);
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction
@@ -429,9 +429,10 @@ public class DefaultAdminCategoryService implements
         return getNodeDao().get(nodeId);
     }
 
-    private void notifyCategoryChange(final int nodeId) {
+    private void notifyCategoryChange(final OnmsNode node) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "CategoryUI");
-        bldr.setNodeid(nodeId);
+        bldr.setNode(node);
+        bldr.setParam("nodelabel", node.getLabel());
         send(bldr.getEvent());
     }
     

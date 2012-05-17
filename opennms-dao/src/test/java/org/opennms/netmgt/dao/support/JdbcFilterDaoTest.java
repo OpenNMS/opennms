@@ -44,6 +44,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -108,10 +109,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_interfaceDao);
-        assertNotNull(m_populator);
-        assertNotNull(m_transTemplate);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

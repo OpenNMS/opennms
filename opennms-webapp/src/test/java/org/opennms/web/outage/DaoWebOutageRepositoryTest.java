@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -51,6 +52,7 @@ import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,13 +66,18 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DaoWebOutageRepositoryTest {
+public class DaoWebOutageRepositoryTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
     
     @Autowired
     WebOutageRepository m_daoOutageRepo;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @BeforeClass
     public static void setupLogging(){

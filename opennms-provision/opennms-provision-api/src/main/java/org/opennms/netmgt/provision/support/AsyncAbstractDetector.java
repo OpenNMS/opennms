@@ -32,34 +32,13 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.DetectorMonitor;
 
 /**
- * <p>Abstract AsyncAbstractDetector class.</p>
+ * <p>AsyncAbstractDetector class.</p>
  *
  * @author thedesloge
- * @version $Id: $
  */
-public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
-    
-    private static final int DEFAULT_RETRIES = 1;
-    private static final int DEFAULT_TIMEOUT = 2000;
-    
-    private int m_port;
-    private int m_retries;
-    private int m_timeout;
-    private String m_serviceName;
-    
-    
-    /**
-     * <p>Constructor for AsyncAbstractDetector.</p>
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     * @param port a int.
-     */
-    protected AsyncAbstractDetector(final String serviceName, final int port) {
-        this(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
-    }
+public abstract class AsyncAbstractDetector extends AbstractDetector implements AsyncServiceDetector {
     
     /**
      * <p>Constructor for AsyncAbstractDetector.</p>
@@ -70,102 +49,20 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      * @param retries a int.
      */
     protected AsyncAbstractDetector(final String serviceName, final int port, final int timeout, final int retries) {
-        m_serviceName = serviceName;
-        m_port = port;
-        m_timeout = timeout;
-        m_retries = retries;
+        super(serviceName, port, timeout, retries);
     }
 
     /**
-     * <p>init</p>
-     */
-    public void init() {
-        if (m_serviceName == null || m_timeout <= 0) {
-            throw new IllegalStateException(String.format("ServiceName is null or timeout of %d is invalid.  Timeout must be > 0", m_timeout));
-        }
-        
-        onInit();
-    }
-    
-    /**
-     * <p>onInit</p>
-     */
-    abstract protected void onInit();
-    
-    /** {@inheritDoc} */
-    abstract public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor);
-    
-    /**
-     * <p>dispose</p>
-     */
-    abstract public void dispose();
-    
-    /**
-     * <p>setPort</p>
+     * <p>Constructor for AsyncAbstractDetector.</p>
      *
+     * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public void setPort(final int port) {
-        m_port = port;
+    protected AsyncAbstractDetector(final String serviceName, final int port) {
+        super(serviceName, port);
     }
-
-    /**
-     * <p>getPort</p>
-     *
-     * @return a int.
-     */
-    public int getPort() {
-        return m_port;
-    }
-
-    /**
-     * <p>setRetries</p>
-     *
-     * @param retries a int.
-     */
-    public void setRetries(final int retries) {
-        m_retries = retries;
-    }
-
-    /**
-     * <p>getRetries</p>
-     *
-     * @return a int.
-     */
-    public int getRetries() {
-        return m_retries;
-    }
-
-    /**
-     * <p>setTimeout</p>
-     *
-     * @param timeout a int.
-     */
-    public void setTimeout(final int timeout) {
-        m_timeout = timeout;
-    }
-
-    /**
-     * <p>getTimeout</p>
-     *
-     * @return a int.
-     */
-    public int getTimeout() {
-        return m_timeout;
-    }
-
+    
     /** {@inheritDoc} */
-    public void setServiceName(final String serviceName) {
-        m_serviceName = serviceName;
-    }
-
-    /**
-     * <p>getServiceName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getServiceName() {
-        return m_serviceName;
-    }
-
+    @Override
+    abstract public DetectFuture isServiceDetected(final InetAddress address);
 }

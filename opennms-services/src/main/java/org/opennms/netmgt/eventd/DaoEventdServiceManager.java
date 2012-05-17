@@ -109,6 +109,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_serviceTypeDao != null, "property serviceTypeDao must be set");
     }

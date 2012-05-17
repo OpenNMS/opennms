@@ -128,6 +128,7 @@ public class UpdateGroupController extends AbstractController implements Initial
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         // TODO Auto-generated method stub
         

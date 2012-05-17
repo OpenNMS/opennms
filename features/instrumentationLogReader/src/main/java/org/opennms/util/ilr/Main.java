@@ -41,6 +41,7 @@ public class Main {
      * @throws IOException  	
      */
     Collector c = new Collector();
+    boolean processedFiles = false;
     public static void main(String[] args) throws IOException {
         new Main().execute(args, System.out);
     }
@@ -49,18 +50,28 @@ public class Main {
         try {
             argParser.processArgs(args);
         } catch (Exception e) {
-            System.err.println("Unable to parse Arguments."+ e);
-            argParser.printHelpOptions();
+            reportErrAndExit(argParser, "Unable to parse Arguments."+ e);
+        }
+        if (!processedFiles) {
+            reportErrAndExit(argParser, "At least one instrumentation log file must be passed in.");
         }
         
         PrintWriter writer = new PrintWriter(out,true);
-
         c.printReport(writer);
 
     }
+	private void reportErrAndExit(ArgumentParser argParser, String errMsg) {
+		System.err.println(errMsg);
+		argParser.printHelpOptions();
+		System.exit(1);
+	}
     @Option (shortName ="tpt", longName = "totalPersistTime", help = "Sorts by total persist time")
     public void sortByTotalPersistTime() {
         c.setSortColumn(SortColumn.TOTALPERSISTTIME);
+    }
+    @Option (shortName ="apt", longName = "averagePersistTime", help = "Sorts by average persist time")
+    public void sortByAveragePersistTime() {
+        c.setSortColumn(SortColumn.AVERAGEPERSISTTIME);
     }
     @Option (shortName ="tct", longName = "totalCollectionTime", help = "Sorts by total collection time")
     public void sortByTotalCollectiontime() {
@@ -105,6 +116,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        processedFiles = true;
     }
     public void parseHelpOption(String [] args, int i) {
         if (args[i].equals( "-h") || args[i].equals( "--help")){
@@ -122,4 +134,6 @@ public class Main {
             System.out.println("-tpt or --totalPersistTime : Sorts by total persist time");
         }
     }
+    
+    
 }

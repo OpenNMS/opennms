@@ -269,6 +269,7 @@ public class PluginManager implements InitializingBean {
      *
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void afterPropertiesSet() throws ValidationException {
         Assert.state(m_capsdConfig != null, "property capsdConfig must be set to a non-null value");
         

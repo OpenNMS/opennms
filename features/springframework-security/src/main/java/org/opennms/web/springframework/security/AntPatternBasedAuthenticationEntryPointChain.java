@@ -83,6 +83,7 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nonMatchingEntryPoint, "nonMatchingEntryPoint may not be null");
         Assert.notNull(m_matchingEntryPoint, "matchingEntryPoint may not be null");

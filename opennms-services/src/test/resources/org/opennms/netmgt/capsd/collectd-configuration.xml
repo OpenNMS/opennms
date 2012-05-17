@@ -16,8 +16,15 @@
            <parameter key="timeout" value="3000"/>
        </service>
        
-       <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+       <service name="HTTP" interval="300000" user-defined="false" status="on">
+           <parameter key="collection" value="default"/>
+           <parameter key="port" value="80"/>
+           <parameter key="retry" value="3"/>
+           <parameter key="timeout" value="3000"/>
+       </service>
+
    </package>
    
-   <collector service="SNMP"     class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+   <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+   <collector service="HTTP" class-name="org.opennms.netmgt.collectd.HttpCollector"/>
 </collectd-configuration>

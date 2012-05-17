@@ -30,8 +30,8 @@ package org.opennms.netmgt.provision.detector.jdbc;
 
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
-import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.RequestBuilder;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -61,17 +61,17 @@ public class JdbcQueryDetector extends AbstractJdbcDetector {
         send(sqlQuery(getSqlQuery()), isValidQuery());
     }
 
-    private ResponseValidator<JDBCResponse> isValidQuery() {
+    private static ResponseValidator<JDBCResponse> isValidQuery() {
         return new ResponseValidator<JDBCResponse>(){
-            public boolean validate(JDBCResponse response) throws Exception {
+            public boolean validate(JDBCResponse response) {
                 return response.isValidQuery();
             }
         };
     }
 
-    private RequestBuilder<JDBCRequest> sqlQuery(final String sqlQuery) {
+    private static RequestBuilder<JDBCRequest> sqlQuery(final String sqlQuery) {
         return new RequestBuilder<JDBCRequest>(){
-            public JDBCRequest getRequest() throws Exception {
+            public JDBCRequest getRequest() {
                 JDBCRequest request = new JDBCRequest();
                 request.setSqyQuery(sqlQuery);
                 return request;

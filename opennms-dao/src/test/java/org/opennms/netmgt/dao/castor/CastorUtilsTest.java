@@ -84,7 +84,7 @@ public class CastorUtilsTest extends TestCase {
         try {
             CastorUtils.unmarshal(Userinfo.class, new FileSystemResource(file));
         } catch (MarshalException e) {
-            String matchString = file.getAbsolutePath();
+            String matchString = file.getAbsolutePath().replace('\\', '/');
             if (e.toString().contains(matchString)) {
                 gotException = true;
             } else {

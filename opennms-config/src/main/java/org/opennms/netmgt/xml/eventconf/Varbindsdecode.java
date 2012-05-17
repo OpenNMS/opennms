@@ -1,16 +1,37 @@
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.xml.eventconf;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,406 +39,166 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.ValidateUsing;
+import org.xml.sax.ContentHandler;
 
 /**
  * This element is used for converting event 
  *  varbind value in static decoded string.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name="varbindsdecode")
 @XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("serial")
-public class Varbindsdecode implements java.io.Serializable {
+@ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_parmid", "m_decodes"})
+public class Varbindsdecode implements Serializable {
+	private static final long serialVersionUID = -6483547334892439888L;
+	private static final Decode[] EMPTY_DECODE_ARRAY = new Decode[0];
 
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * The identifier of the parameters to be
-     *  decoded
-     *  
+	/**
+     * The identifier of the parameters to be decoded
      */
+	// @NotNull
 	@XmlElement(name="parmid", required=true)
     private String m_parmid;
 
     /**
      * The value to string decoding map
-     *  
      */
-	@XmlElement(name="decode")
-    private List<Decode> m_decodeList;
+	// @Size(min=1)
+	// @NotNull
+	@XmlElement(name="decode", required=true)
+    private List<Decode> m_decodes = new ArrayList<Decode>();
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
-    public Varbindsdecode() {
-        super();
-        this.m_decodeList = new ArrayList<Decode>();
+    public String getParmid() {
+        return m_parmid;
     }
 
-
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     * 
-     * 
-     * @param vDecode
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addDecode(
-            final org.opennms.netmgt.xml.eventconf.Decode vDecode)
-    throws IndexOutOfBoundsException {
-        this.m_decodeList.add(vDecode);
+    public void setParmid(final String parmid) {
+        m_parmid = parmid == null? null : parmid.intern();
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vDecode
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addDecode(
-            final int index,
-            final org.opennms.netmgt.xml.eventconf.Decode vDecode)
-    throws IndexOutOfBoundsException {
-        this.m_decodeList.add(index, vDecode);
+    public Decode[] getDecode() {
+        return m_decodes.toArray(EMPTY_DECODE_ARRAY);
     }
 
-    /**
-     * Method enumerateDecode.
-     * 
-     * @return an Enumeration over all possible elements of this
-     * collection
-     */
-    public java.util.Enumeration<org.opennms.netmgt.xml.eventconf.Decode> enumerateDecode(
-    ) {
-        return java.util.Collections.enumeration(this.m_decodeList);
+    public Decode getDecode(final int index) throws IndexOutOfBoundsException {
+        return m_decodes.get(index);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(
-            final Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (obj instanceof Varbindsdecode) {
-        
-            Varbindsdecode temp = (Varbindsdecode)obj;
-            if (this.m_parmid != null) {
-                if (temp.m_parmid == null) return false;
-                else if (!(this.m_parmid.equals(temp.m_parmid))) 
-                    return false;
-            }
-            else if (temp.m_parmid != null)
-                return false;
-            if (this.m_decodeList != null) {
-                if (temp.m_decodeList == null) return false;
-                else if (!(this.m_decodeList.equals(temp.m_decodeList))) 
-                    return false;
-            }
-            else if (temp.m_decodeList != null)
-                return false;
-            return true;
+    public java.util.List<Decode> getDecodeCollection() {
+        return m_decodes;
+    }
+
+    public int getDecodeCount() {
+        return m_decodes.size();
+    }
+
+    public java.util.Enumeration<Decode> enumerateDecode() {
+        return java.util.Collections.enumeration(m_decodes);
+    }
+
+    public java.util.Iterator<Decode> iterateDecode() {
+        return m_decodes.iterator();
+    }
+
+    public void setDecode(final List<Decode> decodes) {
+        m_decodes.clear();
+        m_decodes.addAll(decodes);
+    }
+
+    public void setDecode(final int index, final Decode decode) throws IndexOutOfBoundsException {
+        m_decodes.set(index, decode);
+    }
+
+    public void setDecode(final Decode[] decodes) {
+        m_decodes.clear();
+        for (final Decode decode : decodes) {
+        	m_decodes.add(decode);
         }
-        return false;
     }
 
-    /**
-     * Method getDecode.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * org.opennms.netmgt.xml.eventconf.Decode at the given index
-     */
-    public org.opennms.netmgt.xml.eventconf.Decode getDecode(
-            final int index)
-    throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.m_decodeList.size()) {
-            throw new IndexOutOfBoundsException("getDecode: Index value '" + index + "' not in range [0.." + (this.m_decodeList.size() - 1) + "]");
-        }
-        
-        return (org.opennms.netmgt.xml.eventconf.Decode) m_decodeList.get(index);
+    public void setDecodeCollection(final List<Decode> decodes) {
+        m_decodes = decodes;
     }
 
-    /**
-     * Method getDecode.Returns the contents of the collection in
-     * an Array.  <p>Note:  Just in case the collection contents
-     * are changing in another thread, we pass a 0-length Array of
-     * the correct type into the API call.  This way we <i>know</i>
-     * that the Array returned is of exactly the correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public org.opennms.netmgt.xml.eventconf.Decode[] getDecode(
-    ) {
-        org.opennms.netmgt.xml.eventconf.Decode[] array = new org.opennms.netmgt.xml.eventconf.Decode[0];
-        return (org.opennms.netmgt.xml.eventconf.Decode[]) this.m_decodeList.toArray(array);
+	public void addDecode(final Decode decode) throws IndexOutOfBoundsException {
+        m_decodes.add(decode);
     }
 
-    /**
-     * Method getDecodeCollection.Returns a reference to
-     * '_decodeList'. No type checking is performed on any
-     * modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public java.util.List<org.opennms.netmgt.xml.eventconf.Decode> getDecodeCollection(
-    ) {
-        return this.m_decodeList;
+    public void addDecode(final int index, final Decode decode) throws IndexOutOfBoundsException {
+        m_decodes.add(index, decode);
     }
 
-    /**
-     * Method getDecodeCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getDecodeCount(
-    ) {
-        return this.m_decodeList.size();
+    public void removeAllDecode() {
+        m_decodes.clear();
     }
 
-    /**
-     * Returns the value of field 'parmid'. The field 'parmid' has
-     * the following description: The identifier of the parameters
-     * to be
-     *  decoded
-     *  
-     * 
-     * @return the value of field 'Parmid'.
-     */
-    public String getParmid(
-    ) {
-        return this.m_parmid;
+    public boolean removeDecode(final Decode decode) {
+        return m_decodes.remove(decode);
     }
 
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        return new HashCodeBuilder(17,37).append(getParmid()).append(getDecode()).toHashCode();
+    public Decode removeDecodeAt(final int index) {
+        return m_decodes.remove(index);
     }
 
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
+    public boolean isValid() {
         try {
             validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
     }
 
-    /**
-     * Method iterateDecode.
-     * 
-     * @return an Iterator over all possible elements in this
-     * collection
-     */
-    public java.util.Iterator<org.opennms.netmgt.xml.eventconf.Decode> iterateDecode(
-    ) {
-        return this.m_decodeList.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
 
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
 
-    /**
-     */
-    public void removeAllDecode(
-    ) {
-        this.m_decodeList.clear();
+    public static Varbindsdecode unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (Varbindsdecode) Unmarshaller.unmarshal(Varbindsdecode.class, reader);
     }
 
-    /**
-     * Method removeDecode.
-     * 
-     * @param vDecode
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeDecode(
-            final org.opennms.netmgt.xml.eventconf.Decode vDecode) {
-        boolean removed = m_decodeList.remove(vDecode);
-        return removed;
+    public void validate() throws ValidationException {
+        new Validator().validate(this);
     }
 
-    /**
-     * Method removeDecodeAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public org.opennms.netmgt.xml.eventconf.Decode removeDecodeAt(
-            final int index) {
-        Object obj = this.m_decodeList.remove(index);
-        return (org.opennms.netmgt.xml.eventconf.Decode) obj;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m_decodes == null) ? 0 : m_decodes.hashCode());
+		result = prime * result + ((m_parmid == null) ? 0 : m_parmid.hashCode());
+		return result;
+	}
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vDecode
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void setDecode(
-            final int index,
-            final org.opennms.netmgt.xml.eventconf.Decode vDecode)
-    throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.m_decodeList.size()) {
-            throw new IndexOutOfBoundsException("setDecode: Index value '" + index + "' not in range [0.." + (this.m_decodeList.size() - 1) + "]");
-        }
-        
-        this.m_decodeList.set(index, vDecode);
-    }
-
-    /**
-     * 
-     * 
-     * @param vDecodeArray
-     */
-    public void setDecode(
-            final org.opennms.netmgt.xml.eventconf.Decode[] vDecodeArray) {
-        //-- copy array
-        m_decodeList.clear();
-        
-        for (int i = 0; i < vDecodeArray.length; i++) {
-                this.m_decodeList.add(vDecodeArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of '_decodeList' by copying the given Vector.
-     * All elements will be checked for type safety.
-     * 
-     * @param vDecodeList the Vector to copy.
-     */
-    public void setDecode(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Decode> vDecodeList) {
-        // copy vector
-        this.m_decodeList.clear();
-        
-        this.m_decodeList.addAll(vDecodeList);
-    }
-
-    /**
-     * Sets the value of '_decodeList' by setting it to the given
-     * Vector. No type checking is performed.
-     * @deprecated
-     * 
-     * @param decodeList the Vector to set.
-     */
-    public void setDecodeCollection(
-            final java.util.List<org.opennms.netmgt.xml.eventconf.Decode> decodeList) {
-        this.m_decodeList = decodeList;
-    }
-
-    /**
-     * Sets the value of field 'parmid'. The field 'parmid' has the
-     * following description: The identifier of the parameters to
-     * be
-     *  decoded
-     *  
-     * 
-     * @param parmid the value of field 'parmid'.
-     */
-    public void setParmid(
-            final String parmid) {
-        this.m_parmid = parmid;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.xml.eventconf.Varbindsdecode
-     */
-    public static org.opennms.netmgt.xml.eventconf.Varbindsdecode unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Varbindsdecode) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Varbindsdecode.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Varbindsdecode)) return false;
+		final Varbindsdecode other = (Varbindsdecode) obj;
+		if (m_decodes == null) {
+			if (other.m_decodes != null) return false;
+		} else if (!m_decodes.equals(other.m_decodes)) {
+			return false;
+		}
+		if (m_parmid == null) {
+			if (other.m_parmid != null) return false;
+		} else if (!m_parmid.equals(other.m_parmid)) {
+			return false;
+		}
+		return true;
+	}
 
 }

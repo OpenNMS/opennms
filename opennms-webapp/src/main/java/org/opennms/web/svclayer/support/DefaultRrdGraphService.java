@@ -358,6 +358,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_resourceDao != null, "resourceDao property has not been set");
         Assert.state(m_graphDao != null, "graphDao property has not been set");

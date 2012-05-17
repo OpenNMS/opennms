@@ -97,7 +97,12 @@ public class EventRestService extends OnmsRestService {
 	@Path("{eventId}")
 	@Transactional
 	public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
-		return m_eventDao.get(new Integer(eventId));
+	    readLock();
+	    try {
+	        return m_eventDao.get(new Integer(eventId));
+	    } finally {
+	        readUnlock();
+	    }
 	}
 
 	/**
@@ -110,7 +115,12 @@ public class EventRestService extends OnmsRestService {
 	@Path("count")
 	@Transactional
 	public String getCount() {
-		return Integer.toString(m_eventDao.countAll());
+	    readLock();
+	    try {
+	        return Integer.toString(m_eventDao.countAll());
+	    } finally {
+	        readUnlock();
+	    }
 	}
 
 	/**
@@ -123,14 +133,20 @@ public class EventRestService extends OnmsRestService {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Transactional
 	public OnmsEventCollection getEvents() throws ParseException {
-	    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-	    applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-	    builder.orderBy("eventTime").asc();
+		readLock();
 
-	    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-		coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
-		
-		return coll;
+		try {
+		    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+		    applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+		    builder.orderBy("eventTime").asc();
+	
+		    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+			coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
+			
+			return coll;
+		} finally {
+			readUnlock();
+		}
 	}
 
 	/**
@@ -144,51 +160,57 @@ public class EventRestService extends OnmsRestService {
 	@Path("between")
 	@Transactional
 	public OnmsEventCollection getEventsBetween() throws ParseException {
-	    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-	    final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
-	    
-	    final String column;
-	    if (params.containsKey("column")) {
-	    	column = params.getFirst("column");
-	    	params.remove("column");
-	    } else {
-	    	column = "eventTime";
-	    }
-	    Date begin;
-	    if (params.containsKey("begin")) {
-	    	try {
-		    	begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
-	    	} catch (final Throwable t) {
-	    		begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
-	    	}
-	    	params.remove("begin");
-	    } else {
-	    	begin = new Date(0);
-	    }
-	    Date end;
-	    if (params.containsKey("end")) {
-	    	try {
-		    	end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
-	    	} catch (final Throwable t) {
-		    	end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
-	    	}
-	    	params.remove("end");
-	    } else {
-	    	end = new Date();
-	    }
-
-		applyQueryFilters(params, builder);
-	    builder.match("all");
-		try {
-			builder.between(column, begin, end);
-		} catch (final Throwable t) {
-			throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
-		}
-
-	    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-		coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
+		readLock();
 		
-		return coll;
+		try {
+		    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+		    final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
+		    
+		    final String column;
+		    if (params.containsKey("column")) {
+		    	column = params.getFirst("column");
+		    	params.remove("column");
+		    } else {
+		    	column = "eventTime";
+		    }
+		    Date begin;
+		    if (params.containsKey("begin")) {
+		    	try {
+			    	begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
+		    	} catch (final Throwable t) {
+		    		begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
+		    	}
+		    	params.remove("begin");
+		    } else {
+		    	begin = new Date(0);
+		    }
+		    Date end;
+		    if (params.containsKey("end")) {
+		    	try {
+			    	end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
+		    	} catch (final Throwable t) {
+			    	end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
+		    	}
+		    	params.remove("end");
+		    } else {
+		    	end = new Date();
+		    }
+	
+			applyQueryFilters(params, builder);
+		    builder.match("all");
+			try {
+				builder.between(column, begin, end);
+			} catch (final Throwable t) {
+				throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
+			}
+	
+		    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+			coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
+			
+			return coll;
+		} finally {
+			readUnlock();
+		}
 	}
 
 	/**
@@ -203,11 +225,17 @@ public class EventRestService extends OnmsRestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
-	    final OnmsEvent event = m_eventDao.get(new Integer(eventId));
-		if (ack == null) {
-			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
-		}
-		processEventAck(event, ack);
+	    writeLock();
+	    
+	    try {
+    	    final OnmsEvent event = m_eventDao.get(new Integer(eventId));
+    		if (ack == null) {
+    			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+    		}
+    		processEventAck(event, ack);
+	    } finally {
+	        writeUnlock();
+	    }
 	}
 
 	/**
@@ -220,19 +248,25 @@ public class EventRestService extends OnmsRestService {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
 	public void updateEvents(final MultivaluedMapImpl formProperties) {
-		Boolean ack=false;
-		if(formProperties.containsKey("ack")) {
-			ack="true".equals(formProperties.getFirst("ack"));
-			formProperties.remove("ack");
-		}
-
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-		applyQueryFilters(formProperties, builder);
-		builder.orderBy("eventTime").desc();
-
-		for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
-			processEventAck(event, ack);
-		}
+	    writeLock();
+	    
+	    try {
+    		Boolean ack=false;
+    		if(formProperties.containsKey("ack")) {
+    			ack="true".equals(formProperties.getFirst("ack"));
+    			formProperties.remove("ack");
+    		}
+    
+    		final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+    		applyQueryFilters(formProperties, builder);
+    		builder.orderBy("eventTime").desc();
+    
+    		for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
+    			processEventAck(event, ack);
+    		}
+	    } finally {
+	        writeUnlock();
+	    }
 	}
 
 	private void processEventAck(final OnmsEvent event, final Boolean ack) {

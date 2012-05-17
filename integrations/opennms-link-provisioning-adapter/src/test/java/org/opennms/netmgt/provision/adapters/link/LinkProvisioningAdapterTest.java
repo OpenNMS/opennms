@@ -42,11 +42,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -67,7 +69,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkProvisioningAdapterTest {
+public class LinkProvisioningAdapterTest implements InitializingBean {
     
     public static final String END_POINT_1 = "nc-ral0001-to-ral0002-dwave";
     public static final String END_POINT_2 = "nc-ral0002-to-ral0001-dwave";
@@ -83,6 +85,11 @@ public class LinkProvisioningAdapterTest {
 
     private NodeLinkService m_nodeLinkService;
     
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @Before
     public void setUp() {

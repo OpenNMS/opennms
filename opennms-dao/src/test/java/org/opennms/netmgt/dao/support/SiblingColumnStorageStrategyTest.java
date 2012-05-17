@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class SiblingColumnStorageStrategyTest {
         Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath - hrStorageTable
-        Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
+        Assert.assertEquals("1" + File.separator + "hrStorageIndex" + File.separator + "_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -115,6 +116,23 @@ public class SiblingColumnStorageStrategyTest {
 
         // Set the list of parameters into the strategy -- hrStorageTable
         strategy.setParameters(params);
+    }
+
+    @Test
+    public void testMatchIndex() throws Exception {
+        strategy.setResourceTypeName("macIndex");
+
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(createParameter("sibling-column-name", "_index"));
+        params.add(createParameter("replace-first", "s/^(([\\d]{1,3}\\.){8,8}).*$/$1/"));
+        params.add(createParameter("replace-first", "s/\\.$//"));
+
+        strategy.setParameters(params);
+
+        String parentResource = "1";
+        MockCollectionResource resource = new MockCollectionResource(parentResource, "0.132.43.51.76.89.2.144.10.1.1.1", "macIndex");
+        String resourceName = strategy.getResourceNameFromIndex(resource);
+        Assert.assertEquals("0.132.43.51.76.89.2.144", resourceName);
     }
 
     private Parameter createParameter(String key, String value) {

@@ -49,6 +49,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -86,6 +87,7 @@ import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -101,7 +103,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 @Service
-public class DefaultProvisionService implements ProvisionService {
+public class DefaultProvisionService implements ProvisionService, InitializingBean {
     
     private final static String FOREIGN_SOURCE_FOR_DISCOVERED_NODES = null;
     
@@ -159,6 +161,11 @@ public class DefaultProvisionService implements ProvisionService {
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /**
      * <p>isDiscoveryEnabled</p>
      *

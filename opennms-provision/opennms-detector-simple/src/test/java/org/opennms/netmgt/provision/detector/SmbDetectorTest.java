@@ -58,6 +58,6 @@ public class SmbDetectorTest {
     public void testMyDetector() throws UnknownHostException {
         //m_detector.init();
         //FIXME: This needs to be fixed
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 }

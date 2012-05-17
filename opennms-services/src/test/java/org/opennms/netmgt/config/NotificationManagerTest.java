@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -74,7 +76,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NotificationManagerTest implements TemporaryDatabaseAware<TemporaryDatabase> {
+public class NotificationManagerTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
 
@@ -98,8 +100,14 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
 
     private TemporaryDatabase m_database;
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

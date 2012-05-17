@@ -46,6 +46,8 @@ import org.opennms.acl.model.AuthorityDTO;
 import org.opennms.acl.service.AuthorityService;
 import org.opennms.acl.ui.validator.AuthorityValidator;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -69,7 +71,7 @@ import org.springframework.web.bind.support.SessionStatus;
  */
 @Controller
 @RequestMapping("/authority.edit.page")
-public class AuthorityFormController {
+public class AuthorityFormController implements InitializingBean {
 
     /**
      * <p>processSubmit</p>
@@ -121,4 +123,9 @@ public class AuthorityFormController {
     @Qualifier("authorityValidator")
     private AuthorityValidator authorityValidator;
     private final String authorityForm = "authority/form";
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

@@ -54,6 +54,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -81,7 +82,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 		"classpath*:/META-INF/opennms/component-dao.xml" })
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
-public class AssetServiceImplTest {
+public class AssetServiceImplTest implements InitializingBean {
 
 	@Autowired
 	private DistPollerDao m_distPollerDao;
@@ -127,8 +128,13 @@ public class AssetServiceImplTest {
 	*/
 	
 	private org.springframework.security.core.Authentication m_auth;
-	
+
 	private SecurityContext m_context;
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	    org.opennms.core.utils.BeanUtils.assertAutowiring(this);
+	}
 
 	@Before
 	public void setUp() {

@@ -43,9 +43,11 @@ import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.OutageService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultOutageServiceIntegrationTest {
+public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     private static final int RANGE_LIMIT = 5;
 
     @Autowired
@@ -74,6 +76,11 @@ public class DefaultOutageServiceIntegrationTest {
 
     @Autowired
     DatabasePopulator m_databasePopulator;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() throws Exception {

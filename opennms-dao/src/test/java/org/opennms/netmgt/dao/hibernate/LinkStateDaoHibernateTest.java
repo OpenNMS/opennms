@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.LinkStateDao;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkStateDaoHibernateTest {
+public class LinkStateDaoHibernateTest implements InitializingBean {
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
@@ -68,7 +70,12 @@ public class LinkStateDaoHibernateTest {
 
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
-	
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
 	@Before
 	public void setUp() {
 		m_databasePopulator.populateDatabase();

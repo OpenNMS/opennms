@@ -68,10 +68,13 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 		}
 		
 		public void readConfig() {
+			LogUtils.infof(this, "Parsing drools engine configuration at %s.", m_configResource);
 			m_configuration = JaxbUtils.unmarshal(EngineConfiguration.class, m_configResource);
 		}
 
 		public CorrelationEngine[] constructEngines(ApplicationContext appContext, EventIpcManager eventIpcManager) {
+			LogUtils.infof(this, "Creating drools engins for configuration %s.", m_configResource);
+
 			return m_configuration.constructEngines(m_configResource, appContext, eventIpcManager);
 		}
 
@@ -109,6 +112,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertSet(m_configDirectory, "configurationDirectory");
         assertSet(m_eventIpcManager, "eventIpcManager");
@@ -177,6 +181,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 		
 		// first we see if the config is etc exists 
     	if (m_configResource != null && m_configResource.isReadable()) {
+			LogUtils.infof(this, "Found Drools Plugin config file %s.", m_configResource);
     		pluginConfigs.add(new PluginConfiguration(m_configResource));
     	}
 
@@ -188,6 +193,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     		if (!configFile.exists()) {
     			LogUtils.errorf(this, "Drools Plugin directory %s does not contains a %s config file.  Ignoring plugin.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
     		} else {
+    			LogUtils.infof(this, "Found Drools Plugin directory %s containing a %s config file.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
     			pluginConfigs.add(new PluginConfiguration(new FileSystemResource(configFile)));
     		}
     	}
@@ -196,8 +202,12 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 	}
 
 	private File[] getPluginDirs() throws Exception {
-		
+
+    	LogUtils.debugf(this, "Checking %s for drools correlation plugins", m_configDirectory);
+    	
+
 		if (!m_configDirectory.exists()) {
+			LogUtils.debugf(this, "Plugin configuration directory does not exists.");
 			return new File[0];
 		}
 
@@ -208,6 +218,8 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 				return file.isDirectory();
 			}
 		});
+    	LogUtils.debugf(this, "Found %d drools correlation plugin sub directories", pluginDirs.length);
+    	
 		return pluginDirs;
 	}
 

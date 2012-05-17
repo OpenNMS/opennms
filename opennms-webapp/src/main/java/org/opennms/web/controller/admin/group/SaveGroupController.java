@@ -32,8 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -45,11 +47,16 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.1
  */
-public class SaveGroupController extends AbstractController {
+public class SaveGroupController extends AbstractController implements InitializingBean {
     
     @Autowired
     WebGroupRepository m_groupRepository;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -133,6 +133,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_ipInterfaceDao != null, "property ipInterfaceDao must be set");
     }

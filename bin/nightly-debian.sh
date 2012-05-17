@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`
@@ -53,10 +53,10 @@ VERSION=`grep '<version>' pom.xml | head -n 1 | sed -e 's,^.*<version>,,' -e 's,
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 # create the package 
-./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
+./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
-$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" "${TOPDIR}"/../*opennms*_${VERSION}*.deb
+$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" "${TOPDIR}"/../*opennms*_${VERSION}*.deb || exit 1
 find ../*opennms*.{changes,deb,dsc,tar.gz} -maxdepth 0 -type f -exec rm -rf {} \;
 
 $BUILDTOOL nightly-debian save

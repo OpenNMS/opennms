@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class MaskelementTest extends XmlTest<Maskelement> {
+public class MaskelementTest extends XmlTestNoCastor<Maskelement> {
 
-	public MaskelementTest(final Maskelement sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public MaskelementTest(final Maskelement sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 

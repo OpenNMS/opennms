@@ -43,27 +43,30 @@ import org.opennms.core.utils.LogUtils;
  * @author ranger
  * @version $Id: $
  */
-public class Conversation {    
+public class Conversation {
     
     public static class ErrorExchange implements Exchange{
-        private String m_errorString = "DEFAULT ERROR STRING: YOU HAVE NOT IMPLEMENTED AN ERROR EXCHANGE";
+        private static final String ERROR_STRING = "DEFAULT ERROR STRING: YOU HAVE NOT IMPLEMENTED AN ERROR EXCHANGE";
         
+        @Override
         public boolean matchResponseByString(String response) {
             return false;
         }
 
+        @Override
         public boolean processResponse(BufferedReader in) throws IOException {
             return true;
         }
 
+        @Override
         public boolean sendRequest(OutputStream out) throws IOException {
-            out.write(String.format("%s\r\n", m_errorString).getBytes());
+            out.write(String.format("%s\r\n", ERROR_STRING).getBytes());
             return true;
         }
         
     }
     
-    private List<Exchange> m_conversation = new ArrayList<Exchange>();
+    private final List<Exchange> m_conversation = new ArrayList<Exchange>();
     private Exchange m_errorExchange = new ErrorExchange();
     
     /**
@@ -168,7 +171,7 @@ public class Conversation {
      * @param response a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
      */
-    public ResponseHandler startsWith(final String response){
+    public static ResponseHandler startsWith(final String response){
         return new ResponseHandler(){
 
             public boolean matches(String input) {
@@ -184,7 +187,7 @@ public class Conversation {
      * @param response a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
      */
-    public ResponseHandler contains(final String response){
+    public static ResponseHandler contains(final String response){
         return new ResponseHandler(){
 
             public boolean matches(String input) {
@@ -200,7 +203,7 @@ public class Conversation {
      * @param response a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
      */
-    public ResponseHandler regexpMatches(final String response){
+    public static ResponseHandler regexpMatches(final String response){
         return new ResponseHandler(){
 
             public boolean matches(String input) {
@@ -209,7 +212,4 @@ public class Conversation {
             
         };
     }
-
-    
-    
 }

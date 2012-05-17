@@ -42,6 +42,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -119,7 +120,8 @@ class SyslogReceiver implements Runnable {
             Integer.MAX_VALUE,
             100L,
             TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>()
+            new LinkedBlockingQueue<Runnable>(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE, false)
         ));
 
         m_executors.add(new ThreadPoolExecutor(
@@ -127,7 +129,8 @@ class SyslogReceiver implements Runnable {
             Integer.MAX_VALUE,
             100L,
             TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>()
+            new LinkedBlockingQueue<Runnable>(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE, false)
         ));
 }
 

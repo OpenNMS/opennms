@@ -100,6 +100,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventMgr != null, "eventManager not set");
         Assert.state(m_trapdIpMgr != null, "trapIpMgr not set");

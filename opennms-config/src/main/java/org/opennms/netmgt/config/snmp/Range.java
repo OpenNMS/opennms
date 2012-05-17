@@ -38,8 +38,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -83,25 +81,6 @@ public class Range implements Serializable {
     	_end = end;
 	}
 
-	/**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-		if (obj instanceof Range == false) return false;
-		if (this == obj) return true;
-
-		final Range temp = (Range)obj;
-
-		return new EqualsBuilder()
-			.append(getBegin(), temp.getBegin())
-			.append(getEnd(), temp.getEnd())
-			.isEquals();
-    }
-
     /**
      * Returns the value of field 'begin'. The field 'begin' has
      * the following description: Starting IP address of the range.
@@ -120,27 +99,6 @@ public class Range implements Serializable {
      */
     public String getEnd() {
         return this._end;
-    }
-
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode() {
-        int result = 17;
-        
-        if (_begin != null) {
-           result = 37 * result + _begin.hashCode();
-        }
-        if (_end != null) {
-           result = 37 * result + _end.hashCode();
-        }
-        
-        return result;
     }
 
     /**
@@ -231,10 +189,36 @@ public class Range implements Serializable {
 
     @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.appendSuper(super.toString())
-    		.append("begin", getBegin())
-    		.append("end", getEnd())
-    		.toString();
+        return "Range[begin=" + _begin + ", end=" + _end + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((_begin == null) ? 0 : _begin.hashCode());
+        result = prime * result + ((_end == null) ? 0 : _end.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        final Range other = (Range) obj;
+        if (_begin == null) {
+            if (other._begin != null) return false;
+        } else if (!_begin.equals(other._begin)) {
+            return false;
+        }
+        if (_end == null) {
+            if (other._end != null) return false;
+        } else if (!_end.equals(other._end)) {
+            return false;
+        }
+        return true;
+    }
+
 }

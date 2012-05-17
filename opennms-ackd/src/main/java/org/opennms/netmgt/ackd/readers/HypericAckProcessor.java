@@ -646,6 +646,7 @@ public class HypericAckProcessor implements AckProcessor {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
     }
 

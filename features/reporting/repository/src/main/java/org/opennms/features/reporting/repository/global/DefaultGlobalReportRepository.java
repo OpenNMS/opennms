@@ -40,6 +40,7 @@ import org.springframework.util.Assert;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * <p>DefaultGlobalReportRepository class.</p>
@@ -311,8 +312,10 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         m_remoteRepositoryConfigDao = remoteRepositoryConfigDao;
 
         /**
+         * Clear all local-repositories, then
          * Add local-repository to repository list.
          */
+        this.m_repositoryList.clear();
         this.m_repositoryList.add(m_localReportRepository);
 
         /**
@@ -336,5 +339,16 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     public RemoteRepositoryConfigDao getRemoteRepositoryConfigDao() {
         return m_remoteRepositoryConfigDao;
+    }
+
+    @Override
+    public void reloadConfigurationFiles() {
+        try {
+            m_remoteRepositoryConfigDao.loadConfiguration();
+            this.setRemoteRepositoryConfigDao(m_remoteRepositoryConfigDao);
+            m_localReportRepository.loadConfiguration();
+        } catch (Exception e) {
+            logger.error("Could not reload configuration on repositories: '{}'", e.getMessage());
+        }
     }
 }

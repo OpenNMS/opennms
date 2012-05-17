@@ -45,6 +45,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.AppStatusDetailsComputer;
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
@@ -70,16 +71,15 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 
 /**
@@ -199,12 +199,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     /**
      * <p>afterPropertiesSet</p>
      */
-    public void afterPropertiesSet() {
-        Assert.notNull(m_locationDao);
-        Assert.notNull(m_applicationDao);
-        Assert.notNull(m_monitoredServiceDao);
-        Assert.notNull(m_geocoder);
-
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
         initialize();
     }
 

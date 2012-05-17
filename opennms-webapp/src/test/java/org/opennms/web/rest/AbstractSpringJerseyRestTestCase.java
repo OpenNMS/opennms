@@ -213,6 +213,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
 		};
 		request.setContextPath(contextPath);
+		request.setUserPrincipal(MockUserPrincipal.getInstance());
 		return request;
 	}
 

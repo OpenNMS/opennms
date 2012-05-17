@@ -26,12 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
 
 package org.opennms.netmgt.xml.event;
 
@@ -40,10 +34,14 @@ package org.opennms.netmgt.xml.event;
 //---------------------------------/
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -51,17 +49,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * This element is used for converting events into alarms.
  * 
- * @version $Revision$ $Date$
  */
 
 @XmlRootElement(name="alarm-data")
 @XmlAccessorType(XmlAccessType.FIELD)
+//@ValidateUsing("event.xsd")
 public class AlarmData implements Serializable {
 	private static final long serialVersionUID = 3681502418413339216L;
 
-	//--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
 
     /**
      * Field _reductionKey.
@@ -98,23 +93,19 @@ public class AlarmData implements Serializable {
      */
 	@XmlAttribute(name="x733-probable-cause")
     private Integer _x733ProbableCause;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+	
+	/**
+	 * Field m_updateField
+	 */
+    @XmlElement(name="update-field", required=false)
+    private List<UpdateField> m_updateFieldList = new ArrayList<UpdateField>();
+    
 
     public AlarmData() {
         super();
     }
 
 
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     */
     public void deleteAlarmType(
     ) {
     	this._alarmType = null;
@@ -289,6 +280,48 @@ public class AlarmData implements Serializable {
     public void setX733ProbableCause(
             final Integer x733ProbableCause) {
         this._x733ProbableCause = x733ProbableCause;
+    }
+    
+    public UpdateField[] getUpdateField() {
+        return m_updateFieldList.toArray(new UpdateField[0]);
+    }
+    
+    public Collection<UpdateField> getUpdateFieldCollection() {
+        return m_updateFieldList;
+    }
+    
+    public List<UpdateField> getUpdateFieldList() {
+        return m_updateFieldList;
+    }
+    
+    public int getUpdateFieldListCount() {
+        return m_updateFieldList.size();
+    }
+    
+    public Boolean hasUpdateFields() {
+        Boolean hasFields = true;
+        if (m_updateFieldList == null || m_updateFieldList.isEmpty()) {
+            hasFields = false;
+        }
+        return hasFields;
+    }
+    
+    public void setUpdateField(UpdateField[] fields) {
+        m_updateFieldList.clear();
+        
+        for (int i = 0; i < fields.length; i++) {
+            m_updateFieldList.add(fields[i]);
+        }
+    }
+    
+    public void setUpdateField(List<UpdateField> fields) {
+        m_updateFieldList.clear();
+        m_updateFieldList.addAll(fields);
+    }
+    
+    public void setUpdateFieldCollection(Collection<UpdateField> fields) {
+        m_updateFieldList.clear();
+        m_updateFieldList.addAll(fields);
     }
 
     public String toString() {

@@ -84,6 +84,7 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");

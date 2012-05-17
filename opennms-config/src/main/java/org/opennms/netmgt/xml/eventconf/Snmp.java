@@ -1,43 +1,66 @@
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.xml.eventconf;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.ValidateUsing;
+import org.xml.sax.ContentHandler;
 
 /**
  * The SNMP information from the trap
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name="snmp")
 @XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("serial")
-public class Snmp implements java.io.Serializable {
+@ValidateUsing("eventconf.xsd")
+@XmlType(propOrder={"m_id", "m_idText", "m_version", "m_specific", "m_generic", "m_community"})
+public class Snmp implements Serializable {
+	private static final long serialVersionUID = 7180451834403181827L;
 
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
+	/**
      * The SNMP enterprise ID
      */
+	// @NotNull
 	@XmlElement(name="id", required=true)
     private String m_id;
 
@@ -45,11 +68,12 @@ public class Snmp implements java.io.Serializable {
      * The SNMP enterprise ID text
      */
 	@XmlElement(name="idtext", required=false)
-    private String m_idtext;
+    private String m_idText;
 
     /**
      * The SNMP version
      */
+	// @NotNull
 	@XmlElement(name="version", required=true)
     private String m_version;
 
@@ -71,327 +95,160 @@ public class Snmp implements java.io.Serializable {
 	@XmlElement(name="community", required=false)
     private String m_community;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
-    public Snmp() {
-        super();
-    }
-
-
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     */
-    public void deleteGeneric(
-    ) {
+    public void deleteGeneric() {
         m_generic = null;
     }
 
-    /**
-     */
-    public void deleteSpecific(
-    ) {
+    public void deleteSpecific() {
         m_specific = null;
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(
-            final Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (obj instanceof Snmp) {
-        
-            Snmp temp = (Snmp)obj;
-            if (this.m_id != null) {
-                if (temp.m_id == null) return false;
-                else if (!(this.m_id.equals(temp.m_id))) 
-                    return false;
-            }
-            else if (temp.m_id != null)
-                return false;
-            if (this.m_idtext != null) {
-                if (temp.m_idtext == null) return false;
-                else if (!(this.m_idtext.equals(temp.m_idtext))) 
-                    return false;
-            }
-            else if (temp.m_idtext != null)
-                return false;
-            if (this.m_version != null) {
-                if (temp.m_version == null) return false;
-                else if (!(this.m_version.equals(temp.m_version))) 
-                    return false;
-            }
-            else if (temp.m_version != null)
-                return false;
-            if (this.m_specific != temp.m_specific)
-                return false;
-            if (this.m_generic != temp.m_generic)
-                return false;
-            if (this.m_community != null) {
-                if (temp.m_community == null) return false;
-                else if (!(this.m_community.equals(temp.m_community))) 
-                    return false;
-            }
-            else if (temp.m_community != null)
-                return false;
-            return true;
-        }
-        return false;
+    public String getCommunity() {
+        return m_community;
     }
 
-    /**
-     * Returns the value of field 'community'. The field
-     * 'community' has the following description: The community
-     * name
-     * 
-     * @return the value of field 'Community'.
-     */
-    public String getCommunity(
-    ) {
-        return this.m_community;
-    }
-
-    /**
-     * Returns the value of field 'generic'. The field 'generic'
-     * has the following description: The generic trap number
-     * 
-     * @return the value of field 'Generic'.
-     */
+    /** The generic trap number. */
     public Integer getGeneric(
     ) {
-        return this.m_generic;
+        return m_generic;
+    }
+
+    /** The SNMP enterprise ID */
+    public String getId() {
+        return m_id;
+    }
+
+    /** The SNMP enterprise ID text */
+    public String getIdtext() {
+        return m_idText;
+    }
+
+    /** The specific trap number */
+    public Integer getSpecific() {
+        return m_specific;
+    }
+
+    /** The SNMP version */
+    public String getVersion() {
+        return m_version;
     }
 
     /**
-     * Returns the value of field 'id'. The field 'id' has the
-     * following description: The SNMP enterprise ID
-     * 
-     * @return the value of field 'Id'.
-     */
-    public String getId(
-    ) {
-        return this.m_id;
-    }
-
-    /**
-     * Returns the value of field 'idtext'. The field 'idtext' has
-     * the following description: The SNMP enterprise ID text
-     * 
-     * @return the value of field 'Idtext'.
-     */
-    public String getIdtext(
-    ) {
-        return this.m_idtext;
-    }
-
-    /**
-     * Returns the value of field 'specific'. The field 'specific'
-     * has the following description: The specific trap number
-     * 
-     * @return the value of field 'Specific'.
-     */
-    public Integer getSpecific(
-    ) {
-        return this.m_specific;
-    }
-
-    /**
-     * Returns the value of field 'version'. The field 'version'
-     * has the following description: The SNMP version
-     * 
-     * @return the value of field 'Version'.
-     */
-    public String getVersion(
-    ) {
-        return this.m_version;
-    }
-
-    /**
-     * Method hasGeneric.
-     * 
      * @return true if at least one Generic has been added
      */
-    public boolean hasGeneric(
-    ) {
+    public boolean hasGeneric() {
         return m_generic != null;
     }
 
     /**
-     * Method hasSpecific.
-     * 
      * @return true if at least one Specific has been added
      */
-    public boolean hasSpecific(
-    ) {
+    public boolean hasSpecific() {
         return m_specific != null;
     }
 
     /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        return new HashCodeBuilder(17,37).append(getGeneric()).append(getSpecific())
-        	.append(getCommunity()).append(getId()).append(getIdtext()).append(getVersion()).toHashCode();
-    }
-
-    /**
-     * Method isValid.
-     * 
      * @return true if this object is valid according to the schema
      */
-    public boolean isValid(
-    ) {
+    public boolean isValid() {
         try {
             validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
     }
 
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
 
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
 
-    /**
-     * Sets the value of field 'community'. The field 'community'
-     * has the following description: The community name
-     * 
-     * @param community the value of field 'community'.
-     */
-    public void setCommunity(
-            final String community) {
-        this.m_community = community;
+    public void setCommunity(final String community) {
+        m_community = community;
     }
 
-    /**
-     * Sets the value of field 'generic'. The field 'generic' has
-     * the following description: The generic trap number
-     * 
-     * @param generic the value of field 'generic'.
-     */
-    public void setGeneric(
-            final int generic) {
-        this.m_generic = generic;
+    public void setGeneric(final int generic) {
+        m_generic = generic;
     }
 
-    /**
-     * Sets the value of field 'id'. The field 'id' has the
-     * following description: The SNMP enterprise id
-     * 
-     * @param id the value of field 'id'.
-     */
-    public void setId(
-            final String id) {
-        this.m_id = id;
+    public void setId(final String id) {
+        m_id = id;
     }
 
-    /**
-     * Sets the value of field 'idtext'. The field 'idtext' has the
-     * following description: The SNMP enterprise id text
-     * 
-     * @param idtext the value of field 'idtext'.
-     */
-    public void setIdtext(
-            final String idtext) {
-        this.m_idtext = idtext;
+    public void setIdtext(final String idText) {
+        m_idText = idText;
     }
 
-    /**
-     * Sets the value of field 'specific'. The field 'specific' has
-     * the following description: The specific trap number
-     * 
-     * @param specific the value of field 'specific'.
-     */
-    public void setSpecific(
-            final int specific) {
-        this.m_specific = specific;
+    public void setSpecific(final int specific) {
+        m_specific = specific;
     }
 
-    /**
-     * Sets the value of field 'version'. The field 'version' has
-     * the following description: The SNMP version
-     * 
-     * @param version the value of field 'version'.
-     */
-    public void setVersion(
-            final String version) {
-        this.m_version = version;
+    public void setVersion(final String version) {
+        m_version = version;
     }
 
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.eventconf.Snmp
-     */
-    public static org.opennms.netmgt.xml.eventconf.Snmp unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Snmp) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Snmp.class, reader);
+    public static Snmp unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (Snmp) Unmarshaller.unmarshal(Snmp.class, reader);
     }
 
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
+    public void validate() throws ValidationException {
+        new Validator().validate(this);
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m_community == null) ? 0 : m_community.hashCode());
+		result = prime * result + ((m_generic == null) ? 0 : m_generic.hashCode());
+		result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+		result = prime * result + ((m_idText == null) ? 0 : m_idText.hashCode());
+		result = prime * result + ((m_specific == null) ? 0 : m_specific.hashCode());
+		result = prime * result + ((m_version == null) ? 0 : m_version.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Snmp)) return false;
+		final Snmp other = (Snmp) obj;
+		if (m_community == null) {
+			if (other.m_community != null) return false;
+		} else if (!m_community.equals(other.m_community)) {
+			return false;
+		}
+		if (m_generic == null) {
+			if (other.m_generic != null) return false;
+		} else if (!m_generic.equals(other.m_generic)) {
+			return false;
+		}
+		if (m_id == null) {
+			if (other.m_id != null) return false;
+		} else if (!m_id.equals(other.m_id)) {
+			return false;
+		}
+		if (m_idText == null) {
+			if (other.m_idText != null) return false;
+		} else if (!m_idText.equals(other.m_idText)) {
+			return false;
+		}
+		if (m_specific == null) {
+			if (other.m_specific != null) return false;
+		} else if (!m_specific.equals(other.m_specific)) {
+			return false;
+		}
+		if (m_version == null) {
+			if (other.m_version != null) return false;
+		} else if (!m_version.equals(other.m_version)) {
+			return false;
+		}
+		return true;
+	}
 
 }

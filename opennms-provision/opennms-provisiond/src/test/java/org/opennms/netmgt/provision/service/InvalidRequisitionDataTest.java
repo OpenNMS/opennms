@@ -1,27 +1,33 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -39,14 +45,17 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/importerServiceTest.xml"
 })
-        
 /* This test is for bug 3778 */
-@JUnitTemporaryDatabase()
-@JUnitConfigurationEnvironment()
-public class InvalidRequisitionDataTest {
+@JUnitTemporaryDatabase
+@JUnitConfigurationEnvironment
+@DirtiesContext
+public class InvalidRequisitionDataTest implements InitializingBean {
     
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private EventDao m_eventDao;
     
     @Autowired
     private Provisioner m_provisioner;
@@ -60,6 +69,11 @@ public class InvalidRequisitionDataTest {
 
     private EventAnticipator m_anticipator;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws Exception {
         // clean out any existing nodes
@@ -67,6 +81,9 @@ public class InvalidRequisitionDataTest {
             m_nodeDao.delete(node);
         }
         m_nodeDao.flush();
+        for (final OnmsEvent event : m_eventDao.findAll()) {
+        	m_eventDao.delete(event);
+        }
 
         MockLogAppender.setupLogging(true, "DEBUG");
         m_anticipator = new EventAnticipator();
@@ -81,6 +98,7 @@ public class InvalidRequisitionDataTest {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testImportInvalidAsset() throws Exception {
         assertEquals(0, m_nodeDao.countAll());
 
@@ -98,9 +116,41 @@ public class InvalidRequisitionDataTest {
 
         // should still import the node, just skip the asset field
         assertEquals(1, m_nodeDao.countAll());
+        OnmsNode node = m_nodeDao.get(m_nodeDao.getNodeIds().iterator().next());
+        assertEquals("yellow human", node.getAssetRecord().getDescription());
+        assertNull(node.getAssetRecord().getPollerCategory());
+    }
+
+    /**
+     * @see http://issues.opennms.org/browse/NMS-5191
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testImportLegacyAssetNameRequisition() throws Exception {
+        assertEquals(0, m_nodeDao.countAll());
+
+        final Resource resource = getResource("classpath:/import_legacyAssetFieldName.xml");
+
+        m_anticipator.anticipateEvent(getStarted(resource));
+        m_anticipator.anticipateEvent(getSuccessful(resource));
+        m_anticipator.anticipateEvent(getNodeAdded());
+        m_anticipator.anticipateEvent(getNodeGainedInterface());
+        m_anticipator.anticipateEvent(getNodeGainedService());
+
+        // This requisition has an asset called "maintContractNumber" which was changed in
+        // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
+        // field still works.
+        m_provisioner.doImport(resource.getURL().toString(), true);
+
+        // should still import the node, just skip the asset field
+        assertEquals(1, m_nodeDao.countAll());
+        OnmsNode node = m_nodeDao.get(m_nodeDao.getNodeIds().iterator().next());
+        assertEquals("yellow human", node.getAssetRecord().getDescription());
+        assertEquals("123456", node.getAssetRecord().getMaintcontract());
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testImportInvalidXml() throws Exception {
         assertEquals(0, m_nodeDao.countAll());
 

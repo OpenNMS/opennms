@@ -169,6 +169,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		m_eventManager.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 	}

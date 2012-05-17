@@ -39,17 +39,17 @@ public interface BaseOnmsMBean {
     /**
      * Initialization invoked prior to start.
      */
-    public abstract void init();
+    void init();
 
     /**
      * Starts the current managed bean.
      */
-    public abstract void start();
+    void start();
 
     /**
      * Starts the current managed bean.
      */
-    public abstract void stop();
+    void stop();
 
     /**
      * The current status of the managed bean. This is a representation of the
@@ -58,20 +58,20 @@ public interface BaseOnmsMBean {
      *
      * @return a int.
      */
-    public abstract int getStatus();
+    int getStatus();
 
     /**
      * <p>status</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String status();
+    String status();
 
     /**
      * <p>getStatusText</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getStatusText();
+    String getStatusText();
 
 }

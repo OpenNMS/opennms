@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -108,16 +109,12 @@ public class DefaultAckServiceTest implements InitializingBean {
 
         m_populator.populateDatabase();
     }
-    
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_ackService);
-        Assert.assertNotNull(m_ackDao);
-        Assert.assertNotNull(m_notifDao);
-        Assert.assertNotNull(m_eventDao);
-        Assert.assertNotNull(m_nodeDao);
-        Assert.assertNotNull(m_populator);
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
-    
+
     @Test(expected=IllegalStateException.class)
     public void notificationWithMissingAlarm() {
         

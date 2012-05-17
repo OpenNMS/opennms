@@ -644,12 +644,29 @@
       </simpleContent>
     </complexType>
   </element>
-
+  
   <element name="alarm-data">
     <annotation>
       <documentation>This element is used for converting events into alarms.</documentation>
     </annotation>
     <complexType>
+      <sequence>
+        <element name="update-field" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+            This element provides a list of the fields that will be updated during alarm reduction in addition to the defaults. For
+            example: severity.
+            </documentation>
+          </annotation>
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="update" type="boolean" use="optional" default="true" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+      </sequence>
       <attribute name="reduction-key" type="string" use="required" />
       <attribute name="alarm-type" use="required">
         <simpleType>

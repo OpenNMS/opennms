@@ -69,18 +69,18 @@ public class LdapDetectorTest implements ApplicationContextAware{
 
     @Test
     public void testMyDetector() throws UnknownHostException {
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP), new NullDetectorMonitor()));
+        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
     }
 //    
 //    @Test
 //    public void testDetectorFailWrongPort() throws UnknownHostException {
 //        m_detector.setPort(1200);
-//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP), new NullDetectorMonitor()));
+//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
 //    }
 //    
 //    @Test
 //    public void testDetectorFailNotALdapServer() throws UnknownHostException {
-//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.101"), new NullDetectorMonitor()));
+//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.101")));
 //    }
 
     /* (non-Javadoc)

@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -49,10 +50,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.util.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -72,7 +72,7 @@ public class AuthenticationIntegrationTest implements InitializingBean {
     private UserManager m_userManager;
 
 	@Autowired
-	private DaoAuthenticationProvider m_provider; 
+	private AuthenticationProvider m_provider; 
 
 	@Before
 	public void setUp() {
@@ -150,6 +150,6 @@ public class AuthenticationIntegrationTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_provider);
+        BeanUtils.assertAutowiring(this);
     }
 }
