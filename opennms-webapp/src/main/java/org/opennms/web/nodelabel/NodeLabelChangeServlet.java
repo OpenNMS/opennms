@@ -46,6 +46,7 @@ import org.opennms.netmgt.utils.NodeLabel;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.rest.MultivaluedMapImpl;
 import org.opennms.web.rest.RequisitionRestService;
 import org.springframework.transaction.TransactionStatus;
@@ -100,7 +101,8 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
         try {
             final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-            NodeLabel oldLabel = NodeLabel.retrieveLabel(nodeId);
+            OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+            NodeLabel oldLabel = new NodeLabel(node.getLabel(), node.getLabelSource());
             NodeLabel newLabel = null;
 
             if (labelType.equals("auto")) {
