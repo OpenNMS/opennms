@@ -350,8 +350,13 @@
             
             <a href="<%= Util.calculateUrlBase(request, "alarm/detail.jsp?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
             <c:if test="<%= alarms[i].getStickyNote() != null%>">
-                Sticky Note 
+                <img src="images/AlarmNotes/StickyNote.png" width="20" height="20" alt="<%=alarms[i].getStickyNote()%>"/>  
             </c:if>
+            
+            <c:if test="<%= alarms[i].getStickyNote() != null%>">
+                <img src="images/AlarmNotes/JornalNote.png" width="20" height="20" alt="<%=alarms[i].getStickyNote()%>"/>        
+            </c:if>
+
                 
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
