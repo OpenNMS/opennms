@@ -232,7 +232,26 @@
           <td><%=alarm.getDescription()%></td>
         </tr>
       </table>
-      
+
+      <table>
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
+          <th colspan="5">Alarm Notes</th>
+        </tr>
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
+            <td>Sticky Note</td>
+            <td><%=alarm.getStickyNote()%></td>
+            <td>User <%=alarm.getStickyNoteUser()%></td>
+            <td>Created <%=alarm.getStickyNoteCreate()%></td>
+            <td>Updated <%=alarm.getStickyNoteUpdate()%></td>
+        </tr>
+        <tr class="<%=alarm.getSeverity().getLabel()%>">
+            <td>Journal Note</td>
+            <td><%=alarm.getStickyNote()%></td>
+            <td>User <%=alarm.getStickyNoteUser()%></td>
+            <td>Created <%=alarm.getStickyNoteCreate()%></td>
+            <td>Updated <%=alarm.getStickyNoteUpdate()%></td>
+        </tr>
+      </table>
       
       <table>
 	<tr class="<%=alarm.getSeverity().getLabel()%>">

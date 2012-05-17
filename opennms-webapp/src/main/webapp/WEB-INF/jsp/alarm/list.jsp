@@ -349,6 +349,10 @@
           <td class="divider bright" valign="middle" rowspan="1">
             
             <a href="<%= Util.calculateUrlBase(request, "alarm/detail.jsp?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <c:if test="<%= alarms[i].getStickyNote() != null%>">
+                Sticky Note 
+            </c:if>
+                
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
