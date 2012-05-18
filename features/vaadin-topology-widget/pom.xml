@@ -9,7 +9,6 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.vaadin-topology-widget</artifactId>
   <packaging>jar</packaging>
-  <version>1.11.1-SNAPSHOT</version>
   <name>OpenNMS Topology Widget</name>
 
   <properties>
@@ -267,10 +266,6 @@
       <scope>provided</scope>
 	</dependency>
 	<dependency>
-	   <groupId>org.opennms.core</groupId>
-	   <artifactId>org.opennms.core.soa</artifactId>
-	</dependency>
-	<dependency>
 	  <groupId>net.sf.jung</groupId>
 	  <artifactId>jung-graph-impl</artifactId>
 	  <version>2.0.1</version>
@@ -285,6 +280,11 @@
 	  <artifactId>jung-visualization</artifactId>
 	  <version>2.0.1</version>
 	</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     
   </dependencies>
 
