@@ -35,10 +35,6 @@
 		<beans:property name="groupManager" ref="groupManager" />
 	</beans:bean>
 
-	<beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">
-		<beans:property name="userDao" ref="userDao" />
-	</beans:bean>
-
 	<beans:bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
 		<custom-authentication-provider />
 		<beans:property name="userDao" ref="userDao" />
