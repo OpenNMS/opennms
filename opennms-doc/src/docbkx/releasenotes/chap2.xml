@@ -17,6 +17,7 @@
 				<listitem><para>JRobinRrdStrategy: JRobin: Unrecognized graph argument: (Issue <ulink url='http://issues.opennms.org/browse/NMS-4757'>NMS-4757</ulink>)</para></listitem>
 				<listitem><para>Provisiond leaks file handles, eventually causing &quot;Too many open files&quot; crashes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4846'>NMS-4846</ulink>)</para></listitem>
 				<listitem><para>Scheduled outages applied on latency thresholds are ignored by Pollerd. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5357'>NMS-5357</ulink>)</para></listitem>
+				<listitem><para>Unable to create reports after upgrade from 1.10.1 to 1.10.2 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5359'>NMS-5359</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 	</section>
