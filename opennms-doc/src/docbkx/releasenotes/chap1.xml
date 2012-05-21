@@ -6,6 +6,19 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.3">
+		<title>Release 1.10.3</title>
+
+		<para>
+			Release 1.10.3 is the latest in the stable series of OpenNMS releases.
+			It contains a few bugfixes, most notably an important deadlock fix when
+			using provisiond.
+		</para>
+		<para>
+			The codename for 1.10.3 is <emphasis>Fiscorn</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.10.2">
 		<title>Release 1.10.2</title>
 
