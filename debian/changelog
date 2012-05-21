@@ -2,6 +2,8 @@ opennms (1.10.3-1) stable; urgency=high
 
   * New upstream release.  Includes a fix for a potential deadlock in provisiond.
 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 May 2012 17:01:00 -0400
+
 opennms (1.10.2-1) stable; urgency=high
 
   * New upstream release.  Includes a fix to reduce the number of open filehandles
