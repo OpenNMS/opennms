@@ -816,7 +816,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
         retval.append("label", m_label);
-        retval.append("parent.id", getParent() == null ? "null" : getParent().getId());
+        retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
         // retval.append("distPoller", m_distPoller);
         retval.append("sysObjectId", m_sysObjectId);
