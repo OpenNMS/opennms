@@ -355,11 +355,13 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     public void testDnsVisit() throws ForeignSourceRepositoryException, MalformedURLException {
         final Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost:9153/opennms.com"));
         final CountingVisitor visitor = new CountingVisitor() {
+            @Override
             public void visitNode(final OnmsNodeRequisition req) {
                 LogUtils.debugf(this, "visitNode: %s/%s %s", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
                 m_nodes.add(req);
                 m_nodeCount++;
             }
+            @Override
             public void visitInterface(final OnmsIpInterfaceRequisition req) {
                 LogUtils.debugf(this, "visitInterface: %s", req.getIpAddr());
                 m_ifaces.add(req);
@@ -1303,6 +1305,27 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertTrue(String.format("Did not find anticipated %s event", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI), foundEvent);
     }
 
+    /**
+     * Test that the parent-foreign-source attribute in a requisition can add a parent to a
+     * node that resides in a different provisioning group.
+     * 
+     * @see http://issues.opennms.org/browse/NMS-4109
+     */
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    @Transactional
+    public void testParentForeignSource() throws Exception {
+        importFromResource("classpath:/parent_foreign_source_server.xml", true);
+        importFromResource("classpath:/parent_foreign_source_client.xml", true);
+
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        assertEquals(2, nodes.size());
+        OnmsNode node = getNodeDao().findByLabel("www").iterator().next();
+        assertEquals("admin", node.getParent().getLabel());
+        assertEquals("192.168.1.12", node.getPathElement().getIpAddress());
+        assertEquals("ICMP", node.getPathElement().getServiceName());
+    }
+
     private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
@@ -1423,7 +1446,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             return m_modelImportCount;
         }
         
-		public int getModelImportCompletedCount() {
+        public int getModelImportCompletedCount() {
             return m_modelImportCompleted;
         }
         
@@ -1475,36 +1498,44 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             return m_assetCompleted;
         }
         
+        @Override
         public void visitModelImport(final Requisition req) {
             m_modelImportCount++;
         }
 
+        @Override
         public void visitNode(final OnmsNodeRequisition nodeReq) {
             m_nodeCount++;
             assertEquals("apknd", nodeReq.getNodeLabel());
             assertEquals("4243", nodeReq.getForeignId());
         }
 
+        @Override
         public void visitInterface(final OnmsIpInterfaceRequisition ifaceReq) {
             m_ifaceCount++;
         }
 
+        @Override
         public void visitMonitoredService(final OnmsMonitoredServiceRequisition monSvcReq) {
             m_svcCount++;
         }
 
+        @Override
         public void visitNodeCategory(final OnmsNodeCategoryRequisition catReq) {
             m_nodeCategoryCount++;
         }
         
+        @Override
         public void visitServiceCategory(final OnmsServiceCategoryRequisition catReq) {
             m_svcCategoryCount++;
         }
         
+        @Override
         public void visitAsset(final OnmsAssetRequisition assetReq) {
             m_assetCount++;
         }
         
+        @Override
         public String toString() {
             return (new ToStringCreator(this)
                 .append("modelImportCount", getModelImportCount())
@@ -1524,30 +1555,37 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
                 .toString());
         }
 
+        @Override
         public void completeModelImport(Requisition req) {
             m_modelImportCompleted++;
         }
 
+        @Override
         public void completeNode(OnmsNodeRequisition nodeReq) {
             m_nodeCompleted++;
         }
 
+        @Override
         public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
             m_ifaceCompleted++;
         }
 
+        @Override
         public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
             m_svcCompleted++;
         }
 
+        @Override
         public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
             m_nodeCategoryCompleted++;
         }
         
+        @Override
         public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
             m_nodeCategoryCompleted++;
         }
         
+        @Override
         public void completeAsset(OnmsAssetRequisition assetReq) {
             m_assetCompleted++;
         }

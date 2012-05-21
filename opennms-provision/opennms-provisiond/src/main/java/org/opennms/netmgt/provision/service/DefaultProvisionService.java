@@ -635,15 +635,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
     
     /** {@inheritDoc} */
+    @Override
     @Transactional
-    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
+    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignSource, final String parentForeignId, final String parentNodeLabel) {
 
         final OnmsNode node = findNodebyForeignId(foreignSource, foreignId);
         if (node == null) {
             return;
         }
         
-        final OnmsNode parent = findParent(foreignSource, parentForeignId, parentNodeLabel);
+        final OnmsNode parent = findParent(parentForeignSource, parentForeignId, parentNodeLabel);
 
         setParent(node, parent);
         setPathDependency(node, parent);
