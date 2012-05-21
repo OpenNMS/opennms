@@ -44,7 +44,6 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
-import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.web.WebSecurityUtils;
 
@@ -86,10 +85,7 @@ public class UpdateUserServlet extends HttpServlet {
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
-                final Password pass = new Password();
-                pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
-                pass.setSalt(true);
-                newUser.setPassword(pass);
+                newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
             }
             
             String tuiPin = request.getParameter("tuiPin");

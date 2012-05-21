@@ -39,7 +39,6 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -81,15 +80,11 @@ public class AddNewUserServlet extends HttpServlet {
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/userGroupView/users/newUser.jsp?action=redo");
             dispatcher.forward(request, response);
         } else {
-            final Password pass = new Password();
-            pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
-            pass.setSalt(true);
-
-            final User newUser = new User();
+            User newUser = new User();
             newUser.setUserId(userID);
-            newUser.setPassword(pass);
+            newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
 
-            final HttpSession userSession = request.getSession(false);
+            HttpSession userSession = request.getSession(false);
             userSession.setAttribute("user.modifyUser.jsp", newUser);
 
             // forward the request for proper display

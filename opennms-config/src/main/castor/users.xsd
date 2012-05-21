@@ -66,16 +66,6 @@
     </complexType>
   </element>
 
-  <element name="password">
-    <complexType>
-      <simpleContent>
-        <extension base="string">
-          <attribute name="salt" type="boolean" use="optional" default="false" />
-        </extension>
-      </simpleContent>
-    </complexType>
-  </element>
-
   <element name="user">
     <complexType>
       <sequence>
@@ -83,13 +73,15 @@
 
         <element maxOccurs="1" minOccurs="0" name="full-name" type="string"/>
 
-        <element maxOccurs="1" minOccurs="0" name="user-comments" type="string"/>
+        <element maxOccurs="1" minOccurs="0" name="user-comments"
+                 type="string"/>
 
-        <element maxOccurs="1" minOccurs="1" ref="this:password"/>
+        <element maxOccurs="1" minOccurs="1" name="password" type="string"/>
 
         <element maxOccurs="unbounded" minOccurs="0" ref="this:contact"/>
 
-        <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule" type="string"/>
+        <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule"
+                 type="string"/>
 
         <element maxOccurs="1" minOccurs="0" name="tui-pin">
           <simpleType>

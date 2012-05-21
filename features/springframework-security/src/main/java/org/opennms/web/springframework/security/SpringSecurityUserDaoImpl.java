@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
@@ -67,6 +68,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private UserManager m_userManager;
 
     private GroupManager m_groupManager;
+
+    private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
+
+    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
 
     private String m_usersConfigurationFile;
     
@@ -187,23 +192,13 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         // look up users and their passwords
         String[] configuredUsers = BundleLists.parseBundleList(properties.getProperty("users"));
 
-        for (String user : configuredUsers) {
+        for (String user : configuredUsers ) {
             String username = properties.getProperty("user." + user + ".username");
             String password = properties.getProperty("user." + user + ".password");
 
-            OnmsUser newUser = null;
-            try {
-                newUser = m_userManager.getOnmsUser(user);
-            } catch (final Exception ioe) {
-                throw new DataRetrievalFailureException("Unable to read user " + user + " from users.xml", ioe);
-            }
-            
-            if (newUser == null) {
-                newUser = new OnmsUser();
-                newUser.setUsername(username);
-                newUser.setPassword(m_userManager.encryptedPassword(password, true));
-                newUser.setPasswordSalted(true);
-            }
+            OnmsUser newUser = new OnmsUser();
+            newUser.setUsername(username);
+            newUser.setPassword(PASSWORD_ENCODER.encodePassword(password, null));
 
             magicUsers.put(username, newUser);
         }
