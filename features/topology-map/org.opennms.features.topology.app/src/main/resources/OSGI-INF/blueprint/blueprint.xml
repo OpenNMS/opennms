@@ -12,6 +12,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="alias" value="/hello"/>
         </service-properties>
     </service>
+    
     <reference-list interface="org.opennms.features.topology.api.IViewContribution">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="helloWorldFactory">
         </reference-listener>

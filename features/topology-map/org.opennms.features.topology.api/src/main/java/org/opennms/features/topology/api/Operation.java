@@ -11,4 +11,6 @@ public interface Operation {
     public Undoer execute(List<Object> targets);
     public boolean display(List<Object> targets);
     public boolean enabled(List<Object> targets);
+    public String getLable();
+    public String getId();
 }
