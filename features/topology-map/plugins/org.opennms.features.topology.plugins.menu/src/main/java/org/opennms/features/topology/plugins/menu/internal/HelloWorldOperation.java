@@ -24,4 +24,16 @@ public class HelloWorldOperation implements Operation {
 		return false;
 	}
 
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
