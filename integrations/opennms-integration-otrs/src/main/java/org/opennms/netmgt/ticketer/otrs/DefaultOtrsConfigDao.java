@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ticketer.otrs;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,26 +52,23 @@ public class DefaultOtrsConfigDao {
 	 * @param otrsTicketerPlugin
 	 * @return a
 	 *         <code>java.util.Properties object containing otrs plugin defined properties
+	 * @throws IOException 
 	 */
-	
 	private Configuration getProperties() {
-		
-		String propsFile = new String(System.getProperty("opennms.home") + "/etc/otrs.properties");
-		
-		LogUtils.debugf(this, "loading properties from: %s", propsFile);
-		
-		Configuration config = null;
-		
+		Configuration config = new PropertiesConfiguration();
+		String propsFile = null;
 		try {
+			propsFile = new File(new File(System.getProperty("opennms.home"), "etc"), "otrs.properties").getCanonicalPath();
+			LogUtils.debugf(this, "loading properties from: %s", propsFile);
 			config = new PropertiesConfiguration(propsFile);
 		} catch (final ConfigurationException e) {
-		    LogUtils.debugf(this, e, "Unable to load properties from %s", propsFile);
+			LogUtils.errorf(this, e, "Unable to load properties from %s", propsFile);
+		} catch (final IOException e) {
+			LogUtils.errorf(this, e, "Exception when trying to find OTRS configuration properties from %s", propsFile);
 		}
-	
 		return config;
-	
 	}
-	
+
 	/**
 	 * <p>getUserName</p>
 	 *
