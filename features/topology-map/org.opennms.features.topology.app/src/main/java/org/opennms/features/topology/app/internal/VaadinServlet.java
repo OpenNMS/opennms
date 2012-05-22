@@ -9,6 +9,7 @@ import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 
 public class VaadinServlet extends AbstractApplicationServlet {
 
+    
 	@Override
 	protected Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
 		return HelloWorld.class;

@@ -1,0 +1,6 @@
+##########################################
+# Pax Runner Profile for                 #
+# Apache Felix Configuration Admin 1.2.4 #
+##########################################
+
+scan-bundle:mvn:org.apache.felix/org.apache.felix.configadmin/1.2.4

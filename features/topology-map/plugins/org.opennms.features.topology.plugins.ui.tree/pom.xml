@@ -42,6 +42,12 @@
       <artifactId>osgi_R4_compendium</artifactId>
       <optional>true</optional>
     </dependency>
+    <dependency>
+        <groupId>org.opennms.features.topology</groupId>
+        <artifactId>org.opennms.features.topology.api</artifactId>
+        <version>${project.version}</version>
+        <optional>true</optional>
+    </dependency>
   </dependencies>
 
 </project>

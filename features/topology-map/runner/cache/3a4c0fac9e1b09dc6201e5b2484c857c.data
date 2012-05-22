@@ -1,0 +1,8 @@
+###########################
+# Pax Runner Profile      #
+# OPS4J Pax Logging 1.6.1 #
+###########################
+
+scan-bundle:mvn:org.apache.felix/org.apache.felix.configadmin/1.2.8
+scan-bundle:mvn:org.ops4j.pax.logging/pax-logging-api/1.6.1
+scan-bundle:mvn:org.ops4j.pax.logging/pax-logging-service/1.6.1

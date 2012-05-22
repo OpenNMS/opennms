@@ -4,18 +4,18 @@ xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
 
+    <bean class="org.opennms.features.topology.app.internal.HelloWorldFactory" id="helloWorldFactory"></bean>
 
-    <bean id="vaadinServlet" class="org.opennms.features.topology.app.internal.VaadinServlet" />
     
-	<service interface="javax.servlet.Servlet" ref="vaadinServlet" />
-	
-	<bean id="vaadinResources" class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
-	  
-	</bean>
-    
-    <reference interface="org.opennms.features.topology.api.IViewContribution">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="vaadinServlet" />
-    </reference>
+    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="helloWorldFactory">
+        <service-properties>
+            <entry key="alias" value="/hello"/>
+        </service-properties>
+    </service>
+    <reference-list interface="org.opennms.features.topology.api.IViewContribution">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="helloWorldFactory">
+        </reference-listener>
+    </reference-list>
     
 
 </blueprint>
