@@ -33,14 +33,14 @@
     </dependency>
     -->
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <optional>true</optional>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>6.7.3</version>
     </dependency>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <optional>true</optional>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
