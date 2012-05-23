@@ -72,9 +72,10 @@
            | some example Pax-Runner settings
           -->
           <provision>
-            <param>--platform=felix</param>
-            <param>--profiles=web</param>
-            <param>--shell=karaf.shell.lite</param>
+            <param>--platform=equinox</param>
+            <param>scan-bundle:mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/2.2.7</param>
+            <param>scan-features:mvn:org.apache.karaf.assemblies.features/standard/2.2.7/xml/features!/karaf-framework,http-whiteboard</param>
+            <param>--noConsole</param>
           </provision>
         </configuration>
         <executions>
