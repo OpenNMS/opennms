@@ -37,5 +37,6 @@
     <module>test-api</module>
     <!--<module>web</module>-->
     <module>xml</module>
+    <module>osgid</module>
   </modules>
 </project>
