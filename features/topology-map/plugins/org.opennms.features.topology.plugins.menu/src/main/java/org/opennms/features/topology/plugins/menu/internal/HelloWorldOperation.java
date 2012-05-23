@@ -14,14 +14,12 @@ public class HelloWorldOperation implements Operation {
 
 	@Override
 	public boolean display(List<Object> targets) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean enabled(List<Object> targets) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
