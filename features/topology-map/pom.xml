@@ -49,6 +49,7 @@
     <module>provision</module>
     <module>org.opennms.features.topology.api</module>
     <module>org.opennms.features.topology.app</module>
+    <module>org.opennms.features.topology.shell</module>
     <module>plugins</module>
   </modules>
 
