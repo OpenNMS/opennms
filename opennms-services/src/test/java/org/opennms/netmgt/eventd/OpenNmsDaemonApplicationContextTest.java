@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt;
+package org.opennms.netmgt.eventd;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

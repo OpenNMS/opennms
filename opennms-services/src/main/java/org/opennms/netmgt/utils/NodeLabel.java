@@ -42,7 +42,6 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.PropertyConstants;
 import org.opennms.netmgt.dao.NodeDao;
 
 /**
@@ -159,6 +158,12 @@ public class NodeLabel {
      * Flag describing source of node label
      */
     private final char m_nodeLabelSource;
+
+    /**
+     * The property string in the properties file which specifies the method to
+     * use for determining which interface is primary on a multi-interface box.
+     */
+    public static final String PROP_PRIMARY_INTERFACE_SELECT_METHOD = "org.opennms.bluebird.dp.primaryInterfaceSelectMethod";
 
     /**
      * Default constructor
@@ -476,7 +481,7 @@ public class NodeLabel {
         // the method to use for determining which interface on a multi-interface
         // system is to be deemed the primary interface. The primary interface
         // will then determine what the node's label is.
-        String method = System.getProperty(PropertyConstants.PROP_PRIMARY_INTERFACE_SELECT_METHOD);
+        String method = System.getProperty(NodeLabel.PROP_PRIMARY_INTERFACE_SELECT_METHOD);
         if (method == null) {
             method = DEFAULT_SELECT_METHOD;
         }
