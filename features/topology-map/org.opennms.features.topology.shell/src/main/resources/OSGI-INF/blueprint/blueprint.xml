@@ -1,8 +1,11 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
-        <command name="test/hello">
-            <action class="org.opennms.features.topology.shell.HelloShellCommand"/>
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="blueprint/listnamespaces">
+            <action class="org.opennms.features.topology.shell.BlueprintNamespaceShellCommand"/>
+        </command>
+        <command  name="shell/listcommands">
+            <action class="org.opennms.features.topology.shell.CommandProviderShellCommand"/>
         </command>
     </command-bundle>
 
