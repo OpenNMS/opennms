@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.test.mock;
+package org.opennms.core.test;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
