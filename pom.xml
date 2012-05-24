@@ -107,7 +107,6 @@
     <module>opennms-config-utils</module>
     <module>opennms-config-tester</module>
     <module>opennms-dao</module>
-    <module>opennms-daemon</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
@@ -1349,8 +1348,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-daemon</artifactId>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.daemon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

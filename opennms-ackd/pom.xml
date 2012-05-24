@@ -10,8 +10,8 @@
   <name>OpenNMS Acknowledgement Daemon</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-daemon</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

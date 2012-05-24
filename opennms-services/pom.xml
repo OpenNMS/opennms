@@ -71,8 +71,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-daemon</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
