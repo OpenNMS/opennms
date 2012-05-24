@@ -12,12 +12,11 @@ import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
-@Command(scope = "shell", name = "listcommands", description="Lists the available shell commands and their providers.")
+@Command(scope = "onms", name = "listcommands", description="Lists the available shell commands and their providers.")
 public class CommandProviderShellCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-
     	final ServiceReference[] services = this.bundleContext.getServiceReferences(BlueprintContainer.class.getName(), null);
     	for (final ServiceReference sr : services) {
 

@@ -8,7 +8,7 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
-@Command(scope = "blueprint", name = "listnamespaces", description="Lists the available blueprint namespaces and their providers.")
+@Command(scope = "onms", name = "listnamespaces", description="Lists the available blueprint namespaces and their providers.")
 public class BlueprintNamespaceShellCommand extends OsgiCommandSupport {
 
     @Override

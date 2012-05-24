@@ -51,6 +51,7 @@
     <module>org.opennms.features.topology.app</module>
     <module>org.opennms.features.topology.shell</module>
     <module>plugins</module>
+    <module>features</module>
   </modules>
 
   <build>
@@ -67,7 +68,7 @@
         <groupId>org.ops4j</groupId>
         <artifactId>maven-pax-plugin</artifactId>
         <version>1.5</version>
-	<inherited>false</inherited>
+        <inherited>false</inherited>
         <configuration>
           <!--
            | some example Pax-Runner settings

@@ -43,6 +43,12 @@
       <version>2.2.7</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.enterprise</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>
