@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt;
+package org.opennms.netmgt.vmmgr;
 
 import org.springframework.context.ApplicationContext;
 

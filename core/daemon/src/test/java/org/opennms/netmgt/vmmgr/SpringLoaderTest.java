@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.netmgt.Registry;
 import org.opennms.netmgt.model.ServiceDaemon;
 
 public class SpringLoaderTest {

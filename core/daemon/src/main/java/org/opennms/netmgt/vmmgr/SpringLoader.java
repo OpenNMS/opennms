@@ -33,7 +33,6 @@ import java.rmi.ConnectException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.netmgt.Registry;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
