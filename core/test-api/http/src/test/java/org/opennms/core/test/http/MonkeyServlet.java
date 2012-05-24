@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.servlets;
+package org.opennms.core.test.http;
 
 import java.io.IOException;
 

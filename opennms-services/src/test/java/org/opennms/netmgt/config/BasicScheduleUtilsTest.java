@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.groups.Schedule;
-import org.opennms.test.mock.MockLogAppender;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
     

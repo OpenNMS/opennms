@@ -37,7 +37,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 import org.springframework.core.io.ByteArrayResource;
 
 public class PollOutagesConfigManagerTest extends TestCase {

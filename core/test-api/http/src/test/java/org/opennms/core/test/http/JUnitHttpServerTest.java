@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test;
+package org.opennms.core.test.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
