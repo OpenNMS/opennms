@@ -49,6 +49,7 @@
     <include-collection dataCollectionGroup="Net-SNMP"/>
     <include-collection dataCollectionGroup="Nortel"/>
     <include-collection dataCollectionGroup="Novell"/>
+    <include-collection dataCollectionGroup="pfSense"/>
     <include-collection dataCollectionGroup="Powerware"/>
     <include-collection dataCollectionGroup="Riverbed"/>
     <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
