@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.annotations;
+package org.opennms.core.test.dns.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -34,14 +34,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>JUnitDNSServer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE})
-public @interface DNSZone {
+@Target({ElementType.METHOD,ElementType.TYPE})
+public @interface JUnitDNSServer {
 
-    String name();
-    String v4address() default "127.0.0.1";
-    String v6address() default "::1";
-    DNSEntry[] entries() default {};
+    /** the port to listen on **/
+    int port() default 9153;
 
+    /** a list of DNS zones to respond to **/
+    DNSZone[] zones() default {};
 }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.annotations;
+package org.opennms.core.test.dns.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

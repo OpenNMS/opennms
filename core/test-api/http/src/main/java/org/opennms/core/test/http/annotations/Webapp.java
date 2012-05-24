@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.annotations;
+package org.opennms.core.test.http.annotations;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>JUnitDNSServer class.</p>
+ * <p>Webapp class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.TYPE})
-public @interface JUnitDNSServer {
+@Target({ElementType.ANNOTATION_TYPE})
+public @interface Webapp {
 
-    /** the port to listen on **/
-    int port() default 9153;
+	String context() default "/";
+	
+	String path();
 
-    /** a list of DNS zones to respond to **/
-    DNSZone[] zones() default {};
 }

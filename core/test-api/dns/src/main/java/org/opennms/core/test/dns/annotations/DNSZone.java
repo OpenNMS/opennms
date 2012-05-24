@@ -26,18 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test;
+package org.opennms.core.test.dns.annotations;
 
-public class ConfigurationException extends Exception {
-	private static final long serialVersionUID = -5568481847146314296L;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	public ConfigurationException() { }
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.ANNOTATION_TYPE})
+public @interface DNSZone {
 
-    public ConfigurationException(final String message) {
-        super(message);
-    }
+    String name();
+    String v4address() default "127.0.0.1";
+    String v6address() default "::1";
+    DNSEntry[] entries() default {};
 
-    public ConfigurationException(final String message, final Throwable t) {
-        super(message, t);
-    }
 }

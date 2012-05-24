@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test;
+package org.opennms.core.test.http;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,8 +47,9 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.opennms.core.test.annotations.JUnitHttpServer;
-import org.opennms.core.test.annotations.Webapp;
+import org.opennms.core.test.OpenNMSAbstractTestExecutionListener;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
