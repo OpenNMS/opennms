@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.opennms-tools</groupId>
     <artifactId>org.opennms.opennms-tools.syslog-profiler</artifactId>
-    <version>1.8.0</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.opennms-tools.syslog-profiler</groupId>
@@ -18,10 +18,17 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!--
     <dependency>
