@@ -8,7 +8,7 @@
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <name>OpenNMS Instrumentation Log Reader</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -26,6 +26,18 @@
               <mainClass>org.opennms.util.ilr.Main</mainClass>
             </manifest>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.util.ilr.*;version="${project.version}"</Export-Package>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collectd.jdbc;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -46,12 +46,9 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.collectd.jdbc.JdbcAgentState;
-import org.opennms.netmgt.collectd.jdbc.JdbcCollectionAttributeType;
-import org.opennms.netmgt.collectd.jdbc.JdbcCollectionResource;
-import org.opennms.netmgt.collectd.jdbc.JdbcCollectionSet;
-import org.opennms.netmgt.collectd.jdbc.JdbcMultiInstanceCollectionResource;
-import org.opennms.netmgt.collectd.jdbc.JdbcSingleInstanceCollectionResource;
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.CollectionException;
+import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
