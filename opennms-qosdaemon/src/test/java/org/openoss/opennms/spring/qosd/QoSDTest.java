@@ -37,7 +37,9 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.openoss.opennms.spring.qosdrx.QoSDrx;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -62,13 +64,18 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class QoSDTest {
+public class QoSDTest implements InitializingBean {
 	//@Autowired
 	@SuppressWarnings("unused")
     private QoSDrx m_qosdrx;
 
 	@Autowired
 	private QoSD m_qosd;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
 	@Before
 	public void setUp() throws Exception {

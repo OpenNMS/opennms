@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -66,12 +68,17 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("categories")
 @Transactional
-public class OnmsCategoryResource extends OnmsRestService {
+public class OnmsCategoryResource extends OnmsRestService implements InitializingBean {
     @Autowired
     private NodeDao m_nodeDao;
     
     @Autowired
     private CategoryDao m_categoryDao;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     /**
      * <p>getCategories</p>

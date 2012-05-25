@@ -45,6 +45,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -78,7 +80,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Transactional
-public class OnmsSnmpInterfaceResource extends OnmsRestService {
+public class OnmsSnmpInterfaceResource extends OnmsRestService implements InitializingBean {
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -92,6 +94,11 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Context 
     UriInfo m_uriInfo;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /**
      * <p>getSnmpInterfaces</p>
      *

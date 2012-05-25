@@ -41,6 +41,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.NotificationDao;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -69,7 +71,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-public class AcknowledgmentRestService extends OnmsRestService {
+public class AcknowledgmentRestService extends OnmsRestService implements InitializingBean {
     @Autowired
     private AcknowledgmentDao m_ackDao;
     
@@ -87,7 +89,12 @@ public class AcknowledgmentRestService extends OnmsRestService {
 
     @Context
     SecurityContext m_securityContext;
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /**
      * <p>getAcknowledgment</p>
      *

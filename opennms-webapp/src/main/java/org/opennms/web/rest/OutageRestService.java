@@ -42,9 +42,11 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -72,7 +74,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Path("outages")
-public class OutageRestService extends OnmsRestService {
+public class OutageRestService extends OnmsRestService implements InitializingBean {
 
     @Autowired
     private OutageDao m_outageDao;
@@ -86,6 +88,11 @@ public class OutageRestService extends OnmsRestService {
     @Context
     ServletContext m_servletContext;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /**
      * <p>getOutage</p>
      *

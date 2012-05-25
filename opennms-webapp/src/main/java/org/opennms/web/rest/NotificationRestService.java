@@ -43,9 +43,11 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -64,7 +66,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Path("notifications")
-public class NotificationRestService extends OnmsRestService {
+public class NotificationRestService extends OnmsRestService implements InitializingBean {
     @Autowired
     private NotificationDao m_notifDao;
     
@@ -74,6 +76,11 @@ public class NotificationRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /**
      * <p>getNotification</p>
      *

@@ -40,11 +40,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.web.snmpinfo.SnmpInfo;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -93,11 +95,16 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("snmpConfig")
 @Transactional
-public class SnmpConfigRestService extends OnmsRestService {
+public class SnmpConfigRestService extends OnmsRestService implements InitializingBean {
     
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     /**
      * <p>getSnmpInfo</p>
      *
