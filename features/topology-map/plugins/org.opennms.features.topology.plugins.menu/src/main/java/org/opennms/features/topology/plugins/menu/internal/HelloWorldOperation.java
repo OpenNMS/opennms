@@ -7,31 +7,29 @@ import org.opennms.features.topology.api.Operation;
 public class HelloWorldOperation implements Operation {
 
 	@Override
-	public Undoer execute(List<Object> targets) {
-		// TODO Auto-generated method stub
+	public Undoer execute(final List<Object> targets) {
+		System.out.println("Hello, world!");
 		return null;
 	}
 
 	@Override
-	public boolean display(List<Object> targets) {
+	public boolean display(final List<Object> targets) {
 		return true;
 	}
 
 	@Override
-	public boolean enabled(List<Object> targets) {
+	public boolean enabled(final List<Object> targets) {
 		return true;
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Hello World";
 	}
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "helloworld";
 	}
 
 }
