@@ -34,6 +34,7 @@ public class OperationListShellCommand extends OsgiCommandSupport {
 
         for (final ServiceReference sr : services) {
     		final Operation operation = (Operation)this.bundleContext.getService(sr);
+    		if (operation == null) continue;
 
     		operations.add(operation);
 
