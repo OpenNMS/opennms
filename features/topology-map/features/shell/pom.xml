@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.opennms.features.topology</groupId>
+    <artifactId>features</artifactId>
+    <version>1.11.1-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology.features</groupId>
+  <artifactId>shell</artifactId>
+
+  <name>org.opennms.features.topology.features.shell (OpenNMS Topology Map Shell Feature)</name>
+
+  <description>Handy shell commands for debugging in an OSGi container.</description>
+
+  <packaging>pom</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>2.2.7</version>
+          <executions>
+            <execution>
+              <id>generate</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>generate-features-xml</goal>
+              </goals>
+              <configuration>
+                <!--<bundles>src/main/resources/bundles.properties</bundles>-->
+                <!--<kernelVersion>2.2.7</kernelVersion>-->
+                <outputFile>target/features.xml</outputFile>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>
