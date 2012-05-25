@@ -17,10 +17,49 @@
 
   <packaging>pom</packaging>
 
+  <!--
   <modules>
     <module>app</module>
     <module>shell</module>
     <module>all</module>
   </modules>
+  -->
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>2.2.7</version>
+          <executions>
+            <execution>
+              <id>generate</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>generate-features-xml</goal>
+              </goals>
+              <configuration>
+                <!--<bundles>src/main/resources/bundles.properties</bundles>-->
+                <!--<kernelVersion>2.2.7</kernelVersion>-->
+                <outputFile>target/features.xml</outputFile>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.app</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>
