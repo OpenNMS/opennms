@@ -10,4 +10,21 @@
   <artifactId>org.opennms.features.reporting.model</artifactId>
   <name>OpenNMS Model for Reports</name>
   <url>http://www.opennms.org/</url>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.features.reporting.model.*;org.opennms.features.reporting.model.basicreport.*;org.opennms.features.reporting.model.jasper.*;org.opennms.features.reporting.model.jasperreport.*;org.opennms.features.reporting.model.remoterepository.*;version="${project.version}"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
