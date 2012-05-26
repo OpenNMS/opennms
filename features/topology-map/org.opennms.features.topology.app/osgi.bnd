@@ -3,3 +3,11 @@
 #-----------------------------------------------------------------
 
 #Bundle-Activator: ${bundle.namespace}.internal.Activator
+
+# Package format version - do not change
+Vaadin-Package-Version: 1
+Vaadin-Widgetsets: org.opennms.features.vaadin.topology.gwt.MyWidgetSet
+Export-Package: org.opennms.*
+Include-Resource: {maven-resources},target/gwt/
+Embed-Dependency: jung*|colt|concurrent|collections-generic
+Embed-Transitive: true
