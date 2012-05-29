@@ -7,9 +7,9 @@
     <version>1.11.1-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
-  <artifactId>org.opennms.features.vaadin-topology-widget</artifactId>
+  <artifactId>vaadinsandbox</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Topology Widget</name>
+  <name>Vaadin Sandbox</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
