@@ -42,7 +42,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -60,7 +59,6 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -79,7 +77,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Transactional
-public class OnmsMonitoredServiceResource extends OnmsRestService implements InitializingBean {
+public class OnmsMonitoredServiceResource extends OnmsRestService {
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -95,11 +93,6 @@ public class OnmsMonitoredServiceResource extends OnmsRestService implements Ini
     
     @Autowired
     private EventProxy m_eventProxy;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     /**
      * <p>getServices</p>

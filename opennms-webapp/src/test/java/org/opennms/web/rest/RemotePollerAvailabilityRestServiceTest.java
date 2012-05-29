@@ -44,7 +44,6 @@ import javax.servlet.ServletException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -54,15 +53,14 @@ import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockServletConfig;
@@ -76,7 +74,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
-public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase implements InitializingBean {
+public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     ApplicationDao m_applicationDao;
@@ -94,11 +92,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     
     public static final boolean USE_EXISTING = false;
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
     @Before
     @Override
     public void setUp() throws Throwable {

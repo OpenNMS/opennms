@@ -46,13 +46,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.OnmsGroupList;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -72,7 +70,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("groups")
 @Transactional
-public class GroupRestService extends OnmsRestService implements InitializingBean {
+public class GroupRestService extends OnmsRestService {
     @Autowired
     private GroupManager m_groupManager;
     
@@ -81,11 +79,6 @@ public class GroupRestService extends OnmsRestService implements InitializingBea
     
     @Context
     ResourceContext m_context;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})

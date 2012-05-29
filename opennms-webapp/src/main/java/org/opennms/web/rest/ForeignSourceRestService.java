@@ -49,7 +49,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection;
@@ -61,7 +60,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -131,7 +129,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Path("foreignSources")
-public class ForeignSourceRestService extends OnmsRestService implements InitializingBean {
+public class ForeignSourceRestService extends OnmsRestService {
     
     @Autowired
     @Qualifier("pending")
@@ -149,11 +147,6 @@ public class ForeignSourceRestService extends OnmsRestService implements Initial
 
     @Context
     SecurityContext m_securityContext;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     /**
      * <p>getDefaultForeignSource</p>

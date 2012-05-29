@@ -48,11 +48,9 @@ import javax.ws.rs.core.UriInfo;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -71,7 +69,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Path("events")
-public class EventRestService extends OnmsRestService implements InitializingBean {
+public class EventRestService extends OnmsRestService {
 
 	private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();
 	private static final DateTimeFormatter ISO8601_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
@@ -87,11 +85,6 @@ public class EventRestService extends OnmsRestService implements InitializingBea
 
 	@Context
 	SecurityContext m_securityContext;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
 	/**
 	 * <p>getEvent</p>

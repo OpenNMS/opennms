@@ -40,7 +40,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.web.springframework.security.Authentication;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -60,7 +58,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Path("alarms")
-public class AlarmRestService extends AlarmRestServiceBase implements InitializingBean {
+public class AlarmRestService extends AlarmRestServiceBase {
 
     @Autowired
     private AlarmDao m_alarmDao;
@@ -74,11 +72,6 @@ public class AlarmRestService extends AlarmRestServiceBase implements Initializi
     @Context
     SecurityContext m_securityContext;
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
     /**
      * <p>getAlarm</p>
      *

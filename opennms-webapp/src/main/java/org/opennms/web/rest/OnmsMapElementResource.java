@@ -35,11 +35,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElementList;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -59,17 +57,12 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Scope("prototype")
 @Transactional
-public class OnmsMapElementResource extends OnmsRestService implements InitializingBean {
+public class OnmsMapElementResource extends OnmsRestService {
     @Autowired
     private OnmsMapDao m_mapDao;
 
     @Context
     ResourceContext m_context;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     /**
      * <p>getMapElements</p>

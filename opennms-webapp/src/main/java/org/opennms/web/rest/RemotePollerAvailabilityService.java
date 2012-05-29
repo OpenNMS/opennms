@@ -48,7 +48,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -64,7 +63,6 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinitionList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -78,7 +76,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @PerRequest
 @Path("remotelocations")
 @Transactional
-public class RemotePollerAvailabilityService extends OnmsRestService implements InitializingBean {
+public class RemotePollerAvailabilityService extends OnmsRestService {
 
 
     @Autowired
@@ -107,12 +105,8 @@ public class RemotePollerAvailabilityService extends OnmsRestService implements 
         super();
         
     }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
+    
+    
     protected TimeChunker getTimeChunkerFromMidnight() {
         Calendar calendar = Calendar.getInstance();
         Date startTime = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0,0,0).getTime();

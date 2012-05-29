@@ -42,14 +42,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapList;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -70,7 +68,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("maps")
 @Transactional
-public class OnmsMapRestService extends OnmsRestService implements InitializingBean {
+public class OnmsMapRestService extends OnmsRestService {
     @Autowired
     private OnmsMapDao m_mapDao;
 
@@ -79,11 +77,6 @@ public class OnmsMapRestService extends OnmsRestService implements InitializingB
 
     @Context
     ResourceContext m_context;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     /**
      * <p>getMaps</p>
