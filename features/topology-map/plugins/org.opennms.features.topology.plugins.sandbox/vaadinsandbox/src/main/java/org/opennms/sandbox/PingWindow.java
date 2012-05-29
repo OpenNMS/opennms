@@ -16,10 +16,14 @@ public class PingWindow extends Window{
 
    
     private final double sizePercentage = 0.80; // Window size proportionate to main window
+    private boolean numOutput = false;
+    private NativeSelect ipDropdown = null;
+    private NativeSelect packetSizeDropdown = null;
+    private Node testNode = null;
     public PingWindow (float width, float height){
         
         //Test Data
-        final Node testNode = new Node("172.0.1.234","Test Node");
+        testNode = new Node("172.0.1.234","Test Node");
         //End Test Data
         
         
@@ -35,10 +39,10 @@ public class PingWindow extends Window{
 
         VerticalLayout layout = new VerticalLayout();
         GridLayout grid = new GridLayout(2,5);
-        final NativeSelect ipDropdown = new NativeSelect();
-        
-        NativeSelect packetSizeDropdown = new NativeSelect();
-        final CheckBox numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
+        ipDropdown = new NativeSelect();
+        packetSizeDropdown = new NativeSelect();
+        CheckBox numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
+        numericalDataCheckBox.setImmediate(true);
         packetSizeDropdown.addItem("16");
         packetSizeDropdown.addItem("32");
         packetSizeDropdown.addItem("64");
@@ -66,18 +70,11 @@ public class PingWindow extends Window{
         grid.addComponent(numericalDataCheckBox);
         
         numericalDataCheckBox.addListener(new ValueChangeListener() {
-            public void valueChange(ValueChangeEvent event) {
-               if(numericalDataCheckBox.getValue().equals(true)) {
-                 testNode.setDisplayedName(testNode.name);
-                 ipDropdown.removeAllItems();
-                 ipDropdown.addItem(testNode.getDisplayedName());
-                 
-               }else if(numericalDataCheckBox.getValue().equals(false)){
-                 testNode.setDisplayedName(testNode.ip);
-                 ipDropdown.removeAllItems();
-                 ipDropdown.addItem(testNode.getDisplayedName());
-               }
-            }
+
+			public void valueChange(ValueChangeEvent event) {
+				switchNumOutput();
+			}
+        	
         });
        
         final Button pingButton = new Button("Ping");        
@@ -94,4 +91,19 @@ public class PingWindow extends Window{
         addComponent(layout);
 
     }
+    
+	private void switchNumOutput() {
+		ipDropdown.removeAllItems();
+		if (numOutput == false){
+			testNode.setDisplayedName(testNode.ip);
+	        ipDropdown.addItem(testNode.getDisplayedName());
+	        numOutput = true;
+		} else {
+			testNode.setDisplayedName(testNode.name);
+            ipDropdown.addItem(testNode.getDisplayedName());
+            numOutput = false;
+		}
+		ipDropdown.select(testNode.getDisplayedName());
+		ipDropdown.requestRepaint();
+	}
 }
