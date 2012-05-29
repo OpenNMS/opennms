@@ -104,7 +104,6 @@
     <module>opennms-model</module>
     <module>opennms-ackd</module>
     <module>opennms-alarms</module>
-    <module>opennms-config-utils</module>
     <module>opennms-config-tester</module>
     <module>opennms-dao</module>
     <module>opennms-icmp</module>
