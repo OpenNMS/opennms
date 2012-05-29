@@ -40,6 +40,8 @@
 		java.util.*,
 		org.opennms.netmgt.xml.rtc.Node,
 		org.opennms.web.XssRequestWrapper,
+		org.opennms.web.springframework.security.AclUtils,
+		org.opennms.web.springframework.security.AclUtils.NodeAccessChecker,
 		org.springframework.security.core.context.SecurityContextHolder
 		"
 %>
@@ -110,8 +112,7 @@
 %>
 
 
-<%@page import="org.opennms.web.AclUtils"%>
-<%@page import="org.opennms.web.AclUtils.NodeAccessChecker"%><jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Category Service Level Monitoring" />
   <jsp:param name="headTitle" value="<%=category.getName()%>" />
   <jsp:param name="headTitle" value="Category" />

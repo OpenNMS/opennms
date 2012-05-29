@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.web.springframework.security;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +36,6 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.web.springframework.security.Authentication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,7 +69,7 @@ public class AclUtils {
      * <p>getNodeAccessChecker</p>
      *
      * @param sc a {@link javax.servlet.ServletContext} object.
-     * @return a {@link org.opennms.web.AclUtils.NodeAccessChecker} object.
+     * @return a {@link org.opennms.web.springframework.security.AclUtils.NodeAccessChecker} object.
      */
     public static NodeAccessChecker getNodeAccessChecker(ServletContext sc) {
         

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt;
+package org.opennms.netmgt.model.events;
 
 import static org.junit.Assert.assertEquals;
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt;
+package org.opennms.netmgt.model.events;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.EventConstants;
 
 @RunWith(Parameterized.class)
 public class EventConstantsTest {

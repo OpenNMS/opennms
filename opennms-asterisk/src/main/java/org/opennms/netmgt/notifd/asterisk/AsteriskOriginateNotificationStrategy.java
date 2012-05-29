@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.notifd;
+package org.opennms.netmgt.notifd.asterisk;
 
 import java.util.List;
 
@@ -36,6 +36,8 @@ import org.opennms.netmgt.asterisk.agi.scripts.BaseOnmsAgiScript;
 import org.opennms.netmgt.asterisk.utils.AsteriskOriginator;
 import org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.notifd.Notifd;
+import org.opennms.netmgt.notifd.NotificationStrategy;
 
 /**
  * <p>AsteriskOriginateNotificationStrategy class.</p>
