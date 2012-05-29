@@ -17,6 +17,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
         <service-properties>
             <entry key="alias" value="/topology"/>
+            <entry key="widgetset" value="org.opennms.features.vaadin.topology.gwt.TopologyWidget"/>
         </service-properties>
     </service>
    <!-- 
