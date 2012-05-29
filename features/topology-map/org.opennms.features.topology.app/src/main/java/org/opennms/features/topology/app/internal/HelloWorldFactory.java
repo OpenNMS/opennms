@@ -1,10 +1,12 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.features.topology.api.IViewContribution;
 import org.ops4j.pax.vaadin.ApplicationFactory;
-import org.osgi.framework.ServiceReference;
 
 import com.vaadin.Application;
 
@@ -24,11 +26,11 @@ public class HelloWorldFactory implements ApplicationFactory {
         return HelloWorld.class;
     }
     
-    public void onBind(ServiceReference reference) {
+    public void onBind(IViewContribution button, Map<String, Object> properties) {
         
     }
     
-    public void onUnBind(ServiceReference reference) {
+    public void onUnBind(IViewContribution button, Map<String, Object> properties) {
         
     }
 

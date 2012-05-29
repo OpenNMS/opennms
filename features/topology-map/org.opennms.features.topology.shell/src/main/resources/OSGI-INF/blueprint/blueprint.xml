@@ -7,6 +7,9 @@
         <command  name="onms/listcommands">
             <action class="org.opennms.features.topology.shell.CommandProviderShellCommand"/>
         </command>
+        <command  name="topo/listoperations">
+            <action class="org.opennms.features.topology.shell.OperationListShellCommand"/>
+        </command>
     </command-bundle>
 
 </blueprint>
