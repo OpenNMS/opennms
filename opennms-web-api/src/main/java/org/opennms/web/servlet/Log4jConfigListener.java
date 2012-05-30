@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,49 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.web.servlet;
+
+import javax.servlet.ServletContextEvent;
+import org.springframework.web.util.Log4jWebConfigurer;
+
 /**
- * 
- * <p>
- * CommandBeanMockup class.
- * </p>
- * 
- * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
- * 
+ * <p>Log4jConfigListener class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
-public class CommandBeanMockup {
-	String script = "<script>foo</script>";
-	String htmlTable = "<table>";
-	int number = 1;
-	Boolean cool = false;
-	
-	public String getScript() {
-		return script;
-	}
-	public void setScript(String script) {
-		this.script = script;
-	}
-	public String getHtmlTable() {
-		return htmlTable;
-	}
-	public void setHtmlTable(String htmlTable) {
-		this.htmlTable = htmlTable;
-	}
-	public int getNumber() {
-		return number;
-	}
-	public void setNumber(int number) {
-		this.number = number;
-	}
-	public Boolean getCool() {
-		return cool;
-	}
-	public void setCool(Boolean cool) {
-		this.cool = cool;
-	}
-	@Override
-	public String toString() {
-		return "CommandBean [script=" + script + ", htmlTable=" + htmlTable
-				+ ", number=" + number + ", cool=" + cool + "]";
-	}
+public class Log4jConfigListener implements javax.servlet.ServletContextListener {
+
+    /** {@inheritDoc} */
+    public void contextInitialized(ServletContextEvent event) {
+        if (! event.getServletContext().getServerInfo().toLowerCase().contains("jetty")) {
+            Log4jWebConfigurer.initLogging(event.getServletContext());
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void contextDestroyed(ServletContextEvent event) {
+        if (! event.getServletContext().getServerInfo().toLowerCase().contains("jetty")) {
+            Log4jWebConfigurer.shutdownLogging(event.getServletContext());
+        }
+    }
+
 }

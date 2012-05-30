@@ -40,7 +40,7 @@
 		org.springframework.web.context.support.WebApplicationContextUtils,
 		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.netmgt.model.OnmsNode,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.event.*,
 		org.opennms.web.springframework.security.Authentication,
@@ -101,7 +101,7 @@
     String nodeIdString = request.getParameter( "node" );
 
     if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
+        throw new org.opennms.web.servlet.MissingParameterException( "node" );
     }
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );

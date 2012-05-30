@@ -48,9 +48,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.servlet.MissingParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -34,7 +34,7 @@
         import="java.util.*,
         org.opennms.netmgt.config.*,
         org.opennms.netmgt.config.poller.*,
-        org.opennms.web.WebSecurityUtils,
+        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,

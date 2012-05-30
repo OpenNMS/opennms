@@ -31,7 +31,7 @@ package org.opennms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.support.DistributedStatusHistoryModel;
 import org.springframework.web.servlet.ModelAndView;

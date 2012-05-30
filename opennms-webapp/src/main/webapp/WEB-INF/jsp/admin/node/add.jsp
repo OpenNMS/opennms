@@ -35,7 +35,7 @@
 <%@page import="java.util.Set"%>
 
 <%@page import="org.opennms.netmgt.provision.persist.foreignsource.ForeignSource" %>
-<%@page import="org.opennms.web.XssRequestWrapper" %>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
 	<jsp:param name="title" value="Requisition Node" />

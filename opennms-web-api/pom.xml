@@ -12,6 +12,10 @@
   <name>OpenNMS Web APIs</name>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>

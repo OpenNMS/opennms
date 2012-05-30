@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.gwt.web.ui.asset.client.AssetService;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
@@ -40,7 +41,6 @@ import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.SecurityContextService;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.springframework.security.SpringSecurityContextService;
