@@ -41,7 +41,6 @@
               <inputFile>src/main/features/features.xml.in</inputFile>
               <outputFile>target/features.xml</outputFile>
               <aggregateFeatures>true</aggregateFeatures>
-              <!-- <includeTransitiveDependency>false</includeTransitiveDependency> -->
             </configuration>
           </execution>
         </executions>

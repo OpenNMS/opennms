@@ -3,5 +3,6 @@
     <feature name="org.opennms.features.topology.shell" version="${project.version}" description="OpenNMS Karaf Shell Utilities">
         <details>OpenNMS Karaf shell utilities.</details>
         <feature version="${project.version}">org.opennms.features.topology.api</feature>
+        <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
     </feature>
 </features>

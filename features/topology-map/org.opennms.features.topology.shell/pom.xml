@@ -39,7 +39,6 @@
             <configuration>
               <inputFile>src/main/features/features.xml.in</inputFile>
               <outputFile>target/features.xml</outputFile>
-              <addSelf>true</addSelf>
               <aggregateFeatures>true</aggregateFeatures>
               <includeTransitiveDependency>false</includeTransitiveDependency>
             </configuration>
