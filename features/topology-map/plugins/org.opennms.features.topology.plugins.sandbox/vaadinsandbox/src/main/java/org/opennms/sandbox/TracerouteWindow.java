@@ -2,31 +2,28 @@ package org.opennms.sandbox;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout.MarginInfo;
 import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 
-public class PingWindow extends Window{
+public class TracerouteWindow extends Window{
 
-   
-    private final double sizePercentage = 0.80; // Window size proportionate to main window
+	private final double sizePercentage = 0.80; // Window size proportionate to main window
     private boolean numOutput = false;
     private NativeSelect ipDropdown = null;
     private NativeSelect packetSizeDropdown = null;
     private Node testNode = null;
     private Label nodeLabel = null;
-    public PingWindow (float width, float height){
+    
+    public TracerouteWindow (float width, float height){
         
         //Test Data
         testNode = new Node("172.0.1.234","Test Node");
@@ -36,7 +33,7 @@ public class PingWindow extends Window{
         nodeLabel.setContentMode(Label.CONTENT_XHTML);
         int windowWidth = (int)(sizePercentage * width), windowHeight = (int)(sizePercentage * height);
 
-        setCaption("Ping");
+        setCaption("Traceroute");
         setImmediate(true);
         setResizable(false);
         setWidth("" + windowWidth + "px");
@@ -50,9 +47,9 @@ public class PingWindow extends Window{
         VerticalLayout topLayout = new VerticalLayout();
         VerticalLayout bottomLayout = new VerticalLayout();
         VerticalLayout form = new VerticalLayout();
-        GridLayout grid = new GridLayout(2,4);
+        GridLayout grid = new GridLayout(2,2);
         grid.setWidth("420");
-        grid.setHeight("120");
+        grid.setHeight("62");
         ipDropdown = new NativeSelect();
         packetSizeDropdown = new NativeSelect();
         CheckBox numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
@@ -70,29 +67,18 @@ public class PingWindow extends Window{
         ipDropdown.select(testNode.getDisplayedName());
         //End Test Data
         Label ipLabel = new Label("IP Address: ");
-        Label requestsLabel = new Label("Number of Requests: ");
-        Label timeoutLabel = new Label("Time-Out (seconds): ");
-        Label packetLabel = new Label("Packet Size: ");
-        TextField requestsField = new TextField();
-        TextField timeoutField = new TextField();
+        Label forcedHopLabel = new Label("Forced hop IP: ");
+        TextField forcedHopField = new TextField();
      
         grid.addComponent(ipLabel);
         grid.setComponentAlignment(ipLabel, Alignment.MIDDLE_LEFT);
         grid.addComponent(ipDropdown);
         grid.setComponentAlignment(ipDropdown, Alignment.MIDDLE_LEFT);
-        grid.addComponent(requestsLabel);
-        grid.setComponentAlignment(requestsLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(requestsField);
-        grid.setComponentAlignment(requestsField, Alignment.MIDDLE_LEFT);
-        grid.addComponent(timeoutLabel);
-        grid.setComponentAlignment(timeoutLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(timeoutField);
-        grid.setComponentAlignment(timeoutField, Alignment.MIDDLE_LEFT);
-        grid.addComponent(packetLabel);
-        grid.setComponentAlignment(packetLabel, Alignment.MIDDLE_LEFT);
-        grid.addComponent(packetSizeDropdown);
-        grid.setComponentAlignment(packetSizeDropdown, Alignment.MIDDLE_LEFT);
-        packetSizeDropdown.select("16");
+        grid.addComponent(forcedHopLabel);
+        grid.setComponentAlignment(forcedHopLabel, Alignment.MIDDLE_LEFT);
+        grid.addComponent(forcedHopField);
+        grid.setComponentAlignment(forcedHopField, Alignment.MIDDLE_LEFT);
+        
         
         numericalDataCheckBox.setValue(false);
         
@@ -104,7 +90,7 @@ public class PingWindow extends Window{
         	
         });
        
-        final Button pingButton = new Button("Ping"); 
+        final Button pingButton = new Button("Traceroute"); 
         pingButton.addListener(new Button.ClickListener() {
 
             public void buttonClick(ClickEvent event) {
@@ -128,7 +114,7 @@ public class PingWindow extends Window{
         bottomLayout.setMargin(true);
         vSplit.setFirstComponent(topLayout);
         vSplit.setSecondComponent(bottomLayout);
-        vSplit.setSplitPosition(33, UNITS_PERCENTAGE);
+        vSplit.setSplitPosition(25, UNITS_PERCENTAGE);
         vSplit.setLocked(true);
         mainLayout.addComponent(vSplit);
         mainLayout.setExpandRatio(vSplit, 1);

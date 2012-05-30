@@ -29,6 +29,7 @@ public class DefaultMenu extends Application{
     private EventsAlarmsWindow EA_Window = null;
     private ResourceGraphsWindow RG_Window = null;
     private PingWindow Ping_Window = null;
+    private TracerouteWindow Trace_Window = null;
     private Label cartman = new Label("Cartman");
     private Label butters = new Label("Butters");
     private ContextMenu cartmanMenu = new ContextMenu();
@@ -42,6 +43,7 @@ public class DefaultMenu extends Application{
     private void buildMainLayout() {
         setMainWindow(new Window("Topology Maps"));
         getMainWindow().setImmediate(true);
+        //setTheme("forms");
         mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
         mainLayout.addComponent(createMenuBar());
@@ -112,36 +114,48 @@ public class DefaultMenu extends Application{
 
         MenuBar.Command Ping_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
-                try {
-                    showPingWindow();
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
+            	showPingWindow();
             }
         };
+        
+        MenuBar.Command Trace_Select = new MenuBar.Command() {
+			
+			public void menuSelected(MenuItem selectedItem) {
+                showTracerouteWindow();
+			}
+		};
 
         MenuBar.MenuItem file = menubar.addItem("File", null);
         MenuBar.MenuItem view = menubar.addItem("View", null);
         MenuBar.MenuItem node = menubar.addItem("Node Options", null);
         node.addItem("Events/Alarms", EA_Select);
         node.addItem("Ping", Ping_Select);
+        node.addItem("Traceroute", Trace_Select);
         node.addItem("Resource Graphs", RG_Select);
         menubar.setWidth("100%");
 
         return menubar;
     }
 
-    private void buildContextMenus() {
+    private void showTracerouteWindow() {
+		getMainWindow().addWindow(getTracerouteWindow());
+	}
+
+	private Window getTracerouteWindow() {
+		if (Trace_Window == null)
+			Trace_Window = new TracerouteWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
+		return Trace_Window;
+	}
+
+	private void buildContextMenus() {
         buildCartmanMenu();
         buildButtersMenu();
     }
 
     private void buildCartmanMenu() {
-        ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
+        final ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
         final ContextMenuItem ping = cartmanMenu.addItem("Ping");
-        ContextMenuItem traceroute = cartmanMenu.addItem("Traceroute");
+        final ContextMenuItem traceroute = cartmanMenu.addItem("Traceroute");
         final ContextMenuItem eventsAlarms = cartmanMenu.addItem("Events/Alarms");
         final ContextMenuItem resourceGraphs = cartmanMenu.addItem("Resource Graphs");
         cartmanMenu.addListener(new ContextMenu.ClickListener() {
@@ -152,8 +166,12 @@ public class DefaultMenu extends Application{
                         showEventsAlarmsWindow();
                     } else if (resourceGraphs == event.getClickedItem()){
                         showResourceGraphsWindow();
-                    }else if(ping == event.getClickedItem()) {
+                    } else if (ping == event.getClickedItem()) {
                         showPingWindow();
+                    } else if (traceroute == event.getClickedItem()) {
+                    	showTracerouteWindow();
+                    } else if (nodeInfo == event.getClickedItem()) {
+                    	//TODO
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -164,7 +182,6 @@ public class DefaultMenu extends Application{
                 }
             }
         });
-        nodeInfo.setEnabled(false);
     }
 
     private void buildButtersMenu() {
