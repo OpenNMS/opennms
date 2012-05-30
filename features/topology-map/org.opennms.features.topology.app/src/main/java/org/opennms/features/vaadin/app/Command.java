@@ -1,33 +1,65 @@
 package org.opennms.features.vaadin.app;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.opennms.features.topology.api.Operation;
+
 import com.vaadin.event.Action;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
-public abstract class Command extends Action implements MenuBar.Command {
-	
-    public Command(String caption) {
-        super(caption);
-    }
+public abstract class Command extends Action implements MenuBar.Command  {
 
+    Operation m_operation;
+    Map<String, String> m_props;
     private String m_parentMenu;
     private boolean m_action = false;
     private boolean m_menu = false;
     
+    public Command(String caption, Operation operation, Map<String, String> props) {
+        super(operation.getLabel());
+        m_operation = operation;
+        m_props = props;
+    }
+    
     public boolean appliesToTarget(Object target) {
-    	return true;
+        return m_operation.enabled(asList(target));
     }
     
     public void menuSelected(MenuItem selectedItem) {
         this.doCommand(null);
     }
     
-    public abstract void doCommand(Object target);
+    public void doCommand(Object target) {
+        m_operation.execute(asList(target));
+    }
 	
-	public void undoCommand() {}
+	private List<Object> asList(Object target) {
+	    if(target instanceof Collection<?>) {
+            return new ArrayList<Object>( (Collection<?>) target);
+        }
+        
+        if(target instanceof Object[]) {
+            return  Arrays.asList( (Object[]) target);
+        }
+        
+        return Collections.singletonList(target);
+        
+    }
+
+    public void undoCommand() {
+        throw new UnsupportedOperationException("The undoCommand is not supported at this time");
+        
+    }
 	
     public String getMenuPosition() {
-        return !m_menu ? null : m_parentMenu == null ? getCaption() : m_parentMenu + "|" + getCaption();
+        String menuLocation = m_props.get(Operation.OPERATION_MENU_LOCATION);
+        return menuLocation == null ? null : menuLocation.isEmpty() ? getCaption() : menuLocation + "|" + getCaption();
     }
     
     public Command setParentMenu(String parentMenu) {
@@ -42,7 +74,8 @@ public abstract class Command extends Action implements MenuBar.Command {
     }
 
     public boolean isAction() {
-        return m_action;
+        String contextLocation = m_props.get(Operation.OPERATION_CONTEXT_LOCATION);
+        return contextLocation != null;
     }
     
     public String toString() {

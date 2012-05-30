@@ -33,6 +33,7 @@ public class CommandManager  implements Action.Handler {
         m_commandList.add(command);
     }
     
+    
     public void addCommand(Command command, boolean addToContextMenu) {
         if(addToContextMenu) {
             command.setAction();

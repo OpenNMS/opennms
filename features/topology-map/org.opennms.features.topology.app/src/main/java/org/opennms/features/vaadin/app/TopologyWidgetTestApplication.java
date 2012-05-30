@@ -3,9 +3,11 @@ package org.opennms.features.vaadin.app;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.opennms.features.topology.api.Operation;
 import org.opennms.features.vaadin.topology.AlternativeLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.ManualLayoutAlgorithm;
 import org.opennms.features.vaadin.topology.SimpleGraphContainer;
@@ -43,7 +45,470 @@ import com.vaadin.ui.Window;
 
 public class TopologyWidgetTestApplication extends Application{
 	
-	public static final String ROOT_GROUP_ID = "Network";
+	private class GetInfoCommand extends Command {
+        private GetInfoCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+            return itemId == null || m_graphContainer.getEdgeContainer().containsId(itemId);
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            getMainWindow().showNotification("This has not been implemented yet");
+        }
+    }
+
+    private class ShowMapCommand extends Command {
+        private ShowMapCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            getMainWindow().showNotification("This has not been implemented yet");
+            
+        }
+    }
+
+    private class HistoryCommand extends Command {
+        private HistoryCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            showHistoryList(m_commandManager.getHistoryList());
+        }
+    }
+
+    private class ResetCommand extends Command {
+        private ResetCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	
+            resetView();
+        }
+    }
+
+    private class OtherLayoutCommand extends Command {
+        private OtherLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
+        }
+    }
+
+    private class FRLayoutCommand extends Command {
+        private FRLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+        }
+    }
+
+    private class ISOMLayoutCommand extends Command {
+        private ISOMLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new ISOMLayoutAlgorithm());
+        }
+    }
+
+    private class KKLayoutCommand extends Command {
+        private KKLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
+        }
+    }
+
+    private class SpringLayoutCommand extends Command {
+        private SpringLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new SpringLayoutAlgorithm());
+        }
+    }
+
+    private class SimpleLayoutCommand extends Command {
+        private SimpleLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
+        }
+    }
+
+    private class TreeLayoutCommand extends Command {
+        private TreeLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new TreeLayoutAlgorithm());
+        }
+    }
+
+    private class RadialTreeLayoutCommand extends Command {
+        private RadialTreeLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new RadialTreeLayoutAlgorithm());
+        }
+    }
+
+    private class DAGLayoutCommand extends Command {
+        private DAGLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new DAGLayoutAlgorithm(CENTER_VERTEX_ID));
+        }
+    }
+
+    private class CircleLayoutCommand extends Command {
+        private CircleLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new CircleLayoutAlgorithm());
+        }
+    }
+
+    private class BalloonLayoutCommand extends Command {
+        private BalloonLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new BalloonLayoutAlgorithm(CENTER_VERTEX_ID));
+        }
+    }
+
+    private class ManualLayoutCommand extends Command {
+        private ManualLayoutCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+        	return true;
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.setLayoutAlgorithm(new ManualLayoutAlgorithm());
+        }
+    }
+
+    private class CreateGroupCommand extends Command {
+        private CreateGroupCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	return m_graphContainer.getSelectedVertexIds().size() > 0;
+        }
+
+        @Override
+        public void doCommand(Object vertexId) {
+        	String groupId = m_graphContainer.getNextGroupId();
+        	m_graphContainer.addGroup(groupId, GROUP_ICON);
+        	m_graphContainer.getVertexContainer().setParent(groupId, ROOT_GROUP_ID);
+        	
+        	for(Object itemId : m_graphContainer.getSelectedVertexIds()) {
+        		m_graphContainer.getVertexContainer().setParent(itemId, groupId);
+        	}
+        }
+    }
+
+    private class ConnectCommand extends Command {
+        private ConnectCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	return m_graphContainer.getSelectedVertexIds().size() == 2;
+        }
+
+        @Override
+        public void doCommand(Object unused) {
+        	List<Object> endPoints = new ArrayList<Object>(m_graphContainer.getSelectedVertexIds());
+        	
+        	m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), (String)endPoints.get(0), (String)endPoints.get(1));
+        }
+    }
+
+    private class RemoveVertexCommand extends Command {
+        private RemoveVertexCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
+        }
+
+        @Override
+        public void doCommand(Object vertexId) {
+        	if (vertexId == null) {
+        		System.err.println("need to handle selection!!!");
+        	} else {
+        		m_graphContainer.removeVertex(vertexId.toString());
+        		m_graphContainer.redoLayout();
+        	}
+        }
+    }
+
+    private class AddSwitchVertexCommand extends Command {
+        private AddSwitchVertexCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
+        }
+
+        @Override
+        public void doCommand(Object vertexId) {
+        	if (vertexId == null) {
+        		addRandomVertex();
+        	} else {
+        		connectNewVertexTo(vertexId.toString(), SWITCH_ICON);
+        	}
+        	m_graphContainer.redoLayout();
+        }
+    }
+
+    private class UnlockCommand extends Command {
+        private UnlockCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	if (m_graphContainer.getVertexContainer().containsId(itemId)) {
+        		Item v = m_graphContainer.getVertexContainer().getItem(itemId);
+        		return (Boolean)v.getItemProperty("locked").getValue();
+        	}
+        	return false;
+        }
+
+        @Override
+        public void doCommand(Object vertexId) {
+        	Item v = m_graphContainer.getVertexContainer().getItem(vertexId);
+        	v.getItemProperty("locked").setValue(false);
+        }
+    }
+
+    private class LockCommand extends Command {
+        private LockCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	if (m_graphContainer.getVertexContainer().containsId(itemId)) {
+        		Item v = m_graphContainer.getVertexContainer().getItem(itemId);
+        		return !(Boolean)v.getItemProperty("locked").getValue();
+        	}
+        	return false;
+        }
+
+        @Override
+        public void doCommand(Object vertexId) {
+        	Item v = m_graphContainer.getVertexContainer().getItem(vertexId);
+        	v.getItemProperty("locked").setValue(true);
+        }
+    }
+
+    private class AddVertexCommand extends Command {
+        private AddVertexCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public boolean appliesToTarget(Object itemId) {
+        	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
+        }
+
+        @Override
+        public void doCommand(Object vertexId) {
+        	if (vertexId == null) {
+        		addRandomVertex();
+        	} else {
+        		connectNewVertexTo(vertexId.toString(), SERVER_ICON);
+        	}
+        	m_graphContainer.redoLayout();
+        }
+    }
+
+    private class SaveCommand extends Command {
+        private SaveCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            m_graphContainer.save("graph.xml");
+        }
+    }
+
+    private class OpenCommand extends Command {
+        private OpenCommand(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public void doCommand(Object target) {
+            m_graphContainer.load("graph.xml");
+        }
+    }
+
+    private class RedoLayout extends Command {
+        private RedoLayout(String caption, Operation operation,
+                Map<String, String> props) {
+            super(caption, operation, props);
+        }
+
+        @Override
+        public void doCommand(Object target) {
+        	m_graphContainer.redoLayout();
+        }
+
+        @Override
+        public boolean appliesToTarget(Object target) {
+            //Applies to background as a whole
+            return target == null;
+        }
+    }
+
+    public static final String ROOT_GROUP_ID = "Network";
 	public static final String CENTER_VERTEX_ID = "center";
 	public static final String GROUP_ICON = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/group.png";
 	public static final String SERVER_ICON = "VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png";
@@ -87,390 +552,49 @@ public class TopologyWidgetTestApplication extends Application{
             }
         }, 1000, 1000);
         
-        m_commandManager.addCommand(new Command("Redo Layout") {;
-
-            @Override
-            public void doCommand(Object target) {
-            	m_graphContainer.redoLayout();
-            }
-    
-            @Override
-            public boolean appliesToTarget(Object target) {
-                //Applies to background as a whole
-                return target == null;
-            }
-        }, true);
+        m_commandManager.addCommand(new RedoLayout("Redo Layout", null, null), true);
         
-        m_commandManager.addCommand(new Command("Open") {
-
-            @Override
-            public void doCommand(Object target) {
-                m_graphContainer.load("graph.xml");
-            }
-
-        }, false, "File");
+        m_commandManager.addCommand(new OpenCommand("Open", null, null), false, "File");
         
-        m_commandManager.addCommand(new Command("Save") {
-
-            @Override
-            public void doCommand(Object target) {
-                m_graphContainer.save("graph.xml");
-            }
-
-        }, false, "File");
+        m_commandManager.addCommand(new SaveCommand("Save", null, null), false, "File");
         
-        m_commandManager.addCommand(new Command("Add Vertex") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	if (vertexId == null) {
-            		addRandomVertex();
-            	} else {
-            		connectNewVertexTo(vertexId.toString(), SERVER_ICON);
-            	}
-            	m_graphContainer.redoLayout();
-            }
-
-        }, true, "File");
+        m_commandManager.addCommand(new AddVertexCommand("Add Vertex", null, null), true, "File");
         
-        m_commandManager.addCommand(new Command("Lock") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	if (m_graphContainer.getVertexContainer().containsId(itemId)) {
-            		Item v = m_graphContainer.getVertexContainer().getItem(itemId);
-            		return !(Boolean)v.getItemProperty("locked").getValue();
-            	}
-            	return false;
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	Item v = m_graphContainer.getVertexContainer().getItem(vertexId);
-            	v.getItemProperty("locked").setValue(true);
-            }
-
-        }, true);
+        m_commandManager.addCommand(new AddSwitchVertexCommand("Add Switch Vertex", null, null), true);
         
-        m_commandManager.addCommand(new Command("Unlock") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	if (m_graphContainer.getVertexContainer().containsId(itemId)) {
-            		Item v = m_graphContainer.getVertexContainer().getItem(itemId);
-            		return (Boolean)v.getItemProperty("locked").getValue();
-            	}
-            	return false;
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	Item v = m_graphContainer.getVertexContainer().getItem(vertexId);
-            	v.getItemProperty("locked").setValue(false);
-            }
-
-        }, true);
-        m_commandManager.addCommand(new Command("Add Switch Vertex") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	if (vertexId == null) {
-            		addRandomVertex();
-            	} else {
-            		connectNewVertexTo(vertexId.toString(), SWITCH_ICON);
-            	}
-            	m_graphContainer.redoLayout();
-            }
-
-
-        }, true);
+        m_commandManager.addCommand(new RemoveVertexCommand("Remove Vertex", null, null), true, "File");
         
-        m_commandManager.addCommand(new Command("Remove Vertex") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	return itemId == null || m_graphContainer.getVertexContainer().containsId(itemId);
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	if (vertexId == null) {
-            		System.err.println("need to handle selection!!!");
-            	} else {
-            		m_graphContainer.removeVertex(vertexId.toString());
-            		m_graphContainer.redoLayout();
-            	}
-            }
-
-
-        }, true, "File");
+        m_commandManager.addCommand(new ConnectCommand("Connect", null, null), true, "File");
+        m_commandManager.addCommand(new CreateGroupCommand("Create Group", null, null), true, "Edit");
         
-        m_commandManager.addCommand(new Command("Connect") {
+        m_commandManager.addCommand(new ManualLayoutCommand("Manual Layout", null, null), false, "Edit|Layout");
 
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	return m_graphContainer.getSelectedVertexIds().size() == 2;
-            }
-
-            @Override
-            public void doCommand(Object unused) {
-            	List<Object> endPoints = new ArrayList<Object>(m_graphContainer.getSelectedVertexIds());
-            	
-            	m_graphContainer.connectVertices(m_graphContainer.getNextEdgeId(), (String)endPoints.get(0), (String)endPoints.get(1));
-            }
-
-        }, true, "File");
-        m_commandManager.addCommand(new Command("Create Group") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-            	return m_graphContainer.getSelectedVertexIds().size() > 0;
-            }
-
-            @Override
-            public void doCommand(Object vertexId) {
-            	String groupId = m_graphContainer.getNextGroupId();
-            	m_graphContainer.addGroup(groupId, GROUP_ICON);
-            	m_graphContainer.getVertexContainer().setParent(groupId, ROOT_GROUP_ID);
-            	
-            	for(Object itemId : m_graphContainer.getSelectedVertexIds()) {
-            		m_graphContainer.getVertexContainer().setParent(itemId, groupId);
-            	}
-            }
-
-        }, true, "Edit");
+        m_commandManager.addCommand(new BalloonLayoutCommand("Balloon Layout", null, null), false, "Edit|Layout|JUNG");
         
-        m_commandManager.addCommand(new Command("Manual Layout") {
+        m_commandManager.addCommand(new CircleLayoutCommand("Circle Layout", null, null), false, "Edit|Layout|JUNG");
 
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
+        m_commandManager.addCommand(new DAGLayoutCommand("DAG Layout", null, null), false, "Edit|Layout|JUNG");
 
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new ManualLayoutAlgorithm());
-			}
+        m_commandManager.addCommand(new RadialTreeLayoutCommand("Radial Tree Layout", null, null), false, "Edit|Layout|JUNG");
+        m_commandManager.addCommand(new TreeLayoutCommand("Tree Layout", null, null), false, "Edit|Layout|JUNG");
 
-        }, false, "Edit|Layout");
+        m_commandManager.addCommand(new SimpleLayoutCommand("Simple Layout", null, null), false, "Edit|Layout");
 
-        m_commandManager.addCommand(new Command("Balloon Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new BalloonLayoutAlgorithm(CENTER_VERTEX_ID));
-			}
-
-        }, false, "Edit|Layout|JUNG");
+        m_commandManager.addCommand(new SpringLayoutCommand("Spring Layout", null, null), false, "Edit|Layout|JUNG");
         
-        m_commandManager.addCommand(new Command("Circle Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new CircleLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
-        m_commandManager.addCommand(new Command("DAG Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new DAGLayoutAlgorithm(CENTER_VERTEX_ID));
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
-        m_commandManager.addCommand(new Command("Radial Tree Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new RadialTreeLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-        m_commandManager.addCommand(new Command("Tree Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new TreeLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
-        m_commandManager.addCommand(new Command("Simple Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout");
-
-        m_commandManager.addCommand(new Command("Spring Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new SpringLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
+        m_commandManager.addCommand(new KKLayoutCommand("KK Layout", null, null), false, "Edit|Layout|JUNG");
+        m_commandManager.addCommand(new ISOMLayoutCommand("ISOM Layout", null, null), false, "Edit|Layout|JUNG");
+        m_commandManager.addCommand(new FRLayoutCommand("FR Layout", null, null), false, "Edit|Layout|JUNG");
         
-        m_commandManager.addCommand(new Command("KK Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
-        m_commandManager.addCommand(new Command("ISOM Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new ISOMLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
-        m_commandManager.addCommand(new Command("FR Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
-			}
-
-        }, false, "Edit|Layout|JUNG");
-
+        m_commandManager.addCommand(new OtherLayoutCommand("Other Layout", null, null), false, "Edit|Layout");
         
-        m_commandManager.addCommand(new Command("Other Layout") {
-
-			@Override
-			public boolean appliesToTarget(Object target) {
-				return true;
-			}
-
-			@Override
-			public void doCommand(Object target) {
-				m_graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
-			}
-
-		}, false, "Edit|Layout");
+        m_commandManager.addCommand(new ResetCommand("Reset", null, null), false, null);
         
-        m_commandManager.addCommand(new Command("Reset") {
-
-            @Override
-            public boolean appliesToTarget(Object target) {
-                return true;
-            }
-
-            @Override
-            public void doCommand(Object target) {
-            	
-                resetView();
-            }
-
-        }, false, null);
+        m_commandManager.addCommand(new HistoryCommand("History", null, null), false, null);
         
-        m_commandManager.addCommand(new Command("History") {
-
-            @Override
-            public boolean appliesToTarget(Object target) {
-                return true;
-            }
-
-            @Override
-            public void doCommand(Object target) {
-                showHistoryList(m_commandManager.getHistoryList());
-            }
-
-        }, false, null);
+        m_commandManager.addCommand(new ShowMapCommand("Show Map", null, null), false, "View");
         
-        m_commandManager.addCommand(new Command("Show Map") {
-
-            @Override
-            public void doCommand(Object target) {
-                getMainWindow().showNotification("This has not been implemented yet");
-                
-            }
-
-        }, false, "View");
-        
-        m_commandManager.addCommand(new Command("Get Info") {
-
-            @Override
-            public boolean appliesToTarget(Object itemId) {
-                return itemId == null || m_graphContainer.getEdgeContainer().containsId(itemId);
-            }
-
-            @Override
-            public void doCommand(Object target) {
-                getMainWindow().showNotification("This has not been implemented yet");
-            }
-
-        }, true, "Device");
+        m_commandManager.addCommand(new GetInfoCommand("Get Info", null, null), true, "Device");
         
         
         AbsoluteLayout layout = new AbsoluteLayout();
