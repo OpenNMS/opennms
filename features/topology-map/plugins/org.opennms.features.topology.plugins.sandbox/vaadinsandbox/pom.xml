@@ -82,7 +82,6 @@
           <noServer>true</noServer>
           <port>8080</port>
           <compileReport>false</compileReport>
-          <draftCompile>true</draftCompile>
         </configuration>
         <executions>
           <execution>
