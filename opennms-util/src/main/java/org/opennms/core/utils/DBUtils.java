@@ -40,9 +40,8 @@ import java.util.Set;
  * <p>DBUtils class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
-public abstract class DBUtils {
+public class DBUtils {
     private final Set<Statement> m_statements;
     private final Set<ResultSet> m_resultSets;
     private final Set<Connection> m_connections;
