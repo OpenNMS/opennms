@@ -37,7 +37,7 @@ import java.io.Writer;
 /**
  * <p>StreamUtils class.</p>
  */
-public class StreamUtils {
+public abstract class StreamUtils {
 
     /**
      * Convenience method for reading data from a <code>Reader</code> and then

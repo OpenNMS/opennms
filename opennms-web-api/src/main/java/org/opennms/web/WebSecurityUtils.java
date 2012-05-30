@@ -44,7 +44,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @version $Id: $
  */
-public class WebSecurityUtils {
+public abstract class WebSecurityUtils {
 	
 	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	

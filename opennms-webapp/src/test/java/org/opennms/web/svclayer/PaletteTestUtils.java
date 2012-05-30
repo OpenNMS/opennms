@@ -33,7 +33,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-public class PaletteTestUtils extends Assert {
+public abstract class PaletteTestUtils extends Assert {
 
 	public static void assertPaletteItemEquals(PaletteItem expectedItem, PaletteItem actualItem) {
 		assertEquals(expectedItem.getId(), actualItem.getId());

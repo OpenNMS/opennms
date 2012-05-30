@@ -42,7 +42,7 @@ import java.util.Set;
  * @author ranger
  * @version $Id: $
  */
-public class DBUtils {
+public abstract class DBUtils {
     private final Set<Statement> m_statements;
     private final Set<ResultSet> m_resultSets;
     private final Set<Connection> m_connections;
