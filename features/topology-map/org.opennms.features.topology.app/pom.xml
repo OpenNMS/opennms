@@ -55,7 +55,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <version>${gwt.plugin.version}</version>
         <configuration>
-          <!-- <modules> <module>org.opennms.features.vaadin.topology.gwt.MyWidgetSet</module> </modules> -->
+          <!-- <modules> <module>org.opennms.features.topology.app.internal.gwt.MyWidgetSet</module> </modules> -->
           <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
           <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
         </configuration>
@@ -97,6 +97,60 @@
       
       
     </plugins>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>
+    									org.apache.karaf.tooling
+    								</groupId>
+    								<artifactId>
+    									karaf-maven-plugin
+    								</artifactId>
+    								<versionRange>
+    									[3.0.0-SNAPSHOT,)
+    								</versionRange>
+    								<goals>
+    									<goal>
+    										features-generate-descriptor
+    									</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.codehaus.mojo</groupId>
+    								<artifactId>
+    									gwt-maven-plugin
+    								</artifactId>
+    								<versionRange>
+    									[2.2.0,)
+    								</versionRange>
+    								<goals>
+    									<goal>resources</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
   </build>
 
   <dependencies>
@@ -155,6 +209,19 @@
     <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-visualization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>

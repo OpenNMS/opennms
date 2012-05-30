@@ -17,7 +17,7 @@
         <init-param>
             <description>Application widgetset</description>
             <param-name>widgetset</param-name>
-            <param-value>org.opennms.features.vaadin.topology.gwt.TopologyWidget</param-value>
+            <param-value>org.opennms.features.topology.app.internal.gwt.TopologyWidget</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
