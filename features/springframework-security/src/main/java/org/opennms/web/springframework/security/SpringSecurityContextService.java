@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.support;
+package org.opennms.web.springframework.security;
 
 import java.util.Collection;
 
-import org.opennms.web.svclayer.SecurityContextService;
+import org.opennms.web.api.SecurityContextService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

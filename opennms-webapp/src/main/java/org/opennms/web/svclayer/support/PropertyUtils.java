@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.web.svclayer.support;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.8.1
  */
-public class BeanUtils {
+public abstract class PropertyUtils {
 
     /**
      * <p>getProperties</p>
