@@ -16,6 +16,15 @@
 
   <packaging>pom</packaging>
 
+  <properties>
+    <gwt.version>2.3.0</gwt.version>
+    <gwt.plugin.version>2.2.0</gwt.plugin.version>
+    <jung.version>2.0.1</jung.version>
+    <karaf.version>2.2.7</karaf.version>
+    <vaadin.version>6.7.3</vaadin.version>
+    <validation.api.version>1.0.0.GA</validation.api.version>
+  </properties>
+
   <modules>
     <module>wrappers</module>
     <module>compiled</module>
@@ -48,6 +57,68 @@
         <optional>true</optional>
       </dependency>
       <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+        <optional>true</optional>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin</artifactId>
+        <version>${vaadin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${validation.api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${validation.api.version}</version>
+        <classifier>sources</classifier>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-api</artifactId>
+        <version>${jung.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-graph-impl</artifactId>
+        <version>${jung.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-algorithms</artifactId>
+        <version>${jung.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-visualization</artifactId>
+        <version>${jung.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.vaadin</groupId>
+        <artifactId>service</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi_R4_core</artifactId>
         <version>1.0</version>
@@ -61,7 +132,37 @@
         <scope>provided</scope>
         <optional>true</optional>
       </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.enterprise</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf.shell</groupId>
+        <artifactId>org.apache.karaf.shell.console</artifactId>
+        <version>${karaf.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>servicemix</id>
+      <name>Apache ServiceMix Repository</name>
+      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>servicemix</id>
+      <name>Apache ServiceMix Repository</name>
+      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
