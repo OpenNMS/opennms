@@ -2,25 +2,20 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
-    <relativePath>../../poms/compiled/</relativePath>
-    <groupId>org.opennms.features.topology.build</groupId>
-    <artifactId>compiled-bundle-settings</artifactId>
+    <groupId>org.opennms.features.topology</groupId>
+    <artifactId>features</artifactId>
     <version>1.11.1-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <bundle.symbolicName>org.opennms.features.topology.plugins.menu</bundle.symbolicName>
-    <bundle.namespace>org.opennms.features.topology.plugins.menu</bundle.namespace>
-  </properties>
-
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.topology.plugins</groupId>
-  <artifactId>org.opennms.features.topology.plugins.menu</artifactId>
-  <version>1.11.1-SNAPSHOT</version>
+  <groupId>org.opennms.osgi.features.topology</groupId>
+  <artifactId>all</artifactId>
 
-  <name>${bundle.symbolicName}</name>
+  <name>org.opennms.osgi.features.topology.all (OpenNMS Topology OSGi features)</name>
 
-  <packaging>bundle</packaging>
+  <description>Convenience feature for installing all topology features.</description>
+
+  <packaging>pom</packaging>
 
   <build>
     <plugins>
@@ -28,7 +23,6 @@
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
         <version>3.0.0-SNAPSHOT</version>
-        <extensions>true</extensions>
         <executions>
           <execution>
             <id>generate</id>
@@ -40,7 +34,6 @@
               <inputFile>src/main/features/features.xml.in</inputFile>
               <outputFile>target/features.xml</outputFile>
               <aggregateFeatures>true</aggregateFeatures>
-              <includeTransitiveDependency>false</includeTransitiveDependency>
             </configuration>
           </execution>
         </executions>
@@ -49,32 +42,19 @@
   </build>
 
   <dependencies>
-    <!--
-     | uncomment to add all imported (non-local) bundles to your compilation classpath
     <dependency>
-      <type>pom</type>
-      <groupId>${parent.groupId}</groupId>
-      <artifactId>provision</artifactId>
-      <optional>true</optional>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <groupId>org.opennms.osgi.features</groupId>
+      <artifactId>topology</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>provided</scope>
     </dependency>
-
     <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin</artifactId>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.shell</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
     </dependency>
   </dependencies>
 
