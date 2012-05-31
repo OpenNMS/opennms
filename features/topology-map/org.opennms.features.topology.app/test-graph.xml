@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <graph>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>a</id>
         <locked>false</locked>
         <parent>g1</parent>
@@ -10,7 +10,7 @@
         <y>100</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>b</id>
         <locked>false</locked>
         <parent>g1</parent>
@@ -19,7 +19,7 @@
         <y>50</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>c</id>
         <locked>false</locked>
         <parent>g2</parent>
@@ -28,7 +28,7 @@
         <y>150</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>d</id>
         <locked>false</locked>
         <parent>g2</parent>
@@ -37,7 +37,7 @@
         <y>100</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/server.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>e</id>
         <locked>false</locked>
         <selected>false</selected>
@@ -45,7 +45,7 @@
         <y>200</y>
     </vertex>
     <group>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/group.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/group.png</icon>
         <id>g1</id>
         <locked>false</locked>
         <selected>false</selected>
@@ -55,7 +55,7 @@
         <members>b</members>
     </group>
     <group>
-        <icon>VAADIN/widgetsets/org.opennms.features.vaadin.topology.gwt.TopologyWidget/topologywidget/images/group.png</icon>
+        <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/group.png</icon>
         <id>g2</id>
         <locked>false</locked>
         <selected>false</selected>

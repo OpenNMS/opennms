@@ -1,10 +1,11 @@
 package org.opennms.features.vaadin.topology;
 
-import static org.opennms.features.vaadin.app.TopologyWidgetTestApplication.SERVER_ICON;
-import static org.opennms.features.vaadin.app.TopologyWidgetTestApplication.GROUP_ICON;
+import static org.opennms.features.topology.app.internal.TopologyWidgetTestApplication.GROUP_ICON;
+import static org.opennms.features.topology.app.internal.TopologyWidgetTestApplication.SERVER_ICON;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 
 public class SimpleGraphContainerTest {
 
