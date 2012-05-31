@@ -2,16 +2,13 @@ package org.opennms.sandbox;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+@SuppressWarnings("serial")
 public class EventsAlarmsWindow extends Window {
 
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
