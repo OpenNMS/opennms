@@ -117,7 +117,7 @@ $ENV{'JAVA_HOME'} = $JAVA_HOME;
 
 if (not exists $ENV{'JAVA_VENDOR'}) {
 	warning("You do not have \$JAVA_VENDOR set. This is probably OK, but on some platforms");
-	warning("(or when building with OpenJDK) you might want to set it to 'Sun'.");
+	warning("(or when building with OpenJDK) you might want to set it, eg, to 'Sun' or 'openjdk'.");
 }
 
 $MAVEN_VERSION = `$MVN --version`;
