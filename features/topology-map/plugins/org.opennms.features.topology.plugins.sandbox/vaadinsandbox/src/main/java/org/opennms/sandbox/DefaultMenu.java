@@ -33,10 +33,14 @@ public class DefaultMenu extends Application{
     private ResourceGraphsWindow RG_Window = null; //Sub-window which contains an embedded browser that shows the Resource Graphs for a node.
     private PingWindow Ping_Window = null; //Sub-window which contains the functionality for Pinging a node.
     private TracerouteWindow Trace_Window = null; //Sub-window which contains the functionality for Tracerouting a node.
+    private NodeInfoWindow Info_Window = null; //Sub-window which contains the functionality for getting node information
     private Label cartman = new Label("Cartman"); //Name of the node which is displayed at the top of the Left side of the split panel.
     private Label butters = new Label("Butters"); //Name of the node which is displayed at the top of the right side of the split panel.
     private ContextMenu cartmanMenu = new ContextMenu(); //Context Menu that appears when right clicking on the left side of the split panel.
     private ContextMenu buttersMenu = new ContextMenu(); //Context Menu that appears when right clicking on the right side of the split panel.
+
+    /*Test Data*/
+    private Node testNode = new Node(34,"172.0.1.234","NC State");
 
     /**
      * The init method initializes the DefaultMenu Application and sets up the layouts and windows.
@@ -49,49 +53,57 @@ public class DefaultMenu extends Application{
      * The buildMainLayout method sets up all of the layouts and windows and adds all of 
      * the visible and invisible components of the application to the main window.
      */
-	private void buildMainLayout() {
+    private void buildMainLayout() {
         setMainWindow(new Window("Topology Maps"));
         getMainWindow().setImmediate(true);
-        
+
         mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
         mainLayout.addComponent(createMenuBar());
         mainLayout.addComponent(horizontalSplit);
-        
+
         leftLayout.setSizeFull();
         leftLayout.addComponent(cartman);
-        
+
         rightLayout.setSizeFull();
         rightLayout.addComponent(butters);
-        
+
         horizontalSplit.setFirstComponent(leftLayout);
         horizontalSplit.setSecondComponent(rightLayout);
-        
+
         buildCartmanMenu(); //Left side of split panel
         buildButtersMenu(); //Right side of split panel
-        
+
         /*Sets up a right click listener which brings up the Cartman Context menu*/
         leftLayout.addListener(new LayoutClickListener() {
 
             public void layoutClick(LayoutClickEvent event) {
                 if (LayoutClickEvent.BUTTON_RIGHT == event.getButton()) {
                     cartmanMenu.show(event.getClientX(), event.getClientY());
+                }else if(LayoutClickEvent.BUTTON_LEFT == event.getButton()) {
+                    if(event.isCtrlKey()){
+                        cartmanMenu.show(event.getClientX(), event.getClientY());
+                    }
                 }
             }
 
         });
-        
+
         /*Sets up a right click listener which brings up the Butters Context menu*/
         rightLayout.addListener(new LayoutClickListener() {
 
             public void layoutClick(LayoutClickEvent event) {
                 if (LayoutClickEvent.BUTTON_RIGHT == event.getButton()) {
                     buttersMenu.show(event.getClientX(), event.getClientY());
+                }else if(LayoutClickEvent.BUTTON_LEFT == event.getButton()) {
+                    if(event.isCtrlKey()){
+                        buttersMenu.show(event.getClientX(), event.getClientY());
+                    }
                 }
             }
 
         });
-        
+
         /* Allocate all available extra space to the horizontal split panel */
         mainLayout.setExpandRatio(horizontalSplit, 1);
 
@@ -106,7 +118,7 @@ public class DefaultMenu extends Application{
      * Listeners are also added for each option selected so that the corresponding window opens when clicked.
      * @return MenuBar component
      */
-	private MenuBar createMenuBar() {
+    private MenuBar createMenuBar() {
         final MenuBar menubar = new MenuBar();
 
         /*Sets up command for clicking on Node -> Events/Alarms option*/
@@ -142,21 +154,21 @@ public class DefaultMenu extends Application{
         /*Sets up command for clicking on Node -> Ping option*/
         MenuBar.Command Ping_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
-            	showPingWindow();
+                showPingWindow();
             }
         };
-        
+
         /*Sets up command for clicking on Node -> Traceroute option*/
         MenuBar.Command Trace_Select = new MenuBar.Command() {
-			public void menuSelected(MenuItem selectedItem) {
+            public void menuSelected(MenuItem selectedItem) {
                 showTracerouteWindow();
-			}
-		};
-		
-		/*Sets up command for clicking on Node -> Node Info option*/
-		MenuBar.Command NodeInfo_Select = new MenuBar.Command() {
-			public void menuSelected(MenuItem selectedItem) {
-				try {
+            }
+        };
+
+        /*Sets up command for clicking on Node -> Node Info option*/
+        MenuBar.Command NodeInfo_Select = new MenuBar.Command() {
+            public void menuSelected(MenuItem selectedItem) {
+                try {
                     showNodeInfoWindow();
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -165,14 +177,14 @@ public class DefaultMenu extends Application{
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-			}
-		};
+            }
+        };
 
-		/*Creates menu item dropdowns*/
+        /*Creates menu item dropdowns*/
         MenuBar.MenuItem file = menubar.addItem("File", null);
         MenuBar.MenuItem view = menubar.addItem("View", null);
         MenuBar.MenuItem node = menubar.addItem("Node Options", null);
-        
+
         /* Add options to the main Menu bar along with commands for each*/
         file.addItem("Open", null);
         file.addItem("Close", null);
@@ -187,11 +199,11 @@ public class DefaultMenu extends Application{
         return menubar;
     }
 
-	/**
-	 * The buildCartmanMenu method creates a Vaadin Context menu and adds it to the
-	 * left side of the split panel
-	 */
-	private void buildCartmanMenu() {
+    /**
+     * The buildCartmanMenu method creates a Vaadin Context menu and adds it to the
+     * left side of the split panel
+     */
+    private void buildCartmanMenu() {
         final ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
         final ContextMenuItem ping = cartmanMenu.addItem("Ping");
         final ContextMenuItem traceroute = cartmanMenu.addItem("Traceroute");
@@ -208,9 +220,9 @@ public class DefaultMenu extends Application{
                     } else if (ping == event.getClickedItem()) {
                         showPingWindow();
                     } else if (traceroute == event.getClickedItem()) {
-                    	showTracerouteWindow();
+                        showTracerouteWindow();
                     } else if (nodeInfo == event.getClickedItem()) {
-                    	//TODO
+                        showNodeInfoWindow();
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -227,7 +239,7 @@ public class DefaultMenu extends Application{
      * The buildButtersMenu method creates a Vaadin Context menu and adds it to the
      * right side of the split panel
      */
-	private void buildButtersMenu() {
+    private void buildButtersMenu() {
         final ContextMenuItem nodeInfo = buttersMenu.addItem("Node Info");
         final ContextMenuItem eventsAlarms = buttersMenu.addItem("Events/Alarms");
         final ContextMenuItem resourceGraphs = buttersMenu.addItem("Resource Graphs");
@@ -240,7 +252,7 @@ public class DefaultMenu extends Application{
                     } else if (resourceGraphs == event.getClickedItem()){
                         showResourceGraphsWindow();
                     } else if (nodeInfo == event.getClickedItem()) {
-                    	showNodeInfoWindow();
+                        showNodeInfoWindow();
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -252,16 +264,19 @@ public class DefaultMenu extends Application{
             }
         });
     }
-    
+
     /**
      * The getNodeInfoWindow method initializes the Node Info Sub-window and returns it.
      * @return NodeInfoWindow component
+     * @throws MalformedURLException 
      */
-	private Window getNodeInfoWindow() {
-		//TODO Add NodeInfoWindow initializer
-		return null;
-	}
-	
+    private Window getNodeInfoWindow() throws MalformedURLException {
+        if(Info_Window == null){
+            Info_Window = new NodeInfoWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
+        }
+        return Info_Window;
+    }
+
     /**
      * The showNodeInfoWindow method adds the Node info Sub-window to the main window of
      * the Application and makes it visible to the user.
@@ -270,10 +285,10 @@ public class DefaultMenu extends Application{
      * @throws MalformedURLException
      */
     private void showNodeInfoWindow() throws IllegalArgumentException, NullPointerException, MalformedURLException{
-		getMainWindow().addWindow(getNodeInfoWindow());
-	}
+        getMainWindow().addWindow(getNodeInfoWindow());
+    }
 
-	/**
+    /**
      * The getEventsAlarmsWindow method initializes the Events and Alarms Sub-window and returns it.
      * @return EventsAlarmsWindow component
      * @throws MalformedURLException
@@ -301,11 +316,11 @@ public class DefaultMenu extends Application{
      */
     private Window getPingWindow() {
         if (Ping_Window == null) {
-            Ping_Window = new PingWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
+            Ping_Window = new PingWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         }
         return  Ping_Window;
     }
-    
+
     /**
      * The showPingWindow method adds the Ping Sub-window to the main window of
      * the Application and makes it visible to the user.
@@ -313,24 +328,24 @@ public class DefaultMenu extends Application{
     private void showPingWindow(){
         getMainWindow().addWindow(getPingWindow());
     }
-    
+
     /**
      * The getTracerouteWindow method initializes the Traceroute Sub-window and returns it.
      * @return TracerouteWindow component
      */
-	private Window getTracerouteWindow() {
-		if (Trace_Window == null)
-			Trace_Window = new TracerouteWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
-		return Trace_Window;
-	}
-    
+    private Window getTracerouteWindow() {
+        if (Trace_Window == null)
+            Trace_Window = new TracerouteWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
+        return Trace_Window;
+    }
+
     /**
      * The showTracerouteWindow method adds the Traceroute Sub-window to the
      * main window of the Application and makes it visible to the user.
      */
     private void showTracerouteWindow() {
-		getMainWindow().addWindow(getTracerouteWindow());
-	}
+        getMainWindow().addWindow(getTracerouteWindow());
+    }
 
     /**
      * The getResourceGraphsWindow method initializes the Resource Graph Sub-window and returns it.
@@ -339,7 +354,7 @@ public class DefaultMenu extends Application{
      */
     private ResourceGraphsWindow getResourceGraphsWindow() throws MalformedURLException{
         if (RG_Window == null)
-            RG_Window = new ResourceGraphsWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
+            RG_Window = new ResourceGraphsWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return RG_Window;
     }
 
@@ -353,5 +368,5 @@ public class DefaultMenu extends Application{
     private void showResourceGraphsWindow() throws IllegalArgumentException, NullPointerException, MalformedURLException{
         getMainWindow().addWindow(getResourceGraphsWindow());
     }
-    
+
 }

@@ -2,11 +2,13 @@ package org.opennms.sandbox;
 
 public class Node {
     
-    String name;
-    String ip;
+    private String name;
+    private String ip;
     private String displayedName;
+    private int nodeID;
     
-    public Node(String ip, String name) {
+    public Node(int nodeID, String ip, String name) {
+        this.nodeID = nodeID;
         this.ip = ip;
         this.name = name;
         displayedName = name;
@@ -34,5 +36,13 @@ public class Node {
 
     public String getDisplayedName() {
         return displayedName;
+    }
+
+    public void setNodeID(int nodeID) {
+        this.nodeID = nodeID;
+    }
+
+    public int getNodeID() {
+        return nodeID;
     }
 }

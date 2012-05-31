@@ -30,9 +30,10 @@ public class TracerouteWindow extends Window{
     private Node testNode = null; //Node object containing all of its relative information.
     private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
     
-    public TracerouteWindow (float width, float height){
+    public TracerouteWindow (Node testNode, float width, float height){
         
     	/*Sets up window settings*/
+        this.testNode = testNode;
     	setCaption("Traceroute");
         setImmediate(true);
         setResizable(false);
@@ -42,8 +43,6 @@ public class TracerouteWindow extends Window{
         setPositionX((int)((1.0 - windowWidth/width)/2.0 * width));
         setPositionY((int)((1.0 - windowHeight/height)/2.0 * height));
         
-        /*Test Data*/
-        testNode = new Node("172.0.1.234","Test Node");
 
         /*Initialize the header of the Sub-window with the name of the selected Node*/
         String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + testNode.getName() + "</div>";
@@ -141,12 +140,12 @@ public class TracerouteWindow extends Window{
 		ipDropdown.removeAllItems();
 		if (numOutput == false){ 
 			/*Switching to IP Address format*/
-			testNode.setDisplayedName(testNode.ip);
+			testNode.setDisplayedName(testNode.getIPAddress());
 	        ipDropdown.addItem(testNode.getDisplayedName());
 	        numOutput = true;
 		} else { 
 			/*Switching to Name format*/
-			testNode.setDisplayedName(testNode.name);
+			testNode.setDisplayedName(testNode.getName());
             ipDropdown.addItem(testNode.getDisplayedName());
             numOutput = false;
 		}

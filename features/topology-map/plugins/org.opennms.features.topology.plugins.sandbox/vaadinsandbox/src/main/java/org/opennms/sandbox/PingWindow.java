@@ -34,12 +34,15 @@ public class PingWindow extends Window{
     /**
      * The PingWindow method constructs a PingWindow component with a size proportionate to the 
      * width and height of the main window.
+     * @param testNode 
      * @param width Width of Main window
      * @param height Height of Main window
      */
-	public PingWindow (float width, float height){
-        
+	public PingWindow (Node testNode, float width, float height){
+       
+	    
     	/*Sets up window settings*/
+	this.testNode = testNode;
     	setCaption("Ping");
         setImmediate(true);
         setResizable(false);
@@ -49,8 +52,6 @@ public class PingWindow extends Window{
         setPositionX((int)((1.0 - windowWidth/width)/2.0 * width));
         setPositionY((int)((1.0 - windowHeight/height)/2.0 * height));
         
-        /*Test Data*/
-        testNode = new Node("172.0.1.234","Test Node");
 
         /*Initialize the header of the Sub-window with the name of the selected Node*/
         String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + testNode.getName() + "</div>";
@@ -170,12 +171,12 @@ public class PingWindow extends Window{
 		ipDropdown.removeAllItems();
 		if (numOutput == false){ 
 			/*Switching to IP Address format*/
-			testNode.setDisplayedName(testNode.ip);
+			testNode.setDisplayedName(testNode.getIPAddress());
 	        ipDropdown.addItem(testNode.getDisplayedName());
 	        numOutput = true;
 		} else { 
 			/*Switching to Name format*/
-			testNode.setDisplayedName(testNode.name);
+			testNode.setDisplayedName(testNode.getName());
             ipDropdown.addItem(testNode.getDisplayedName());
             numOutput = false;
 		}

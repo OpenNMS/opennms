@@ -16,7 +16,7 @@ public class ResourceGraphsWindow extends Window {
 	private final URL rgURL = new URL("http://demo.opennms.org/opennms/graph/index.jsp");
 	private Embedded rgBrowser = new Embedded("", new ExternalResource(rgURL));
 	
-	public ResourceGraphsWindow (float width, float height) throws MalformedURLException{
+	public ResourceGraphsWindow (Node testNode, float width, float height) throws MalformedURLException{
 		int browserWidth = (int)(sizePercentage * width), browserHeight = (int)(sizePercentage * height);
 		int windowWidth = browserWidth + widthCushion, windowHeight = browserHeight + heightCushion;
 		
