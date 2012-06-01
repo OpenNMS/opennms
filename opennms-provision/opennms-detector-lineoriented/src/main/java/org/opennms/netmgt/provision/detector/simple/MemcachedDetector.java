@@ -31,15 +31,15 @@ package org.opennms.netmgt.provision.detector.simple;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>MemcachedDetector class.</p>
  *
  * @author agalue
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class MemcachedDetector extends AsyncLineOrientedDetector {
+public class MemcachedDetector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "Memcached";
     private static final int DEFAULT_PORT = 11211;
@@ -64,7 +64,8 @@ public class MemcachedDetector extends AsyncLineOrientedDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit(){
+    @Override
+    protected void onInit(){
         send(request("version"), startsWith("VERSION"));
     }
     

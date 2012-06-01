@@ -69,12 +69,12 @@ public interface PausableFiber extends Fiber {
      * a <code>PAUSED</code> status after changing its internal state, if
      * applicable.
      */
-    public void pause();
+    void pause();
 
     /**
      * This method is used to resume a suspeneded <code>Fiber</code>. If the
      * thread is already running then this method should have no effect on the
      * current <code>Fiber</code>.
      */
-    public void resume();
+    void resume();
 }

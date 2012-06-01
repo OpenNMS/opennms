@@ -56,6 +56,7 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     	super(configFile, dsName);
     }
 
+    @Override
     protected void initializePool(final JdbcDataSource dataSource) throws SQLException {
     	m_dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
     	m_dataSource.setName(dataSource.getName());
@@ -76,68 +77,85 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     	m_dataSource.setFairQueue(true);
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
     	return m_dataSource.getConnection();
     }
 
+    @Override
     public String getUrl() {
     	return m_dataSource.getUrl();
     }
 
+    @Override
     public void setUrl(final String url) {
+    	validateJdbcUrl(url);
     	m_dataSource.setUrl(url);
     }
 
+    @Override
     public String getUser() {
     	return m_dataSource.getUsername();
     }
 
+    @Override
     public void setUser(final String user) {
     	m_dataSource.setUsername(user);
     }
 
+    @Override
     public DataSource getDataSource() {
     	return m_dataSource;
     }
 
+    @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
     	return m_dataSource.getConnection(username, password);
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
     	return m_dataSource.getLogWriter();
     }
 
+    @Override
     public void setLogWriter(final PrintWriter out) throws SQLException {
         m_dataSource.setLogWriter(out);
     }
 
+    @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
         m_dataSource.setLoginTimeout(seconds);
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
         return m_dataSource.getLoginTimeout();
     }
 
+    @Override
     public void close() throws SQLException {
     	super.close();
     	LogUtils.infof(this, "Closing Tomcat DBCP pool.");
     	m_dataSource.close();
     }
 
+    @Override
 	public void setIdleTimeout(final int idleTimeout) {
 		LogUtils.warnf(this, "Tomcat DBCP doesn't have the concept of a generic idle timeout.  Ignoring.");
 	}
 
+    @Override
 	public void setMinPool(final int minPool) {
 		m_dataSource.setInitialSize(minPool);
 	}
 
+    @Override
 	public void setMaxPool(final int maxPool) {
 		LogUtils.warnf(this, "Tomcat DBCP doesn't have the concept of a maximum pool.  Ignoring.");
 	}
 
+    @Override
 	public void setMaxSize(final int maxSize) {
 		m_dataSource.setMaxActive(maxSize);
 	}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
+        <report id="defaultCalendarReport" display-name="default calendar report"
+                report-service="availabilityReportService" description="standard opennms report in calendar format" />
+        <report id="defaultClassicReport" display-name="default classic report"
+                report-service="availabilityReportService" description="standard opennms report in tabular format" />
+        <report id="sample-report" display-name="sample JasperReport" online="true"
+                report-service="jasperReportService" description="sample Jasper report using jdbc datasource" />
+        <report id="trivial-report" display-name="trivial JasperReport" online="true"
+                report-service="jasperReportService" description="trivial Jasper report using null datasource" />
+	    <report id="parameter-test" display-name="parameter test report" online="true"
+                report-service="jasperReportService" description="trivial Jasper Report with parameters using null datasource" />
+        <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
+                report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
+        <report id="Response-Time-Summary-Report" display-name="Response Time Summary for node" online="true" 
+                report-service="jasperReportService" description="Response Time by node across one or more surveillance categories" />
+        <report id="Node-Availability-Report" display-name="Availability by node" online="true" 
+                report-service="jasperReportService" description="Availability by node across one or more surveillance categories" />
+        <report id="Availability-Summary-Report" display-name="Availability Summary -Default configuration for past 7 Days" online="true" 
+                report-service="jasperReportService" description="Availability summary across one or more surveillance categories" />
+        <report id="Response-Time-Report" display-name="Response time by node" online="true" 
+                report-service="jasperReportService" description="Response time by node across one or more surveillance categories" />
+        <report id="Serial-Interface-Utilization-Summary" display-name="Serial Serial Interface Utilization Summary" online="true" 
+                report-service="jasperReportService" description="Serial Serial Interface Utilization Summary" />
+        <report id="Total-Bytes-Transferred-By-Interface" display-name="Total Bytes Transferred by Interface " online="true" 
+                report-service="jasperReportService" description="Total Bytes Transferred by Interface" />
+        <report id="Average-Peak-Traffic-Rates" display-name="Average and Peak Traffic rates for Nodes by Interface" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface" />
+        <report id="Interface-Availability-Report" display-name="Interface Availability Report" online="true" 
+                report-service="jasperReportService" description="Interface Availability Report, show interface availability for interfaces with outages within time range" />
+        <report id="Snmp-Interface-Oper-Availability" display-name="Snmp Interface Availability Report" online="true" 
+                report-service="jasperReportService" description="Snmp Interface Availability Report, shows availability for snmp interfaces with interfaceOperDown outages within the time range" />
+        <report id="AssetMangementMaintExpired" display-name="Maintenance contracts expired" online="true" 
+                report-service="jasperReportService" description="Asset management report shows all maintenance contracts expired." />
+        <report id="AssetMangementMaintStrategy" display-name="Maintenance contracts strategy" online="true" 
+                report-service="jasperReportService" description="Asset management report focused on maintenance strategy.Forecast and overview for 12 month and informations about age of nodes and maintenance contracts" />
+        <report id="Event-Analysis" display-name="Event Analysis report" online="true" 
+                report-service="jasperReportService" description="Analyse events based on events source and quantity by nodes." />
+<!--	<report id="DiskUsageForCTX" display-name="C: Disk Usage for CTX servers" online="true" 
+	report-service="jasperReportService" description="C: Disk Usage for CTX servers" />-->
+</database-reports>

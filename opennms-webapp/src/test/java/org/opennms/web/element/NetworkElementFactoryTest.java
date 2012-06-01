@@ -38,12 +38,14 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.resource.Vault;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -63,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NetworkElementFactoryTest  {
+public class NetworkElementFactoryTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -76,10 +78,17 @@ public class NetworkElementFactoryTest  {
 
     @Autowired
     SimpleJdbcTemplate m_jdbcTemplate;
+
+    @Autowired
+    NodeDao m_nodeDao;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @Before
     public void setUp() {
-        Vault.setDataSource(m_dataSource);
         m_dbPopulator.populateDatabase();
     }
     
@@ -103,15 +112,19 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @Transactional
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNodesWithIpLikeOneInterface() throws Exception {
+        // setUp() creates nodes by default, start with a clean slate
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         
-        assertEquals("node count in DB", 7, m_jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
-        assertEquals("ipInterface count in DB", 20, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
-        
-        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
+        final List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.size());
     }
     
@@ -119,14 +132,17 @@ public class NetworkElementFactoryTest  {
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetNodesWithIpLikeTwoInterfaces() throws Exception {
+        // setUp() creates nodes by default, start with a clean slate
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.2', 'M')");
         
-        assertEquals("node count in DB", 7, m_jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
-        assertEquals("ipInterface count in DB", 21, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
-
-        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
+        final List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.size());
     }
 

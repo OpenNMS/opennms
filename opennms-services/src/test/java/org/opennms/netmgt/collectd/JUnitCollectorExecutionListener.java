@@ -113,6 +113,8 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         if (config == null) {
             return;
         }
+        
+        boolean shouldIgnoreNonExistent = testContext.getTestException() != null;
 
         if (config.anticipateFiles().length > 0 ||
                 config.anticipateRrds().length > 0) {
@@ -132,23 +134,33 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             }
         }
 
+        Exception e = null;
         if (m_fileAnticipator.isInitialized()) {
-            m_fileAnticipator.deleteExpected(true);
+        	try {
+        		m_fileAnticipator.deleteExpected(shouldIgnoreNonExistent);
+        	} catch (Throwable t) {
+        		e = new RuntimeException(t);
+        	}
         }
 
-        deleteChildDirectories(m_snmpRrdDirectory);
+        deleteResursively(m_snmpRrdDirectory);
         m_fileAnticipator.tearDown();
+        
+        if (e != null) {
+        	throw e;
+        }
     }
-
-    private static void deleteChildDirectories(File directory) {
-        for (File f : directory.listFiles()) {
-            if (f.isDirectory()) {
-                deleteChildDirectories(f);
-                if (f.list().length == 0) {
-                    f.delete();
-                }
+    
+    private static void deleteResursively(File directory) {
+    	if (!directory.exists()) return;
+    	
+    	if (directory.isDirectory()) {
+    		for (File f : directory.listFiles()) {
+                deleteResursively(f);
             }
         }
+    	
+    	directory.delete();
     }
 
     private static JUnitCollector findCollectorAnnotation(TestContext testContext) {

@@ -110,6 +110,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_serviceRegistry, "The serviceRegistry must be set");
         Assert.notNull(m_serviceInterface, "The serviceInterface must be set");

@@ -1,3 +1,40 @@
+opennms (1.11.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 11:21:00 -0400
+
+opennms (1.10.3-1) stable; urgency=high
+
+  * New upstream release.  Includes a fix for a potential deadlock in provisiond.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 May 2012 17:01:00 -0400
+
+opennms (1.10.2-1) stable; urgency=high
+
+  * New upstream release.  Includes a fix to reduce the number of open filehandles
+  when using provisiond.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 10:53:00 -0400
+
+opennms (1.10.1-1) stable; urgency=medium
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 09 Apr 2012 09:42:00 -0400
+
+opennms (1.10.0-2) stable; urgency=low
+
+  * Fix inclusion of etc-pristine in -core package
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 08 Feb 2012 12:42:00 -0400
+
+opennms (1.10.0-1) unstable; urgency=high
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 19 Jan 2012 17:50:00 -0400
+
 opennms (1.9.93-1) unstable; urgency=low
 
   * New upstream release.
@@ -89,6 +126,24 @@ opennms (1.9.0-1) unstable; urgency=low
   * New upstream release.
 
  -- Benjamin Reed <ranger@opennms.org>  Tue, 10 Aug 2010 11:42:00 -0500
+
+opennms (1.8.17-2) unstable; urgency=low
+
+  * Fix makedeb.sh for source builds.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 03 Feb 2012 16:41:00 -0400
+
+opennms (1.8.17-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 19 Jan 2012 11:33:00 -0400
+
+opennms (1.8.16-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Nov 2011 14:14:00 -0500
 
 opennms (1.8.15-1) unstable; urgency=low
 

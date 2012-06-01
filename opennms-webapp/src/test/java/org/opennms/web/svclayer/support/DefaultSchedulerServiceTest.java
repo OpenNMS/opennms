@@ -36,22 +36,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
-import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.JobDetailBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.test.MockRequestContext;
@@ -74,9 +73,6 @@ public class DefaultSchedulerServiceTest implements InitializingBean {
     private SchedulerFactoryBean m_schedulerFactory;
     
     @Autowired
-    private JobDetailBean m_jobDetail;
- 
-    @Autowired
     private ReportWrapperService m_reportWrapperService;
     
     Scheduler m_scheduler;
@@ -98,13 +94,10 @@ public class DefaultSchedulerServiceTest implements InitializingBean {
         m_scheduler = (Scheduler) m_schedulerFactory.getScheduler();
         
     }
-
+    
     @Override
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_schedulerService);
-        Assert.assertNotNull(m_schedulerFactory);
-        Assert.assertNotNull(m_jobDetail);
-        Assert.assertNotNull(m_reportWrapperService);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
     
     @Test

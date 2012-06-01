@@ -32,6 +32,11 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsSeverityEditor;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.PrimaryTypeEditor;
+import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
@@ -71,9 +76,12 @@ public class BeanUtils {
      * @return a T object.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getPathValue(Object bean, String path, Class<T> expectedClass) {
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
-        Class<?> propType = wrapper.getPropertyType(path);
+    public static <T> T getPathValue(final Object bean, final String path, final Class<T> expectedClass) {
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
+        wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
+        wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
+        wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
+        final Class<?> propType = wrapper.getPropertyType(path);
         if (propType == null) {
             // we were unable to find the property
             Assert.notNull(propType, "propType in BeanUtils is null path: " + path); //for debug purposes

@@ -48,6 +48,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
@@ -55,7 +56,6 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.util.StringUtils;
 
@@ -74,7 +74,7 @@ public class JRobinRrdStrategyTest {
         // Make sure that AWT headless mode is enabled
         System.setProperty("java.awt.headless", "true");
         
-        MockLogAppender.setupLogging();
+        MockLogAppender.setupLogging(true, "DEBUG");
         
         m_strategy = new JRobinRrdStrategy();
 
@@ -145,9 +145,11 @@ public class JRobinRrdStrategyTest {
         	t = e;
         }
         assertNotNull(t);
-    	assertTrue(t.getMessage().contains("Could not open /response/fe80:0000:0000:0000:0000:0000:0000:0000%5/dns.jrb"));
+        
+    	assertTrue("message was " + t.getMessage(), t.getMessage().contains("Could not open "));
+    	assertTrue("message was " + t.getMessage(), t.getMessage().contains("fe80:0000:0000:0000:0000:0000:0000:0000%5"));
     }
-    
+
     @Test
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
@@ -218,7 +220,7 @@ public class JRobinRrdStrategyTest {
         command = new String[] {
                 "--start=" + (startTime - 300),
                 "--end=" + (endTime + 300),
-                "DEF:baz=" + rrdFile.getAbsolutePath() + ":bar:AVERAGE",
+                "DEF:baz=" + rrdFile.getAbsolutePath().replace("\\", "\\\\") + ":bar:AVERAGE",
                 "VDEF:avg=baz,AVERAGE",
                 "VDEF:min=baz,MIN",
                 "VDEF:max=baz,MAX",
@@ -250,7 +252,7 @@ public class JRobinRrdStrategyTest {
         command = new String[] {
                 "--start=" + (startTime - 300),
                 "--end=" + (endTime + 300),
-                "DEF:baz=" + rrdFile.getAbsolutePath() + ":bar:AVERAGE",
+                "DEF:baz=" + rrdFile.getAbsolutePath().replace("\\", "\\\\") + ":bar:AVERAGE",
                 "CDEF:bazX1=baz,1,*",
                 "CDEF:bazX1P0=bazX1,0,+",
                 "VDEF:avg=bazX1,AVERAGE",

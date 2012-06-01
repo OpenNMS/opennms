@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.jmx.client;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class Jsr160Client extends JMXClient {
         
         m_parameterMap.put("port",           port);
         m_parameterMap.put("timeout", timeout);
-        return m_parameterMap;
+        return Collections.unmodifiableMap(m_parameterMap);
     }
 
     /** {@inheritDoc} */

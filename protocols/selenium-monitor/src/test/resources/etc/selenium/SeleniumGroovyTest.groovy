@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
@@ -26,6 +27,7 @@ class SeleniumGroovyTest  {
     
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging(true, "DEBUG");
         driver = new HtmlUnitDriver();
         driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     }

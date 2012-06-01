@@ -31,11 +31,12 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
@@ -127,7 +128,7 @@ public class OnmsNodeRequisition {
         visitor.completeNode(this);
     }
     
-    private class OnmsNodeBuilder extends AbstractRequisitionVisitor {
+    private static class OnmsNodeBuilder extends AbstractRequisitionVisitor {
         private NetworkBuilder bldr = new NetworkBuilder();
         
         public OnmsNode getNode() {
@@ -150,13 +151,13 @@ public class OnmsNodeRequisition {
             if (ipAddr == null || "".equals(ipAddr)) {
                 bldr.clearInterface();
                 final String msg = String.format("Found interface on node %s with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
-                log().error(msg);
+                LogUtils.errorf(this, msg);
                 return;
             }
 
             final InterfaceBuilder ifBldr = bldr.addInterface(ipAddr);
             ifBldr.setIsManaged(ifaceReq.getStatus() == 3 ? "U" : "M");
-            ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary());
+            ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary().getCode());
             
         }
 
@@ -250,6 +251,18 @@ public class OnmsNodeRequisition {
      */
     public String getCity() {
         return m_node.getCity();
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getParentForeignSource()
+     */
+    /**
+     * <p>getParentForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getParentForeignSource() {
+        return m_node.getParentForeignSource();
     }
 
     /* (non-Javadoc)

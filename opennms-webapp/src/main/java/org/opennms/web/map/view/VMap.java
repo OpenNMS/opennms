@@ -28,12 +28,11 @@
 
 package org.opennms.web.map.view;
 
-import java.util.List;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.web.map.db.DbMap;
 
@@ -45,12 +44,12 @@ import org.opennms.web.map.db.DbMap;
  * @since 1.8.1
  */
 final public class VMap extends DbMap {
-    Hashtable<String, VElement> elements = new Hashtable<String, VElement>();
+    private final Map<String, VElement> elements = new ConcurrentHashMap<String, VElement>();
     
-    List<VLink> links = new ArrayList<VLink>();
+    private final List<VLink> links = new ArrayList<VLink>();
     
-    String createTimeString;
-    String lastModifiedTimeString;
+    private String createTimeString;
+    private String lastModifiedTimeString;
     
     /**
      *  Create a new VMap with empty name.

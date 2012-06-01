@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2012-02-27T21:56:42.927Z" foreign-source="pgsql-cluster" date-stamp="2012-02-27T21:56:39.835Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="pgvip-slave.somemediathing.net" foreign-id="1330379559529" building="pgsql-cluster">
+        <interface status="1" snmp-primary="S" ip-addr="10.0.8.66" descr="">
+            <monitored-service service-name="Postgres-dev_staging"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="pgvip-master.somemediathing.net" foreign-id="1330379381245" building="pgsql-cluster" parent-foreign-source="postgres" parent-foreign-id="1241674181872" parent-node-label="barbacoa.somemediathing.net">
+        <interface status="1" snmp-primary="S" ip-addr="10.0.8.65" descr="">
+            <monitored-service service-name="Postgres-dev_staging"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="db4.somemediathing.net" foreign-id="1330379198788" building="pgsql-cluster">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.61" descr="">
+            <monitored-service service-name="heartbeat_resource"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="db3.somemediathing.net" foreign-id="1330378978648" building="pgsql-cluster">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.8.60" descr="">
+            <monitored-service service-name="MySQL"/>
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="somethingsvn_utilweb"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="heartbeat"/>
+            <monitored-service service-name="heartbeat_resource"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+    </node>
+</model-import>

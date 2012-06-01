@@ -39,9 +39,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -54,7 +56,7 @@ import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
@@ -73,7 +75,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class IfIndexNullTest {
+public class IfIndexNullTest implements InitializingBean {
     
     @Autowired
     private Provisioner m_provisioner;
@@ -90,6 +92,11 @@ public class IfIndexNullTest {
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();

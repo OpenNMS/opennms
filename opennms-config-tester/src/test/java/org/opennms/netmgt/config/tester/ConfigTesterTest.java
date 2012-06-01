@@ -28,23 +28,6 @@
 
 package org.opennms.netmgt.config.tester;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -53,6 +36,15 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 
 public class ConfigTesterTest {
@@ -555,12 +547,18 @@ public class ConfigTesterTest {
     public void testXmppConfiguration() {
         ignoreConfigFile("xmpp-configuration.properties");
     }
+
+	@Test
+    public void testRemoteRepositoyConfig() {
+	    ignoreConfigFile("remote-repository.xml");
+    }
+    
 	
 	@Test
 	public void testAllConfigs() {
 		ConfigTester.main(new String[] { "-a" });
 	}
-
+	
 	private void testConfigFile(String file) {
 		/*
 		 * Add to the tested list first, so if we get a test failure

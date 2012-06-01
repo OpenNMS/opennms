@@ -46,6 +46,8 @@ import org.opennms.acl.model.GroupDTO;
 import org.opennms.acl.service.GroupService;
 import org.opennms.acl.ui.validator.GroupValidator;
 import org.opennms.acl.util.Constants;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -69,7 +71,7 @@ import org.springframework.web.bind.support.SessionStatus;
  */
 @Controller
 @RequestMapping("/group.edit.page")
-public class GroupFormController {
+public class GroupFormController implements InitializingBean {
 
     /**
      * <p>processSubmit</p>
@@ -121,4 +123,9 @@ public class GroupFormController {
     @Qualifier("groupValidator")
     private GroupValidator groupValidator;
     private final String groupForm = "group/form";
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

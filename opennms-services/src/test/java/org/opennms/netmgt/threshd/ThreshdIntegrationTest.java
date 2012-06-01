@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import org.apache.log4j.Level;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
@@ -37,7 +38,6 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

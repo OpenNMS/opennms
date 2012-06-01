@@ -32,14 +32,16 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
 import org.opennms.protocols.snmp.SnmpEndOfMibView;
 import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpNoSuchInstance;
+import org.opennms.protocols.snmp.SnmpNoSuchObject;
 import org.opennms.protocols.snmp.SnmpNull;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
@@ -49,7 +51,7 @@ import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpTimeTicks;
 import org.opennms.protocols.snmp.SnmpUInt32;
 
-class JoeSnmpValue implements SnmpValue {
+class JoeSnmpValue extends AbstractSnmpValue {
     SnmpSyntax m_value;
     
     JoeSnmpValue(final SnmpSyntax value) {
@@ -94,6 +96,18 @@ class JoeSnmpValue implements SnmpValue {
             m_value = new SnmpOctetString(bytes);
             break;
         }
+        case SnmpSMI.SMI_ENDOFMIBVIEW: {
+        	m_value = new SnmpEndOfMibView();
+        	break;
+        }
+        case SnmpSMI.SMI_NOSUCHINSTANCE: {
+        	m_value = new SnmpNoSuchInstance();
+        	break;
+        }
+        case SnmpSMI.SMI_NOSUCHOBJECT: {
+        	m_value = new SnmpNoSuchObject();
+        	break;
+        }
         case SnmpSMI.SMI_NULL: {
             m_value = new SnmpNull();
             break;
@@ -118,6 +132,9 @@ class JoeSnmpValue implements SnmpValue {
         case SnmpSMI.SMI_OPAQUE:
         case SnmpSMI.SMI_STRING:
             return ((SnmpOctetString)m_value).getString();
+        case SnmpSMI.SMI_ENDOFMIBVIEW:
+        case SnmpSMI.SMI_NOSUCHINSTANCE:
+        case SnmpSMI.SMI_NOSUCHOBJECT:
         case SnmpSMI.SMI_NULL:
             return new byte[0];
         default:
@@ -262,7 +279,7 @@ class JoeSnmpValue implements SnmpValue {
             return true;
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
-            return SnmpUtils.allBytesDisplayable(getBytes());
+            return allBytesDisplayable(getBytes());
         }
         
         return false;

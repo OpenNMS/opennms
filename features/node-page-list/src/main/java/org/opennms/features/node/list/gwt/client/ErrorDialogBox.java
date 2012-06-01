@@ -70,8 +70,8 @@ public class ErrorDialogBox extends PopupPanel {
 
     public void setErrorMessageAndShow(String errorMsg) {
         m_errorLabel.setText(errorMsg);
-        m_errorLabel.setHeight("100%");
-        setHeight((52 + m_caption.getOffsetHeight() + 52) + "px");
+        m_errorLabel.setHeight("100px");
+        setHeight((52 + m_caption.getOffsetHeight() + 100) + "px");
         show();
     }
     

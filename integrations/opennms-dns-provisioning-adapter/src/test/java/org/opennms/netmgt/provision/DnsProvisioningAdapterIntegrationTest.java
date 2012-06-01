@@ -39,18 +39,17 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 /**
  * Test class for DNS Provisioning
@@ -74,19 +73,14 @@ public class DnsProvisioningAdapterIntegrationTest implements InitializingBean {
     private NodeDao m_nodeDao;
     
     @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
-    
-    @Autowired
     private DatabasePopulator m_populator;
 
     @Autowired
     private DnsProvisioningAdapter m_adapter; 
 
+    @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_nodeDao, "Autowiring failed, node dao is null");
-        Assert.notNull(m_mockEventIpcManager, "Autowiring failed, ipc manager is null");
-        Assert.notNull(m_populator, "Autowiring failed, db populater is null");
-        Assert.notNull(m_adapter, "Autowiring failed, adapter is null");
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

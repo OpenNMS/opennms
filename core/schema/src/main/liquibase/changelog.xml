@@ -30,7 +30,6 @@
 	<include file="1.6.0/changelog.xml" />
 	<include file="1.7.0/changelog.xml" />
 	<include file="1.7.1/changelog.xml" />
-	<!-- no schema changes in 1.7.2 -->
 	<include file="1.7.3/changelog.xml" /> 
 	<include file="1.7.4/changelog.xml" />
 	<include file="1.7.5/changelog.xml" />
@@ -50,6 +49,8 @@
 	<include file="1.9.90/changelog.xml"/>
 	<include file="1.9.91/changelog.xml"/>
 	<include file="1.9.92/changelog.xml"/>
+	<include file="1.10.1/changelog.xml"/>
+	<include file="1.10.4/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

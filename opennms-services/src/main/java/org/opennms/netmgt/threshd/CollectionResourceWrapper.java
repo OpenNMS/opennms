@@ -301,6 +301,10 @@ public class CollectionResourceWrapper {
             log().warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
             return null;
         }
+        // TODO Is this ID unique ? Here is a suggestion:
+        // String id = "node[" + m_nodeId + '].resourceType[' + m_resource.getResourceTypeName()
+        //   + '].instance[' + m_resource.getInstance() + "].label[" + m_resource.getLabel()
+        //   + "].metric[" + ds + "]"
         String id = m_resource.toString() + "." + ds;
         Double current = Double.parseDouble(numValue);
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
@@ -357,8 +361,16 @@ public class CollectionResourceWrapper {
                 }
                 //Get the interval between when this current collection was taken, and the last time this
                 // value was collected (and had a counter rate calculated for it)
+                // FIXME If interval == 0 then, the returned value will be infinite.
+                //       This is the problem experienced by some customers.
+                //       This has been always related with SNMP Interface resources.
+                //       Here is a temporal workaround to avoid the threshold messages.
                 long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
-                m_localCache.put(id, delta / interval);
+                if (interval > 0) {
+                    m_localCache.put(id, delta / interval);
+                } else {
+                    log().error("getCounterValue: invalid interval rate for " + id + ". The last valid value for the metric was " + last.value + " at " + last.timestamp + ". This value will be used instead.");
+                }
             }
         }
         return m_localCache.get(id);
@@ -371,11 +383,15 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getLabelValue(String ds) {
-        if (ds == null)
+        if (ds == null || ds.equals(""))
             return null;
         if (log().isDebugEnabled()) {
             log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
         }
+        if ("nodeid".equals(ds))
+            return Integer.toString(m_nodeId);
+        if ("ipaddress".equals(ds))
+            return m_hostAddress;
         if ("iflabel".equals(ds))
             return getIfLabel();
         String value = null;
@@ -392,6 +408,12 @@ public class CollectionResourceWrapper {
             }
         } catch (Throwable e) {
             log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
+        }
+        if (value == null) {
+            log().debug("getLabelValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
+            Double d = getAttributeValue(ds);
+            if (d != null)
+                value = d.toString();
         }
         return value;
     }

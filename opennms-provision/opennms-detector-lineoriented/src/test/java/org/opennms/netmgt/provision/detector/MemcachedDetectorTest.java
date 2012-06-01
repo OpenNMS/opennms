@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -40,25 +40,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.MemcachedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class MemcachedDetectorTest {
+public class MemcachedDetectorTest implements InitializingBean {
 
     @Autowired
     private MemcachedDetector m_detector;
 
     private SimpleServer m_server = null;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() throws Exception{
@@ -94,9 +100,9 @@ public class MemcachedDetectorTest {
         try {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(100);
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
-            future.awaitUninterruptibly();
+            future.awaitForUninterruptibly();
             assertTrue(future.isServiceDetected());
         } finally {
             m_server.stopServer();
@@ -121,9 +127,9 @@ public class MemcachedDetectorTest {
         try {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(100);
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
-            future.awaitUninterruptibly();
+            future.awaitForUninterruptibly();
             assertFalse(future.isServiceDetected());
         } finally {
             m_server.stopServer();

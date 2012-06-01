@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.sms.monitor.internal.MobileSequenceConfigBuilder;
 import org.opennms.sms.monitor.internal.MobileSequenceExecution;
@@ -69,7 +70,9 @@ public class MobileMsgSequenceBuilderTest {
         
         m_session = new MobileSequenceSession(m_tracker);
         
-        m_coordinator = new DefaultTaskCoordinator("MobileMsgSequenceBuilderTest", Executors.newSingleThreadExecutor());
+        m_coordinator = new DefaultTaskCoordinator("MobileMsgSequenceBuilderTest", Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory("MobileMsgSequenceBuilderTest", 1, false)
+        ));
 
         System.err.println("=== STARTING TEST ===");
     }

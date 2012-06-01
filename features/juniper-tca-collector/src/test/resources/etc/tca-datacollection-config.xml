@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<tca-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/tca-datacollection">
+  <tca-collection name="default">
+    <rrd>
+		<rra>RRA:AVERAGE:0.5:1:3600</rra>
+		<rra>RRA:AVERAGE:0.5:300:288</rra>
+		<rra>RRA:MIN:0.5:300:288</rra>
+		<rra>RRA:MAX:0.5:300:288</rra>
+		<rra>RRA:AVERAGE:0.5:900:2880</rra>
+		<rra>RRA:MIN:0.5:900:2880</rra>
+		<rra>RRA:MAX:0.5:900:2880</rra>
+		<rra>RRA:AVERAGE:0.5:3600:4300</rra>
+		<rra>RRA:MIN:0.5:3600:4300</rra>
+		<rra>RRA:MAX:0.5:3600:4300</rra>
+	</rrd>
+  </tca-collection>
+</tca-datacollection-config>

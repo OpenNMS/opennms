@@ -37,13 +37,12 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.config.modelimport.ModelImport;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -65,7 +64,7 @@ public class MockForeignSourceRepositoryTest {
     public void setUp() {
         MockLogAppender.setupLogging();
         m_repository = new MockForeignSourceRepository();
-        m_defaultForeignSourceName = new ModelImport().getForeignSource();
+        m_defaultForeignSourceName = "imported:";
     }
     
     private Requisition createRequisition() throws Exception {

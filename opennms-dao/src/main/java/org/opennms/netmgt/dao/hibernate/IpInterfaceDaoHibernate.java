@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

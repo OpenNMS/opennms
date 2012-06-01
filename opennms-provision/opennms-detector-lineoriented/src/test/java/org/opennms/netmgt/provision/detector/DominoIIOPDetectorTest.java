@@ -37,11 +37,10 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -77,20 +76,20 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
     public void testDetectorSuccessTokenPort() throws UnknownHostException {
         //m_detector.setPort(8080);
         //m_detector.init();
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
     
     @Test
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(10000);
         m_detector.init();
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
     
     @Test
     public void testDetectorFailNoHost() throws UnknownHostException {
         m_detector.init();
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("1.1.1.1"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("1.1.1.1")));
     }
     
     @Test
@@ -98,7 +97,7 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
 //        m_detector.setIorPort(1000);
 //        m_detector.setPort(80);
 //        m_detector.init();
-//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 
     /* (non-Javadoc)

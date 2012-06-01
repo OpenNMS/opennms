@@ -33,10 +33,12 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -170,7 +172,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      * The RunnableConsumerThreadPool that runs updaters that interpret and
      * update the data
      */
-    private RunnableConsumerThreadPool m_updaterPool;
+    private ExecutorService m_updaterPool;
 
     /**
      * The DataSender
@@ -510,12 +512,15 @@ public final class RTCManager extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        m_updaterPool = new RunnableConsumerThreadPool("RTC Updater Pool", 0.6f, 1.0f, rFactory.getUpdaters());
+        m_updaterPool = Executors.newFixedThreadPool(
+            rFactory.getUpdaters(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), rFactory.getUpdaters(), false)
+        );
 
         if (log().isDebugEnabled())
             log().debug("Created updater pool");
 
-        m_eventReceiver = new BroadcastEventProcessor(m_updaterPool.getRunQueue());
+        m_eventReceiver = new BroadcastEventProcessor(m_updaterPool);
         if (log().isDebugEnabled())
             log().debug("Created event receiver");
 
@@ -538,11 +543,6 @@ public final class RTCManager extends AbstractServiceDaemon {
 		//
         // Start all the threads
         //
-        if (log().isDebugEnabled()) {
-            log().debug("Starting updater pool");
-        }
-
-        m_updaterPool.start();
 
         if (log().isDebugEnabled()) {
             log().debug("Starting data sender ");
@@ -569,7 +569,7 @@ public final class RTCManager extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("DataSender shutdown");
 
-            m_updaterPool.stop();
+            m_updaterPool.shutdown();
             if (log().isDebugEnabled())
                 log().debug("Updater pool shutdown");
 
@@ -612,7 +612,7 @@ public final class RTCManager extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("sending shutdown to updaters");
 
-            m_updaterPool.stop();
+            m_updaterPool.shutdown();
 
             if (log().isDebugEnabled())
                 log().debug("RTC Updaters shutdown");

@@ -34,23 +34,22 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.DNSEntry;
-import org.opennms.core.test.annotations.DNSZone;
-import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.test.dns.annotations.DNSEntry;
+import org.opennms.core.test.dns.annotations.DNSZone;
+import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 import org.xbill.DNS.Lookup;
@@ -80,7 +79,7 @@ public class DnsMonitorTest {
     
     @Test
     public void testIPV6Response() throws UnknownHostException {
-        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("::1"), "DNS");
@@ -98,7 +97,7 @@ public class DnsMonitorTest {
     @Test
     // type not found is still considered a valid response with the default response codes
     public void testNotFound() throws UnknownHostException {
-        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
@@ -116,7 +115,7 @@ public class DnsMonitorTest {
     @Test
     // type not found is still considered a valid response with the default response codes
     public void testNotFoundWithCustomRcode() throws UnknownHostException {
-        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
@@ -134,7 +133,7 @@ public class DnsMonitorTest {
     
     @Test
     public void testUnrecoverable() throws UnknownHostException {
-        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("192.168.1.120"), "DNS");
@@ -150,7 +149,7 @@ public class DnsMonitorTest {
     
     @Test
     public void testDNSIPV4Response() throws UnknownHostException {
-        final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");

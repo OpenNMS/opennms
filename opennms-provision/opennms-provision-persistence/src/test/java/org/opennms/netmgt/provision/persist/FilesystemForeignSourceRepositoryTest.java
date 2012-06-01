@@ -40,13 +40,14 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
@@ -58,17 +59,22 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/testForeignSourceContext.xml"
 })
 @JUnitConfigurationEnvironment
-public class FilesystemForeignSourceRepositoryTest {
+public class FilesystemForeignSourceRepositoryTest implements InitializingBean {
     private String m_defaultForeignSourceName;
 
     @Autowired
     @Qualifier("pending")
     private ForeignSourceRepository m_foreignSourceRepository;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_defaultForeignSourceName = new ModelImport().getForeignSource();
+        m_defaultForeignSourceName = "imported:";
     }
 
     private Requisition createRequisition() throws Exception {

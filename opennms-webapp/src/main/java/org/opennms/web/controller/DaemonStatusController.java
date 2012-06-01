@@ -32,8 +32,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.ServiceInfo;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,10 +50,15 @@ import org.springframework.web.servlet.ModelAndView;
  */
 //@Controller
 //@RequestMapping("/daemonstatus.htm")
-public class DaemonStatusController {
+public class DaemonStatusController implements InitializingBean {
 
     @Autowired
 	private DaemonStatusService daemonStatusService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
 	protected Map<String, Collection<ServiceInfo>> referenceData() throws Exception {
 		Map<String, Collection<ServiceInfo>> referenceData = new HashMap<String, Collection<ServiceInfo>>();

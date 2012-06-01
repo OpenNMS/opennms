@@ -36,17 +36,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -57,7 +51,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpeException;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
-import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -293,33 +286,13 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
      * @throws java.io.IOException if any.
      */
     protected Socket wrapSocket(Socket socket, boolean useSsl) throws IOException {
-    	if (! useSsl) {
+    	if (!useSsl) {
     		return socket;
+    	} else {
+    	    // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
+    	    // benefits of SSL, but it's how NRPE rolls so we have to play along.
+    	    return SocketUtils.wrapSocketInSslContext(socket, ADH_CIPHER_SUITES);
     	}
     	
-        SSLSocketFactory sslSF = null;
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = null;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, tm, new java.security.SecureRandom());
-        } catch (NoSuchAlgorithmException e) {
-            log().error("wrapSocket: Error wrapping socket, throwing runtime exception..."+e);
-            throw new IllegalStateException("No such algorithm in SSLSocketFactory: "+e);
-        } catch (KeyManagementException e) {
-            log().error("wrapSocket: Error wrapping socket, throwing runtime exception..."+e);
-            throw new IllegalStateException("Key management exception in SSLSocketFactory: "+e);
-        }
-        sslSF = sslContext.getSocketFactory();
-        Socket wrappedSocket;
-        InetAddress inetAddress = socket.getInetAddress();
-        String hostAddress = InetAddressUtils.str(inetAddress);
-        int port = socket.getPort();
-        wrappedSocket = sslSF.createSocket(socket, hostAddress, port, true);
-        SSLSocket sslSocket = (SSLSocket)wrappedSocket;
-        // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
-        // benefits of SSL, but it's how NRPE rolls so we have to play along.
-        sslSocket.setEnabledCipherSuites(ADH_CIPHER_SUITES);
-        return wrappedSocket;
     }
 }

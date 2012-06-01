@@ -2,13 +2,14 @@
 
 use Cwd qw(abs_path);
 use File::Basename qw(dirname);
+use File::Spec;
 
 # include script functions
 use vars qw(
 	$PREFIX
 );
 $PREFIX = abs_path(dirname($0));
-require($PREFIX . "/bin/functions.pl");
+require(File::Spec->catfile($PREFIX, 'bin', 'functions.pl'));
 
 
 if (not grep { $_ =~ /^[^-]/ } @ARGS) {

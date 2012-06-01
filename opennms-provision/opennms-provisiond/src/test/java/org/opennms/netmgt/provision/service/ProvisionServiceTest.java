@@ -39,12 +39,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -202,8 +203,9 @@ public class ProvisionServiceTest implements InitializingBean {
         MockLogAppender.setupLogging();
     }
 
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_provService);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

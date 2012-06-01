@@ -1,8 +1,9 @@
-<?xml version="1.0"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms-provision</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-lineoriented</artifactId>
@@ -12,6 +13,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.novell.ldap</groupId>
@@ -26,24 +28,29 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-mock-simpleserver</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

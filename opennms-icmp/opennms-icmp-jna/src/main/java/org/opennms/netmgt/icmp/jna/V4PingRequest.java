@@ -52,7 +52,28 @@ class V4PingRequest extends ICMPEchoPacket {
         setType(Type.EchoRequest);
         setCode(0);
     }
-    
+
+    public V4PingRequest(int id, int seqNum, long threadId, int packetSize) {
+        super(packetSize);
+        
+        // header fields
+        setType(Type.EchoRequest);
+        setCode(0);
+        setIdentifier(id);
+        setSequenceNumber(seqNum);
+        
+        // data fields
+        setThreadId(threadId);
+        setCookie();
+        // timestamp is set later
+
+        // fill buffer with 'interesting' data
+        ByteBuffer buf = getContentBuffer();
+        for(int b = DATA_LENGTH; b < buf.limit(); b++) {
+            buf.put(b, (byte)b);
+        }
+    }
+
     public V4PingRequest(int id, int seqNum, long threadId) {
         super(PACKET_LENGTH);
         

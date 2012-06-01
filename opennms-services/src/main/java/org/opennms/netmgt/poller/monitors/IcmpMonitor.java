@@ -96,8 +96,9 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             //
             int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
+            int packetSize = ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKET_SIZE);
             
-            rtt = PingerFactory.getInstance().ping(host, timeout, retries);
+            rtt = PingerFactory.getInstance().ping(host, timeout, retries,packetSize);
         } catch (Throwable e) {
             log.debug("failed to ping " + host, e);
         }

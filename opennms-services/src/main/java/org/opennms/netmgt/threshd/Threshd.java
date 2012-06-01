@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -48,13 +48,9 @@ import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
@@ -93,11 +89,6 @@ public final class Threshd extends AbstractServiceDaemon {
     private volatile boolean m_schedulingCompleted = false;
 
     /**
-     * Reference to the JMS event proxy for sending events.
-     */
-    private final EventProxy m_proxy;
-
-    /**
      * Reference to the event processor
      */
     private volatile BroadcastEventProcessor m_receiver;
@@ -115,18 +106,8 @@ public final class Threshd extends AbstractServiceDaemon {
     Threshd() {
     	super("OpenNMS.Threshd");
         m_scheduler = null;
-        m_svcThresholders = Collections.synchronizedMap(new TreeMap<String, ServiceThresholder>());
+        m_svcThresholders = new ConcurrentSkipListMap<String, ServiceThresholder>();
         m_thresholdableServices = Collections.synchronizedList(new LinkedList<ThresholdableService>());
-
-        m_proxy = new EventProxy() {
-            public void send(Event e) {
-                EventIpcManagerFactory.getIpcManager().sendNow(e);
-            }
-
-            public void send(Log l) {
-                EventIpcManagerFactory.getIpcManager().sendNow(l);
-            }
-        };
     }
 
     /**
@@ -142,7 +123,7 @@ public final class Threshd extends AbstractServiceDaemon {
         //
         // Load up an instance of each thresholder from the config
         // so that the event processor will have them for
-        // new incomming events to create collectable service objects.
+        // new incoming events to create collectable service objects.
         //
         initializeThresholders();
 
@@ -317,15 +298,6 @@ public final class Threshd extends AbstractServiceDaemon {
      */
     public LegacyScheduler getScheduler() {
         return m_scheduler;
-    }
-
-    /**
-     * Returns reference to the event proxy
-     *
-     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
-     */
-    public EventProxy getEventProxy() {
-        return m_proxy;
     }
 
     /**

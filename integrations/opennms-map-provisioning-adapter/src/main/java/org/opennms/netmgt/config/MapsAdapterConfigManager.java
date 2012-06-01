@@ -631,7 +631,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                     }
                 }
             }
-            return csubmaps;
+            return Collections.unmodifiableMap(csubmaps);
         } finally {
             getReadLock().unlock();
         }
@@ -653,7 +653,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                     }
                 }
             }
-            return celements;
+            return Collections.unmodifiableMap(celements);
         } finally {
             getReadLock().unlock();
         }

@@ -28,49 +28,36 @@
 
 package org.opennms.web.springframework.security;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UserDetailsService;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.Assert;
 
-/**
- * <p>OpenNMSUserDetailsService class.</p>
- */
-public class OpenNMSUserDetailsService implements UserDetailsService {
+public class OpenNMSUserDetailsService implements UserDetailsService, InitializingBean {
 	private SpringSecurityUserDao m_userDao;
 	
+	public void afterPropertiesSet() throws Exception {
+	    Assert.notNull(m_userDao);
+	}
+
 	/** {@inheritDoc} */
-	public UserDetails loadUserByUsername(String username)
-		throws UsernameNotFoundException, DataAccessException {
-		if (m_userDao == null) {
-			// XXX there must be a better way to do this
-			throw new IllegalStateException("usersDao parameter must be set to a UsersDao bean");
-		}
-		
-		UserDetails userDetails = m_userDao.getByUsername(username);
+	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {
+	    final UserDetails userDetails = m_userDao.getByUsername(username);
 		
 		if (userDetails == null) {
-			throw new UsernameNotFoundException("User test_user is not a valid user");
+			throw new UsernameNotFoundException("Unable to locate " + username + " in the userDao");
 		}
 		
 		return userDetails;
 	}
 
-	/**
-	 * <p>setUserDao</p>
-	 *
-	 * @param userDao a {@link org.opennms.web.springframework.security.SpringSecurityUserDao} object.
-	 */
-	public void setUserDao(SpringSecurityUserDao userDao) {
+	public void setUserDao(final SpringSecurityUserDao userDao) {
 		m_userDao = userDao;
 		
 	}
 
-	/**
-	 * <p>getUserDao</p>
-	 *
-	 * @return a {@link org.opennms.web.springframework.security.SpringSecurityUserDao} object.
-	 */
 	public SpringSecurityUserDao getUserDao() {
 		return m_userDao;
 	}

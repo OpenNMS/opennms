@@ -261,7 +261,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
 		
 		sRackUnitHight.addErrorValidator(new StringAsIntegerValidator());
 		sNumpowersupplies.addErrorValidator(new StringAsIntegerValidator());
-		sInputpower.addErrorValidator(new StringAsIntegerValidator());
+		sInputpower.addWarningValidator(new StringAsIntegerValidator());
 		initUiElementList();
 	}
 

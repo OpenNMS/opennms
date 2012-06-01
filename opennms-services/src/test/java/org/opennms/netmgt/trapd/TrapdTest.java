@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.net.InetAddress;
 
 import javax.annotation.Resource;
@@ -39,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.TrapdConfigFactory;
@@ -85,8 +84,7 @@ public class TrapdTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_trapd);
-        assertNotNull(m_mockEventIpcManager);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

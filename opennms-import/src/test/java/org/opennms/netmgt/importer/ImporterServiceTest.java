@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.importer;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
@@ -36,14 +35,15 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,9 +66,9 @@ public class ImporterServiceTest implements InitializingBean {
     @Autowired
     private ImporterService m_daemon;
 
+    @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_eventIpcMgr);
-        assertNotNull(m_daemon);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

@@ -1,16 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
   <name>OpenNMS Configuration</name>
   <build>
     <plugins>
+      <!-- don't generate eventconf.xsd for now, we have some issues with validation...
       <plugin>
-        <groupId>org.opennms.core.build</groupId>
+        <groupId>com.sun.tools.jxc.maven2</groupId>
+        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <destdir>${project.build.directory}/xsds</destdir>
+          <srcdir>${basedir}/src/main/java</srcdir>
+          <verbose>false</verbose>
+          <includes>
+            <include>org/opennms/netmgt/xml/eventconf/*.java</include>
+          </includes>
+          <schemas>
+            <schema>
+              <namespace>http://xmlns.opennms.org/xsd/eventconf</namespace>
+              <file>eventconf.xsd</file>
+            </schema>
+          </schemas>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>

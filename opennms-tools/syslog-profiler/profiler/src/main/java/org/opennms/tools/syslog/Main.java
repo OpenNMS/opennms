@@ -45,10 +45,10 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.vmmgr.Invoker;
 import org.opennms.netmgt.vmmgr.InvokerService;
 

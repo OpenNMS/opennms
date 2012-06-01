@@ -37,14 +37,12 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -62,14 +60,12 @@ public class SnmpDetectorTest implements ApplicationContextAware {
 	private SnmpDetector m_detector;
     private ApplicationContext m_applicationContext;
     private InetAddress m_testIpAddress;
-    private DetectorMonitor m_detectorMonitor;
     
     @Before
     public void setUp() throws InterruptedException, UnknownHostException {
         MockLogAppender.setupLogging();
 
         m_testIpAddress = InetAddressUtils.addr(TEST_IP_ADDRESS);
-        m_detectorMonitor = new NullDetectorMonitor();
 
         if(m_detector == null) {
             m_detector = getDetector(SnmpDetector.class);
@@ -82,23 +78,23 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         m_detector.setForceVersion("snmpv1");
-        assertTrue(m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
+        assertTrue(m_detector.isServiceDetected(m_testIpAddress));
     }
     
     @Test
     public void testIsExpectedValue() throws UnknownHostException {
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
-        assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
+        assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
     }
     
     @Test
     public void testIsExpectedValueNoVbValue() throws UnknownHostException {
-        assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
+        assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
     }
     
     @Test
      public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
-         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
+         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
          
      }
 

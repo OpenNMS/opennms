@@ -29,7 +29,6 @@
 package org.opennms.web.outage.filter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -41,15 +40,16 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.WebOutageRepository;
 import org.springframework.beans.factory.InitializingBean;
@@ -107,11 +107,9 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
         m_dbPopulator.getOutageDao().flush();
     }
     
-    public void afterPropertiesSet() {
-        assertNotNull(m_appContext);
-        assertNotNull(m_dbPopulator);
-        assertNotNull(m_daoOutageRepo);
-        assertNotNull(m_jdbcOutageRepo);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
     
     @Test

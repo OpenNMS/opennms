@@ -71,7 +71,6 @@ public class EventConfData extends Object {
      * OpenNMS internal events faster(in cases where there are multiple masks
      * for the same UEI)
      */
-    // private Hashtable m_ueiToKeyListMap;
     private LinkedHashMap<String, List<EventKey>> m_ueiToKeyListMap;
 
     /**

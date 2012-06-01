@@ -31,7 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -124,7 +125,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      * The map of service parameters. These parameters are mapped by the
      * composite key <em>(package name, service name)</em>.
      */
-    private static Map<String,Map<?,?>> SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap<String,Map<?,?>>());
+    private static Map<String,Map<?,?>> SVC_PROP_MAP = new ConcurrentSkipListMap<String,Map<?,?>>();
 
     private Threshd m_threshd;
 
@@ -148,7 +149,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         m_status = ServiceThresholder.THRESHOLDING_SUCCEEDED;
 
         m_threshd = threshd;
-        m_proxy = threshd.getEventProxy();
+        m_proxy = EventIpcManagerFactory.getIpcManager();
         m_scheduler = threshd.getScheduler();
         m_thresholder = threshd.getServiceThresholder(svcName);
         m_updates = new ThresholderUpdates();
@@ -179,7 +180,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         m_svcPropKey = m_package.getName() + "." + m_service.getName();
         synchronized (SVC_PROP_MAP) {
             if (!SVC_PROP_MAP.containsKey(m_svcPropKey)) {
-                Map<String,String> m = Collections.synchronizedMap(new TreeMap<String,String>());
+                Map<String,String> m = new ConcurrentSkipListMap<String,String>();
                 for (final Parameter p : m_service.getParameterCollection()) {
                     m.put(p.getKey(), p.getValue());
                 }
@@ -379,7 +380,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
     }
 
     Map<?,?> getPropertyMap() {
-        return (Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey);
+        return Collections.unmodifiableMap((Map<?,?>) SVC_PROP_MAP.get(m_svcPropKey));
     }
 
     /**

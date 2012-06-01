@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -66,8 +65,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfigDao {
-    private static final Pattern s_digitsPattern = Pattern.compile("^.*?\\d+.*?$"); 
-    
+
     private String m_configDirectory;
 
     // have we validated the config since last reloading?
@@ -296,7 +294,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                 throw m_validationException;
             }
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     public RrdRepository getRrdRepository(final String collectionName) {
@@ -554,7 +552,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
             collectionGroupMap.put(collection.getName(), groupMap);
         }
-        return collectionGroupMap;
+        return Collections.unmodifiableMap(collectionGroupMap);
     }
 
     private void validateResourceTypes(final Set<String> allowedResourceTypes) {
@@ -575,7 +573,12 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 	                    if (instance == null)                            continue;
                         if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
                         if (allowedResourceTypes.contains(instance))     continue;
-	                    if (s_digitsPattern.matcher(instance).matches()) continue;
+	                    try {
+	                        // Check to see if the value is a non-negative integer
+	                        if (Integer.parseInt(instance.trim()) >= 0) {
+	                            continue;
+	                        }
+	                    } catch (NumberFormatException e) {}
 
 	                    // XXX this should be a better exception
 	                    throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);

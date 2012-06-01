@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,12 +33,29 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.springframework.security.Authentication,
-		org.opennms.core.resource.Vault
+		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.DBUtils,
+		java.sql.Connection
 	"
 %>
 
 <%
     boolean role = request.isUserInRole(Authentication.ROLE_ADMIN);
+    
+    final DBUtils d = new DBUtils();
+    String dbName;
+    String dbVersion;
+    try {
+      Connection conn = Vault.getDbConnection();
+      d.watch(conn);
+      dbName = Vault.getDbConnection().getMetaData().getDatabaseProductName();
+      dbVersion = Vault.getDbConnection().getMetaData().getDatabaseProductVersion();
+   	} catch (Exception e) {
+   	  dbName = "Unknown";
+      dbVersion = "Unknown";
+   	} finally {
+   	  d.cleanUp();
+   	}
 %> 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -83,14 +100,22 @@
   <tr>
     <td class="standardheader">User Agent:</td>
     <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
-  </tr>    
+  </tr>
+  <tr>
+    <td class="standardheader">Database Type:</td>
+    <td class="standard"><%=dbName%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Database Version:</td>
+    <td class="standard"><%=dbVersion%></td>
+  </tr>
 </table>
 <hr />
 <h3>License and Copyright</h3>
 <div class="boxWrapper">
 <p>
   The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
-  distributed here, is copyright &copy; 2002-2011
+  distributed here, is copyright &copy; 2002-2012
   <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>.
   <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
   trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

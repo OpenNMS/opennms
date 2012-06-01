@@ -90,6 +90,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         if (m_applicationDao == null) {
             throw new IllegalStateException("applicationDao property not set");

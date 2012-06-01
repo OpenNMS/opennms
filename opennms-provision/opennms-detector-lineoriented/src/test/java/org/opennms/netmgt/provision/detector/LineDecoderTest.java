@@ -36,14 +36,12 @@ import java.io.OutputStream;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetector;
+import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetectorMinaImpl;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author Donald Desloge
@@ -92,7 +90,7 @@ public class LineDecoderTest {
         }
     }
     
-    public static class TestDetector extends AsyncLineOrientedDetector{
+    public static class TestDetector extends AsyncLineOrientedDetectorMinaImpl {
 
         public TestDetector() {
             super("POP3", 110, 5000, 1);
@@ -116,6 +114,7 @@ public class LineDecoderTest {
 
         m_server = new TestServer() {
             
+            @Override
             public void onInit() {
                 setBanner("+OK");
                 addResponseHandler(contains("QUIT"), shutdownServer("+OK"));
@@ -138,41 +137,38 @@ public class LineDecoderTest {
         
         m_detector = createDetector(m_server.getLocalPort());
         m_detector.setIdleTime(100);
-        assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     
-    @Ignore
     @Test
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
         
         m_detector = createDetector(m_server.getLocalPort());
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
         
     }
     
-    @Ignore
     @Test
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
         m_detector = createDetector(m_server.getLocalPort());
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
         
     }
     
-    @Ignore
     @Test
     public void testDetectorFailWrongPort() throws Exception{
         
         m_detector = createDetector(9000);
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
     
-    private TestDetector createDetector(int port) {
+    private static TestDetector createDetector(int port) {
         TestDetector detector = new TestDetector();
         detector.setServiceName("TEST");
         detector.setTimeout(1000);
@@ -181,9 +177,9 @@ public class LineDecoderTest {
         return detector;
     }
     
-    private boolean  doCheck(DetectFuture future) throws Exception {
+    private static boolean doCheck(DetectFuture future) throws Exception {
         
-        future.await();
+        future.awaitFor();
         
         return future.isServiceDetected();
     }

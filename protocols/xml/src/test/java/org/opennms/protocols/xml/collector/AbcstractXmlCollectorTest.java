@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
+import org.jrobin.core.Datasource;
+import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,7 +52,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -156,6 +158,27 @@ public abstract class AbcstractXmlCollectorTest {
         collectionSet.visit(persister);
         
         Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());
+    }
+    
+    /**
+     * Validates a JRB.
+     * <p>It assumes storeByGroup=true</p>
+     * 
+     * @param file the JRB file instance
+     * @param dsnames the array of data source names
+     * @param dsvalues the array of data source values
+     * @throws Exception the exception
+     */
+    public void validateJrb(File file, String[] dsnames, Double[] dsvalues) throws Exception {
+        Assert.assertTrue(file.exists());
+        RrdDb jrb = new RrdDb(file);
+        Assert.assertEquals(dsnames.length, jrb.getDsCount());
+        for (int i = 0; i < dsnames.length; i++) {
+            Datasource ds = jrb.getDatasource(dsnames[i]);
+            Assert.assertNotNull(ds);
+            Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
+        }
+
     }
 
     /**

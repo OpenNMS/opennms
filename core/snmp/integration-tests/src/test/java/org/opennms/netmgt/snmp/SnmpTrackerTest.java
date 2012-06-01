@@ -42,12 +42,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -56,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestData1.properties")
-public class SnmpTrackerTest {
+public class SnmpTrackerTest implements InitializingBean {
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
@@ -176,6 +178,11 @@ public class SnmpTrackerTest {
         walker.waitFor();
     }
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();

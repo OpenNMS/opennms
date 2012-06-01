@@ -29,11 +29,11 @@
 
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
@@ -41,11 +41,11 @@ import org.opennms.netmgt.provision.detector.simple.HttpDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
 import org.opennms.netmgt.provision.detector.simple.LdapDetector;
+import org.opennms.netmgt.provision.detector.simple.LdapsDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,40 +63,46 @@ public class DetectorWiringTest implements InitializingBean {
     
     @Autowired
     @Qualifier(value="org.opennms.netmgt.provision.detector.simple.HttpDetector")
+    @SuppressWarnings("unused")
     private HttpDetector m_httpDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private Pop3Detector m_pop3Detector;
     @Autowired 
+    @SuppressWarnings("unused")
     private CitrixDetector m_citrixDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private DominoIIOPDetector m_dominoIIOPDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private FtpDetector m_ftpDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private HttpsDetector m_httpsDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private ImapDetector m_imapDetector;
     @Autowired 
+    @Qualifier(value="org.opennms.netmgt.provision.detector.simple.LdapDetector")
+    @SuppressWarnings("unused")
     private LdapDetector m_ldapDetector;
     @Autowired 
+    @SuppressWarnings("unused")
+    private LdapsDetector m_ldapsDetector;
+    @Autowired 
+    @SuppressWarnings("unused")
     private NrpeDetector m_nrpeDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private SmtpDetector m_smtpDetector;
     @Autowired 
+    @SuppressWarnings("unused")
     private TcpDetector m_tcpDetector;
 
-    public void afterPropertiesSet() {
-        assertNotNull(m_httpDetector);
-        assertNotNull(m_pop3Detector);
-        assertNotNull(m_citrixDetector);
-        assertNotNull(m_dominoIIOPDetector);
-        assertNotNull(m_ftpDetector);
-        assertNotNull(m_httpsDetector);
-        assertNotNull(m_imapDetector);
-        assertNotNull(m_ldapDetector);
-        assertNotNull(m_nrpeDetector);
-        assertNotNull(m_smtpDetector);
-        assertNotNull(m_tcpDetector);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

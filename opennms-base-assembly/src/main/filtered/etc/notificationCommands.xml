@@ -91,7 +91,7 @@
     </command>
     <command binary="false">
         <name>callWorkPhone</name>
-        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <execute>org.opennms.netmgt.notifd.asterisk.AsteriskOriginateNotificationStrategy</execute>
         <comment>class for calling via Asterisk for notifications</comment>
         <argument streamed="false">
             <switch>-d</switch>
@@ -120,7 +120,7 @@
     </command>
     <command binary="false">
         <name>callMobilePhone</name>
-        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <execute>org.opennms.netmgt.notifd.asterisk.AsteriskOriginateNotificationStrategy</execute>
         <comment>class for calling via Asterisk for notifications</comment>
         <argument streamed="false">
             <switch>-d</switch>
@@ -149,7 +149,7 @@
     </command>
     <command binary="false">
         <name>callHomePhone</name>
-        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <execute>org.opennms.netmgt.notifd.asterisk.AsteriskOriginateNotificationStrategy</execute>
         <comment>class for calling via Asterisk for notifications</comment>
         <argument streamed="false">
             <switch>-d</switch>

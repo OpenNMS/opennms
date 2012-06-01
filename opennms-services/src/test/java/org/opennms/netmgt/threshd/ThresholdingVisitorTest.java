@@ -61,6 +61,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -110,7 +111,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -781,9 +781,9 @@ public class ThresholdingVisitorTest {
     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
-     * - test-thresholds-2.xml
+     * - test-thresholds-bug3227.xml
      * 
-     * There is no Frame Relay related thresholds definitions on test-thresholds-2.xml.
+     * There is no Frame Relay related thresholds definitions on test-thresholds-bug3227.xml.
      * When visit resources, getEntityMap from ThresholdingSet must null.
      * Updated to reflect the fact that counter are treated as rates.
      */
@@ -810,7 +810,7 @@ public class ThresholdingVisitorTest {
         resource.visit(visitor);
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
         int count = 0;
-        String expectedMsg = "getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.";
+        String expectedMsg = "getEntityMap: No thresholds configured for resource type frCircuitIfIndex in threshold group generic-snmp. Skipping this group.";
         for (LoggingEvent e : events) {
             if (e.getMessage().equals(expectedMsg))
                 count++;
@@ -837,7 +837,7 @@ public class ThresholdingVisitorTest {
     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
-     * - test-thresholds-6.xml
+     * - test-thresholds-bug3333.xml
      */
     @Test
     public void testBug3333() throws Exception {
@@ -988,7 +988,33 @@ public class ThresholdingVisitorTest {
         runGaugeDataTest(visitor, 6); // Increment the value above configured threshold level: 6 - lastValue > 3, where lastValue=2
         verifyEvents(0);
     }
-    
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-NMS5115.xml
+     * 
+     * The idea is to be able to use any numeric metric inside the resource filters. NMS-5115 is a valid use case for this.
+     */
+    @Test
+    public void testNMS5115() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-NMS5115.xml");
+
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "Unknown", null, "memAvailSwap / memTotalSwap * 100.0", null, null);
+        ThresholdingVisitor visitor = createVisitor();
+
+        CollectionAgent agent = createCollectionAgent();
+        NodeResourceType resourceType = createNodeResourceType(agent);
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+
+        addAttributeToCollectionResource(resource, resourceType, "memAvailSwap", "gauge", "0", 5);
+        addAttributeToCollectionResource(resource, resourceType, "memTotalSwap", "gauge", "0", 100);
+
+        resource.visit(visitor);
+        EasyMock.verify(agent);
+        verifyEvents(0);
+    }
+
     // Execute an interface test where the physical interface doesn't have any IPAddress (i.e. ipAddr='0.0.0.0')
     // The event will always be associated to Agent Interface (see Bug 3808)
     private void runTestForBug2711(Integer ifIndex, Integer remainingEvents) throws Exception {
@@ -1243,7 +1269,39 @@ public class ThresholdingVisitorTest {
          Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
      }
 
-    /*
+     
+     /*
+      * This test uses this files from src/test/resources:
+      * - thresd-configuration.xml
+      * - test-thresholds-bug5258-a.xml
+      * - test-thresholds-bug5258-b.xml
+      */
+     @Test
+     public void testBug5258() throws Exception {
+         initFactories("/threshd-configuration.xml","/test-thresholds-bug5258-a.xml");
+         ThresholdingVisitor visitor = createVisitor();
+
+         // Define Main Events
+         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 65.0, "/opt", "1", "hrStorageUsed", null, null);
+         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 70.0, "/var", "1", "hrStorageUsed", null, null);
+
+         // Define Rearm Event - This is because the configuration of an already triggered threshold has been changed.
+         addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, Double.NaN, "/opt", "1", "hrStorageUsed", null, null);
+
+         // Trigger high Threshold for /opt
+         runFileSystemDataTest(visitor, 1, "/opt", 65, 100);
+
+         // Change the filter
+         initFactories("/threshd-configuration.xml","/test-thresholds-bug5258-b.xml");
+         visitor.reload();
+         // Trigger high Threshold for /var
+         runFileSystemDataTest(visitor, 1, "/var", 70, 100);
+
+         // Verify Events
+         verifyEvents(0);
+     }
+
+     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds-bug3664.xml

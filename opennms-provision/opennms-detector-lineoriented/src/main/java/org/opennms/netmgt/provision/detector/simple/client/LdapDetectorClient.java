@@ -30,10 +30,11 @@ package org.opennms.netmgt.provision.detector.simple.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.TimeoutSocketFactory;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPSocketFactory;
@@ -45,33 +46,26 @@ import com.novell.ldap.LDAPSocketFactory;
  * @version $Id: $
  */
 public class LdapDetectorClient extends LineOrientedClient {
-    
+
     /**
      * A class to add a timeout to the socket that the LDAP code uses to access
      * an LDAP server
      */
-    private static class TimeoutLDAPSocket implements LDAPSocketFactory {
-
-        private final int m_timeout;
-        private Socket m_socket;
-
-        public TimeoutLDAPSocket(final int timeout) {
-            m_timeout = timeout;
-        }
-
-        public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
-            m_socket = new Socket(host, port);
-            m_socket.setSoTimeout(m_timeout);
-            return m_socket;
+    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
+        public TimeoutLDAPSocket(int timeout) {
+            super(timeout, getSocketWrapper());
         }
     }
-    
+
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
+    }
+
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         super.connect(address, port, timeout);
         final LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
         lc.connect(InetAddressUtils.str(address), port);
-
     }
-
 }

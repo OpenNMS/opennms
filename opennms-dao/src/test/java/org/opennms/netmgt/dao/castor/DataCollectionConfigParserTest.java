@@ -31,15 +31,18 @@ package org.opennms.netmgt.dao.castor;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -53,15 +56,17 @@ public class DataCollectionConfigParserTest {
     private static final int resourceTypesCount = 88;
     private static final int systemDefCount = 141;
     private static final int groupsCount = 204;
+    private Level errorLevel;
 
     @Before
     public void setUp() {
+        errorLevel = Level.WARN;
         MockLogAppender.setupLogging();
     }
 
     @After
     public void tearDown() {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNotGreaterOrEqual(errorLevel);
     }
 
     @Test
@@ -173,6 +178,65 @@ public class DataCollectionConfigParserTest {
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(40, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
         Assert.assertEquals(25, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
+    }
+
+    @Test
+    public void testSingleSystemDefs() throws Exception {
+        // Create DatacollectionConfig
+        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-single-systemdef.xml");
+        DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
+
+        // Validate default datacollection content
+        SnmpCollection collection = config.getSnmpCollection(0);
+        Assert.assertEquals(2, collection.getIncludeCollectionCount());
+        Assert.assertEquals(0, collection.getResourceTypeCount()); 
+        Assert.assertNull(collection.getSystems());
+        Assert.assertNull(collection.getGroups());
+
+        // Execute Parser
+        executeParser(collection);
+
+        // Validate SNMP Collection
+        Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
+        Assert.assertEquals(2, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(28, collection.getGroups().getGroupCount());
+    }
+
+    @Test
+    public void testPrecedence() throws Exception {
+        // Create DatacollectionConfig
+        errorLevel = Level.ERROR;
+        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-hybrid-precedence.xml");
+        DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
+
+        // Validate default datacollection content
+        SnmpCollection collection = config.getSnmpCollection(0);
+        Assert.assertEquals(1, collection.getIncludeCollectionCount());
+        Assert.assertEquals(0, collection.getResourceTypeCount());
+        Assert.assertEquals(1, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(1, collection.getGroups().getGroupCount());
+
+        // Execute Parser
+        executeParser(collection);
+
+        // Validate SNMP Collection
+        Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
+        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(13, collection.getGroups().getGroupCount());
+
+        // Test Precedence ~ any group/systemDef directly defined inside the SNMP collection will have precedence over any definition
+        // from external files. That means, the definitions from external files will be ignored and won't be included in the collection.
+        // This is a way to "override" the content of a specific datacollection-group.
+        for (Group group : collection.getGroups().getGroupCollection()) {
+            if (group.getName().equals("cisco-frame-relay")) {
+                Assert.assertEquals(4, group.getMibObjCount());
+            }
+        }
+        for (SystemDef systemDef : collection.getSystems().getSystemDefCollection()) {
+            if (systemDef.getName().equals("Cisco Routers")) {
+                Assert.assertEquals(3, systemDef.getCollect().getIncludeGroupCount());
+            }
+        }
     }
 
     private File getDatacollectionDirectory() {

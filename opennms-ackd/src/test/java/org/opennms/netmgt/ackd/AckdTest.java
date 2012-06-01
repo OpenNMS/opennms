@@ -39,7 +39,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.config.ackd.Reader;
@@ -47,13 +49,11 @@ import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -64,7 +64,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -97,9 +96,6 @@ public class AckdTest implements InitializingBean {
     private AckService m_ackService;
     
     @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
-    
-    @Autowired
     private AlarmDao m_alarmDao;
     
     @Autowired
@@ -123,9 +119,6 @@ public class AckdTest implements InitializingBean {
     @Autowired
     private UserNotificationDao m_userNotificationDao;
     
-    @Autowired
-    private JavaMailConfigurationDao m_jmConfigDao;
-
     private static boolean m_populated = false;
     
     @BeforeTransaction
@@ -150,19 +143,9 @@ public class AckdTest implements InitializingBean {
         MockLogAppender.setupLogging(props);
     }
     
-    public void afterPropertiesSet() {
-        Assert.assertNotNull(m_ackDao);
-        Assert.assertNotNull(m_alarmDao);
-        Assert.assertNotNull(m_eventDao);
-        Assert.assertNotNull(m_nodeDao);
-        Assert.assertNotNull(m_notificationDao);
-        Assert.assertNotNull(m_userNotificationDao);
-        Assert.assertNotNull(m_mockEventIpcManager);
-        Assert.assertNotNull(m_ackService);
-        Assert.assertNotNull(m_daemon);
-        Assert.assertNotNull(m_populator);
-        Assert.assertNotNull(m_jmConfigDao);
-        
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
         Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
     }
     

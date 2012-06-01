@@ -36,7 +36,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -49,7 +51,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,7 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase> {
+public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
 
     @Autowired
     private JdbcTemplate m_jdbcTemplate;
@@ -88,8 +90,14 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase> {
 
     private TemporaryDatabase m_database;
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

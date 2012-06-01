@@ -114,7 +114,7 @@ public interface Fiber {
      * <code>Fiber</code>, which should eventually transition to a
      * <code>RUNNING</code> status.
      */
-    public void start();
+    void start();
 
     /**
      * This method is used to stop a currently running <code>Fiber</code>.
@@ -122,7 +122,7 @@ public interface Fiber {
      * Depending on the implementation, this method may block until the
      * <code>Fiber</code> terminates.
      */
-    public void stop();
+    void stop();
 
     /**
      * This method is used to return the name of the <code>Fiber</code>. The
@@ -131,7 +131,7 @@ public interface Fiber {
      *
      * @return The name of the <code>Fiber</code>.
      */
-    public String getName();
+    String getName();
 
     /**
      * This method is used to get the current status of the <code>Fiber</code>.
@@ -140,5 +140,5 @@ public interface Fiber {
      *
      * @return The current status of the <code>Fiber</code>.
      */
-    public int getStatus();
+    int getStatus();
 }

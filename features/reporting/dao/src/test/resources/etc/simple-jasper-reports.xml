@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<simple-jasper-reports>
+    
+    <simple-jasper-report>
+        <id>423</id>
+        <display-name>sample display-name</display-name>
+        <description>sample description</description>
+        <engine>null</engine>
+        <online>true</online>
+        <report-service>jasperReportService</report-service>
+        <template>file:///tmp/resource-uri-test.jrxml</template>
+    </simple-jasper-report>
+   
+    <simple-jasper-report>
+        <id>23</id>
+        <display-name>more sample display-name</display-name>
+        <description>more sample description</description>
+        <engine>jdbc</engine>
+        <online>true</online>
+        <report-service>jasperReportService</report-service>
+        <template>file:///tmp/resource-uri-test.jrxml</template>
+    </simple-jasper-report>
+    
+</simple-jasper-reports>

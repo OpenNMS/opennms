@@ -41,29 +41,29 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -82,16 +82,13 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
 @Transactional
-public class SnmpCollectorMinMaxValTest implements TestContextAware {
+public class SnmpCollectorMinMaxValTest implements TestContextAware, InitializingBean {
     private static final String TEST_HOST_ADDRESS = "172.20.1.205";
     private static final String TEST_NODE_LABEL = "TestNode"; 
 
-
-	@Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -101,9 +98,6 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -116,18 +110,16 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware {
 
 	private SnmpAgentConfig m_agentConfig;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws Exception {
         final Properties p = new Properties();
     	p.setProperty("log4j.logger.org.opennms.netmgt.snmp.SnmpUtils", "DEBUG");
         MockLogAppender.setupLogging(p);
-
-        assertNotNull(m_mockEventIpcManager);
-        assertNotNull(m_transactionManager);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_snmpPeerFactory);
 
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
 

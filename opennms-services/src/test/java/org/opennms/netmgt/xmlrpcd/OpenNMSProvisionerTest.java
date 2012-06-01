@@ -47,6 +47,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
@@ -68,7 +69,6 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class OpenNMSProvisionerTest {
@@ -189,8 +189,6 @@ public class OpenNMSProvisionerTest {
 
     @After
     public void tearDown() throws Exception {
-        
-        DataSourceFactory.setInstance(null);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 

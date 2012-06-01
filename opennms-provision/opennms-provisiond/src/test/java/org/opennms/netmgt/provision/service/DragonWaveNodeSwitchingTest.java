@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
@@ -41,12 +40,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.snmp.MockSnmpDataProvider;
 import org.opennms.core.test.snmp.MockSnmpDataProviderAware;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpDataProvider;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.NodeDao;
@@ -63,7 +64,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -104,11 +104,7 @@ public class DragonWaveNodeSwitchingTest implements InitializingBean, MockSnmpDa
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		assertNotNull(m_nodeDao);
-		assertNotNull(m_provisioner);
-		assertNotNull(m_resourceLoader);
-		assertNotNull(m_eventSubscriber);
-		assertNotNull(m_snmpPeerFactory);
+        BeanUtils.assertAutowiring(this);
 
 		// Override the SnmpPeerFactory with an instance that directs all requests to the temporary JUnit SNMP agent
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);

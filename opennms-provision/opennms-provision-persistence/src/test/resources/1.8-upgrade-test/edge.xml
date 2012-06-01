@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2011-04-13T23:50:58.375Z" foreign-source="edge" date-stamp="2011-04-13T23:50:58.127Z" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="link.somemediaads.com" foreign-id="1302738636275" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.54" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+    </node>
+    <node node-label="api.somegamething.com" foreign-id="1299882379296" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.53" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="shandarpc-dev.somemediathing.net" foreign-id="1285630748328" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.49" descr="">
+            <monitored-service service-name="coinwad_b2b-public"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Development"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="shandarpc.somemediathing.net" foreign-id="1285630697369" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.48" descr="">
+            <monitored-service service-name="coinwad_b2b-public"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="zh-cn.somemediathing.com" foreign-id="1280974582859" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.36" descr="">
+            <monitored-service service-name="somethingmedia-static"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="www-origin.somemediaads.com" foreign-id="1280973813696" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.33" descr="">
+            <monitored-service service-name="services-swf"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="staticswf.somemediaads.com" foreign-id="1280973447974" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.34" descr="">
+            <monitored-service service-name="services-swf"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="git.somemediathing.net" foreign-id="1274226556721" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.44" descr="">
+            <monitored-service service-name="gitweb"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="edge-basichttp" foreign-id="1267672707878" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.30" descr="">
+            <monitored-service service-name="somethingmention"/>
+            <monitored-service service-name="somethingcon"/>
+            <monitored-service service-name="somethingkit"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="mch.io" foreign-id="1267558801484" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.27" descr="">
+            <monitored-service service-name="mchio-web"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="sandbox.somemediaads.com" foreign-id="1267413984526" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.47" descr="">
+            <monitored-service service-name="sandbox-somethingads"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.21" descr="">
+            <monitored-service service-name="sandbox-somethingads"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="scores.somemediathing.com" foreign-id="1260485690631" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.24" descr="">
+            <monitored-service service-name="scorewad-web"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="coins.somemediathing.com" foreign-id="1260485667306" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.25" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="gameplay.somemediathing.com" foreign-id="1260397367071" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.26" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="dev.somemediathing.com" foreign-id="1257302937056" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.31" descr="">
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Development"/>
+        <category name="VIP"/>
+    </node>
+    <node node-label="www.somethingpass.com" foreign-id="1257302819146" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.29" descr="">
+            <monitored-service service-name="somethingpass-web"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="www.somemediathing.com" foreign-id="1257302743854" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.28" descr="">
+            <monitored-service service-name="somethingmedia-static"/>
+            <monitored-service service-name="feeds"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="x.somemediaads.com" foreign-id="1257302507233" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.13" descr="">
+            <monitored-service service-name="somethingads"/>
+            <monitored-service service-name="services-swf"/>
+            <monitored-service service-name="x-somethingads"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.14" descr="">
+            <monitored-service service-name="somethingads"/>
+            <monitored-service service-name="services-swf"/>
+            <monitored-service service-name="x-somethingads"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="core.somethingbot.com" foreign-id="1232675762051" building="edge">
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.22" descr="">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="web-somethingbot"/>
+        </interface>
+        <interface status="1" snmp-primary="N" ip-addr="192.168.1.23" descr="">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="web-somethingbot"/>
+        </interface>
+        <category name="VIP"/>
+        <category name="Production"/>
+    </node>
+    <node node-label="edge-a1.somemediathing.net" foreign-id="1232675769575" building="">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.105" descr="">
+            <monitored-service service-name="nginx_stats"/>
+            <monitored-service service-name="memcached"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+    <node node-label="edge-b1.somemediathing.net" foreign-id="1232675780875" building="">
+        <interface status="1" snmp-primary="P" ip-addr="10.0.0.107" descr="">
+            <monitored-service service-name="memcached"/>
+            <monitored-service service-name="nginx_stats"/>
+            <monitored-service service-name="megaRaid"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="Production"/>
+        <category name="Servers"/>
+    </node>
+</model-import>

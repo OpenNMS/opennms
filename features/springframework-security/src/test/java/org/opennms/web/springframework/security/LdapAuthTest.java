@@ -44,11 +44,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.util.FilterChainProxy;
+import org.springframework.security.web.FilterChainProxy;
 
 
 /**
@@ -59,7 +61,7 @@ import org.springframework.security.util.FilterChainProxy;
 @ContextConfiguration(locations={
         "classpath:/applicationContext-ldapTest.xml"
 })*/
-public class LdapAuthTest {
+public class LdapAuthTest implements InitializingBean {
     
     /**
      * @author brozow
@@ -88,6 +90,11 @@ public class LdapAuthTest {
     AccesAnticipator m_chain = new AccesAnticipator();
     
     String m_contextPath = "/opennms";
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @Before
     public void setUp() {

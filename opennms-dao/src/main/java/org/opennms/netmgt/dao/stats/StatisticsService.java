@@ -1,9 +1,11 @@
 package org.opennms.netmgt.dao.stats;
 
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.core.criteria.Criteria;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface StatisticsService<T> {
-
-    int getTotalCount(final OnmsCriteria criteria);
+	
+	@Transactional(readOnly=true)
+    int getTotalCount(final Criteria criteria);
 
 }

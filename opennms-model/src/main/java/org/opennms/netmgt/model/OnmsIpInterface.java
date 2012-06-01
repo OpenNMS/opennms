@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -76,108 +75,6 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="ipInterface")
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
-    @Embeddable
-    public static class PrimaryType implements Comparable<PrimaryType>, Serializable {
-        private static final long serialVersionUID = -647348487361201657L;
-        private static final char[] s_order = { 'N', 'S', 'P' };
-        private char m_collType;
-
-        private PrimaryType() {
-            this('N');
-        }
-
-        private PrimaryType(char collType) {
-            m_collType = collType;
-        }
-
-        @Column(name="isSnmpPrimary")
-        public char getCharCode() {
-            return m_collType;
-        }
-
-        public void setCharCode(char collType) {
-            m_collType = collType;
-        }
-
-        /**
-         * Hibernate objects should not have any specific hashCode() implementation
-         * since it should always give the same object for the same row anyways.
-         */
-        @Override
-        public int hashCode() {
-        	return super.hashCode();
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof PrimaryType) {
-                return this.compareTo((PrimaryType)o) == 0;
-            } else return false;
-        }
-
-        public int compareTo(PrimaryType collType) {
-            return getIndex(m_collType) - getIndex(collType.m_collType);
-        }
-
-        private static int getIndex(char code) {
-            for (int i = 0; i < s_order.length; i++) {
-                if (s_order[i] == code) {
-                    return i;
-                }
-            }
-            throw new IllegalArgumentException("illegal collType code '"+code+"'");
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(m_collType);
-        }
-
-        public boolean isLessThan(PrimaryType collType) {
-            return compareTo(collType) < 0;
-        }
-
-        public boolean isGreaterThan(PrimaryType collType) {
-            return compareTo(collType) > 0;
-        }
-
-        public PrimaryType max(PrimaryType collType) {
-            return this.isLessThan(collType) ? collType : this;
-        }
-
-        public PrimaryType min(PrimaryType collType) {
-            return this.isLessThan(collType) ? this : collType;
-        }
-
-        public static PrimaryType get(char code) {
-            switch (code) {
-            case 'P': return PRIMARY;
-            case 'S': return SECONDARY;
-            case 'N': return NOT_ELIGIBLE;
-            default:
-                throw new IllegalArgumentException("Cannot create collType from code "+code);
-            }
-        }
-
-        public static PrimaryType get(String code) {
-            if (code == null) {
-                return NOT_ELIGIBLE;
-            }
-            code = code.trim();
-            if (code.length() < 1) {
-                return NOT_ELIGIBLE;
-            } else if (code.length() > 1) {
-                throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
-            } else {
-                return get(code.charAt(0));
-            }
-        }
-
-        public static final PrimaryType PRIMARY = new PrimaryType('P');
-        public static final PrimaryType SECONDARY = new PrimaryType('S');
-        public static final PrimaryType NOT_ELIGIBLE = new PrimaryType('N');
-    }
-
     private static final long serialVersionUID = 7750043250236397014L;
 
     private Integer m_id;
@@ -396,7 +293,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     /**
      * <p>getIsSnmpPrimary</p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
+     * @return a {@link org.opennms.netmgt.model.PrimaryType} object.
      */
     @Column(name="isSnmpPrimary", length=1)
     @XmlTransient
@@ -407,7 +304,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     /**
      * <p>setIsSnmpPrimary</p>
      *
-     * @param issnmpprimary a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
+     * @param issnmpprimary a {@link org.opennms.netmgt.model.PrimaryType} object.
      */
     public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
         m_isSnmpPrimary = issnmpprimary;
@@ -606,8 +503,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     /**
      * <p>hasNewCollectionTypeValue</p>
      *
-     * @param newVal a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
-     * @param existingVal a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
+     * @param newVal a {@link org.opennms.netmgt.model.PrimaryType} object.
+     * @param existingVal a {@link org.opennms.netmgt.model.PrimaryType} object.
      * @return a boolean.
      */
     protected static boolean hasNewCollectionTypeValue(PrimaryType newVal, PrimaryType existingVal) {

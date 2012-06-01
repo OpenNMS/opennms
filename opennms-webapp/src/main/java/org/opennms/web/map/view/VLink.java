@@ -43,20 +43,20 @@ import org.opennms.web.map.MapsConstants;
  * @since 1.8.1
  */
 final public class VLink {
-	private String elem1Type;
-	private int elem1Id;
-	private String elem2Type;
-    private int elem2Id;	
-    private Set<Integer> nodeids;
+	private final String elem1Type;
+	private final int elem1Id;
+	private final String elem2Type;
+    private final int elem2Id;
+    private final Set<Integer> nodeids = new TreeSet<Integer>();
 
-    private Map<String, Integer> vlinkStatusMap;
+    private final Map<String, Integer> vlinkStatusMap = new HashMap<String, Integer>();
 	private int numberOfLinks;
     //the link type defined in the map properties file
 	private int linkTypeId;
 	
 	private String linkStatusString;
 	
-    private String id;
+    private final String id;
 	
 	/**
 	 * <p>Constructor for VLink.</p>
@@ -74,7 +74,6 @@ final public class VLink {
         this.elem2Id = elem2Id;
         this.linkTypeId = linkTypeId;
         this.numberOfLinks = 1;
-        this.vlinkStatusMap = new HashMap<String, Integer>();
         String  a = elem1Id+elem1Type;
         String  b = elem2Id+elem2Type;
         String id = a + "-" + b;
@@ -88,7 +87,6 @@ final public class VLink {
         }
 		id = id+"-"+linkTypeId;
 		this.id = id;
-		this.nodeids = new TreeSet<Integer>();
 	}
 	
 	/**
@@ -106,7 +104,8 @@ final public class VLink {
      * @param vlinkStatusMap a java$util$Map object.
      */
     public void setVlinkStatusMap(Map<String, Integer> vlinkStatusMap) {
-        this.vlinkStatusMap = vlinkStatusMap;
+        this.vlinkStatusMap.clear();
+        this.vlinkStatusMap.putAll(vlinkStatusMap);
     }
 
     /**
@@ -267,7 +266,8 @@ final public class VLink {
      * @param nodeids a {@link java.util.Set} object.
      */
     public void setNodeids(Set<Integer> nodeids) {
-        this.nodeids = nodeids;
+        this.nodeids.clear();
+        nodeids.addAll(nodeids);
     }
 
 }

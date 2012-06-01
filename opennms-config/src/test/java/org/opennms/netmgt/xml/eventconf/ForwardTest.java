@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class ForwardTest extends XmlTest<Forward> {
+public class ForwardTest extends XmlTestNoCastor<Forward> {
 
-	public ForwardTest(final Forward sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public ForwardTest(final Forward sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 

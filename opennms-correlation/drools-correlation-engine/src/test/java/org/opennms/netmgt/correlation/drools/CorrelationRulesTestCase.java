@@ -52,7 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
-public class CorrelationRulesTestCase {
+public abstract class CorrelationRulesTestCase {
 
     @Autowired
     private MockEventIpcManager m_eventIpcMgr;
@@ -67,6 +67,11 @@ public class CorrelationRulesTestCase {
 
     public void setCorrelationEngineRegistrar(CorrelationEngineRegistrar correlator) {
         m_correlator = correlator;
+    }
+    
+    protected void resetAnticipated() {
+    	getAnticipator().reset();
+    	m_anticipatedMemorySize = null;
     }
 
     protected void verify(DroolsCorrelationEngine engine) {

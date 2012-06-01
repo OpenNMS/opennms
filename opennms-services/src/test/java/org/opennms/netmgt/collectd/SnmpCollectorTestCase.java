@@ -47,7 +47,7 @@ import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -105,7 +105,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         setStartEventd(false);
         super.setUp();
         
-        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(myLocalHost()) + "/9161");
+        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.str(myLocalHost()) + "/9161");
         
         m_config = new MockDataCollectionConfig();
         DataCollectionConfigFactory.setInstance(m_config);

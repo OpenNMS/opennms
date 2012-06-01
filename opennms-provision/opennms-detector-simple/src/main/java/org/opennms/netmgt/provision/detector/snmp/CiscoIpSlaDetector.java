@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -92,7 +91,7 @@ public class CiscoIpSlaDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    public boolean isServiceDetected(InetAddress address) {
         try {
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             configureAgentPTR(agentConfig);

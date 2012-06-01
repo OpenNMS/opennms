@@ -3,13 +3,14 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.reporting</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.reporting</groupId>
   <artifactId>org.opennms.features.reporting.core</artifactId>
   <name>OpenNMS Reporting Core</name>
   <url>http://www.opennms.org/</url>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
@@ -35,6 +36,18 @@
           </additionalProjectnatures>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.reporting.core.*;org.opennms.reporting.core.svclayer.*;org.opennms.reporting.core.svclayer.support.*;version="${project.version}"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -57,7 +70,17 @@
       <artifactId>org.opennms.features.reporting.api</artifactId>
       <scope>compile</scope>
     </dependency>
-        <dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.model</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.repository</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>compile</scope>
@@ -68,8 +91,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -84,4 +107,3 @@
     </dependency>
   </dependencies>
 </project>
-

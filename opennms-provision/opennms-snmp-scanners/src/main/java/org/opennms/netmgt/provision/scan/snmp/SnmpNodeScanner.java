@@ -49,7 +49,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
 
     /** {@inheritDoc} */
     @Override
-    public void onInit() {
+    protected void onInit() {
         getSingleInstance(".1.3.6.1.2.1.1.2", "0").andStoreIn(sysObjectId());
         getSingleInstance(".1.3.6.1.2.1.1.5", "0").andStoreIn(sysName());
         getSingleInstance(".1.3.6.1.2.1.1.1", "0").andStoreIn(sysDescription());
@@ -62,7 +62,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      *
      * @return a Storer object.
      */
-    public Storer sysObjectId() {
+    public static Storer sysObjectId() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysObjectId(res.getValue().toDisplayString());
@@ -75,7 +75,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      *
      * @return a Storer object.
      */
-    public Storer sysName() {
+    public static Storer sysName() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysName(res.getValue().toDisplayString());
@@ -88,7 +88,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      *
      * @return a Storer object.
      */
-    public Storer sysDescription() {
+    public static Storer sysDescription() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysDescription(res.getValue().toDisplayString());
@@ -101,7 +101,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      *
      * @return a Storer object.
      */
-    public Storer sysLocation() {
+    public static Storer sysLocation() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysLocation(res.getValue().toDisplayString());
@@ -114,7 +114,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      *
      * @return a Storer object.
      */
-    public Storer sysContact() {
+    public static Storer sysContact() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysContact(res.getValue().toDisplayString());

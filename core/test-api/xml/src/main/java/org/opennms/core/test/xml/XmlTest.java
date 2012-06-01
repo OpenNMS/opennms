@@ -56,10 +56,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
@@ -71,7 +71,7 @@ abstract public class XmlTest<T> {
 	private String m_sampleXml;
 	private String m_schemaFile;
 
-	public XmlTest(final T sampleObject, final String sampleXml, String schemaFile) {
+	public XmlTest(final T sampleObject, final String sampleXml, final String schemaFile) {
 		m_sampleObject = sampleObject;
 		m_sampleXml = sampleXml;
 		m_schemaFile = schemaFile;

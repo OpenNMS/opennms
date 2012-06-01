@@ -3,18 +3,32 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-alarms</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-api</artifactId>
   <name>OpenNMS Alarm API</name>
-
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.netmgt.alarmd.api.*;org.opennms.netmgt.alarmd.api.support.*;version="${project.version}"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
-
   </dependencies>
 </project>

@@ -36,9 +36,9 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -68,19 +68,19 @@ public class NrpeDetectorTest implements ApplicationContextAware {
     //Tested against a local windows box with NSClient++
     @Test
     public void testDetectorSuccess() throws UnknownHostException {
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
     
     @Test
     public void testDetectorFailWrongPort() throws UnknownHostException {
         //m_detector.setPort(12489);
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
     
     @Test
     public void testDetectorFailNotUsingSSL() throws UnknownHostException {
         //m_detector.setUseSsl(false);
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 
     /* (non-Javadoc)

@@ -32,7 +32,6 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.provision.DetectFuture;
 
 /**
  * <p>BaseDetectorHandler class.</p>
@@ -42,7 +41,7 @@ import org.opennms.netmgt.provision.DetectFuture;
  */
 public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     
-    private DetectFuture m_future;
+    private DetectFutureMinaImpl m_future;
     private AsyncClientConversation<Request, Response> m_conversation;
     
 
@@ -53,7 +52,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
      * @param <Request> a Request object.
      * @param <Response> a Response object.
      */
-    public void setFuture(DetectFuture future) {
+    public void setFuture(DetectFutureMinaImpl future) {
         m_future = future;
     }
 
@@ -62,16 +61,18 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
      *
      * @return a {@link org.opennms.netmgt.provision.DetectFuture} object.
      */
-    public DetectFuture getFuture() {
+    public DetectFutureMinaImpl getFuture() {
         return m_future;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void sessionCreated(IoSession session) throws Exception {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sessionOpened(IoSession session) throws Exception {
         if(!getConversation().hasBanner() && getConversation().getRequest() != null) {
             Object request = getConversation().getRequest();
@@ -80,21 +81,26 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sessionClosed(IoSession session) throws Exception {
         if(!getFuture().isDone()) {
+            LogUtils.infof(this, "Session closed and detection is not complete. Setting service detection to false.");
             getFuture().setServiceDetected(false);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         if(getConversation().hasBanner() && status == IdleStatus.READER_IDLE) {
+            LogUtils.infof(this, "Session went idle without receiving banner. Setting service detection to false.");
             getFuture().setServiceDetected(false);
             session.close(true);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         LogUtils.debugf(this, cause, "Caught a Throwable in BaseDetectorHandler");
         getFuture().setException(cause);
@@ -102,10 +108,11 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {
-            LogUtils.debugf(this, "Client Receiving: %s\n", message.toString().trim());
+            LogUtils.debugf(this, "Client Receiving: %s", message.toString().trim());
             
             if(getConversation().hasExchanges() && getConversation().validate((Response)message)) {
                
@@ -114,14 +121,16 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
                 if(request != null) {
                    session.write(request);
                }else if(request == null && getConversation().isComplete()){
+                   LogUtils.infof(this, "Conversation is complete and there are no more pending requests. Setting service detection to true.");
                    getFuture().setServiceDetected(true);
                    session.close(false);
                }else {
-                   
+                   LogUtils.infof(this, "Conversation is incomplete. Setting service detection to false.");
                    getFuture().setServiceDetected(false);
                    session.close(false);
                }
             }else {
+                LogUtils.infof(this, "Conversation response was invalid. Setting service detection to false.");
                 getFuture().setServiceDetected(false);
                 session.close(false);
             }
@@ -133,9 +142,6 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         }
         
     }
-
-    /** {@inheritDoc} */
-    public void messageSent(IoSession session, Object message) throws Exception {}
 
     /**
      * <p>setConversation</p>

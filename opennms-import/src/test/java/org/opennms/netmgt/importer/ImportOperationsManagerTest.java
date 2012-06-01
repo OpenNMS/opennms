@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,8 +41,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -62,7 +65,6 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -105,17 +107,9 @@ public class ImportOperationsManagerTest implements InitializingBean {
     @Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
+    @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_populator);
-        assertNotNull(m_transTemplate);
-        assertNotNull(m_distPollerDao);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_serviceTypeDao);
-        assertNotNull(m_categoryDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_snmpInterfaceDao);
-        assertNotNull(m_snmpPeerFactory);
-
+        BeanUtils.assertAutowiring(this);
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
 
@@ -282,14 +276,14 @@ public class ImportOperationsManagerTest implements InitializingBean {
     private Map<String, Integer> getAssetNumberMapInTransaction(final SpecFile specFile) {
         Map<String, Integer> assetNumbers = m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
             public Map<String, Integer> doInTransaction(TransactionStatus status) {
-                return getAssetNumberMap(specFile.getForeignSource());
+                return Collections.unmodifiableMap(getAssetNumberMap(specFile.getForeignSource()));
             }
         });
         return assetNumbers;
     }
 
     protected Map<String, Integer> getAssetNumberMap(String foreignSource) {
-        return m_nodeDao.getForeignIdToNodeIdMap(foreignSource);
+        return Collections.unmodifiableMap(m_nodeDao.getForeignIdToNodeIdMap(foreignSource));
     }
 
     protected void expectServiceTypeCreate(String string) {

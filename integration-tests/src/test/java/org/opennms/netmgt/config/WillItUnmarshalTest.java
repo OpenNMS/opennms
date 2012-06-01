@@ -29,33 +29,19 @@
 
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
 import junit.framework.AssertionFailedError;
-
 import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
+import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
+import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -64,8 +50,7 @@ import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
-import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
-import org.opennms.netmgt.config.databaseReports.DatabaseReports;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
@@ -91,7 +76,6 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
-import org.opennms.netmgt.config.reporting.jasperReports.JasperReports;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
@@ -120,11 +104,19 @@ import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
+
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * The name of this class is a tribute to
@@ -152,62 +144,31 @@ public class WillItUnmarshalTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    /**
-     * Ensure we can load a good configuration file without enabling
-     * lenient sequence ordering.
-     */
     @Test
     public void testGoodOrdering() throws Exception {
-        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        JaxbUtils.unmarshal(Events.class, resource);
     }
 
-    /**
-     * Ensure we can load a bad configuration file with
-     * lenient sequence ordering enabled explicitly.
-     */
     @Test
     public void testLenientOrdering() throws Exception {
-        LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
-
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
-    }
-
-    /**
-     * Ensure we can load a bad configuration file with
-     * lenient sequence ordering enabled in castor.properties.
-     */
-    @Test
-    public void testLenientOrderingAsDefault() throws Exception {
-        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
-        System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
-    }
-    
-    /**
-     * Ensure we fail to load a bad configuration file with
-     * lenient sequence ordering disabled explicitly.
-     */
-    @Test
-    public void testLenientOrderingDisabled() throws Exception {
-        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-
-        unmarshalAndAnticipateException("eventconf-bad-ordering.xml", "Element with name event passed to type events in incorrect order");
+        JaxbUtils.unmarshal(Events.class, resource);
     }
     
     @Test
-    public void testNotIgnoreExtraAttributeAsDefault() throws Exception {
-        unmarshalAndAnticipateException("eventconf-bad-attribute.xml", "The attribute 'bad-attribute' appears illegally on element 'event'");
+    public void testUpdateFields() throws Exception {
+        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-update-fields.xml");
+        System.out.println("Unmarshalling: " + resource.getURI());
+        JaxbUtils.unmarshal(Events.class, resource);
     }
 
+
     @Test
-    public void testNotIgnoreExtraElementAsDefault() throws Exception {
-        unmarshalAndAnticipateException("eventconf-bad-element.xml", "unable to find FieldDescriptor for 'bad-element' in ClassDescriptor of events");
+    public void testFailOnInvalidElement() throws Exception {
+        unmarshalAndAnticipateException("eventconf-bad-element.xml", "Invalid content was found starting with element 'bad-element'.");
     }
 
     @Test
@@ -248,7 +209,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testDatabaseReportsConfiguration() throws Exception {
-        unmarshal("database-reports.xml", DatabaseReports.class);
+        unmarshalJaxb("database-reports.xml", LegacyLocalReportsDefinition.class);
     }
     @Test
     public void testDatabaseSchema() throws Exception {
@@ -304,7 +265,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testJasperReportsConfiguration() throws Exception {
-        unmarshal("jasper-reports.xml", JasperReports.class);
+        unmarshalJaxb("jasper-reports.xml", LocalJasperReports.class);
     }
     @Test
     public void testJmxDataCollectionConfiguration() throws Exception {
@@ -570,7 +531,12 @@ public class WillItUnmarshalTest {
     public void testJdbcDataCollectionConfiguration() throws Exception {
         unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
     }
-    
+
+    @Test
+    public void testRemoteRepositoryXmlConfiguration() throws Exception {
+        unmarshalJaxb("remote-repository.xml", RemoteRepositoryConfig.class);
+    }
+
     @Test
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
@@ -731,22 +697,22 @@ public class WillItUnmarshalTest {
         return config;
     }
 
-    private void unmarshalAndAnticipateException(String file, String exceptionText) throws ValidationException, IOException, AssertionFailedError {
+    private void unmarshalAndAnticipateException(final String file,  final String exceptionText) throws ValidationException, IOException, AssertionFailedError {
         boolean gotException = false;
         try {
-            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));
-        } catch (MarshalException e) {
+            JaxbUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));
+        } catch (final Exception e) {
             if (e.getMessage().contains(exceptionText)) {
                 gotException = true;
             } else {
-                AssertionFailedError newE = new AssertionFailedError("unmarshal threw MarshalException but did not contain expected text: " + exceptionText);
+                AssertionFailedError newE = new AssertionFailedError("unmarshal threw an exception but did not contain expected text: " + exceptionText);
                 newE.initCause(e);
                 throw newE;
             }
         }
 
         if (!gotException) {
-            fail("unmarshal did not throw MarshalException containing expected text: " + exceptionText);
+            fail("unmarshal did not throw exception containing expected text: " + exceptionText);
         }
     }
 }

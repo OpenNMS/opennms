@@ -42,10 +42,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -108,13 +109,13 @@ public class Vulnscand extends AbstractServiceDaemon {
      * The pool of threads that are used to executed the SpecificScanProcessor
      * instances queued by the event processor (BroadcastEventProcessor).
      */
-    private RunnableConsumerThreadPool m_specificScanRunner;
+    private ExecutorService m_specificScanRunner;
 
     /**
      * The pool of threads that are used to executed RescanProcessor instances
      * queued by the rescan scheduler thread.
      */
-    private RunnableConsumerThreadPool m_scheduledScanRunner;
+    private ExecutorService m_scheduledScanRunner;
 
 	/**
 	 * SQL used to retrieve the last poll time for all the managed interfaces
@@ -146,11 +147,11 @@ public class Vulnscand extends AbstractServiceDaemon {
 
         // Stop the Suspect Event Processor thread pool
         //
-        m_specificScanRunner.stop();
+        m_specificScanRunner.shutdown();
 
         // Stop the Rescan Processor thread pool
         //
-        m_scheduledScanRunner.stop();
+        m_scheduledScanRunner.shutdown();
 	}
 
     /**
@@ -199,17 +200,9 @@ public class Vulnscand extends AbstractServiceDaemon {
 
         // Create the specific and scheduled scan pools
         //
-        m_specificScanRunner = new RunnableConsumerThreadPool("Vulnscand Scan Pool", 0.6f, 1.0f, VulnscandConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
+        m_specificScanRunner = Executors.newFixedThreadPool(VulnscandConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
 
-        m_scheduledScanRunner = new RunnableConsumerThreadPool("Vulnscand Rescan Pool", 0.6f, 1.0f, VulnscandConfigFactory.getInstance().getMaxRescanThreadPoolSize());
-
-        // Start the suspect event and rescan thread pools
-        //
-        if (log().isDebugEnabled())
-            log().debug("start: Starting runnable thread pools...");
-
-        m_specificScanRunner.start();
-        m_scheduledScanRunner.start();
+        m_scheduledScanRunner = Executors.newFixedThreadPool(VulnscandConfigFactory.getInstance().getMaxRescanThreadPoolSize());
 
         // Create and start the rescan scheduler
         //
@@ -218,7 +211,7 @@ public class Vulnscand extends AbstractServiceDaemon {
         try {
             // During instantiation, the scheduler will load the
             // list of known nodes from the database
-            m_scheduler = new Scheduler(m_scheduledScanRunner.getRunQueue());
+            m_scheduler = new Scheduler(m_scheduledScanRunner);
             initialize();
         } catch (SQLException sqlE) {
             log().error("Failed to initialize the rescan scheduler.", sqlE);
@@ -237,7 +230,7 @@ public class Vulnscand extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("start: Creating event broadcast event receiver");
 
-            m_receiver = new BroadcastEventProcessor(m_specificScanRunner.getRunQueue(), m_scheduler);
+            m_receiver = new BroadcastEventProcessor(m_specificScanRunner, m_scheduler);
         } catch (Throwable t) {
             log().error("Failed to initialized the broadcast event receiver", t);
             throw new UndeclaredThrowableException(t);

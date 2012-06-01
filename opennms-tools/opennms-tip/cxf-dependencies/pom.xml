@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tip</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tip</groupId>
@@ -13,19 +14,23 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use the apache cxf libraries
   </description>
-  
   <properties>
     <cxf.version>2.2.10</cxf.version>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-core</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -33,8 +38,14 @@
       <artifactId>cxf-rt-frontend-simple</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -42,8 +53,14 @@
       <artifactId>cxf-rt-frontend-jaxws</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -51,8 +68,14 @@
       <artifactId>cxf-rt-databinding-aegis</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -60,8 +83,14 @@
       <artifactId>cxf-rt-transports-local</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -69,8 +98,14 @@
       <artifactId>cxf-rt-transports-http</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -78,8 +113,14 @@
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -87,8 +128,14 @@
       <artifactId>cxf-rt-transports-jms</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -96,8 +143,14 @@
       <artifactId>cxf-rt-management</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -105,8 +158,14 @@
       <artifactId>cxf-common-utilities</artifactId>
       <version>${cxf.version}</version>
       <exclusions>
-        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
-        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -116,27 +175,29 @@
       <scope>${provided.by.opennms}</scope>
     </dependency>
   </dependencies>
-  
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <!-- OpenNMS private download URL -->
     <!-- see http://www.opennms.org/wiki/TIP_Maven_Repository -->
-   <repository>
-     <releases />
-     <id>tip-repo</id>
-     <url>http://tip.opennms.org/content/repositories/tip-repo</url>
-   </repository>
-   <repository>
-     <snapshots />
-     <id>tip-snapshot</id>
-     <url>http://tip.opennms.org/content/repositories/tip-snapshot</url>
-   </repository>
+    <repository>
+      <releases/>
+      <id>tip-repo</id>
+      <url>http://tip.opennms.org/content/repositories/tip-repo</url>
+    </repository>
+    <repository>
+      <snapshots/>
+      <id>tip-snapshot</id>
+      <url>http://tip.opennms.org/content/repositories/tip-snapshot</url>
+    </repository>
   </repositories>
-  
 </project>

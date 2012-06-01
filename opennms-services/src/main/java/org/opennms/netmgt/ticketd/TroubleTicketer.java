@@ -46,9 +46,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
@@ -87,6 +84,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      * @throws java.lang.Exception An exception is thrown when detecting an invalid state such
      *         as data not properly initialized or this method called more then once.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(!m_initialized, "shouldn't be calling afterProperties set more than once");
         Assert.state(m_eventIpcManager != null, "property eventIpcManager must be set to a non-null value");
@@ -109,7 +107,18 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
+        // DO NOTHING?
+    }
+
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public void destroy() throws Exception {
         // DO NOTHING?
     }
 

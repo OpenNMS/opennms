@@ -853,6 +853,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao cannot be null");
         Assert.state(m_locationMonitorDao != null, "property locationMonitorDao cannot be null");

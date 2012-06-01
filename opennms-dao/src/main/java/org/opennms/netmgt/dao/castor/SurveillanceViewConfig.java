@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.castor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,6 @@ public class SurveillanceViewConfig {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, View> getViewsMap() {
-        return m_viewsMap;
+        return Collections.unmodifiableMap(m_viewsMap);
     }
 }

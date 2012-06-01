@@ -47,8 +47,8 @@
 
 	<!-- Middle Column -->
 	<div id="index-contentmiddle">
-		<!-- category box(es) -->    
-		<jsp:include page="/includes/categories-box.jsp" flush="false" />
+		<% String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp"); %>
+		<jsp:include page="<%=centerUrl%>" flush="false" />
 		<hr />
 	</div>
 

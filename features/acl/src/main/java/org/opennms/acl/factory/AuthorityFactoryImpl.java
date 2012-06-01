@@ -45,11 +45,11 @@ package org.opennms.acl.factory;
 import org.opennms.acl.domain.Authority;
 import org.opennms.acl.service.AclItemService;
 import org.opennms.acl.service.AuthorityService;
+import org.opennms.core.utils.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 /**
  * <p>AuthorityFactoryImpl class.</p>
@@ -71,9 +71,9 @@ public class AuthorityFactoryImpl implements AutorityFactory, InitializingBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(authorityService != null, "authorityService property must be set and cannot be null");
-        Assert.state(aclItemService != null, "aclItemService property must be set and cannot be null");
+        BeanUtils.assertAutowiring(this);
     }
 
     @Autowired

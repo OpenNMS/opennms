@@ -16,10 +16,17 @@
 
  <bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder"/>
 
- <bean id="daoAuthenticationProvider" class="org.springframework.security.providers.dao.DaoAuthenticationProvider">
+ <!--
+ <bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
   <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
   <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
- </bean>        
+ </bean>
+ -->        
+
+ <bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
+  <property name="userDao" ref="userDao" />
+  <property name="userManager" ref="userManager" />
+ </bean>
  
  <!--
  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

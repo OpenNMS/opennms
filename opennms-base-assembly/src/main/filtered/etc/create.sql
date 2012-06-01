@@ -894,7 +894,7 @@ create unique index vulnplugins_plugin_idx on vulnPlugins(pluginID, pluginSubID)
 
 create table notifications (
        textMsg      text not null,
-       subject      varchar(256),
+       subject      text,
        numericMsg   varchar(256),
        notifyID	    integer not null,
        pageTime     timestamp with time zone,

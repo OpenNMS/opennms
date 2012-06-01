@@ -51,6 +51,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -71,6 +72,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -94,7 +96,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
+public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 
     private Vacuumd m_vacuumd;
@@ -117,6 +119,11 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     public void setTemporaryDatabase(MockDatabase database) {
         m_database = database;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

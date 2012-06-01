@@ -37,15 +37,17 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -62,13 +64,18 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SnmpAssetProvisioningAdapterTest {
+public class SnmpAssetProvisioningAdapterTest implements InitializingBean {
 
 	@Autowired
 	private SnmpAssetProvisioningAdapter m_adapter;
 
 	@Autowired
 	private NodeDao m_nodeDao;
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		BeanUtils.assertAutowiring(this);
+	}
 
 	@Before
 	public void setUp() throws Exception {

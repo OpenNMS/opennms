@@ -47,6 +47,7 @@ public class XmlRpcProxyFactoryBean<T> extends XmlRpcClientInterceptor implement
      * <p>afterPropertiesSet</p>
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void afterPropertiesSet() {
         if (getServiceInterface() == null) {
             throw new IllegalArgumentException("serviceInterface is required");

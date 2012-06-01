@@ -31,9 +31,11 @@ package org.opennms.netmgt.dao;
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -42,7 +44,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * @author brozow
  */
-public class DefaultUpsertService implements UpsertService {
+public class DefaultUpsertService implements UpsertService, InitializingBean {
     
     @Autowired
     NodeDao m_nodeDao;
@@ -52,6 +54,11 @@ public class DefaultUpsertService implements UpsertService {
     
     @Autowired
     PlatformTransactionManager m_transactionManager;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Override
     public OnmsSnmpInterface upsert(final int nodeId, final OnmsSnmpInterface snmpInterface, final int sleep) {

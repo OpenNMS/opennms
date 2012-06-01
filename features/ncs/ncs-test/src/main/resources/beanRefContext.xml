@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" default-lazy-init="true">
+        
+   <bean id="testDaoContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-datasource.xml</value>
+         <value>META-INF/opennms/applicationContext-testDao.xml</value>
+         <value>classpath*:/META-INF/opennms/applicationContext-daemon.xml</value>
+         <value>classpath*:/META-INF/opennms/component-dao.xml</value>
+         <value>file:src/main/resources/META-INF/opennms/component-service.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="soaContext" />
+   </bean>
+   
+</beans>

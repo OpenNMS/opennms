@@ -28,17 +28,40 @@
 
 package org.opennms.netmgt.snmp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
+
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
-import junit.framework.TestSuite;
-
-import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
+import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
 import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.springframework.core.io.ClassPathResource;
 
+@RunWith(Parameterized.class)
 public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcessorFactory {
+	
+	@Parameters
+	public static List<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				/* Strategy class,        SnmpVersion,              trapsSupported */
+				{ JoeSnmpStrategy.class.getName(),  SnmpAgentConfig.VERSION1,  true },	
+				{ Snmp4JStrategy.class.getName(),   SnmpAgentConfig.VERSION1,  true },	
+				{ MockSnmpStrategy.class.getName(), SnmpAgentConfig.VERSION1,  false },	
+		});
+	}
     
     private TestTrapListener m_trapListener;
 
@@ -99,28 +122,30 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
             return m_receivedTrapCount;
         }
     }
-
-    public static TestSuite suite() {
-        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SnmpUtilsTest.class);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    
+    String m_strategyClass;
+    int m_snmpVersion;
+    boolean m_trapsSupported;
+    
+    public SnmpUtilsTest(String strategyClass, int snmpVersion, boolean trapsSupported) {
+    	m_strategyClass = strategyClass;
+    	m_snmpVersion = snmpVersion;
+    	m_trapsSupported = trapsSupported;
+    	
+    	System.setProperty("org.opennms.snmp.strategyClass", m_strategyClass);
+    	
         setPropertiesResource(new ClassPathResource("snmpTestData1.properties"));
-        
-        super.setUp();
-        
-        m_trapListener = new TestTrapListener();
-        SnmpUtils.registerForTraps(m_trapListener, this, null, 9162);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        SnmpUtils.unregisterForTraps(m_trapListener, null, 9162);
-        
-        super.tearDown();
+
+	@After
+    public void cleanupTrapListener() throws Exception {
+    	if (m_trapListener != null) {
+    		SnmpUtils.unregisterForTraps(m_trapListener, null, 9162);
+    	}
     }
     
+    @Test
     public void testCreateSnmpAgentConfig() throws UnknownHostException {
         SnmpAgentConfig agentConfig = new SnmpAgentConfig();
         assertNull(agentConfig.getAddress());
@@ -132,18 +157,21 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertSnmpAgentConfigDefaults(agentConfig);
     }
     
+    @Test
     public void testGet() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2.0"));
         assertNotNull(val);
     }
 
+    @Test
     public void testBadGet() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2"));
         assertEquals(null, val);
     }
     
+    @Test
     public void getMultipleVarbinds() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpObjId[] oids = { SnmpObjId.get(".1.3.6.1.2.1.1.2.0"), SnmpObjId.get(".1.3.6.1.2.1.1.3.0") };
@@ -152,12 +180,14 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertEquals(2, vals.length);
     }
     
+    @Test
     public void testGetNext() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.getNext(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1"));
         assertNotNull(val);
     }
     
+    @Test
     public void testGetNextMultipleVarbinds() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpObjId[] oids = { SnmpObjId.get(".1.3.6.1.2.1.1.2.0"), SnmpObjId.get(".1.3.6.1.2.1.1.3.0") };
@@ -178,19 +208,26 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertNotNull(walker);
     }
 */    
+    @Test
     public void testCreateWalkerWithAgentConfig() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "Test", new ColumnTracker(SnmpObjId.get("1.2.3.4")));
         assertNotNull(walker);
     }
     
+    @Test
     public void testGetStrategy() {
         SnmpStrategy strategy = SnmpUtils.getStrategy();
         assertNotNull(strategy);
         assertEquals(System.getProperty("org.opennms.snmp.strategyClass"), strategy.getClass().getName());
     }
     
+    @Test
     public void testSendV1Trap() throws Exception {
+    	assumeTrue(m_trapsSupported);
+        m_trapListener = new TestTrapListener();
+        SnmpUtils.registerForTraps(m_trapListener, this, null, 9162);
+
         SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
         trap.setAgentAddress(InetAddress.getLocalHost());
         trap.setEnterprise(SnmpObjId.get(".0.0"));
@@ -202,7 +239,12 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
     
+    @Test
     public void testSendV2Trap() throws Exception {
+    	assumeTrue(m_trapsSupported);
+        m_trapListener = new TestTrapListener();
+        SnmpUtils.registerForTraps(m_trapListener, this, null, 9162);
+
         SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
         SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
         
@@ -220,7 +262,12 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         return new TestTrapProcessor();
     }
     
+    @Test
     public void testSendV1TestTrap() throws Exception {
+    	assumeTrue(m_trapsSupported);
+        m_trapListener = new TestTrapListener();
+        SnmpUtils.registerForTraps(m_trapListener, this, null, 9162);
+
         SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
         trap.setAgentAddress(InetAddress.getLocalHost());
         trap.setEnterprise(SnmpObjId.get(".0.0"));
@@ -231,7 +278,12 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
     
+    @Test
     public void testSendV2TestTrap() throws Exception {
+    	assumeTrue(m_trapsSupported);
+        m_trapListener = new TestTrapListener();
+        SnmpUtils.registerForTraps(m_trapListener, this, null, 9162);
+
         SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
         SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
         
@@ -244,6 +296,7 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
     
+    @Test
     public void testGetValueFactory() throws UnknownHostException {
         SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
         assertNotNull(valueFactory);

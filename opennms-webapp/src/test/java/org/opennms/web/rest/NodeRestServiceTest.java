@@ -44,11 +44,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /*
@@ -237,6 +237,24 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("isManaged=\"U\""));
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
+    }
+    
+    @Test
+    public void testIpInterfaceByIpAddress() throws Exception{
+        createTwoIpInterface();
+        String url = "/nodes/1/ipinterfaces";
+        String xml = sendRequest(GET, url, parseParamData("ipAddress=11&comparator=contains"), 200);
+        assertTrue(xml.contains("count=\"1\""));
+        
+    }
+    
+    @Test
+    public void testIpInterfaceIpLikeFilter() throws Exception{
+        createTwoIpInterface();
+        String url = "/nodes/1/ipinterfaces";
+        String xml = sendRequest(GET, url, parseParamData("ipAddress=*.*.*.11&comparator=iplike"), 200);
+        assertTrue(xml.contains("count=\"1\""));
+        
     }
 
     @Test

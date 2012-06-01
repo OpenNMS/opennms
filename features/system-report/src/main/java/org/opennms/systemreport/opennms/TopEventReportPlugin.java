@@ -31,16 +31,23 @@ package org.opennms.systemreport.opennms;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.opennms.systemreport.dao.CountedObject;
 import org.opennms.systemreport.dao.EventCountDao;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
-public class TopEventReportPlugin extends AbstractSystemReportPlugin {
+public class TopEventReportPlugin extends AbstractSystemReportPlugin implements InitializingBean {
     @Autowired
     public EventCountDao m_eventCountDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     public String getName() {
         return "TopEvent";

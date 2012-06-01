@@ -165,7 +165,7 @@ public class NetworkBuilder {
 		}
 
 		public InterfaceBuilder setIsSnmpPrimary(final String isSnmpPrimary) {
-			m_iface.setIsSnmpPrimary(OnmsIpInterface.PrimaryType.get(isSnmpPrimary));
+			m_iface.setIsSnmpPrimary(PrimaryType.get(isSnmpPrimary));
 			return this;
 		}
 
@@ -348,7 +348,7 @@ public class NetworkBuilder {
         try {
             m_assetBean.setPropertyValue(name, value);
         } catch (final BeansException e) {
-        	LogUtils.warnf(this, e, "Could not set property '%v' on asset '%v'", value, name);
+        	LogUtils.warnf(this, e, "Could not set property '%s' on asset '%s'", value, name);
         }
     }
 

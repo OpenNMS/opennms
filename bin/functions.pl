@@ -1,8 +1,11 @@
 #!/usr/bin/env perl
 
 use Cwd;
+use File::Basename;
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
+use IO::Handle;
+use IPC::Open2;
 
 use vars qw(
 	$BUILD_PROFILE
@@ -24,11 +27,26 @@ $VERBOSE       = undef;
 
 # If we were called from bin, remove the /bin so we're always
 # rooted in the top-of-tree
-$PREFIX =~ s#/bin/?$##;
+if (basename($PREFIX) eq "bin") {
+	my @dirs = File::Spec->splitdir($PREFIX);
+	pop(@dirs);
+	$PREFIX = File::Spec->catdir(@dirs);
+}
 
 # path to git executable
-$GIT = `which git 2>/dev/null`;
-chomp($GIT);
+$GIT = $ENV{'GIT'};
+if (not defined $GIT or not -x $GIT) {
+	for my $dir (File::Spec->path()) {
+		my $git = File::Spec->catfile($dir, 'git');
+		if ($^O =~ /mswin/i) {
+			$git .= '.exe';
+		}
+		if (-x $git) {
+			$GIT = $git;
+			break;
+		}
+	}
+}
 if ($GIT eq "" or ! -x "$GIT") {
 	warning("Unable to locate git.");
 	$GIT = undef;
@@ -37,7 +55,10 @@ if ($GIT eq "" or ! -x "$GIT") {
 # path to maven executable
 $MVN = $ENV{'MVN'};
 if (not defined $MVN or not -x $MVN) {
-	$MVN = $PREFIX . '/maven/bin/mvn';
+	$MVN = File::Spec->catfile($PREFIX, 'maven', 'bin', 'mvn');
+	if ($^O =~ /mswin/i) {
+		$MVN .= '.bat';
+	}
 }
 
 delete $ENV{'M2_HOME'};
@@ -93,6 +114,12 @@ if (not defined $JAVA_HOME) {
 }
 $ENV{'JAVA_HOME'} = $JAVA_HOME;
 
+
+if (not exists $ENV{'JAVA_VENDOR'}) {
+	warning("You do not have \$JAVA_VENDOR set. This is probably OK, but on some platforms");
+	warning("(or when building with OpenJDK) you might want to set it to 'Sun'.");
+}
+
 $MAVEN_VERSION = `$MVN --version`;
 $MAVEN_VERSION =~ s/^.*Apache Maven ([\d\.]+).*?$/$1/gs;
 chomp($MAVEN_VERSION);
@@ -102,6 +129,7 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 
 if (defined $TESTS) {
 	debug("tests are enabled");
+	unshift(@ARGS, '-DfailIfNoTests=false');
 } else {
 	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
 	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
@@ -127,8 +155,8 @@ if (grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 }
 
 
-if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
-	if (open(FILEIN, $ENV{'HOME'} . "/.opennms-buildrc")) {
+if (-r File::Spec->catfile($ENV{'HOME'}, '.opennms-buildrc')) {
+	if (open(FILEIN, File::Spec->catfile($ENV{'HOME'}, '/.opennms-buildrc'))) {
 		while (my $line = <FILEIN>) {
 			chomp($line);
 			if ($line !~ /^\s*$/ && $line !~ /^\s*\#/) {
@@ -144,7 +172,6 @@ $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
 info("MVN = $MVN");
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
-info("MAVEN_VERSION = $MAVEN_VERSION");
 
 sub clean_git {
 	my @command = ($GIT, "clean", "-fdx", ".");
@@ -255,6 +282,43 @@ sub handle_errors_and_exit_on_failure {
 sub handle_errors_and_exit {
 	my $exit = handle_errors(@_);
 	exit ($exit >> 8);
+}
+
+sub run_command {
+	my $outfile = shift;
+	my @command = @_;
+
+	my $start = time;
+	my $count = 0;
+
+	my $read   = IO::Handle->new();
+	my $write  = IO::Handle->new();
+	my $output = IO::Handle->new();
+
+	if (not defined $outfile) {
+		$outfile = 'output.log';
+	}
+	open($output, '>' . $outfile) or die "unable to write to $outfile: $!";
+	$output->autoflush(1);
+
+	my $pid = open2($read, $write, @command);
+
+	close($write);
+
+	my $elapsed = 0;
+	while (<$read>) {
+		print $output $_;
+		if (($count++ % 1000) == 0) {
+			$elapsed = time - $start;
+			info(sprintf("elapsed time: %.2f minutes", ($elapsed / 60.0)));
+		}
+	}
+
+	close($read);
+	close($output);
+
+	waitpid($pid, 0);
+	return $?;
 }
 
 sub debug {

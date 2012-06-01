@@ -2,6 +2,7 @@ package org.opennms.smoketest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -14,6 +15,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging(true, "DEBUG");
+
         // Google Chrome
         // System.setProperty("webdriver.chrome.driver", "/Users/ranger/Downloads/chromedriver");
         // WebDriver driver = new ChromeDriver();

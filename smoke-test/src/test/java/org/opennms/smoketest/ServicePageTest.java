@@ -54,8 +54,6 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         waitForPageToLoad();
 
-        waitForPageToLoad();
-
         selenium.click("link=Manage Provisioning Requisitions");
         waitForPageToLoad();
 
@@ -69,13 +67,13 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         selenium.click("//input[@value='Add Detector']");
         waitForPageToLoad();
         
-        String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8980"), select("pluginClass", "HTTP"));
+        String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8080"), select("pluginClass", "HTTP"));
         waitForPageToLoad();
         
         selenium.click("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']");
         waitForPageToLoad();
         
-        setTreeFieldsAndSave("foreignSourceEditForm", select("key", "port"), type("value", "8980"));
+        setTreeFieldsAndSave("foreignSourceEditForm", select("key", "port"), type("value", "8080"));
         
         waitForPageToLoad();
         
@@ -97,6 +95,12 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
         waitForPageToLoad();
 
+        selenium.click("//a[text() = 'Add Service']");
+        waitForPageToLoad();
+        
+        setTreeFieldsAndSave("nodeEditForm", type("serviceName", "HTTP-8080"));
+        waitForPageToLoad();
+
         selenium.click("//input[@value='Done']");
         waitForPageToLoad();
 
@@ -105,6 +109,9 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         selenium.click("link=Log out");
         waitForPageToLoad();
+        
+        // Yo dawg, I heard you liked hacks
+        Thread.sleep(10000);
     }
 
     @Test
@@ -161,20 +168,19 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         selenium.click("link=Node List");
         waitForPageToLoad();
         if(selenium.isElementPresent("link=localNode")) {
+            // if there's more than 1 node discovered, it will give a list
             selenium.click("link=localNode");
             waitForPageToLoad();
-            selenium.click("link=HTTP-8980");
-            waitForPageToLoad();
-            assertTrue("Managed text not found",selenium.isTextPresent("Managed"));
-            assertTrue("IP text not found",selenium.isTextPresent("0000:0000:0000:0000:0000:0000:0000:0001"));
-            assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
-        }else if(selenium.isElementPresent("link=HTTP-8980")){
-            selenium.click("link=HTTP-8980");
+        }
+        // otherwise it will go straight to the only node's page
+
+        if(selenium.isElementPresent("link=ICMP")){
+            selenium.click("link=ICMP");
             waitForPageToLoad();
             assertTrue("Managed text not found", selenium.isTextPresent("regexp:(Managed|Not Monitored)"));
             assertTrue("IP text not found", selenium.isTextPresent("regexp:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0*1"));
             assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
-        }else {
+        } else {
             fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
         }
     }

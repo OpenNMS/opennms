@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.statsd;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -50,10 +50,15 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class StatsdTest {
+public class StatsdTest implements InitializingBean {
     @Autowired
     Statsd m_statsd;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
@@ -61,7 +66,6 @@ public class StatsdTest {
     
     @Test
     public void testStartup() throws Exception {
-        assertNotNull(m_statsd);
         m_statsd.start();
         m_statsd.unscheduleReports();
     }

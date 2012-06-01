@@ -31,11 +31,15 @@ package org.opennms.netmgt.poller.remote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -44,15 +48,29 @@ import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,7 +88,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class PollerBackEndIntegrationTest{
+public class PollerBackEndIntegrationTest implements InitializingBean {
     
     @Resource(name="daemon")
     PollerBackEnd m_backEnd;
@@ -81,6 +99,23 @@ public class PollerBackEndIntegrationTest{
     @Autowired
     JdbcTemplate m_jdbcTemplate;
     
+    @Autowired
+    DistPollerDao m_distPollerDao;
+    
+    @Autowired
+    NodeDao m_nodeDao;
+    
+    @Autowired
+    ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
+    LocationMonitorDao m_locationMonitorDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
@@ -90,33 +125,35 @@ public class PollerBackEndIntegrationTest{
     @Transactional
     public void testRegister() {
         
-        Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
+        final Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
         assertNotNull("locations list should not be null", locations);
         assertFalse("locations list should not be empty", locations.isEmpty());
+
+        final int initialCount = m_locationMonitorDao.findAll().size();
         
-        int initialCount = queryForInt("select count(*) from location_monitors");
-        
-        for (OnmsMonitoringLocationDefinition location : locations) {
-            int locationMonitorId = m_backEnd.registerLocationMonitor(location.getName());
+        for (final OnmsMonitoringLocationDefinition location : locations) {
+            final int locationMonitorId = m_backEnd.registerLocationMonitor(location.getName());
             assertTrue(locationMonitorId > 0);
-            assertEquals("REGISTERED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
+            assertEquals(MonitorStatus.REGISTERED, m_locationMonitorDao.get(locationMonitorId).getStatus());
         }
         
-        
-        assertEquals(initialCount + locations.size(), m_jdbcTemplate.queryForInt("select count(*) from location_monitors"));
-        
+        assertEquals(initialCount + locations.size(), m_locationMonitorDao.findAll().size());
     }
     
     @Test
     @Transactional
     public void testPollingStarted() {
-        int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
+        final int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
         m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
-        
-        assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
-        assertEquals(2, queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", locationMonitorId));
-        assertEquals("WonkaOS", queryForString("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", locationMonitorId, "os.name"));
+
+        final OnmsLocationMonitor monitor = m_locationMonitorDao.get(locationMonitorId);
+        assertNotNull(monitor);
+        final Map<String, String> details = monitor.getDetails();
+        assertNotNull(details);
+        assertEquals(MonitorStatus.STARTED, monitor.getStatus());
+        assertEquals(2, details.keySet().size());
+        assertEquals("WonkaOS", details.get("os.name"));
     }
     
     @Test
@@ -127,13 +164,11 @@ public class PollerBackEndIntegrationTest{
         
         m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
         
-        assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
+        assertEquals(MonitorStatus.STARTED, m_locationMonitorDao.get(locationMonitorId).getStatus());
 
         m_backEnd.pollerStopping(locationMonitorId);
         
-        assertEquals("STOPPED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
-        
-        
+        assertEquals(MonitorStatus.STOPPED, m_locationMonitorDao.get(locationMonitorId).getStatus());
     }
     
     @Test
@@ -143,21 +178,20 @@ public class PollerBackEndIntegrationTest{
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
         m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
-        
-        assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
-        
+
+        assertEquals(MonitorStatus.STARTED, m_locationMonitorDao.get(locationMonitorId).getStatus());
         
         Thread.sleep(1500);
 
         m_backEnd.checkForDisconnectedMonitors();
 
-        assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
+        assertEquals(MonitorStatus.STARTED, m_locationMonitorDao.get(locationMonitorId).getStatus());
 
         Thread.sleep(2000);
         
         m_backEnd.checkForDisconnectedMonitors();
         
-        assertEquals("DISCONNECTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
+        assertEquals(MonitorStatus.DISCONNECTED, m_locationMonitorDao.get(locationMonitorId).getStatus());
         
     }
     
@@ -175,18 +209,24 @@ public class PollerBackEndIntegrationTest{
     @Test
     @Transactional
     public void testReportResults() throws InterruptedException {
-        m_jdbcTemplate.execute("INSERT INTO node (nodeId, nodeCreateTime) VALUES (1, now())");
-        m_jdbcTemplate.execute("INSERT INTO ipInterface (id, nodeId, ipAddr)  VALUES (1, 1, '192.168.1.1')");
-        m_jdbcTemplate.execute("INSERT INTO service (serviceId, serviceName) VALUES (1, 'HTTP')");
-        m_jdbcTemplate.execute("INSERT INTO ifServices (id, nodeId, ipAddr, serviceId, ipInterfaceId) VALUES (1, 1, '192.168.1.1', 1, 1)");
+        final OnmsNode node = new OnmsNode(m_distPollerDao.findAll().get(0), "foo");
+        final OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
+        OnmsServiceType serviceType = m_serviceTypeDao.findByName("HTTP");
+        if (serviceType == null) {
+            serviceType = new OnmsServiceType("HTTP");
+            m_serviceTypeDao.save(serviceType);
+            m_serviceTypeDao.flush();
+        }
+        final OnmsMonitoredService service = new OnmsMonitoredService(iface, serviceType);
+        iface.setMonitoredServices(Collections.singleton(service));
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
         
-        int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
-        int serviceId = findServiceId();
-        
-        String ipAddr = queryForString("select ipaddr from ifservices where id = ?", serviceId);
-        
+        final int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
+        final int serviceId = service.getId();
+
         // make sure there is no rrd data
-        File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http" + RrdUtils.getExtension());
+        final File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ InetAddressUtils.str(iface.getIpAddress()) +"/http" + RrdUtils.getExtension());
         if (rrdFile.exists()) {
             rrdFile.delete();
         }
@@ -197,31 +237,21 @@ public class PollerBackEndIntegrationTest{
         Thread.sleep(1000);
         m_backEnd.reportResult(locationMonitorId, serviceId, PollStatus.unavailable());
 
-        assertEquals(2, queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", locationMonitorId));
+        final Collection<OnmsLocationSpecificStatus> statuses = m_locationMonitorDao.getStatusChangesForLocationBetween(new Date(0L), new Date(), "RDU");
+        assertEquals(2, statuses.size());
+
+        final Iterator<OnmsLocationSpecificStatus> statusIterator = statuses.iterator();
+        final OnmsLocationSpecificStatus status1 = statusIterator.next();
+        final OnmsLocationSpecificStatus status2 = statusIterator.next();
+
+        assertEquals(Double.valueOf(1234D), status1.getPollResult().getResponseTime());
+        assertNull(status2.getPollResult().getResponseTime());
 
         assertTrue("rrd file doesn't exist at " + rrdFile.getAbsolutePath(), rrdFile.exists());
     }
 
-    private int findServiceId() {
-        return m_jdbcTemplate.queryForInt("select id from ifservices, service where ifservices.serviceid = service.serviceid and service.servicename='HTTP' limit 1");
-    }
-
-    private void flush() {
-        m_sessionFactory.getCurrentSession().flush();
-    }
-    
-    private String queryForString(String sql, Object... args) {
-        flush();
-        return (String) m_jdbcTemplate.queryForObject(sql, args, String.class);
-    }
-    
-    public int queryForInt(String sql, Object... args) {
-        flush();
-        return m_jdbcTemplate.queryForInt(sql, args);
-    }
-    
     public Map<String, String> getPollerDetails() {
-        Map<String, String> pollerDetails = new HashMap<String, String>();
+        final Map<String, String> pollerDetails = new HashMap<String, String>();
         pollerDetails.put("os.name", "WonkaOS");
         pollerDetails.put("os.version", "1.2.3");
         return pollerDetails;

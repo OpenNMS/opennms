@@ -55,8 +55,7 @@ public class XmpUtil {
     /** Constant <code>MATCHES="~"</code> */
     public static final String MATCHES = "~";
     
-    private static boolean valueMeetsCriteria(XmpVar replyVar, 
-            String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive)
+    private static boolean valueMeetsCriteria(XmpVar replyVar, String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive)
             throws XmpUtilException {
         RE valueRegex = null;
         if (MATCHES.equals(valueOperator)) {

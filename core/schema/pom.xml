@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.schema</artifactId>
   <name>OpenNMS Core Schema</name>
-
   <build>
     <testResources>
       <testResource>
@@ -37,13 +37,11 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
-
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -54,22 +52,18 @@
       <type>pom</type>
       <scope>compile</scope>
     </dependency>
-
     <!-- test dependencies -->
-
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
-		<version>${liquibaseVersion}</version>
+      <version>${liquibaseVersion}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
@@ -96,24 +90,26 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
   <!-- temporary, while building against liquibase snapshot -->
   <repositories>
     <repository>
-      <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
   </repositories>
-
 </project>

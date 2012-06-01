@@ -30,7 +30,7 @@ package org.opennms.protocols.nsclient.detector;
 
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientManager;
 import org.opennms.protocols.nsclient.NsclientPacket;
@@ -83,7 +83,7 @@ public class NsclientDetector extends BasicDetector<NsclientRequest, NsclientPac
         send(getRequest(), getNsclientValidator());
     }
 
-    private ResponseValidator<NsclientPacket> getNsclientValidator() {
+    private static ResponseValidator<NsclientPacket> getNsclientValidator() {
         return new ResponseValidator<NsclientPacket>() {
             @Override
             public boolean validate(final NsclientPacket pack) {

@@ -2,25 +2,23 @@ package org.opennms.netmgt.dao.stats;
 
 import static org.junit.Assert.assertEquals;
 
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Fetch.FetchType;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.util.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -33,19 +31,22 @@ import org.springframework.util.Assert;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AlarmStatisticsServiceTest {
+public class AlarmStatisticsServiceTest implements InitializingBean {
     @Autowired
     DatabasePopulator m_dbPopulator;
 
     @Autowired
-    private AlarmStatisticsService m_statisticsService;
+    private DefaultAlarmStatisticsService m_statisticsService;
 
     private static boolean m_initialized = false;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
-        Assert.notNull(m_statisticsService);
-
         MockLogAppender.setupLogging();
         if (!m_initialized) m_dbPopulator.populateDatabase();
         m_initialized = true;
@@ -53,61 +54,36 @@ public class AlarmStatisticsServiceTest {
     
     @Test
     public void testCount() {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+    	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
-        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
-        
-        criteria.createAlias("node", "node", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+    	cb.fetch("firstEvent", FetchType.EAGER);
+    	cb.fetch("lastEvent", FetchType.EAGER);
 
-        criteria.setProjection(
-                               Projections.distinct(
-                                   Projections.projectionList().add(
-                                       Projections.alias( Projections.property("id"), "id" )
-                                   )
-                               )
-                           );
+        cb.alias("node", "node", JoinType.LEFT_JOIN);
+        cb.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
 
-        OnmsCriteria rootCriteria = new OnmsCriteria(OnmsAlarm.class);
-        rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
-        // rootCriteria.addOrder(Order.desc("lastEventTime"));
-        // rootCriteria.setMaxResults(1);
-        // rootCriteria.setFirstResult(0);
+        cb.distinct();
 
-        final int count = m_statisticsService.getTotalCount(rootCriteria);
+        final int count = m_statisticsService.getTotalCount(cb.toCriteria());
         assertEquals(1, count);
     }
 
     @Test
     public void testCountBySeverity() {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+    	final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+    	cb.ge("severity", OnmsSeverity.NORMAL);
 
-        criteria.add(Restrictions.ge("severity", OnmsSeverity.NORMAL));
-        
-        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
-        
-        criteria.createAlias("node", "node", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+    	cb.fetch("firstEvent", FetchType.EAGER);
+    	cb.fetch("lastEvent", FetchType.EAGER);
 
-        criteria.setProjection(
-                               Projections.distinct(
-                                   Projections.projectionList().add(
-                                       Projections.alias( Projections.property("id"), "id" )
-                                   )
-                               )
-                           );
+        cb.alias("node", "node", JoinType.LEFT_JOIN);
+        cb.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
 
-        OnmsCriteria rootCriteria = new OnmsCriteria(OnmsAlarm.class);
-        rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
-        // rootCriteria.addOrder(Order.desc("lastEventTime"));
-        // rootCriteria.setMaxResults(1);
-        // rootCriteria.setFirstResult(0);
+        cb.distinct();
 
-        final int count = m_statisticsService.getTotalCount(rootCriteria);
+        final int count = m_statisticsService.getTotalCount(cb.toCriteria());
         assertEquals(1, count);
     }
 }

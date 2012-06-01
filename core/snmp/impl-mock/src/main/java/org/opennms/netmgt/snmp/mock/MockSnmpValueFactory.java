@@ -4,9 +4,11 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.mock.snmp.MockSnmpValue;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -26,18 +28,18 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 
 	@Override
 	public SnmpValue getCounter32(final long val) {
-		return new MockSnmpValue.Counter32SnmpValue(Long.valueOf(val).intValue());
+		return new MockSnmpValue.Counter32SnmpValue(val);
 	}
 
 	@Override
 	public SnmpValue getCounter64(final BigInteger val) {
 		if (val == null) return null;
-		return new MockSnmpValue.Counter64SnmpValue(val.longValue());
+		return new MockSnmpValue.Counter64SnmpValue(val);
 	}
 
 	@Override
 	public SnmpValue getGauge32(final long val) {
-		return new MockSnmpValue.Gauge32SnmpValue(Long.valueOf(val).intValue());
+		return new MockSnmpValue.Gauge32SnmpValue(val);
 	}
 
 	@Override
@@ -48,39 +50,34 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 	@Override
 	public SnmpValue getIpAddress(final InetAddress val) {
 		if (val == null) return null;
-		return new MockSnmpValue.IpAddressSnmpValue(InetAddressUtils.str(val));
+		return new MockSnmpValue.IpAddressSnmpValue(val);
 	}
 
 	@Override
 	public SnmpValue getObjectId(final SnmpObjId objId) {
-		return new MockSnmpValue.OidSnmpValue(objId.toString());
+		return new MockSnmpValue.OidSnmpValue(objId);
 	}
 
 	@Override
 	public SnmpValue getTimeTicks(final long val) {
-		return new MockSnmpValue.TimeticksSnmpValue("(" + val + ")");
+		return new MockSnmpValue.TimeticksSnmpValue(val);
 	}
 
 	@Override
 	public SnmpValue getValue(int type, byte[] bytes) {
-		if (bytes == null) return null;
-		final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
-		bb.put(bytes);
-		bb.flip();
-		final String value = m_defaultCharset.decode(bb).toString();
 		switch (type) {
 			case SnmpValue.SNMP_COUNTER32:
-				return SnmpUtils.parseMibValue("Counter32: " + value);
+				return new MockSnmpValue.Counter32SnmpValue(new BigInteger(bytes).longValue());
 			case SnmpValue.SNMP_COUNTER64:
-				return SnmpUtils.parseMibValue("Counter64: " + value);
+				return new MockSnmpValue.Counter64SnmpValue(new BigInteger(bytes));
 			case SnmpValue.SNMP_END_OF_MIB:
 				return MockSnmpValue.END_OF_MIB;
 			case SnmpValue.SNMP_GAUGE32:
-				return SnmpUtils.parseMibValue("Gauge32: " + value);
+				return new MockSnmpValue.Gauge32SnmpValue(new BigInteger(bytes).longValue());
 			case SnmpValue.SNMP_INT32:
-				return SnmpUtils.parseMibValue("INTEGER: " + value);
+				return new MockSnmpValue.Integer32SnmpValue(new BigInteger(bytes).intValue());
 			case SnmpValue.SNMP_IPADDRESS:
-				return SnmpUtils.parseMibValue("IpAddress: " + value);
+				return new MockSnmpValue.IpAddressSnmpValue(bytes);
 			case SnmpValue.SNMP_NO_SUCH_INSTANCE:
 				return MockSnmpValue.NO_SUCH_INSTANCE;
 			case SnmpValue.SNMP_NO_SUCH_OBJECT:
@@ -88,11 +85,11 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 			case SnmpValue.SNMP_NULL:
 				return MockSnmpValue.NULL_VALUE;
 			case SnmpValue.SNMP_OBJECT_IDENTIFIER:
-				return SnmpUtils.parseMibValue("OID: " + value);
+				return new MockSnmpValue.OidSnmpValue(new String(bytes));
 			case SnmpValue.SNMP_OCTET_STRING:
-				return SnmpUtils.parseMibValue("Hex-STRING: " + value);
+				return new MockSnmpValue.OctetStringSnmpValue(bytes);
 			case SnmpValue.SNMP_TIMETICKS:
-				return SnmpUtils.parseMibValue("Timeticks: " + value);
+				return new MockSnmpValue.TimeticksSnmpValue(new BigInteger(bytes).longValue());
 			case SnmpValue.SNMP_OPAQUE:
 				throw new IllegalArgumentException("Unable to handle opaque types in MockSnmpValue");
 			default:
@@ -109,5 +106,63 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 	public SnmpValue getOpaque(final byte[] bs) {
 		throw new IllegalArgumentException("Unable to handle opaque types in MockSnmpValue");
 	}
+	
+	private static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
+
+	SnmpValue parseMibValue(final String mibVal) {
+		if (mibVal.startsWith("OID:")) {
+	    	return getObjectId(SnmpObjId.get(mibVal.substring("OID:".length()).trim()));
+	    } else if (mibVal.startsWith("Timeticks:")) {
+	    	String timeticks = mibVal.substring("Timeticks:".length()).trim();
+			if (timeticks.contains("(")) {
+				timeticks = timeticks.replaceAll("^.*\\((\\d*?)\\).*$", "$1");
+			}
+			return getTimeTicks(Long.valueOf(timeticks));
+		} else if (mibVal.startsWith("STRING:")) {
+			return getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
+		} else if (mibVal.startsWith("INTEGER:")) {
+			return getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim().replaceAll(" *.[Bb]ytes$", "")));
+		} else if (mibVal.startsWith("Gauge32:")) {
+	    	return getGauge32(Long.valueOf(mibVal.substring("Gauge32:".length()).trim()));
+		} else if (mibVal.startsWith("Counter32:")) {
+	    	return getCounter32(Long.valueOf(mibVal.substring("Counter32:".length()).trim()));
+		} else if (mibVal.startsWith("Counter64:")) {
+	    	return getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
+		} else if (mibVal.startsWith("IpAddress:")) {
+	    	return getIpAddress(InetAddressUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
+		} else if (mibVal.startsWith("Hex-STRING:")) {
+			final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
+			final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
+			if (trimmed.matches("^.*[ :].*$")) {
+				for (final String chunk : trimmed.split("[ :]")) {
+					short s = Short.valueOf(chunk, 16);
+					bb.put((byte)(s & 0xFF));
+				}
+			} else {
+				if (trimmed.length() % 2 != 0) {
+					LogUtils.warnf(SnmpUtils.class, "Hex-STRING %s does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
+				}
+				final Matcher m = MockSnmpValueFactory.HEX_CHUNK_PATTERN.matcher(trimmed);
+				while (m.find()) {
+	                short s = Short.valueOf(m.group(1), 16);
+	                bb.put((byte)(s & 0xFF));
+				}
+			}
+			final byte[] parsed = new byte[bb.position()];
+			bb.flip();
+			bb.get(parsed);
+			return getOctetString(parsed);
+	    } else if (mibVal.startsWith("Network Address:")) {
+			return getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
+	    } else if (mibVal.startsWith("BITS:")) {
+	        return getOctetString(mibVal.substring("BITS:".length()).trim().getBytes());
+	    } else if (mibVal.equals("\"\"")) {
+	    	return getNull();
+	    }
+	
+	    throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
+	}
+
+
 
 }

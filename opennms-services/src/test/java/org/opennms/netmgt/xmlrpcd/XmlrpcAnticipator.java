@@ -31,6 +31,7 @@ package org.opennms.netmgt.xmlrpcd;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
@@ -44,6 +45,7 @@ import java.util.Vector;
 
 import junit.framework.AssertionFailedError;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.WebServer;
@@ -241,13 +243,22 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     }
 
     private void sendCheckCall(Socket s) throws IOException {
-        PrintWriter p = new PrintWriter(s.getOutputStream());
-        p.print("POST / HTTP/1.0\r\n");
-        p.print("Connection: close\r\n");
-        p.print("\r\n");
-
-        p.print("<?xml.version=\"1.0\"?><methodCall><methodName>" + CHECK_METHOD_NAME + "</methodName><params></params></methodCall>\r\n");
-        p.close();
+    	OutputStream out = null;
+    	PrintWriter p = null;
+    	try {
+    		out = s.getOutputStream();
+    		p = new PrintWriter(out);
+	        p.print("POST / HTTP/1.0\r\n");
+	        p.print("Connection: close\r\n");
+	        p.print("\r\n");
+	
+	        p.print("<?xml.version=\"1.0\"?><methodCall><methodName>" + CHECK_METHOD_NAME + "</methodName><params></params></methodCall>\r\n");
+    	} finally {
+    		IOUtils.closeQuietly(p);
+    		IOUtils.closeQuietly(out);
+    		out = null;
+    		p = null;
+    	}
     }
     
     private void waitForShutdown() throws IOException {
@@ -284,7 +295,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Object execute(String method, Vector vector) {
+    public Object execute(String method, @SuppressWarnings("rawtypes") Vector vector) {
         if (m_webServer == null) {
             String message = "Hey!  We aren't initialized (anymore)!  "
                 + "We should not be receiving execute calls!";

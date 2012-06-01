@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -120,7 +122,7 @@ public class CategoryModel extends Object {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Category> getCategoryMap() {
-        return new HashMap<String, Category>(m_categoryMap);
+        return Collections.unmodifiableMap(new HashMap<String, Category>(m_categoryMap));
     }
 
     /**
@@ -269,6 +271,8 @@ public class CategoryModel extends Object {
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get node availability for nodeId %d", nodeId);
         } finally {
             d.cleanUp();
         }
@@ -352,11 +356,13 @@ public class CategoryModel extends Object {
                 avail = rs.getDouble(2);
                 retMap.put(new Integer(nodeid), new Double(avail));
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get node availability for nodeIds %s", nodeIds);
         } finally {
             d.cleanUp();
         }
 
-        return retMap;
+        return Collections.unmodifiableMap(retMap);
     }    
 
     /**
@@ -430,6 +436,8 @@ public class CategoryModel extends Object {
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get interface availability for nodeId %d, interface %s", nodeId, ipAddr);
         } finally {
             d.cleanUp();
         }
@@ -512,6 +520,8 @@ public class CategoryModel extends Object {
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get service availability for nodeId %d, interface %s, serviceId %d", nodeId, ipAddr, serviceId);
         } finally {
             d.cleanUp();
         }

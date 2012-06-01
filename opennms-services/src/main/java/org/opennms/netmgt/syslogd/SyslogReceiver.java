@@ -28,19 +28,29 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.SocketTimeoutException;
-
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-
 /**
+ * @deprecated This class should be combined with {@link SyslogHandler}
+ * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
@@ -59,7 +69,7 @@ class SyslogReceiver implements Runnable {
     /**
      * The UDP socket for receipt and transmission of packets from agents.
      */
-    private DatagramSocket m_dgSock;
+    private final DatagramSocket m_dgSock;
 
     /**
      * The context thread
@@ -71,17 +81,19 @@ class SyslogReceiver implements Runnable {
      */
     private String m_logPrefix;
 
-    private String m_matchPattern;
+    private final String m_matchPattern;
 
-    private int m_hostGroup;
+    private final int m_hostGroup;
 
-    private int m_messageGroup;
+    private final int m_messageGroup;
     
-    private String m_discardUei;
+    private final String m_discardUei;
 
-    private UeiList m_UeiList;
+    private final UeiList m_UeiList;
 
-    private HideMessage m_HideMessages;
+    private final HideMessage m_HideMessages;
+
+    private final List<ExecutorService> m_executors = new ArrayList<ExecutorService>();
 
     /**
      * construct a new receiver
@@ -103,7 +115,24 @@ class SyslogReceiver implements Runnable {
         m_HideMessages = hideMessages;
         m_logPrefix = LOG4J_CATEGORY;
 
-    }
+        m_executors.add(new ThreadPoolExecutor(
+            1,
+            Integer.MAX_VALUE,
+            100L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE, false)
+        ));
+
+        m_executors.add(new ThreadPoolExecutor(
+            1,
+            Integer.MAX_VALUE,
+            100L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE, false)
+        ));
+}
 
     /*
      * stop the current receiver
@@ -112,6 +141,12 @@ class SyslogReceiver implements Runnable {
      */
     void stop() throws InterruptedException {
         m_stop = true;
+
+        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
+        for (ExecutorService service : m_executors) {
+            service.shutdown();
+        }
+
         if (m_context != null) {
             ThreadCategory log = ThreadCategory.getInstance(getClass());
             log.debug("Stopping and joining thread context " + m_context.getName());
@@ -122,17 +157,9 @@ class SyslogReceiver implements Runnable {
     }
 
     /**
-     * Return true if this receiver is alive
-     *
-     * @return boolean
-     */
-    boolean isAlive() {
-        return (m_context != null && m_context.isAlive());
-    }
-
-    /**
      * The execution context.
      */
+    @Override
     public void run() {
         // get the context
         m_context = Thread.currentThread();
@@ -178,15 +205,14 @@ class SyslogReceiver implements Runnable {
 
             try {
                 if (!ioInterrupted) {
-                    log.debug("Wating on a datagram to arrive");
+                    log.debug("Waiting on a datagram to arrive");
                 }
 
                 DatagramPacket pkt = new DatagramPacket(buffer, length);
                 m_dgSock.receive(pkt);
 
                 //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
-                Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei), SyslogConnection.class.getSimpleName());
-                worker.start();
+                WaterfallExecutor.waterfall(m_executors, new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 ioInterrupted = false; // reset the flag
             } catch (SocketTimeoutException e) {
                 ioInterrupted = true;
@@ -194,6 +220,12 @@ class SyslogReceiver implements Runnable {
             } catch (InterruptedIOException e) {
                 ioInterrupted = true;
                 continue;
+            } catch (ExecutionException e) {
+                log.error("Task execution failed in " + this.getClass().getSimpleName(), e);
+                break;
+            } catch (InterruptedException e) {
+                log.error("Task interrupted in " + this.getClass().getSimpleName(), e);
+                break;
             } catch (IOException e) {
                 log.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 break;

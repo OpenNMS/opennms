@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -12,30 +12,37 @@
   <modules>
     <module>invd</module>
     <module>acl</module>
-    <module>jdbc-collector</module>
     <module>instrumentationLogReader</module>
+    <module>jdbc-collector</module>
+    <module>juniper-tca-collector</module>
     <module>mdns</module>
+    <module>ncs</module>
     <module>poller</module>
     <module>provisioning</module>
-    <module>root-webapp</module>
+    <module>reporting</module>
+    <module>request-tracker</module>
+    <module>springframework-security</module>
+    <module>system-report</module>
     <module>ticketing</module>
+
+    <!-- SMS monitoring -->
     <module>phonebook</module>
     <module>sms-reflector</module>
-    <module>reporting</module>
-    <module>springframework-security</module>
-    <module>request-tracker</module>
-    <module>system-report</module>
+
+    <!-- webapps -->
+    <module>root-webapp</module>
+
+    <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
     <module>gwt-suggestion-combobox</module>
     <module>gwt-ksc-combobox</module>
+    <module>gwt-ksc-add</module>
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
   </modules>
-
   <profiles>
-
     <profile>
       <id>build.features.remote-poller</id>
       <activation>
@@ -47,7 +54,5 @@
         <module>remote-poller-gwt</module>
       </modules>
     </profile>
-
   </profiles>
-
 </project>

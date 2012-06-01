@@ -33,20 +33,19 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>IcmpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class IcmpDetector extends AbstractDetector {
+public class IcmpDetector extends SyncAbstractDetector {
     
     /**
      * <p>Constructor for IcmpDetector.</p>
@@ -56,16 +55,9 @@ public class IcmpDetector extends AbstractDetector {
         init();
     }
     
-    /**
-     * <p>init</p>
-     */
-    public void init() {
-        setTimeout(PingConstants.DEFAULT_TIMEOUT);
-        setRetries(PingConstants.DEFAULT_RETRIES);
-    }
-    
     /** {@inheritDoc} */
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
+    @Override
+    public boolean isServiceDetected(InetAddress address) {
         
         LogUtils.debugf(this, "isServiceDetected: Testing ICMP based service for address: %s...", address);
 
@@ -97,7 +89,8 @@ public class IcmpDetector extends AbstractDetector {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        
+        setTimeout(PingConstants.DEFAULT_TIMEOUT);
+        setRetries(PingConstants.DEFAULT_RETRIES);
     }
 
     /** {@inheritDoc} */

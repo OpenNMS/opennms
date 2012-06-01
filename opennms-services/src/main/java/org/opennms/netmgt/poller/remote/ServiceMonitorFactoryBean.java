@@ -99,6 +99,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, I
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_monitorClass, "monitorClass");
 		

@@ -95,7 +95,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
 
             for (final Event event : events.getEventCollection()) {
                 if (log().isDebugEnabled()) {
-                    // Log the eui, source, and other important aspects
+                    // Log the uei, source, and other important aspects
                 	final String uuid = event.getUuid();
                     log().debug("Event {");
                     log().debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
@@ -140,6 +140,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventProcessors != null, "property eventPersisters must be set");
     }

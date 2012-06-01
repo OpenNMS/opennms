@@ -43,6 +43,7 @@ import javax.servlet.ServletException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -57,7 +58,6 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
@@ -159,7 +159,8 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         System.err.println("------------------------------------------------------------------------------");
     }
     
-    public void afterServletStart() {
+    @Override
+    protected void afterServletStart() {
         MockLogAppender.setupLogging();
         
         m_databasePopulator = getBean("databasePopulator", DatabasePopulator.class);

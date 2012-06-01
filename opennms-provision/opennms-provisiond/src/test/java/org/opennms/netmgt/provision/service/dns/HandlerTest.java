@@ -33,7 +33,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -41,9 +40,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.springframework.core.io.UrlResource;
 
 public class HandlerTest {
     
@@ -71,15 +71,14 @@ public class HandlerTest {
         
         URL url = new URL(DNS_URL);
         
-        InputStream is = url.openConnection().getInputStream();
+        UrlResource resource = new UrlResource(url);
+
+        MockForeignSourceRepository fsr = new MockForeignSourceRepository();
+        Requisition r = fsr.importResourceRequisition(resource);
         
-        Assert.assertNotNull("input stream is null", is);
-        
-        ModelImport mi = CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, is);
-        
-        Assert.assertTrue("Number of nodes in Model Import > 1", 1 == mi.getNodeCount());
-        Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(mi.getNode(0).getNodeLabel()));
-        Assert.assertTrue("127.0.0.1".equals(mi.getNode(0).getInterface(0).getIpAddr()));
+        Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodeCount());
+        Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(r.getNodes().get(0).getNodeLabel()));
+        Assert.assertTrue("127.0.0.1".equals(r.getNodes().get(0).getInterfaces().get(0).getIpAddr()));
     }
 
     @Test

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -14,49 +14,67 @@
   <build>
     <plugins>
       <plugin>
-       <artifactId>maven-deploy-plugin</artifactId>
-       <configuration>
-         <skip>true</skip>
-       </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-impl</artifactId>
+            <version>2.2</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commonsValidatorVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commonsBeanutilsVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>${xmlApisVersion}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
-            <id>generate-key</id>
-            <phase>generate-resources</phase>
+            <id>unpack-keystore</id>
+            <phase>process-resources</phase>
             <goals>
-              <goal>execute</goal>
+              <goal>unpack</goal>
             </goals>
             <configuration>
-              <source>
-                def keystore = new File(project.properties['webstart.keystore'])
-                if (!keystore.exists()) {
-                  keystore.parentFile.mkdirs();
-                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
-                  def args = [
-                    keystore: project.properties['webstart.keystore'],
-                    alias: project.properties['webstart.keyalias'],
-                    storepass: project.properties['webstart.storepass'],
-                    dname: "cn=${project.properties['webstart.dnameCn']}"
-                  ]
-                  if (project.properties['webstart.keypass']) {
-                    args.put('keypass', project.properties['webstart.keypass'])
-                  }
-                  def ant = new AntBuilder();
-                  ant.genkey(args)
-                }
-              </source>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core.build</groupId>
+                  <artifactId>org.opennms.core.build.keystore</artifactId>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -82,21 +100,21 @@
       </plugin>
       <plugin>
         <groupId>org.dstovall</groupId>
-         <artifactId>onejar-maven-plugin</artifactId>
-         <version>1.4.3</version>
-         <executions>
-            <execution>
-              <configuration>
-                 <mainClass>org.opennms.poller.remote.Main</mainClass>
-                 <onejarVersion>0.96</onejarVersion>
-                 <attachToBuild>true</attachToBuild>
-              </configuration>
-              <phase>package</phase>
-              <goals>
-                 <goal>one-jar</goal>
-              </goals>
-            </execution>
-         </executions>
+        <artifactId>onejar-maven-plugin</artifactId>
+        <version>1.4.3</version>
+        <executions>
+          <execution>
+            <configuration>
+              <mainClass>org.opennms.poller.remote.Main</mainClass>
+              <onejarVersion>0.96</onejarVersion>
+              <attachToBuild>true</attachToBuild>
+            </configuration>
+            <phase>package</phase>
+            <goals>
+              <goal>one-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -123,6 +141,10 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.build</groupId>
+      <artifactId>org.opennms.core.build.keystore</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>

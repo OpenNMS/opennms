@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,10 +49,9 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 /**
@@ -68,10 +68,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private UserManager m_userManager;
 
     private GroupManager m_groupManager;
-
-    private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
-
-    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
 
     private String m_usersConfigurationFile;
     
@@ -91,7 +87,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      */
     private Map<String, OnmsUser> m_magicUsers = null;
 
-    private Map<String, GrantedAuthority[]> m_roles = null;
+    private Map<String, Collection<? extends GrantedAuthority>> m_roles = null;
     
     private long m_magicUsersLastModified;
 
@@ -175,7 +171,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      */
     private void parseMagicUsers() throws DataRetrievalFailureException {
         HashMap<String, OnmsUser> magicUsers = new HashMap<String, OnmsUser>();
-        HashMap<String, GrantedAuthority[]> roles = new HashMap<String, GrantedAuthority[]>();
+        Map<String, Collection<? extends GrantedAuthority>> roles = new HashMap<String, Collection<? extends GrantedAuthority>>();
 
         long lastModified = new File(m_magicUsersConfigurationFile).lastModified();
 
@@ -192,13 +188,23 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         // look up users and their passwords
         String[] configuredUsers = BundleLists.parseBundleList(properties.getProperty("users"));
 
-        for (String user : configuredUsers ) {
+        for (String user : configuredUsers) {
             String username = properties.getProperty("user." + user + ".username");
             String password = properties.getProperty("user." + user + ".password");
 
-            OnmsUser newUser = new OnmsUser();
-            newUser.setUsername(username);
-            newUser.setPassword(PASSWORD_ENCODER.encodePassword(password, null));
+            OnmsUser newUser = null;
+            try {
+                newUser = m_userManager.getOnmsUser(user);
+            } catch (final Exception ioe) {
+                throw new DataRetrievalFailureException("Unable to read user " + user + " from users.xml", ioe);
+            }
+            
+            if (newUser == null) {
+                newUser = new OnmsUser();
+                newUser.setUsername(username);
+                newUser.setPassword(m_userManager.encryptedPassword(password, true));
+                newUser.setPasswordSalted(true);
+            }
 
             magicUsers.put(username, newUser);
         }
@@ -250,7 +256,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         m_roles = roles;
     }
 
-    private GrantedAuthority[] getAuthorityListFromRoleList(LinkedList<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
+    private Collection<? extends GrantedAuthority> getAuthorityListFromRoleList(LinkedList<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
         boolean addToDefaultGroup = false;
         
         for (String role : roleList) {
@@ -266,10 +272,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         }
 
         for (String role : roleList) {
-            authorities.add(new GrantedAuthorityImpl(role));
+            authorities.add(new SimpleGrantedAuthority(role));
         }
 
-        return authorities.toArray(new GrantedAuthority[authorities.size()]);
+        return authorities;
     }
 
     /**
@@ -278,11 +284,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      * @param user a {@link java.lang.String} object.
      * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
      */
-    protected GrantedAuthority[] getAuthoritiesByUsername(String user) {
+    protected Collection<? extends GrantedAuthority> getAuthoritiesByUsername(String user) {
         if (m_roles.containsKey(user)) {
             return m_roles.get(user);
         } else {
-            return new GrantedAuthority[] { ROLE_USER };
+            return Arrays.asList(new GrantedAuthority[] { ROLE_USER });
         }
     }
 
@@ -506,6 +512,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
         Assert.state(!m_useGroups || m_groupsConfigurationFile != null, "groupsConfigurationFile parameter must be set to the location of the groups.xml configuration file");

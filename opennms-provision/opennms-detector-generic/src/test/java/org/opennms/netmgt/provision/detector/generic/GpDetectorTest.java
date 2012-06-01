@@ -38,19 +38,24 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class GpDetectorTest {
+public class GpDetectorTest implements InitializingBean {
     
     @Autowired
     public GpDetector m_detector;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @Before
     public void setUp() {
@@ -67,7 +72,7 @@ public class GpDetectorTest {
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("hello\n");
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
     @Test 
@@ -75,6 +80,6 @@ public class GpDetectorTest {
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("world");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 }

@@ -20,19 +20,19 @@ clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
 my $hostname = `hostname 2>/dev/null`;
 chomp($hostname);
-if ($hostname eq "nen") {
+if ($hostname eq "repo.opennms.org") {
 	# special case, on nen we use the local repo
 	unshift(@ARGS, "-DaltDeploymentRepository=opennms-snapshot::default::file:///var/www/sites/opennms.org/site/repo/snapshots");
 }
 
-my @command = ($MVN, '-Dmaven.test.skip.exec=true', @ARGS, 'deploy');
+my @command = ($MVN, '-Dmaven.test.skip.exec=true', '-DrepositoryLayout=legacy', @ARGS, 'deploy');
 info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
+handle_errors_and_exit_on_failure(run_command('opennms-deploy.log', @command));
 
 chdir($PREFIX . '/opennms-assemblies');
-@command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', @ARGS, 'deploy');
+@command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', '-DrepositoryLayout=legacy', @ARGS, 'deploy');
 info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
+handle_errors_and_exit_on_failure(run_command('assemblies-deploy.log', @command));
 
 clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 

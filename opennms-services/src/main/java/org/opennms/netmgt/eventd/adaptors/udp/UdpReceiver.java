@@ -46,7 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 class UdpReceiver implements Runnable {
     /**
-     * The list of incomming events.
+     * The list of incoming events.
      */
     private List<UdpReceivedEvent> m_eventsIn;
 
@@ -149,7 +149,7 @@ class UdpReceiver implements Runnable {
         // set to avoid numerious tracing message
         boolean ioInterrupted = false;
 
-        // now start processing incomming request
+        // now start processing incoming request
         while (!m_stop) {
             if (m_context.isInterrupted()) {
                 log().debug("Thread context interrupted");

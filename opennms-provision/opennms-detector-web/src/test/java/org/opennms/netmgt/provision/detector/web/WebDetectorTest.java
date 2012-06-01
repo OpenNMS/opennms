@@ -42,10 +42,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -60,7 +61,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class WebDetectorTest {
+public class WebDetectorTest implements InitializingBean {
 
     @Autowired
     private WebDetector m_detector;
@@ -104,6 +105,11 @@ public class WebDetectorTest {
 
     private String notAServerResponse = "NOT A SERVER";
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -136,7 +142,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -147,7 +153,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -158,7 +164,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -169,7 +175,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -179,7 +185,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -189,7 +195,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     @Test
@@ -198,7 +204,7 @@ public class WebDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
     public void setServerOKResponse(String serverOKResponse) {
@@ -209,8 +215,9 @@ public class WebDetectorTest {
         return serverOKResponse;
     }
 
-    private SimpleServer createServer(final String httpResponse) throws Exception {
+    private static SimpleServer createServer(final String httpResponse) throws Exception {
         SimpleServer server = new SimpleServer() {
+            @Override
             public void init() throws Exception {
                 super.init();
                 setServerSocket(new ServerSocket(9000, 0, InetAddress.getLocalHost()));

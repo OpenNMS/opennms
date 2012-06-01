@@ -43,13 +43,13 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 public class UserGroupManagerTest {
     private GroupManager m_groupManager;

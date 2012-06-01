@@ -247,7 +247,7 @@ public class Mib2Events {
         Options opts = new Options();
         opts.addOption("m", "mib", true, "Pathname or URL of MIB file to scan for traps");
         opts.addOption("b", "ueibase", true, "Base UEI for resulting events");
-        opts.addOption("c", "compat", false, "Turn on compatability mode to create output as similar to mib2opennms as possible");
+        opts.addOption("c", "compat", false, "Turn on compatibility mode to create output as similar to mib2opennms as possible");
 
         CommandLineParser parser = new GnuParser();
         try {
@@ -572,6 +572,7 @@ public class Mib2Events {
         Document doc = builder.parse(docStream);
 
         OutputFormat fmt = new OutputFormat(doc);
+        fmt.setOmitXMLDeclaration(true);
         fmt.setLineWidth(72);
         fmt.setIndenting(true);
         fmt.setIndent(2);

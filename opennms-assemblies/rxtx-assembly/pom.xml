@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -12,10 +13,10 @@
   <build>
     <plugins>
       <plugin>
-       <artifactId>maven-deploy-plugin</artifactId>
-       <configuration>
-         <skip>true</skip>
-       </configuration>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -60,8 +61,14 @@
   <!-- for finding rxtx-osgi, can't unpack transitive org.opennms.dependencies:rxtx-dependencies directly above -->
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>

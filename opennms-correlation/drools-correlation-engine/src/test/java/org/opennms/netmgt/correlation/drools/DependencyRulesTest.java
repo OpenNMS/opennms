@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import static org.easymock.EasyMock.expect;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import org.junit.Test;

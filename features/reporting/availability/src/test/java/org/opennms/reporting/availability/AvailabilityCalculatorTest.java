@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -43,7 +44,6 @@ import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 public class AvailabilityCalculatorTest extends TestCase {
 

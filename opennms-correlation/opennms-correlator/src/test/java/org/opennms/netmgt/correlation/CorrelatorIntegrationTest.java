@@ -32,9 +32,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -50,10 +52,15 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:META-INF/opennms/correlation-engine.xml"
 })
 @JUnitConfigurationEnvironment
-public class CorrelatorIntegrationTest {
+public class CorrelatorIntegrationTest implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_eventIpcMgr;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Test
     public void testIt() throws Exception {

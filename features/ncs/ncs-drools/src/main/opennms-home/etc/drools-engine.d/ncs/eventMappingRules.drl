@@ -1,0 +1,176 @@
+package org.opennms.netmgt.correlation.ncs;
+
+import function org.opennms.core.utils.InetAddressUtils.addr;
+import function org.opennms.core.utils.InetAddressUtils.str;
+
+import java.util.Date;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.model.ncs.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.drools.spi.KnowledgeHelper;
+import org.opennms.netmgt.correlation.ncs.NCSCorrelationService;
+import org.opennms.netmgt.correlation.ncs.NCSCorrelationService.AttrParmMap;
+
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.opennms.netmgt.correlation.ncs.NCSCorrelationService correlationService;
+
+
+
+rule "pseudo-wire component down"
+	salience 100
+when
+	$e : Event( uei matches ".*jnxVpnPwDown" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("jnxVpnPwVpnType", 1), map("jnxVpnPwVpnName", 2));
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentDownEvent( c, $e ) );
+	}
+end
+
+rule "pseudo-wire component up"
+	salience 100
+when
+	$e : Event( $uei: uei matches ".*jnxVpnPwUp" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("jnxVpnPwVpnType", 1), map("jnxVpnPwVpnName", 2));
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentUpEvent( c, $e ) );
+	}
+end
+
+rule "Vpn interface (UNI) component down"
+	salience 100
+when
+	$e : Event( uei matches ".*jnxVpnIfDown" )
+then
+	println( "Found Event " + $e.getUei() );
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("jnxVpnIfVpnType", 1), map("jnxVpnIfVpnName", 2));
+	println(" Found matching components: " + list );
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentDownEvent( c, $e ) );
+	}
+end
+
+rule "Vpn interface (UNI) component up"
+	salience 100
+when
+	$e : Event( $uei: uei matches ".*jnxVpnIfUp" )
+then
+	println( "Found Event " + $e.getUei() );
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("jnxVpnIfVpnType", 1), map("jnxVpnIfVpnName", 2));
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentUpEvent( c, $e ) );
+	}
+end
+
+ 
+
+rule "mpls lsp path component down"
+	salience 100
+when
+	$e : Event( uei matches ".*mplsLspPathDown" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsLspName", 1));
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentDownEvent( c, $e ) );
+	}
+end
+
+rule "mpls lsp path component up"
+	salience 100
+when
+	$e : Event( uei matches ".*mplsLspPathUp" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsLspName", 1));
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentUpEvent( c, $e ) );
+	}
+end
+
+rule "node down"
+	salience 100
+when
+	$e : Event( uei matches ".*nodeDown" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e /* no attributes */);
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentDownEvent( c, $e ) );
+	}
+end
+
+rule "node up"
+	salience 100
+when
+	$e : Event( uei matches ".*nodeUp" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e /* no attribures */);
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentUpEvent( c, $e ) );
+	}
+end
+
+
+
+function void println(Object msg)
+{
+	System.err.println(new Date() + " : " + msg);
+}
+
+function AttrParmMap map( String attrName, int parmIndex )
+{
+	return new AttrParmMap(attrName, parmIndex);	
+}
+
+function void sendImpactedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e )
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentImpacted", "Component Correlator" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e)
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentResolved", "Component Correlator" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+

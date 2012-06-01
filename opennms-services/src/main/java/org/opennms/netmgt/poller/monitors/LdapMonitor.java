@@ -28,18 +28,19 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
+import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -62,7 +63,7 @@ import com.novell.ldap.LDAPSocketFactory;
  */
 
 @Distributable
-final public class LdapMonitor extends AbstractServiceMonitor {
+public class LdapMonitor extends AbstractServiceMonitor {
 
     /**
      * Default retries.
@@ -90,19 +91,18 @@ final public class LdapMonitor extends AbstractServiceMonitor {
      * A class to add a timeout to the socket that the LDAP code uses to access
      * an LDAP server
      */
-    private class TimeoutLDAPSocket implements LDAPSocketFactory {
-
-        private int m_timeout;
-
+    private class TimeoutLDAPSocket extends TimeoutSocketFactory implements LDAPSocketFactory {
         public TimeoutLDAPSocket(int timeout) {
-            m_timeout = timeout;
+            super(timeout, getSocketWrapper());
         }
+    }
 
-        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-            Socket socket = new Socket(host, port);
-            socket.setSoTimeout(m_timeout);
-            return socket;
-        }
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
+    }
+
+    protected int determinePort(final Map<String, Object> parameters) {
+        return ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
     }
 
     /**
@@ -120,20 +120,20 @@ final public class LdapMonitor extends AbstractServiceMonitor {
 
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
-	
-        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // get the parameters
         //
-        int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
-        int ldapPort = ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
-        String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
-        String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
+        final int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
+        final int ldapPort = determinePort(parameters);
+        final String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
+        final String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 
-        String password = (String) parameters.get("password");
-        String ldapDn = (String) parameters.get("dn");
+        final String password = (String) parameters.get("password");
+        final String ldapDn = (String) parameters.get("dn");
 
-        Object addressObject = iface.getAddress();
+        final Object addressObject = iface.getAddress();
         String address = null;
         if (addressObject instanceof InetAddress)
             address = InetAddressUtils.str(((InetAddress) addressObject));

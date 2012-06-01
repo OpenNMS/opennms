@@ -34,24 +34,20 @@
   <parent>
     <artifactId>opennms-correlation</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>drools-correlation-engine</artifactId>
-  <name>Drools Correlation Engine</name>
+  <name>OpenNMS Drools Correlation Engine</name>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.opennms.core.build</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
           <additionalBuildcommands>
             <buildcommand>org.drools.ide.droolsbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
         </configuration>
       </plugin>
       <plugin>
@@ -89,7 +85,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
@@ -97,11 +93,18 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -116,10 +119,12 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -129,6 +134,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

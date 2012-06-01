@@ -36,6 +36,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -471,6 +472,6 @@ public class ViewFactory {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, View> getViews() {
-        return m_views;
+        return Collections.unmodifiableMap(m_views);
     }
 }

@@ -46,6 +46,7 @@ public class TestGatewayGroupLoader implements InitializingBean {
 		return m_serviceRegistry;
 	}
 
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(m_serviceRegistry, "serviceRegistry must not be null");
 		

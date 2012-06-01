@@ -69,10 +69,9 @@ import org.opennms.web.svclayer.support.RtcNodeModel;
 import org.opennms.web.svclayer.support.RtcNodeModel.RtcNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContext;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -82,14 +81,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
- * @since 1.8.1
  */
 @Transactional(readOnly = true)
 public class DefaultSurveillanceService implements SurveillanceService, InitializingBean {
@@ -223,6 +214,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         addCriteriaForSurveillanceSet(nodeCriteria, set);
         nodeCriteria.add(Restrictions.ne("type", "D"));
         criteria.addOrder(Order.desc("alarm.severity"));
+        criteria.setMaxResults(100);
         
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
@@ -335,7 +327,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         SecurityContext context = SecurityContextHolder.getContext();
         Assert.state(context != null, "No security context found when calling SecurityContextHolder.getContext()");
         
-        Authentication auth = context.getAuthentication();
+        org.springframework.security.core.Authentication auth = context.getAuthentication();
         Assert.state(auth != null, "No Authentication object found when calling getAuthentication on our SecurityContext object");
         
         Object obj = auth.getPrincipal();
@@ -500,6 +492,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
         Assert.state(m_resourceDao != null, "resourceDao property must be set and cannot be null");

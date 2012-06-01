@@ -67,7 +67,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.annotations.Filter;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -817,7 +816,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
         retval.append("label", m_label);
-        retval.append("parent.id", getParent() == null ? "null" : getParent().getId());
+        retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
         // retval.append("distPoller", m_distPoller);
         retval.append("sysObjectId", m_sysObjectId);

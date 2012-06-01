@@ -3,11 +3,11 @@
 <datacollection-group name="AKCP sensorProbe">
 
   <!-- AKCP sensorProbe -->
-  <resourceType name="hhmsSensorArrayTemp" label="AKCP ${spTempDescr}">
+  <resourceType name="hhmsSensorArrayTemp" label="AKCP" resourceLabel="${spTempDescr}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
-  <resourceType name="hhmsSensorArrayHumid" label="AKCP ${spHumidityDescr}">
+  <resourceType name="hhmsSensorArrayHumid" label="AKCP" resourceLabel="${spHumidityDescr}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
@@ -40,12 +40,12 @@
 
   <!-- AKCP sensorProbe -->
   <group name = "akcp-sensor-temperature" ifType = "all">
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.1.1" instance="hhmsSensorArrayTemp" alias="spTempDescr"  type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.1.3" instance="hhmsSensorArrayTemp" alias="spTempDegree" type="gauge" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.1" instance="hhmsSensorArrayTemp" alias="spTempDescr"  type="string" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.3" instance="hhmsSensorArrayTemp" alias="spTempDegree" type="gauge" />
   </group>
   <group name = "akcp-sensor-humidity" ifType = "all">
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.1.1.1" instance="hhmsSensorArrayHumid" alias="spHumidityDescr"   type="integer"/>
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.1.1.3" instance="hhmsSensorArrayHumid" alias="spHumidityPercent" type="gauge"/>
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.1" instance="hhmsSensorArrayHumid" alias="spHumidityDescr"   type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.3" instance="hhmsSensorArrayHumid" alias="spHumidityPercent" type="gauge"/>
   </group>
 
   <!-- AKCP securityProbe -->

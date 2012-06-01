@@ -3,26 +3,38 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-alarms</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-northbounder-jms</artifactId>
   <name>OpenNMS Northbounder JMS</name>
-
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.netmgt.alarmd.northbounder.jms.*;version="${project.version}"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
-
-	<dependency>
-	  <groupId>org.opennms</groupId>
-	  <artifactId>opennms-alarm-api</artifactId>
-	  <version>${project.version}</version>
-	</dependency>
-
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jms_1.1_spec</artifactId>
       <version>1.1.1</version>
     </dependency>
-
-
   </dependencies>
 </project>

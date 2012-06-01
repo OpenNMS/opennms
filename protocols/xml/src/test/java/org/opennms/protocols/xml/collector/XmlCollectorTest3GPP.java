@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.protocols.xml.collector;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class XmlCollectorTest3GPP extends AbcstractXmlCollectorTest {
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/xml-datacollection-config.junit.xml";
+        return "src/test/resources/3gpp-xml-datacollection-config.xml";
     }
 
     /* (non-Javadoc)
@@ -95,6 +96,11 @@ public class XmlCollectorTest3GPP extends AbcstractXmlCollectorTest {
         parameters.put("collection", "3GPP");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 147);
+        // Test a JRB.
+        File file = new File("target/snmp/1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.jrb");
+        String[] dsnames = new String[] { "cpuUtilization", "memoryUtilization" };
+        Double[] dsvalues = new Double[] { 1.0, 18.0 };
+        validateJrb(file, dsnames, dsvalues);
     }
 
 }

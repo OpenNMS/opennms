@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reporting</artifactId>
@@ -10,7 +11,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.core.build</groupId>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>
@@ -19,7 +20,7 @@
         <configuration>
           <additionalBuildcommands>
             <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
           </additionalProjectnatures>
@@ -47,11 +48,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-utils</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -28,18 +28,23 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.After;
+import org.junit.Before;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 
-import junit.framework.TestCase;
-
-public abstract class MockSnmpAgentTestCase extends TestCase {
+public abstract class MockSnmpAgentTestCase {
     private InetAddress m_agentAddress;
     private int m_agentPort = 1691;
     private ClassPathResource m_propertiesResource = new ClassPathResource("loadSnmpDataTest.properties");
@@ -56,34 +61,45 @@ public abstract class MockSnmpAgentTestCase extends TestCase {
         }
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
+    @Before
+    public void setUp() throws Exception {
+        MockUtil.println("------------ Strategy = " + System.getProperty("org.opennms.snmp.strategyClass")+" --------------------------");
 
-        super.setUp();
-        
         MockLogAppender.setupLogging();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource, m_agentAddress.getHostAddress() + "/" + m_agentPort);
+        agentSetup();
     }
 
-    @Override
-    public void runTest() throws Throwable {
-        super.runTest();
-        
+	protected void agentSetup() throws InterruptedException, IOException {
+		if (usingMockStrategy()) {
+			MockSnmpStrategy.setDataForAddress(new SnmpAgentAddress(m_agentAddress, m_agentPort), m_propertiesResource);
+		} else {
+			m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), m_agentAddress.getHostAddress() + "/" + m_agentPort);
+		}
+	}
+
+	protected boolean usingMockStrategy() {
+		return MockSnmpStrategy.class.getName().equals(System.getProperty("org.opennms.snmp.strategyClass"));
+	}
+
+	@After
+    public void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
-    }
 
-    @Override
-    protected void tearDown() throws Exception {
-        if (m_agent != null) {
-            m_agent.shutDownAndWait();
-        }
+        agentCleanup();
     
-        super.tearDown();
-
-        MockUtil.println("------------ End Test " + getName() + " --------------------------");
+        MockUtil.println("------------ End Test --------------------------");
     }
+
+	protected void agentCleanup() throws InterruptedException {
+		if (usingMockStrategy()) {
+			MockSnmpStrategy.removeHost(new SnmpAgentAddress(m_agentAddress, m_agentPort));
+		} else {
+			if (m_agent != null) {
+				m_agent.shutDownAndWait();
+			}
+		}
+	}
 
     protected SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig config = new SnmpAgentConfig();

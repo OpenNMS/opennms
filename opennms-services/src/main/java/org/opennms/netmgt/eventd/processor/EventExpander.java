@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.eventd.processor;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.EventConfDao;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
@@ -126,13 +129,14 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
     }
 
     /**
      * This method is used to transform an event configuration mask instance
-     * into an event mask instance. This is used when the incomming event does
+     * into an event mask instance. This is used when the incoming event does
      * not have a mask and the information from the configuration object is
      * copied.
      * 
@@ -167,7 +171,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
     /**
      * This method is used to transform an SNMP event configuration instance
-     * into an SNMP event instance. This is used when the incomming event does
+     * into an SNMP event instance. This is used when the incoming event does
      * not have any SNMP information and the information from the configuration
      * object is copied.
      * 
@@ -198,7 +202,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform a log message event configuration
      * instance into a log message event instance. This is used when the
-     * incomming event does not have any log message information and the
+     * incoming event does not have any log message information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -220,7 +224,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform a correlation event configuration
      * instance into a correlation event instance. This is used when the
-     * incomming event does not have any correlation information and the
+     * incoming event does not have any correlation information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -245,7 +249,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform an auto action event configuration
      * instance into an auto action event instance. This is used when the
-     * incomming event does not have any auto action information and the
+     * incoming event does not have any auto action information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -266,7 +270,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform an operator action event configuration
      * instance into an operator action event instance. This is used when the
-     * incomming event does not have any operator action information and the
+     * incoming event does not have any operator action information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -288,7 +292,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform an auto acknowledgement event
      * configuration instance into an auto acknowledgement event instance. This
-     * is used when the incomming event does not have any auto acknowledgement
+     * is used when the incoming event does not have any auto acknowledgement
      * information and the information from the configuration object is copied.
      * 
      * @param src
@@ -309,7 +313,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * This method is used to transform a trouble ticket event configuration
      * instance into a trouble ticket event instance. This is used when the
-     * incomming event does not have any trouble ticket information and the
+     * incoming event does not have any trouble ticket information and the
      * information from the configuration object is copied.
      * 
      * @param src
@@ -715,8 +719,6 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setMouseovertext(econf.getMouseovertext());
             }
 
-            // TODO Do we need an isSecureTag() check here to see if any AlarmData fields 
-            // should be overridden?
             if (e.getAlarmData() == null && econf.getAlarmData() != null) {
                 AlarmData alarmData = new AlarmData();
                 alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
@@ -725,10 +727,22 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
                 alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
                 alarmData.setClearKey(econf.getAlarmData().getClearKey());
+                
+                List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econf.getAlarmData().getUpdateFieldList();
+                if (updateFieldList.size() > 0) {
+                    List<UpdateField> updateFields = new ArrayList<UpdateField>();
+                    for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
+                        UpdateField eventField = new UpdateField();
+                        eventField.setFieldName(econfUpdateField.getFieldName());
+                        eventField.setUpdateOnReduction(econfUpdateField.isUpdateOnReduction());
+                        updateFields.add(eventField);
+                    }
+                    alarmData.setUpdateField(updateFields);
+                }
+                
                 e.setAlarmData(alarmData);
             }
-
-        } 
+        }
         
         Map<String, Map<String, String>> decode = new HashMap<String, Map<String,String>>();
         if (econf != null && econf.getVarbindsdecode() != null) {

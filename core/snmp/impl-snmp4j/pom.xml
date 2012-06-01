@@ -1,25 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
   <name>OpenNMS SNMP4J SNMP Implementation</name>
-
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.netmgt.snmp.snmp4j.*;version="${project.version}"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
-		<version>${project.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>1.11.1</version> 
+      <version>1.11.1</version>
     </dependency>
     <dependency>
       <groupId>org.snmp4j</groupId>
@@ -34,11 +51,16 @@
       <type>pom</type>
     </dependency>
   </dependencies>
-
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>

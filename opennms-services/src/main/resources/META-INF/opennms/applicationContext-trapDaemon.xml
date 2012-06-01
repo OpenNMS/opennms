@@ -2,17 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+  <context:annotation-config />
+  
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
-    <property name="trapdIpMgr" ref="trapdIpMgr"/>
     <property name="eventReader" ref="eventReader"/>
-    <property name="backlogQ" ref="backlogQ"/>
-    <property name="processor" ref="processor"/>
-    <property name="snmpTrapAddress" ref="snmpTrapAddress"/>
-    <property name="snmpTrapPort" ref="snmpTrapPort"/>
-    <property name="snmpV3Users" ref="snmpV3Users"/>
+    <property name="backlogQ" ref="trapdBacklogQ"/>
   </bean>
   
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
@@ -20,12 +19,13 @@
   </bean>
 
   <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
-
-<!-- 
+  
+  <!--
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
     <property name="dataSource" ref="dataSource"/>
   </bean>
   -->
+  
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.HibernateTrapdIpMgr">
     <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
   </bean>
@@ -35,13 +35,13 @@
     <constructor-arg ref="trapdIpMgr" />
   </bean>
   
-  <bean id="backlogQ" class="org.opennms.core.queue.FifoQueueImpl"/>
+  <!-- Single-threaded pool that will queue and convert traps into events -->
+  <bean id="trapdBacklogQ" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+    <constructor-arg value="1"/>
+  </bean>
   
-  <bean id="processor" class="org.opennms.netmgt.trapd.TrapQueueProcessor">
-    <property name="backlogQ" ref="backlogQ"/>
-    <property name="eventConfDao" ref="eventConfDao"/>
-    <property name="eventMgr" ref="eventIpcManager"/>
-    <property name="newSuspect" ref="newSuspectOnTrap"/>
+  <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
+    <property name="eventManager" ref="eventIpcManager"/>
   </bean>
   
   <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>

@@ -3,17 +3,18 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.reporting</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.reporting</groupId>
   <artifactId>org.opennms.features.reporting.availability</artifactId>
   <name>OpenNMS Availability Reports</name>
   <url>http://www.opennms.org/</url>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.core.build</groupId>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>
@@ -55,17 +56,24 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.reporting.availability.*;org.opennms.reporting.availability.render.*;org.opennms.reporting.availability.svclayer.*;org.opennms.reporting.datablock.*;org.opennms.reporting.availability.descriptors.*;version="${project.version}"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-utils</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -171,4 +179,3 @@
     </dependency>
   </dependencies>
 </project>
-

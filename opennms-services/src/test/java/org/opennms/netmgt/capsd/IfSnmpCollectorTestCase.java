@@ -77,7 +77,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
         m_addr = InetAddressUtils.addr(hostName);
         m_ifSnmpc = new IfSnmpCollector(m_addr);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(m_addr) + "/" + PORT);
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.str(m_addr) + "/" + PORT);
         
         runCollection();
     }

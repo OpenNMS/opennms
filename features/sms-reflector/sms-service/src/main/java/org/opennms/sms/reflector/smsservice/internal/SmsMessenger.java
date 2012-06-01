@@ -79,6 +79,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_smsService, "the smsService must not be null");
     }

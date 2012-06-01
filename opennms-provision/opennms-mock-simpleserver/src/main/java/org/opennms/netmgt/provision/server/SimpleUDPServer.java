@@ -33,11 +33,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * <p>SimpleUDPServer class.</p>
@@ -115,7 +114,9 @@ public class SimpleUDPServer {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {} 
+    public void onInit() {
+        // Do nothing by default
+    } 
     
     /**
      * <p>startServer</p>
@@ -271,14 +272,9 @@ public class SimpleUDPServer {
      * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getInetAddress() {
-        if(m_testInetAddress == null){
-            try {
-                return InetAddress.getLocalHost();
-            } catch (final UnknownHostException e) {
-                LogUtils.debugf(this, e, "Unable to get localhost");
-                return null;
-            }
-        }else{
+        if(m_testInetAddress == null) {
+            return InetAddressUtils.getLocalHostAddress();
+        } else {
             return m_testInetAddress;
         }
     }

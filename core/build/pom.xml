@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -11,6 +11,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Core Build Tools</name>
   <modules>
-    <module>castor-maven-plugin</module>
+    <module>keystore</module>
   </modules>
 </project>

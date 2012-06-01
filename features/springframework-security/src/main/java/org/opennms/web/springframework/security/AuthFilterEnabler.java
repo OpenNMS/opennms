@@ -31,23 +31,22 @@ package org.opennms.web.springframework.security;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.FilterManager;
-import org.opennms.web.AclUtils;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.ui.FilterChainOrder;
-import org.springframework.security.ui.SpringSecurityFilter;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * <p>AuthFilterEnabler class.</p>
  */
-public class AuthFilterEnabler extends SpringSecurityFilter {
+public class AuthFilterEnabler implements Filter {
     
     private FilterManager m_filterManager;
     
@@ -76,10 +75,9 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
      */
     /** {@inheritDoc} */
     @Override
-    protected void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         
-        boolean shouldFilter = AclUtils.shouldFilter();
+        boolean shouldFilter = AclUtils.shouldFilter(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
         try {
             if (shouldFilter) {
@@ -108,16 +106,12 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
         
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.core.Ordered#getOrder()
-     */
-    /**
-     * <p>getOrder</p>
-     *
-     * @return a int.
-     */
-    public int getOrder() {
-        return FilterChainOrder.getOrder("LAST");
+    @Override
+    public void destroy() {
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
     }
 
 }

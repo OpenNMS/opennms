@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.provision.persist.NodeProvisionService;
 import org.opennms.web.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -149,6 +149,7 @@ public class NodeProvisioningController extends AbstractController implements
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_successView, "successView must be set");

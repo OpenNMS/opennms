@@ -51,6 +51,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
@@ -78,7 +79,6 @@ import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 /**

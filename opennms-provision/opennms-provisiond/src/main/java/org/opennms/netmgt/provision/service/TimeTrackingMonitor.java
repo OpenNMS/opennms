@@ -183,20 +183,20 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 	 */
 	public String toString() {
 		StringBuffer stats = new StringBuffer();
-		stats.append("Deletes: ").append(m_deleteCount).append(' ');
-		stats.append("Updates: ").append(m_updateCount).append(' ');
-		stats.append("Inserts: ").append(m_insertCount).append('\n');
-		stats.append(m_importDuration).append(' ');
-		stats.append(m_loadingDuration).append(' ');
+		stats.append("Deletes: ").append(m_deleteCount).append(", ");
+		stats.append("Updates: ").append(m_updateCount).append(", ");
+		stats.append("Inserts: ").append(m_insertCount).append("\n");
+		stats.append(m_importDuration).append(", ");
+		stats.append(m_loadingDuration).append(", ");
 		stats.append(m_auditDuration).append('\n');
-		stats.append(m_preprocessingDuration).append(' ');
-		stats.append(m_processingDuration).append(' ');
-		stats.append(m_relateDuration).append(' ');
-		stats.append(m_preprocessingEffort).append(' ');
-		stats.append(m_processingEffort).append(' ');
-		stats.append(m_eventEffort).append(' ');
+		stats.append(m_preprocessingDuration).append(", ");
+		stats.append(m_processingDuration).append(", ");
+		stats.append(m_relateDuration).append("\n");
+		stats.append(m_preprocessingEffort).append(", ");
+		stats.append(m_processingEffort).append(", ");
+		stats.append(m_eventEffort);
 		if (m_eventCount > 0) {
-			stats.append("Avg ").append((double)m_eventEffort.getTotalTime()/(double)m_eventCount).append(" ms per event");
+			stats.append(", Avg ").append((double)m_eventEffort.getTotalTime()/(double)m_eventCount).append(" ms per event");
 		}
 		
 		return stats.toString();

@@ -125,6 +125,7 @@ public class LocationMonitorPauseController extends AbstractCommandController im
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (m_distributedPollerService == null) {
             throw new IllegalStateException("distributedPollerService property cannot be null");

@@ -40,7 +40,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -51,7 +54,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.WaterfallExecutor;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -71,7 +77,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -90,7 +96,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SyslogdEventdLoadTest {
+public class SyslogdEventdLoadTest implements InitializingBean {
 
     private EventCounter m_eventCounter;
     private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
@@ -109,6 +115,11 @@ public class SyslogdEventdLoadTest {
     
     private Syslogd m_syslogd;
 
+    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
+            Executors.newFixedThreadPool(3),
+            Executors.newFixedThreadPool(3)
+    });
+
     static {
         UeiMatch ueiMatch;
         Match match;
@@ -125,6 +136,11 @@ public class SyslogdEventdLoadTest {
             ueiMatch.setUei(String.format("uei.example.org/syslog/loadTest/foo%d", i));
             UEI_LIST.addUeiMatch(ueiMatch);
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before
@@ -196,8 +212,7 @@ public class SyslogdEventdLoadTest {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-            worker.start();
+            WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
         }
 
         long mid = System.currentTimeMillis();
@@ -223,14 +238,12 @@ public class SyslogdEventdLoadTest {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -251,14 +264,12 @@ public class SyslogdEventdLoadTest {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        Thread worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        worker = new Thread(new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI), SyslogConnection.class.getSimpleName());
-        worker.run();
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         

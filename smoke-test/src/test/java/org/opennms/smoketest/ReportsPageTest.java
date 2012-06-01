@@ -1,11 +1,13 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         selenium.click("link=Reports");
@@ -33,7 +35,20 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         assertTrue(selenium.isElementPresent("//input[@value='KSC Reports']"));
      }
-        
+//TODO Tak: Build report download test
+     @Ignore
+     @Test
+     public void testDownloadSampleReport() {
+    	 selenium.click("link=Database Reports");
+         assertTrue(selenium.isElementPresent("link=Online reports"));
+    	 selenium.click("link=Online reports");
+    	 assertTrue(selenium.isTextPresent("Kochwurst sample JasperReport"));
+    	 selenium.click("link=execute");
+    	 selenium.click("id=run");
+    	 selenium.waitForPageToLoad("300000");
+    	 selenium.goBack();
+     }
+     
       @Test
       public void testAllLinks() {
         selenium.click("link=Resource Graphs");
@@ -49,7 +64,7 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         selenium.click("link=KSC Performance, Nodes, Domains");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Customized Reports"));
-        assertTrue(selenium.isTextPresent("Node & Domain Interface Reports"));
+        assertTrue("no Node & Domain Interface Reports found, content is: " + selenium.getHtmlSource(), selenium.isTextPresent("Node & Domain Interface Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
         waitForPageToLoad();
@@ -58,11 +73,11 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Database Reports"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         assertTrue(selenium.isTextPresent("You may run or schedule"));
-        assertTrue(selenium.isElementPresent("link=Batch reports"));
-        assertTrue(selenium.isElementPresent("link=Online reports"));
-        assertTrue(selenium.isElementPresent("//div[@id='content']/div[2]/div/ul/li[3]"));
+        assertTrue(selenium.isElementPresent("link=List reports"));
+        assertTrue(selenium.isElementPresent("link=View and manage pre-run reports"));
         assertTrue(selenium.isElementPresent("link=Manage the batch report schedule"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
+        selenium.goBack();
+        
         waitForPageToLoad();
         selenium.click("link=Statistics Reports");
         waitForPageToLoad();

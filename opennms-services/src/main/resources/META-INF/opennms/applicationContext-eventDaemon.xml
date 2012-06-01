@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
@@ -42,11 +42,13 @@
 
   <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
     <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
+    <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
     <property name="eventHandler" ref="eventdEventHandler"/>
     <property name="eventIpcManagerProxy" ref="eventIpcManager"/>
   </bean>
 
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
+  <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
   
   <!-- 
   <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.JdbcEventdServiceManager">

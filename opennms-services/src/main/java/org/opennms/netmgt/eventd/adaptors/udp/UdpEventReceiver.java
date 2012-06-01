@@ -54,9 +54,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * @version $Id: $
  */
 public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMBean {
     /**
@@ -81,7 +78,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     private UdpUuidSender m_output;
 
     /**
-     * The list of incomming events.
+     * The list of incoming events.
      */
     private List<UdpReceivedEvent> m_eventsIn;
 

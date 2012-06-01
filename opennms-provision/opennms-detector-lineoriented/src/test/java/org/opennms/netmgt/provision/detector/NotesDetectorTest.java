@@ -37,18 +37,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.NotesHttpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class NotesDetectorTest {
+public class NotesDetectorTest implements InitializingBean {
     
     @Autowired
     private NotesHttpDetector m_detector;
@@ -89,9 +90,12 @@ public class NotesDetectorTest {
                                     + "</html>";
     
     private String notAServerResponse = "NOT A SERVER";
-    
 
-    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -111,7 +115,7 @@ public class NotesDetectorTest {
         m_server = createServer(notAServerResponse);
         m_detector.setPort(m_server.getLocalPort());
         
-       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
@@ -124,7 +128,7 @@ public class NotesDetectorTest {
         m_server = createServer(notFoundResponse);
         m_detector.setPort(m_server.getLocalPort());
         
-       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
@@ -137,7 +141,7 @@ public class NotesDetectorTest {
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
@@ -150,7 +154,7 @@ public class NotesDetectorTest {
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
@@ -162,7 +166,7 @@ public class NotesDetectorTest {
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     
@@ -174,7 +178,7 @@ public class NotesDetectorTest {
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
@@ -185,7 +189,7 @@ public class NotesDetectorTest {
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     public void setServerOKResponse(String serverOKResponse) {
@@ -211,7 +215,7 @@ public class NotesDetectorTest {
         return server;
     }
     private boolean doCheck(DetectFuture future) throws InterruptedException {
-        future.await();
+        future.awaitFor();
         return future.isServiceDetected();
     }
 }

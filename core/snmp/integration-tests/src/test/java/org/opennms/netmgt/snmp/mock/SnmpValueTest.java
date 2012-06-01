@@ -13,6 +13,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -20,7 +21,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpValueFactory;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
-import org.opennms.test.mock.MockLogAppender;
 
 public class SnmpValueTest {
 	private static final SnmpValueFactory[] m_factories = new SnmpValueFactory[] {
@@ -187,7 +187,7 @@ public class SnmpValueTest {
 	public void testTimeTicks() {
 		for (final SnmpValueFactory factory : m_factories) {
 			final String className = factory.getClass().getName();
-			final SnmpValue[] values = { factory.getTimeTicks(42), SnmpUtils.parseMibValue("Timeticks: (42) 0:00:42.00") };
+			final SnmpValue[] values = { factory.getTimeTicks(42) };
 			for (final SnmpValue value : values) {
 				assertTrue(className + ": getInetAddress isDisplayable should be true", value.isDisplayable());
 				assertEquals(className + ": getTimeTicks to int should return " + value.toInt(), 42, value.toInt());

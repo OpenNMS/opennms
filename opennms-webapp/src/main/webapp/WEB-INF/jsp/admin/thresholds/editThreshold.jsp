@@ -113,6 +113,22 @@
 <input type="hidden" name="filterSelected" value="${filterSelected}"/>
 <h3>Resource Filters</h3>
 <table class="normal">
+    <tr><td>Filter Operator</td>
+    <td><select name="filterOperator">
+        <c:forEach items="${filterOperators}" var="thisOperator">
+            <c:choose>
+                <c:when test="${threshold.filterOperator==thisOperator}">
+                    <c:set var="selected">selected="selected"</c:set>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="selected" value=""/>
+                </c:otherwise>
+            </c:choose>
+            <option ${selected} value='${thisOperator}'>${thisOperator}</option>
+        </c:forEach>
+    </select></td></tr>
+</table>
+<table class="normal">
 <tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
   <c:forEach items="${threshold.resourceFilter}" var="filter" varStatus="i">
     <tr>
@@ -163,6 +179,9 @@
 <b>Rearmed UEI</b>: A custom UEI to send into the events system when this threshold is re-armed.  If left blank, it defaults to the standard thresholds UEIs.<br/>
 <b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds,<br/>
 you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you.<br/>
-<b>Filters</b>: Only apply for interfaces and Generic Resources. They are applied in order. If the resource match any of them, the threshold will be processed.
+<b>Filter Operator</b>: Define the logical function that will be applied over the thresholds filters to determinate if the threshold will be applied or not.<br />
+<b>Filters</b>: Only apply for interfaces and Generic Resources. They are applied in order.<br/>
+&nbsp;&nbsp;<b>operator=OR</b>: if the resource match any of them, the threshold will be processed.<br/>
+&nbsp;&nbsp;<b>operator=AND</b>: the resource must match all the filters.
 </p>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

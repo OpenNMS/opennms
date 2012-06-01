@@ -35,17 +35,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.SocketUtils;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
-import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
  * <p>NrpeClient class.</p>
@@ -53,7 +49,7 @@ import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager
  * @author Donald Desloge
  * @version $Id: $
  */
-public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
+public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrapper {
     
     /** 
      * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
@@ -104,8 +100,8 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
-            return wrapSocket(socket, InetAddressUtils.str(address), port);
-        } catch (final Exception e) {
+            return wrapSocket(socket);
+        } catch (final IOException e) {
             LogUtils.debugf(this, e, "an error occurred while SSL-wrapping a socket (%s:%d)", address, port);
             return null;
         }
@@ -120,27 +116,14 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      * @return a {@link java.net.Socket} object.
      * @throws java.lang.Exception if any.
      */
-    protected Socket wrapSocket(final Socket socket, final String hostAddress, final int port) throws Exception {
-        if (! isUseSsl()) {
+    public Socket wrapSocket(final Socket socket) throws IOException {
+        if (!isUseSsl()) {
             return socket;
-        } 
-
-        Socket wrappedSocket;
-
-        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
-        // CERTIFICATES
-        SSLSocketFactory sslSF = null;
-
-        final TrustManager[] tm = { new RelaxedX509TrustManager() };
-        final SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, tm, new java.security.SecureRandom());
-        sslSF = sslContext.getSocketFactory();
-        wrappedSocket = sslSF.createSocket(socket, hostAddress, port, true);
-        final SSLSocket sslSocket = (SSLSocket) wrappedSocket;
-        // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
-        // benefits of SSL, but it's how NRPE rolls so we have to play along.
-        sslSocket.setEnabledCipherSuites(ADH_CIPHER_SUITES);
-        return wrappedSocket;
+        } else {
+            // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
+            // benefits of SSL, but it's how NRPE rolls so we have to play along.
+            return SocketUtils.wrapSocketInSslContext(socket, ADH_CIPHER_SUITES);
+        }
     }
 
     /**

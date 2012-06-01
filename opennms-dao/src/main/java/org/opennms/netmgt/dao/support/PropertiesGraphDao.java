@@ -923,6 +923,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @throws java.io.IOException
      *             if any.
      */
+    @Override
     public void afterPropertiesSet() throws IOException {
         Assert.notNull(m_prefabConfigs,
                        "property prefabConfigs must be set to a non-null value");
@@ -941,7 +942,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Resource> getAdhocConfigs() {
-        return m_adhocConfigs;
+        return Collections.unmodifiableMap(m_adhocConfigs);
     }
 
     /**
@@ -964,7 +965,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, Resource> getPrefabConfigs() {
-        return m_prefabConfigs;
+        return Collections.unmodifiableMap(m_prefabConfigs);
     }
 
     /**

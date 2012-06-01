@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.simple.support;
 
 import org.apache.mina.core.session.IoSession;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.BaseDetectorHandler;
@@ -41,6 +42,7 @@ public class TcpDetectorHandler extends BaseDetectorHandler<LineOrientedRequest,
             Object request = getConversation().getRequest();
             session.write(request);
        }else if(!getConversation().hasBanner() && getConversation().getRequest() == null) {
+           LogUtils.infof(this, "TCP session was opened, no banner was expected, and there are no more pending requests. Setting service detection to true.");
            getFuture().setServiceDetected(true);
            session.close(true);
        }

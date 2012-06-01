@@ -29,15 +29,15 @@
 package org.opennms.netmgt.scheduler;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.Assert;
@@ -50,13 +50,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
@@ -75,7 +68,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The pool of threads that are used to executed the runnable instances
      * scheduled by the class' instance.
      */
-    private RunnableConsumerThreadPool m_runner;
+    private ExecutorService m_runner;
 
     /**
      * The status for this fiber.
@@ -94,19 +87,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     public static final class PeekableFifoQueue<T> extends FifoQueueImpl<T> {
         /**
-         * The object hold. This holds the last object peeked at by the
-         * application.
-         */
-        private T m_hold;
-
-        /**
-         * Default constructor.
-         */
-        PeekableFifoQueue() {
-            m_hold = null;
-        }
-
-        /**
          * This method allows the caller to peek at the next object that would
          * be returned on a <code>remove</code> call. If the queue is
          * currently empty then the caller is blocked until an object is put
@@ -121,66 +101,8 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
          *             Thrown if an error occurs removing an item from the
          *             queue.
          */
-        public synchronized T peek() throws InterruptedException, FifoQueueException {
-            if (m_hold == null) {
-                m_hold = super.remove(1L);
-            }
-
-            return m_hold;
-        }
-
-        /**
-         * Removes the next element from the queue and returns it to the caller.
-         * If there is no objects available then the caller is blocked until an
-         * item is available.
-         * 
-         * @return The next element in the queue.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public synchronized T remove() throws InterruptedException, FifoQueueException {
-            T rval = null;
-            if (m_hold != null) {
-                rval = m_hold;
-                m_hold = null;
-            } else {
-                rval = super.remove();
-            }
-
-            return rval;
-        }
-
-        /**
-         * Removes the next element from the queue and returns it to the caller.
-         * If there is no objects available then the caller is blocked until an
-         * item is available. If an object is not available within the time
-         * frame specified by <code>timeout</code>.
-         * 
-         * @param timeout
-         *            The maximum time to wait.
-         * 
-         * @return The next element in the queue.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public synchronized T remove(long timeout) throws InterruptedException, FifoQueueException {
-            T rval = null;
-            if (m_hold != null) {
-                rval = m_hold;
-                m_hold = null;
-            } else {
-                rval = super.remove(timeout);
-            }
-
-            return rval;
+        public T peek() throws InterruptedException {
+            return m_delegate.peek();
         }
     }
 
@@ -196,10 +118,12 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *            The maximum size of the thread pool.
      */
     public LegacyScheduler(String parent, int maxSize) {
-        String name = parent + "Scheduler-" + maxSize;
         m_status = START_PENDING;
-        m_runner = new RunnableConsumerThreadPool(name + " Pool", 0.6f, 1.0f, maxSize);
-        m_queues = Collections.synchronizedMap(new TreeMap<Long, PeekableFifoQueue<ReadyRunnable>>());
+        m_runner = Executors.newFixedThreadPool(
+            maxSize,
+            new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize, false)
+        );
+        m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
     }
@@ -222,12 +146,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *            threads are started.
      */
     public LegacyScheduler(String parent, int maxSize, float lowMark, float hiMark) {
-        String name = parent + "Scheduler-" + maxSize;
-        m_status = START_PENDING;
-        m_runner = new RunnableConsumerThreadPool(name + " Pool", lowMark, hiMark, maxSize);
-        m_queues = Collections.synchronizedMap(new TreeMap<Long, PeekableFifoQueue<ReadyRunnable>>());
-        m_scheduled = 0;
-        m_worker = null;
+        this(parent, maxSize);
     }
 
     /**
@@ -266,9 +185,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         } catch (InterruptedException e) {
             log().info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler: " + e, e);
             Thread.currentThread().interrupt();
-        } catch (FifoQueueException e) {
-            log().info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler: " + e, e);
-            throw new UndeclaredThrowableException(e);
         }
     }
 
@@ -313,7 +229,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
-        m_runner.start();
         m_worker = new Thread(this, getName());
         m_worker.start();
         m_status = STARTING;
@@ -332,7 +247,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
 
         m_status = STOP_PENDING;
         m_worker.interrupt();
-        m_runner.stop();
+        m_runner.shutdown();
 
         log().info("stop: scheduler stopped");
     }
@@ -394,7 +309,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * @return a {@link java.lang.String} object.
      */
     public String getName() {
-        return m_runner.getName();
+        return m_runner.toString();
     }
     
     /**
@@ -412,7 +327,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *
      * @return thread pool
      */
-    public RunnableConsumerThreadPool getRunner() {
+    public ExecutorService getRunner() {
         return m_runner;
     }
 
@@ -486,7 +401,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
              * are peekable fifo queues.
              */
             int runned = 0;
-            FifoQueue<Runnable> out = m_runner.getRunQueue();
             synchronized (m_queues) {
                 /*
                  * Get an iterator so that we can cycle
@@ -519,12 +433,12 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 in.remove();
 
                                 // Add runnable to the execution queue
-                                out.add(readyRun);
+                                m_runner.execute(readyRun);
                                 ++runned;
                             }
                         } catch (InterruptedException e) {
                             return; // jump all the way out
-                        } catch (FifoQueueException e) {
+                        } catch (RejectedExecutionException e) {
                             throw new UndeclaredThrowableException(e);
                         }
 

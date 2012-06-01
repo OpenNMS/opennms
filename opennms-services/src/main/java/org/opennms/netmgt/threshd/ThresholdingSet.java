@@ -30,6 +30,7 @@ package org.opennms.netmgt.threshd;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,7 +66,6 @@ public class ThresholdingSet {
     protected final RrdRepository m_repository;
     
     protected ThresholdsDao m_thresholdsDao;
-    protected ThreshdConfigManager m_configManager;
     
     protected boolean m_initialized = false;
     protected boolean m_hasThresholds = false;
@@ -369,7 +369,6 @@ public class ThresholdingSet {
                 throw new RuntimeException("Could not initialize ThreshdConfigFactory: " + t, t);
             }
             m_thresholdsDao = defaultThresholdsDao;
-            m_configManager = ThreshdConfigFactory.getInstance();            
         }
     }
     
@@ -381,12 +380,13 @@ public class ThresholdingSet {
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
     private List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
+        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
 
         List<String> groupNameList = new LinkedList<String>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackage()) {
 
             // Make certain the the current service is in the package and enabled!
-            if (!m_configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
+            if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
                 if (log().isDebugEnabled())
                     log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
@@ -395,7 +395,7 @@ public class ThresholdingSet {
             // Is the interface in the package?
             if (log().isDebugEnabled())
                 log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
-            if (!m_configManager.interfaceInPackage(hostAddress, pkg)) {
+            if (!configManager.interfaceInPackage(hostAddress, pkg)) {
                 if (log().isDebugEnabled())
                     log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
@@ -422,7 +422,8 @@ public class ThresholdingSet {
 
     protected void updateScheduledOutages() {
         m_scheduledOutages.clear();
-        for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
+        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
+        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackage()) {
             for (String outageCal : pkg.getOutageCalendarCollection()) {
                 log().info("updateScheduledOutages[node=" + m_nodeId + "]: checking scheduled outage '" + outageCal + "'");
                 try {
@@ -441,6 +442,9 @@ public class ThresholdingSet {
     }
 
     private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
+        if (log().isDebugEnabled()) {
+            log().debug("getEntityMap: checking if the resourceType '" + resourceType + "' exists on threshold group " + thresholdGroup);
+        }
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
@@ -449,17 +453,17 @@ public class ThresholdingSet {
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
             if (typeMap == null) {
-                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen).");
+                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen) for threshold group " + thresholdGroup.getName());
                 return null;
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
+                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + " in threshold group " + thresholdGroup.getName() + ". Skipping this group.");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();
         }
-        return entityMap;
+        return Collections.unmodifiableMap(entityMap);
     }
 
     /** {@inheritDoc} */

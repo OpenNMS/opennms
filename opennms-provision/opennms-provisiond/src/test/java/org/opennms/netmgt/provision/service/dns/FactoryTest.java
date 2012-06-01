@@ -34,7 +34,7 @@ import java.net.URLStreamHandler;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 
 public class FactoryTest {
 

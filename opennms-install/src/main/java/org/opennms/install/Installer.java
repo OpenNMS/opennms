@@ -372,7 +372,7 @@ public class Installer {
      */
     public void loadProperties() throws Exception {
         m_properties = new Properties();
-        m_properties.load(Installer.class.getResourceAsStream("installer.properties"));
+        m_properties.load(Installer.class.getResourceAsStream("/installer.properties"));
 
         /*
          * Do this if we want to merge our properties with the system

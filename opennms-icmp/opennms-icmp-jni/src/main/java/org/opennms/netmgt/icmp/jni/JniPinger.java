@@ -30,11 +30,13 @@ package org.opennms.netmgt.icmp.jni;
 
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
+import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_PACKET_SIZE;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -129,7 +131,7 @@ public class JniPinger implements Pinger {
 	 *
 	 * @throws java.io.IOException if any.
 	 */
-	public synchronized void initialize() throws IOException {
+	private synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
 	    try {
     	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
@@ -144,11 +146,20 @@ public class JniPinger implements Pinger {
 	        throw rte;
 	    }
 	}
+	
+	public void initialize4() throws Exception {
+	    initialize();
+	}
+
+	public void initialize6() throws Exception {
+	    throw new IllegalStateException("This pinger does not support IPv6.");
+	}
 
 	public boolean isV4Available() {
 	    try {
 	        initialize();
 	    } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv4");
 	    }
 	    if (s_pingTracker != null && m_error == null) return true;
 	    return false;
@@ -164,14 +175,31 @@ public class JniPinger implements Pinger {
      * @param host a {@link java.net.InetAddress} object.
      * @param timeout a long.
      * @param retries a int.
+     * @param packetsize The size in byte of the ICMP packet.
+     * @param sequenceId a short.
+     * @param cb a {@link org.opennms.netmgt.icmp.jni.PingResponseCallback} object.
+     * @throws java.lang.Exception if any.
+     */
+    public void ping(final InetAddress host, final long timeout, final int retries, final int packetsize, final int sequenceId, final PingResponseCallback cb) throws Exception {
+        initialize();
+        s_pingTracker.sendRequest(new JniPingRequest(host, m_pingerId, sequenceId, timeout, retries, packetsize, new LogPrefixPreservingPingResponseCallback(cb)));
+	}
+
+    /**
+     * <p>ping</p>
+     *
+     * @param host a {@link java.net.InetAddress} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param packetsize The size in byte of the ICMP packet.
      * @param sequenceId a short.
      * @param cb a {@link org.opennms.netmgt.icmp.jni.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
     public void ping(final InetAddress host, final long timeout, final int retries, final int sequenceId, final PingResponseCallback cb) throws Exception {
         initialize();
-        s_pingTracker.sendRequest(new JniPingRequest(host, m_pingerId, sequenceId, timeout, retries, new LogPrefixPreservingPingResponseCallback(cb)));
-	}
+        s_pingTracker.sendRequest(new JniPingRequest(host, m_pingerId, sequenceId, timeout, retries, DEFAULT_PACKET_SIZE, new LogPrefixPreservingPingResponseCallback(cb)));
+        }
 
     /**
      * This method is used to ping a remote host to test for ICMP support. If
@@ -189,14 +217,33 @@ public class JniPinger implements Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public Number ping(final InetAddress host, final long timeout, final int retries) throws Exception {
+    public Number ping(final InetAddress host, final long timeout, final int retries, final int packetsize) throws Exception {
         final SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        ping(host, timeout, retries, (short)1, cb);
+        ping(host, timeout, retries, packetsize,(short)1, cb);
         cb.waitFor();
         cb.rethrowError();
         return cb.getResponseTime();
     }
     
+    /**
+     * This method is used to ping a remote host to test for ICMP support. If
+     * the remote host responds within the specified period, defined by retries
+     * and timeouts, then the response time is returned.
+     *
+     * @param host
+     *            The address to poll.
+     * @param timeout
+     *            The time to wait between each retry.
+     * @param retries
+     *            The number of times to retry
+     * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
+     * @throws InterruptedException if any.
+     * @throws IOException if any.
+     * @throws java.lang.Exception if any.
+     */
+    public Number ping(final InetAddress host, final long timeout, final int retries) throws Exception {
+        return ping(host, timeout, retries, DEFAULT_PACKET_SIZE);
+    }
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
@@ -227,7 +274,7 @@ public class JniPinger implements Pinger {
         
 	    final long threadId = JniPingRequest.getNextTID();
         for (int seqNum = 0; seqNum < count; seqNum++) {
-            final JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0, cb);
+            final JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, DEFAULT_PACKET_SIZE, 0, cb);
             s_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }

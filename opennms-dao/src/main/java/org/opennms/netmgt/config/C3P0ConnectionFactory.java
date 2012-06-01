@@ -61,6 +61,7 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
     	super(configFile, dsName);
     }
 
+    @Override
     protected void initializePool(final JdbcDataSource dataSource) throws SQLException {
         m_pool = new ComboPooledDataSource();
         m_pool.setPassword(dataSource.getPassword());
@@ -81,70 +82,87 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
         }
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         return m_pool.getConnection();
     }
 
+    @Override
     public String getUrl() {
         return m_pool.getJdbcUrl();
     }
 
+    @Override
     public void setUrl(final String url) {
+        validateJdbcUrl(url);
         m_pool.setJdbcUrl(url);
     }
 
+    @Override
     public String getUser() {
         return m_pool.getUser();
     }
 
+    @Override
     public void setUser(final String user) {
         m_pool.setUser(user);
     }
 
+    @Override
     public DataSource getDataSource() {
         return m_pool;
     }
 
+    @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
         return m_pool.getConnection(username, password);
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return m_pool.getLogWriter();
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
         m_pool.setLogWriter(out);
     }
 
+    @Override
     public void setLoginTimeout(int seconds) throws SQLException {
         m_pool.setLoginTimeout(seconds);
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
         return m_pool.getLoginTimeout();
     }
 
+    @Override
     public void close() throws SQLException {
     	super.close();
     	LogUtils.infof(this, "Closing C3P0 pool.");
         m_pool.close();
     }
 
+    @Override
 	public void setIdleTimeout(final int idleTimeout) {
 		m_pool.setMaxIdleTime(idleTimeout);
 	}
 
+    @Override
 	public void setMinPool(final int minPool) {
-		LogUtils.warnf(this, "Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
+		LogUtils.debugf(this, "Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
 	}
 
+    @Override
 	public void setMaxPool(final int maxPool) {
 		m_pool.setMinPoolSize(maxPool);
 		m_pool.setMaxPoolSize(maxPool);
 	}
 
+    @Override
 	public void setMaxSize(final int maxSize) {
-		LogUtils.warnf(this, "C3P0 has no equivalent to setMaxSize.  Ignoring.");
+		LogUtils.debugf(this, "C3P0 has no equivalent to setMaxSize.  Ignoring.");
 	}
 }

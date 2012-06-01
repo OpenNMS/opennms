@@ -38,13 +38,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.UrlResource;
@@ -56,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/testForeignSourceContext.xml"
 })
 @JUnitConfigurationEnvironment
-public class FusedForeignSourceRepositoryTest {
+public class FusedForeignSourceRepositoryTest implements InitializingBean {
     @Autowired
     @Qualifier("pending")
     private ForeignSourceRepository m_pending;
@@ -68,6 +70,11 @@ public class FusedForeignSourceRepositoryTest {
     @Autowired
     @Qualifier("fused")
     private ForeignSourceRepository m_repository;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() {

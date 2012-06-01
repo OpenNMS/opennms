@@ -32,13 +32,17 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+
+import javax.annotation.Resource;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.concurrent.WaterfallExecutor;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -48,7 +52,7 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -75,36 +79,42 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory, TrapNotificationListener, InitializingBean {
-    /*
+public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory, TrapNotificationListener {
+    /**
      * The last status sent to the service control manager.
      */
     private int m_status = START_PENDING;
 
     /**
-     * The communication queue
+     * The thread pool that processes traps
      */
-    private FifoQueue<TrapNotification> m_backlogQ;
+    private ExecutorService m_backlogQ;
 
     /**
      * The queue processing thread
      */
-    private TrapQueueProcessor m_processor;
+    @Autowired
+    private TrapQueueProcessorFactory m_processorFactory;
 
     /**
      * The class instance used to receive new events from for the system.
      */
+    @Autowired
     private BroadcastEventProcessor m_eventReader;
-
+    
     /**
      * Trapd IP manager.  Contains IP address -> node ID mapping.
      */
+    @Autowired
     private TrapdIpMgr m_trapdIpMgr;
 
-	private String m_snmpTrapAddress;
+    @Resource(name="snmpTrapAddress")
+    private String m_snmpTrapAddress;
 
+    @Resource(name="snmpTrapPort")
     private Integer m_snmpTrapPort;
 
+    @Resource(name="snmpV3Users")
     private List<SnmpV3User> m_snmpV3Users;
 
     private boolean m_registeredForTraps;
@@ -128,22 +138,19 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      *
      * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
      */
+    @Override
     public TrapProcessor createTrapProcessor() {
         return new EventCreator(m_trapdIpMgr);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void trapReceived(TrapNotification trapNotification) {
-        addTrap(trapNotification);
-    }
-
-    private void addTrap(TrapNotification o) {
         try {
-            m_backlogQ.add(o);
+            WaterfallExecutor.waterfall(Collections.singletonList(m_backlogQ), m_processorFactory.getInstance(trapNotification));
         } catch (InterruptedException e) {
-            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue, it was interrupted");
-            Thread.currentThread().interrupt();
-        } catch (final FifoQueueException e) {
+            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
+        } catch (ExecutionException e) {
             LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
         }
     }
@@ -151,13 +158,11 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     /**
      * <p>onInit</p>
      */
+    @Override
     public synchronized void onInit() {
-        Assert.state(m_trapdIpMgr != null, "trapdIpMgr must be set");
-        Assert.state(m_eventReader != null, "eventReader must be set");
+        BeanUtils.assertAutowiring(this);
+
         Assert.state(m_backlogQ != null, "backlogQ must be set");
-        Assert.state(m_snmpTrapAddress != null, "snmpTrapAddress must be set");
-        Assert.state(m_snmpTrapPort != null, "snmpTrapPort must be set");
-        Assert.state(m_processor != null, "processor must be set");
 
         try {
             m_trapdIpMgr.dataSourceSync();
@@ -168,8 +173,8 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         try {
         	InetAddress address = getInetAddress();
-    		LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), getSnmpTrapPort());
-            SnmpUtils.registerForTraps(this, this, address, getSnmpTrapPort(), getSnmpV3Users());
+    		LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
+            SnmpUtils.registerForTraps(this, this, address, m_snmpTrapPort, m_snmpV3Users);
             m_registeredForTraps = true;
 
             LogUtils.debugf(this, "init: Creating the trap session");
@@ -211,12 +216,12 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      * @see org.opennms.protocols.snmp.SnmpTrapHandler
      */
+    @Override
     public synchronized void onStart() {
         m_status = STARTING;
 
         LogUtils.debugf(this, "start: Initializing the trapd config factory");
 
-        m_processor.start();
         m_status = RUNNING;
 
         LogUtils.debugf(this, "start: Trapd ready to receive traps");
@@ -225,6 +230,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     /**
      * Pauses Trapd
      */
+    @Override
     public void onPause() {
         if (m_status != RUNNING) {
             return;
@@ -234,7 +240,6 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         LogUtils.debugf(this, "pause: Calling pause on processor");
 
-        m_processor.pause();
         m_status = PAUSED;
 
         LogUtils.debugf(this, "pause: Trapd paused");
@@ -243,6 +248,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     /**
      * Resumes Trapd
      */
+    @Override
     public void onResume() {
         if (m_status != PAUSED) {
             return;
@@ -252,7 +258,6 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         LogUtils.debugf(this, "resume: Calling resume on processor");
 
-        m_processor.resume();
         m_status = RUNNING;
 
         LogUtils.debugf(this, "resume: Trapd resumed");
@@ -262,6 +267,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      * Stops the currently running service. If the service is not running then
      * the command is silently discarded.
      */
+    @Override
     public synchronized void onStop() {
         m_status = STOP_PENDING;
 
@@ -271,7 +277,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         try {
             if (m_registeredForTraps) {
                 LogUtils.debugf(this, "stop: Closing SNMP trap session.");
-                SnmpUtils.unregisterForTraps(this, getInetAddress(), getSnmpTrapPort());
+                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_snmpTrapPort);
                 LogUtils.debugf(this, "stop: SNMP trap session closed.");
             } else {
             	LogUtils.debugf(this, "stop: not attemping to closing SNMP trap session--it was never opened");
@@ -285,7 +291,8 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         LogUtils.debugf(this, "stop: Stopping queue processor.");
 
-        m_processor.stop();
+        m_backlogQ.shutdown();
+
         m_eventReader.close();
 
         m_status = STOPPED;
@@ -298,31 +305,15 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      *
      * @return The service's status.
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void trapError(final int error, final String msg) {
         LogUtils.warnf(this, "Error Processing Received Trap: error = " + error + (msg != null ? ", ref = " + msg : ""));
-    }
-
-    /**
-     * <p>getTrapdIpMgr</p>
-     *
-     * @return a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
-     */
-    public TrapdIpMgr getTrapdIpMgr() {
-        return m_trapdIpMgr;
-    }
-
-    /**
-     * <p>setTrapdIpMgr</p>
-     *
-     * @param trapdIpMgr a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
-     */
-    public void setTrapdIpMgr(TrapdIpMgr trapdIpMgr) {
-        m_trapdIpMgr = trapdIpMgr;
     }
 
     /**
@@ -346,71 +337,18 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     /**
      * <p>getBacklogQ</p>
      *
-     * @return a {@link org.opennms.core.queue.FifoQueue} object.
+     * @return a {@link java.util.concurrent.ExecutorService} object.
      */
-    public FifoQueue<TrapNotification> getBacklogQ() {
+    public ExecutorService getBacklogQ() {
         return m_backlogQ;
     }
 
     /**
      * <p>setBacklogQ</p>
      *
-     * @param backlogQ a {@link org.opennms.core.queue.FifoQueue} object.
+     * @param backlogQ a {@link java.util.concurrent.ExecutorService} object.
      */
-    public void setBacklogQ(FifoQueue<TrapNotification> backlogQ) {
+    public void setBacklogQ(ExecutorService backlogQ) {
         m_backlogQ = backlogQ;
     }
-
-    /**
-     * <p>getProcessor</p>
-     *
-     * @return a {@link org.opennms.netmgt.trapd.TrapQueueProcessor} object.
-     */
-    public TrapQueueProcessor getProcessor() {
-        return m_processor;
-    }
-
-    /**
-     * <p>setProcessor</p>
-     *
-     * @param processor a {@link org.opennms.netmgt.trapd.TrapQueueProcessor} object.
-     */
-    public void setProcessor(TrapQueueProcessor processor) {
-        m_processor = processor;
-    }
-
-    public String getSnmpTrapAddress() {
-    	return m_snmpTrapAddress;
-    }
-    
-    public void setSnmpTrapAddress(final String snmpTrapAddress) {
-    	m_snmpTrapAddress = snmpTrapAddress;
-    }
-    
-    /**
-     * <p>getSnmpTrapPort</p>
-     *
-     * @return a int.
-     */
-    public int getSnmpTrapPort() {
-        return m_snmpTrapPort;
-    }
-    
-    /**
-     * <p>setSnmpTrapPort</p>
-     *
-     * @param snmpTrapPort a int.
-     */
-    public void setSnmpTrapPort(int snmpTrapPort) {
-        m_snmpTrapPort = snmpTrapPort;
-    }
-
-    public List<SnmpV3User> getSnmpV3Users() {
-        return m_snmpV3Users;
-    }
-
-    public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
-        this.m_snmpV3Users = snmpV3Users;
-    }
-
 }

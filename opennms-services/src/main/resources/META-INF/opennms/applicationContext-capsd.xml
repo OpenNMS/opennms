@@ -2,16 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
 	">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:annotation-config />
     
     <bean name="xmlRpcNotifier" class="org.opennms.netmgt.capsd.XmlRpcEventHandlerNotifier" >
         <property name="xmlRpcEnabled">
@@ -29,33 +32,29 @@
     </bean>
     
     
-    <bean name="suspectRunner" class="org.opennms.netmgt.utils.RunnableConsumerThreadPoolFactoryBean">
-        <property name="name" value="Capsd Suspect Pool" />
-        <property name="maxThreads">
-          <util:property-path path="capsdConfig.maxSuspectThreadPoolSize" />
-        </property>
-    </bean>
-    
-    <bean name="rescanRunner" class="org.opennms.netmgt.utils.RunnableConsumerThreadPoolFactoryBean">
-        <property name="name" value="Capsd Rescan Pool" />
-        <property name="maxThreads">
-          <util:property-path path="capsdConfig.maxRescanThreadPoolSize" />
-        </property>
-    </bean>
-    
-    <bean name="capsdScheduler" class="org.opennms.netmgt.capsd.Scheduler">
+    <bean id="suspectRunner" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
         <constructor-arg>
-          <util:property-path path="rescanRunner.runQueue" />
+          <util:property-path path="capsdConfig.maxSuspectThreadPoolSize" />
         </constructor-arg>
+        <!-- <property name="name" value="Capsd Suspect Pool" /> -->
+    </bean>
+    
+    <bean id="rescanRunner" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+        <constructor-arg>
+          <util:property-path path="capsdConfig.maxRescanThreadPoolSize" />
+        </constructor-arg>
+        <!-- <property name="name" value="Capsd Rescan Pool" /> -->
+    </bean>
+
+    <bean name="capsdScheduler" class="org.opennms.netmgt.capsd.Scheduler">
+        <constructor-arg ref="rescanRunner"/>
         <constructor-arg ref="rescanProcessorFactory"/>
     </bean>
     
     <bean name="capsdBroadcastProcessor" class="org.opennms.netmgt.capsd.BroadcastEventProcessor">
         <property name="scheduler" ref="capsdScheduler" />
         <property name="suspectEventProcessorFactory" ref="suspectEventProcessorFactory"/>
-        <property name="suspectQueue">
-          <util:property-path path="suspectRunner.runQueue" />
-        </property>
+        <property name="suspectQueue" ref="suspectRunner"/>
         <property name="localServer">
           <util:property-path path="onmsServerConfig.serverName" />
         </property>
@@ -74,13 +73,9 @@
     
     
     <bean name="daemon" class="org.opennms.netmgt.capsd.Capsd">
-        <property name="suspectEventProcessorFactory" ref="suspectEventProcessorFactory"/>
-        <property name="capsdDbSyncer" ref="syncer" />
-        <property name="capsdConfig" ref="capsdConfig"/>
         <property name="suspectRunner" ref="suspectRunner" />
         <property name="rescanRunner" ref="rescanRunner" />
         <property name="eventListener" ref="capsdEventListenerAdapter" />
-        <property name="scheduler" ref="capsdScheduler" />
     </bean>
     
 </beans>

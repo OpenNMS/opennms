@@ -43,13 +43,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -61,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JdbcStoredProcedureDetectorTest {
+public class JdbcStoredProcedureDetectorTest implements InitializingBean {
     
     @Autowired
     public JdbcStoredProcedureDetector m_detector;
@@ -69,6 +70,11 @@ public class JdbcStoredProcedureDetectorTest {
     @Autowired
     public DataSource m_dataSource;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws SQLException{
         MockLogAppender.setupLogging();
@@ -116,14 +122,14 @@ public class JdbcStoredProcedureDetectorTest {
     @Test
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
-        assertTrue("JDBCStoredProcedureDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()));
+        assertTrue("JDBCStoredProcedureDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
     
     @Test
     public void testStoredProcedureFail() throws UnknownHostException{
         m_detector.setStoredProcedure("bogus");
         m_detector.init();
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
     
     @Test
@@ -131,7 +137,7 @@ public class JdbcStoredProcedureDetectorTest {
         m_detector.setUser("wrongUserName");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()) );
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
     }
     
 
@@ -140,6 +146,6 @@ public class JdbcStoredProcedureDetectorTest {
         m_detector.setSchema("defaultSchema");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()) );
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
     }
 }

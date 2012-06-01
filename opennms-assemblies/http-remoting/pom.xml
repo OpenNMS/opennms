@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -13,10 +13,10 @@
   <build>
     <plugins>
       <plugin>
-       <artifactId>maven-deploy-plugin</artifactId>
-       <configuration>
-         <skip>true</skip>
-       </configuration>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -65,27 +65,44 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
-
     <!-- test dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
+      <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

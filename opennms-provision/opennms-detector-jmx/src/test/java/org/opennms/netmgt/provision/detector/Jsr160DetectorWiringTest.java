@@ -34,9 +34,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -70,6 +70,7 @@ public class Jsr160DetectorWiringTest implements ApplicationContextAware {
         testWiredDetector(Jsr160Detector.class);
     }
     
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

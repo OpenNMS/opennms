@@ -28,23 +28,45 @@
 
 package org.opennms.core.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class StringUtilsTest extends TestCase {
+public class StringUtilsTest {
     
     private String[] m_expected = { "The", "quick", "fox" };
 
+    @Test
     public void testSimpleCommandArray() {
         String arg = "The   quick fox";
         testCreateCmdArray(m_expected, arg);
     }
     
+    @Test
     public void testQuotedCommandArray() {
         testCreateCmdArray(m_expected, "\"The\" \"quick\" \"fox\"");
     }
 
+    @Test
+    public void testWindowsPaths() {
+    	if (File.separatorChar != '\\') return;
+    	
+    	final String[] trueStrings = new String[] { "C:\\monkey", "C:/monkey", "C:/", "C:\\" };
+    	final String[] falseStrings = new String[] { "C:", "foo/bar", "/tmp/blah", "", "/", "blah:baz" };
+    	
+    	for (final String trueString : trueStrings) {
+    		assertTrue(trueString, StringUtils.isLocalWindowsPath(trueString));
+    	}
+    	for (final String falseString : falseStrings) {
+    		assertFalse(falseString, StringUtils.isLocalWindowsPath(falseString));
+    	}
+    }
+    
     private void testCreateCmdArray(String[] expected, String arg) {
         String[] actual = StringUtils.createCommandArray(arg, '@');
         assertArrayEquals(expected, actual);
@@ -53,6 +75,4 @@ public class StringUtilsTest extends TestCase {
     private void assertArrayEquals(String[] expected, String[] actual) {
         assertEquals(Arrays.asList(expected), Arrays.asList(actual));
     }
-    
-
 }

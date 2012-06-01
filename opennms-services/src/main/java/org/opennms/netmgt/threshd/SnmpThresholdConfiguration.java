@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
@@ -189,7 +190,7 @@ public class SnmpThresholdConfiguration {
      * @return a {@link java.util.Map} object.
      */
     public Map<String,ThresholdResourceType> getGenericResourceTypeMap() {
-        return m_thresholdGroup.getGenericResourceTypeMap();
+        return Collections.unmodifiableMap(m_thresholdGroup.getGenericResourceTypeMap());
     }
 
     /**

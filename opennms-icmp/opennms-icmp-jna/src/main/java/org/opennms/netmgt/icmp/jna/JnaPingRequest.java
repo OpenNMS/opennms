@@ -75,7 +75,13 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * how long to wait for a response
      */
 	private final long m_timeout;
-    
+
+    /**
+     * The ICMP packet size including the header
+     */
+	
+	private final int m_packetsize;
+	
     /**
      * The expiration time of this request
      */
@@ -89,20 +95,21 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     
 	private final AtomicBoolean m_processed = new AtomicBoolean(false);
 	
-    public JnaPingRequest(final JnaPingRequestId id, final long timeout, final int retries, final ThreadCategory log, final PingResponseCallback cb) {
+    public JnaPingRequest(final JnaPingRequestId id, final long timeout, final int retries, final int packetsize, final ThreadCategory log, final PingResponseCallback cb) {
         m_id = id;
         m_retries = retries;
+        m_packetsize = packetsize;
         m_timeout = timeout;
         m_log = log;
         m_callback = new LogPrefixPreservingPingResponseCallback(cb);
     }
 	
-    public JnaPingRequest(final InetAddress addr, final int identifier, final int sequenceId, final long threadId, final long timeout, final int retries, final PingResponseCallback cb) {
-        this(new JnaPingRequestId(addr, identifier, sequenceId, threadId), timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
+    public JnaPingRequest(final InetAddress addr, final int identifier, final int sequenceId, final long threadId, final long timeout, final int retries, final int packetsize, final PingResponseCallback cb) {
+        this(new JnaPingRequestId(addr, identifier, sequenceId, threadId), timeout, retries, packetsize, ThreadCategory.getInstance(JnaPingRequest.class), cb);
     }
     
-    public JnaPingRequest(final InetAddress addr, final int identifier, final int sequenceId, final long timeout, final int retries, final PingResponseCallback cb) {
-        this(addr, identifier, sequenceId, getNextTID(), timeout, retries, cb);
+    public JnaPingRequest(final InetAddress addr, final int identifier, final int sequenceId, final long timeout, final int retries, final int packetsize, final PingResponseCallback cb) {
+        this(addr, identifier, sequenceId, getNextTID(), timeout, retries, packetsize, cb);
     }
         
     /**
@@ -131,7 +138,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             JnaPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new JnaPingRequest(m_id, m_timeout, (m_retries - 1), m_log, m_callback);
+                    returnval = new JnaPingRequest(m_id, m_timeout, (m_retries - 1),m_packetsize, m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
@@ -226,7 +233,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
         
             m_expiration = System.currentTimeMillis() + m_timeout;
-            v6.ping(addr6, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
+            v6.ping(addr6, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0, m_packetsize);
         } catch (final Throwable t) {
             m_callback.handleError(getAddress(), this, t);
         }
@@ -237,7 +244,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             //throw new IllegalStateException("The m_request field should be set here!!!");
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
             m_expiration = System.currentTimeMillis() + m_timeout;
-            v4.ping(addr4, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
+            v4.ping(addr4, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0, m_packetsize);
         } catch (final Throwable t) {
             m_callback.handleError(getAddress(), this, t);
         }
@@ -255,6 +262,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         sb.append("ID=").append(m_id).append(',');
         sb.append("Retries=").append(m_retries).append(",");
         sb.append("Timeout=").append(m_timeout).append(",");
+        sb.append("Packet-Size=").append(m_packetsize).append(",");
         sb.append("Expiration=").append(m_expiration).append(',');
         sb.append("Callback=").append(m_callback);
         sb.append("]");

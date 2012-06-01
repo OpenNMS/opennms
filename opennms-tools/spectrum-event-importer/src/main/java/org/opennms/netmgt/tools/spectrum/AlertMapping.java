@@ -29,6 +29,7 @@
 package org.opennms.netmgt.tools.spectrum;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AlertMapping {
@@ -84,7 +85,7 @@ public class AlertMapping {
     }
     
     public List<OidMapping> getOidMappings() {
-        return m_oidMappings;
+        return Collections.unmodifiableList(m_oidMappings);
     }
     
     public void setOidMappings(List<OidMapping> oidMappings) {

@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -79,7 +80,7 @@ public class MailTransportParameters {
     }
             
     Map<String,Object> getParameterMap() {
-        return m_parameterMap;
+        return Collections.unmodifiableMap(m_parameterMap);
     }
 
     MailTransportTest getTransportTest() {

@@ -85,6 +85,11 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      * how long to wait for a response
      */
     private final long m_timeout;
+
+    /**
+     * The ICMP packet size
+     */
+    private final int m_packetsize;
     
     /**
      * The expiration time of this request
@@ -100,24 +105,25 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
     private final AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    public Jni6PingRequest(Jni6PingRequestId id, long timeout, int retries, ThreadCategory log, PingResponseCallback callback) {
+    public Jni6PingRequest(Jni6PingRequestId id, long timeout, int retries, int packetsize, ThreadCategory log, PingResponseCallback callback) {
         m_id = id;
         m_timeout = timeout;
         m_retries = retries;
+        m_packetsize = packetsize;
         m_log = log;
         m_callback = callback;
     }
     
-    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
-        this(new Jni6PingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, logger, cb);
+    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, ThreadCategory logger, PingResponseCallback cb) {
+        this(new Jni6PingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, packetsize, logger, cb);
     }
     
-    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, identifier, sequenceNumber, threadId, timeout, retries, ThreadCategory.getInstance(Jni6PingRequest.class), cb);
+    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, identifier, sequenceNumber, threadId, timeout, retries, packetsize, ThreadCategory.getInstance(Jni6PingRequest.class), cb);
     }
 
-    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, cb);
+    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, packetsize, cb);
     }
 
 
@@ -146,7 +152,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
             Jni6PingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new Jni6PingRequest(m_id, m_timeout, (m_retries - 1), m_log, m_callback);
+                    returnval = new Jni6PingRequest(m_id, m_timeout, (m_retries - 1), m_packetsize, m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
@@ -180,6 +186,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
         sb.append("ID=").append(m_id).append(',');
         sb.append("Retries=").append(m_retries).append(",");
         sb.append("Timeout=").append(m_timeout).append(",");
+        sb.append("Packet-Size=").append(m_packetsize).append(",");
         sb.append("Expiration=").append(m_expiration).append(',');
         sb.append("Callback=").append(m_callback);
         sb.append("]");
@@ -273,7 +280,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
     }
 
     private ICMPv6EchoRequest createRequestPacket() {
-        return new ICMPv6EchoRequest(m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId());
+        return new ICMPv6EchoRequest(m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), m_packetsize);
     }
 
     @Override

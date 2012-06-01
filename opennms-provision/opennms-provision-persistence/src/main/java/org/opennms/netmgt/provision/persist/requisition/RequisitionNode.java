@@ -75,6 +75,9 @@ public class RequisitionNode {
     @XmlAttribute(name = "node-label", required = true)
     protected String nodeLabel;
     
+    @XmlAttribute(name = "parent-foreign-source")
+    protected String parentForeignSource;
+
     @XmlAttribute(name = "parent-foreign-id")
     protected String parentForeignId;
 
@@ -435,6 +438,24 @@ public class RequisitionNode {
     }
 
     /**
+     * <p>Getter for the field <code>parentForeignSource</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getParentForeignSource() {
+        return parentForeignSource;
+    }
+
+    /**
+     * <p>Setter for the field <code>parentForeignSource</code>.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
+    public void setParentForeignSource(String value) {
+        parentForeignSource = value;
+    }
+
+    /**
      * <p>Getter for the field <code>parentForeignId</code>.</p>
      *
      * @return a {@link java.lang.String} object.
@@ -479,6 +500,7 @@ public class RequisitionNode {
     		.append("city", city)
     		.append("foreign-id", foreignId)
     		.append("node-label", nodeLabel)
+    		.append("parent-foreign-source", parentForeignSource)
     		.append("parent-foreign-id", parentForeignId)
     		.append("parent-node-label", parentNodeLabel)
     		.toString();

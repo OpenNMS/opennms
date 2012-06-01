@@ -45,8 +45,11 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.SecurityContextService;
 import org.opennms.web.svclayer.support.SpringSecurityContextService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +62,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @Transactional(readOnly = false)
 public class AssetServiceImpl extends RemoteServiceServlet implements
 		AssetService {
+
+    private final Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + AssetServiceImpl.class.getName());
 
 	/**
 	 * generated serial
@@ -110,12 +115,12 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 	/**
 	 * ROLE_ADMIN is allowed to edit
 	 */
-	private static final String ALLOW_EDIT_ROLE_ADMIN = "ROLE_ADMIN";
+	private static final String ALLOW_EDIT_ROLE_ADMIN = Authentication.ROLE_ADMIN;
 
 	/**
 	 * ROLE_PROVISIONING is allowed to edit
 	 */
-	private static final String ALLOW_EDIT_ROLE_PROVISION = "ROLE_PROVISION";
+	private static final String ALLOW_EDIT_ROLE_PROVISION = Authentication.ROLE_PROVISION;
 
 	/**
 	 * Constant
@@ -134,6 +139,9 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 		 * configurable, we take this over from the old JSP version
 		 */
 		s_autoenableOptions.add(AUTOENABLE);
+		//TODO added "" to be able to remove AUTOENABLE again. this could cause problems at the AUTOENABLE reading code.
+		s_autoenableOptions.add("");
+		
 
 		/*
 		 * Init static strings for connection types TODO: Should be
@@ -142,6 +150,9 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 		s_connectionOptions.add(TELNET_CONNECTION);
 		s_connectionOptions.add(SSH_CONNECTION);
 		s_connectionOptions.add(RSH_CONNECTION);
+		//TODO added "" to be able to remove connection again. this could cause problems at the connection reading code.
+		s_connectionOptions.add("");
+		
 		
 		/*
 		 * Init AllowHtmlFields for sanitizing Strings 
@@ -155,10 +166,19 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 		AssetCommand assetCommand = new AssetCommand();
 		this.m_onmsNode = this.m_nodeDao.get(nodeId);
 		this.m_onmsAssetRecord = this.m_onmsNode.getAssetRecord();
-
+		logger.debug("onmsAssetRecord '{}'", m_onmsAssetRecord);
 		// copy all assetRecord properties to assetCommand for gui
 		BeanUtils.copyProperties(this.m_onmsAssetRecord, assetCommand);
-
+		
+		//This manual null to "" settings is to prevent problems caused by different behavior of browsers in null handling in select boxes 
+		if (assetCommand.getConnection() == null) {
+			assetCommand.setConnection("");
+		}
+		if (assetCommand.getAutoenable() == null) {
+			assetCommand.setAutoenable("");
+		}
+		
+		
 		// set node specific properties for the asset node page
 		assetCommand.setSnmpSysContact(this.m_onmsNode.getSysContact());
 		assetCommand.setSnmpSysDescription(this.m_onmsNode.getSysDescription());
@@ -187,6 +207,8 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 
 		// assign the asset record back to the node
 		this.m_onmsAssetRecord.setNode(this.m_onmsNode);
+		
+		logger.debug("assetCommand: '{}'", assetCommand);
 		return assetCommand;
 	}
 
@@ -253,6 +275,9 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Boolean saveOrUpdateAssetByNodeId(int nodeId,
 			AssetCommand assetCommand) {
+		
+		logger.debug("nodeId: '{}' assetCommand: '{}'", nodeId, assetCommand);
+		
 		Boolean isSaved = false;
 		this.m_onmsNode = this.m_nodeDao.get(nodeId);
 		this.m_onmsAssetRecord = this.m_onmsNode.getAssetRecord();
@@ -261,7 +286,8 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 		BeanUtils.copyProperties(
 				WebSecurityUtils.sanitizeBeanStringProperties(assetCommand, s_allowHtmlFields),
 				this.m_onmsAssetRecord);
-
+		logger.debug("OnmsAssetRecord: '{}'", m_onmsAssetRecord);
+		
 		// set the last modified user from logged in user
 		this.m_onmsAssetRecord.setLastModifiedBy(this.m_securityContext
 				.getUsername());
@@ -272,11 +298,16 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 
 		// try to persist the asset record from the web ui
 		try {
+			logger.debug("OnmsNode '{}'", m_onmsNode.toString());
+			logger.debug("AssetRecordDao to update '{}'", m_assetRecordDao.toString());
+			logger.debug("OnmsAssetRecord to update '{}'", m_onmsAssetRecord.toString());
+			
 			this.m_assetRecordDao.saveOrUpdate(this.m_onmsAssetRecord);
 			isSaved = true;
 		} catch (Exception e) {
 			// TODO: Catch exception and show error in web user interface
 			isSaved = false;
+			logger.error("Problem during saveing or updating assets '{}'", e.getMessage());
 			e.printStackTrace();
 		}
 

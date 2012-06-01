@@ -12,9 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.JUnitHttpServer;
-import org.opennms.core.test.annotations.Webapp;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -85,6 +86,7 @@ public class SeleniumMonitorTest {
 	
 	@Before
 	public void setup() throws Exception{
+	    MockLogAppender.setupLogging(true, "DEBUG");
 		System.setProperty("opennms.home", "src/test/resources");
 	}
 	
@@ -92,7 +94,7 @@ public class SeleniumMonitorTest {
 	@Test
 	@JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path = "src/test/resources/testWar"))
 	public void testPollStatusNotNull() throws UnknownHostException{
-	    MonitoredService monSvc = new MockMonService(1, "papajohns", InetAddress.getByName("http://www.papajohns.co.uk"), "PapaJohnsSite");
+	    MonitoredService monSvc = new MockMonService(1, "papajohns", InetAddressUtils.addr("213.187.33.164"), "PapaJohnsSite");
 	    
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("selenium-test", "SeleniumGroovyTest.groovy");

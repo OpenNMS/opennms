@@ -58,33 +58,6 @@ final class SyslogdIPMgr {
     private static Map<String,Long> m_knownips = new ConcurrentHashMap<String,Long>();
 
     /**
-     * Default construct for the instance. This constructor always throws an
-     * exception to the caller.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *                               Always thrown.
-     *                               <p/>
-     *                               Clears and synchronizes the internal known IP address cache with the
-     *                               current information contained in the database. To synchronize the cache
-     *                               the method opens a new connection to the database, loads the address,
-     *                               and then closes it's connection.
-     * @throws java.sql.SQLException Thrown if the connection cannot be created or a database
-     *                               error occurs.
-     *                               <p/>
-     *                               Clears and synchronizes the internal known IP address cache with the
-     *                               current information contained in the database. To synchronize the cache
-     *                               the method opens a new connection to the database, loads the address,
-     *                               and then closes it's connection.
-     * @throws java.sql.SQLException Thrown if the connection cannot be created or a database
-     *                               error occurs.
-     */
-
-    // WTF, This is a straight Cut'n paste from TRAPD
-    // private SyslodIPMgr() {
-    // throw new UnsupportedOperationException("Construction is not
-    // supported");
-    // }
-    /**
      * Clears and synchronizes the internal known IP address cache with the
      * current information contained in the database. To synchronize the cache
      * the method opens a new connection to the database, loads the address,

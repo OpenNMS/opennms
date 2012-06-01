@@ -282,7 +282,7 @@ public class CollectdPackage {
 		return filterRules.toString();
 	}
 
-	void createIpList(String localServer, boolean verifyServer) {
+	void createIpList(final String localServer, final boolean verifyServer) {
 		Package pkg = getPackage();
 		//
 		// Get a list of ipaddress per package agaist the filter rules from
@@ -294,10 +294,7 @@ public class CollectdPackage {
 			log().debug("createPackageIpMap: package is " + pkg.getName()
 					+ ". filer rules are  " + filterRules);
 		try {
-            List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
-			if (ipList.size() > 0) {
-				putIpList(ipList);
-			}
+            putIpList(FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules));
 		} catch (Throwable t) {
 		    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
 		}

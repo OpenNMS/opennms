@@ -92,6 +92,7 @@ public class InterfaceOutagesController extends AbstractController implements In
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_successView, "property successView must be set");
         Assert.notNull(m_webOutageRepository, "webOutageRepository must be set");

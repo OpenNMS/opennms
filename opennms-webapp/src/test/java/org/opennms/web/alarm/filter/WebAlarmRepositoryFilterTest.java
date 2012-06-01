@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -67,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class WebAlarmRepositoryFilterTest {
+public class WebAlarmRepositoryFilterTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -82,6 +84,11 @@ public class WebAlarmRepositoryFilterTest {
     
     @Autowired
     ApplicationContext m_appContext;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @Before
     public void setUp(){

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='KSCResourceAddGraph'>
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.json.JSON"/>
+  <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='org.opennms.features.gwt.ksc.add.client.KSCResourceAddGraph'/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+
+  <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true" />
+</module>

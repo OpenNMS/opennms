@@ -36,7 +36,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperation;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class RancidProvisioningAdapterTest {
+public class RancidProvisioningAdapterTest implements InitializingBean {
     @Autowired
     private RancidProvisioningAdapter m_adapter;
     
@@ -69,6 +71,11 @@ public class RancidProvisioningAdapterTest {
     private AdapterOperation m_addOperation;
     private AdapterOperation m_deleteOperation;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws Exception {
         NetworkBuilder nb = new NetworkBuilder();

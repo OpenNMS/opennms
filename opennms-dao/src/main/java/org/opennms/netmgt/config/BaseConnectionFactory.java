@@ -32,8 +32,6 @@ import java.beans.PropertyVetoException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
@@ -45,7 +43,6 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 /**
- * <p>C3P0ConnectionFactory class.</p>
  */
 public abstract class BaseConnectionFactory implements ClosableDataSource {
 
@@ -91,14 +88,6 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     protected abstract void initializePool(final JdbcDataSource ds) throws SQLException;
 
     /**
-     * <p>getConnection</p>
-     *
-     * @return a {@link java.sql.Connection} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public abstract Connection getConnection() throws SQLException;
-
-    /**
      * <p>getUrl</p>
      *
      * @return a {@link java.lang.String} object.
@@ -133,23 +122,6 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      */
     public abstract DataSource getDataSource();
 
-    /** {@inheritDoc} */
-    public abstract Connection getConnection(final String username, final String password) throws SQLException;
-
-    /**
-     * <p>getLogWriter</p>
-     *
-     * @return a {@link java.io.PrintWriter} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public abstract PrintWriter getLogWriter() throws SQLException;
-
-    /** {@inheritDoc} */
-    public abstract void setLogWriter(PrintWriter out) throws SQLException;
-
-    /** {@inheritDoc} */
-    public abstract void setLoginTimeout(final int seconds) throws SQLException;
-
     /**
      * <p>getLoginTimeout</p>
      *
@@ -163,6 +135,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      *
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public void close() throws SQLException {
     }
 
@@ -174,6 +147,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @return a T object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public <T> T unwrap(final Class<T> iface) throws SQLException {
         return null;  //TODO
     }
@@ -185,7 +159,23 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public boolean isWrapperFor(final Class<?> iface) throws SQLException {
         return false;  //TODO
+    }
+
+    protected static void validateJdbcUrl(String url) {
+        try {
+            if (url == null) {
+                throw new IllegalArgumentException("Null JDBC URL");
+            } else if (url.length() == 0) {
+                throw new IllegalArgumentException("Blank JDBC URL");
+            } else if (url.matches("\\$\\{.*\\}")) {
+                throw new IllegalArgumentException("JDBC URL cannot contain replacement tokens");
+            }
+        } catch (IllegalArgumentException e) {
+            LogUtils.errorf(e, e, "Invalid JDBC URL specified: %s", e.getMessage());
+            throw e;
+        }
     }
 }

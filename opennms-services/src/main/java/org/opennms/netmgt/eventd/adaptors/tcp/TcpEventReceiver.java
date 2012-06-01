@@ -48,12 +48,12 @@ import org.springframework.util.Assert;
 
 /**
  * This class is the access point for the agents to hook into the event queue.
- * This fiber sets up an server socket that accepts incomming connections on the
+ * This fiber sets up an server socket that accepts incoming connections on the
  * configured port (port 5817 by default).
  *
  * When a connection is established a new thread is started to process the
  * socket connection. The event document is decoded and each of the events are
- * passed to the handlers. Based upon the action of the handlers an event recipt
+ * passed to the handlers. Based upon the action of the handlers an event receipt
  * is generated and sent to the remote client.
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
@@ -67,7 +67,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     /**
      * The main server thread. This thread of execution is used to handle all
-     * incomming connection requests.
+     * incoming connection requests.
      */
     private Thread m_worker;
 
@@ -77,7 +77,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     private TcpServer m_server;
 
     /**
-     * The registered list of event handlers. Each incomming event will be
+     * The registered list of event handlers. Each incoming event will be
      * passed to all event handlers. The event handlers <em>MUST NOT</em>
      * modify the passed event.
      */

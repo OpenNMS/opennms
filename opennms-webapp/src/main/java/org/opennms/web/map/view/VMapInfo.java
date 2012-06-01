@@ -42,9 +42,9 @@ package org.opennms.web.map.view;
  */
 final public class VMapInfo {
 
-    private int id;
-    private String name;
-    private String owner;
+    private final int id;
+    private final String name;
+    private final String owner;
 
 
 	/**

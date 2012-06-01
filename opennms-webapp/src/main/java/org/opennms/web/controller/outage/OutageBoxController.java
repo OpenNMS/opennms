@@ -102,6 +102,7 @@ public class OutageBoxController extends AbstractController implements Initializ
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_successView, "property successView must be set");
         Assert.notNull(m_webOutageRepository, "webOutageRepository must be set");

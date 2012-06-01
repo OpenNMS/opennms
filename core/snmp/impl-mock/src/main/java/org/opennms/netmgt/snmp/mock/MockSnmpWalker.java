@@ -2,22 +2,22 @@ package org.opennms.netmgt.snmp.mock;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class MockSnmpWalker extends SnmpWalker {
 
-	public static final class MockPduBuilder extends WalkerPduBuilder {
+	private static class MockPduBuilder extends WalkerPduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
 
         public MockPduBuilder(final int maxVarsPerPdu) {
@@ -47,16 +47,40 @@ public class MockSnmpWalker extends SnmpWalker {
         public void setMaxRepetitions(final int maxRepetitions) {
         }
     }
+	
+	private static class MockVarBind {
+		SnmpObjId m_oid;
+		SnmpValue m_value;
+		
+		public MockVarBind(SnmpObjId oid, SnmpValue value) {
+			m_oid = oid;
+			m_value = value;
+		}
+
+		public SnmpObjId getOid() {
+			return m_oid;
+		}
+
+		public SnmpValue getValue() {
+			return m_value;
+		}
+		
+		
+	}
 
 	private final SnmpAgentAddress m_agentAddress;
+	private final int m_snmpVersion;
     private final PropertyOidContainer m_container;
     private final ExecutorService m_executor;
 
-    public MockSnmpWalker(final SnmpAgentAddress agentAddress, final PropertyOidContainer container, final String name, final CollectionTracker tracker, int maxVarsPerPdu) {
+    public MockSnmpWalker(final SnmpAgentAddress agentAddress, int snmpVersion, final PropertyOidContainer container, final String name, final CollectionTracker tracker, int maxVarsPerPdu) {
         super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, tracker);
         m_agentAddress = agentAddress;
+        m_snmpVersion = snmpVersion;
         m_container = container;
-        m_executor = Executors.newSingleThreadExecutor();
+        m_executor = Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+        );
     }
 
     @Override
@@ -142,33 +166,36 @@ public class MockSnmpWalker extends SnmpWalker {
 	            	return;
 	            }
 
-	            final Map<SnmpObjId,SnmpValue> responses = new LinkedHashMap<SnmpObjId,SnmpValue>();
+	            List<MockVarBind> responses = new ArrayList<MockVarBind>(m_oids.size());
+	            		
+	            int errorStatus = 0;
+	            int errorIndex = 0;
+	            int index = 1; // snmp index start at 1
 	            for (final SnmpObjId oid : m_oids) {
-	                responses.put(m_container.findNextOidForOid(oid), m_container.findNextValueForOid(oid));
+	            	SnmpObjId nextOid = m_container.findNextOidForOid(oid);
+	            	if (nextOid == null) { 
+		            	LogUtils.debugf(this, "No OID following %s", oid);
+	            		if (m_snmpVersion == SnmpAgentConfig.VERSION1) {
+	            			if (errorStatus == 0) { // for V1 only record the index of the first failing varbind
+	            				errorStatus = CollectionTracker.NO_SUCH_NAME_ERR;
+	            				errorIndex = index;
+	            			}
+	            		}
+            			responses.add(new MockVarBind(oid, MockSnmpValue.END_OF_MIB));
+	            	} else {
+	            		responses.add(new MockVarBind(nextOid, m_container.findValueForOid(nextOid)));
+	            	}
+	            	index++;
 	            }
 
-	            if (processErrors(0, 0)) {
-	            	LogUtils.debugf(this, "Errors while handling responses... Whaaaat?");
-	            } else {
-	            	LogUtils.debugf(this, "Handling %d responses.", responses.size());
-	                for (final Map.Entry<SnmpObjId,SnmpValue> entry : responses.entrySet()) {
-	                	processResponse(entry.getKey(), entry.getValue());
+	            if (!processErrors(errorStatus, errorIndex)) {
+	            	LogUtils.debugf(this, "Responding with PDU of size %d.", responses.size());
+	            	for(MockVarBind vb : responses) {
+	                	processResponse(vb.getOid(), vb.getValue());
 	                }
-	            }
+	            } 
 				buildAndSendNextPdu();
-				/*
-	            m_executor.submit(new Runnable() {
-					@Override
-					public void run() {
-			            try {
-							buildAndSendNextPdu();
-						} catch (final Exception e) {
-							LogUtils.debugf(this, e, "Failed to build and send next PDU.");
-				            handleFatalError(e);
-						}
-					}
-	            });
-	            */
+
 	        } catch (final Throwable t) {
 	            handleFatalError(t);
 	        }

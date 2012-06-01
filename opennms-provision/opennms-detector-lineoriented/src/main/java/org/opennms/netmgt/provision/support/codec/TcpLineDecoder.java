@@ -45,6 +45,7 @@ import org.opennms.netmgt.provision.detector.simple.response.LineOrientedRespons
  * @version $Id: $
  */
 public class TcpLineDecoder extends CumulativeProtocolDecoder {
+    public final static String NO_MESSAGES_RECEIVED = "___OPENNMS_NO_TCP_BANNER_RECEIVED___";
 
     private Charset m_charset;
     
@@ -150,7 +151,7 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
     @Override
     public void finishDecode(final IoSession session, final ProtocolDecoderOutput out) {
         if(session.getReadMessages() == 0) {
-            out.write(new LineOrientedResponse("TCP Failed to send Banner"));
+            out.write(new LineOrientedResponse(NO_MESSAGES_RECEIVED));
         }
         
     }

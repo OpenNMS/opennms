@@ -98,6 +98,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.webServer == null)
             throw new IllegalArgumentException("webServer is required");

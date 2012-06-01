@@ -30,6 +30,7 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class LatencyInterface {
 		// ThresholdEntity map attributes
 	    //
 	    Map<String, ThresholdEntity> thresholdMap = iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
-	    return thresholdMap;
+	    return Collections.unmodifiableMap(thresholdMap);
 	}
 
 	InetAddress getInetAddress() {

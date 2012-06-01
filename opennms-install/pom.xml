@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-install</artifactId>
@@ -10,17 +11,17 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
         <filtering>true</filtering>
         <directory>src/main/filtered</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
     <testResources>
       <testResource>
-      	<filtering>true</filtering>
-      	<directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <directory>src/test/resources</directory>
       </testResource>
     </testResources>
     <plugins>
@@ -90,6 +91,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-version</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.schema</artifactId>
     </dependency>
@@ -98,7 +104,6 @@
       <artifactId>org.opennms.core.schema</artifactId>
       <classifier>liquibase</classifier>
     </dependency>
-
     <!-- Non-OpenNMS dependencies -->
     <dependency>
       <groupId>commons-cli</groupId>

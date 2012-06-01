@@ -189,6 +189,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean<WebServer>,
 	 * @throws java.lang.Exception
 	 *             if any.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (m_port == -1)
 			throw new IllegalArgumentException("port is required");

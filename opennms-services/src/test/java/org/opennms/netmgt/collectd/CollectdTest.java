@@ -48,6 +48,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
@@ -65,6 +66,7 @@ import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -76,7 +78,6 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -117,6 +118,7 @@ public class CollectdTest extends TestCase {
 
         // Test setup
         m_eventIpcManager = m_easyMockUtils.createMock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
         m_collectorConfigDao = m_easyMockUtils.createMock(CollectorConfigDao.class);
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_ipIfDao = m_easyMockUtils.createMock(IpInterfaceDao.class);

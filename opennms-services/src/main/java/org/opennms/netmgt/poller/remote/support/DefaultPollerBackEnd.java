@@ -52,12 +52,12 @@ import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -128,6 +128,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
@@ -146,8 +147,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
         // Nothing to do: job scheduling and RMI export is done externally
+    }
+
+    /**
+     * <p>destroy</p>
+     */
+    @Override
+    public void destroy() {
+        // Nothing to do
     }
 
     /**

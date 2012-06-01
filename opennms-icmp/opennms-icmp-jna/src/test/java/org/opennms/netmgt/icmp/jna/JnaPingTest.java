@@ -191,7 +191,7 @@ public class JnaPingTest extends TestCase {
     private void pingCallbackTimeout(InetAddress addr) throws Exception {
         TestPingResponseCallback cb = new TestPingResponseCallback();
         
-        s_jnaPinger.ping(addr, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
+        s_jnaPinger.ping(addr, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, PingConstants.DEFAULT_PACKET_SIZE,1, cb);
         
         cb.await();
         

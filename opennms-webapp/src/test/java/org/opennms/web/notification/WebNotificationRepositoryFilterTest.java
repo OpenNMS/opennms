@@ -29,7 +29,6 @@
 package org.opennms.web.notification;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.Properties;
@@ -38,11 +37,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.InterfaceFilter;
@@ -53,6 +53,7 @@ import org.opennms.web.notification.filter.NotificationIdListFilter;
 import org.opennms.web.notification.filter.ResponderFilter;
 import org.opennms.web.notification.filter.ServiceFilter;
 import org.opennms.web.notification.filter.UserFilter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,7 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class WebNotificationRepositoryFilterTest {
+public class WebNotificationRepositoryFilterTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
@@ -81,6 +82,11 @@ public class WebNotificationRepositoryFilterTest {
     @Autowired
     @Qualifier("jdbc")
     WebNotificationRepository m_jdbcNotificationRepo;
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
     
     @BeforeClass
     public static void setUpLogging(){
@@ -94,7 +100,6 @@ public class WebNotificationRepositoryFilterTest {
     
     @Before
     public void setUp(){
-        assertNotNull(m_daoNotificationRepo);
         m_dbPopulator.populateDatabase();
     }
     

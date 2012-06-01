@@ -81,6 +81,12 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     private final int m_retries;
     
     /**
+     * The ICMP packet size
+     */
+    private final int m_packetsize;
+    
+
+    /**
      * how long to wait for a response
      */
     private final long m_timeout;
@@ -99,24 +105,25 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     private final AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    public JniPingRequest(JniPingRequestId id, long timeout, int retries, ThreadCategory log, PingResponseCallback callback) {
+    public JniPingRequest(JniPingRequestId id, long timeout, int retries, int packetsize, ThreadCategory log, PingResponseCallback callback) {
         m_id = id;
         m_timeout = timeout;
         m_retries = retries;
+        m_packetsize = packetsize-8;
         m_log = log;
         m_callback = callback;
     }
     
-    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
-        this(new JniPingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, logger, cb);
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, ThreadCategory logger, PingResponseCallback cb) {
+        this(new JniPingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, packetsize, logger, cb);
     }
     
-    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, identifier, sequenceNumber, threadId, timeout, retries, ThreadCategory.getInstance(JniPingRequest.class), cb);
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, identifier, sequenceNumber, threadId, timeout, retries, packetsize, ThreadCategory.getInstance(JniPingRequest.class), cb);
     }
 
-    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, cb);
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, packetsize, cb);
     }
 
 
@@ -145,7 +152,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
             JniPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new JniPingRequest(m_id, m_timeout, (m_retries - 1), m_log, m_callback);
+                    returnval = new JniPingRequest(m_id, m_timeout, (m_retries - 1), m_packetsize, m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
@@ -179,6 +186,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
         sb.append("ID=").append(m_id).append(',');
         sb.append("Retries=").append(m_retries).append(",");
         sb.append("Timeout=").append(m_timeout).append(",");
+        sb.append("Packet-Size=").append(m_packetsize).append(",");
         sb.append("Expiration=").append(m_expiration).append(',');
         sb.append("Callback=").append(m_callback);
         sb.append("]");
@@ -272,7 +280,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     }
 
     private ICMPEchoPacket createRequestPacket() {
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(m_id.getThreadId());
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(m_id.getThreadId(), m_packetsize);
         iPkt.setIdentity((short)m_id.getIdentifier());
         iPkt.setSequenceId((short) m_id.getSequenceNumber());
         iPkt.computeChecksum();

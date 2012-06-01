@@ -1,230 +1,139 @@
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
 package org.opennms.netmgt.xml.eventconf;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.ValidateUsing;
+import org.xml.sax.ContentHandler;
 
 /**
  * This element is used for converting event 
  *  varbind value in static decoded string.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name="decode")
 @XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("serial")
-public class Decode implements java.io.Serializable {
+@ValidateUsing("eventconf.xsd")
+public class Decode implements Serializable {
+	private static final long serialVersionUID = 3617401172106159899L;
 
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * Field _varbindvalue.
-     */
+	// @NotNull
 	@XmlAttribute(name="varbindvalue", required=true)
     private String m_varbindvalue;
 
-    /**
-     * Field _varbinddecodedstring.
-     */
+	// @NotNull
 	@XmlAttribute(name="varbinddecodedstring",required=true)
     private String m_varbinddecodedstring;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
-    public Decode() {
-        super();
+    public String getVarbinddecodedstring() {
+        return m_varbinddecodedstring;
     }
 
-
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (obj instanceof Decode) {
-        
-            Decode temp = (Decode)obj;
-            if (this.m_varbindvalue != null) {
-                if (temp.m_varbindvalue == null) return false;
-                else if (!(this.m_varbindvalue.equals(temp.m_varbindvalue))) 
-                    return false;
-            }
-            else if (temp.m_varbindvalue != null)
-                return false;
-            if (this.m_varbinddecodedstring != null) {
-                if (temp.m_varbinddecodedstring == null) return false;
-                else if (!(this.m_varbinddecodedstring.equals(temp.m_varbinddecodedstring))) 
-                    return false;
-            }
-            else if (temp.m_varbinddecodedstring != null)
-                return false;
-            return true;
-        }
-        return false;
+    public String getVarbindvalue() {
+        return m_varbindvalue;
     }
 
     /**
-     * Returns the value of field 'varbinddecodedstring'.
-     * 
-     * @return the value of field 'Varbinddecodedstring'.
-     */
-    public String getVarbinddecodedstring(
-    ) {
-        return this.m_varbinddecodedstring;
-    }
-
-    /**
-     * Returns the value of field 'varbindvalue'.
-     * 
-     * @return the value of field 'Varbindvalue'.
-     */
-    public String getVarbindvalue(
-    ) {
-        return this.m_varbindvalue;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        return new HashCodeBuilder(17,37).append(getVarbinddecodedstring()).append(getVarbindvalue()).toHashCode();
-    }
-
-    /**
-     * Method isValid.
-     * 
      * @return true if this object is valid according to the schema
      */
-    public boolean isValid(
-    ) {
+    public boolean isValid() {
         try {
             validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
     }
 
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
 
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
 
-    /**
-     * Sets the value of field 'varbinddecodedstring'.
-     * 
-     * @param varbinddecodedstring the value of field
-     * 'varbinddecodedstring'.
-     */
-    public void setVarbinddecodedstring(
-            final String varbinddecodedstring) {
-        this.m_varbinddecodedstring = varbinddecodedstring;
+    public void setVarbinddecodedstring(final String varbinddecodedstring) {
+        m_varbinddecodedstring = varbinddecodedstring.intern();
     }
 
-    /**
-     * Sets the value of field 'varbindvalue'.
-     * 
-     * @param varbindvalue the value of field 'varbindvalue'.
-     */
-    public void setVarbindvalue(
-            final String varbindvalue) {
-        this.m_varbindvalue = varbindvalue;
+    public void setVarbindvalue(final String varbindvalue) {
+        m_varbindvalue = varbindvalue.intern();
     }
 
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.xml.eventconf.Decode
-     */
-    public static org.opennms.netmgt.xml.eventconf.Decode unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.eventconf.Decode) Unmarshaller.unmarshal(org.opennms.netmgt.xml.eventconf.Decode.class, reader);
+    public static Decode unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (Decode) Unmarshaller.unmarshal(Decode.class, reader);
     }
 
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
+    public void validate() throws ValidationException {
+        new Validator().validate(this);
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m_varbinddecodedstring == null) ? 0 : m_varbinddecodedstring.hashCode());
+		result = prime * result + ((m_varbindvalue == null) ? 0 : m_varbindvalue.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof Decode)) return false;
+		final Decode other = (Decode) obj;
+		if (m_varbinddecodedstring == null) {
+			if (other.m_varbinddecodedstring != null) return false;
+		} else if (!m_varbinddecodedstring.equals(other.m_varbinddecodedstring)) {
+			return false;
+		}
+		if (m_varbindvalue == null) {
+			if (other.m_varbindvalue != null) return false;
+		} else if (!m_varbindvalue.equals(other.m_varbindvalue)) {
+			return false;
+		}
+		return true;
+	}
 
 }

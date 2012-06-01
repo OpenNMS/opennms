@@ -153,11 +153,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
     	return servletContext;
     }
 
+    /**
+     * By default, don't do anything.
+     */
     protected void beforeServletStart() throws Exception {
     }
-    
+
+    /**
+     * By default, don't do anything.
+     */
     protected void afterServletStart() throws Exception {
-        
     }
 
     @After
@@ -171,11 +176,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
         afterServletDestroy();
     }
 
+    /**
+     * By default, don't do anything.
+     */
     protected void beforeServletDestroy() throws Exception {
     }
-    
+
+    /**
+     * By default, don't do anything.
+     */
     protected void afterServletDestroy() throws Exception {
-        
     }
 
     protected void dispatch(final MockHttpServletRequest request, final MockHttpServletResponse response) throws Exception {
@@ -191,40 +201,73 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return new MockHttpServletResponse();
     }
 
-    protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
-    	final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath) {
+	protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
+		final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath) {
 
-            @Override
-            public void setContentType(final String contentType) {
-                super.setContentType(contentType);
-                super.addHeader("Content-Type", contentType);
-            }
-            
-        };
-        request.setContextPath(contextPath);
-        return request;
-    }
+			@Override
+			// FIXME: remove when we update to Spring 3.1
+			public void setContentType(final String contentType) {
+				super.setContentType(contentType);
+				super.addHeader("Content-Type", contentType);
+			}
 
+		};
+		request.setContextPath(contextPath);
+		request.setUserPrincipal(MockUserPrincipal.getInstance());
+		return request;
+	}
+
+    /**
+     * @param url
+     * @param xml
+     */
     protected void sendPost(String url, String xml) throws Exception {
         sendData(POST, MediaType.APPLICATION_XML, url, xml);
     }
 
+    /**
+     * @param url
+     * @param xml
+     * @param statusCode
+     */
     protected void sendPost(String url, String xml, int statusCode) throws Exception {
         sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
     }
 
+    /**
+     * @param url
+     * @param formData
+     */
     protected void sendPut(String url, String formData) throws Exception {
         sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData);
     }
     
+    /**
+     * @param url
+     * @param formData
+     * @param statusCode
+     */
     protected void sendPut(String url, String formData, int statusCode) throws Exception {
         sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
     }
     
+    /**
+     * @param requestType
+     * @param contentType
+     * @param url
+     * @param data
+     */
     protected void sendData(String requestType, String contentType, String url, String data) throws Exception {
     	sendData(requestType, contentType, url, data, 200);
     }
     
+    /**
+     * @param requestType
+     * @param contentType
+     * @param url
+     * @param data
+     * @param statusCode
+     */
     protected void sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
         MockHttpServletRequest request = createRequest(requestType, url);
         request.setContentType(contentType);
@@ -348,21 +391,18 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     }
     
-    protected void putXmlObject(JAXBContext context, String url, int expectedStatus, Object object) throws Exception {
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream(); 
-        Marshaller marshaller = context.createMarshaller();
+    protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object) throws Exception {
+    	final ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+        final Marshaller marshaller = context.createMarshaller();
         marshaller.marshal(object, out);
-        byte[] content = out.toByteArray();
+        final byte[] content = out.toByteArray();
         
-
-        MockHttpServletRequest request = createRequest(PUT, url);
+        final MockHttpServletRequest request = createRequest(PUT, url);
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
-        MockHttpServletResponse response = createResponse();
+        final MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
-        
     }
 
 	protected void createNode() throws Exception {

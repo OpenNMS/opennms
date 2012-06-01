@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao</artifactId>
@@ -10,7 +11,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.core.build</groupId>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>
@@ -40,7 +41,7 @@
         <configuration>
           <additionalBuildcommands>
             <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
           </additionalProjectnatures>
@@ -94,10 +95,6 @@
       <artifactId>opennms-config</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-utils</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
@@ -113,6 +110,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.criteria</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -143,7 +144,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
-   
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>commons-beanutils</groupId>

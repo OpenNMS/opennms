@@ -48,6 +48,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -81,7 +82,6 @@ import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -227,7 +227,6 @@ public class PollerTest {
 		if (m_assertLevel != null) {
 			MockLogAppender.assertNotGreaterOrEqual(m_assertLevel);
 		}
-		DataSourceFactory.setInstance(null);
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
@@ -1184,7 +1183,6 @@ public class PollerTest {
 		try {
 			Thread.sleep(millis);
 		} catch (final InterruptedException e) {
-			Thread.currentThread().interrupt();
 		}
 	}
 

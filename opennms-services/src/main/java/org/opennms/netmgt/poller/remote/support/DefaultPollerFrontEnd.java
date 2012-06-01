@@ -34,6 +34,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -417,6 +418,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_timeAdjustment, "timeAdjustment");
         m_state.initialize();
@@ -540,7 +542,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         details.put("org.opennms.netmgt.poller.remote.hostAddress", InetAddressUtils.str(us));
         details.put("org.opennms.netmgt.poller.remote.hostName", us.getHostName());
 
-        return details;
+        return Collections.unmodifiableMap(details);
     }
 
     /**

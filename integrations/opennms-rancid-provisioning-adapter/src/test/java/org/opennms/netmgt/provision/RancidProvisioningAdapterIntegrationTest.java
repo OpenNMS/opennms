@@ -40,15 +40,16 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -87,11 +88,9 @@ public class RancidProvisioningAdapterIntegrationTest implements InitializingBea
     
     private static final int NODE_ID = 1;
 
-    public void afterPropertiesSet() {
-        assertNotNull("Autowiring failed, node dao is null", m_nodeDao);
-        assertNotNull("Autowiring failed, IPC manager is null", m_mockEventIpcManager);
-        assertNotNull("Autowiring failed, DB populator is null", m_populator);
-        assertNotNull("Autowiring failed, adapter is null", m_adapter);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

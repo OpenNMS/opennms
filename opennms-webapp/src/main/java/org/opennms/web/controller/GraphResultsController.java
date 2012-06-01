@@ -251,6 +251,7 @@ public class GraphResultsController extends AbstractController implements Initia
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_graphResultsService != null, "graphResultsService property must be set to a non-null value");
     }

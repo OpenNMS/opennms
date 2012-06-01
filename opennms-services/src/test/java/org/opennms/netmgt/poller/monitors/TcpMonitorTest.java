@@ -33,21 +33,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -72,7 +71,7 @@ public class TcpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -103,7 +102,7 @@ public class TcpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();
@@ -133,7 +132,7 @@ public class TcpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new TcpMonitor();

@@ -35,17 +35,17 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.WebSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.security.Authentication;
-import org.springframework.security.event.authentication.AbstractAuthenticationEvent;
-import org.springframework.security.event.authentication.AbstractAuthenticationFailureEvent;
-import org.springframework.security.event.authentication.AuthenticationSuccessEvent;
-import org.springframework.security.event.authentication.InteractiveAuthenticationSuccessEvent;
-import org.springframework.security.event.authorization.AuthorizationFailureEvent;
-import org.springframework.security.event.authorization.AuthorizedEvent;
-import org.springframework.security.ui.WebAuthenticationDetails;
+import org.springframework.security.access.event.AuthorizationFailureEvent;
+import org.springframework.security.access.event.AuthorizedEvent;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.util.Assert;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
 
@@ -110,9 +110,9 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     private EventBuilder createEvent(String uei, AbstractAuthenticationEvent authEvent) {
         EventBuilder builder = new EventBuilder(uei, "OpenNMS.WebUI");
         builder.setTime(new Date(authEvent.getTimestamp()));
-        Authentication auth = authEvent.getAuthentication();
+        org.springframework.security.core.Authentication auth = authEvent.getAuthentication();
         if (auth != null && auth.getName() != null) {
-            builder.addParam("user", auth.getName());
+            builder.addParam("user", WebSecurityUtils.sanitizeString(auth.getName()));
         }
         if (auth != null && auth.getDetails() != null && auth.getDetails() instanceof WebAuthenticationDetails) {
             WebAuthenticationDetails webDetails = (WebAuthenticationDetails) auth.getDetails();
@@ -143,6 +143,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }

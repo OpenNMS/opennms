@@ -37,16 +37,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
-import org.opennms.web.outage.filter.NodeFilter;
-import org.opennms.web.outage.filter.RecentOutagesFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -98,9 +96,13 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{outageId}")
     @Transactional
-    public OnmsOutage getOutage(@PathParam("outageId") String outageId) {
-    	OnmsOutage result= m_outageDao.get(Integer.valueOf(outageId));
-    	return result;
+    public OnmsOutage getOutage(@PathParam("outageId") final String outageId) {
+        readLock();
+        try {
+            return m_outageDao.get(Integer.valueOf(outageId));
+        } finally {
+            readUnlock();
+        }
     }
     
     /**
@@ -113,7 +115,12 @@ public class OutageRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-    	return Integer.toString(m_outageDao.countAll());
+        readLock();
+        try {
+            return Integer.toString(m_outageDao.countAll());
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -125,14 +132,20 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsOutageCollection getOutages() {
-        OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
-
-        //For getting totalCount
-        OnmsCriteria crit = new OnmsCriteria(OnmsOutage.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsOutage.class);
-        coll.setTotalCount(m_outageDao.countMatching(crit));
-
-        return coll;
+        readLock();
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+    
+            final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+    
+            //For getting totalCount
+            coll.setTotalCount(m_outageDao.countMatching(builder.count().toCriteria()));
+    
+            return coll;
+        } finally {
+            readUnlock();
+        }
     }
 
     /**
@@ -145,46 +158,28 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("forNode/{nodeId}")
-    public OnmsOutageCollection forNodeId(@PathParam("nodeId") int nodeId) {
-        MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
-        OnmsCriteria criteria=new OnmsCriteria(OnmsOutage.class);
-
-        setLimitOffset(params, criteria);
-        addOrdering(params, criteria, false);
-        addFiltersToCriteria(params, criteria, OnmsOutage.class);
-
-        criteria.createAlias("monitoredService", "monitoredService");
-        criteria.createAlias("monitoredService.ipInterface", "ipInterface");
-        criteria.createAlias("monitoredService.ipInterface.node", "node");
-        criteria.createAlias("monitoredService.serviceType", "serviceType");
-
-        NodeFilter node = new NodeFilter(nodeId, m_servletContext);
-        criteria.add(node.getCriterion());
-
-        Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
-        RecentOutagesFilter recent = new RecentOutagesFilter(d);
-        criteria.add(recent.getCriterion());
-
-        return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(OnmsOutage.class, criteria)));
-    }
-
-    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
-
-        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
-        addOrdering(params, criteria, false);
-        // Set default ordering
-        addOrdering(
-            new MultivaluedMapImpl(
-                new String[][] { 
-                    new String[] { "orderBy", "ifLostService" }, 
-                    new String[] { "order", "desc" } 
-                }
-            ), criteria, false
-        );
-        addFiltersToCriteria(params, criteria, OnmsOutage.class);
-
-        return getDistinctIdCriteria(OnmsOutage.class, criteria);
+    public OnmsOutageCollection forNodeId(@PathParam("nodeId") final int nodeId) {
+        readLock();
+        
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+            builder.eq("node.id", nodeId);
+            final Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
+    
+            builder.alias("monitoredService", "monitoredService");
+            builder.alias("monitoredService.ipInterface", "ipInterface");
+            builder.alias("monitoredService.ipInterface.node", "node");
+            builder.alias("monitoredService.serviceType", "serviceType");
+    
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+    
+            builder.orderBy("id").desc();
+    
+            return new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+        } finally {
+            readUnlock();
+        }
     }
 }
 

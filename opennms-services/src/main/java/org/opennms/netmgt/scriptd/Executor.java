@@ -29,9 +29,10 @@
 package org.opennms.netmgt.scriptd;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -48,11 +49,11 @@ import org.opennms.netmgt.config.scriptd.ReloadScript;
 import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
 import org.opennms.netmgt.config.scriptd.Uei;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Script;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.dao.NodeDao;
 
 /**
  * This class is used as a thread for launching scripts to handle received
@@ -66,7 +67,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The input queue of events.
      */
-    private FifoQueue<Event> m_execQ;
+    private final FifoQueue<Event> m_execQ;
 
     /**
      * The worker thread that executes the <code>run</code> method.
@@ -76,7 +77,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The name of this Fiber
      */
-    private String m_name;
+    private final String m_name;
 
     /**
      * The status of this fiber.
@@ -96,7 +97,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The configured scripts (UEI specified).
      */
-    private Hashtable<String,List<EventScript>> m_eventScriptMap;
+    private Map<String,List<EventScript>> m_eventScriptMap;
 
     /**
      * The BSF manager
@@ -143,7 +144,7 @@ final class Executor implements Runnable, PausableFiber {
         EventScript[] scripts = m_config.getEventScripts();
 
         m_eventScripts = new ArrayList<EventScript>();
-        m_eventScriptMap = new Hashtable<String,List<EventScript>>();
+        m_eventScriptMap = new ConcurrentHashMap<String,List<EventScript>>();
 
         for (int i = 0; i < scripts.length; i++) {
             Uei[] ueis = scripts[i].getUei();

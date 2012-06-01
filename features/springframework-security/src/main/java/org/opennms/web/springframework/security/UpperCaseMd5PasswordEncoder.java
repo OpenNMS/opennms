@@ -28,7 +28,7 @@
 
 package org.opennms.web.springframework.security;
 
-import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
 /**
  * <p>UpperCaseMd5PasswordEncoder class.</p>

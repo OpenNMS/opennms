@@ -36,12 +36,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -84,7 +83,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
         m_detector = createDetector(m_server.getLocalPort());
         m_detector.setIdleTime(100);
-        assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     @Test
@@ -93,7 +92,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
         m_detector = createDetector(m_server.getLocalPort());
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
         
     }
     
@@ -102,7 +101,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         m_server.setBanner(null);
         m_detector = createDetector(m_server.getLocalPort());
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
         
     }
     
@@ -111,7 +110,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
         m_detector = createDetector(9000);
         
-        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
+        assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
     
     private Pop3Detector createDetector(int port) {
@@ -125,7 +124,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
     
     private boolean  doCheck(DetectFuture future) throws Exception {
         
-        future.await();
+        future.awaitFor();
         
         return future.isServiceDetected();
     }

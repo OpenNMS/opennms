@@ -173,7 +173,7 @@ public class JniPingTest extends TestCase {
 
         TestPingResponseCallback cb = new TestPingResponseCallback();
         
-        pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
+        pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, PingConstants.DEFAULT_PACKET_SIZE, 1, cb);
         
         cb.await();
 

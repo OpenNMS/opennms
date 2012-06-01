@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <parent>
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
-
   <properties>
     <bundle.symbolicName>org.opennms.features.sms-reflector.sms-monitor</bundle.symbolicName>
     <bundle.namespace>org.opennms.sms.monitor</bundle.namespace>
   </properties>
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.sms-reflector</groupId>
   <artifactId>sms-monitor</artifactId>
-
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
-
   <packaging>bundle</packaging>
-
   <build>
     <plugins>
       <plugin>
@@ -81,7 +75,6 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <type>pom</type>
@@ -207,8 +200,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
       <type>pom</type>
@@ -241,8 +234,12 @@
   </dependencies>
   <pluginRepositories>
     <pluginRepository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
       <url>http://repo1.maven.org/maven2</url>
@@ -252,11 +249,12 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
-      <releases><enabled>true</enabled></releases>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://maven.opennms.org/content/groups/java.net-release/</url>
     </pluginRepository>
   </pluginRepositories>
-
 </project>

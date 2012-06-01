@@ -49,19 +49,6 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @version $Id: $
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventTranslatorMBean {
 

@@ -28,21 +28,16 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import java.beans.PropertyEditor;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileFilter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
 
-import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
-import org.opennms.netmgt.correlation.drools.config.Global;
-import org.opennms.netmgt.correlation.drools.config.RuleSet;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.InitializingBean;
@@ -50,10 +45,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
@@ -63,14 +56,39 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySupport implements InitializingBean, ApplicationListener<ApplicationEvent> {
-    // injected
+
+	public static final String PLUGIN_CONFIG_FILE_NAME = "drools-engine.xml";
+	
+	private static class PluginConfiguration {
+		private Resource m_configResource;
+		private EngineConfiguration m_configuration;
+		
+		public PluginConfiguration(Resource configResource) {
+			m_configResource = configResource;
+		}
+		
+		public void readConfig() {
+			LogUtils.infof(this, "Parsing drools engine configuration at %s.", m_configResource);
+			m_configuration = JaxbUtils.unmarshal(EngineConfiguration.class, m_configResource);
+		}
+
+		public CorrelationEngine[] constructEngines(ApplicationContext appContext, EventIpcManager eventIpcManager) {
+			LogUtils.infof(this, "Creating drools engins for configuration %s.", m_configResource);
+
+			return m_configuration.constructEngines(m_configResource, appContext, eventIpcManager);
+		}
+
+	}
+	
+	// injected
+	private File m_configDirectory;
     private Resource m_configResource;
     private EventIpcManager m_eventIpcManager;
-    //private ResourceLoader m_resourceLoader;
+    private CorrelationEngineRegistrar m_correlator;
 
     // built
-    private List<RuleSetConfiguration> m_ruleSets;
-    private CorrelationEngineRegistrar m_correlator;
+    private PluginConfiguration[] m_pluginConfigurations;
+
     
     /**
      * <p>Constructor for DroolsCorrelationEngineBuilder.</p>
@@ -94,25 +112,25 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
-        assertSet(m_configResource, "configurationResource");
+        assertSet(m_configDirectory, "configurationDirectory");
         assertSet(m_eventIpcManager, "eventIpcManager");
         assertSet(m_correlator, "correlator");
         
-        
-        //m_resourceLoader = new ConfigFileResourceLoader();
+        Assert.state(!m_configDirectory.exists() || m_configDirectory.isDirectory(), m_configDirectory+" must be a directory!");
         
         readConfiguration();
     }
 
     private void registerEngines(final ApplicationContext appContext) {
-        
-        for (final RuleSetConfiguration ruleSet : m_ruleSets) {
-            m_correlator.addCorrelationEngine(ruleSet.constructEngine(appContext));
-        }
+    	for(PluginConfiguration pluginConfig : m_pluginConfigurations) {
+    		m_correlator.addCorrelationEngines(pluginConfig.constructEngines(appContext, m_eventIpcManager));
+    	}
+
     }
 
-    /**
+	/**
      * <p>setEventIpcManager</p>
      *
      * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
@@ -131,6 +149,15 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
     
     /**
+     * <p>setConfigurationDirectory</p>
+     * 
+     * @param configDirectory a {@link java.io.File} object.
+     */
+    public void setConfigurationDirectory(final File configDirectory) {
+        m_configDirectory = configDirectory;
+    }
+    
+    /**
      * <p>setCorrelationEngineRegistrar</p>
      *
      * @param correlator a {@link org.opennms.netmgt.correlation.CorrelationEngineRegistrar} object.
@@ -140,192 +167,63 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
     
     private void readConfiguration() throws Exception {
-    	final EngineConfiguration configuration = CastorUtils.unmarshal(EngineConfiguration.class, m_configResource);
-
-    	final List<RuleSetConfiguration> ruleSets = new LinkedList<RuleSetConfiguration>();
-        for (final RuleSet ruleSet : configuration.getRuleSet()) {
-            ruleSets.add(new RuleSetConfiguration(ruleSet));
-        }
-
-        m_ruleSets = ruleSets;
-    }
-    
-    private static class ConfigFileApplicationContext extends AbstractXmlApplicationContext {
-        
-        private String m_configFileLocation;
-        
-        public ConfigFileApplicationContext(final String configFileLocation, final ApplicationContext parent) {
-            super(parent);
-            m_configFileLocation = configFileLocation;
-            refresh();
-        }
-        
-        @Override
-        protected String[] getConfigLocations() {
-            if ( m_configFileLocation == null ) {
-                return null;
-            }
-            return new String[] { m_configFileLocation };
-        }
-
-        @Override
-        protected Resource getResourceByPath(final String path) {
-            return new FileSystemResource(path);
-        }
-        
-    }
-    
-    public static class ResourceConfiguration {
-        private String m_resourcePath;
-        
-        public ResourceConfiguration(final String resourcePath) {
-            m_resourcePath = resourcePath;
-        }
-        
-        public Resource getResource(final ResourceLoader loader) {
-        	final String finalName = PropertiesUtils.substitute( m_resourcePath, System.getProperties() );
-            return loader.getResource( finalName );
-
-        }
-    }
-    
-    public static class GlobalConfiguration extends PropertyEditorRegistrySupport {
-
-        private final String m_name;
-        private final String m_type;
-        private final String m_value;
-        private final String m_ref;
-        
-        public GlobalConfiguration(final Global global) {
-            registerDefaultEditors();
-            m_name = global.getName();
-            m_type = global.getType();
-            m_value = global.getValue();
-            m_ref = global.getRef();
-        }
-
-        public String getName() {
-            return m_name;
-        }
-
-        public String getRef() {
-            return m_ref;
-        }
-
-        public String getType() {
-            return m_type;
-        }
-
-        public String getValue() {
-            return m_value;
-        }
-
-        Object constructValue(final ApplicationContext context) {
-            
-        	final String type = getType();
-        	Class<?> typeClass = Object.class;
-            if (type != null) {
-            	final PropertyEditor classEditor = getDefaultEditor(Class.class);
-                classEditor.setAsText(type);
-                typeClass = (Class<?>)classEditor.getValue();
-            }
-        
-            final String value = getValue();
-            if (value != null) {
-            	final PropertyEditor valueEditor = getDefaultEditor(typeClass);
-                valueEditor.setAsText(value);
-                return valueEditor.getValue();
-            }
-            
-            final String ref = getRef();
-            if (ref != null) {
-            	return context.getBean(ref, typeClass);
-            }
-            
-            throw new IllegalArgumentException("One of either the value or the ref must be specified");
-            
-        }
-
+    	m_pluginConfigurations = locatePluginConfigurations();
+    	
+    	// now parse all of the configuration files
+    	for(PluginConfiguration pluginCofig : m_pluginConfigurations) {
+    		pluginCofig.readConfig();
+    	}
+    	
     }
 
-    public class RuleSetConfiguration {
-        private final String m_name;
-        private final String m_appContextLocation;
-        private final List<String> m_interestingEvents;
-        private final List<ResourceConfiguration> m_resourceConfigurations;
-        private final List<GlobalConfiguration> m_globalConfig;
-        
-        public RuleSetConfiguration(final RuleSet ruleSet) {
+	private PluginConfiguration[] locatePluginConfigurations() throws Exception {
+		List<PluginConfiguration> pluginConfigs = new LinkedList<PluginConfiguration>();
+		
+		// first we see if the config is etc exists 
+    	if (m_configResource != null && m_configResource.isReadable()) {
+			LogUtils.infof(this, "Found Drools Plugin config file %s.", m_configResource);
+    		pluginConfigs.add(new PluginConfiguration(m_configResource));
+    	}
 
-            m_name = ruleSet.getName();
-            m_interestingEvents = Arrays.asList(ruleSet.getEvent());
-            
-            m_resourceConfigurations = new LinkedList<ResourceConfiguration>();
-            for(final String resourcePath : ruleSet.getRuleFile()) {
-                m_resourceConfigurations.add( new ResourceConfiguration( resourcePath ) );
-            }
-            
-            m_appContextLocation = ruleSet.getAppContext();
-            
-            m_globalConfig = new LinkedList<GlobalConfiguration>();
-            for(final Global global : ruleSet.getGlobal()) {
-                m_globalConfig.add(new GlobalConfiguration(global));
-            }
-            
-            
-        }
+    	// then we look in each plugin dir for a config
+    	File[] pluginDirs = getPluginDirs();
+    	
+    	for(File pluginDir : pluginDirs) {
+    		File configFile = new File(pluginDir, PLUGIN_CONFIG_FILE_NAME);
+    		if (!configFile.exists()) {
+    			LogUtils.errorf(this, "Drools Plugin directory %s does not contains a %s config file.  Ignoring plugin.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
+    		} else {
+    			LogUtils.infof(this, "Found Drools Plugin directory %s containing a %s config file.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
+    			pluginConfigs.add(new PluginConfiguration(new FileSystemResource(configFile)));
+    		}
+    	}
+    	
+    	return pluginConfigs.toArray(new PluginConfiguration[0]);
+	}
 
-        public String getName() {
-            return m_name;
-        }
+	private File[] getPluginDirs() throws Exception {
 
-        public Map<String, Object> getGlobals(final ApplicationContext context) {
-        	final Map<String, Object> globals = new HashMap<String, Object>();
-            
-            for (final GlobalConfiguration globalConfig : m_globalConfig) {
-                globals.put(globalConfig.getName(), globalConfig.constructValue(context));
-            }
-            
-            return globals;
-        }
+    	LogUtils.debugf(this, "Checking %s for drools correlation plugins", m_configDirectory);
+    	
 
-        public List<String> getInterestingEvents() {
-            return m_interestingEvents;
-        }
+		if (!m_configDirectory.exists()) {
+			LogUtils.debugf(this, "Plugin configuration directory does not exists.");
+			return new File[0];
+		}
 
-        public List<Resource> getRuleResources(final ResourceLoader resourceLoader) {
-        	final List<Resource> resources = new LinkedList<Resource>();
-            for (final ResourceConfiguration resConfig : m_resourceConfigurations) {
-                resources.add(resConfig.getResource(resourceLoader));
-                
-            }
-            return resources;
-        }
-        
-        CorrelationEngine constructEngine(final ApplicationContext parent) {
-        	final ApplicationContext configContext = new ConfigFileApplicationContext(getConfigLocation(), parent);
-            
-        	final DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
-            engine.setName(getName());
-            engine.setEventIpcManager(m_eventIpcManager);
-            engine.setScheduler(new Timer(getName()+"-Timer"));
-            engine.setInterestingEvents(getInterestingEvents());
-            engine.setRulesResources(getRuleResources(configContext));
-            engine.setGlobals(getGlobals(configContext));
-            try {
-                engine.initialize();
-                return engine;
-            } catch (final Throwable e) {
-                throw new RuntimeException("Unable to initialize Drools engine "+getName(), e);
-            }
-        }
+		File[] pluginDirs = m_configDirectory.listFiles(new FileFilter() {
+			
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory();
+			}
+		});
+    	LogUtils.debugf(this, "Found %d drools correlation plugin sub directories", pluginDirs.length);
+    	
+		return pluginDirs;
+	}
 
-        private String getConfigLocation() {
-            return PropertiesUtils.substitute(m_appContextLocation, System.getProperties());
-        }
-    }
-
-    /** {@inheritDoc} */
+	/** {@inheritDoc} */
     public void onApplicationEvent(final ApplicationEvent appEvent) {
         if (appEvent instanceof ContextRefreshedEvent) {
             final ApplicationContext appContext = ((ContextRefreshedEvent)appEvent).getApplicationContext();

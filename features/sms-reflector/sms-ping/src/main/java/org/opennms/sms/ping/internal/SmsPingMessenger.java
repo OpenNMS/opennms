@@ -71,6 +71,7 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_smsService, "the smsService property must be set");
     }

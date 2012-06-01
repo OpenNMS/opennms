@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +95,7 @@ public class LatencyThresholdingSet extends ThresholdingSet {
         //Yes, we have to know a little too much about the implementation details of CollectionResourceWrapper to say that, but
         // we have little choice
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(new Date(), m_nodeId, m_hostAddress, m_serviceName, m_repository, latencyResource, attributesMap);
-        return applyThresholds(resourceWrapper, attributesMap);
+        return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap));
     }
     
     /*

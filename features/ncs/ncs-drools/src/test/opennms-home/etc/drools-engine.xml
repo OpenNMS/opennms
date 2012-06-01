@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine-configuration 
+	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine http://xmlns.opennms.org/xsd/drools-engine.xsd ">
+  <rule-set name="monolithicDependencyRules">
+    <rule-file>file:src/test/opennms-home/etc/DependencyRules.drl</rule-file>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
+    <global name="correlationService" ref="ncsCorrelationService"/>
+  </rule-set>
+  <rule-set name="eventMappingRules" assert-behaviour="equality">
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/eventMappingRules.drl</rule-file>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
+    <global name="correlationService" ref="ncsCorrelationService"/>
+  </rule-set>
+  <rule-set name="dependencyLoadingRules" assert-behaviour="equality">
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyLoadingRules.drl</rule-file>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
+    <global name="correlationService" ref="ncsCorrelationService"/>
+  </rule-set>
+  <rule-set name="impactPropagationRules">
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/impactPropagationRules.drl</rule-file>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
+    <global name="correlationService" ref="ncsCorrelationService"/>
+  </rule-set>
+  <rule-set name="dependencyRules">
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/eventMappingRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyLoadingRules.drl</rule-file>
+    <rule-file>file:src/main/opennms-home/etc/drools-engine.d/ncs/impactPropagationRules.drl</rule-file>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</event>
+    <event>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</event>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>file:src/main/opennms-home/etc/drools-engine.d/ncs/dependencyRules-context.xml</app-context>
+    <global name="correlationService" ref="ncsCorrelationService"/>
+  </rule-set>
+</engine-configuration>

@@ -41,26 +41,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -68,7 +68,6 @@ import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,12 +88,9 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
 public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase>, TestContextAware {
-
-    @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -104,9 +100,6 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private ServiceTypeDao m_serviceTypeDao;
 
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
@@ -130,12 +123,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Override
-    public void afterPropertiesSet() {
-        assertNotNull(m_mockEventIpcManager);
-        assertNotNull(m_transactionManager);
-        assertNotNull(m_nodeDao);
-        assertNotNull(m_ipInterfaceDao);
-        assertNotNull(m_serviceTypeDao);
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before

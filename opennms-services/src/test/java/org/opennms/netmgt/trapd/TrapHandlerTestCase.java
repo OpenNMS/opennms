@@ -29,7 +29,6 @@
 package org.opennms.netmgt.trapd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -46,8 +45,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -63,7 +64,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -89,7 +89,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     private MockTrapdIpMgr m_trapdIpMgr;
 
     @Autowired
-    private TrapQueueProcessor m_processor;
+    private TrapQueueProcessorFactory m_processorFactory;
 
     private EventAnticipator m_anticipator;
 
@@ -111,10 +111,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_eventMgr);
-        assertNotNull(m_trapd);
-        assertNotNull(m_trapdIpMgr);
-        assertNotNull(m_snmpTrapPort);
+        BeanUtils.assertAutowiring(this);
     }
 
     @Before
@@ -379,7 +376,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     @DirtiesContext
     public void testNodeGainedModifiesIpMgr() throws Exception {
         long nodeId = 2;
-        m_processor.setNewSuspect(true);
+        m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -403,7 +400,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     @DirtiesContext
     public void testInterfaceReparentedModifiesIpMgr() throws Exception {
         long nodeId = 2;
-        m_processor.setNewSuspect(true);
+        m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -427,7 +424,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     @DirtiesContext
     public void testInterfaceDeletedModifiesIpMgr() throws Exception {
         long nodeId = 0;
-        m_processor.setNewSuspect(true);
+        m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -481,7 +478,7 @@ public class TrapHandlerTestCase implements InitializingBean {
             String event,
             String snmpTrapVersion, String enterprise,
             int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
-        m_processor.setNewSuspect(newSuspectOnTrap);
+        m_processorFactory.setNewSuspect(newSuspectOnTrap);
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known

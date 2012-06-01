@@ -47,7 +47,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -160,7 +160,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
      */
-    private Map<String, ServiceMonitor> m_svcMonitors = Collections.synchronizedMap(new TreeMap<String, ServiceMonitor>());
+    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<String, ServiceMonitor>();
     /**
      * A boolean flag to indicate If a filter rule against the local OpenNMS
      * server has to be used.
@@ -957,7 +957,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private void initializeServiceMonitors() {
         // Load up an instance of each monitor from the config
         // so that the event processor will have them for
-        // new incomming events to create pollable service objects.
+        // new incoming events to create pollable service objects.
         //
         LogUtils.debugf(this, "start: Loading monitors");
 
@@ -980,7 +980,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Map<String, ServiceMonitor> getServiceMonitors() {
         getReadLock().lock();
         try {
-            return m_svcMonitors;
+            return Collections.unmodifiableMap(m_svcMonitors);
         } finally {
             getReadLock().unlock();
         }

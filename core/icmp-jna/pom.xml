@@ -1,18 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.icmp-jna</artifactId>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
-	    <artifactId>maven-jar-plugin</artifactId>
-	    <configuration>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
           <archive>
             <index>true</index>
             <manifest>
@@ -20,6 +21,18 @@
               <mainClass>org.opennms.jicmp.standalone.Main</mainClass>
             </manifest>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.jicmp.ip.*;org.opennms.jicmp.ipv6.*;org.opennms.jicmp.jna.*;org.opennms.jicmp.standalone.*;version="${project.version}"</Export-Package>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>
@@ -37,4 +50,3 @@
     </dependency>
   </dependencies>
 </project>
-  

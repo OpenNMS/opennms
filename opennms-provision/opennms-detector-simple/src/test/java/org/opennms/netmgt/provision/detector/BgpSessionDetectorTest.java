@@ -36,12 +36,13 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -51,11 +52,16 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/detectors.xml"
 })
 @JUnitSnmpAgent(host=BgpSessionDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
-public class BgpSessionDetectorTest {
+public class BgpSessionDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "172.20.1.205";
 
 	@Autowired
     private BgpSessionDetector m_detector;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -67,11 +73,11 @@ public class BgpSessionDetectorTest {
     @Test
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setBgpPeerIp("172.20.1.201");
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
     
     @Test
     public void testDetectorFail() throws UnknownHostException{
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 }

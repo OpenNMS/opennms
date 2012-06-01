@@ -2,32 +2,32 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd"> 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
 
 
 	<!-- this is a pidgin version of the context from opennms-webapps, start there if you haven't already -->
 
    <!-- was mappedEntryPoint -->
-	<http realm="OpenNMS Realm" entry-point-ref="_basicAuthenticationEntryPoint">
+	<http pattern="/**" realm="OpenNMS Realm">
       <intercept-url pattern="/"            access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/index.html"  access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/webstart/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
 		<intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
-		<anonymous />
 		<http-basic />
+		<custom-filter position="LAST" ref="authFilterEnabler"/>
 	</http>
-
-	<authentication-provider user-service-ref="openNMSUserDetailsService">
-		<password-encoder ref="upperCaseMd5PasswordEncoder" />
-	</authentication-provider>
 
 	<!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
 	<beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
-		<custom-filter position="LAST"/>
 		<beans:property name="filterManager" ref="filterManager" />
 		<beans:property name="groupDao" ref="groupDao" />
 	</beans:bean>
+
+	<!-- use our custom authentication provider; to use RADIUS instead, change this to "radiusAuthenticationProvider" and uncomment below -->
+	<authentication-manager>
+		<authentication-provider ref="hybridAuthenticationProvider" />
+	</authentication-manager>
 
 	<!-- ===================== USER DAO AUTHENTICATION ==================== -->
 	<beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
@@ -43,7 +43,10 @@
 		<beans:property name="userDao" ref="userDao" />
 	</beans:bean>
 
-	<beans:bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder"/>
+	<beans:bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
+		<beans:property name="userDao" ref="userDao" />
+		<beans:property name="userManager" ref="userManager" />
+	</beans:bean>
 
 	<!-- ====================== RADIUS AUTHENTICATION ===================== -->
 	<!--
@@ -64,10 +67,12 @@
 		If the reply from the radius server does not actually contain the
 		specified attribute, the user will be assigned the roles specified by
 		the defaultRoles property.
+
+                IMPORTANT: To use this feature the following package must be installed:
+                opennms-plugin-protocols-radius
 	-->
 	<!-- 
 	<beans:bean id="radiusAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
-		<custom-authentication-provider />
 		<beans:constructor-arg value="%%% Radius Server %%%"/>
 		<beans:constructor-arg value="%%% Shared Secret %%%"/>
 	-->

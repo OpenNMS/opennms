@@ -33,18 +33,20 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.JUnitDNSServerExecutionListener;
-import org.opennms.core.test.annotations.DNSEntry;
-import org.opennms.core.test.annotations.DNSZone;
-import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.dns.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.dns.annotations.DNSEntry;
+import org.opennms.core.test.dns.annotations.DNSZone;
+import org.opennms.core.test.dns.annotations.JUnitDNSServer;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperation;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -67,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
         "importer.adapter.dns.privatekey=hmac-md5/test.example.com./QBMBi+8THN8iyAuGIhniB+fiURwQjrrpwFuq1L6NmHcya7QdKqjwp6kLIczPjsAUDcqiLAdQJnQUhCPThA4XtQ=="
 })
 @JUnitTemporaryDatabase
-public class DnsProvisioningAdapterTest {
+public class DnsProvisioningAdapterTest implements InitializingBean {
     @Autowired
     private DnsProvisioningAdapter m_adapter;
     
@@ -77,6 +79,11 @@ public class DnsProvisioningAdapterTest {
     private AdapterOperation m_addOperation;
     private AdapterOperation m_deleteOperation;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() throws Exception {
         NetworkBuilder nb = new NetworkBuilder();

@@ -42,12 +42,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dhcpd.Dhcpd;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.protocols.dhcp.detector.DhcpDetector;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -56,7 +56,7 @@ import edu.bucknell.net.JDHCP.DHCPSocket;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath*:/META-INF/opennms/detectors.xml"})
-public class DhcpDetectorTest{
+public class DhcpDetectorTest implements InitializingBean {
 	
     //Tested local DHCP client
     private static String DHCP_SERVER_IP = "172.20.1.1";
@@ -68,6 +68,11 @@ public class DhcpDetectorTest{
     
     private Thread m_dhcpdThread = null;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
@@ -93,7 +98,7 @@ public class DhcpDetectorTest{
 	public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
 	    m_detector.setTimeout(5000);
 	    m_detector.init();
-	    assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP), new NullDetectorMonitor()));
+	    assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
 	    
 	}
 	

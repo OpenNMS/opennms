@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -91,7 +90,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    public boolean isServiceDetected(InetAddress address) {
         
         boolean status = false;
 
@@ -133,7 +132,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
                 SnmpValue value = entry.getValue();
 
                 // See if the service name is in the list of running services
-                if (stripExtraQuotes(value.toString()).equalsIgnoreCase(serviceName) && !status) {
+                if (match(serviceName, stripExtraQuotes(value.toString())) && !status) {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + value);
                     status = true;
                     break;
@@ -150,6 +149,13 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
         return status;
         
+    }
+
+    private boolean match(String expectedText, String currentText) {
+        if (expectedText.startsWith("~")) {
+            return currentText.matches(expectedText.replaceFirst("~", ""));
+        }
+        return currentText.equalsIgnoreCase(expectedText);
     }
 
     private static String stripExtraQuotes(String string) {

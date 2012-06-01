@@ -30,55 +30,47 @@ package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.netmgt.provision.support.DefaultDetectFuture;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAware {
-    
-    private SimpleServer m_server;
-    private AtomicReference<TcpDetector> m_detector = new AtomicReference<TcpDetector>();
-    private ApplicationContext m_applicationContext;
-    
-    @Before
-    public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+public class AsyncDetectorFileDescriptorLeakTest {
 
-        m_detector.set(getDetector(TcpDetector.class));
-        m_detector.get().setServiceName("TCP");
-        m_detector.get().setTimeout(10000);
-        m_detector.get().setBanner(".*");
-        m_detector.get().init();
+    private SimpleServer m_server;
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
     }
-    
-    @BeforeClass
-    public static void beforeTest(){
-        System.setProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000");
+
+    private static AsyncServiceDetector getNewDetector(int port, String bannerRegex) {
+        TcpDetector detector = new TcpDetector();
+        detector.setServiceName("TCP");
+        detector.setPort(port);
+        detector.setTimeout(10000);
+        detector.setBanner(bannerRegex);
+        detector.setRetries(3);
+        detector.init();
+        return detector;
     }
     
     @After
@@ -90,101 +82,94 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         
     }
 
-    private void setUpServer() throws Exception {
+    private void setUpServer(final String banner) throws Exception {
         m_server = new SimpleServer() {
             
             public void onInit() {
-               setBanner("Winner");
+                if (banner != null) {
+                    setBanner(banner);
+                }
             }
             
         };
 
+        // No timeout
         m_server.setTimeout(0);
         m_server.init();
         m_server.startServer();
     }
     
     @Test
-    public void testSucessServer() throws Throwable {
-        setUpServer();
+    public void testSuccessServer() throws Throwable {
+        setUpServer("Winner");
         final int port = m_server.getLocalPort();
         final InetAddress address = m_server.getInetAddress();
 
-        final double connectionRate = 0.2;
-        
-        final long startTime = System.currentTimeMillis();
+        int i = 0;
+        while (i < 10000) {
+            LogUtils.debugf(this, "current loop: %d", i);
+
+            AsyncServiceDetector detector = getNewDetector(port, ".*");
+
+            assertNotNull(detector);
+
+            final DetectFuture future = (DetectFuture)detector.isServiceDetected(address);
+
+            assertNotNull(future);
+            future.awaitFor();
+            if (future.getException() != null) {
+                LogUtils.debugf(this, future.getException(), "got future exception");
+                throw future.getException();
+            }
+            assertTrue("False negative during detection!!", future.isServiceDetected());
+            assertNull(future.getException());
+
+            i++;
+        }
+    }
+
+    @Test
+    public void testBannerlessServer() throws Throwable {
+        // No banner
+        setUpServer(null);
+        final int port = m_server.getLocalPort();
+        final InetAddress address = m_server.getInetAddress();
 
         int i = 0;
         while (i < 10000) {
-            long now = Math.max(System.currentTimeMillis(), 1);
-            double actualRate = ((double)i) / ((double)(now - startTime));
-            LogUtils.debugf(this, "Expected Rate: %f Actual Rate: %f Events Sent: %d", connectionRate, actualRate, i);
-            if (actualRate < connectionRate) {
-                setUp();
-                LogUtils.debugf(this, "current loop: %d", i);
-                assertNotNull(m_detector);
-                
-                final TcpDetector detector = m_detector.get();
+            LogUtils.debugf(this, "current loop: %d", i);
 
-                detector.setPort(port);
+            AsyncServiceDetector detector = getNewDetector(port, null);
 
-                final DefaultDetectFuture future = (DefaultDetectFuture)detector.isServiceDetected(address, new NullDetectorMonitor());
-                future.addListener(new IoFutureListener<DetectFuture>() {
-                    public void operationComplete(final DetectFuture future) {
-                        detector.dispose();
-                    }
-                });
+            assertNotNull(detector);
 
-                future.awaitUninterruptibly();
-                assertNotNull(future);
-                if (future.getException() != null) {
-                    LogUtils.debugf(this, future.getException(), "got future exception");
-                    throw future.getException();
-                }
-                LogUtils.debugf(this, "got value: %s", future.getObjectValue());
-                assertTrue(future.isServiceDetected());
+            final DetectFuture future = (DetectFuture)detector.isServiceDetected(address);
 
-                m_detector.set(null);
-                
-                i++;
-            } else {
-                Thread.sleep(5);
+            assertNotNull(future);
+            future.awaitFor();
+            if (future.getException() != null) {
+                LogUtils.debugf(this, future.getException(), "got future exception");
+                throw future.getException();
             }
+            assertTrue("False negative during detection!!", future.isServiceDetected());
+            assertNull(future.getException());
+
+            i++;
         }
     }
-    
+
     @Test
     @Repeat(10000)
     public void testNoServerPresent() throws Exception {
+        AsyncServiceDetector detector = getNewDetector(1999, ".*");
+        LogUtils.infof(this, "Starting testNoServerPresent with detector: %s\n", detector);
         
-        final TcpDetector detector = m_detector.get();
-        detector.setPort(1999);
-        
-        final DetectFuture future = detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
-        future.addListener(new IoFutureListener<DetectFuture>() {
-
-            public void operationComplete(final DetectFuture future) {
-                detector.dispose();
-            }
-            
-        });
+        final DetectFuture future = detector.isServiceDetected(InetAddressUtils.getLocalHostAddress());
         assertNotNull(future);
-        future.awaitUninterruptibly();
-        assertFalse(future.isServiceDetected());
+        future.awaitFor();
+        assertFalse("False positive during detection!!", future.isServiceDetected());
+        assertNull(future.getException());
         
-        
-        m_detector.set(null);
-        System.err.println("Finish test");
-    }
-    
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-    }
-    
-    private TcpDetector getDetector(final Class<? extends ServiceDetector> detectorClass) {
-        final Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (TcpDetector)bean;
+        LogUtils.infof(this, "Finished testNoServerPresent with detector: %s\n", detector);
     }
 }

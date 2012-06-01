@@ -30,14 +30,15 @@ package org.opennms.web.springframework.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.ui.FilterChainOrder;
-import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.ui.preauth.PreAuthenticatedCredentialsNotFoundException;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.util.Assert;
 
 /**
- * <p>RequestAttributePreAuthenticationProcessingFilter class.</p>
- *
+ * <p>RequestAttributePreAuthenticationProcessingFilter class. This filter should be used
+ * PRE_AUTH_FILTER position in the filter chain.</p>
+ * 
+ * @see http://static.springsource.org/spring-security/site/docs/3.1.x/reference/springsecurity-single.html
  * @author Timothy Nowaczyk, tan7f@virginia.edu
  */
 public class RequestAttributePreAuthenticationProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
@@ -91,14 +92,4 @@ public class RequestAttributePreAuthenticationProcessingFilter extends AbstractP
         Assert.hasText(credentialsRequestAttribute, "credentialsRequestAttribute must not be empty or null");     
         m_credentialsRequestAttribute = credentialsRequestAttribute;
     }
-
-    /**
-     * <p>getOrder</p>
-     *
-     * @return a int.
-     */
-    public int getOrder() {
-        return FilterChainOrder.PRE_AUTH_FILTER;
-    }
-
 }

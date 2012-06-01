@@ -38,11 +38,10 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -67,13 +66,13 @@ public class LoopDetectorTest implements ApplicationContextAware {
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setIpMatch(InetAddressUtils.str(InetAddress.getLocalHost()));
         m_detector.init();
-        assertTrue("Service detection for loopDetector failed.", m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue("Service detection for loopDetector failed.", m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
     @Test
     public void testDetectorFail() throws UnknownHostException{
         m_detector.init();
-        assertFalse("Service detection was supposed to be false but was true:", m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse("Service detection was supposed to be false but was true:", m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
     private LoopDetector getDetector(Class<? extends ServiceDetector> detectorClass) {

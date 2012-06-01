@@ -33,9 +33,9 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ByteArrayResource;
 
 public class SnmpPeerFactoryTest extends TestCase {
@@ -45,7 +45,7 @@ public class SnmpPeerFactoryTest extends TestCase {
 	protected void setUp() throws Exception {
         setVersion(SnmpAgentConfig.VERSION2C);
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
-        MockLogAppender.setupLogging(false);
+        MockLogAppender.setupLogging(true);
     }
     
     public void setVersion(int version) {
@@ -53,7 +53,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
 
-	/**
+    /**
      * String representing snmp-config.xml
      */
     public String getSnmpConfig() {
@@ -111,6 +111,27 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "\n" + 
                 "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\" max-repetitions=\"7\" >\n" + 
                 "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "</snmp-config>";
+    }
+
+    /**
+     * String representing snmp-config.xml
+     */
+    public String getBadRangeSnmpConfig() {
+        return "<?xml version=\"1.0\"?>\n" + 
+                "<snmp-config "+ 
+                " retry=\"3\" timeout=\"3000\"\n" + 
+                " read-community=\"public\"" +
+                " write-community=\"private\"\n" + 
+                " port=\"161\"\n" +
+                " max-vars-per-pdu = \"23\" " +
+                " version=\"v1\">\n" +
+                "\n" +
+                "   <definition version=\"v2c\" read-community=\"rangev2c\">\n" + 
+                "       <range begin=\"10.0.5.100\" end=\"10.0.1.100\"/>\n" +
+                "       <range begin=\"10.7.25.100\" end=\"10.7.20.100\"/>\n" +
                 "   </definition>\n" + 
                 "\n" + 
                 "</snmp-config>";
@@ -259,5 +280,17 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("specificv2c", agentConfig.getReadCommunity());
     }
     
+    /**
+     * This tests for ranges configured for a v2 node and community string
+     * @throws UnknownHostException
+     */
+    public void testReversedRange() throws UnknownHostException {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getBadRangeSnmpConfig().getBytes())));
+        
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.7.23.100"));
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
+        assertEquals("rangev2c", agentConfig.getReadCommunity());
+    }
 
 }

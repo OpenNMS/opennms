@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<thresholding-config>
+       <group name="generic-snmp" rrdRepository="${install.share.dir}/rrd/snmp/">
+               <threshold type="high" ds-type="hrStorageIndex" value="50.0"
+                       rearm="45.0" trigger="1" ds-label="hrStorageDescr" ds-name="hrStorageUsed">
+                       <resource-filter field="hrStorageDescr">^/(opt|var)</resource-filter>
+               </threshold>
+       </group>
+</thresholding-config>

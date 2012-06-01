@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.icmp;
 
+import org.opennms.core.utils.LogUtils;
+
 /**
  * <p>PingerFactory class.</p>
  *
@@ -53,11 +55,21 @@ public abstract class PingerFactory {
                 clazz = Class.forName(pingerClassName).asSubclass(Pinger.class);
                 m_pinger = clazz.newInstance();
             } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException("Unable to find class named " + pingerClassName, e);
+                IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + pingerClassName, e);
+                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                throw ex;
             } catch (InstantiationException e) {
-                throw new IllegalArgumentException("Error trying to create pinger of type " + clazz, e);
+                IllegalArgumentException ex = new IllegalArgumentException("Error trying to create pinger of type " + clazz, e);
+                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                throw ex;
             } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
+                IllegalArgumentException ex = new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
+                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                throw ex;
+            } catch (Throwable e) {
+                IllegalArgumentException ex = new IllegalArgumentException("Unexpected exception thrown while trying to create pinger of type " + clazz, e);
+                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                throw ex;
             }
         }
         return m_pinger;

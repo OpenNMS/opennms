@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class SecurityTest extends XmlTest<Security> {
+public class SecurityTest extends XmlTestNoCastor<Security> {
 
-	public SecurityTest(final Security sampleObject, final String sampleXml,
-			final String schemaFile) {
+	public SecurityTest(final Security sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);
 	}
 

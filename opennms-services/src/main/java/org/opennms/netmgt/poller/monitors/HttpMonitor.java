@@ -47,9 +47,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -215,8 +217,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
      * @return a {@link java.net.Socket} object.
      * @throws java.io.IOException if any.
      */
-    protected Socket wrapSocket(final Socket socket) throws IOException {
-        return socket;
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
     }
 
     private static boolean determineVerbosity(final Map<String, Object> parameters) {
@@ -418,7 +420,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             m_httpSocket.connect(new InetSocketAddress(((InetAddress) m_iface.getAddress()), m_currentPort), m_timeoutTracker.getConnectionTimeout());
             m_serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
             m_httpSocket.setSoTimeout(m_timeoutTracker.getSoTimeout());
-            m_httpSocket = wrapSocket(m_httpSocket);
+            m_httpSocket = getSocketWrapper().wrapSocket(m_httpSocket);
         }
         
         public void closeConnection() {

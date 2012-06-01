@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -226,7 +227,7 @@ public class SiteStatusViewsFactory {
      * @return a {@link java.util.Map} object.
      */
     public synchronized static Map<String, View> getViewsMap() {
-        return m_viewsMap;
+        return Collections.unmodifiableMap(m_viewsMap);
     }
 
     /**

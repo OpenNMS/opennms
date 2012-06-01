@@ -3,14 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-integrations</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rancid-provisioning-adapter</artifactId>
   <name>OpenNMS RANCID Provisioning Interface</name>
-
   <dependencies>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
@@ -37,36 +35,30 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
     </dependency>
-
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
@@ -75,7 +67,5 @@
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
-
   </dependencies>
-
 </project>

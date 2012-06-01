@@ -46,10 +46,39 @@ public interface Pinger {
      * @param host The {@link java.net.InetAddress} address to poll.
      * @param timeout The time to wait between each retry.
      * @param retries The number of times to retry.
+     * @param packetsize The size in byte of the ICMP packet.
      * @param sequenceId an ID representing the ping
+     * 
+     * @param cb the {@link org.opennms.netmgt.ping.PingResponseCallback} callback to call upon success or error
+     */
+    public void ping(InetAddress host, long timeout, int retries, int packetsize, int sequenceId, PingResponseCallback cb) throws Exception;
+
+    /**
+     * This method is used to ping a remote host to test for ICMP support.  Calls
+     * the callback method upon success or error.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param timeout The time to wait between each retry.
+     * @param retries The number of times to retry.
+     * @param sequenceId an ID representing the ping
+     * 
      * @param cb the {@link org.opennms.netmgt.ping.PingResponseCallback} callback to call upon success or error
      */
     public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception;
+
+    /**
+     * This method is used to ping a remote host to test for ICMP support. If
+     * the remote host responds within the specified period, defined by retries
+     * and timeouts, then the response time is returned.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param timeout The time to wait between each retry.
+     * @param retries The number of times to retry.
+     * @param packetsize The size in byte of the ICMP packet.
+     * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
+     */
+    public Number ping(InetAddress host, long timeout, int retries, int packetsize) throws Exception;
+    
 
     /**
      * This method is used to ping a remote host to test for ICMP support. If
@@ -88,6 +117,18 @@ public interface Pinger {
 	 *     echo reply, it will contain a number, otherwise a null value.
 	 */
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
+	
+	/**
+	 * Initialize IPv4 in this Pinger implementation.
+	 * @throws Exception
+	 */
+	public void initialize4() throws Exception;
+
+	/**
+	 * Initialize IPv6 in this Pinger implementation.
+	 * @throws Exception
+	 */
+	public void initialize6() throws Exception;
 	
 	/**
 	 * Whether or not IPv4 is initialized and available for this implementation.

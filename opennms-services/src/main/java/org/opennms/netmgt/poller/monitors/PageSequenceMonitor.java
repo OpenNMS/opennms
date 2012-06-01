@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -612,7 +613,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         Map<String, String> getParameterMap() {
-            return m_parameterMap;
+            return Collections.unmodifiableMap(m_parameterMap);
         }
 
         HttpPageSequence getPageSequence() {

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -207,7 +208,7 @@ public class DefaultReportService implements ReportService {
         for(Parameter parm : parameters)
             parmMap.put(parm.getName(), parm.getValue());
         
-        return parmMap;
+        return Collections.unmodifiableMap(parmMap);
     }
     
 

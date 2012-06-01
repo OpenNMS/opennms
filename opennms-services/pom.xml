@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -31,10 +32,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
-          <configuration>
+        <configuration>
           <additionalBuildcommands>
             <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
           </additionalProjectnatures>
@@ -55,8 +56,9 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-utils</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-config</artifactId>
+      <scope>test</scope>
+      <classifier>xsds</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -64,8 +66,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-daemon</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -94,6 +96,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.snmp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jasypt-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -189,11 +196,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jradius-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>jivesoftware</groupId>
       <artifactId>smack</artifactId>
       <scope>compile</scope>
@@ -226,6 +228,10 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
     </dependency>
     <dependency>
       <groupId>xmlrpc</groupId>

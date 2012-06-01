@@ -41,9 +41,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -62,7 +64,7 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -83,7 +85,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NewSuspectScanTest {
+public class NewSuspectScanTest implements InitializingBean {
     
     @Autowired
     private Provisioner m_provisioner;
@@ -118,6 +120,11 @@ public class NewSuspectScanTest {
 
     static private String s_initialDiscoveryEnabledValue;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @BeforeClass
     public static void setUpLogging() {
         Properties props = new Properties();

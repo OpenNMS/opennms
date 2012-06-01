@@ -829,7 +829,7 @@ public abstract class NotificationManager {
             newMap.put(notices[i].getName(), notices[i]);
         }
     
-        return newMap;
+        return Collections.unmodifiableMap(newMap);
     }
     /**
      * <p>getServiceNames</p>

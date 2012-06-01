@@ -42,6 +42,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -60,7 +61,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.test.mock.MockLogAppender;
 
 public class PassiveStatusKeeperTest {
     
@@ -119,7 +119,6 @@ public class PassiveStatusKeeperTest {
         m_psk.stop();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
-        DataSourceFactory.setInstance(null);
         m_db.drop();
 //        MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }

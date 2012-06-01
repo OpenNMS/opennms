@@ -44,7 +44,6 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-import org.opennms.core.test.ConfigurationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.xbill.DNS.*;

@@ -128,6 +128,7 @@ public class NotificationTask extends Thread {
             for (Command command : m_commands) {
                 buffer.append((command == null ? "null" : command.getName()));
                 buffer.append("/");
+                buffer.append("[#" + m_notifyId + "]");
             }
         }
         buffer.append(" to " + m_user.getUserId() + " at " + new Date(m_sendTime));

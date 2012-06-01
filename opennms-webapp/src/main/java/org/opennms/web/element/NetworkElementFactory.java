@@ -30,9 +30,7 @@ package org.opennms.web.element;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -41,7 +39,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +52,9 @@ import org.hibernate.FetchMode;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -73,27 +68,27 @@ import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.utils.SingleResultQuerier;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -101,18 +96,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * services). Encapsulates all lookup functionality for the network element
  * business objects in one place.
  *
- * To use this factory to lookup network elements, you must first initialize the
- * Vault with the database connection manager * and JDBC URL it will use. Call
- * the init method to initialize the factory. After that, you can call any
- * lookup methods.
- *
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Transactional(readOnly=true)
 public class NetworkElementFactory implements InitializingBean, NetworkElementFactoryInterface {
-    
-    //private static NetworkElementFactory s_networkElemFactory;
     
     @Autowired
     NodeDao m_nodeDao;
@@ -135,6 +123,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Autowired
     private CategoryDao m_categoryDao;
     
+    @Autowired
+    SimpleJdbcTemplate m_jdbcTemplate;
     
     /**
      * A mapping of service names (strings) to service identifiers (integers).
@@ -150,8 +140,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
     }
 
-
-
     public static NetworkElementFactoryInterface getInstance(ApplicationContext appContext) {
     	return appContext.getBean(NetworkElementFactoryInterface.class);
     }
@@ -161,6 +149,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeLabel(int)
 	 */
+    @Override
     public String getNodeLabel(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.add(Restrictions.eq("id", nodeId));
@@ -177,6 +166,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getIpPrimaryAddress(int)
 	 */
+    @Override
     public String getIpPrimaryAddress(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.add(Restrictions.and(Restrictions.eq("node.id", nodeId), Restrictions.eq("isSnmpPrimary", PrimaryType.PRIMARY)));
@@ -194,6 +184,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNode(int)
 	 */
+    @Override
     public OnmsNode getNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.add(Restrictions.eq("id",nodeId));
@@ -208,11 +199,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     }
 
-    
-
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllNodes()
 	 */
+    @Override
     public List<OnmsNode> getAllNodes() {
         OnmsCriteria criteria =  new OnmsCriteria(OnmsNode.class);
         criteria.add(Restrictions.or(Restrictions.isNull("type"), Restrictions.ne("type", "D")));
@@ -224,6 +214,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLike(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesLike(String nodeLabel) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("assetRecord", "assetRecord");
@@ -236,6 +227,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithIpLike(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithIpLike(String iplike) {
         if(iplike == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -252,11 +244,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return m_nodeDao.findMatching(nodeCrit);
     }
 
-    
-
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithService(int)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithService(int serviceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("assetRecord", "assetRecord");
@@ -271,6 +262,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddr(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithPhysAddr(String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("assetRecord", "assetRecord");
@@ -288,10 +280,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return m_nodeDao.findMatching(criteria);
     }
 
-
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddrAtInterface(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithPhysAddrAtInterface(String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("arpInterfaces", "arpIfaces");
@@ -306,6 +298,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddrFromSnmpInterface(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithPhysAddrFromSnmpInterface(String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("snmpInterfaces", "snmpIface");
@@ -320,6 +313,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithIfAlias(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithIfAlias(String ifAlias) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("snmpInterfaces", "snmpIface");
@@ -333,6 +327,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getHostname(java.lang.String)
 	 */
+    @Override
     public String getHostname(String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
@@ -349,27 +344,26 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return null;
     }
 
+    @Override
     public Integer getIfIndex(int ipinterfaceid) {
-        SingleResultQuerier querier = new SingleResultQuerier(Vault.getDataSource(), "SELECT ifindex FROM IPINTERFACE WHERE ID = ?");
-        querier.execute(ipinterfaceid);
-        final Integer result = (Integer)querier.getResult();
+        final Integer result = m_jdbcTemplate.queryForObject("SELECT ifindex FROM IPINTERFACE WHERE ID = ?", Integer.class, ipinterfaceid);
         if (result !=  null)
-        	return result;    	
-    	return -1;
+            return result;
+        return -1;
     }
     
+    @Override
     public Integer getIfIndex(int nodeID, String ipaddr) {
-        SingleResultQuerier querier = new SingleResultQuerier(Vault.getDataSource(), "SELECT ifindex FROM IPINTERFACE WHERE Nodeid = " + nodeID + " and ipaddr = '" + ipaddr + "'");
-        querier.execute();
-        final Integer result = (Integer)querier.getResult();
+        final Integer result = m_jdbcTemplate.queryForObject("SELECT ifindex FROM IPINTERFACE WHERE Nodeid = ? and ipaddr = ?", Integer.class, nodeID, ipaddr);
         if (result !=  null)
-        	return result;    	
-    	return -1;
+            return result;
+        return -1;
     }
     
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int)
 	 */
+    @Override
     public Interface getInterface(int ipInterfaceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.add(Restrictions.eq("id", ipInterfaceId));
@@ -387,6 +381,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int, java.lang.String)
 	 */
+    @Override
     public Interface getInterface(int nodeId, String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
@@ -401,6 +396,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int, java.lang.String, int)
 	 */
+    @Override
     public Interface getInterface(int nodeId, String ipAddress, int ifIndex) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
@@ -417,6 +413,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getSnmpInterface(int, int)
 	 */
+    @Override
     public Interface getSnmpInterface(int nodeId, int ifIndex) {
         OnmsCriteria criteria  = new OnmsCriteria(OnmsSnmpInterface.class);
         criteria.createAlias("node", "node");
@@ -434,6 +431,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterfacesWithIpAddress(java.lang.String)
 	 */
+    @Override
     public Interface[] getInterfacesWithIpAddress(String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
@@ -447,6 +445,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterfacesWithIfAlias(int, java.lang.String)
 	 */
+    @Override
     public Interface[] getInterfacesWithIfAlias(int nodeId, String ifAlias) {
         
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -463,6 +462,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllInterfacesOnNode(int)
 	 */
+    @Override
     public Interface[] getAllInterfacesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
@@ -476,6 +476,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllSnmpInterfacesOnNode(int)
 	 */
+    @Override
     public Interface[] getAllSnmpInterfacesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
         criteria.createAlias("node", "node");
@@ -499,7 +500,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getActiveInterfacesOnNode(int)
 	 */
-    
+    @Override
     public Interface[] getActiveInterfacesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
@@ -515,6 +516,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllInterfaces()
 	 */
+    @Override
     public Interface[] getAllInterfaces() {
         return getAllInterfaces(true);
     }
@@ -530,6 +532,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllInterfaces(boolean)
 	 */
+    @Override
     public Interface[] getAllInterfaces(boolean includeSnmp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
@@ -546,6 +549,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllManagedIpInterfaces(boolean)
 	 */
+    @Override
     public Interface[] getAllManagedIpInterfaces(boolean includeSNMP) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
@@ -567,6 +571,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getService(int, java.lang.String, int)
 	 */
+    @Override
     public Service getService(int nodeId, String ipAddress, int serviceId) {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -592,6 +597,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getService(int)
 	 */
+    @Override
     public Service getService(int ifServiceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
         criteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.LEFT_JOIN);
@@ -615,6 +621,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllServices()
 	 */
+    @Override
     public Service[] getAllServices() {
         return onmsMonitoredServices2ServiceArray(m_monSvcDao.findAll());
     }
@@ -624,6 +631,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnInterface(int, java.lang.String)
 	 */
+    @Override
     public Service[] getServicesOnInterface(int nodeId, String ipAddress) {
         return getServicesOnInterface(nodeId, ipAddress, false);
     }
@@ -631,6 +639,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnInterface(int, java.lang.String, boolean)
 	 */
+    @Override
     public Service[] getServicesOnInterface(int nodeId, String ipAddress, boolean includeDeletions) {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -652,6 +661,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnNode(int)
 	 */
+    @Override
     public Service[] getServicesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
         criteria.createAlias("ipInterface", "ipInterface");
@@ -666,6 +676,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnNode(int, int)
 	 */
+    @Override
     public Service[] getServicesOnNode(int nodeId, int serviceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
         criteria.createAlias("ipInterface", "ipInterface");
@@ -678,7 +689,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return onmsMonitoredServices2ServiceArray(m_monSvcDao.findMatching(criteria));
     }
     
-    public AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
+    private static AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
         for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
             final String ifaceAddress = iface.getIpAddress();
             if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
@@ -687,221 +698,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
         return null;
     }
-    
-    /**
-     * This method returns the data from the result set as an vector of
-     * ipinterface objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.Interface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    protected static Interface[] rs2Interfaces(ResultSet rs) throws SQLException {
-        List<Interface> intfs = new ArrayList<Interface>();
 
-        while (rs.next()) {
-            
-            Object element = null;
-            Interface intf = new Interface();
-
-            intf.m_id = rs.getInt("id");
-            intf.m_nodeId = rs.getInt("nodeid");
-            intf.m_ifIndex = rs.getInt("ifIndex");
-            intf.m_ipStatus = rs.getInt("ipStatus");
-            intf.m_ipHostName = rs.getString("ipHostname");
-            intf.m_ipAddr = rs.getString("ipAddr");
-            
-            element = rs.getString("isManaged");
-            if (element != null) {
-                intf.m_isManaged = ((String) element).charAt(0);
-            }
-
-            element = rs.getTimestamp("ipLastCapsdPoll");
-            if (element != null) {
-                intf.m_ipLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
-            }
-
-            intfs.add(intf);
-        }
-
-        Collections.sort(intfs, INTERFACE_COMPARATOR);
-        return intfs.toArray(new Interface[intfs.size()]);
-
-    }
-
-    /**
-     * This method returns the data from the result set as an vector of
-     * interface objects for non-ip interfaces.
-     *
-     * @return Interface[]
-     * @throws java.sql.SQLException if any.
-     * @param rs a {@link java.sql.ResultSet} object.
-     */
-    protected static Interface[] rs2SnmpInterfaces(ResultSet rs) throws SQLException {
-        List<Interface> intfs = new ArrayList<Interface>();
-
-        while (rs.next()) {
-            
-            Interface intf = new Interface();
-
-            intf.m_nodeId = rs.getInt("nodeid");
-            intf.m_ipAddr = rs.getString("ipaddr");
-            intf.m_snmpIfIndex = rs.getInt("snmpifindex");
-            intf.m_snmpIpAdEntNetMask = rs.getString("snmpIpAdEntNetMask");
-            intf.m_snmpPhysAddr = rs.getString("snmpPhysAddr");
-            intf.m_snmpIfDescr = rs.getString("snmpIfDescr");
-            intf.m_snmpIfName = rs.getString("snmpIfName");
-            intf.m_snmpIfType = rs.getInt("snmpIfType");
-            intf.m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
-            intf.m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
-            intf.m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
-            intf.m_snmpIfAlias = rs.getString("snmpIfAlias");
-            
-            Object element = rs.getString("snmpPoll");
-            if (element != null) {
-                intf.m_isSnmpPoll = ((String) element).charAt(0);
-            }
-
-            element = rs.getTimestamp("snmpLastCapsdPoll");
-            if (element != null) {
-                intf.m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
-            }
-
-            element = rs.getTimestamp("snmpLastSnmpPoll");
-            if (element != null) {
-                intf.m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
-            }
-
-            intfs.add(intf);
-        }
-
-        Collections.sort(intfs, INTERFACE_COMPARATOR);
-        return intfs.toArray(new Interface[intfs.size()]);
-
-    }
-
-    
-    /**
-     * <p>augmentInterfacesWithSnmpData</p>
-     *
-     * @param intfs an array of {@link org.opennms.web.element.Interface} objects.
-     * @param conn a {@link java.sql.Connection} object.
-     * @throws java.sql.SQLException if any.
-     */
-    protected static void augmentInterfacesWithSnmpData(Interface[] intfs, Connection conn) throws SQLException {
-        if (intfs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        for (int i = 0; i < intfs.length; i++) {
-            if (intfs[i].getIfIndex() != 0) {
-                PreparedStatement pstmt;
-                ResultSet rs;
-                try {
-                    pstmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID=? AND SNMPIFINDEX=?");
-                    d.watch(pstmt);
-                    pstmt.setInt(1, intfs[i].getNodeId());
-                    pstmt.setInt(2, intfs[i].getIfIndex());
-
-                    rs = pstmt.executeQuery();
-                    d.watch(rs);
-                    
-                    if (rs.next()) {
-                        intfs[i].m_snmpIfIndex = rs.getInt("snmpifindex");
-                        intfs[i].m_snmpIpAdEntNetMask = rs.getString("snmpIpAdEntNetMask");
-                        intfs[i].m_snmpPhysAddr = rs.getString("snmpPhysAddr");
-                        intfs[i].m_snmpIfDescr = rs.getString("snmpIfDescr");
-                        intfs[i].m_snmpIfName = rs.getString("snmpIfName");
-                        intfs[i].m_snmpIfType = rs.getInt("snmpIfType");
-                        intfs[i].m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
-                        intfs[i].m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
-                        intfs[i].m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
-                        intfs[i].m_snmpIfAlias = rs.getString("snmpIfAlias");
-                        
-                        Object element = rs.getString("snmpPoll");
-                        if (element != null) {
-                            intfs[i].m_isSnmpPoll = ((String) element).charAt(0);
-                        }
-
-                        element = rs.getTimestamp("snmpLastCapsdPoll");
-                        if (element != null) {
-                            intfs[i].m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
-                        }
-
-                        element = rs.getTimestamp("snmpLastSnmpPoll");
-                        if (element != null) {
-                            intfs[i].m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
-                        }
-
-                    }
-
-                    pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=? AND ipaddr=?");
-                    d.watch(pstmt);
-                    pstmt.setInt(1, intfs[i].getNodeId());
-                    pstmt.setInt(2, intfs[i].getIfIndex());
-                    pstmt.setString(3, intfs[i].getIpAddress());
-
-                    rs = pstmt.executeQuery();
-                    d.watch(rs);
-
-                    if (rs.next()) {
-                        intfs[i].m_isSnmpPrimary = rs.getString("issnmpprimary");
-                    }
-                } finally {
-                    d.cleanUp();
-                }
-            }
-        }
-    }
-    
-
-    /**
-     * <p>rs2Services</p>
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.Service} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    protected static Service[] rs2Services(ResultSet rs) throws SQLException {
-        List<Service> services = new ArrayList<Service>();
-
-        while (rs.next()) {
-            Service service = new Service();
-
-            Object element = null;
-            
-            service.setId(rs.getInt("id"));
-            service.setNodeId(rs.getInt("nodeid"));
-            service.setIpAddress(InetAddressUtils.normalize(rs.getString("ipaddr")));
-
-            element = rs.getTimestamp("lastgood");
-            if (element != null) {
-                service.setLastGood(Util.formatDateToUIString(new Date(((Timestamp) element).getTime())));
-            }
-
-            service.setServiceId(rs.getInt("serviceid"));
-            service.setServiceName(rs.getString("servicename"));
-
-            element = rs.getTimestamp("lastfail");
-            if (element != null) {
-                service.setLastFail(Util.formatDateToUIString(new Date(((Timestamp) element).getTime())));
-            }
-
-            service.setNotify(rs.getString("notify"));
-
-            element = rs.getString("status");
-            if (element != null) {
-                service.setStatus(((String) element).charAt(0));
-            }
-
-            services.add(service);
-        }
-
-        return services.toArray(new Service[services.size()]);
-    }
-    
-    private Service[] onmsMonitoredServices2ServiceArray(List<OnmsMonitoredService> monSvcs) {
+    private static Service[] onmsMonitoredServices2ServiceArray(List<OnmsMonitoredService> monSvcs) {
         List<Service> svcs = new LinkedList<Service>();
         for(OnmsMonitoredService monSvc : monSvcs) {
             Service service = onmsMonitoredService2Service(monSvc);
@@ -913,7 +711,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return svcs.toArray(new Service[svcs.size()]);
     }
 
-    private Service onmsMonitoredService2Service(OnmsMonitoredService monSvc) {
+    private static Service onmsMonitoredService2Service(OnmsMonitoredService monSvc) {
         Service service = new Service();
         service.setId(monSvc.getId());
         service.setNodeId(monSvc.getNodeId());
@@ -937,6 +735,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceNameFromId(int)
 	 */
+    @Override
     public String getServiceNameFromId(int serviceId) {
         if (serviceId2NameMap == null) {
             createServiceIdNameMaps();
@@ -950,6 +749,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceIdFromName(java.lang.String)
 	 */
+    @Override
     public int getServiceIdFromName(String serviceName) {
         if (serviceName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -973,6 +773,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceIdToNameMap()
 	 */
+    @Override
     public Map<Integer, String> getServiceIdToNameMap(){
         if (serviceId2NameMap == null) {
             createServiceIdNameMaps();
@@ -984,6 +785,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceNameToIdMap()
 	 */
+    @Override
     public Map<String, Integer> getServiceNameToIdMap(){
         if (serviceName2IdMap == null) {
             createServiceIdNameMaps();
@@ -1011,6 +813,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLikeAndIpLike(java.lang.String, java.lang.String, int)
 	 */
+    @Override
     public List<OnmsNode> getNodesLikeAndIpLike(String nodeLabel, String iplike, int serviceId) {
         if (nodeLabel == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1031,6 +834,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLike(java.lang.String, int)
 	 */
+    @Override
     public List<OnmsNode> getNodesLike(String nodeLabel, int serviceId) {
         if (nodeLabel == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1051,6 +855,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithIpLike(java.lang.String, int)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithIpLike(String iplike, int serviceId) {
         if (iplike == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1074,6 +879,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllNodes(int)
 	 */
+    @Override
     public List<OnmsNode> getAllNodes(int serviceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("ipInterfaces", "ipInterfaces");
@@ -1089,6 +895,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesFromPhysaddr(java.lang.String)
 	 */
+    @Override
     public List<OnmsNode> getNodesFromPhysaddr(String AtPhysAddr) {
         if (AtPhysAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1112,39 +919,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link org.opennms.web.element.AtInterface} object.
      * @throws java.sql.SQLException if any.
      */
-    public AtInterface getAtInterface(int nodeID, String ipaddr, ServletContext servletContext)
-            throws SQLException {
-
-        if (ipaddr == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        AtInterface[] nodes = null;
-        AtInterface node = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ATINTERFACE WHERE NODEID = ? AND IPADDR = ? AND STATUS != 'D'");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            stmt.setString(2, ipaddr);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            nodes = rs2AtInterface(rs);
-        } finally {
-            d.cleanUp();
-        }
-        if (nodes.length > 0) {
-            return nodes[0];
-        }
-        return node;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.opennms.web.element.NetworkElementFactoryInterface#getAtInterface(int, java.lang.String)
-     */
+    @Override
     public AtInterface getAtInterface(int nodeId, String ipAddr) {
         OnmsNode node = m_nodeDao.get(nodeId);
         return getAtInterfaceForOnmsNode(node, ipAddr);
@@ -1157,33 +932,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public IpRouteInterface[] getIpRoute(int nodeID) {
-
-        IpRouteInterface[] nodes = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY ROUTEDEST");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            nodes = rs2IpRouteInterface(rs);
-        } catch (SQLException e) {
-        	 LogUtils.warnf(this, e, "An error occurred getting the IP Route for node %d", nodeID);
-        	 return null;
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodes;
+        List<IpRouteInterface> nodes = m_jdbcTemplate.query("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY ROUTEDEST", new IpRouteInterfaceRowMapper(), nodeID);
+        return nodes.toArray(new IpRouteInterface[nodes.size()]);
     }
-    
+
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#isParentNode(int)
 	 */
+    @Override
     public boolean isParentNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
@@ -1206,29 +964,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public boolean isBridgeNode(int nodeID) throws SQLException {
-
-        boolean isPN = false;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM STPNODE WHERE NODEID = ? AND STATUS != 'D' ");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            rs.next();
-            int count = rs.getInt(1);
-
-            if (count > 0) {
-                isPN = true;
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return isPN;
+        int count = m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM STPNODE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
+        return (count > 0);
     }
 
     /**
@@ -1238,30 +977,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public boolean isRouteInfoNode(int nodeID) throws SQLException {
-
-        boolean isRI = false;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            rs.next();
-            int count = rs.getInt(1);
-
-            if (count > 0) {
-                isRI = true;
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return isRI;
+        int count = m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
+        return (count > 0);
     }
 
     /**
@@ -1271,149 +990,45 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.util.Set} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
         Set<Integer> nodes = new TreeSet<Integer>();
-        Integer node = null;
-        
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-    	    while (rs.next()) {
-	            Object element = new Integer(rs.getInt("parentid"));
-	            if (element != null) {
-	                node = ((Integer) element);
-	            }
-	            nodes.add(node);
-	        }
 
-            stmt = conn.prepareStatement("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'");
-            d.watch(stmt);
-		    stmt.setInt(1, nodeID);
-		    rs = stmt.executeQuery();
-		    d.watch(rs);
-    	    while (rs.next()) {
-	            Object element = new Integer(rs.getInt("parentid"));
-	            if (element != null) {
-	                node = ((Integer) element);
-	            }
-	            nodes.add(node);
-	        }
-        } finally {
-            d.cleanUp();
-        }
-        return nodes;
-        
-    }
-    
-    /**
-     * <p>getLinkedNodeIdOnNode</p>
-     *
-     * @param nodeID a int.
-     * @param conn a {@link java.sql.Connection} object.
-     * @return a {@link java.util.Set} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public Set<Integer> getLinkedNodeIdOnNode(int nodeID,Connection conn) throws SQLException {
-        Set<Integer> nodes = new TreeSet<Integer>();
-        Integer node = null;
-        
-        PreparedStatement stmt;
-        ResultSet rs;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            stmt = conn.prepareStatement("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                Object element = new Integer(rs.getInt("parentid"));
-                if (element != null) {
-                    node = ((Integer) element);
+        List<Integer> parentIds = m_jdbcTemplate.query(
+            "SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'",
+            new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getObject("parentid") == null ? null : rs.getInt("parentid");
                 }
-                nodes.add(node);
-            }
+            },
+            nodeID
+        );
+        // Remove all nulls, TreeSets cannot contain null
+        parentIds.remove(null);
+        nodes.addAll(parentIds);
 
-            stmt = conn.prepareStatement("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                Object element = new Integer(rs.getInt("parentid"));
-                if (element != null) {
-                    node = ((Integer) element);
+        parentIds = m_jdbcTemplate.query(
+            "SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'",
+            new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getObject("parentid") == null ? null : rs.getInt("parentid");
                 }
-                nodes.add(node);
-            }
-        } finally {
-            d.cleanUp();
-        }
+            },
+            nodeID
+        );
+        // Remove all nulls, TreeSets cannot contain null
+        parentIds.remove(null);
+        nodes.addAll(parentIds);
+
         return nodes;
-        
-    }    
-
-    /**
-     * <p>getLinkedNodeIdOnNodes</p>
-     *
-     * @param nodeIds a {@link java.util.Set} object.
-     * @param conn a {@link java.sql.Connection} object.
-     * @return a {@link java.util.Set} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public Set<Integer> getLinkedNodeIdOnNodes(Set<Integer> nodeIds, Connection conn) throws SQLException {
-        List<Integer> nodes = new ArrayList<Integer>();
-        if(nodeIds==null || nodeIds.size()==0){
-        	return new TreeSet<Integer>();
-        }
-        
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-        	StringBuffer query = new StringBuffer("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID IN (");
-        	Iterator<Integer> it = nodeIds.iterator();
-        	StringBuffer nodesStrBuff = new StringBuffer("");
-        	while(it.hasNext()){
-        		nodesStrBuff.append( (it.next()).toString());
-        		if(it.hasNext()){
-        			nodesStrBuff.append(", ");
-        		}
-        	}
-        	query.append(nodesStrBuff);
-        	query.append(") AND STATUS != 'D'");
-        	
-            PreparedStatement stmt = conn.prepareStatement(query.toString());
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-    	    while (rs.next()) {
-	            nodes.add(new Integer(rs.getInt("parentid")));
-	        }
-
-            query = new StringBuffer("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEID IN (");
-            query.append(nodesStrBuff);
-        	query.append(") AND STATUS != 'D'");            
-            rs = stmt.executeQuery();
-            d.watch(rs);
-    	    while (rs.next()) {
-	            nodes.add(new Integer(rs.getInt("parentid")));
-	        }
-        } finally {
-            d.cleanUp();
-        }
-        
-        return new TreeSet<Integer>(nodes);
-        
     }
     
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnNode(int)
 	 */
+    @Override
     public List<LinkInterface> getDataLinksOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
@@ -1433,6 +1048,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     	
     }
 
+    @Override
     public List<LinkInterface> getDataLinksOnInterface(int nodeId, String ipAddress){
     	Interface iface = getInterface(nodeId, ipAddress);
     	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
@@ -1441,6 +1057,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     	return new ArrayList<LinkInterface>();
     }
     
+    @Override
     public List<LinkInterface> getDataLinksOnInterface(int id){
     	Interface iface = getInterface(id);
     	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
@@ -1453,6 +1070,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnInterface(int, int)
 	 */
+    @Override
     public List<LinkInterface> getDataLinksOnInterface(int nodeId, int ifIndex){
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
@@ -1551,27 +1169,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.Vlan} objects.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public Vlan[] getVlansOnNode(int nodeID) throws SQLException {
-    	Vlan[] vlans = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            
-            String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
-
-            PreparedStatement stmt = conn.prepareStatement(sqlQuery);
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            vlans = rs2Vlan(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return vlans;
+        String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
+        List<Vlan> nodes = m_jdbcTemplate.query(sqlQuery, new VlanRowMapper(), nodeID);
+        return nodes.toArray(new Vlan[nodes.size()]);
     }
     
     /**
@@ -1581,34 +1183,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public StpInterface[] getStpInterface(int nodeID)
-            throws SQLException {
-
-        StpInterface[] nodes = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-
-            String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
-                    + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
-                    + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress " 
-					+ "AND stpportdesignatedbridge != '0000000000000000'"
-                    + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ?) AS stpinterfacedb "
-                    + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
-
-            PreparedStatement stmt = conn.prepareStatement(sqlQuery);
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            nodes = rs2StpInterface(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodes;
+    @Override
+    public StpInterface[] getStpInterface(int nodeID) throws SQLException {
+        String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
+            + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
+            + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress " 
+            + "AND stpportdesignatedbridge != '0000000000000000'"
+            + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ?) AS stpinterfacedb "
+            + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
+        List<StpInterface> nodes = m_jdbcTemplate.query(sqlQuery, new StpInterfaceRowMapper(), nodeID);
+        return nodes.toArray(new StpInterface[nodes.size()]);
     }
 
     /**
@@ -1619,35 +1203,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public StpInterface[] getStpInterface(int nodeID, int ifindex)
-            throws SQLException {
-
-        StpInterface[] nodes = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            
-            String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
-                + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
-                + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress "
-				+ "AND stpportdesignatedbridge != '0000000000000000'"
-                + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ? AND stpinterface.ifindex = ?) AS stpinterfacedb "
-                + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
-
-            PreparedStatement stmt = conn.prepareStatement(sqlQuery);
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            stmt.setInt(2, ifindex);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            nodes = rs2StpInterface(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodes;
+    @Override
+    public StpInterface[] getStpInterface(int nodeID, int ifindex) throws SQLException {
+        String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
+            + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
+            + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress "
+            + "AND stpportdesignatedbridge != '0000000000000000'"
+            + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ? AND stpinterface.ifindex = ?) AS stpinterfacedb "
+            + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
+        List<StpInterface> nodes = m_jdbcTemplate.query(sqlQuery, new StpInterfaceRowMapper(), nodeID, ifindex);
+        return nodes.toArray(new StpInterface[nodes.size()]);
     }
 
     /**
@@ -1657,96 +1222,20 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpNode} objects.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public StpNode[] getStpNode(int nodeID) throws SQLException {
-
-        StpNode[] nodes = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("select distinct(e2.nodeid) as stpdesignatedrootnodeid, e1.* from (stpnode e1 left join stpnode e2 on substr(e1.stpdesignatedroot, 5, 16) = e2.basebridgeaddress) where e1.nodeid = ? AND e1.status != 'D' ORDER BY e1.basevlan");
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            nodes = rs2StpNode(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodes;
+        String sqlQuery = "select distinct(e2.nodeid) as stpdesignatedrootnodeid, e1.* from (stpnode e1 left join stpnode e2 on substr(e1.stpdesignatedroot, 5, 16) = e2.basebridgeaddress) where e1.nodeid = ? AND e1.status != 'D' ORDER BY e1.basevlan";
+        List<StpNode> nodes = m_jdbcTemplate.query(sqlQuery, new StpNodeRowMapper(), nodeID);
+        return nodes.toArray(new StpNode[nodes.size()]);
     }
 
     /**
-     * This method returns the data from the result set as an array of
-     * AtInterface objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.AtInterface} objects.
-     * @throws java.sql.SQLException if any.
+     * This class converts data from the result set into {@link IpRouteInterface} objects.
      */
-    private static AtInterface[] rs2AtInterface(ResultSet rs)
-            throws SQLException {
-        if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+    private static class IpRouteInterfaceRowMapper implements RowMapper<IpRouteInterface> {
 
-        List<AtInterface> atIfs = new ArrayList<AtInterface>();
-
-        while (rs.next()) {
-            // Non-null field
-            Object element = new Integer(rs.getInt("nodeId"));
-            int nodeId = ((Integer) element).intValue();
-
-            // Non-null field
-            element = rs.getString("ipaddr");
-            String ipaddr = (String) element;
-
-            // Non-null field
-            element = rs.getString("atphysaddr");
-            String physaddr = (String) element;
-
-            // Non-null field
-            element = rs.getTimestamp("lastpolltime");
-            String lastPollTime = Util.formatDateToUIString(new Date(
-                    ((Timestamp) element).getTime()));
-
-            // Non-null field
-            element = new Integer(rs.getInt("sourcenodeID"));
-            int sourcenodeid = ((Integer) element).intValue();
-
-            // Non-null field
-            element = new Integer(rs.getInt("ifindex"));
-            int ifindex = ((Integer) element).intValue();
-
-            // Non-null field
-            element = rs.getString("status");
-            char status = ((String) element).charAt(0);
-
-            atIfs.add(new AtInterface(nodeId, sourcenodeid, ifindex, ipaddr, physaddr, lastPollTime, status));
-        }
-
-        return atIfs.toArray(new AtInterface[atIfs.size()]);
-    }
-
-    /**
-     * This method returns the data from the result set as an array of
-     * IpRouteInterface objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    private static IpRouteInterface[] rs2IpRouteInterface(ResultSet rs)
-            throws SQLException {
-        if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        List<IpRouteInterface> ipRtIfs = new ArrayList<IpRouteInterface>();
-
-        while (rs.next()) {
+        @Override
+        public IpRouteInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
             IpRouteInterface ipRtIf = new IpRouteInterface();
 
             Object element = new Integer(rs.getInt("nodeId"));
@@ -1816,29 +1305,17 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 ipRtIf.m_status = DbIpRouteInterfaceEntry.STATUS_UNKNOWN;
             }
 
-            ipRtIfs.add(ipRtIf);
+            return ipRtIf;
         }
-
-        return ipRtIfs.toArray(new IpRouteInterface[ipRtIfs.size()]);
     }
 
     /**
-     * This method returns the data from the result set as an array of
-     * StpInterface objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.StpInterface} objects.
-     * @throws java.sql.SQLException if any.
+     * This class converts data from the result set to {@link StpInterface} objects.
      */
-    private static StpInterface[] rs2StpInterface(ResultSet rs)
-            throws SQLException {
-        if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+    private class StpInterfaceRowMapper implements RowMapper<StpInterface> {
 
-        List<StpInterface> stpIfs = new ArrayList<StpInterface>();
-
-        while (rs.next()) {
+        @Override
+        public StpInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
             StpInterface stpIf = new StpInterface();
 
             Object element = new Integer(rs.getInt("nodeId"));
@@ -1915,28 +1392,18 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                         .get_ifindex());
             }
 
-            stpIfs.add(stpIf);
+            return stpIf;
         }
-
-        return stpIfs.toArray(new StpInterface[stpIfs.size()]);
     }
 
     /**
-     * This method returns the data from the result set as an array of StpNode
+     * This class converts data from the result set into {@link StpNode}
      * objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.StpNode} objects.
-     * @throws java.sql.SQLException if any.
      */
-    private static StpNode[] rs2StpNode(ResultSet rs) throws SQLException {
-        if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+    private static class StpNodeRowMapper implements RowMapper<StpNode> {
 
-        List<StpNode> stpNodes = new ArrayList<StpNode>();
-
-        while (rs.next()) {
+        @Override
+        public StpNode mapRow(ResultSet rs, int rowNum) throws SQLException {
             StpNode stpNode = new StpNode();
 
             Object element = new Integer(rs.getInt("nodeId"));
@@ -2010,29 +1477,18 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 stpNode.m_stprootnodeid = ((Integer) element).intValue();
             }
 
-            stpNodes.add(stpNode);
+            return stpNode;
         }
-
-        return stpNodes.toArray(new StpNode[stpNodes.size()]);
     }
 
     /**
-     * This method returns the data from the result set as an array of StpNode
+     * This class converts data from the result set into {@link Vlan}
      * objects.
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.element.Vlan} objects.
-     * @throws java.sql.SQLException if any.
      */
-    private static Vlan[] rs2Vlan(ResultSet rs) throws SQLException {
-        if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+    private static class VlanRowMapper implements RowMapper<Vlan> {
 
-        List<Vlan> vlan = new ArrayList<Vlan>();
-
-        while (rs.next()) {
-
+        @Override
+        public Vlan mapRow(ResultSet rs, int rowNum) throws SQLException {
             // Non-null field
             Object element = new Integer(rs.getInt("nodeId"));
             int nodeId = ((Integer) element).intValue();
@@ -2066,10 +1522,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             element = rs.getString("status");
             char status = ((String) element).charAt(0);
 
-            vlan.add(new Vlan(nodeId, vlanid, vlanname, vlantype, vlanstatus, lastpolltime, status));
+            return new Vlan(nodeId, vlanid, vlanname, vlantype, vlanstatus, lastpolltime, status);
         }
-
-        return vlan.toArray(new Vlan[vlan.size()]);
     }
 
 
@@ -2080,29 +1534,24 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    private static String getIpAddress(int nodeid) throws SQLException {
+    private String getIpAddress(int nodeid) throws SQLException {
+        String retval = null;
+        List<String> rs = m_jdbcTemplate.query(
+            "SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ?",
+            new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString("ipaddr");
+                }
+            },
+            nodeid
+        );
 
-        String ipaddr = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ?");
-            d.watch(stmt);
-            stmt.setInt(1, nodeid);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-                 ipaddr = rs.getString("ipaddr");
-            }
-        } finally {
-            d.cleanUp();
+        for (String ipaddr : rs) {
+            retval = ipaddr;
         }
 
-        return ipaddr;
-
+        return retval;
     }
 
     /**
@@ -2113,35 +1562,32 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    private static String getIpAddress(int nodeid, int ifindex)
+    private String getIpAddress(int nodeid, int ifindex)
             throws SQLException {
-        String ipaddr = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
+        String retval = null;
+        List<String> rs = m_jdbcTemplate.query(
+            "SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX = ? ",
+            new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString("ipaddr");
+                }
+            },
+            nodeid,
+            ifindex
+        );
 
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX = ? ");
-            d.watch(stmt);
-            stmt.setInt(1, nodeid);
-            stmt.setInt(2, ifindex);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-                ipaddr = rs.getString("ipaddr");
-            }
-        } finally {
-            d.cleanUp();
+        for (String ipaddr : rs) {
+            retval = ipaddr;
         }
 
-        return ipaddr;
-
+        return retval;
     }
 
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeIdsWithIpLike(java.lang.String)
 	 */
+    @Override
     public List<Integer> getNodeIdsWithIpLike(String iplike){
         if (iplike == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -2179,6 +1625,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], boolean)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithCategories(String[] categories, boolean onlyNodesWithDownAggregateStatus) {
         List<OnmsNode> ourNodes = getNodesInCategories(categories);
         
@@ -2207,6 +1654,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], java.lang.String[], boolean)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
         return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
 
@@ -2220,6 +1668,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], java.lang.String[], boolean)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithCategories(String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {
@@ -2467,8 +1916,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
     }
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(m_nodeDao, "NodeDao must not be null");
-		Assert.notNull(m_ipInterfaceDao, "IpinterfaceDao must not be null");
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 }

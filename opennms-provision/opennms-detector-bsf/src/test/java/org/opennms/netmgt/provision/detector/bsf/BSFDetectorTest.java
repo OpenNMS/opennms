@@ -38,8 +38,9 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,10 +53,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class BSFDetectorTest {
+public class BSFDetectorTest implements InitializingBean {
 
     @Autowired
     public BSFDetector m_detector;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
 
     @Before
     public void setUp() {
@@ -71,21 +77,21 @@ public class BSFDetectorTest {
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/testa.groovy");
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
     public void testDetectorWrongBanner() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/testb.groovy");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
     public void testDetectorFileNotFound() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/unknown.groovy");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
@@ -93,7 +99,7 @@ public class BSFDetectorTest {
         m_detector.setRunType("eval");
         m_detector.setFileName("src/test/resources/testa.groovy");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
@@ -104,7 +110,7 @@ public class BSFDetectorTest {
         m_detector.setBsfEngine("org.apache.bsf.engines.jython.JythonEngine");
         m_detector.setFileName("src/test/resources/test.py");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
 }

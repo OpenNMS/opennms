@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -125,7 +124,8 @@ public class DiskUsageDetector extends SnmpDetector {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+    @Override
+    public boolean isServiceDetected(InetAddress address) {
         int matchType = MATCH_TYPE_EXACT;
 
         try {

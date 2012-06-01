@@ -31,22 +31,15 @@ package org.opennms.netmgt.dao.hibernate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.impl.CriteriaImpl.CriterionEntry;
 import org.hibernate.transform.ResultTransformer;
-import org.hibernate.transform.Transformers;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -56,8 +49,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
-
-import com.mchange.v2.codegen.bean.Property;
 
 /**
  * <p>NodeDaoHibernate class.</p>
@@ -294,7 +285,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
         }
-        return foreignIdMap;
+        return Collections.unmodifiableMap(foreignIdMap);
     }
 
     /** {@inheritDoc} */

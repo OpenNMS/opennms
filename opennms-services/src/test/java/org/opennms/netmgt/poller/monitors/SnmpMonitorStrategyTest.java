@@ -32,24 +32,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.mock.snmp.MockSnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.Counter32SnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.Counter64SnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.Gauge32SnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.Integer32SnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.IpAddressSnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.OidSnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.StringSnmpValue;
-import org.opennms.mock.snmp.MockSnmpValue.TimeticksSnmpValue;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author brozow
@@ -79,13 +75,14 @@ public class SnmpMonitorStrategyTest {
 
     @Test
     public void testMeetsCriteriaWithSnmpNull() {
-        SnmpValue result = MockSnmpValue.NULL_VALUE;
+        SnmpValue result = nullValue();
         testSyntaxEquals(result, "", "1");
     }
+    
 
     @Test
     public void testMeetsCriteriaWithString() {
-        StringSnmpValue result = new StringSnmpValue("A Test String");
+        SnmpValue result = octetString("A Test String");
         testSyntaxEquals(result, "A Test String", "a test string");
         testSyntaxMatches(result, "[tT][eE][sS][tT]", "test");
         testSyntaxMatches(result, "^A Test String$", "^A Test$");
@@ -93,63 +90,83 @@ public class SnmpMonitorStrategyTest {
 
     @Test
     public void testMeetsCriteriaWithObjectID() {
-        OidSnmpValue result = new OidSnmpValue(".1.2.3.4.5.6.7.8.9");
+        SnmpValue result = oid(".1.2.3.4.5.6.7.8.9");
         testSyntaxEquals(result, ".1.2.3.4.5.6.7.8.9", "..1.2.3.4.5.6.7.8.9");
         testSyntaxMatches(result, "\\.7\\.", "\\.11\\.");
     }
 
     @Test
     public void testMeetsCriteriaWithIPAddr() throws Exception {
-        IpAddressSnmpValue result = new IpAddressSnmpValue("10.1.1.1");
+        SnmpValue result = ipAddr("10.1.1.1");
         testSyntaxEquals(result, "10.1.1.1", "10.1.1.2");
         testSyntaxMatches(result, "10\\.1\\.1\\.[1-5]", "10\\.1\\.1\\.[02-9]");
     }
 
-    @Test
+	@Test
     public void testNumericString() {
-        StringSnmpValue result = new StringSnmpValue("12345");
+        SnmpValue result = octetString("12345");
         testOrderOperations(result, 12345);
     }
 
     @Test
     public void testMeetsCriteriaWithInteger() {
-        Integer32SnmpValue result = new Integer32SnmpValue(1234);
+        SnmpValue result = int32Value(1234);
         testSyntaxEquals(result, "1234", "2234");
         testOrderOperations(result, 1234);
         testSyntaxMatches(result, "23", "14");
     }
 
-    @Test
+    private SnmpValue int32Value(int i) {
+		return SnmpUtils.getValueFactory().getInt32(i);
+	}
+
+	@Test
     public void testMeetsCriteriaWithCounter32() {
-        Counter32SnmpValue result = new Counter32SnmpValue(1);
+        SnmpValue result = counter32Value(1);
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
-    @Test
+    private SnmpValue counter32Value(int i) {
+		return SnmpUtils.getValueFactory().getCounter32(i);
+	}
+
+	@Test
     public void testMeetsCriteriaWithGauge32() {
-        Gauge32SnmpValue result = new Gauge32SnmpValue(1);
+        SnmpValue result = gauge32Value(1);
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
-    @Test
+    private SnmpValue gauge32Value(int i) {
+		return SnmpUtils.getValueFactory().getGauge32(i);
+	}
+
+	@Test
     public void testMeetsCriteriaWithTimeTicks() {
-        TimeticksSnmpValue result = new TimeticksSnmpValue("1");
+        SnmpValue result = timeticks("1");
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
-    @Test
+    private SnmpValue timeticks(String val) {
+		return SnmpUtils.getValueFactory().getTimeTicks(Long.parseLong(val));
+	}
+
+	@Test
     public void testMeetsCriteriaWithCounter64() {
-        Counter64SnmpValue result = new Counter64SnmpValue(1);
+        SnmpValue result = counter64Value(1);
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
-    @Test
+    private SnmpValue counter64Value(int i) {
+		return SnmpUtils.getValueFactory().getCounter64(BigInteger.valueOf(i));
+	}
+
+	@Test
     public void testErrorConditions() {
-        Integer32SnmpValue result = new Integer32SnmpValue(1);
+    	SnmpValue result = int32Value(1);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("operator X is unknown"));
@@ -163,7 +180,7 @@ public class SnmpMonitorStrategyTest {
     
     @Test
     public void testErrorConditions2() {
-        Integer32SnmpValue result = new Integer32SnmpValue(1);
+        SnmpValue result = int32Value(1);
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new NumberFormatException("For input string: \"abc\""));
@@ -213,5 +230,23 @@ public class SnmpMonitorStrategyTest {
         assertTrue(monitor.meetsCriteria(result, SnmpMonitor.GREATER_THAN_EQUALS, Integer.toString(value)));
         assertTrue(monitor.meetsCriteria(result, SnmpMonitor.GREATER_THAN_EQUALS, Integer.toString(value - 1)));
     }
+    
+    SnmpValue octetString(String val) {
+    	return SnmpUtils.getValueFactory().getOctetString(val.getBytes());
+    }
+    
+    SnmpValue nullValue() {
+    	return SnmpUtils.getValueFactory().getNull();
+    }
+    
+    SnmpValue oid(String objectId) {
+    	return SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(objectId));
+    }
+    
+    private SnmpValue ipAddr(String addr) throws UnknownHostException {
+		return SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName(addr));
+	}
+
+
 
 }

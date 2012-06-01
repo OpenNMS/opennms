@@ -82,6 +82,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
         

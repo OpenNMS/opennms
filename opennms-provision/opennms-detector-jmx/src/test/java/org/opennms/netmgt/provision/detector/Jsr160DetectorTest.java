@@ -52,9 +52,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -65,7 +66,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class Jsr160DetectorTest {
+public class Jsr160DetectorTest implements InitializingBean {
     
     @Autowired
     public Jsr160Detector m_detector;
@@ -73,6 +74,11 @@ public class Jsr160DetectorTest {
     public static MBeanServer m_beanServer;
     private JMXConnectorServer m_connectorServer;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     @BeforeClass
     public static void beforeTest() throws RemoteException{
         LocateRegistry.createRegistry(9123);
@@ -101,9 +107,9 @@ public class Jsr160DetectorTest {
         
         m_detector.setPort(9123);
         m_detector.setUrlPath("/server");
-        m_detector.onInit();
+        m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
        
     }
     
@@ -112,9 +118,9 @@ public class Jsr160DetectorTest {
         
         m_detector.setPort(9000);
         m_detector.setUrlPath("/server");
-        m_detector.onInit();
+        m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
         
     }
     
@@ -123,9 +129,9 @@ public class Jsr160DetectorTest {
         
         m_detector.setPort(9000);
         m_detector.setUrlPath("/wrongurlpath");
-        m_detector.onInit();
+        m_detector.init();
 
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
         
     }
 }

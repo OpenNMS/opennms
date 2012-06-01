@@ -42,9 +42,6 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 
 /**
  * <p>CollectionSpecification class.</p>
@@ -264,22 +261,10 @@ public class CollectionSpecification {
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
         Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            return getCollector().collect(agent, eventProxy(), getPropertyMap());
+            return getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
         } finally {
             Collectd.instrumentation().endCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
-    }
-
-    private EventProxy eventProxy() {
-        return new EventProxy() {
-            public void send(Event e) {
-                EventIpcManagerFactory.getIpcManager().sendNow(e);
-            }
-
-            public void send(Log log) {
-                EventIpcManagerFactory.getIpcManager().sendNow(log);
-            }
-        };
     }
 
     /**

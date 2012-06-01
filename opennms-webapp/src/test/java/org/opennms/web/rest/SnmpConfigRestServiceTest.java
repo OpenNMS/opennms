@@ -53,7 +53,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
     private File m_snmpConfigFile;
 
     @Override
-    public void beforeServletStart() throws Exception {
+    protected void beforeServletStart() throws Exception {
         
         File dir = new File("target/test-work-dir");
         dir.mkdirs();
@@ -89,7 +89,6 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
     
     @Test
     public void testSetNewValue() throws Exception {
-        
         String url = "/snmpConfig/1.1.1.1";
         // Testing GET Collection
         

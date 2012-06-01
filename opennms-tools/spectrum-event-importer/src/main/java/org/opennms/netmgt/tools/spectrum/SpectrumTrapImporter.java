@@ -40,6 +40,7 @@ import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -192,6 +193,7 @@ public class SpectrumTrapImporter {
         m_eventFormats = formats;
     }
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (m_baseUei == null) {
             throw new IllegalStateException("The baseUei property must be set");
@@ -475,15 +477,15 @@ public class SpectrumTrapImporter {
     }
     
     public List<AlertMapping> getAlertMappings() {
-        return m_alertMappings;
+        return Collections.unmodifiableList(m_alertMappings);
     }
     
     public List<EventDisposition> getEventDispositions() {
-        return m_eventDispositions;
+        return Collections.unmodifiableList(m_eventDispositions);
     }
     
     public Map<String,EventFormat> getEventFormats() {
-        return m_eventFormats;
+        return Collections.unmodifiableMap(m_eventFormats);
     }
     
     public void setOutputWriter(PrintWriter out) {

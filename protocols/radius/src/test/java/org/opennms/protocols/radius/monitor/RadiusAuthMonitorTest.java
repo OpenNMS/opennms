@@ -30,14 +30,14 @@ package org.opennms.protocols.radius.monitor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -45,8 +45,6 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.monitors.MonitorTestUtils;
-import org.opennms.protocols.radius.monitor.RadiusAuthMonitor;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -63,7 +61,7 @@ public class RadiusAuthMonitorTest {
 	@Test
 	@Ignore("have to have a radius server set up")
 	public void testResponse() throws Exception {
-		final Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
 		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.211.11"), "RADIUS");

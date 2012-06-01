@@ -119,7 +119,17 @@ if (not defined $command) {
 
 =item B<list>
 
+=over 8
+
+=item B<list>
+
 List the available requisition foreign sources.
+
+=item B<list E<lt>foreign-sourceE<gt>>
+
+List the requisition with the given foreign source.
+
+=back
 
 =cut
 
@@ -135,6 +145,10 @@ sub cmd_list {
 =item B<requisition>
 
 =over 8
+
+=item B<requisition list E<lt>foreign-sourceE<gt>>
+
+List the requisition with the given foreign source.
 
 =item B<requisition add E<lt>foreign-sourceE<gt>>
 
@@ -165,7 +179,9 @@ sub cmd_requisition {
 		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 
-	if (is_add($command)) {
+	if ($command eq 'list') {
+		cmd_list($foreign_source);
+	} elsif (is_add($command)) {
 		my $xml = get_element('model-import');
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
@@ -252,8 +268,8 @@ sub cmd_node {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a key!", -verbose => 0);
 		}
 
-		$key   = uri_escape_utf8($key);
-		$value = uri_escape_utf8($value);
+		$key   = URI::Escape::uri_escape_utf8($key);
+		$value = URI::Escape::uri_escape_utf8($value);
 		put($foreign_source . '/nodes/' . $foreign_id, "$key=$value");
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: node $command", -verbose => 0);
@@ -324,8 +340,8 @@ sub cmd_interface {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a key!", -verbose => 0);
 		}
 
-		$key   = uri_escape_utf8($key);
-		$value = uri_escape_utf8($value);
+		$key   = URI::Escape::uri_escape_utf8($key);
+		$value = URI::Escape::uri_escape_utf8($value);
 
 		put($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
 	} else {
@@ -539,11 +555,11 @@ sub cmd_snmp {
 		if (not defined $community or $community eq "") {
 			pod2usage(-exitval => 1, -message => "Error: You must specify an SNMP community string!", -verbose => 0);
 		}
-		my $arguments = "community=" . uri_escape_utf8($community);
+		my $arguments = "community=" . URI::Escape::uri_escape_utf8($community);
 
 		for my $arg (@args) {
 			my ($key, $value) = split(/=/, $arg);
-			$arguments .= "&" . uri_escape_utf8($key) . "=" . uri_escape_utf8($value);
+			$arguments .= "&" . URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value);
 		}
 		put($ip, $arguments, '/snmpConfig');
 	} else {
@@ -653,7 +669,11 @@ sub dump_xml {
 	my $content = shift;
 
 	$XML->parse($content);
-	dump_requisitions($XML->root);
+	if ($content =~ m/[<]requisitions/) {
+		dump_requisitions($XML->root);
+	} else {
+		dump_requisition($XML->root);
+	}
 	#$XML->flush;
 }
 
