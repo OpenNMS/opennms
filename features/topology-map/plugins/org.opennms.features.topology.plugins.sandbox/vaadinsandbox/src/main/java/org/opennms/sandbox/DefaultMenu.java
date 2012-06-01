@@ -34,6 +34,7 @@ public class DefaultMenu extends Application{
     private PingWindow Ping_Window = null; //Sub-window which contains the functionality for Pinging a node.
     private TracerouteWindow Trace_Window = null; //Sub-window which contains the functionality for Tracerouting a node.
     private NodeInfoWindow Info_Window = null; //Sub-window which contains the functionality for getting node information
+    private SSHWindow SSH_Window = null;
     private Label cartman = new Label("Cartman"); //Name of the node which is displayed at the top of the Left side of the split panel.
     private Label butters = new Label("Butters"); //Name of the node which is displayed at the top of the right side of the split panel.
     private ContextMenu cartmanMenu = new ContextMenu(); //Context Menu that appears when right clicking on the left side of the split panel.
@@ -179,6 +180,13 @@ public class DefaultMenu extends Application{
                 }
             }
         };
+        
+        MenuBar.Command SSH_Select = new MenuBar.Command() {
+			
+			public void menuSelected(MenuItem selectedItem) {
+				showSSHWindow();
+			}
+		};
 
         /*Creates menu item dropdowns*/
         MenuBar.MenuItem file = menubar.addItem("File", null);
@@ -189,6 +197,7 @@ public class DefaultMenu extends Application{
         file.addItem("Open", null);
         file.addItem("Close", null);
         view.addItem("Layouts", null);
+        node.addItem("SSH", SSH_Select);
         node.addItem("Node Info", NodeInfo_Select);
         node.addItem("Events/Alarms", EA_Select);
         node.addItem("Ping", Ping_Select);
@@ -204,7 +213,8 @@ public class DefaultMenu extends Application{
      * left side of the split panel
      */
     private void buildCartmanMenu() {
-        final ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
+        final ContextMenuItem ssh = cartmanMenu.addItem("SSH");
+    	final ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
         final ContextMenuItem ping = cartmanMenu.addItem("Ping");
         final ContextMenuItem traceroute = cartmanMenu.addItem("Traceroute");
         final ContextMenuItem eventsAlarms = cartmanMenu.addItem("Events/Alarms");
@@ -223,6 +233,8 @@ public class DefaultMenu extends Application{
                         showTracerouteWindow();
                     } else if (nodeInfo == event.getClickedItem()) {
                         showNodeInfoWindow();
+                    } else if (ssh == event.getClickedItem()) {
+                    	showSSHWindow();
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -240,7 +252,8 @@ public class DefaultMenu extends Application{
      * right side of the split panel
      */
     private void buildButtersMenu() {
-        final ContextMenuItem nodeInfo = buttersMenu.addItem("Node Info");
+    	final ContextMenuItem ssh = cartmanMenu.addItem("SSH");
+    	final ContextMenuItem nodeInfo = buttersMenu.addItem("Node Info");
         final ContextMenuItem eventsAlarms = buttersMenu.addItem("Events/Alarms");
         final ContextMenuItem resourceGraphs = buttersMenu.addItem("Resource Graphs");
         buttersMenu.addListener(new ContextMenu.ClickListener() {
@@ -253,6 +266,8 @@ public class DefaultMenu extends Application{
                         showResourceGraphsWindow();
                     } else if (nodeInfo == event.getClickedItem()) {
                         showNodeInfoWindow();
+                    } else if (ssh == event.getClickedItem()) {
+                    	showSSHWindow();
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -360,6 +375,14 @@ public class DefaultMenu extends Application{
      */
     private void showResourceGraphsWindow() throws IllegalArgumentException, NullPointerException, MalformedURLException{
         getMainWindow().addWindow(getResourceGraphsWindow());
+    }
+    
+    private SSHWindow getSSHWindow() {
+    	SSH_Window = new SSHWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
+    	return SSH_Window;
+    }
+    private void showSSHWindow() {
+    	getMainWindow().addWindow(getSSHWindow());
     }
 
 }

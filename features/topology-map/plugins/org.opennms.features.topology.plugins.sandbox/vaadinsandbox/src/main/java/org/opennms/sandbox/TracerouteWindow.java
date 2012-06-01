@@ -3,8 +3,6 @@ package org.opennms.sandbox;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -40,7 +38,8 @@ public class TracerouteWindow extends Window{
     private VerticalLayout bottomLayout = null;
     private VerticalSplitPanel vSplit = null;
     private int margin = 40;
-    private int splitPercentage = 25;
+    private int splitHeight = 180;
+    private int topHeight = 220;
     
     public TracerouteWindow (Node testNode, float width, float height){
         
@@ -133,7 +132,7 @@ public class TracerouteWindow extends Window{
         /*Setting first and second components for the split panel and setting the panel divider position*/
         vSplit.setFirstComponent(topLayout);
         vSplit.setSecondComponent(bottomLayout);
-        vSplit.setSplitPosition(splitPercentage, UNITS_PERCENTAGE);
+        vSplit.setSplitPosition(splitHeight, UNITS_PIXELS);
         vSplit.setLocked(true);
         
         /*Adds split panel to the main layout and expands the split panel to 100% of the layout space*/
@@ -162,8 +161,8 @@ public class TracerouteWindow extends Window{
 	private void buildEmbeddedBrowser() {
 		resultsBrowser = new Embedded();
 		resultsBrowser.setType(Embedded.TYPE_BROWSER);
-		resultsBrowser.setWidth("" + (int)(this.getWidth()+margin) + "px"); //Cuts off "close" button from window
-		resultsBrowser.setHeight("" + (int)((this.getHeight())*((100-splitPercentage)/100)-margin) + "px");
+		resultsBrowser.setWidth("" + (int)(this.getWidth()-margin) + "px"); //Cuts off "close" button from window
+		resultsBrowser.setHeight("" + (int)(this.getHeight() - topHeight - margin) + "px");
 		resultsBrowser.setImmediate(true);
 		resultsBrowser.setVisible(false);
 		bottomLayout.addComponent(resultsBrowser);

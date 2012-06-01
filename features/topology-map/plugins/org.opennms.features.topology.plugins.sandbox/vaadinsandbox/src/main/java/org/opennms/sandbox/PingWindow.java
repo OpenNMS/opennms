@@ -3,7 +3,6 @@ package org.opennms.sandbox;
 import java.net.MalformedURLException;
 import java.net.URL;
 import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
