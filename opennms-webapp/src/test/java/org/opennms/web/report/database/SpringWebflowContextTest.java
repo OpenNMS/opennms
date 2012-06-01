@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.web.report.database;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContextEvent;

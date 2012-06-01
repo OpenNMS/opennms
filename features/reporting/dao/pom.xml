@@ -21,7 +21,11 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.reporting.dao.*;org.opennms.reporting.dao.jasper.*;org.opennms.reporting.dao.remoterepository.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.reporting.dao.jasper.*;version="${project.version}",
+              org.opennms.reporting.dao.remoterepository.*;version="${project.version}",
+              org.opennms.reporting.dao.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

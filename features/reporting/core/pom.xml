@@ -44,7 +44,11 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.reporting.core.*;org.opennms.reporting.core.svclayer.*;org.opennms.reporting.core.svclayer.support.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.reporting.core.svclayer.support.*;version="${project.version}",
+              org.opennms.reporting.core.svclayer.*;version="${project.version}",
+              org.opennms.reporting.core.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

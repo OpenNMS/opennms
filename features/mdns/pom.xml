@@ -20,7 +20,10 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.serviceregistration.*;org.opennms.serviceregistration.strategies.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.serviceregistration.strategies.*;version="${project.version}",
+              org.opennms.serviceregistration.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

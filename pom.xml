@@ -9,10 +9,7 @@
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
   <description>
-    OpenNMS is the world's first enterprise grade network management
-    platform developed under the open source model. It consists of a
-    community supported open-source project as well as a commercial
-    services, training and support organization. 
+    OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.
   </description>
   <issueManagement>
     <system>Jira</system>
