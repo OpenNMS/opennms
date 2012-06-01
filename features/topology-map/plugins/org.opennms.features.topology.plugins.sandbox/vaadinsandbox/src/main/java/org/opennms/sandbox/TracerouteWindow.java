@@ -1,10 +1,15 @@
 package org.opennms.sandbox;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -25,10 +30,17 @@ import com.vaadin.ui.Window;
 public class TracerouteWindow extends Window{
 
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
-    private boolean numOutput = false; //Flag for Numerical output
     private NativeSelect ipDropdown = null; //Dropdown component for IP Address
     private Node testNode = null; //Node object containing all of its relative information.
     private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
+    private TextField forcedHopField = null;
+    private CheckBox numericalDataCheckBox = null;
+    private Embedded resultsBrowser = null;
+    private VerticalLayout topLayout = null;
+    private VerticalLayout bottomLayout = null;
+    private VerticalSplitPanel vSplit = null;
+    private int margin = 40;
+    private int splitPercentage = 25;
     
     public TracerouteWindow (Node testNode, float width, float height){
         
@@ -52,9 +64,9 @@ public class TracerouteWindow extends Window{
         /*Creating various layouts to encapsulate all of the components*/
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
-        VerticalSplitPanel vSplit = new VerticalSplitPanel();
-        VerticalLayout topLayout = new VerticalLayout();
-        VerticalLayout bottomLayout = new VerticalLayout();
+        vSplit = new VerticalSplitPanel();
+        topLayout = new VerticalLayout();
+        bottomLayout = new VerticalLayout();
         VerticalLayout form = new VerticalLayout();
         GridLayout grid = new GridLayout(2,2);
         grid.setWidth("420");
@@ -62,23 +74,18 @@ public class TracerouteWindow extends Window{
         
         /*Sets up IP Address dropdown with the Name as default*/
         ipDropdown = new NativeSelect();
-        ipDropdown.addItem(testNode.getDisplayedName());
-        ipDropdown.select(testNode.getDisplayedName());
+        ipDropdown.addItem(this.testNode.getIPAddress());
+        ipDropdown.select(this.testNode.getIPAddress());
         
         /*Creates the Numerical Output Check box and sets up the listener*/
-        CheckBox numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
+        numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
         numericalDataCheckBox.setImmediate(true);
         numericalDataCheckBox.setValue(false);
-        numericalDataCheckBox.addListener(new ValueChangeListener() {
-			public void valueChange(ValueChangeEvent event) {
-				switchNumOutput();
-			}
-        });
         
         /*Creates the form labels and text fields*/
         Label ipLabel = new Label("IP Address: ");
         Label forcedHopLabel = new Label("Forced Hop IP: ");
-        TextField forcedHopField = new TextField();
+        forcedHopField = new TextField();
      
         /*Add all of the components to the GridLayout*/
         grid.addComponent(ipLabel);
@@ -94,9 +101,11 @@ public class TracerouteWindow extends Window{
         final Button tracerouteButton = new Button("Traceroute"); 
         tracerouteButton.addListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-                if(event.getButton() == tracerouteButton){
-                  getWindow().showNotification("I HAS NOTIFICATZ UR DISLAI!!!111");
-                }
+                try {
+					changeBrowserURL(buildURL());
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
             }
         }); 
         
@@ -115,14 +124,16 @@ public class TracerouteWindow extends Window{
         topLayout.setMargin(true, true, false, true);
         
         /*Adds components to the Bottom Layout and sets the width and margins*/
-        bottomLayout.addComponent(new Label("RESULTS GO HERE"));
         bottomLayout.setSizeFull();
         bottomLayout.setMargin(true);
+        bottomLayout.setImmediate(true);
+        
+        buildEmbeddedBrowser();
         
         /*Setting first and second components for the split panel and setting the panel divider position*/
         vSplit.setFirstComponent(topLayout);
         vSplit.setSecondComponent(bottomLayout);
-        vSplit.setSplitPosition(23, UNITS_PERCENTAGE);
+        vSplit.setSplitPosition(splitPercentage, UNITS_PERCENTAGE);
         vSplit.setLocked(true);
         
         /*Adds split panel to the main layout and expands the split panel to 100% of the layout space*/
@@ -132,24 +143,30 @@ public class TracerouteWindow extends Window{
         setContent(mainLayout);
     }
     
-    /**
-     * The switchNumOutput method changes the displayed values in the IP Address dropdown depending on
-     * whether the Numerical Output checkbox is selected.
-     */
-	private void switchNumOutput() {
-		ipDropdown.removeAllItems();
-		if (numOutput == false){ 
-			/*Switching to IP Address format*/
-			testNode.setDisplayedName(testNode.getIPAddress());
-	        ipDropdown.addItem(testNode.getDisplayedName());
-	        numOutput = true;
-		} else { 
-			/*Switching to Name format*/
-			testNode.setDisplayedName(testNode.getName());
-            ipDropdown.addItem(testNode.getDisplayedName());
-            numOutput = false;
-		}
-		ipDropdown.select(testNode.getDisplayedName());
-		ipDropdown.requestRepaint();
+    private void changeBrowserURL(URL url) {
+		resultsBrowser.setVisible(false);
+		resultsBrowser.setSource(new ExternalResource(url));
+		resultsBrowser.setVisible(true);
 	}
+
+	private URL buildURL() throws MalformedURLException {
+		String base = "http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute";
+		String options = base;
+		options += "&address=" + ipDropdown.getValue().toString();
+		options += "&hopAddress=" + forcedHopField.getValue().toString();
+		if (numericalDataCheckBox.getValue().equals(true))
+			options += "&numericOutput=true";
+		return new URL(options);
+	}
+	
+	private void buildEmbeddedBrowser() {
+		resultsBrowser = new Embedded();
+		resultsBrowser.setType(Embedded.TYPE_BROWSER);
+		resultsBrowser.setWidth("" + (int)(this.getWidth()+margin) + "px"); //Cuts off "close" button from window
+		resultsBrowser.setHeight("" + (int)((this.getHeight())*((100-splitPercentage)/100)-margin) + "px");
+		resultsBrowser.setImmediate(true);
+		resultsBrowser.setVisible(false);
+		bottomLayout.addComponent(resultsBrowser);
+	}
+ 
 }

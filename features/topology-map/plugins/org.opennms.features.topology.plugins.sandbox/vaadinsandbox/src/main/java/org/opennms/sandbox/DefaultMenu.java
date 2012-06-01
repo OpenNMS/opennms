@@ -40,7 +40,7 @@ public class DefaultMenu extends Application{
     private ContextMenu buttersMenu = new ContextMenu(); //Context Menu that appears when right clicking on the right side of the split panel.
 
     /*Test Data*/
-    private Node testNode = new Node(34,"172.0.1.234","NC State");
+    private Node testNode = new Node(34,"172.20.1.201","NC State");
 
     /**
      * The init method initializes the DefaultMenu Application and sets up the layouts and windows.
@@ -271,9 +271,7 @@ public class DefaultMenu extends Application{
      * @throws MalformedURLException 
      */
     private Window getNodeInfoWindow() throws MalformedURLException {
-        if(Info_Window == null){
-            Info_Window = new NodeInfoWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
-        }
+        Info_Window = new NodeInfoWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return Info_Window;
     }
 
@@ -294,8 +292,7 @@ public class DefaultMenu extends Application{
      * @throws MalformedURLException
      */
     private EventsAlarmsWindow getEventsAlarmsWindow() throws MalformedURLException{
-        if (EA_Window == null)
-            EA_Window = new EventsAlarmsWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
+        EA_Window = new EventsAlarmsWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
         return EA_Window;
     }
 
@@ -315,9 +312,7 @@ public class DefaultMenu extends Application{
      * @return PingWindow component
      */
     private Window getPingWindow() {
-        if (Ping_Window == null) {
-            Ping_Window = new PingWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
-        }
+        Ping_Window = new PingWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return  Ping_Window;
     }
 
@@ -334,8 +329,7 @@ public class DefaultMenu extends Application{
      * @return TracerouteWindow component
      */
     private Window getTracerouteWindow() {
-        if (Trace_Window == null)
-            Trace_Window = new TracerouteWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
+        Trace_Window = new TracerouteWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return Trace_Window;
     }
 
@@ -353,8 +347,7 @@ public class DefaultMenu extends Application{
      * @throws MalformedURLException
      */
     private ResourceGraphsWindow getResourceGraphsWindow() throws MalformedURLException{
-        if (RG_Window == null)
-            RG_Window = new ResourceGraphsWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
+        RG_Window = new ResourceGraphsWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return RG_Window;
     }
 

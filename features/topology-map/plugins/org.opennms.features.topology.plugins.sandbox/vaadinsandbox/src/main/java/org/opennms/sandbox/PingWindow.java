@@ -1,11 +1,14 @@
 package org.opennms.sandbox;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
+import java.net.MalformedURLException;
+import java.net.URL;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -25,11 +28,20 @@ import com.vaadin.ui.Window;
 public class PingWindow extends Window{
 
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
-    private boolean numOutput = false; //Flag for Numerical output
     private NativeSelect ipDropdown = null; //Dropdown component for IP Address
     private NativeSelect packetSizeDropdown = null; //Dropdown component for Packet Size
     private Node testNode = null; //Node object containing all of its relative information.
     private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
+    private TextField requestsField = null;
+    private TextField timeoutField = null;
+    private CheckBox numericalDataCheckBox = null;
+    private Embedded resultsBrowser = null;
+    private VerticalLayout topLayout = null;
+    private VerticalLayout bottomLayout = null;
+    private VerticalSplitPanel vSplit = null;
+    private int margin = 40;
+    private int splitHeight = 240;
+    private int topHeight = 280;
     
     /**
      * The PingWindow method constructs a PingWindow component with a size proportionate to the 
@@ -42,7 +54,7 @@ public class PingWindow extends Window{
        
 	    
     	/*Sets up window settings*/
-	this.testNode = testNode;
+		this.testNode = testNode;
     	setCaption("Ping");
         setImmediate(true);
         setResizable(false);
@@ -61,9 +73,9 @@ public class PingWindow extends Window{
         /*Creating various layouts to encapsulate all of the components*/
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
-        VerticalSplitPanel vSplit = new VerticalSplitPanel();
-        VerticalLayout topLayout = new VerticalLayout();
-        VerticalLayout bottomLayout = new VerticalLayout();
+        vSplit = new VerticalSplitPanel();
+        topLayout = new VerticalLayout();
+        bottomLayout = new VerticalLayout();
         VerticalLayout form = new VerticalLayout();
         GridLayout grid = new GridLayout(2,4);
         grid.setWidth("420");
@@ -71,8 +83,8 @@ public class PingWindow extends Window{
         
         /*Sets up IP Address dropdown with the Name as default*/
         ipDropdown = new NativeSelect();
-        ipDropdown.addItem(testNode.getDisplayedName());
-        ipDropdown.select(testNode.getDisplayedName());
+        ipDropdown.addItem(this.testNode.getIPAddress());
+        ipDropdown.select(this.testNode.getIPAddress());
         
         /*Sets up Packet Size dropdown with different values*/
         packetSizeDropdown = new NativeSelect();
@@ -86,22 +98,17 @@ public class PingWindow extends Window{
         packetSizeDropdown.select("16");
         
         /*Creates the Numerical Output Check box and sets up the listener*/
-        CheckBox numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
+        numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
         numericalDataCheckBox.setImmediate(true);
         numericalDataCheckBox.setValue(false);
-        numericalDataCheckBox.addListener(new ValueChangeListener() {
-			public void valueChange(ValueChangeEvent event) {
-				switchNumOutput();
-			}
-        });
         
         /*Creates the form labels and text fields*/
         Label ipLabel = new Label("IP Address: ");
         Label requestsLabel = new Label("Number of Requests: ");
         Label timeoutLabel = new Label("Time-Out (seconds): ");
         Label packetLabel = new Label("Packet Size: ");
-        TextField requestsField = new TextField();
-        TextField timeoutField = new TextField();
+        requestsField = new TextField();
+        timeoutField = new TextField();
      
         /*Add all of the components to the GridLayout*/
         grid.addComponent(ipLabel);
@@ -126,7 +133,11 @@ public class PingWindow extends Window{
         pingButton.addListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
                 if(event.getButton() == pingButton){
-                  getWindow().showNotification("I HAS NOTIFICATZ UR DISLAI!!!111");
+                	try {
+						changeBrowserURL(buildURL());
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					}
                 }
             }
         }); 
@@ -145,15 +156,17 @@ public class PingWindow extends Window{
         topLayout.setSizeFull();
         topLayout.setMargin(true, true, false, true);
         
-        /*Adds components to the Bottom Layout and sets the width and margins*/
-        bottomLayout.addComponent(new Label("RESULTS GO HERE"));
+        /*Sets attributes for bottom layout component*/
         bottomLayout.setSizeFull();
         bottomLayout.setMargin(true);
+        bottomLayout.setImmediate(true);
+        
+        buildEmbeddedBrowser();
         
         /*Setting first and second components for the split panel and setting the panel divider position*/
         vSplit.setFirstComponent(topLayout);
         vSplit.setSecondComponent(bottomLayout);
-        vSplit.setSplitPosition(33, UNITS_PERCENTAGE);
+        vSplit.setSplitPosition(splitHeight, UNITS_PIXELS);
         vSplit.setLocked(true);
         
         /*Adds split panel to the main layout and expands the split panel to 100% of the layout space*/
@@ -162,25 +175,33 @@ public class PingWindow extends Window{
         
         setContent(mainLayout);
     }
-    
-    /**
-     * The switchNumOutput method changes the displayed values in the IP Address dropdown depending on
-     * whether the Numerical Output checkbox is selected.
-     */
-	private void switchNumOutput() {
-		ipDropdown.removeAllItems();
-		if (numOutput == false){ 
-			/*Switching to IP Address format*/
-			testNode.setDisplayedName(testNode.getIPAddress());
-	        ipDropdown.addItem(testNode.getDisplayedName());
-	        numOutput = true;
-		} else { 
-			/*Switching to Name format*/
-			testNode.setDisplayedName(testNode.getName());
-            ipDropdown.addItem(testNode.getDisplayedName());
-            numOutput = false;
-		}
-		ipDropdown.select(testNode.getDisplayedName());
-		ipDropdown.requestRepaint();
+
+	private void changeBrowserURL(URL url) {
+		resultsBrowser.setVisible(false);
+		resultsBrowser.setSource(new ExternalResource(url));
+		resultsBrowser.setVisible(true);
 	}
+
+	private URL buildURL() throws MalformedURLException {
+		String base = "http://demo.opennms.org/opennms/ExecCommand.map?command=ping";
+		String options = base;
+		options += "&address=" + ipDropdown.getValue().toString();
+		options += "&timeout=" + timeoutField.getValue().toString();
+		options += "&numberOfRequests=" + requestsField.getValue().toString();
+		options += "&packetSize=" + (Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
+		if (numericalDataCheckBox.getValue().equals(true))
+			options += "&numericOutput=true";
+		return new URL(options);
+	}
+	
+	private void buildEmbeddedBrowser() {
+		resultsBrowser = new Embedded();
+		resultsBrowser.setType(Embedded.TYPE_BROWSER);
+		resultsBrowser.setWidth("" + (int)(this.getWidth()-margin) + "px"); //Cuts off "close" button from window
+		resultsBrowser.setHeight("" + (int)(this.getHeight() - topHeight - margin) + "px");
+		resultsBrowser.setImmediate(true);
+		resultsBrowser.setVisible(false);
+		bottomLayout.addComponent(resultsBrowser);
+	}
+	
 }
