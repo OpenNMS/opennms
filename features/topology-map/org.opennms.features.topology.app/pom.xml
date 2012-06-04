@@ -166,12 +166,12 @@
 
     <!-- scope: provided because we include feature=org.opennms.features.topology.api
          in src/main/features/features.xml.in -->
-    <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.opennms.features.topology</groupId> -->
+<!--       <artifactId>org.opennms.features.topology.api</artifactId> -->
+<!--       <version>${project.version}</version> -->
+<!--       <scope>provided</scope> -->
+<!--     </dependency> -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.api</artifactId>
@@ -223,12 +223,23 @@
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>refresher</artifactId>
+        <version>1.1.1</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
 
   </dependencies>
+  
+  <repositories>
+    <repository>
+        <id>vaadin-addons</id>
+        <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
 
 </project>

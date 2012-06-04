@@ -25,4 +25,6 @@
     <script src="topologywidget/js/d3.v2.js"/>
 
     
+
+    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
 </module>
