@@ -2,6 +2,9 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.LayoutAlgorithm;
+
 public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
 
     /* (non-Javadoc)

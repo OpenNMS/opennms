@@ -2,8 +2,10 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.app.internal.AlternativeLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 
 
 public class OtherLayoutOperation implements Operation {
@@ -11,7 +13,7 @@ public class OtherLayoutOperation implements Operation {
     @Override
     public Undoer execute(List<Object> targets,
             OperationContext operationContext) {
-        SimpleGraphContainer graphContainer = operationContext.getGraphContainer();
+        DisplayState graphContainer = operationContext.getGraphContainer();
         
         graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
         return null;

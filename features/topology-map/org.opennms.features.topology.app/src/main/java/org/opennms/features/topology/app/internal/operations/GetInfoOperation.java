@@ -2,6 +2,9 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
+
 import com.vaadin.ui.Window;
 
 public class GetInfoOperation implements Operation {

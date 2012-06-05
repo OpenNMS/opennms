@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.app.internal.operations.Operation;
-import org.opennms.features.topology.app.internal.operations.OperationContext;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
 
 import com.vaadin.event.Action;
 import com.vaadin.ui.MenuBar;

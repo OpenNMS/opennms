@@ -11,7 +11,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>org.opennms.features.topology.app</artifactId>
-  <version>1.11.1-SNAPSHOT</version>
 
   <name>${bundle.symbolicName}</name>
 
@@ -166,12 +165,12 @@
 
     <!-- scope: provided because we include feature=org.opennms.features.topology.api
          in src/main/features/features.xml.in -->
-<!--     <dependency> -->
-<!--       <groupId>org.opennms.features.topology</groupId> -->
-<!--       <artifactId>org.opennms.features.topology.api</artifactId> -->
-<!--       <version>${project.version}</version> -->
-<!--       <scope>provided</scope> -->
-<!--     </dependency> -->
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.api</artifactId>

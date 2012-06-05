@@ -1,10 +1,9 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
+import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
 
 import com.github.wolfie.refresher.Refresher;
@@ -20,7 +19,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -46,35 +44,6 @@ public class TopologyWidgetTestApplication extends Application implements Consta
     @Override
     public void init() {
        
-        //This timer is a hack at the moment to disable and enable menuItems
-        m_timer.scheduleAtFixedRate(new TimerTask() {
-
-            @Override
-            public void run() {
-                List<MenuItem> items = m_menuBar.getItems();
-                for(MenuItem item : items) {
-                    if(item.getText().equals("Device")) {
-                        List<MenuItem> children = item.getChildren();
-                        for(MenuItem child : children) {
-                            if(m_graphContainer.getSelectedVertexIds().size() > 0) {
-                                if(!child.isEnabled()) {
-                                    child.setEnabled(true);
-                                }
-                            }else {
-                                if(child.isEnabled()) {
-                                    child.setEnabled(false);
-                                }
-                                
-                            }
-                        }
-                        
-                        
-                    }
-                }
-            }
-        }, 1000, 1000);
-        
-        
         m_layout = new AbsoluteLayout();
         m_layout.setSizeFull();
         
@@ -86,16 +55,16 @@ public class TopologyWidgetTestApplication extends Application implements Consta
         refresher.setRefreshInterval(5000);
         getMainWindow().addComponent(refresher);
         
-        m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
-        m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
-        m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
+//        m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
+//        m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
+//        m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
         m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
         
         
         m_topologyComponent = new TopologyComponent(m_graphContainer);
         m_topologyComponent.setSizeFull();
         
-        final Property scale = m_graphContainer.getProperty("scale");
+        final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
         final Slider slider = new Slider(1, 4);
         slider.setResolution(2);
         slider.setHeight("300px");
@@ -112,7 +81,7 @@ public class TopologyWidgetTestApplication extends Application implements Consta
         
         m_tree = createTree();
         Label semanticZoomLabel = new Label();
-        final Property zoomLevel = m_graphContainer.getProperty("semanticZoomLevel");
+        final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
 		semanticZoomLabel.setPropertyDataSource(zoomLevel);
         
         Button zoomInBtn = new Button("Zoom In");

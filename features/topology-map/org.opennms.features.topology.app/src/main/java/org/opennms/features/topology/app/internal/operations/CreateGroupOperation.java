@@ -2,24 +2,26 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.Constants;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 
 public class CreateGroupOperation implements Constants, Operation{
     
-
+    
+    TopologyProvider m_topologyProvider = new SimpleTopologyProvider();
     @Override
-    public Undoer execute(List<Object> targets,
-            OperationContext operationContext) {
-        SimpleGraphContainer graphContainer = operationContext.getGraphContainer();
+    public Undoer execute(List<Object> targets, OperationContext operationContext) {
         
-        String groupId = graphContainer.getNextGroupId();
-        graphContainer.addGroup(groupId, GROUP_ICON);
-        graphContainer.getVertexContainer().setParent(groupId, ROOT_GROUP_ID);
+        Object groupId = m_topologyProvider.addGroup(GROUP_ICON);
         
-        for(Object itemId : graphContainer.getSelectedVertexIds()) {
-        	graphContainer.getVertexContainer().setParent(itemId, groupId);
+        m_topologyProvider.setParent(groupId, ROOT_GROUP_ID);
+        
+        for(Object itemId : targets) {
+            m_topologyProvider.setParent(itemId, groupId);
         }
         return null;
     }
@@ -31,9 +33,8 @@ public class CreateGroupOperation implements Constants, Operation{
     }
 
     @Override
-    public boolean enabled(List<Object> targets,
-            OperationContext operationContext) {
-        return operationContext.getGraphContainer().getSelectedVertexIds().size() > 0;
+    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+        return targets.size() > 0;
     }
 
     @Override

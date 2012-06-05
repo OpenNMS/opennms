@@ -2,19 +2,23 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.app.internal.Constants;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 public class AddVertexOperation implements Operation{
+    
+    private SimpleTopologyProvider m_topologyProvider = new SimpleTopologyProvider();
+    
     private String m_icon;
     public AddVertexOperation(String icon) {
         m_icon = icon;
     }
     
     @Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        // TODO Auto-generated method stub
+    public boolean display(List<Object> targets, OperationContext operationContext) {
         return false;
     }
 
@@ -32,13 +36,11 @@ public class AddVertexOperation implements Operation{
         return null;
     }
 
-    void connectNewVertex(String vertexId, String icon, SimpleGraphContainer graphContainer) {
-        String vertexId1 = graphContainer.getNextVertexId();
-        graphContainer.addVertex(vertexId1, 0, 0, icon);
-        graphContainer.getVertexContainer().setParent(vertexId1, Constants.ROOT_GROUP_ID);
+    void connectNewVertex(String vertexId, String icon, DisplayState graphContainer) {
+        Object vertId1 = m_topologyProvider.addVertex(0, 0, icon);
+        m_topologyProvider.setParent(vertId1, Constants.ROOT_GROUP_ID);
+        m_topologyProvider.connectVertices(vertexId, vertId1);
         
-        //Right now we are connecting all new vertices to v0
-        graphContainer.connectVertices(graphContainer.getNextEdgeId(), vertexId, vertexId1);
     }
 
     public String getIcon() {
@@ -53,8 +55,9 @@ public class AddVertexOperation implements Operation{
             	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON, operationContext.getGraphContainer());
             }
             else {
-            	operationContext.getGraphContainer().addVertex(Constants.CENTER_VERTEX_ID, 50, 50, Constants.SERVER_ICON);
-            	operationContext.getGraphContainer().getVertexContainer().setParent(Constants.CENTER_VERTEX_ID, Constants.ROOT_GROUP_ID);
+                Object vertId = m_topologyProvider.addVertex(50, 50, Constants.SERVER_ICON);
+                m_topologyProvider.setParent(vertId, Constants.ROOT_GROUP_ID);
+                
             }
         } else {
             

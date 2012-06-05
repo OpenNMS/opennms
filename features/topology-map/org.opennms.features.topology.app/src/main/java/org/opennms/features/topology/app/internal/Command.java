@@ -1,7 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.app.internal.operations.Operation;
-import org.opennms.features.topology.app.internal.operations.OperationContext;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
 
 import com.vaadin.event.Action;
 

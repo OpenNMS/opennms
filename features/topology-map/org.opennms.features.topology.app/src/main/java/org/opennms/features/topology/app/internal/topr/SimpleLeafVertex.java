@@ -1,9 +1,9 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.topr;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="vertex")
-public class SimpleLeafVertex extends GVertex {
+public class SimpleLeafVertex extends SimpleVertex {
 
 	public SimpleLeafVertex() {}
 	

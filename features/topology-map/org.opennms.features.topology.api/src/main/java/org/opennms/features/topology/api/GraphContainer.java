@@ -1,15 +1,13 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api;
 
 import java.util.Collection;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.terminal.Resource;
 
-public interface GraphContainer {
+public interface GraphContainer extends DisplayState {
 	
-	public VertexContainer getVertexContainer();
+	public VertexContainer<?, ?> getVertexContainer();
 	
 	public BeanContainer<?, ?> getEdgeContainer();
 	
@@ -24,9 +22,5 @@ public interface GraphContainer {
 	public Collection<?> getEndPointIdsForEdge(Object edgeId);
 	
 	public Collection<?> getEdgeIdsForVertex(Object vertexId);
-
-	public Integer getSemanticZoomLevel();
 	
-	public Property getProperty(String propertyId);
- 	
 }

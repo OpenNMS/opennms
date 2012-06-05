@@ -1,20 +1,21 @@
 package org.opennms.features.topology.app.internal.operations;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 public class ConnectOperation implements Operation {
 
-
+    SimpleTopologyProvider m_topologyProvider = new SimpleTopologyProvider();
+    
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
-        SimpleGraphContainer graphContainer = operationContext.getGraphContainer();
         
-        List<Object> endPoints = new ArrayList<Object>(graphContainer.getSelectedVertexIds());
+        List<Object> endPoints = targets;
         
-        graphContainer.connectVertices(graphContainer.getNextEdgeId(), (String)endPoints.get(0), (String)endPoints.get(1));
+        m_topologyProvider.connectVertices((String)endPoints.get(0), (String)endPoints.get(1));
         return null;
     }
 
@@ -25,7 +26,7 @@ public class ConnectOperation implements Operation {
 
     @Override
     public boolean enabled(List<Object> targets, OperationContext operationContext) {
-        return operationContext.getGraphContainer().getSelectedVertexIds().size() == 2;
+        return targets.size() == 2;
     }
 
     @Override

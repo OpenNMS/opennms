@@ -2,18 +2,21 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 
 public class OpenOperation implements Operation {
     
-
+    TopologyProvider m_topologyProvider = new SimpleTopologyProvider();
 	@Override
     public Undoer execute(List<Object> targets,
             OperationContext operationContext) {
-        SimpleGraphContainer graphContainer = operationContext.getGraphContainer();
         
-        graphContainer.load("graph.xml");
+        m_topologyProvider.load("graph.xml");
+        //graphContainer.load("graph.xml");
         return null;
     }
 

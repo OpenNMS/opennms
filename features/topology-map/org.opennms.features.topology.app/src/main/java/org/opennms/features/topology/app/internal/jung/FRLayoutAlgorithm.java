@@ -6,10 +6,10 @@ import java.awt.geom.Point2D;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.Edge;
 import org.opennms.features.topology.app.internal.Graph;
-import org.opennms.features.topology.app.internal.GraphContainer;
-import org.opennms.features.topology.app.internal.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.Vertex;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;

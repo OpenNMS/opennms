@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.topr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="group")
-public class SimpleGroup extends GVertex {
+public class SimpleGroup extends SimpleVertex {
 
-	List<GVertex> m_members = new ArrayList<GVertex>();
+	List<SimpleVertex> m_members = new ArrayList<SimpleVertex>();
 	
 	
 	public SimpleGroup() {}
@@ -24,15 +24,15 @@ public class SimpleGroup extends GVertex {
 	}
 	
 	@XmlIDREF
-	public List<GVertex> getMembers() {
+	public List<SimpleVertex> getMembers() {
 		return m_members;
 	}
 	
-	public void addMember(GVertex v) {
+	public void addMember(SimpleVertex v) {
 		m_members.add(v);
 	}
 	
-	public void removeMember(GVertex v) {
+	public void removeMember(SimpleVertex v) {
 		m_members.remove(v);
 	}
 

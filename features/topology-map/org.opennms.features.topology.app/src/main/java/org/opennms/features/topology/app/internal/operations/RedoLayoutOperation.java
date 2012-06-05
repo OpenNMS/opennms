@@ -2,7 +2,9 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
 
 
 public class RedoLayoutOperation implements Operation {
@@ -10,7 +12,7 @@ public class RedoLayoutOperation implements Operation {
 	@Override
     public Undoer execute(List<Object> targets,
             OperationContext operationContext) {
-        SimpleGraphContainer graphContainer = operationContext.getGraphContainer();
+        DisplayState graphContainer = operationContext.getGraphContainer();
         
         graphContainer.redoLayout();
         return null;

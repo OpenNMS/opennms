@@ -24,11 +24,10 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </reference-listener>
     </reference-list>
     
-    <reference-list interface="org.opennms.features.topology.app.internal.operations.Operation" availability="optional">
+    <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
         </reference-listener>
     </reference-list>
-    
     
     <!-- Command Services -->
 <!--     <service interface="org.opennms.features.topology.app.internal.Operation" > -->
@@ -40,7 +39,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 <!--         </bean> -->
 <!--     </service> -->
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.contextMenuLocation" value=""/>
@@ -51,7 +50,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
             <entry key="operation.label" value="Circle Layout"/>
@@ -59,7 +58,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.CircleLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Connect"/>
@@ -68,7 +67,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.ConnectOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Create Group"/>
@@ -77,7 +76,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
             <entry key="operation.label" value="FR Layout"/>
@@ -85,7 +84,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
             <entry key="operation.label" value="Get Info"/>
@@ -93,7 +92,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.GetInfoOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="History"/>
@@ -103,7 +102,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
             <entry key="operation.label" value="ISOM Layout"/>
@@ -111,7 +110,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.ISOMLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
             <entry key="operation.label" value="KK Layout"/>
@@ -119,7 +118,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.KKLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout"/>
             <entry key="operation.label" value="Manual Layout"/>
@@ -127,7 +126,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="File"/>
             <entry key="operation.label" value="Open"/>
@@ -135,7 +134,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.OpenOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout"/>
             <entry key="operation.label" value="Other Layout"/>
@@ -144,7 +143,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.OtherLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.label" value="Redo Layout"/>
             <entry key="operation.contextMenuLocation" value=""/>
@@ -152,7 +151,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.RedoLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Remove Vertex"/>
@@ -161,7 +160,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.RemoveVertexOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Reset"/>
@@ -170,7 +169,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.ResetOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="File"/>
             <entry key="operation.label" value="Save"/>
@@ -178,7 +177,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.SaveOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="Show Map"/>
@@ -186,7 +185,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.ShowMapOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout"/>
             <entry key="operation.label" value="Simple Layout"/>
@@ -194,13 +193,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.SimpleLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.app.internal.operations.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout"/>
             <entry key="operation.label" value="Spring Layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.SpringLayoutOperation"/>
     </service>
-    
 
 </blueprint>

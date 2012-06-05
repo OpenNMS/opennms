@@ -1,7 +1,6 @@
 package org.opennms.features.topology.shell;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,18 +14,18 @@ import org.osgi.framework.ServiceReference;
 
 @Command(scope = "topo", name = "listoperations", description="Lists the available OpenNMS topology operations.")
 public class OperationListShellCommand extends OsgiCommandSupport {
-	public static final Comparator<Operation> OPERATION_COMPARATOR = new Comparator<Operation>() {
-		@Override
-		public int compare(final Operation a, final Operation b) {
-			final int comp = a.getId().compareTo(b.getId());
-			return comp == 0? a.getLabel().compareTo(b.getLabel()) : comp;
-		}
-	};
+//	public static final Comparator<Operation> OPERATION_COMPARATOR = new Comparator<Operation>() {
+//		@Override
+//		public int compare(final Operation a, final Operation b) {
+//			final int comp = a.getId().compareTo(b.getId());
+//			return comp == 0? a.getLabel().compareTo(b.getLabel()) : comp;
+//		}
+//	};
 
     @Override
     protected Object doExecute() throws Exception {
 
-    	final Set<Operation> operations = new TreeSet<Operation>(OPERATION_COMPARATOR);
+    	final Set<Operation> operations = new TreeSet<Operation>();
     	final Map<Operation,Map<String,Object>> properties = new HashMap<Operation,Map<String,Object>>();
 
     	final ServiceReference[] services = this.bundleContext.getServiceReferences(Operation.class.getName(), null);
@@ -52,7 +51,7 @@ public class OperationListShellCommand extends OsgiCommandSupport {
     		System.out.println();
     		
     		System.out.println("    ID:    " + operation.getId());
-    		System.out.println("    Label: " + operation.getLabel());
+    		//System.out.println("    Label: " + operation.getLabel());
     		System.out.println();
 
     		final Map<String,Object> props = properties.get(operation);
