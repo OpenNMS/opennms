@@ -109,6 +109,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
     @Test
     public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
+        Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.FRENCH);
         
         // Make sure we actually have a valid test
@@ -132,6 +133,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         m_mocks.replayAll();
         adaptor.updateRRD("foo", InetAddress.getLocalHost(), "baz", map);
         m_mocks.verifyAll();
+        Locale.setDefault(defaultLocale);
     }
     
     @Test
