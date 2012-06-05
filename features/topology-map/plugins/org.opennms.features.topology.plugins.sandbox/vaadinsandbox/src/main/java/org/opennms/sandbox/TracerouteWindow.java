@@ -29,23 +29,28 @@ public class TracerouteWindow extends Window{
 
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
     private NativeSelect ipDropdown = null; //Dropdown component for IP Address
-    private Node testNode = null; //Node object containing all of its relative information.
     private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
-    private TextField forcedHopField = null;
-    private CheckBox numericalDataCheckBox = null;
-    private Embedded resultsBrowser = null;
-    private VerticalLayout topLayout = null;
-    private VerticalLayout bottomLayout = null;
-    private VerticalSplitPanel vSplit = null;
-    private int margin = 40;
-    private int splitHeight = 180;
-    private int topHeight = 220;
+    private TextField forcedHopField = null; //Textfield for the "Forced Hop" variable
+    private CheckBox numericalDataCheckBox = null; //Checkbox which toggles numeric output
+    private Embedded resultsBrowser = null; //Browser component which displays the results of Traceroute
+    private VerticalLayout topLayout = null; //Contains the form for Traceroute
+    private VerticalLayout bottomLayout = null; //Contains the results Browser for a Traceroute
+    private VerticalSplitPanel vSplit = null; //Splits up the top and bottom layout
+    private int margin = 40; //Padding around the results browser
+    private int splitHeight = 180;//Height from top of the window to the split location in pixels
+    private int topHeight = 220;//Set height size for everything above the split
     
-    public TracerouteWindow (Node testNode, float width, float height){
+    /**
+     * The TracerouteWindow method constructs a TracerouteWindow component with a size proportionate to the 
+     * width and height of the main window.
+     * @param node 
+     * @param width Width of Main window
+     * @param height Height of Main window
+     */
+    public TracerouteWindow (Node node, float width, float height){
         
     	/*Sets up window settings*/
-        this.testNode = testNode;
-    	setCaption("Traceroute");
+    	setCaption("Traceroute - " + node.getName());
         setImmediate(true);
         setResizable(false);
         int windowWidth = (int)(sizePercentage * width), windowHeight = (int)(sizePercentage * height);
@@ -56,7 +61,7 @@ public class TracerouteWindow extends Window{
         
 
         /*Initialize the header of the Sub-window with the name of the selected Node*/
-        String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + testNode.getName() + "</div>";
+        String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + node.getName() + "</div>";
         nodeLabel = new Label(nodeName);
         nodeLabel.setContentMode(Label.CONTENT_XHTML);
         
@@ -73,8 +78,8 @@ public class TracerouteWindow extends Window{
         
         /*Sets up IP Address dropdown with the Name as default*/
         ipDropdown = new NativeSelect();
-        ipDropdown.addItem(this.testNode.getIPAddress());
-        ipDropdown.select(this.testNode.getIPAddress());
+        ipDropdown.addItem(node.getIPAddress());
+        ipDropdown.select(node.getIPAddress());
         
         /*Creates the Numerical Output Check box and sets up the listener*/
         numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
@@ -142,12 +147,23 @@ public class TracerouteWindow extends Window{
         setContent(mainLayout);
     }
     
+    /**
+	 * The changeBrowserURL method changes the address of the results browser whenever a new
+	 * traceroute request form is submitted and refreshes the browser.
+	 * @param url New web address
+	 */
     private void changeBrowserURL(URL url) {
 		resultsBrowser.setVisible(false);
 		resultsBrowser.setSource(new ExternalResource(url));
 		resultsBrowser.setVisible(true);
 	}
 
+    /**
+	 * The buildURL method takes the current values in the form and formats them into the
+	 * URL string that is used to redirect the results browser to the Traceroute page.
+	 * @return Web address for traceroute command with submitted parameters
+	 * @throws MalformedURLException
+	 */
 	private URL buildURL() throws MalformedURLException {
 		String base = "http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute";
 		String options = base;
@@ -158,6 +174,10 @@ public class TracerouteWindow extends Window{
 		return new URL(options);
 	}
 	
+	/**
+	 * The buildEmbeddedBrowser method creates a new browser instance and adds it to the 
+	 * bottom layout. The browser is set to invisible by default.
+	 */
 	private void buildEmbeddedBrowser() {
 		resultsBrowser = new Embedded();
 		resultsBrowser.setType(Embedded.TYPE_BROWSER);
