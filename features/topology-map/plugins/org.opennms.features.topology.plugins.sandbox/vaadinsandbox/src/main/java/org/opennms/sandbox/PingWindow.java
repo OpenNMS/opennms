@@ -29,32 +29,30 @@ public class PingWindow extends Window{
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
     private NativeSelect ipDropdown = null; //Dropdown component for IP Address
     private NativeSelect packetSizeDropdown = null; //Dropdown component for Packet Size
-    private Node testNode = null; //Node object containing all of its relative information.
     private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
-    private TextField requestsField = null;
-    private TextField timeoutField = null;
-    private CheckBox numericalDataCheckBox = null;
-    private Embedded resultsBrowser = null;
-    private VerticalLayout topLayout = null;
-    private VerticalLayout bottomLayout = null;
-    private VerticalSplitPanel vSplit = null;
-    private int margin = 40;
-    private int splitHeight = 240;
-    private int topHeight = 280;
+    private TextField requestsField = null; //Textfield for "Number of Requests" variable
+    private TextField timeoutField = null; //Textfield for "Time-Out (seconds)" variable
+    private CheckBox numericalDataCheckBox = null; //Checkbox for toggling numeric output
+    private Embedded resultsBrowser = null; //Browser which displays the ping results
+    private VerticalLayout topLayout = null; //Contains the form components
+    private VerticalLayout bottomLayout = null; //Contains the results browser
+    private VerticalSplitPanel vSplit = null; //Splits up the top layout and bottom layout
+    private int margin = 40; //Padding around the results browser
+    private int splitHeight = 240; //Height from top of the window to the split location in pixels
+    private int topHeight = 280; //Set height size for everything above the split
     
     /**
      * The PingWindow method constructs a PingWindow component with a size proportionate to the 
      * width and height of the main window.
-     * @param testNode 
+     * @param node 
      * @param width Width of Main window
      * @param height Height of Main window
      */
-	public PingWindow (Node testNode, float width, float height){
+	public PingWindow (Node node, float width, float height){
        
 	    
     	/*Sets up window settings*/
-		this.testNode = testNode;
-    	setCaption("Ping");
+    	setCaption("Ping - " + node.getName());
         setImmediate(true);
         setResizable(false);
         int windowWidth = (int)(sizePercentage * width), windowHeight = (int)(sizePercentage * height);
@@ -65,7 +63,7 @@ public class PingWindow extends Window{
         
 
         /*Initialize the header of the Sub-window with the name of the selected Node*/
-        String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + testNode.getName() + "</div>";
+        String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + node.getName() + "</div>";
         nodeLabel = new Label(nodeName);
         nodeLabel.setContentMode(Label.CONTENT_XHTML);
         
@@ -82,8 +80,8 @@ public class PingWindow extends Window{
         
         /*Sets up IP Address dropdown with the Name as default*/
         ipDropdown = new NativeSelect();
-        ipDropdown.addItem(this.testNode.getIPAddress());
-        ipDropdown.select(this.testNode.getIPAddress());
+        ipDropdown.addItem(node.getIPAddress());
+        ipDropdown.select(node.getIPAddress());
         
         /*Sets up Packet Size dropdown with different values*/
         packetSizeDropdown = new NativeSelect();
@@ -175,12 +173,23 @@ public class PingWindow extends Window{
         setContent(mainLayout);
     }
 
+	/**
+	 * The changeBrowserURL method changes the address of the results browser whenever a new
+	 * ping request form is submitted and refreshes the browser.
+	 * @param url New web address
+	 */
 	private void changeBrowserURL(URL url) {
 		resultsBrowser.setVisible(false);
 		resultsBrowser.setSource(new ExternalResource(url));
 		resultsBrowser.setVisible(true);
 	}
 
+	/**
+	 * The buildURL method takes the current values in the form and formats them into the
+	 * URL string that is used to redirect the results browser to the Ping page.
+	 * @return Web address for ping command with submitted parameters
+	 * @throws MalformedURLException
+	 */
 	private URL buildURL() throws MalformedURLException {
 		String base = "http://demo.opennms.org/opennms/ExecCommand.map?command=ping";
 		String options = base;
@@ -193,6 +202,10 @@ public class PingWindow extends Window{
 		return new URL(options);
 	}
 	
+	/**
+	 * The buildEmbeddedBrowser method creates a new browser instance and adds it to the 
+	 * bottom layout. The browser is set to invisible by default.
+	 */
 	private void buildEmbeddedBrowser() {
 		resultsBrowser = new Embedded();
 		resultsBrowser.setType(Embedded.TYPE_BROWSER);

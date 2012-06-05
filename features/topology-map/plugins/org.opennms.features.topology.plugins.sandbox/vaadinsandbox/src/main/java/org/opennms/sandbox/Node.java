@@ -1,10 +1,16 @@
 package org.opennms.sandbox;
 
+/**
+ * The Node class constructs an object which contains all necessary information
+ * and methods for a server or machine in a network
+ * @author Leonardo Bell
+ * @author Philip Grenon
+ */
 public class Node {
     
-    private String name;
-    private String ip;
-    private int nodeID;
+    private String name; //Name of the server or machine
+    private String ip; //IP Address of the server or machine
+    private int nodeID; //Identification number
     
     public Node(int nodeID, String ip, String name) {
         this.nodeID = nodeID;

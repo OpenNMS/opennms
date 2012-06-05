@@ -24,7 +24,6 @@ import com.vaadin.Application;
 @SuppressWarnings("serial")
 public class DefaultMenu extends Application{
 
-    private static final long serialVersionUID = 1L;
     private HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel(); //Creates two panels to represent two Nodes.
     private VerticalLayout mainLayout = null; //Master container for all components on the main window.
     private VerticalLayout leftLayout = new VerticalLayout(); //Left side of Horizontal split panel which represents the Cartman node.
@@ -34,14 +33,15 @@ public class DefaultMenu extends Application{
     private PingWindow Ping_Window = null; //Sub-window which contains the functionality for Pinging a node.
     private TracerouteWindow Trace_Window = null; //Sub-window which contains the functionality for Tracerouting a node.
     private NodeInfoWindow Info_Window = null; //Sub-window which contains the functionality for getting node information
-    private SSHWindow SSH_Window = null;
+    private SSHWindow SSH_Window = null; //Sub-window which contains the functionality for SSH'ing into a node
     private Label cartman = new Label("Cartman"); //Name of the node which is displayed at the top of the Left side of the split panel.
     private Label butters = new Label("Butters"); //Name of the node which is displayed at the top of the right side of the split panel.
     private ContextMenu cartmanMenu = new ContextMenu(); //Context Menu that appears when right clicking on the left side of the split panel.
     private ContextMenu buttersMenu = new ContextMenu(); //Context Menu that appears when right clicking on the right side of the split panel.
 
     /*Test Data*/
-    private Node testNode = new Node(34,"172.20.1.201","NC State");
+    private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
+    private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
 
     /**
      * The init method initializes the DefaultMenu Application and sets up the layouts and windows.
@@ -126,7 +126,7 @@ public class DefaultMenu extends Application{
         MenuBar.Command EA_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
                 try {
-                    showEventsAlarmsWindow();
+                    showEventsAlarmsWindow(testNode1);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
@@ -141,7 +141,7 @@ public class DefaultMenu extends Application{
         MenuBar.Command RG_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
                 try {
-                    showResourceGraphsWindow();
+                    showResourceGraphsWindow(testNode1);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
@@ -155,14 +155,14 @@ public class DefaultMenu extends Application{
         /*Sets up command for clicking on Node -> Ping option*/
         MenuBar.Command Ping_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
-                showPingWindow();
+                showPingWindow(testNode1);
             }
         };
 
         /*Sets up command for clicking on Node -> Traceroute option*/
         MenuBar.Command Trace_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
-                showTracerouteWindow();
+                showTracerouteWindow(testNode1);
             }
         };
 
@@ -170,7 +170,7 @@ public class DefaultMenu extends Application{
         MenuBar.Command NodeInfo_Select = new MenuBar.Command() {
             public void menuSelected(MenuItem selectedItem) {
                 try {
-                    showNodeInfoWindow();
+                    showNodeInfoWindow(testNode1);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
@@ -184,7 +184,7 @@ public class DefaultMenu extends Application{
         MenuBar.Command SSH_Select = new MenuBar.Command() {
 			
 			public void menuSelected(MenuItem selectedItem) {
-				showSSHWindow();
+				showSSHWindow(testNode1);
 			}
 		};
 
@@ -224,17 +224,17 @@ public class DefaultMenu extends Application{
             public void contextItemClick(ClickEvent event) {
                 try {
                     if (eventsAlarms == event.getClickedItem()){
-                        showEventsAlarmsWindow();
+                        showEventsAlarmsWindow(testNode1);
                     } else if (resourceGraphs == event.getClickedItem()){
-                        showResourceGraphsWindow();
+                        showResourceGraphsWindow(testNode1);
                     } else if (ping == event.getClickedItem()) {
-                        showPingWindow();
+                        showPingWindow(testNode1);
                     } else if (traceroute == event.getClickedItem()) {
-                        showTracerouteWindow();
+                        showTracerouteWindow(testNode1);
                     } else if (nodeInfo == event.getClickedItem()) {
-                        showNodeInfoWindow();
+                        showNodeInfoWindow(testNode1);
                     } else if (ssh == event.getClickedItem()) {
-                    	showSSHWindow();
+                    	showSSHWindow(testNode1);
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -252,7 +252,7 @@ public class DefaultMenu extends Application{
      * right side of the split panel
      */
     private void buildButtersMenu() {
-    	final ContextMenuItem ssh = cartmanMenu.addItem("SSH");
+    	final ContextMenuItem ssh = buttersMenu.addItem("SSH");
     	final ContextMenuItem nodeInfo = buttersMenu.addItem("Node Info");
         final ContextMenuItem eventsAlarms = buttersMenu.addItem("Events/Alarms");
         final ContextMenuItem resourceGraphs = buttersMenu.addItem("Resource Graphs");
@@ -261,13 +261,13 @@ public class DefaultMenu extends Application{
             public void contextItemClick(ClickEvent event) {
                 try {
                     if (eventsAlarms == event.getClickedItem()){
-                        showEventsAlarmsWindow();
+                        showEventsAlarmsWindow(testNode2);
                     } else if (resourceGraphs == event.getClickedItem()){
-                        showResourceGraphsWindow();
+                        showResourceGraphsWindow(testNode2);
                     } else if (nodeInfo == event.getClickedItem()) {
-                        showNodeInfoWindow();
+                        showNodeInfoWindow(testNode2);
                     } else if (ssh == event.getClickedItem()) {
-                    	showSSHWindow();
+                    	showSSHWindow(testNode2);
                     }
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -285,7 +285,7 @@ public class DefaultMenu extends Application{
      * @return NodeInfoWindow component
      * @throws MalformedURLException 
      */
-    private Window getNodeInfoWindow() throws MalformedURLException {
+    private Window getNodeInfoWindow(Node testNode) throws MalformedURLException {
         Info_Window = new NodeInfoWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return Info_Window;
     }
@@ -297,8 +297,8 @@ public class DefaultMenu extends Application{
      * @throws NullPointerException
      * @throws MalformedURLException
      */
-    private void showNodeInfoWindow() throws IllegalArgumentException, NullPointerException, MalformedURLException{
-        getMainWindow().addWindow(getNodeInfoWindow());
+    private void showNodeInfoWindow(Node testNode) throws IllegalArgumentException, NullPointerException, MalformedURLException{
+        getMainWindow().addWindow(getNodeInfoWindow(testNode));
     }
 
     /**
@@ -306,8 +306,8 @@ public class DefaultMenu extends Application{
      * @return EventsAlarmsWindow component
      * @throws MalformedURLException
      */
-    private EventsAlarmsWindow getEventsAlarmsWindow() throws MalformedURLException{
-        EA_Window = new EventsAlarmsWindow(getMainWindow().getWidth(), getMainWindow().getHeight());
+    private EventsAlarmsWindow getEventsAlarmsWindow(Node testNode) throws MalformedURLException{
+        EA_Window = new EventsAlarmsWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return EA_Window;
     }
 
@@ -318,15 +318,15 @@ public class DefaultMenu extends Application{
      * @throws NullPointerException
      * @throws MalformedURLException
      */
-    private void showEventsAlarmsWindow() throws IllegalArgumentException, NullPointerException, MalformedURLException{
-        getMainWindow().addWindow(getEventsAlarmsWindow());
+    private void showEventsAlarmsWindow(Node testNode) throws IllegalArgumentException, NullPointerException, MalformedURLException{
+        getMainWindow().addWindow(getEventsAlarmsWindow(testNode));
     }
 
     /**
      * The getPingWindow method initializes the Ping Sub-window and returns it.
      * @return PingWindow component
      */
-    private Window getPingWindow() {
+    private Window getPingWindow(Node testNode) {
         Ping_Window = new PingWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return  Ping_Window;
     }
@@ -335,15 +335,15 @@ public class DefaultMenu extends Application{
      * The showPingWindow method adds the Ping Sub-window to the main window of
      * the Application and makes it visible to the user.
      */
-    private void showPingWindow(){
-        getMainWindow().addWindow(getPingWindow());
+    private void showPingWindow(Node testNode){
+        getMainWindow().addWindow(getPingWindow(testNode));
     }
 
     /**
      * The getTracerouteWindow method initializes the Traceroute Sub-window and returns it.
      * @return TracerouteWindow component
      */
-    private Window getTracerouteWindow() {
+    private Window getTracerouteWindow(Node testNode) {
         Trace_Window = new TracerouteWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return Trace_Window;
     }
@@ -352,8 +352,8 @@ public class DefaultMenu extends Application{
      * The showTracerouteWindow method adds the Traceroute Sub-window to the
      * main window of the Application and makes it visible to the user.
      */
-    private void showTracerouteWindow() {
-        getMainWindow().addWindow(getTracerouteWindow());
+    private void showTracerouteWindow(Node testNode) {
+        getMainWindow().addWindow(getTracerouteWindow(testNode));
     }
 
     /**
@@ -361,7 +361,7 @@ public class DefaultMenu extends Application{
      * @return ResourceGraph component
      * @throws MalformedURLException
      */
-    private ResourceGraphsWindow getResourceGraphsWindow() throws MalformedURLException{
+    private ResourceGraphsWindow getResourceGraphsWindow(Node testNode) throws MalformedURLException{
         RG_Window = new ResourceGraphsWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
         return RG_Window;
     }
@@ -373,16 +373,26 @@ public class DefaultMenu extends Application{
      * @throws NullPointerException
      * @throws MalformedURLException
      */
-    private void showResourceGraphsWindow() throws IllegalArgumentException, NullPointerException, MalformedURLException{
-        getMainWindow().addWindow(getResourceGraphsWindow());
+    private void showResourceGraphsWindow(Node testNode) throws IllegalArgumentException, NullPointerException, MalformedURLException{
+        getMainWindow().addWindow(getResourceGraphsWindow(testNode));
     }
     
-    private SSHWindow getSSHWindow() {
+    /**
+     * The getSSHWindow method initializes the SSH Sub-window and returns it.
+     * @return SSHWindow component
+     */
+    private SSHWindow getSSHWindow(Node testNode) {
+		
     	SSH_Window = new SSHWindow(testNode, getMainWindow().getWidth(), getMainWindow().getHeight());
     	return SSH_Window;
     }
-    private void showSSHWindow() {
-    	getMainWindow().addWindow(getSSHWindow());
+    
+    /**
+     * The showSSHWindow method adds the SSH Sub-window to the
+     * main window of the Application and makes it visible to the user.
+     */
+    private void showSSHWindow(Node testNode) {
+    	getMainWindow().addWindow(getSSHWindow(testNode));
     }
 
 }
