@@ -17,7 +17,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.netmgt.provision.detector.icmp.*;org.opennms.netmgt.provision.detector.loop.*;org.opennms.netmgt.provision.detector.smb.*;org.opennms.netmgt.provision.detector.sms.*;org.opennms.netmgt.provision.detector.snmp.*;version="${project.version}"</Export-Package>
           </instructions>
