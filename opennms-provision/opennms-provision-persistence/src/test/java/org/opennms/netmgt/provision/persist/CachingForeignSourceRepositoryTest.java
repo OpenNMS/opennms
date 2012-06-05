@@ -106,7 +106,12 @@ public class CachingForeignSourceRepositoryTest implements InitializingBean {
         createRequisition();
         ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
         Set<ForeignSource> foreignSources = m_foreignSourceRepository.getForeignSources();
-        assertEquals("number of foreign sources must be 1", 1, foreignSources.size());
+        String names = "", separator = "";
+        for (ForeignSource fs : foreignSources) {
+            names += (separator + "\"" + fs.getName() + "\"");
+            separator = ", ";
+        }
+        assertEquals("number of foreign sources must be 1: " + names, 1, foreignSources.size());
         assertEquals("getAll() foreign source name must match", m_defaultForeignSourceName, foreignSources.iterator().next().getName());
         
         // check that the foreign source matches
