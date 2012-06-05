@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
   <name>OpenNMS Configuration</name>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <!-- don't generate eventconf.xsd for now, we have some issues with validation...
@@ -59,6 +60,20 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.opennms.netmgt.config.*;version="${project.version}";-split-package:=merge-first
+            </Export-Package>
+          </instructions>
+        </configuration>
       </plugin>
     </plugins>
   </build>
