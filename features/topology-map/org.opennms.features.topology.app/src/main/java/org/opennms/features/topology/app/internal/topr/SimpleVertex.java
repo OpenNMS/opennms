@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.topr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +105,7 @@ abstract public class SimpleVertex {
 	}
 
 	@XmlTransient
-	List<SimpleEdge> getEdges() {
+    public List<SimpleEdge> getEdges() {
 		return m_edges;
 	}
 	

@@ -1,41 +1,40 @@
 package org.opennms.features.vaadin.topology;
 
-import static org.opennms.features.topology.app.internal.TopologyWidgetTestApplication.GROUP_ICON;
-import static org.opennms.features.topology.app.internal.TopologyWidgetTestApplication.SERVER_ICON;
-import static org.junit.Assert.*;
+import static org.opennms.features.topology.app.internal.Constants.GROUP_ICON;
+import static org.opennms.features.topology.app.internal.Constants.SERVER_ICON;
 
 import org.junit.Test;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 public class SimpleGraphContainerTest {
 
 	@Test
 	public void test() {
-		SimpleGraphContainer container = new SimpleGraphContainer();
+		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
 		
-		container.addVertex("a", 50, 100, SERVER_ICON);
-		container.addVertex("b", 100, 50, SERVER_ICON);
-		container.addVertex("c", 100, 150, SERVER_ICON);
-		container.addVertex("d", 150, 100, SERVER_ICON);
-		container.addVertex("e", 200, 200, SERVER_ICON);
-		container.addGroup("g1", GROUP_ICON);
-		container.addGroup("g2", GROUP_ICON);
-		container.getVertexContainer().setParent("a", "g1");
-		container.getVertexContainer().setParent("b", "g1");
-		container.getVertexContainer().setParent("c", "g2");
-		container.getVertexContainer().setParent("d", "g2");
+		String vertexA = (String) topologyProvider.addVertex(50, 100, SERVER_ICON);
+		String vertexB = (String) topologyProvider.addVertex(100, 50, SERVER_ICON);
+		String vertexC = (String) topologyProvider.addVertex(100, 150, SERVER_ICON);
+		String vertexD = (String) topologyProvider.addVertex(150, 100, SERVER_ICON);
+		String vertexE = (String) topologyProvider.addVertex(200, 200, SERVER_ICON);
+		String group1 = (String) topologyProvider.addGroup(GROUP_ICON);
+		String group2 = (String) topologyProvider.addGroup(GROUP_ICON);
+		topologyProvider.getVertexContainer().setParent(vertexA, group1);
+		topologyProvider.getVertexContainer().setParent(vertexB, group1);
+		topologyProvider.getVertexContainer().setParent(vertexC, group2);
+		topologyProvider.getVertexContainer().setParent(vertexD, group2);
 		
-		container.connectVertices("e1", "a", "b");
-		container.connectVertices("e2", "a", "c");
-		container.connectVertices("e3", "b", "c");
-		container.connectVertices("e4", "b", "d");
-		container.connectVertices("e5", "c", "d");
-		container.connectVertices("e6", "a", "e");
-		container.connectVertices("e7", "d", "e");
+		topologyProvider.connectVertices(vertexA, vertexB);
+		topologyProvider.connectVertices(vertexA, vertexC);
+		topologyProvider.connectVertices(vertexB, vertexC);
+		topologyProvider.connectVertices(vertexB, vertexD);
+		topologyProvider.connectVertices(vertexC, vertexD);
+		topologyProvider.connectVertices(vertexA, vertexE);
+		topologyProvider.connectVertices(vertexD, vertexE);
 		
-		container.save("test-graph.xml");
+		topologyProvider.save("test-graph.xml");
 		
-		container.load("test-graph.xml");
+		topologyProvider.load("test-graph.xml");
 		
 	}
 	

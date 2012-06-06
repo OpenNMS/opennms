@@ -13,13 +13,13 @@ import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
 @XmlRootElement(name="edge")
 public class SimpleEdge {
 	String m_id;
-	SimpleVertex m_source;
-	SimpleVertex m_target;
+	GVertex m_source;
+	GVertex m_target;
 	
 	public SimpleEdge() {}
 	
 	
-	public SimpleEdge(String id, SimpleVertex source, SimpleVertex target) {
+	public SimpleEdge(String id, GVertex source, GVertex target) {
 		m_id = id;
 		m_source = source;
 		m_target = target;
@@ -38,21 +38,21 @@ public class SimpleEdge {
 	}
 	
 	@XmlIDREF
-	public SimpleVertex getSource() {
+	public GVertex getSource() {
 		return m_source;
 	}
 
-	public void setSource(SimpleVertex source) {
+	public void setSource(GVertex source) {
 		m_source = source;
 		m_source.addEdge(this);
 	}
 
 	@XmlIDREF
-	public SimpleVertex getTarget() {
+	public GVertex getTarget() {
 		return m_target;
 	}
 
-	public void setTarget(SimpleVertex target) {
+	public void setTarget(GVertex target) {
 		m_target = target;
 		m_target.addEdge(this);
 	}

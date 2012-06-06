@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="group")
-public class SimpleGroup extends SimpleVertex {
+public class SimpleGroup extends GVertex {
 
-	List<SimpleVertex> m_members = new ArrayList<SimpleVertex>();
+	List<GVertex> m_members = new ArrayList<GVertex>();
 	
 	
 	public SimpleGroup() {}
@@ -24,15 +24,15 @@ public class SimpleGroup extends SimpleVertex {
 	}
 	
 	@XmlIDREF
-	public List<SimpleVertex> getMembers() {
+	public List<GVertex> getMembers() {
 		return m_members;
 	}
 	
-	public void addMember(SimpleVertex v) {
+	public void addMember(GVertex v) {
 		m_members.add(v);
 	}
 	
-	public void removeMember(SimpleVertex v) {
+	public void removeMember(GVertex v) {
 		m_members.remove(v);
 	}
 

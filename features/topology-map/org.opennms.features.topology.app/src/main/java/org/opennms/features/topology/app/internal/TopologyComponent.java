@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 
 import com.vaadin.data.Container.ItemSetChangeEvent;
@@ -75,7 +77,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
 		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
 		
-		Property scale = m_graphContainer.getProperty("scale");
+		Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		setScaleDataSource(scale);
 		
 	}

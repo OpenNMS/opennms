@@ -1,8 +1,21 @@
 package org.opennms.sandbox;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.vaadin.console.Console;
+import org.vaadin.console.Console.Handler;
+import org.vaadin.console.DefaultConsoleHandler;
+
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.apache.sshd.ClientChannel;
+import org.apache.sshd.ClientSession;
+import org.apache.sshd.SshClient;
+import org.apache.sshd.agent.SshAgent;
+import org.apache.sshd.client.future.ConnectFuture;     
+
 
 /**
  * The SSHWindow class constructs a custom Window component which contains a terminal
@@ -49,6 +62,38 @@ public class SSHWindow extends Window {
         console.reset();
         console.focus();
         
+        Handler scriptHandler = new DefaultConsoleHandler() {
+            private static final long serialVersionUID = -5733237166568671987L;
+
+            @Override
+            public void inputReceived(Console console, String lastInput) {
+
+                // Check if there is registered command and use it by default
+                int i = lastInput.indexOf(' ');
+                String cmdName = lastInput.substring(0, i >= 0 ? i : lastInput.length());
+                if (console.getCommand(cmdName) != null) {
+                    super.inputReceived(console, lastInput);
+                    return;
+                }
+
+                // Run the input in the engine
+                try {
+                    SSHWindow.doThatSSHThing(console, lastInput);
+//                    Object r = engine.eval(lastInput);
+                    { /*if (r != null) {*/
+//                        console.print("" + r);
+                    }
+                } catch (Exception e) {
+//                    console.print(e.getMessage());
+                    e.printStackTrace();
+                }
+                console.prompt();
+                return;
+            }
+        };
+
+        console.setHandler(scriptHandler);
+        
         /*Creates a layout and adds the console component to it*/
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(console);
@@ -56,6 +101,39 @@ public class SSHWindow extends Window {
         layout.setImmediate(true);
         
         addComponent(layout);
+	}
+	
+	public static void doThatSSHThing(Console console, String lastInput) {
+	        String host = "localhost";
+	        int port = 8101;
+	        String user = "karaf";
+	        String password = "karaf";
+
+	        SshClient client = null;
+	        try {
+	            client = SshClient.setUpDefaultClient();
+	            client.start();
+	            
+	            
+	            ConnectFuture future = client.connect(host, port);
+	            future.await();
+	            ClientSession session = future.getSession();
+	            session.authPassword(user, password);
+	            ClientChannel channel = session.createChannel("shell");
+	            channel.setIn(new ByteArrayInputStream(lastInput.getBytes()));
+	            channel.setOut(console.getPrintStream());
+	            channel.setErr(console.getPrintStream());
+	            channel.open();
+	            channel.waitFor(ClientChannel.CLOSED, 0);
+	        } catch (Throwable t) {
+	            t.printStackTrace();
+	            System.exit(1);
+	        } finally {
+	            try {
+	                client.stop();
+	            } catch (Throwable t) { }
+	        }
+	        System.exit(0);
 	}
 	
 }

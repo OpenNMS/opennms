@@ -6,6 +6,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.LayoutAlgorithm;
+
 public class AlternativeLayoutAlgorithm implements LayoutAlgorithm {
 	
 	private static class Layer extends LinkedHashSet<Vertex> {}

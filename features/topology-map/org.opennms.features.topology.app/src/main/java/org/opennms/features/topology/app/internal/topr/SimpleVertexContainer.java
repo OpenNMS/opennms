@@ -1,18 +1,17 @@
 /**
  * 
  */
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.topr;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanContainer;
+import org.opennms.features.topology.api.VertexContainer;
 
-public class VertexContainer extends BeanContainer<String, SimpleVertex> implements Container.Hierarchical {
-	public VertexContainer() {
+public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex> {
+	public SimpleVertexContainer() {
 		super(SimpleVertex.class);
 		setBeanIdProperty("id");
 	}

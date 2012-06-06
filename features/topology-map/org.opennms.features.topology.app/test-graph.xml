@@ -2,43 +2,43 @@
 <graph>
     <vertex>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
-        <id>a</id>
+        <id>v0</id>
         <locked>false</locked>
-        <parent>g1</parent>
+        <parent>e0</parent>
         <selected>false</selected>
         <x>50</x>
         <y>100</y>
     </vertex>
     <vertex>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
-        <id>b</id>
+        <id>v1</id>
         <locked>false</locked>
-        <parent>g1</parent>
+        <parent>e0</parent>
         <selected>false</selected>
         <x>100</x>
         <y>50</y>
     </vertex>
     <vertex>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
-        <id>c</id>
+        <id>v2</id>
         <locked>false</locked>
-        <parent>g2</parent>
+        <parent>e1</parent>
         <selected>false</selected>
         <x>100</x>
         <y>150</y>
     </vertex>
     <vertex>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
-        <id>d</id>
+        <id>v3</id>
         <locked>false</locked>
-        <parent>g2</parent>
+        <parent>e1</parent>
         <selected>false</selected>
         <x>150</x>
         <y>100</y>
     </vertex>
     <vertex>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
-        <id>e</id>
+        <id>v4</id>
         <locked>false</locked>
         <selected>false</selected>
         <x>200</x>
@@ -46,57 +46,57 @@
     </vertex>
     <group>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/group.png</icon>
-        <id>g1</id>
+        <id>e0</id>
         <locked>false</locked>
         <selected>false</selected>
         <x>0</x>
         <y>0</y>
-        <members>a</members>
-        <members>b</members>
+        <members>v0</members>
+        <members>v1</members>
     </group>
     <group>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/group.png</icon>
-        <id>g2</id>
+        <id>e1</id>
         <locked>false</locked>
         <selected>false</selected>
         <x>0</x>
         <y>0</y>
-        <members>c</members>
-        <members>d</members>
+        <members>v2</members>
+        <members>v3</members>
     </group>
     <edge>
-        <id>e1</id>
-        <source>a</source>
-        <target>b</target>
-    </edge>
-    <edge>
         <id>e2</id>
-        <source>a</source>
-        <target>c</target>
+        <source>v0</source>
+        <target>v1</target>
     </edge>
     <edge>
         <id>e3</id>
-        <source>b</source>
-        <target>c</target>
+        <source>v0</source>
+        <target>v2</target>
     </edge>
     <edge>
         <id>e4</id>
-        <source>b</source>
-        <target>d</target>
+        <source>v1</source>
+        <target>v2</target>
     </edge>
     <edge>
         <id>e5</id>
-        <source>c</source>
-        <target>d</target>
+        <source>v1</source>
+        <target>v3</target>
     </edge>
     <edge>
         <id>e6</id>
-        <source>a</source>
-        <target>e</target>
+        <source>v2</source>
+        <target>v3</target>
     </edge>
     <edge>
         <id>e7</id>
-        <source>d</source>
-        <target>e</target>
+        <source>v0</source>
+        <target>v4</target>
+    </edge>
+    <edge>
+        <id>e8</id>
+        <source>v3</source>
+        <target>v4</target>
     </edge>
 </graph>
