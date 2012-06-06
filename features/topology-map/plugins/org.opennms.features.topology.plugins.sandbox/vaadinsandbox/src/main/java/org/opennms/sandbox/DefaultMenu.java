@@ -6,6 +6,9 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.terminal.ClassResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -34,8 +37,8 @@ public class DefaultMenu extends Application{
     private TracerouteWindow Trace_Window = null; //Sub-window which contains the functionality for Tracerouting a node.
     private NodeInfoWindow Info_Window = null; //Sub-window which contains the functionality for getting node information
     private SSHWindow SSH_Window = null; //Sub-window which contains the functionality for SSH'ing into a node
-    private Label cartman = new Label("Cartman"); //Name of the node which is displayed at the top of the Left side of the split panel.
-    private Label butters = new Label("Butters"); //Name of the node which is displayed at the top of the right side of the split panel.
+    private Label cartman = new Label("<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">Cartman</div>"); //Name of the node which is displayed at the top of the Left side of the split panel.
+    private Label butters = new Label("<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">Butters</div>"); //Name of the node which is displayed at the top of the right side of the split panel.
     private ContextMenu cartmanMenu = new ContextMenu(); //Context Menu that appears when right clicking on the left side of the split panel.
     private ContextMenu buttersMenu = new ContextMenu(); //Context Menu that appears when right clicking on the right side of the split panel.
 
@@ -64,10 +67,26 @@ public class DefaultMenu extends Application{
         mainLayout.addComponent(horizontalSplit);
 
         leftLayout.setSizeFull();
-        leftLayout.addComponent(cartman);
+        VerticalLayout cartmanBox = new VerticalLayout();
+        Embedded cartmanImage = new Embedded("", new ClassResource("cartmanIcon.jpg", this));
+        cartmanBox.addComponent(cartmanImage);
+        cartmanBox.setComponentAlignment(cartmanImage, Alignment.MIDDLE_CENTER);
+        cartmanBox.setWidth("" + (int)cartmanImage.getWidth() + "px"); //Sets layout box to width of image
+        cartman.setContentMode(Label.CONTENT_XHTML);
+        cartmanBox.addComponent(cartman);
+        leftLayout.addComponent(cartmanBox);
+        leftLayout.setComponentAlignment(cartmanBox, Alignment.MIDDLE_CENTER);
 
         rightLayout.setSizeFull();
-        rightLayout.addComponent(butters);
+        VerticalLayout buttersBox = new VerticalLayout();
+        Embedded buttersImage = new Embedded("", new ClassResource("buttersIcon.jpg", this));
+        buttersBox.addComponent(buttersImage);
+        buttersBox.setComponentAlignment(buttersImage, Alignment.MIDDLE_CENTER);
+        buttersBox.setWidth("" + (int)buttersImage.getWidth() + "px"); //Sets layout box to width of image
+        butters.setContentMode(Label.CONTENT_XHTML);
+        buttersBox.addComponent(butters);
+        rightLayout.addComponent(buttersBox);
+        rightLayout.setComponentAlignment(buttersBox, Alignment.MIDDLE_CENTER);
 
         horizontalSplit.setFirstComponent(leftLayout);
         horizontalSplit.setSecondComponent(rightLayout);
@@ -76,7 +95,7 @@ public class DefaultMenu extends Application{
         buildButtersMenu(); //Right side of split panel
 
         /*Sets up a right click listener which brings up the Cartman Context menu*/
-        leftLayout.addListener(new LayoutClickListener() {
+        cartmanBox.addListener(new LayoutClickListener() {
 
             public void layoutClick(LayoutClickEvent event) {
                 if (LayoutClickEvent.BUTTON_RIGHT == event.getButton()) {
@@ -91,7 +110,7 @@ public class DefaultMenu extends Application{
         });
 
         /*Sets up a right click listener which brings up the Butters Context menu*/
-        rightLayout.addListener(new LayoutClickListener() {
+        buttersBox.addListener(new LayoutClickListener() {
 
             public void layoutClick(LayoutClickEvent event) {
                 if (LayoutClickEvent.BUTTON_RIGHT == event.getButton()) {
