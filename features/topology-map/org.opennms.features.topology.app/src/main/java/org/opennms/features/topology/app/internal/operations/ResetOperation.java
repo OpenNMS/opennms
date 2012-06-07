@@ -11,8 +11,12 @@ import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 public class ResetOperation implements Constants, Operation{
     
-    SimpleTopologyProvider m_topologyProvider = new SimpleTopologyProvider();
+    SimpleTopologyProvider m_topologyProvider;
     
+    public ResetOperation(SimpleTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
+
     @Override
     public Undoer execute(List<Object> targets,
             OperationContext operationContext) {

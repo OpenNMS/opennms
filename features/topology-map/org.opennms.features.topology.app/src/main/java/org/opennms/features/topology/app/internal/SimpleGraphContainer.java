@@ -9,11 +9,13 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
-import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
+import com.vaadin.data.Container.ItemSetChangeListener;
+import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.MethodProperty;
 
 public class SimpleGraphContainer implements GraphContainer {
@@ -183,23 +185,49 @@ public class SimpleGraphContainer implements GraphContainer {
         
     }
     
-    private class GEdgeContainer extends BeanContainer<String, GEdge>{
+    private class GEdgeContainer extends BeanContainer<String, GEdge> implements ItemSetChangeListener, PropertySetChangeListener{
 
         public GEdgeContainer() {
             super(GEdge.class);
             setBeanIdProperty("key");
             addAll(m_edgeHolder.getElements());
+            m_topologyProvider.getEdgeContainer().addListener((ItemSetChangeListener)this);
+            m_topologyProvider.getEdgeContainer().addListener((PropertySetChangeListener)this);
+        }
+
+        @Override
+        public void containerPropertySetChange(PropertySetChangeEvent event) {
+            m_edgeHolder.update();
+            fireContainerPropertySetChange();
+        }
+
+        @Override
+        public void containerItemSetChange(ItemSetChangeEvent event) {
+            m_edgeHolder.update();
+            fireItemSetChange();
         }
         
         
     }
      
-    private class GVertexContainer extends VertexContainer<Object, GVertex>{
+    private class GVertexContainer extends VertexContainer<Object, GVertex> implements ItemSetChangeListener, PropertySetChangeListener{
         
+        @Override
+        public BeanItem<GVertex> getItem(Object itemId) {
+            return (BeanItem<GVertex>) m_topologyProvider.getVertexContainer().getItem(itemId);
+        }
+
+        @Override
+        public Collection<Object> getItemIds() {
+            return (Collection<Object>) m_topologyProvider.getVertexContainer().getItemIds();
+        }
+
         public GVertexContainer() {
             super(GVertex.class);
             setBeanIdProperty("key");
             addAll(m_vertexHolder.getElements());
+            m_topologyProvider.getVertexContainer().addListener((ItemSetChangeListener)this);
+            m_topologyProvider.getVertexContainer().addListener((PropertySetChangeListener)this);
         }
 
         @Override
@@ -240,8 +268,10 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public boolean areChildrenAllowed(Object key) {
+            if(key == null) return false;
+            
             GVertex vertex = m_vertexHolder.getElementByKey(key.toString());
-            return !vertex.isLeaf();
+            return vertex != null && !vertex.isLeaf();
         }
 
         @Override
@@ -260,6 +290,20 @@ public class SimpleGraphContainer implements GraphContainer {
             GVertex vertex = m_vertexHolder.getElementByKey(key.toString());
             return m_topologyProvider.getVertexContainer().hasChildren(vertex.getItemId());
         }
+
+        @Override
+        public void containerItemSetChange(ItemSetChangeEvent event) {
+            System.err.println("containerItemSetChange called in GVertexContainer");
+            m_vertexHolder.update();
+            fireItemSetChange();
+        }
+
+        @Override
+        public void containerPropertySetChange(PropertySetChangeEvent event) {
+            System.err.println("containerPropertySetChange called in GVertexContainer");
+            m_vertexHolder.update();
+            fireContainerPropertySetChange();
+        }
         
     }
     
@@ -277,11 +321,11 @@ public class SimpleGraphContainer implements GraphContainer {
     private BeanContainer<?, ?> m_edgeContainer;
 
 	
-	public SimpleGraphContainer() {
+	public SimpleGraphContainer(TopologyProvider topologyProvider) {
 		m_zoomLevelProperty = new MethodProperty<Integer>(Integer.class, this, "getSemanticZoomLevel", "setSemanticZoomLevel");
 		m_scaleProperty = new MethodProperty<Double>(Double.class, this, "getScale", "setScale");
 		
-		setDataSource(new SimpleTopologyProvider());
+		setDataSource(topologyProvider);
 		
 		m_vertexContainer = new GVertexContainer();
 		m_edgeContainer = new GEdgeContainer();

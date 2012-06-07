@@ -8,7 +8,11 @@ import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 public class ConnectOperation implements Operation {
 
-    SimpleTopologyProvider m_topologyProvider = new SimpleTopologyProvider();
+    SimpleTopologyProvider m_topologyProvider;
+    
+    public ConnectOperation(SimpleTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
     
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {

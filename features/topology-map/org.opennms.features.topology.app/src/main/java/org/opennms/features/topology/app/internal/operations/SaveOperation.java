@@ -4,17 +4,19 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 
 public class SaveOperation implements Operation {
     
-    TopologyProvider m_topologyProvider = new SimpleTopologyProvider();
-	@Override
+    SimpleTopologyProvider m_topologyProvider;
+	public SaveOperation(SimpleTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
+
+    @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         m_topologyProvider.save("graph.xml");
-        //graphContainer.save("graph.xml");
         return null;
     }
 

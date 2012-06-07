@@ -45,9 +45,15 @@ public class Graph{
 		
 		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer()) {
 
-			@Override
+            @Override
+            List<Vertex> getElements() {
+                String toast = "toast";
+                return super.getElements();
+            }
+
+            @Override
 			protected Vertex update(Vertex element) {
-				Object groupId = m_dataSource.getVertexContainer().getParent(element.getItemId());
+				Object groupId = m_dataSource.getVertexContainer().getParent(element.getKey());
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				
 				element.setGroupId(groupId);
@@ -57,7 +63,7 @@ public class Graph{
 
 			@Override
 			protected Vertex make(String key, Object itemId, Item item) {
-				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
+				Object groupId = m_dataSource.getVertexContainer().getParent(key);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				System.out.println("Parent of itemId: " + itemId + " groupId: " + groupId);
 				return new Vertex(key, itemId, item, groupKey, groupId);
@@ -112,6 +118,7 @@ public class Graph{
 	}
 	
 	public List<Edge> getEdges(){
+	    System.err.println("Graph getEdges calling m_edgeHolder.getElements()");
 		return m_edgeHolder.getElements();
 	}
 	

@@ -243,6 +243,7 @@ public class SimpleTopologyProvider implements TopologyProvider{
     
     
     public Object addVertex(int x, int y, String icon) {
+        System.err.println("Adding vertex in SimpleTopologyProvider with icon: " + icon);
         String nextVertexId = getNextVertexId();
         addVertex(nextVertexId, x, y, icon);
         return nextVertexId;

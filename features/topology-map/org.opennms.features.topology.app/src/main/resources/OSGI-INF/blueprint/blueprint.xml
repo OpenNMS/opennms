@@ -8,9 +8,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
         <property name="commandManager" ref="commandManager"/>
+        <property name="topologyProvider" ref="simpleTopologyProvider"/>
     </bean>
     
     <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager"></bean>
+    <bean id="simpleTopologyProvider" class="org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider" />
     
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
         <service-properties>
@@ -29,16 +31,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </reference-listener>
     </reference-list>
     
-    <!-- Command Services -->
-<!--     <service interface="org.opennms.features.topology.app.internal.Operation" > -->
-<!--         <bean class="org.opennms.features.topology.app.internal.operations.AddVertexCommand"> -->
-<!--             <argument value="Add Vertex" index="0"/> -->
-<!--             <argument value="Edit" index="1"/> -->
-<!--             <argument value="" index="2"/> -->
-<!--             <argument value="VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png" index="3"/> -->
-<!--         </bean> -->
-<!--     </service> -->
-    
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
@@ -47,6 +39,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.AddVertexOperation">
             <argument value="VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png"/>
+            <argument ref="simpleTopologyProvider"/>
         </bean>
     </service>
     
@@ -64,7 +57,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Connect"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.ConnectOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.ConnectOperation">
+            <argument ref="simpleTopologyProvider"/>
+        </bean>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -73,7 +68,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Create Group"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation">
+            <argument ref="simpleTopologyProvider"/>
+        </bean>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -131,7 +128,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.menuLocation" value="File"/>
             <entry key="operation.label" value="Open"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.OpenOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.OpenOperation">
+            <argument ref="simpleTopologyProvider"/>
+        </bean>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -157,7 +156,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Remove Vertex"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.RemoveVertexOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.RemoveVertexOperation">
+            <argument ref="simpleTopologyProvider"/>
+        </bean>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -166,7 +167,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Reset"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.ResetOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.ResetOperation">
+            <argument ref="simpleTopologyProvider"/>
+        </bean>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -174,7 +177,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.menuLocation" value="File"/>
             <entry key="operation.label" value="Save"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.SaveOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.SaveOperation">
+            <argument ref="simpleTopologyProvider"/>
+        </bean>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >

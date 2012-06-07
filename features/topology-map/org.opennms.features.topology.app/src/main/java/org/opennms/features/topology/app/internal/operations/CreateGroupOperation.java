@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.Constants;
 import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
@@ -12,7 +11,12 @@ import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 public class CreateGroupOperation implements Constants, Operation{
     
     
-    TopologyProvider m_topologyProvider = new SimpleTopologyProvider();
+    SimpleTopologyProvider m_topologyProvider;
+    
+    public CreateGroupOperation(SimpleTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
+    
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         

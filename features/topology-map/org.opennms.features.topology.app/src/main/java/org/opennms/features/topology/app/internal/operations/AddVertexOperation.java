@@ -10,11 +10,12 @@ import org.opennms.features.topology.app.internal.topr.SimpleTopologyProvider;
 
 public class AddVertexOperation implements Operation{
     
-    private SimpleTopologyProvider m_topologyProvider = new SimpleTopologyProvider();
+    private SimpleTopologyProvider m_topologyProvider;
     
     private String m_icon;
-    public AddVertexOperation(String icon) {
+    public AddVertexOperation(String icon, SimpleTopologyProvider topologyProvider) {
         m_icon = icon;
+        m_topologyProvider = topologyProvider;
     }
     
     @Override
@@ -48,6 +49,7 @@ public class AddVertexOperation implements Operation{
     }
 
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
+        System.err.println("/*** Executing add Vertex in AddVertexOperation ***/");
         Object vertexId = targets.isEmpty() ? null : targets.get(0);
         String icon = getIcon();
         if (vertexId == null) {
