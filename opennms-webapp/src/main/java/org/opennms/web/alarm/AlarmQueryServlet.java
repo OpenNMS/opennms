@@ -42,9 +42,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
@@ -58,6 +57,7 @@ import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.api.Util;
 import org.opennms.web.controller.event.EventFilterController;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.servlet.MissingParameterException;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to
@@ -279,7 +279,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param prefix a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
-     * @throws org.opennms.web.MissingParameterException if any.
+     * @throws org.opennms.web.servlet.MissingParameterException if any.
      */
     protected Date getDateFromRequest(HttpServletRequest request, String prefix) throws MissingParameterException {
         if (request == null || prefix == null) {

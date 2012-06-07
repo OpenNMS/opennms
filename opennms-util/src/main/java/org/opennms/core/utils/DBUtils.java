@@ -40,7 +40,6 @@ import java.util.Set;
  * <p>DBUtils class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
 public class DBUtils {
     private final Set<Statement> m_statements;

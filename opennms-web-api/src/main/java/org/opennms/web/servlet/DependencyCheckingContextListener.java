@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.web.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

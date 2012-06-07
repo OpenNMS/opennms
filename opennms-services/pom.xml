@@ -323,6 +323,11 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.icmp-jna</artifactId>
       <scope>test</scope>

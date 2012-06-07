@@ -21,7 +21,12 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.features.reporting.repository.*;org.opennms.features.reporting.repository.global.*;org.opennms.features.reporting.repository.local.*;org.opennms.features.reporting.repository.remote.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.features.reporting.repository.global.*;version="${project.version}",
+              org.opennms.features.reporting.repository.local.*;version="${project.version}",
+              org.opennms.features.reporting.repository.remote.*;version="${project.version}",
+              org.opennms.features.reporting.repository.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

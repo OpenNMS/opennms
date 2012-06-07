@@ -42,7 +42,7 @@ import org.opennms.features.poller.remote.gwt.client.utils.Interval;
  * @version $Id: $
  * @since 1.8.1
  */
-public class IntervalUtils {
+public abstract class IntervalUtils {
 
     /**
      * <p>invert</p>

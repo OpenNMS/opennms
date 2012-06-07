@@ -37,13 +37,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

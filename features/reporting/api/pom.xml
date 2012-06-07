@@ -21,7 +21,10 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.api.reporting.*;org.opennms.api.reporting.parameter.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.api.reporting.parameter.*;version="${project.version}",
+              org.opennms.api.reporting.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

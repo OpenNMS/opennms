@@ -26,14 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.core.utils;
 
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 
 import org.junit.Test;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * 

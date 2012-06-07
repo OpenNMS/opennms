@@ -64,7 +64,13 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.reporting.availability.*;org.opennms.reporting.availability.render.*;org.opennms.reporting.availability.svclayer.*;org.opennms.reporting.datablock.*;org.opennms.reporting.availability.descriptors.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.reporting.availability.descriptors.*;version="${project.version}",
+              org.opennms.reporting.availability.render.*;version="${project.version}",
+              org.opennms.reporting.availability.svclayer.*;version="${project.version}",
+              org.opennms.reporting.availability.*;version="${project.version}",
+              org.opennms.reporting.datablock.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

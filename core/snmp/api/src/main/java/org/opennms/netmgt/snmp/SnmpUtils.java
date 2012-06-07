@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.opennms.core.utils.ThreadCategory;
 
-public class SnmpUtils {
+public abstract class SnmpUtils {
 
     private static Properties sm_config;
 

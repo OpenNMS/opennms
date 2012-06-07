@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.core.utils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -44,7 +43,7 @@ import org.springframework.beans.BeanWrapperImpl;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @version $Id: $
  */
-public class WebSecurityUtils {
+public abstract class WebSecurityUtils {
 	
 	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	

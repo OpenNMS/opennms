@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web;
+package org.opennms.web.servlet;
 
 // from http://mc4j.org/confluence/display/stripes/XSS+filter
 
@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 
 /**
  * <p>XssRequestWrapper class.</p>

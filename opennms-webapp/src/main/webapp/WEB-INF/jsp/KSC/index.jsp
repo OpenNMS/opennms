@@ -34,7 +34,7 @@
   session="true"
   import="
   org.opennms.web.api.Util,
-  org.opennms.web.XssRequestWrapper,
+  org.opennms.web.servlet.XssRequestWrapper,
   org.opennms.web.controller.ksc.CustomViewController,
   org.opennms.web.svclayer.ResourceService,
   org.springframework.web.context.WebApplicationContext,

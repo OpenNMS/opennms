@@ -76,7 +76,7 @@ import org.opennms.netmgt.config.charts.Title;
  * @author <a href="david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class ChartUtils {
+public abstract class ChartUtils {
     
     /**
      * Use this it initialize required factories so that the WebUI doesn't

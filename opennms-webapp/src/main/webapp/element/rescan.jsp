@@ -32,10 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.WebSecurityUtils,
+	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
         org.opennms.web.api.Util,
-		org.opennms.web.*
+	org.opennms.web.servlet.MissingParameterException
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

@@ -56,7 +56,7 @@ import org.springframework.core.io.Resource;
  * @author ranger
  * @version $Id: $
  */
-public class ConfigurationTestUtils extends Assert {
+public abstract class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
     // TODO: rename this constant
     private static final String DAEMON_DIRECTORY = "opennms-base-assembly";

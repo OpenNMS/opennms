@@ -62,7 +62,7 @@ import org.springframework.web.bind.ServletRequestUtils;
  * @since jdk 1.5.0
  * @version $Id: $
  */
-public class WebUtils {
+public abstract class WebUtils {
 
     /**
      * <p>getIntId</p>

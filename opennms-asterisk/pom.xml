@@ -8,6 +8,27 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-asterisk</artifactId>
   <name>OpenNMS Support for Asterisk PBX</name>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.opennms.netmgt.asterisk.agi.*;version="${project.version}",
+              org.opennms.netmgt.asterisk.utils.*;version="${project.version}",
+              org.opennms.netmgt.notifd.asterisk.*;version="${project.version}"
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

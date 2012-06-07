@@ -40,7 +40,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.MissingParameterException;
+import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.util.Assert;
 
 /**

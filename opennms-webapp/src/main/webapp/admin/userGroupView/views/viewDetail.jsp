@@ -36,7 +36,7 @@
 		java.util.*,
 		java.text.*,
 		org.opennms.netmgt.config.views.*,
-		org.opennms.web.MissingParameterException
+		org.opennms.web.servlet.MissingParameterException
 	"
 %>
 

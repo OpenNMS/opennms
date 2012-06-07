@@ -30,8 +30,8 @@ package org.opennms.web.svclayer.outage;
 
 import java.util.GregorianCalendar;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * <p>SuppressOutages class.</p>

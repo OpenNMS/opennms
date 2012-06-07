@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.MissingParameterException"
+	import="org.opennms.web.servlet.MissingParameterException"
 %>
 
 <%

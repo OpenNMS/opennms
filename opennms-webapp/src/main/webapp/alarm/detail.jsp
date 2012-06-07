@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.WebSecurityUtils,
+	import="org.opennms.core.utils.WebSecurityUtils,
 			org.opennms.web.controller.alarm.*,
 			org.opennms.web.alarm.*,
 			org.opennms.netmgt.model.OnmsSeverity,
@@ -59,7 +59,7 @@
     String alarmIdString = request.getParameter( "id" );
 
     if( alarmIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "id" );
+        throw new org.opennms.web.servlet.MissingParameterException( "id" );
     }
 
     int alarmId = -1;

@@ -36,10 +36,10 @@
 		org.opennms.web.category.*,
 		org.opennms.web.api.Util,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.MissingParameterException,
+		org.opennms.web.servlet.MissingParameterException,
 		java.util.*,
 		org.opennms.netmgt.xml.rtc.Node,
-		org.opennms.web.XssRequestWrapper,
+		org.opennms.web.servlet.XssRequestWrapper,
 		org.opennms.web.springframework.security.AclUtils,
 		org.opennms.web.springframework.security.AclUtils.NodeAccessChecker,
 		org.springframework.security.core.context.SecurityContextHolder

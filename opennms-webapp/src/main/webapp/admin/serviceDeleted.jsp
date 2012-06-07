@@ -32,9 +32,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.WebSecurityUtils,
+	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		org.opennms.web.MissingParameterException,
+		org.opennms.web.servlet.MissingParameterException,
 		org.opennms.web.category.*,
 		java.util.*,
 		org.opennms.web.event.*

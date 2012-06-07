@@ -44,7 +44,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * AclUtils
  */
-public class AclUtils {
+public abstract class AclUtils {
     
     /**
      * <p>shouldFilter</p>

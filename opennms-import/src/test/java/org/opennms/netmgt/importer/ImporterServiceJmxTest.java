@@ -68,9 +68,6 @@ public class ImporterServiceJmxTest {
         ImporterServiceMBean mbean = new ImporterService();
         mbean.init();
         mbean.start();
-        
-        Thread.sleep(30000);
-        
         mbean.stop();
     }
 }

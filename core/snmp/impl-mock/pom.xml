@@ -34,8 +34,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

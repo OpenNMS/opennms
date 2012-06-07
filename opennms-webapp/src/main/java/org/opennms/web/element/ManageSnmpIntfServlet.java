@@ -49,9 +49,9 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * <p>ManageSnmpIntfServlet class.</p>
@@ -111,19 +111,19 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
 
         String nodeIdString = request.getParameter("node");
         if (nodeIdString == null) {
-            throw new org.opennms.web.MissingParameterException("node");
+            throw new org.opennms.web.servlet.MissingParameterException("node");
         }
         int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
         String intfIdString = request.getParameter("intf");
         if (intfIdString == null) {
-            throw new org.opennms.web.MissingParameterException("intf");
+            throw new org.opennms.web.servlet.MissingParameterException("intf");
         }
         int intfId = WebSecurityUtils.safeParseInt(intfIdString);
 
         String statusString = request.getParameter("status");
         if (statusString == null) {
-            throw new org.opennms.web.MissingParameterException("status");
+            throw new org.opennms.web.servlet.MissingParameterException("status");
         }
         int status = WebSecurityUtils.safeParseInt(statusString);
 

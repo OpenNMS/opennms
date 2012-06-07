@@ -34,8 +34,8 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 
-<%@page import="org.opennms.web.WebSecurityUtils"%>
-<%@page import="org.opennms.web.XssRequestWrapper"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.springframework.security.Authentication"%>
 
 <%@page import="org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet"%>

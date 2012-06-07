@@ -34,9 +34,12 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.ncs.northbounder.*;org.opennms.netmgt.ncs.northbounder.transfer.*;version="${project.version}"</Export-Package>
+            <Export-Package>
+              org.opennms.netmgt.ncs.northbounder.transfer.*;version="${project.version}",
+              org.opennms.netmgt.ncs.northbounder.*;version="${project.version}"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

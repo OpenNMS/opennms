@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.web.MissingParameterException;
+import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;

@@ -35,8 +35,8 @@ import java.util.StringTokenizer;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;

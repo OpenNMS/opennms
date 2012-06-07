@@ -31,9 +31,9 @@ package org.opennms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.support.ChooseResourceModel;
 import org.springframework.beans.factory.InitializingBean;

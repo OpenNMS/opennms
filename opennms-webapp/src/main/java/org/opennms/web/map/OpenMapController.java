@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
