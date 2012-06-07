@@ -29,13 +29,7 @@
 package org.opennms.netmgt.osgid;
 
 import java.io.File;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -45,23 +39,9 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.NotificationDao;
-import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -75,285 +55,64 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        //"classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath*:/META-INF/opennms/component-service.xml",
-        //"classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-osgid.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
-        //"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+		"classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath*:/META-INF/opennms/component-dao.xml",
+		"classpath*:/META-INF/opennms/component-service.xml",
+		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+		"classpath:/META-INF/opennms/applicationContext-osgid.xml",
+		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+		//"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 @Transactional
 public class OsgidTest implements InitializingBean {
 
-    @Autowired
-    private AckService m_ackService;
-    
-    @Autowired
-    private AlarmDao m_alarmDao;
-    
-    @Autowired
-    private EventDao m_eventDao;
-    
-    @Autowired
-    private Osgid m_daemon;
+	@Autowired
+	private Osgid m_daemon;
 
-    @Autowired
-    private AcknowledgmentDao m_ackDao;
+	@Autowired
+	private DatabasePopulator m_populator;
 
-    @Autowired
-    private NodeDao m_nodeDao;
-    
-    @Autowired
-    private DatabasePopulator m_populator;
+	private static boolean m_populated = false;
 
-    @Autowired
-    private NotificationDao m_notificationDao;
-    
-    @Autowired
-    private UserNotificationDao m_userNotificationDao;
-    
-    private static boolean m_populated = false;
-    
-    @BeforeTransaction
-    public void populateDatabase() {
-        try {
-            if (!m_populated) {
-                m_populator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
-    }
+	@BeforeTransaction
+	public void populateDatabase() {
+		try {
+			if (!m_populated) {
+				m_populator.populateDatabase();
+			}
+		} catch (Throwable e) {
+			e.printStackTrace(System.err);
+		} finally {
+			m_populated = true;
+		}
+	}
 
-    @Before
-    public void setUp() throws Exception {
-        Properties props = new Properties();
-        props.setProperty("log4j.logger.org.hibernate", "INFO");
-        props.setProperty("log4j.logger.org.springframework", "INFO");
-        //props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-        MockLogAppender.setupLogging(props);
-        System.setProperty("opennms.home", "target/test-classes");
-    }
-    
-    @After
-    public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(new File("target/test-classes/karaf/data"));
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-        Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
-    }
-    
-    @Test
-    public void testOsgidStartup() throws Exception {
-        m_daemon.start();
-        m_daemon.destroy();
-    }
+	@Before
+	public void setUp() throws Exception {
+		Properties props = new Properties();
+		props.setProperty("log4j.logger.org.hibernate", "INFO");
+		props.setProperty("log4j.logger.org.springframework", "INFO");
+		//props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+		MockLogAppender.setupLogging(props);
+		System.setProperty("opennms.home", "target/test-classes");
+	}
 
-    
-    /**
-     * This tests the acknowledgment of an alarm and any related notifications.
-     */
-    /*
-    @Test
-    public void testAcknowledgeAlarm() {
-        
-        VerificationObject vo = createAckStructure();
-        Assert.assertTrue(vo.m_nodeId > 0);
-        Assert.assertTrue(vo.m_alarmId > 0);
-        Assert.assertTrue(vo.m_eventID > 0);
-        Assert.assertTrue(vo.m_userNotifId > 0);
-        
-        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
+	@After
+	public void tearDown() throws Exception {
+		// Clean up the Karaf module cache
+		FileUtils.deleteDirectory(new File("target/test-classes/karaf/data"));
+	}
 
-        OnmsAcknowledgment ack = new OnmsAcknowledgment(m_alarmDao.get(vo.m_alarmId));
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		BeanUtils.assertAutowiring(this);
+	}
 
-        m_ackDao.save(ack);
-        m_ackDao.flush();
-        
-        m_ackService.processAck(ack);
-        
-        alarm = m_alarmDao.get(ack.getRefId());
-        Assert.assertNotNull(alarm.getAlarmAckUser());
-        Assert.assertEquals("admin", alarm.getAlarmAckUser());
-        
-        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
-        Assert.assertNotNull(notif);
-        Assert.assertEquals("admin", notif.getAnsweredBy());
-        
-        Assert.assertTrue(alarm.getAlarmAckTime().before(notif.getRespondTime()));
-        
-    }
-    */
-    
-    
-    /**
-     * This tests acknowledging a notification and a related alarm.  If events are being deduplicated
-     * they should all have the same alarm ID.
-     * @throws InterruptedException 
-     */
-    /*
-    @Test
-    public void testAcknowledgeNotification() throws InterruptedException {
-        
-        VerificationObject vo = createAckStructure();
-        Assert.assertTrue(vo.m_nodeId > 0);
-        Assert.assertTrue(vo.m_alarmId > 0);
-        Assert.assertTrue(vo.m_eventID > 0);
-        Assert.assertTrue(vo.m_userNotifId > 0);
-        
-        OnmsAcknowledgment ack = new OnmsAcknowledgment(m_notificationDao.get(vo.m_notifId));
-
-        m_ackDao.save(ack);
-        m_ackDao.flush();
-        
-        Thread.sleep(1);
-        m_ackService.processAck(ack);
-        
-        OnmsNotification notif = m_notificationDao.get(ack.getRefId());
-        Assert.assertNotNull(notif.getAnsweredBy());
-        Assert.assertEquals("admin", notif.getAnsweredBy());
-        
-        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
-        Assert.assertNotNull(alarm);
-        Assert.assertEquals("admin", alarm.getAlarmAckUser());
-        
-        long ackTime = ack.getAckTime().getTime();
-        long respondTime = notif.getRespondTime().getTime();
-        
-        //the DAOs now set the acknowledgment time for each Acknowledgable and should
-        //be later (by a few millis in this test) than the time the acknowledgment was created
-        //this will give us an idea about the processing time of an acknowledgment
-        Assert.assertTrue(ackTime < respondTime);
-        
-    }
-    */
-    
-    /*
-    @Test
-    public void testHandelEvent() throws InterruptedException {
-        
-        VerificationObject vo = createAckStructure();
-        EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
-        bldr.addParam("ackType", String.valueOf(AckType.ALARM));
-        bldr.addParam("refId", vo.m_alarmId);
-        final String user = "ackd-test-user";
-        bldr.addParam("user", user);
-
-        m_daemon.handleAckEvent(bldr.getEvent());
-        
-        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
-        Assert.assertEquals(notif.getAckUser(), user);
-//        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
-        
-        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
-        Assert.assertEquals(alarm.getAckUser(), user);
-//        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
-    }
-    */
-    
-    
-    class VerificationObject {
-        int m_eventID;
-        int m_alarmId;
-        int m_nodeId;
-        int m_notifId;
-        int m_userNotifId;
-    }
-    
-    private VerificationObject createAckStructure() {
-        
-        final Date time = new Date();
-        VerificationObject vo = new VerificationObject();
-        
-        List<OnmsNode> nodes = m_nodeDao.findAll();
-        Assert.assertTrue("List of nodes should not be empty", nodes.size() > 0);
-        OnmsNode node = m_nodeDao.get(nodes.get(0).getId());
-        vo.m_nodeId = node.getId();
-                
-        OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(node.getDistPoller());
-        event.setNode(node);
-        
-        event.setEventCreateTime(time);
-        event.setEventDescr("Test node down event.");
-        event.setEventSeverity(6);
-        event.setEventSource("AckdTest");
-        event.setEventTime(time);
-        event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
-        event.setIpAddr(node.getPrimaryInterface().getIpAddress());
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventLogMsg("Testing node down event from AckdTest.");
-        m_eventDao.save(event);
-        m_eventDao.flush();
-        vo.m_eventID = event.getId();
-        
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setAlarmType(1);
-        alarm.setClearKey(EventConstants.NODE_UP_EVENT_UEI + ":localhost:1");
-        alarm.setCounter(1);
-        alarm.setDescription(event.getEventDescr());
-        alarm.setDistPoller(event.getDistPoller());
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setIpAddr(event.getIpAddr());
-        alarm.setLastEvent(event);
-        alarm.setLastEventTime(event.getEventTime());
-        alarm.setLogMsg("Some Log Message");
-        alarm.setNode(event.getNode());
-        alarm.setReductionKey("xyz");
-        alarm.setServiceType(event.getServiceType());
-        alarm.setSeverity(OnmsSeverity.get(event.getEventSeverity()));
-        alarm.setUei(event.getEventUei());
-        m_alarmDao.save(alarm);
-        m_alarmDao.flush();
-        vo.m_alarmId = alarm.getId();
-        event.setAlarm(alarm);
-        
-        OnmsNotification notif = new OnmsNotification();
-        notif.setEvent(event);
-        notif.setEventUei(event.getEventUei());
-        notif.setIpAddress(event.getIpAddr());
-        notif.setNode(event.getNode());
-        notif.setNotifConfigName("abc");
-        notif.setNumericMsg(event.getEventLogMsg());
-        notif.setPageTime(event.getEventTime());
-        notif.setServiceType(event.getServiceType());
-        notif.setSubject("notifyid: 1, node down");
-        notif.setTextMsg(event.getEventLogMsg());
-        m_notificationDao.save(notif);
-        vo.m_notifId = notif.getNotifyId();
-        
-        OnmsUserNotification userNotif = new OnmsUserNotification();
-        userNotif.setAutoNotify("Y");
-        userNotif.setContactInfo("me@yourock.com");
-        userNotif.setMedia("page");
-        userNotif.setNotification(notif);
-        userNotif.setNotifyTime(event.getEventTime());
-        userNotif.setUserId("me");
-        
-        Set<OnmsUserNotification> usersnotifieds = new HashSet<OnmsUserNotification>();
-        usersnotifieds.add(userNotif);
-        m_userNotificationDao.save(userNotif);
-        vo.m_userNotifId = userNotif.getId();
-        
-        notif.setUsersNotified(usersnotifieds);
-        m_notificationDao.update(notif);
-        
-        m_eventDao.update(event);
-        m_eventDao.flush();
-        
-        return vo;
-    }
-    
-    
+	@Test
+	public void testOsgidStartup() throws Exception {
+		m_daemon.start();
+		m_daemon.destroy();
+	}
 }
