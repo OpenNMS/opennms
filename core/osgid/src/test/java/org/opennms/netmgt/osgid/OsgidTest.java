@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.osgid;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,9 +37,12 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
@@ -51,8 +55,6 @@ import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
@@ -60,11 +62,8 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,6 +140,11 @@ public class OsgidTest implements InitializingBean {
         //props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(props);
         System.setProperty("opennms.home", "target/test-classes");
+    }
+    
+    @After
+    public void tearDown() throws Exception {
+        FileUtils.deleteDirectory(new File("target/test-classes/karaf/data"));
     }
     
     @Override
