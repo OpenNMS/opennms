@@ -11,7 +11,7 @@
   <groupId>org.opennms.features.topology.plugins</groupId>
   <artifactId>org.opennms.features.topology.plugins</artifactId>
 
-  <name></name>
+  <name>OpenNMS :: Topology :: Plugins</name>
 
   <packaging>pom</packaging>
   <version>1.11.1-SNAPSHOT</version>

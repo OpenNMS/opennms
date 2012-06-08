@@ -24,27 +24,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <id>generate</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>features-generate-descriptor</goal>
-            </goals>
-            <configuration>
-              <inputFile>src/main/features/features.xml.in</inputFile>
-              <outputFile>target/features.xml</outputFile>
-              <aggregateFeatures>true</aggregateFeatures>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Compiles your custom GWT components with the GWT compiler -->
       <!-- A hosted mode browser for client-side widget debugging can be run with the goal gwt:run after uncommenting the
 	   correct line below. A remote debugger can then be connected to port 8998. Note that e.g. a Jetty server should be running
@@ -166,17 +145,17 @@
     <!-- scope: provided because we include feature=org.opennms.features.topology.api
          in src/main/features/features.xml.in -->
     <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-api</artifactId>
       <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -188,14 +167,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.ops4j.pax.vaadin</groupId>
-      <artifactId>service</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>

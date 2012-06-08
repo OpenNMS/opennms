@@ -2,8 +2,9 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
-    <groupId>org.opennms.features.topology</groupId>
-    <artifactId>org.opennms.features.topology</artifactId>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
     <version>1.11.1-SNAPSHOT</version>
   </parent>
 
@@ -11,13 +12,15 @@
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>features</artifactId>
 
-  <name>org.opennms.features.topology.features (OpenNMS Topology OSGi features)</name>
+  <name>OpenNMS :: Topology :: Features</name>
 
   <packaging>pom</packaging>
 
   <modules>
-    <module>topology</module>
-    <module>all</module>
+    <module>vaadin</module>
+    <module>api</module>
+    <module>runtime</module>
+    <module>dev</module>
   </modules>
 
 </project>
