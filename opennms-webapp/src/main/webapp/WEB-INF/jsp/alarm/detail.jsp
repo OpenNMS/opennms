@@ -40,13 +40,12 @@
         %>
 
 <%@page import="org.opennms.web.alarm.Alarm" %>
-
+<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 
-<%@page import="org.opennms.web.XssRequestWrapper"%>
 <%@page import="org.opennms.web.alarm.Alarm" %>
 
 <%!
