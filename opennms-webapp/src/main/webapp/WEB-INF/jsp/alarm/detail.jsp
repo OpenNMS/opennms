@@ -32,7 +32,7 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.opennms.web.WebSecurityUtils,
+        import="org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
         org.opennms.netmgt.model.OnmsSeverity,
