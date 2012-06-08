@@ -26,51 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm;
+package org.opennms.netmgt.dao;
+
+import org.opennms.netmgt.model.OnmsMemo;
 
 /**
- * <p>AlarmIdNotFoundException class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author <a href="mailto:Markus@OpenNMS.com">Markus Neumann</a>
  */
-public class AlarmIdNotFoundException extends RuntimeException {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8128966294679333327L;
-
-    protected String badId;
-
-    protected String message;
-
-    /**
-     * <p>Constructor for AlarmIdNotFoundException.</p>
-     *
-     * @param msg a {@link java.lang.String} object.
-     * @param id a {@link java.lang.String} object.
-     */
-    public AlarmIdNotFoundException(String msg, String id) {
-        this.message = msg;
-        this.badId = id;
-    }
-
-    /**
-     * <p>Getter for the field <code>message</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getMessage() {
-        return this.message;
-    }
-
-    /**
-     * <p>getBadID</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getBadID() {
-        return this.badId;
-    }
+public interface MemoDao extends OnmsDao<OnmsMemo, Integer> {
+    
 }

@@ -348,7 +348,15 @@
           
           <td class="divider bright" valign="middle" rowspan="1">
             
-            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.jsp?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <c:if test="<%= alarms[i].getStickyMemo().getId() != null%>">
+                <img src="images/AlarmMemos/StickyMemo.png" width="20" height="20" alt="<%=alarms[i].getStickyMemo().getBody() %>"/>  
+            </c:if>
+            
+            <c:if test="<%= alarms[i].getReductionKeyMemo().getId() != null%>">
+                <img src="images/AlarmMemos/JournalMemo.png" width="20" height="20" alt="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>        
+            </c:if>
+                
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
@@ -442,7 +450,7 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><span title="Event <%= alarms[i].getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEventID() %>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
+            <nobr><span title="Event <%= alarms[i].getLastEventID() %>"><a href="event/detail.htm?id=<%= alarms[i].getLastEventID() %>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>

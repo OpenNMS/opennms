@@ -1366,11 +1366,11 @@
       <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
       <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
       <descr>
-        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.jsp?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
         was determined to require an escalation of its severity.&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
-        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.jsp?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
         for node:%nodelabel%; interface:%interface%; service:%service%; was escalated.&lt;/p&gt;
       </logmsg>
       <severity>Minor</severity>
