@@ -67,12 +67,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.status</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.simple</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.status</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
