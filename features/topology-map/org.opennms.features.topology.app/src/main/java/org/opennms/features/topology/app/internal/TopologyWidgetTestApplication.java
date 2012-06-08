@@ -1,9 +1,9 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Iterator;
-import java.util.Timer;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
 
 import com.github.wolfie.refresher.Refresher;
@@ -25,19 +25,19 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements Constants, CommandUpdateListener{
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener{
 	
 	private Window m_window;
     private TopologyComponent m_topologyComponent;
     private Tree m_tree;
-    private SimpleGraphContainer m_graphContainer = new SimpleGraphContainer();
+    private SimpleGraphContainer m_graphContainer;
     private CommandManager m_commandManager;
-    private Timer m_timer = new Timer();
     private MenuBar m_menuBar;
     private AbsoluteLayout m_layout;
     
-    public TopologyWidgetTestApplication(CommandManager commandManager) {
+    public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider) {
         m_commandManager = commandManager;
+        m_graphContainer = new SimpleGraphContainer(topologyProvider);
     }
     
     
@@ -55,11 +55,7 @@ public class TopologyWidgetTestApplication extends Application implements Consta
         refresher.setRefreshInterval(5000);
         getMainWindow().addComponent(refresher);
         
-//        m_graphContainer.addGroup(ROOT_GROUP_ID, GROUP_ICON);
-//        m_graphContainer.addVertex(CENTER_VERTEX_ID, 50, 50, SERVER_ICON);
-//        m_graphContainer.getVertexContainer().setParent(CENTER_VERTEX_ID, ROOT_GROUP_ID);
         m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
-        
         
         m_topologyComponent = new TopologyComponent(m_graphContainer);
         m_topologyComponent.setSizeFull();

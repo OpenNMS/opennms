@@ -6,7 +6,7 @@
         <feature version="${project.version}">org.opennms.features.topology.plugins.layout</feature>
         <feature version="${project.version}">org.opennms.features.topology.plugins.menu</feature>
         <feature version="${project.version}">org.opennms.features.topology.plugins.status</feature>
-        <feature version="${project.version}">org.opennms.features.topology.plugins.topo</feature>
+        <feature version="${project.version}">org.opennms.features.topology.plugins.topo.simple</feature>
         <feature version="${project.version}">org.opennms.features.topology.plugins.ui.tree</feature>
     </feature>
 </features>

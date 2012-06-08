@@ -3,6 +3,7 @@
     <feature name="org.opennms.features.topology.app" version="${project.version}" description="OpenNMS Topology Application">
         <details>The main Vaadin-based OpenNMS topology application.</details>
         <feature version="${project.version}">org.opennms.features.topology.api</feature>
+        <feature version="${project.version}">org.opennms.features.topology.plugins.topo.simple</feature>
         <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
     </feature>
 </features>

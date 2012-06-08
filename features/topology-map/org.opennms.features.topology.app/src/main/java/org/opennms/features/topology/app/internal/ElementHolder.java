@@ -21,12 +21,11 @@ public abstract class ElementHolder<T> {
 	Map<String, T> m_keyToElementMap = new HashMap<String, T>();
 	
 	ElementHolder(Container container) {
-		
 		m_itemContainer = container;
 		
 		update();
 	}
-
+	
 	public void update() {
 		List<Object> oldItemIds = m_itemIds;
 		List<Object> newItemIds = new ArrayList<Object>(m_itemContainer.getItemIds());
@@ -39,12 +38,12 @@ public abstract class ElementHolder<T> {
 		removedContainerItems.removeAll(newItemIds);
 		
 		m_graphElements = new ArrayList<T>(newItemIds.size());
-
 		
 		for(Object itemId : removedContainerItems) {
 			String key = m_elementKey2ItemId.key(itemId);
 			m_elementKey2ItemId.remove(itemId);
-			m_keyToElementMap.remove(key);
+			T element = m_keyToElementMap.remove(key);
+			remove(element);
 		}
 		
 		for(T element : m_keyToElementMap.values()) {
@@ -58,18 +57,21 @@ public abstract class ElementHolder<T> {
 		    T v = make(key, itemId, m_itemContainer.getItem(itemId));
 		    System.err.println("make v: " + v);
 		    m_graphElements.add(v);
-
+		    System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
 		    m_keyToElementMap.put(key, v);
 		}
 	}
 	
 	List<T> getElements(){
+	    System.err.println("getting Elements from ElementHolder m_graphElements: " + m_graphElements);
 		return m_graphElements;
 	}
 
 	protected abstract T make(String key, Object itemId, Item item);
 	
 	protected T update(T element) { return element; }
+	
+	protected void remove(T element) { };
 
 	public T getElementByKey(String key) {
 		return m_keyToElementMap.get(key);

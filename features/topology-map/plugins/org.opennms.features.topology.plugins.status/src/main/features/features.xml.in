@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="OpenNMS Topology :: Plugins :: Status">
-    <feature name="org.opennms.features.topology.plugins.status" version="${project.version}" description="OpenNMS Topology :: Plugins :: Status">
-        <details>OpenNMS topology status plugins.</details>
-        <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
-    </feature>
-</features>

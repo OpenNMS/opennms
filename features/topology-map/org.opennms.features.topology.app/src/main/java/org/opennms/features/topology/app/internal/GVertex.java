@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 
-abstract public class GVertex {
+public abstract class GVertex {
 	String m_id;
 	int m_x;
 	int m_y;
