@@ -8,82 +8,79 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.osgi.features</groupId>
-  <artifactId>topology</artifactId>
+  <groupId>org.opennms.osgi.features.topology</groupId>
+  <artifactId>opennms-topology-runtime</artifactId>
 
-  <name>org.opennms.osgi.features.topology (OpenNMS Topology OSGi features)</name>
+  <name>OpenNMS :: Topology :: Runtime</name>
 
-  <description>Features for installing OpenNMS Topology code in an OSGi container.</description>
+  <description>Runtime and plugins for the OpenNMS topology web app.</description>
 
   <packaging>pom</packaging>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <id>generate</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>features-generate-descriptor</goal>
-            </goals>
-            <configuration>
-              <inputFile>src/main/features/features.xml.in</inputFile>
-              <outputFile>target/features.xml</outputFile>
-              <aggregateFeatures>true</aggregateFeatures>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <features>
+            <feature>opennms-topology-api</feature>
+          </features>
+        </configuration>
       </plugin>
     </plugins>
   </build>
 
   <dependencies>
     <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-api</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+
+    <!-- main topology app -->
+    <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.app</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
     </dependency>
+
+    <!-- plugins -->
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.layout</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.menu</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.status</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.topo</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.ui.tree</artifactId>
       <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
     </dependency>
+
   </dependencies>
 
 </project>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="All OpenNMS Topology Features">
-    <feature name="org.opennms.osgi.features.topology.all" version="${project.version}" description="All OpenNMS Topology Features">
-        <details>All Topology-Related Features for OpenNMS</details>
-        <feature version="1.11.1-SNAPSHOT">org.opennms.osgi.features.topology</feature>
-        <feature version="1.11.1-SNAPSHOT">org.opennms.features.topology.shell</feature>
-    </feature>
-</features>
