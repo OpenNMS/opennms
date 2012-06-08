@@ -23,53 +23,7 @@
 
 	<inherits name="org.vaadin.rpc.WidgetRPC" />
 
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
+	
 
     <inherits name="org.vaadin.rpc.WidgetRPC" />
 
@@ -132,8 +86,6 @@
     <inherits name="org.vaadin.rpc.WidgetRPC" />
 
     <inherits name="org.vaadin.rpc.WidgetRPC" />
-<<<<<<< HEAD
-=======
 
     <inherits name="org.vaadin.rpc.WidgetRPC" />
 
@@ -144,5 +96,54 @@
     <inherits name="org.vaadin.rpc.WidgetRPC" />
 
     <inherits name="org.vaadin.rpc.WidgetRPC" />
->>>>>>> e77615d98a4d5d786ac51fd3230fe3ba1faaacf6
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
+
+    <inherits name="org.vaadin.rpc.WidgetRPC" />
 </module>
