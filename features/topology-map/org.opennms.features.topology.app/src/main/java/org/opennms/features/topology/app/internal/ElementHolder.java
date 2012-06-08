@@ -42,7 +42,8 @@ public abstract class ElementHolder<T> {
 		for(Object itemId : removedContainerItems) {
 			String key = m_elementKey2ItemId.key(itemId);
 			m_elementKey2ItemId.remove(itemId);
-			m_keyToElementMap.remove(key);
+			T element = m_keyToElementMap.remove(key);
+			remove(element);
 		}
 		
 		for(T element : m_keyToElementMap.values()) {
@@ -69,6 +70,8 @@ public abstract class ElementHolder<T> {
 	protected abstract T make(String key, Object itemId, Item item);
 	
 	protected T update(T element) { return element; }
+	
+	protected void remove(T element) { };
 
 	public T getElementByKey(String key) {
 		return m_keyToElementMap.get(key);

@@ -1,7 +1,6 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Iterator;
-import java.util.Timer;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
@@ -26,7 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements Constants, CommandUpdateListener{
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener{
 	
 	private Window m_window;
     private TopologyComponent m_topologyComponent;

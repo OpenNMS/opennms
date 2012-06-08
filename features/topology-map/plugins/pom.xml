@@ -19,7 +19,7 @@
   <modules>
     <module>org.opennms.features.topology.plugins.menu</module>
     <module>org.opennms.features.topology.plugins.layout</module>
-    <module>org.opennms.features.topology.plugins.topo</module>
+    <module>org.opennms.features.topology.plugins.topo.simple</module>
     <module>org.opennms.features.topology.plugins.status</module>
     <module>org.opennms.features.topology.plugins.ui.tree</module>
   </modules>

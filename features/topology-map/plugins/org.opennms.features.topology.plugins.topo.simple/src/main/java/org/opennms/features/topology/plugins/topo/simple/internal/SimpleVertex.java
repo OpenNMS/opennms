@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 
-public abstract class GVertex {
+abstract public class SimpleVertex {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -22,13 +22,13 @@ public abstract class GVertex {
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
 	private int m_semanticZoomLevel = -1;
 	
-	public GVertex() {}
+	public SimpleVertex() {}
 	
-	public GVertex(String id) {
+	public SimpleVertex(String id) {
 		m_id = id;
 	}
 
-	public GVertex(String id, int x, int y) {
+	public SimpleVertex(String id, int x, int y) {
 		m_id = id;
 		m_x = x;
 		m_y = y;
@@ -133,7 +133,7 @@ public abstract class GVertex {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GVertex other = (GVertex) obj;
+		SimpleVertex other = (SimpleVertex) obj;
 		if (m_id == null) {
 			if (other.m_id != null)
 				return false;
@@ -150,7 +150,7 @@ public abstract class GVertex {
 				: m_parent.getSemanticZoomLevel() + 1;
 	}
 	
-	public GVertex getDisplayVertex(int semanticZoomLevel) {
+	public SimpleVertex getDisplayVertex(int semanticZoomLevel) {
 		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
 			return this;
 		}else {

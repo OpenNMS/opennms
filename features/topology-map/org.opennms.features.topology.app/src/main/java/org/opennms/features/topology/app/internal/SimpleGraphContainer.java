@@ -15,12 +15,11 @@ import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.MethodProperty;
 
 public class SimpleGraphContainer implements GraphContainer {
 
-    private class GVertex{
+    public class GVertex{
         
         private String m_key;
         private Object m_itemId;
@@ -57,7 +56,7 @@ public class SimpleGraphContainer implements GraphContainer {
             return m_key;
         }
 
-        private void setKey(String key) {
+        public void setKey(String key) {
             m_key = key;
         }
 
@@ -127,7 +126,7 @@ public class SimpleGraphContainer implements GraphContainer {
         
     }
     
-    private class GEdge{
+    public class GEdge{
 
         private String m_key;
         private Object m_itemId;
@@ -147,7 +146,7 @@ public class SimpleGraphContainer implements GraphContainer {
             return m_key;
         }
 
-        private void setKey(String key) {
+        public void setKey(String key) {
             m_key = key;
         }
 
@@ -198,12 +197,16 @@ public class SimpleGraphContainer implements GraphContainer {
         @Override
         public void containerPropertySetChange(PropertySetChangeEvent event) {
             m_edgeHolder.update();
+            removeAllItems();
+            addAll(m_edgeHolder.getElements());
             fireContainerPropertySetChange();
         }
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
             m_edgeHolder.update();
+            removeAllItems();
+            addAll(m_edgeHolder.getElements());
             fireItemSetChange();
         }
         
@@ -212,15 +215,15 @@ public class SimpleGraphContainer implements GraphContainer {
      
     private class GVertexContainer extends VertexContainer<Object, GVertex> implements ItemSetChangeListener, PropertySetChangeListener{
         
-        @Override
-        public BeanItem<GVertex> getItem(Object itemId) {
-            return (BeanItem<GVertex>) m_topologyProvider.getVertexContainer().getItem(itemId);
-        }
-
-        @Override
-        public Collection<Object> getItemIds() {
-            return (Collection<Object>) m_topologyProvider.getVertexContainer().getItemIds();
-        }
+//        @Override
+//        public BeanItem<GVertex> getItem(Object itemId) {
+//            return (BeanItem<GVertex>) m_topologyProvider.getVertexContainer().getItem(itemId);
+//        }
+//
+//        @Override
+//        public Collection<Object> getItemIds() {
+//            return (Collection<Object>) m_topologyProvider.getVertexContainer().getItemIds();
+//        }
 
         public GVertexContainer() {
             super(GVertex.class);
@@ -295,13 +298,17 @@ public class SimpleGraphContainer implements GraphContainer {
         public void containerItemSetChange(ItemSetChangeEvent event) {
             System.err.println("containerItemSetChange called in GVertexContainer");
             m_vertexHolder.update();
-            fireItemSetChange();
+            removeAllItems();
+            addAll(m_vertexHolder.getElements());
+            //fireItemSetChange();
         }
 
         @Override
         public void containerPropertySetChange(PropertySetChangeEvent event) {
             System.err.println("containerPropertySetChange called in GVertexContainer");
             m_vertexHolder.update();
+            removeAllItems();
+            addAll(m_vertexHolder.getElements());
             fireContainerPropertySetChange();
         }
         
@@ -341,12 +348,18 @@ public class SimpleGraphContainer implements GraphContainer {
         m_vertexHolder = new ElementHolder<GVertex>(m_topologyProvider.getVertexContainer()) {
 
             @Override
+            protected void remove(GVertex element) {
+                
+            }
+
+            @Override
             protected GVertex update(GVertex element) {
                 Object groupId = m_topologyProvider.getVertexContainer().getParent(element.getItemId());
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
                 
                 element.setGroupId(groupId);
                 element.setGroupKey(groupKey);
+                
                 return element;
             }
 

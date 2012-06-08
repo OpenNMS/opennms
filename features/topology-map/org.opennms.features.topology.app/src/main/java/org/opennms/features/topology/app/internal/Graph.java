@@ -63,7 +63,7 @@ public class Graph{
 
 			@Override
 			protected Vertex make(String key, Object itemId, Item item) {
-				Object groupId = m_dataSource.getVertexContainer().getParent(key);
+				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				System.out.println("Parent of itemId: " + itemId + " groupId: " + groupId);
 				return new Vertex(key, itemId, item, groupKey, groupId);
