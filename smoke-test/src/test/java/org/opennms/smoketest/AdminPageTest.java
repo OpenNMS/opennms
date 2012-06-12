@@ -133,7 +133,7 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
         selenium.click("link=Manage Provisioning Requisitions");
         waitForPageToLoad();
-        assertEquals("Add New Group", selenium.getValue("css=input[type=submit]"));
+        assertEquals("Add New Requisition", selenium.getValue("css=input[type=submit]"));
         assertEquals("Edit Default Foreign Source Definition", selenium.getValue("css=input[type=button]"));
         assertEquals("Reset Default Foreign Source Definition", selenium.getValue("//input[@value='Reset Default Foreign Source Definition']"));
         selenium.click("//div[@id='content']/div/h2/a[2]");
