@@ -96,13 +96,14 @@ public class OsgidTest implements InitializingBean {
 		props.setProperty("log4j.logger.org.springframework", "INFO");
 		//props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
 		MockLogAppender.setupLogging(props);
-		System.setProperty("opennms.home", "target/test-classes");
+		
+		m_daemon.setHomeDirectory(new File("target/test-classes/karaf").getPath());
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		// Clean up the Karaf module cache
-		FileUtils.deleteDirectory(new File("target/test-classes/karaf/data"));
+		FileUtils.deleteDirectory(new File(m_daemon.getHomeDirectory(), "data"));
 	}
 
 	@Override

@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -56,20 +57,35 @@ public class Osgid implements SpringServiceDaemon, DisposableBean {
 
 	private final Object m_mainLock = new Object();
 
+	// TODO: Use function to fetch OpenNMS homedir
+	private String m_karafHomeDirectory = new File(System.getProperty("opennms.home"), "karaf").getAbsolutePath();
+
+	/**
+	 * @return the OSGi framework home directory
+	 */
+	public String getHomeDirectory() {
+		return m_karafHomeDirectory;
+	}
+
+	/**
+	 * @param homeDirectoryPath the path to the framework home directory
+	 */
+	public void setHomeDirectory(String homeDirectoryPath) {
+		m_karafHomeDirectory = homeDirectoryPath;
+	}
+
 	/**
 	 * <p>start</p>
 	 * @throws Exception 
 	 */
 	@Override
 	public void start() throws Exception {
-		// TODO: Use function to fetch OpenNMS homedir
-		String root = new File(System.getProperty("opennms.home"), "karaf").getAbsolutePath();
-		System.err.println("Root: " + root);
-		System.setProperty("karaf.home", root);
-		System.setProperty("karaf.base", root);
-		System.setProperty("karaf.data", root + "/data");
-		System.setProperty("karaf.history", root + "/data/history.txt");
-		System.setProperty("karaf.instances", root + "/instances");
+		System.err.println("Root: " + m_karafHomeDirectory);
+		System.setProperty("karaf.home", m_karafHomeDirectory);
+		System.setProperty("karaf.base", m_karafHomeDirectory);
+		System.setProperty("karaf.data", m_karafHomeDirectory + "/data");
+		System.setProperty("karaf.history", m_karafHomeDirectory + "/data/history.txt");
+		System.setProperty("karaf.instances", m_karafHomeDirectory + "/instances");
 		System.setProperty("karaf.startLocalConsole", "false");
 		System.setProperty("karaf.startRemoteShell", "true");
 		System.setProperty("karaf.lock", "false");
@@ -133,4 +149,11 @@ public class Osgid implements SpringServiceDaemon, DisposableBean {
 		return NAME;
 	}
 
+	public BundleContext getBundleContext() {
+		if (m_main != null && m_main.getFramework() != null) {
+			return m_main.getFramework().getBundleContext();
+		} else {
+			return null;
+		}
+	}
 }

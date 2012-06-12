@@ -15,6 +15,7 @@
     <module>dbpool</module>
     <module>dnsjava</module>
     <module>drools</module>
+    <module>felix</module>
     <module>gwt</module>
     <module>hibernate</module>
     <module>jasper</module>

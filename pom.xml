@@ -756,20 +756,21 @@
 
    <updatePolicy>daily</updatePolicy>
 
-   <!-- dependency versions -->
-	<commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
-	<commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-	<gwtVersion>2.3.0</gwtVersion>
-   <jasperreportsVersion>3.7.6</jasperreportsVersion>
-	<jettyVersion>7.5.4.v20111024</jettyVersion>
-	<slf4jVersion>1.6.4</slf4jVersion>
-	<liquibaseVersion>2.0.1</liquibaseVersion>
-   <log4jVersion>1.2.16</log4jVersion>
-   <minaVersion>2.0.4</minaVersion>
-   <oroVersion>2.0.8</oroVersion>
+    <!-- dependency versions -->
+    <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
+    <gwtVersion>2.3.0</gwtVersion>
+    <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jettyVersion>7.5.4.v20111024</jettyVersion>
+    <liquibaseVersion>2.0.1</liquibaseVersion>
+    <log4jVersion>1.2.16</log4jVersion>
+    <minaVersion>2.0.4</minaVersion>
+    <oroVersion>2.0.8</oroVersion>
+    <osgiVersion>4.2.0</osgiVersion>
+    <slf4jVersion>1.6.4</slf4jVersion>
     <xalanVersion>2.7.1</xalanVersion>
-   <xercesVersion>2.9.1</xercesVersion>
-   <xmlApisVersion>1.4.01</xmlApisVersion>
+    <xercesVersion>2.9.1</xercesVersion>
+    <xmlApisVersion>1.4.01</xmlApisVersion>
   </properties>
 
   <profiles>
@@ -940,6 +941,11 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.lib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.osgid</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1223,6 +1229,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>liquibase-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>felix-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -2160,6 +2172,16 @@
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jsp-2.1</artifactId>
         <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${osgiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>${osgiVersion}</version>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>
