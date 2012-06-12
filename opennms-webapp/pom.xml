@@ -232,6 +232,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>felix-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
       <scope>provided</scope>
@@ -305,6 +311,10 @@
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.soa</artifactId>
         <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.osgid</artifactId>
     </dependency>
 
     <!-- FIXME: Does this even need to be here? I had to switch it from provided
