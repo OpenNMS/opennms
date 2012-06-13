@@ -429,6 +429,11 @@ public class HttpCollector implements ServiceCollector {
             return buffer.toString();
         }
 
+        @Override
+        public String getAttributeId() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
     }
 
     private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
@@ -861,6 +866,11 @@ public class HttpCollector implements ServiceCollector {
 
         public String getType() {
             return m_attribute.getType();
+        }
+
+        @Override
+        public String getAttributeId() {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
     }

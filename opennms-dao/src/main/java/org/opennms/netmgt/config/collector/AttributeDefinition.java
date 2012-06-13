@@ -37,6 +37,15 @@ package org.opennms.netmgt.config.collector;
 public interface AttributeDefinition {
 
     /**
+     * <p>getAttributeId</p>
+     * 
+     * Identifies the attribute itself.
+     * Like a SNMP-OID or the combination JMX-MBean and attribute.
+     * @return a {@link java.lang.String} object.
+     */
+    public abstract String getAttributeId();
+    
+    /**
      * <p>getType</p>
      *
      * @return a {@link java.lang.String} object.
@@ -45,7 +54,8 @@ public interface AttributeDefinition {
 
     /**
      * <p>getName</p>
-     *
+     * 
+     * Human readable name for the attribute.
      * @return a {@link java.lang.String} object.
      */
     public abstract String getName();

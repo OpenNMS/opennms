@@ -131,7 +131,7 @@ public abstract class JMXCollector implements ServiceCollector {
     /**
      * In some circumstances there may be many instances of a given service
      * but running on different ports. Rather than using the port as the
-     * identfier users may define a more meaninful name.
+     * identifier users may define a more meaningful name.
      */
     private boolean useFriendlyName = false;
 
@@ -177,13 +177,14 @@ public abstract class JMXCollector implements ServiceCollector {
      * During initialization the JMX collector: - Initializes various
      * configuration factories. - Verifies access to the database - Verifies
      * access to RRD file repository - Verifies access to JNI RRD shared
-     * library - Determines if JMX to be stored for only the node'sprimary
+     * library - Determines if JMX to be stored for only the node's primary
      * interface or for all interfaces.
      * </p>
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, String> parameters) {
         // Initialize the JMXDataCollectionConfigFactory
         try {
@@ -220,6 +221,7 @@ public abstract class JMXCollector implements ServiceCollector {
     /**
      * Responsible for freeing up any resources held by the collector.
      */
+    @Override
     public void release() {
         // Nothing to release...
     }
@@ -230,6 +232,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * Responsible for performing all necessary initialization for the
      * specified interface in preparation for data collection.
      */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         InetAddress ipAddr = (InetAddress) agent.getAddress();
         int nodeID = agent.getNodeId();
@@ -268,6 +271,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * Responsible for releasing any resources associated with the specified
      * interface.
      */
+    @Override
     public void release(CollectionAgent agent) {
         // Nothing to release...
     }
@@ -286,6 +290,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *
      * Perform data collection.
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
@@ -694,21 +699,30 @@ public abstract class JMXCollector implements ServiceCollector {
             return name;
         }
 
+        @Override
         public AttributeGroupType getGroupType() {
             return m_groupType;
         }
 
+        @Override
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
             //Only numeric data comes back from JMX in data collection
             persister.persistNumericAttribute(attribute);
         }
 
+        @Override
         public String getName() {
             return m_name;
         }
 
+        @Override
         public String getType() {
             return m_dataSource.getType();
+        }
+
+        @Override
+        public String getAttributeId() {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     }
     
@@ -727,34 +741,42 @@ public abstract class JMXCollector implements ServiceCollector {
             m_value = value;
         }
 
+        @Override
         public CollectionAttributeType getAttributeType() {
             return m_attribType;
         }
 
+        @Override
         public String getName() {
             return m_alias;
         }
 
+        @Override
         public String getNumericValue() {
             return m_value;
         }
 
+        @Override
         public CollectionResource getResource() {
             return m_resource;
         }
 
+        @Override
         public String getStringValue() {
             return m_value;
         }
 
+        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
 
+        @Override
         public String getType() {
             return m_attribType.getType();
         }
 
+        @Override
         public String toString() {
              return "alias " + m_alias + ", value " + m_value + ", resource "
                  + m_resource + ", attributeType " + m_attribType;
@@ -773,18 +795,22 @@ public abstract class JMXCollector implements ServiceCollector {
             m_nodeId = agent.getNodeId();
         }
         
+        @Override
         public String toString() {
             return "node["+m_nodeId+']';
         }
         
+        @Override
         public int getType() {
             return -1; //Is this correct?
         }
 
+        @Override
         public boolean rescanNeeded() {
             return false;
         }
 
+        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
@@ -799,14 +825,17 @@ public abstract class JMXCollector implements ServiceCollector {
             return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId())+ File.separator+ m_resourceName);
         }
         
+        @Override
         public String getResourceTypeName() {
             return "node"; //All node resources for JMX; nothing of interface or "indexed resource" type
         }
         
+        @Override
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
 
+        @Override
         public String getParent() {
             return Integer.toString(m_nodeId);
         }
@@ -830,16 +859,19 @@ public abstract class JMXCollector implements ServiceCollector {
             m_status=status;
         }
         
+        @Override
         public int getStatus() {
             return m_status;
         }
 
+        @Override
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitCollectionSet(this);
             m_collectionResource.visit(visitor);
             visitor.completeCollectionSet(this);
         }
 
+        @Override
 		public boolean ignorePersist() {
 			return false;
 		}        
@@ -855,6 +887,7 @@ public abstract class JMXCollector implements ServiceCollector {
     }
     
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return JMXDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }
