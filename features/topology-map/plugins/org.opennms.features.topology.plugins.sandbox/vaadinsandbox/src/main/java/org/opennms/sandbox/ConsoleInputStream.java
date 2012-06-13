@@ -45,6 +45,10 @@ public class ConsoleInputStream extends InputStream {
 		return (pos < count) ? (buf[pos++] & 0xff) : -1;
 	}
 	
+	@Override
+	public void close(){
+		
+	}
 	public void setBuffer(byte[] buf){
 		this.pos = 0;
 		this.count = buf.length;

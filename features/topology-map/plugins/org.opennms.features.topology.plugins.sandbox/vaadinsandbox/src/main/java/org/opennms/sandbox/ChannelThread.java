@@ -1,16 +1,15 @@
 package org.opennms.sandbox;
 
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStream;
 
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
-import org.apache.sshd.common.util.NoCloseOutputStream;
 
 public class ChannelThread extends Thread{
 
 	private InputStream input = null;
-	private PrintStream output = null;
+	private OutputStream output = null;
 	private ClientChannel channel = null;
 	private ClientSession session = null;
 	
@@ -24,8 +23,8 @@ public class ChannelThread extends Thread{
 		try {
 			channel = session.createChannel("shell");
 			channel.setIn(input);
-			channel.setOut(new NoCloseOutputStream(output));
-			channel.setErr(new NoCloseOutputStream(output));
+			channel.setOut(output);
+			channel.setErr(output);
 			channel.open();
 			//channel.waitFor(ClientChannel.CLOSED, 0);
 			//session.close(false);
@@ -40,7 +39,7 @@ public class ChannelThread extends Thread{
 		this.input = input;
 	}
 	
-	public void setOutputStream(PrintStream output){
+	public void setOutputStream(OutputStream output){
 		this.output = output;
 	}
 	
