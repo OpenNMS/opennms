@@ -348,13 +348,14 @@
           
           <td class="divider bright" valign="middle" rowspan="1">
             
-            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
             <c:if test="<%= alarms[i].getStickyMemo().getId() != null%>">
-                <img src="images/AlarmMemos/StickyMemo.png" width="20" height="20" alt="<%=alarms[i].getStickyMemo().getBody() %>"/>  
+                <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" 
+		     title="<%=alarms[i].getStickyMemo().getBody() %>"/>
             </c:if>
-            
             <c:if test="<%= alarms[i].getReductionKeyMemo().getId() != null%>">
-                <img src="images/AlarmMemos/JournalMemo.png" width="20" height="20" alt="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>        
+                <img style="vertical-align:middle" src="images/AlarmMemos/JournalMemo.png" width="20" height="20" 
+                     title="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>
             </c:if>
                 
           <c:if test="${param.display == 'long'}">
