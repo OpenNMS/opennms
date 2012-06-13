@@ -72,4 +72,9 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 		persister.persistNumericAttribute(attribute);
 	}
 
+    @Override
+    public String getAttributeId() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

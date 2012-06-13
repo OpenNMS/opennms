@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.rrd;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.BeanFactory;
@@ -42,7 +42,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * Provides static methods for interacting with round robin files. Supports JNI
  * and JRobin based files and provides queuing for managing differences in
- * collection speed and disk write speed. This behaviour is implemented using
+ * collection speed and disk write speed. This behavior is implemented using
  * the Strategy pattern with a different RrdStrategy for JRobin and JNI as well
  * as a Strategy that provides Queueing on top of either one.
  *
@@ -69,6 +69,30 @@ public abstract class RrdUtils {
             // Default RRD configuration context
             "org/opennms/netmgt/rrd/rrd-configuration.xml"
     });
+
+    private static void createMetaDataFile(String rrdName, Map<String, String> attributeMappings) {
+        Writer fileWriter = null;
+        String mapping = "";
+        StringBuilder sb = new StringBuilder(mapping);
+        for (Entry<String, String> mappingEntry : attributeMappings.entrySet()) {
+            sb.append(mappingEntry.getKey());
+            sb.append("=");
+            sb.append(mappingEntry.getValue());
+            sb.append("\n");
+        }
+        try {
+            fileWriter = new FileWriter(rrdName + ".meta");
+            fileWriter.write(sb.toString());
+        } catch (IOException e) {
+        } finally {
+            if (fileWriter != null) {
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
 
     public static enum StrategyName {
         basicRrdStrategy,
@@ -160,8 +184,8 @@ public abstract class RrdUtils {
      * @return true if the file was actually created, false otherwise
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
-    public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList) throws RrdException {
-        return createRRD(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
+    public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList,  Map<String, String> attributeMappings) throws RrdException {
+        return createRRD(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList, attributeMappings);
     }
 
     /**
@@ -176,17 +200,20 @@ public abstract class RrdUtils {
      * @return a boolean.
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
-    public static boolean createRRD(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws RrdException {
+    public static boolean createRRD(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList, Map<String, String> attributeMappings) throws RrdException {
         String fileName = rrdName + getExtension();
-
+        
         String completePath = directory + File.separator + fileName;
-
+        
         try {
             Object def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
             if (def != null) {
                 log().info("createRRD: creating RRD file " + completePath);
             }             
             getStrategy().createFile(def);
+            
+            //TODO find a better place for metadata
+            createMetaDataFile(directory + File.separator + rrdName, attributeMappings);
             return true;
         } catch (Throwable e) {
             log().error("createRRD: An error occured creating rrdfile " + completePath + ": "  + e, e);

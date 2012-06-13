@@ -111,6 +111,11 @@ public class NSClientCollector implements ServiceCollector {
         public String getType() {
             return m_attribute.getType();
         }
+
+        @Override
+        public String getAttributeId() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
     
     class NSClientCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
