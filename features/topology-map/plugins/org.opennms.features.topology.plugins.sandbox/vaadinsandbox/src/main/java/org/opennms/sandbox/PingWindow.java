@@ -179,7 +179,10 @@ public class PingWindow extends Window{
 	 * @param url New web address
 	 */
 	private void changeBrowserURL(URL url) {
-		resultsBrowser.setVisible(false);
+		resultsBrowser.setVisible(false); // This setVisible(false/true) toggle is used to refresh the browser.
+		                                  // Due to to the fact that the updates to the client require a call to
+		                                  // the server, this is currently one of the only ways to accomplish the 
+		                                  // the needed update. 
 		resultsBrowser.setSource(new ExternalResource(url));
 		resultsBrowser.setVisible(true);
 	}
