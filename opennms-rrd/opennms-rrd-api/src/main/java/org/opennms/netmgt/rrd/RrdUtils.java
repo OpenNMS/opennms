@@ -217,6 +217,22 @@ public abstract class RrdUtils {
         return createRRD(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList, null);
     }
 
+/**
+     * <p>createRRD</p>
+     *
+     * @param creator a {@link java.lang.String} object.
+     * @param directory a {@link java.lang.String} object.
+     * @param rrdName a {@link java.lang.String} object.
+     * @param step a int.
+     * @param dataSources a {@link java.util.List} object.
+     * @param rraList a {@link java.util.List} object.
+     * @return a boolean.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
+    public static boolean createRRD(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws RrdException {
+        return createRRD(creator, directory, rrdName, step, dataSources, rraList, null);
+    }
+    
     /**
      * <p>createRRD</p>
      *
