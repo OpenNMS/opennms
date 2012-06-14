@@ -80,6 +80,15 @@ public class Osgid implements SpringServiceDaemon, DisposableBean {
 	 */
 	@Override
 	public void start() throws Exception {
+		// log4j class instances will leak into the OSGi classloader so we
+		// need to tell log4j to ignore the thread context loader and to use
+		// the same classloader for all classloading.
+		//
+		// @see https://issues.apache.org/jira/browse/FELIX-2108
+		// @see http://www.mail-archive.com/announcements@jakarta.apache.org/msg00110.html
+		//
+		System.setProperty("log4j.ignoreTCL", "true");
+
 		System.err.println("Root: " + m_karafHomeDirectory);
 		System.setProperty("karaf.home", m_karafHomeDirectory);
 		System.setProperty("karaf.base", m_karafHomeDirectory);
