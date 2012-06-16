@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="branding" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+    <feature description="OpenNMS Container - Branding " version="1.11.1-SNAPSHOT" name="branding">
+        <details>Branding for the OpenNMS container</details>
+        <bundle>mvn:org.opennms.container/org.opennms.container.branding/${project.version}</bundle>
+    </feature>
+</features>
