@@ -68,9 +68,4 @@ public class StringAttributeType extends SnmpAttributeType {
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistStringAttribute(attribute);
     }
-
-    @Override
-    public String getAttributeId() {
-        return getOid() + "." + getInstance();
-    }
 }

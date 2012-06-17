@@ -323,4 +323,36 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
             return getInstance().equals(inst.toString());
         }
     }
+
+    public String getAttributeId() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("getAttributeId on " + this.getClass().getName() + "\n");
+        sb.append("getAlias: " + getAlias() + "\n");
+        sb.append("toString block: " + toString() + "\n\n");
+
+        if (getResourceType() instanceof IfAliasResourceType) {
+            IfAliasResourceType ifAliasResourceType = (IfAliasResourceType) getResourceType();
+            sb.append("IfAliasResourceType\n");
+            for (AliasedResource aliasedResource : ifAliasResourceType.getResources()) {
+                sb.append("AliasedResource\n");
+                sb.append(aliasedResource.toString() + "\n");
+                //log().warn(aliasedResource.getIfInfo());
+            }
+        }
+        sb.append("\n");
+        if (getResourceType() instanceof IfResourceType) {
+            IfResourceType ifrt = (IfResourceType) getResourceType();
+            sb.append("IfResourceType: \n");
+            for (IfInfo ii : ifrt.getResources()) {
+                sb.append(ii.toString() + "\n");
+                sb.append("ii.getIndex: " + ii.getIndex() + "\n");
+                sb.append("ii.getInstance: " + ii.getInstance() + "\n");
+                sb.append("ii.getCurrentIfAlias: " + ii.getCurrentIfAlias() + "\n");
+                sb.append("ii.getNodeId: " + ii.getNodeId() + "\n");
+                log().warn("ii.idx [" + ii.getIndex() + "]");
+            }
+        }
+        sb.append("all appended");
+        return getOid() + "." + getInstance() + "\n" + sb.toString();
+    }
 }

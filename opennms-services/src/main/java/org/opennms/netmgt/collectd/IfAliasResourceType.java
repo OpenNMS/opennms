@@ -111,6 +111,10 @@ public class IfAliasResourceType extends ResourceType {
     public Collection<AliasedResource> getResources() {
         return m_aliasedIfs.values();
     }
-    
 
+    //TODO Tak cleanup toString super hack
+    @Override
+    public String toString() {
+        return super.toString() +  " IfAliasResourceType{" + "m_ifResourceType=" + m_ifResourceType + ", m_aliasedIfs=" + m_aliasedIfs + ", m_params=" + m_params + '}';
+    }
 }

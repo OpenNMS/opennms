@@ -54,7 +54,7 @@ import org.opennms.netmgt.rrd.RrdException;
  */
 public class BasePersister extends AbstractCollectionSetVisitor implements Persister {
 
-	private boolean m_ignorePersist = false;
+    private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
     private RrdRepository m_repository;
     private LinkedList<Boolean> m_stack = new LinkedList<Boolean>();

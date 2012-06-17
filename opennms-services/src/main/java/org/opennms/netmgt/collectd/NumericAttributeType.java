@@ -102,9 +102,4 @@ public class NumericAttributeType extends SnmpAttributeType {
                 + getAlias()
                 + "' exceeds 19 char maximum for RRD data source names, truncating.");
    }
-
-    @Override
-    public String getAttributeId() {
-        return getOid() + "." + getInstance();
-    }
 }
