@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ * Dashboard test entry point
  */
 public class Application
     implements EntryPoint
