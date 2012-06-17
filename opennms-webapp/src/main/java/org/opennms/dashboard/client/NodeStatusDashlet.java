@@ -86,7 +86,7 @@ public class NodeStatusDashlet extends Dashlet {
      * @param dashboard a {@link org.opennms.dashboard.client.Dashboard} object.
      */
     public NodeStatusDashlet(Dashboard dashboard) {
-        super(dashboard, "Node Status");
+        super(dashboard, "**********Node Status Test*********");
         setLoader(m_loader);
         setView(m_view);
     }

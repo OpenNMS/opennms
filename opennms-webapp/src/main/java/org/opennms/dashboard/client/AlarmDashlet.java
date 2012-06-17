@@ -95,7 +95,7 @@ public class AlarmDashlet extends Dashlet {
     }
     
     AlarmDashlet(Dashboard dashboard) {
-        super(dashboard, "Alarms");
+        super(dashboard, "*********Alarms**************");
         setLoader(m_loader);
         setView(m_view);
     }
