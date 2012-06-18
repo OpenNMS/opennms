@@ -26,6 +26,9 @@
           <features>
             <feature>opennms-topology-runtime</feature>
           </features>
+          <bundles>
+            <bundle>wrap:mvn:junit/junit/${junit.version}</bundle>
+          </bundles>
         </configuration>
       </plugin>
     </plugins>

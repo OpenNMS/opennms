@@ -20,6 +20,7 @@
     <gwt.version>2.3.0</gwt.version>
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
     <jung.version>2.0.1</jung.version>
+    <junit.version>4.8.2</junit.version>
     <karaf.version>2.2.7</karaf.version>
     <vaadin.version>6.7.3</vaadin.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
@@ -135,7 +136,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.8.2</version>
+        <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
