@@ -29,7 +29,6 @@ public class SimpleGraphContainer implements GraphContainer {
         private int m_x;
         private int m_y;
         private boolean m_selected = false;
-        private int m_semanticZoomLevel;
         
         public GVertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
             setKey(key);
@@ -116,14 +115,17 @@ public class SimpleGraphContainer implements GraphContainer {
             m_item.getItemProperty("icon").setValue(icon);
         }
 
-        public int getSemanticZoomLevel() {
-            return m_semanticZoomLevel;
-        }
-
-        public void setSemanticZoomLevel(int semanticZoomLevel) {
-            m_semanticZoomLevel = semanticZoomLevel;
+        private GVertex getParent() {
+            if (m_groupKey == null) return null;
+            
+            return m_vertexHolder.getElementByKey(m_groupKey);
         }
         
+        public int getSemanticZoomLevel() {
+            GVertex parent = getParent();
+            return parent == null ? 0 : parent.getSemanticZoomLevel() + 1;
+        }
+
     }
     
     public class GEdge{
@@ -150,7 +152,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_key = key;
         }
 
-        private Object getItemId() {
+        public Object getItemId() {
             return m_itemId;
         }
 
@@ -214,16 +216,6 @@ public class SimpleGraphContainer implements GraphContainer {
     }
      
     private class GVertexContainer extends VertexContainer<Object, GVertex> implements ItemSetChangeListener, PropertySetChangeListener{
-        
-//        @Override
-//        public BeanItem<GVertex> getItem(Object itemId) {
-//            return (BeanItem<GVertex>) m_topologyProvider.getVertexContainer().getItem(itemId);
-//        }
-//
-//        @Override
-//        public Collection<Object> getItemIds() {
-//            return (Collection<Object>) m_topologyProvider.getVertexContainer().getItemIds();
-//        }
 
         public GVertexContainer() {
             super(GVertex.class);
@@ -368,7 +360,8 @@ public class SimpleGraphContainer implements GraphContainer {
                 Object groupId = m_topologyProvider.getVertexContainer().getParent(itemId);
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
                 System.out.println("Parent of itemId: " + itemId + " groupId: " + groupId);
-                return new GVertex(key, itemId, item, groupKey, groupId);
+                GVertex gVertex = new GVertex(key, itemId, item, groupKey, groupId);
+                return gVertex;
             }
 
         };

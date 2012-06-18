@@ -262,9 +262,9 @@ public class SimpleTopologyProvider implements TopologyProvider{
 
     @Override
     public Object addGroup(String groupIcon) {
-        String nextEdgeId = getNextEdgeId();
-        addGroup(nextEdgeId, groupIcon);
-        return nextEdgeId;
+        String nextGroupId = getNextGroupId();
+        addGroup(nextGroupId, groupIcon);
+        return nextGroupId;
     }
 
     @Override

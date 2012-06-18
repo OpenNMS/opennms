@@ -4,7 +4,7 @@
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>v0</id>
         <locked>false</locked>
-        <parent>e0</parent>
+        <parent>g0</parent>
         <selected>false</selected>
         <x>50</x>
         <y>100</y>
@@ -13,7 +13,7 @@
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>v1</id>
         <locked>false</locked>
-        <parent>e0</parent>
+        <parent>g0</parent>
         <selected>false</selected>
         <x>100</x>
         <y>50</y>
@@ -22,7 +22,7 @@
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>v2</id>
         <locked>false</locked>
-        <parent>e1</parent>
+        <parent>g1</parent>
         <selected>false</selected>
         <x>100</x>
         <y>150</y>
@@ -31,7 +31,7 @@
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>v3</id>
         <locked>false</locked>
-        <parent>e1</parent>
+        <parent>g1</parent>
         <selected>false</selected>
         <x>150</x>
         <y>100</y>
@@ -46,7 +46,7 @@
     </vertex>
     <group>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/group.png</icon>
-        <id>e0</id>
+        <id>g0</id>
         <locked>false</locked>
         <selected>false</selected>
         <x>0</x>
@@ -56,7 +56,7 @@
     </group>
     <group>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/group.png</icon>
-        <id>e1</id>
+        <id>g1</id>
         <locked>false</locked>
         <selected>false</selected>
         <x>0</x>
@@ -65,37 +65,37 @@
         <members>v3</members>
     </group>
     <edge>
-        <id>e2</id>
+        <id>e0</id>
         <source>v0</source>
         <target>v1</target>
     </edge>
     <edge>
-        <id>e3</id>
+        <id>e1</id>
         <source>v0</source>
         <target>v2</target>
     </edge>
     <edge>
-        <id>e4</id>
+        <id>e2</id>
         <source>v1</source>
         <target>v2</target>
     </edge>
     <edge>
-        <id>e5</id>
+        <id>e3</id>
         <source>v1</source>
         <target>v3</target>
     </edge>
     <edge>
-        <id>e6</id>
+        <id>e4</id>
         <source>v2</source>
         <target>v3</target>
     </edge>
     <edge>
-        <id>e7</id>
+        <id>e5</id>
         <source>v0</source>
         <target>v4</target>
     </edge>
     <edge>
-        <id>e8</id>
+        <id>e6</id>
         <source>v3</source>
         <target>v4</target>
     </edge>
