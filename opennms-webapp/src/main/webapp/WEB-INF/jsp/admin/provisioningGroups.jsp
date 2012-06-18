@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,7 +58,7 @@
 
 <br />
 <form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="hidden" name="actionTarget" value="" />
-<input type="submit" value="Add New Group"/>
+<input type="submit" value="Add New Requisition"/>
 <input type="button" value="Edit Default Foreign Source Definition" onclick="javascript:editForeignSource('default')" />
 <input type="button" value="Reset Default Foreign Source Definition" onclick="javascript:resetDefaultForeignSource()" />
 </form>
@@ -74,7 +74,7 @@
         <input type="button" value="Delete Nodes" onclick="javascript:confirmAction(<js:quote value="${foreignSourceName}"/>, 'deleteNodes', <js:quote value="Are you sure you want to delete all the nodes from group ${fn:escapeXml(foreignSourceName)}? This CANNOT be undone."/>)" />
       </c:when>
       <c:otherwise>
-        <input type="button" value="Delete Group" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'deleteGroup')" />
+        <input type="button" value="Delete Requisition" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'deleteGroup')" />
       </c:otherwise>
     </c:choose>
     <c:if test="${!empty groups[foreignSourceName]}">
