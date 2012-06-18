@@ -228,6 +228,70 @@
 		</pluginManagement>
 	</build>
 
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<properties>
+				<maven.release>true</maven.release>
+			</properties>
+		</profile>
+		<profile>
+			<id>org.eclipse.swt.win32</id>
+			<activation>
+				<os>
+					<!--<name>windows xp</name>-->
+					<family>Windows</family>
+					<arch>x86</arch>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.eclipse.swt.win32.win32</groupId>
+					<artifactId>x86</artifactId>
+					<version>3.3.0-v3346</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>org.eclipse.swt.macosx</id>
+			<activation>
+				<os>
+					<name>mac os x</name>
+					<arch>i386</arch>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.eclipse.swt.carbon</groupId>
+					<artifactId>macosx</artifactId>
+					<version>3.3.0-v3346</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>org.eclipse.swt.linux</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.eclipse.swt.gtk.linux</groupId>
+					<artifactId>x86</artifactId>
+					<version>3.3.0-v3346</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+
+
+
+
 	<repositories>
 		<repository>
 			<id>vaadin-snapshots</id>
@@ -304,6 +368,33 @@
     		<version>140</version>
 		</dependency>
         
+    
+    
+    <!-- JTERM DEPENDENCIES -->
+    
+ 	 	<dependency>
+		<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.48</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>swt</artifactId>
+			<version>3.3.0-v3346</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.sun.jna</groupId>
+   		 	<artifactId>jna</artifactId>
+    		<version>3.0.9</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.ovea</groupId>
+    		<artifactId>ovea-mongodb-contrib</artifactId>
+    		<version>1.6.ga</version>
+		</dependency>
+
+		
+		
     
     
 		<dependency>
