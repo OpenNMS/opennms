@@ -245,7 +245,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
      */
     public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpResult res) {
         log().debug("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
-        this.m_attributeId = getOid() + "." + res.getInstance();
+        this.m_attributeId = res.getAbsoluteInstance().toString();
         SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
             resource = m_resourceType.findAliasedResource(res.getInstance(), res.getValue().toString());

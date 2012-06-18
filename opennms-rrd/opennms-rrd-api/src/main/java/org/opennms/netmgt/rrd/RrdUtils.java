@@ -91,6 +91,7 @@ public abstract class RrdUtils {
             try {
                 fileWriter = new FileWriter(directory + File.separator + rrdName + ".meta");
                 fileWriter.write(sb.toString());
+                log().info("createRRD: creating META file " + directory + File.separator + rrdName + ".meta");
             } catch (IOException e) {
                 log().error("createMetaDataFile: An error occured creating metadatafile: " + directory + File.separator + rrdName + ".meta" + "exception: " + e.getMessage());
             } finally {
@@ -253,10 +254,13 @@ public abstract class RrdUtils {
 
         try {
             Object def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
+            //TODO this statment is not fixing the NMS-4845 issue... it's never null
             if (def != null) {
                 //TODO tak find a better place for metadata
                 createMetaDataFile(directory, rrdName, attributeMappings);
                 log().info("createRRD: creating RRD file " + completePath);
+            }else {
+                log().debug("createRRD: skipping RRD file " + completePath);
             }
             getStrategy().createFile(def);
 
