@@ -306,6 +306,10 @@
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
+		<repository>
+			<id>AF_UNIX</id>
+			<url>https://team.iisys.de/nexus/content/repositories/public</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -392,7 +396,12 @@
     		<artifactId>ovea-mongodb-contrib</artifactId>
     		<version>1.6.ga</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.newsclub.net.unix</groupId>
+			<artifactId>junixsocket</artifactId>
+			<version>1.3</version>
+			<scope>compile</scope>
+		</dependency>
 		
 		
     

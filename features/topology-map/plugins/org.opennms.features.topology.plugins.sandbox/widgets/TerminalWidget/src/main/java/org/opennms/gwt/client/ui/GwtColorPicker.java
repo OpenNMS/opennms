@@ -25,7 +25,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A regular GWT component without integration with Vaadin.
@@ -89,12 +88,6 @@ public class GwtColorPicker extends Composite implements ClickHandler {
         initWidget(panel);
     }
 
-    /** Handles click on a color button. */
-    public void onClick(Widget sender) {
-        // Use the button label as the color name to set
-        setColor(((Button) sender).getText());
-    }
-
     /** Sets the currently selected color. */
     public void setColor(String newcolor) {
         // Give client-side feedback by changing the color name in the label
@@ -115,8 +108,9 @@ public class GwtColorPicker extends Composite implements ClickHandler {
         }
     }
 
+    /** Handles click on a color button. */
 	public void onClick(ClickEvent event) {
-		// TODO Auto-generated method stub
-		
+		// Use the button label as the color name to set
+		setColor(((Button) event.getSource()).getText());
 	}
 }
