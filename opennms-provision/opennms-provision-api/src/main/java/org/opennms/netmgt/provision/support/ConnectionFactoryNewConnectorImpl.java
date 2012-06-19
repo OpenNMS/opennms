@@ -113,7 +113,7 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
                         }
                     });
                 } catch (RuntimeIoException e) {
-                    LogUtils.debugf(this, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
+                    LogUtils.debugf(this, e, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
                     // This will be thrown in the event of a ConnectException for example
                     connector.dispose();
                 }

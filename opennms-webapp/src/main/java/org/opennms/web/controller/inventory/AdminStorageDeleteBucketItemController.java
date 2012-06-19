@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.web.servlet.ModelAndView;

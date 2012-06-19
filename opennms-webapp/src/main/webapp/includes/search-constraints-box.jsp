@@ -32,8 +32,8 @@
 <%@page language="java"	contentType="text/html"	session="true" %>
 
 <%@page import="org.opennms.web.api.Util"%>
-<%@page import="org.opennms.web.WebSecurityUtils"%>
-<%@page import="org.opennms.web.XssRequestWrapper"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.filter.Filter"%>
 <%@page import="org.opennms.web.outage.OutageQueryParms"%>
 <%@page import="org.opennms.web.outage.OutageType"%>

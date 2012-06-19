@@ -38,6 +38,7 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * Represents a PollContextTest 

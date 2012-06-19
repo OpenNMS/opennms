@@ -33,7 +33,7 @@ import java.util.Locale;
 /**
  * @author Seth
  */
-abstract public class LocaleUtils {
+public abstract class LocaleUtils {
 
     public static final Locale DEFAULT_LOCALE = new Locale(Locale.ENGLISH.getLanguage(), Locale.US.getCountry());
 

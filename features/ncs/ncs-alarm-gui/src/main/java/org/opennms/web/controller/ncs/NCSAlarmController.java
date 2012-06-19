@@ -7,7 +7,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmQueryParms;

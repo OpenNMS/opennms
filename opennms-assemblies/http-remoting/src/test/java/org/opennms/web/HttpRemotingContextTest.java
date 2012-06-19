@@ -37,7 +37,7 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;

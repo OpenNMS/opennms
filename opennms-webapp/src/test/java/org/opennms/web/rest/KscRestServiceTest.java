@@ -38,8 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.test.mock.MockLogAppender;
 
 public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private File m_configFile = new File("target/test-classes/ksc-performance-reports.xml");

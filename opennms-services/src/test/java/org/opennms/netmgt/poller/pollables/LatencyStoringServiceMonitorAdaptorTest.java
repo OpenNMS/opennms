@@ -55,6 +55,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -79,7 +80,6 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
 public class LatencyStoringServiceMonitorAdaptorTest {
@@ -109,6 +109,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
     @Test
     public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
+        Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.FRENCH);
         
         // Make sure we actually have a valid test
@@ -132,6 +133,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         m_mocks.replayAll();
         adaptor.updateRRD("foo", InetAddress.getLocalHost(), "baz", map);
         m_mocks.verifyAll();
+        Locale.setDefault(defaultLocale);
     }
     
     @Test
@@ -147,6 +149,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         anticipator.verifyAnticipated();
     }
 
+    // TODO: This test will fail if you have a default locale with >3 characters for month, e.g. Locale.FRENCH
     @Test
     public void testThresholdsWithScheduledOutage() throws Exception {
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");

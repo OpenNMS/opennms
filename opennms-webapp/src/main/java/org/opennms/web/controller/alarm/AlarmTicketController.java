@@ -41,8 +41,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  * @since 1.8.1
  */

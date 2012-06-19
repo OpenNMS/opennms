@@ -500,6 +500,7 @@ public class RequisitionNode {
     		.append("city", city)
     		.append("foreign-id", foreignId)
     		.append("node-label", nodeLabel)
+    		.append("parent-foreign-source", parentForeignSource)
     		.append("parent-foreign-id", parentForeignId)
     		.append("parent-node-label", parentNodeLabel)
     		.toString();

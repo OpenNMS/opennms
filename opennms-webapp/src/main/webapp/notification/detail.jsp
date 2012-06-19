@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.notification.*,
 		org.opennms.web.element.*,
                 org.opennms.web.event.*

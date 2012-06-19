@@ -37,7 +37,7 @@ import java.text.DecimalFormat;
  * @author djgregor
  * @link http://www.physics.nist.gov/cuu/Units/
  */
-public class SIUtils {
+public abstract class SIUtils {
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.

@@ -37,7 +37,7 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.netmgt.model.OnmsNode, org.opennms.web.WebSecurityUtils" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.netmgt.model.OnmsNode, org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
     

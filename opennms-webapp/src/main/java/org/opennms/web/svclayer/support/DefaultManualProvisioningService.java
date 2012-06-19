@@ -65,7 +65,6 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.web.BeanUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -172,7 +171,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         try {
             final Requisition group = getProvisioningGroup(groupName);
             
-            final RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
+            final RequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNode.class);
             
             // final int catCount = node.getCategoryCount();
             final RequisitionCategory category = new RequisitionCategory();
@@ -193,7 +192,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_writeLock.lock();
         try {
             final Requisition group = getProvisioningGroup(groupName);
-            final RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
+            final RequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNode.class);
     
             // final int assetCount = node.getAssetCount();
             final RequisitionAsset asset = new RequisitionAsset();
@@ -215,7 +214,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         try {
             final Requisition group = getProvisioningGroup(groupName);
             Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
-            final RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
+            final RequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNode.class);
             Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
 
             PrimaryType snmpPrimary = PrimaryType.PRIMARY;
@@ -275,7 +274,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         try {
             final Requisition group = getProvisioningGroup(groupName);
             
-            final RequisitionInterface iface = BeanUtils.getPathValue(group, pathToInterface, RequisitionInterface.class);
+            final RequisitionInterface iface = PropertyUtils.getPathValue(group, pathToInterface, RequisitionInterface.class);
             
             final RequisitionMonitoredService monSvc = createService(serviceName);
             iface.insertMonitoredService(monSvc);
@@ -547,7 +546,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_readLock.lock();
         
         try {
-            return BeanUtils.getProperties(new OnmsAssetRecord());
+            return PropertyUtils.getProperties(new OnmsAssetRecord());
         } finally {
             m_readLock.unlock();
         }

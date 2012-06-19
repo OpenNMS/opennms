@@ -34,8 +34,8 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmFactory;
@@ -107,7 +107,7 @@ public class AlarmFeed extends AbstractFeed {
                     entry.setTitle(sanitizeTitle(alarm.getLogMessage()));
                     entry.setUpdatedDate(alarm.getFirstEventTime());
                 }
-                entry.setLink(getUrlBase() + "alarm/detail.jsp?id=" + alarm.getId());
+                entry.setLink(getUrlBase() + "alarm/detail.htm?id=" + alarm.getId());
                 
                 entries.add(entry);
             }

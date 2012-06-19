@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;

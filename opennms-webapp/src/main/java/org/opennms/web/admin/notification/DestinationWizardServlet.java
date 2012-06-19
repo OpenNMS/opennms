@@ -43,12 +43,12 @@ import javax.servlet.http.HttpSession;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.web.api.Util;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles the data comming in from the destination wizard jsps.

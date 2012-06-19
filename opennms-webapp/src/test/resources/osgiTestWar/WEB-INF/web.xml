@@ -1,0 +1,51 @@
+<web-app id="opennms-remoting" version="2.4"
+  xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+>
+
+  <display-name>opennms-services</display-name>
+
+  <!--  This is used by the Spring ContextLoaderListener <listener> below -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        /WEB-INF/applicationContext-security.xml
+    </param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <listener>
+    <!-- This listener will start up the Osgid (Karaf) OSGi container -->
+    <listener-class>org.opennms.web.osgi.FrameworkStartupContextListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.apache.felix.http.proxy.ProxyListener</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>felix-http-proxy</servlet-name>
+    <servlet-class>org.apache.felix.http.proxy.ProxyServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>felix-http-proxy</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>   
+
+</web-app>

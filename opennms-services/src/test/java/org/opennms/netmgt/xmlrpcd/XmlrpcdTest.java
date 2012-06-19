@@ -39,6 +39,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
@@ -46,7 +47,6 @@ import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 
 public class XmlrpcdTest extends OpenNMSTestCase {
     private static final int m_port1 = 9000;

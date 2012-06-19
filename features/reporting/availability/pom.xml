@@ -10,6 +10,7 @@
   <artifactId>org.opennms.features.reporting.availability</artifactId>
   <name>OpenNMS Availability Reports</name>
   <url>http://www.opennms.org/</url>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
@@ -55,17 +56,30 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.opennms.reporting.availability.descriptors.*;version="${project.version}",
+              org.opennms.reporting.availability.render.*;version="${project.version}",
+              org.opennms.reporting.availability.svclayer.*;version="${project.version}",
+              org.opennms.reporting.availability.*;version="${project.version}",
+              org.opennms.reporting.datablock.*;version="${project.version}"
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-utils</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

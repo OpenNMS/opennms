@@ -36,9 +36,9 @@ import java.util.Properties;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 
 public class EndPointConfigurationTest {

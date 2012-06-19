@@ -43,7 +43,7 @@ import org.opennms.test.VersionSettingTestSuite;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class SnmpTestSuiteUtils {
+public abstract class SnmpTestSuiteUtils {
     private static final String STRATEGY_CLASS_PROPERTY_NAME = "org.opennms.snmp.strategyClass";
 
     private SnmpTestSuiteUtils() {

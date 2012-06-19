@@ -175,17 +175,7 @@ public class CoreImportActivities {
             @Override
             public void visitNode(final OnmsNodeRequisition nodeReq) {
                 LogUtils.debugf(this, "Scheduling relate of node %s", nodeReq);
-                currentPhase.add(parentSetter(
-                    nodeReq,
-                    // If the node requisition does not include a foreign source
-                    // name, then use the foreign source of the current requisition
-                    // as the default value
-                    //
-                    // @see http://issues.opennms.org/browse/NMS-4109
-                    //
-                    nodeReq.getParentForeignSource() == null ? 
-                        requisition.getForeignSource() : nodeReq.getParentForeignSource()
-                ));
+                currentPhase.add(parentSetter(m_provisionService, nodeReq, requisition.getForeignSource()));
             }
         };
         
@@ -195,21 +185,32 @@ public class CoreImportActivities {
 
     }
     
-    private Runnable parentSetter(final OnmsNodeRequisition nodeReq, final String foreignSource) {
+    private static Runnable parentSetter(final ProvisionService provisionService, final OnmsNodeRequisition nodeReq, final String foreignSource) {
         return new Runnable() {
-           public void run() {
-               m_provisionService.setNodeParentAndDependencies(
-                   foreignSource,
-                   nodeReq.getForeignId(),
-                   nodeReq.getParentForeignId(),
-                   nodeReq.getParentNodeLabel()
-               );
+            @Override
+            public void run() {
+                provisionService.setNodeParentAndDependencies(
+                    foreignSource,
+                    nodeReq.getForeignId(),
+                    // If the node requisition does not include a parent foreign source
+                    // name, then use the foreign source of the current requisition
+                    // as the default value
+                    //
+                    // @see http://issues.opennms.org/browse/NMS-4109
+                    //
+                    nodeReq.getParentForeignSource() == null ? 
+                        foreignSource : nodeReq.getParentForeignSource(),
+                    nodeReq.getParentForeignId(),
+                    nodeReq.getParentNodeLabel()
+                );
 
-               m_provisionService.clearCache();
-           }
-           public String toString() {
-               return "set parent for node "+nodeReq.getNodeLabel();
-           }
+                provisionService.clearCache();
+            }
+
+            @Override
+            public String toString() {
+                return "set parent for node "+nodeReq.getNodeLabel();
+            }
         }; 
     }
 

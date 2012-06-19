@@ -35,7 +35,7 @@
 <jsp:include page="/includes/header.jsp" flush="false">
     <jsp:param name="title" value="System Reports" />
     <jsp:param name="headTitle" value="System Reports" />
-    <jsp:param name="breadcrumb" value="Support" />
+    <jsp:param name="breadcrumb" value="<a href='support/index.htm'>Support</a>"/>
     <jsp:param name="breadcrumb" value="System Reports" />
 </jsp:include>
 

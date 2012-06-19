@@ -8,7 +8,7 @@
         <category name="Production"/>
         <category name="VIP"/>
     </node>
-    <node node-label="pgvip-master.somemediathing.net" foreign-id="1330379381245" building="pgsql-cluster">
+    <node node-label="pgvip-master.somemediathing.net" foreign-id="1330379381245" building="pgsql-cluster" parent-foreign-source="postgres" parent-foreign-id="1241674181872" parent-node-label="barbacoa.somemediathing.net">
         <interface status="1" snmp-primary="S" ip-addr="10.0.8.65" descr="">
             <monitored-service service-name="Postgres-dev_staging"/>
             <monitored-service service-name="ICMP"/>

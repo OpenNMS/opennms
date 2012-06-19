@@ -28,7 +28,7 @@
  *******************************************************************************/
 
 --%>
-<%@page import="org.opennms.web.XssRequestWrapper"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page language="java"
     contentType="text/html"
     session="true" %>

@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.InterfaceFilter;

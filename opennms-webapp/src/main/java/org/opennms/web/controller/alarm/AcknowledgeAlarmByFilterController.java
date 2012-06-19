@@ -35,12 +35,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.MissingParameterException;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

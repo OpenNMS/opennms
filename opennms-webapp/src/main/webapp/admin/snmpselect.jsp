@@ -34,7 +34,7 @@
 	session="true"
 	import="java.io.File,
 		java.util.*,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -48,7 +48,7 @@
 	String nodeIdString = request.getParameter( "node" );
 
 	if( nodeIdString == null ) {
-		throw new org.opennms.web.MissingParameterException( "node" );
+		throw new org.opennms.web.servlet.MissingParameterException( "node" );
 	}
 
 	int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
@@ -56,7 +56,7 @@
 	String nodeLabel = request.getParameter( "nodelabel" );
 
 	if( nodeLabel == null ) {
-		throw new org.opennms.web.MissingParameterException( "nodelabel" );
+		throw new org.opennms.web.servlet.MissingParameterException( "nodelabel" );
 	}
 
 	HttpSession userSession = request.getSession(false);
