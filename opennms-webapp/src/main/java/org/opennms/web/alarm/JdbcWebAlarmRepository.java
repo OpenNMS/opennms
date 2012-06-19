@@ -71,6 +71,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @version $Id: $
  * @since 1.8.1
  */
+@Deprecated
 public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingBean {
     
     @Autowired
@@ -137,6 +138,26 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
                 });
             }
         };
+    }
+
+    @Override
+    public void updateStickyMemo(Integer alarmId, String body, String user) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
+    @Override
+    public void updateReductionKeyMemo(Integer alarmId, String body, String user) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
+    @Override
+    public void removeStickyMemo(Integer alarmId) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
+    @Override
+    public void removeReductionKeyMemo(int alarmId) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
     }
     
     private static class AlarmMapper implements ParameterizedRowMapper<Alarm> {

@@ -55,17 +55,14 @@ import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.api.Util;
-import org.opennms.web.controller.event.EventFilterController;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to
  * the more robust "filter" parameter set of the
- * {@link EventFilterController EventFilterController}via a redirect.
+ * {@link AlarmFilterController AlarmFilterController}via a redirect.
  *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
@@ -79,14 +76,14 @@ public class AlarmQueryServlet extends HttpServlet {
 
     /**
      * The list of parameters that are extracted by this servlet and not passed
-     * on to the {@link EventFilterController EventFilterController}.
+     * on to the {@link AlarmFilterController AlarmFilterController}.
      */
     protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
-     * The URL for the {@link EventFilterController EventFilterController}. The
+     * The URL for the {@link AlarmFilterController AlarmFilterController}. The
      * default is "list." This URL is a sibling URL, so it is relative to the
-     * URL directory that was used to call this servlet (usually "event/").
+     * URL directory that was used to call this servlet (usually "alarm/").
      */
     protected String redirectUrl = "filter";
 
@@ -108,7 +105,7 @@ public class AlarmQueryServlet extends HttpServlet {
      *
      * Extracts the key parameters from the parameter set, translates them into
      * filter-based parameters, and then passes the modified parameter set to
-     * the {@link EventFilterController EventFilterController}.
+     * the {@link AlarmFilterController AlarmFilterController}.
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<Filter>();

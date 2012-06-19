@@ -355,7 +355,7 @@ public class InstallerDb {
 
         for (final String sequence : getSequenceNames()) {
             if (getSequenceMapping(sequence) == null) {
-                throw new Exception("Cannot find sequence mapping for " + sequence);
+                throw new Exception("Cannot find sequence mapping for " + sequence + "-- sequence mapping is setup by comments in the create.sql script. Look:--# DO NOT forget to add an \"install\" comment" );
             }
         }
 

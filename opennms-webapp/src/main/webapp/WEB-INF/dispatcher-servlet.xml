@@ -295,6 +295,27 @@
         <property name="redirectView" value="/event/list.htm"/>
     </bean>
 
+    <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
+    <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+
+    <bean name="/alarm/saveSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+    
+    <bean name="/alarm/clearSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+
+    <bean name="/alarm/saveJournal.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+    
+    <bean name="/alarm/clearJournal.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+    
     <alias name="/event/detail.htm" alias="/event/detail.jsp"/>
     <bean name="/event/detail.htm" class="org.opennms.web.controller.event.EventFilterController">
         <property name="successView" value="event/detail"/>
