@@ -359,7 +359,7 @@
           
           <td class="divider bright" valign="middle" rowspan="1">
             
-            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.jsp?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>

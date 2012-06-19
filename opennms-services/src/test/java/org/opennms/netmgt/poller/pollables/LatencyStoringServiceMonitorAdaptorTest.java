@@ -149,6 +149,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         anticipator.verifyAnticipated();
     }
 
+    // TODO: This test will fail if you have a default locale with >3 characters for month, e.g. Locale.FRENCH
     @Test
     public void testThresholdsWithScheduledOutage() throws Exception {
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");

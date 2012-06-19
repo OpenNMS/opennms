@@ -107,7 +107,7 @@ public class AlarmFeed extends AbstractFeed {
                     entry.setTitle(sanitizeTitle(alarm.getLogMessage()));
                     entry.setUpdatedDate(alarm.getFirstEventTime());
                 }
-                entry.setLink(getUrlBase() + "alarm/detail.jsp?id=" + alarm.getId());
+                entry.setLink(getUrlBase() + "alarm/detail.htm?id=" + alarm.getId());
                 
                 entries.add(entry);
             }
