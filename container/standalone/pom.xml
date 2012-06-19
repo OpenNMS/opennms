@@ -75,7 +75,6 @@
               </descriptors>
               <features>
                 <feature>http-whiteboard</feature>
-                <feature>branding</feature>
               </features>
               <repository>target/features-repo</repository>
            </configuration>
