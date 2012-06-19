@@ -6,10 +6,36 @@
         <format>dir</format>
     </formats>
 
+    <includeBaseDirectory>false</includeBaseDirectory>    
+
+    <dependencySets>
+        <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>WEB-INF</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <scope>provided</scope>
+            <includes>
+                <include>org.opennms.container:org.opennms.container.standalone:tar.gz:${project.version}</include>
+            </includes>
+            <unpackOptions>
+                <excludes>
+                    <exclude>**/lib/*</exclude>
+                    <exclude>**/*.txt</exclude>
+                    <exclude>**/bin/*</exclude>
+                    <exclude>**/demos/**</exclude>
+                    <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
+                    <exclude>**/custom.properties</exclude>
+                    <exclude>**/org.apache.karaf.features.cfg</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}/classes/etc</directory>
-            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/karaf/etc</outputDirectory>
+            <outputDirectory>WEB-INF/org.opennms.container.standalone-${project.version}/etc</outputDirectory>
             <lineEnding>unix</lineEnding>
             <fileMode>0644</fileMode>
         </fileSet>
@@ -18,7 +44,7 @@
     <files>
         <file>
             <source>${project.build.directory}/classes/features/features.xml</source>
-            <outputDirectory>/system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <outputDirectory>WEB-INF/org.opennms.container.standalone-${project.version}/system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
