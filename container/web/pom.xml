@@ -47,7 +47,33 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+              <directory>src/main/filtered-resources</directory>
+              <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>karaf</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/karaf.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
@@ -89,7 +115,7 @@
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
-                                    <excludes>**/lib/*,**/*.txt,**/bin/*,**/demos/**,**/lib,**/bin,**/demos</excludes>
+                                    <excludes>**/lib/*,**/*.txt,**/bin/*,**/demos/**</excludes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

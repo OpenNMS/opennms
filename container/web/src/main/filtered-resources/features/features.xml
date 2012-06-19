@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="opennms-web-container" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+	<feature name="http" version="2.2.0.ONMS" description="HTTP feature using Felix servlet bridge">
+		<bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/2.2.0</bundle>
+	</feature>
+</features>

@@ -1,0 +1,28 @@
+<assembly>
+
+    <id>karaf</id>
+
+    <formats>
+        <format>dir</format>
+    </formats>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/classes/etc</directory>
+            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/karaf/etc</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <file>
+            <source>${project.build.directory}/classes/features/features.xml</source>
+            <outputDirectory>/system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.artifactId}-${project.version}-features.xml</destName>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+    </files>
+
+</assembly>
