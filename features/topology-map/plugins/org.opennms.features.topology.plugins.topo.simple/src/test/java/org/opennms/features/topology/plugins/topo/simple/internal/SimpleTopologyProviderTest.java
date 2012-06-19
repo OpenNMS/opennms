@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +23,8 @@ import org.opennms.features.topology.plugins.topo.simple.internal.operations.Add
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.CreateGroupOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
+import com.vaadin.data.Container.ItemSetChangeEvent;
+import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -279,6 +282,31 @@ public class SimpleTopologyProviderTest {
         
         m_topologyProvider.addGroup(GROUP_ICON);
         
+    }
+    
+    @Test
+    public void testTopoProviderSetParent() {
+        Object vertexId1 = addVertexToTopr();
+        Object vertexId2 = addVertexToTopr();
+        
+        final AtomicInteger eventsReceived = new AtomicInteger(0);
+        
+        m_topologyProvider.getVertexContainer().addListener(new ItemSetChangeListener() {
+            
+            @Override
+            public void containerItemSetChange(ItemSetChangeEvent event) {
+                eventsReceived.incrementAndGet();
+            }
+        });
+        
+        Object groupId = m_topologyProvider.addGroup("groupIcon.jpg");
+        assertEquals(1, eventsReceived.get());
+        eventsReceived.set(0);
+        
+        m_topologyProvider.setParent(vertexId1, groupId);
+        m_topologyProvider.setParent(vertexId2, groupId);
+        
+        assertEquals(2, eventsReceived.get());
     }
 	
 	

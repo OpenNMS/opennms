@@ -83,6 +83,7 @@ public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex>
 		
 		if (newParentId == null) {
 			v.setParent(null);
+			fireItemSetChange();
 			return true;
 		}
 		
@@ -95,6 +96,7 @@ public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex>
 		SimpleGroup g = (SimpleGroup)p;
 		
 		v.setParent(g);
+		fireItemSetChange();
 		return true;
 		
 	}

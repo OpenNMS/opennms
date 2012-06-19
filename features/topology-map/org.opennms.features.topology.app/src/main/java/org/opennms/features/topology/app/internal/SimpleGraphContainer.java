@@ -39,7 +39,7 @@ public class SimpleGraphContainer implements GraphContainer {
                    
         }
 
-        private Object getItemId() {
+        public Object getItemId() {
             return m_itemId;
         }
 
@@ -71,7 +71,7 @@ public class SimpleGraphContainer implements GraphContainer {
             return m_groupKey;
         }
 
-        private Object getGroupId() {
+        public Object getGroupId() {
             return m_groupId;
         }
 

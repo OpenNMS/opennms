@@ -77,7 +77,7 @@ public class TopologyComponentTest {
         mockGraphTagStart(target);
         
         target.startTag("group");
-        target.addAttribute("key", "5");
+        target.addAttribute("key", "1");
         target.addAttribute("x", 0);
         target.addAttribute("y", 0);
         target.addAttribute("selected", false);
@@ -177,7 +177,11 @@ public class TopologyComponentTest {
         target.addAttribute(eq("selected"), EasyMock.anyBoolean());
         target.addAttribute(eq("iconUrl"), EasyMock.notNull(String.class));
         target.addAttribute("semanticZoomLevel", semanticZoomLevel);
+        if(semanticZoomLevel > 0) {
+            target.addAttribute("groupKey", "9");
+        }
         target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
+        
         target.endTag("vertex");
     }
 

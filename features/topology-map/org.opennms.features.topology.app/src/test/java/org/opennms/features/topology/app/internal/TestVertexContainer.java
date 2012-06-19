@@ -83,6 +83,7 @@ public class TestVertexContainer extends VertexContainer<String, TestVertex> {
 		
 		if (newParentId == null) {
 			v.setParent(null);
+			fireItemSetChange();
 			return true;
 		}
 		
@@ -95,6 +96,7 @@ public class TestVertexContainer extends VertexContainer<String, TestVertex> {
 		TestGroup g = (TestGroup)p;
 		
 		v.setParent(g);
+		fireItemSetChange();
 		return true;
 		
 	}
