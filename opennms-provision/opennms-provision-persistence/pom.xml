@@ -138,7 +138,7 @@
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-config-model</artifactId>
       <classifier>xsds</classifier>
     </dependency>
     <dependency>

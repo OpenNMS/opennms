@@ -56,7 +56,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-config-model</artifactId>
       <scope>test</scope>
       <classifier>xsds</classifier>
     </dependency>
