@@ -28,18 +28,23 @@
 
 package org.opennms.web.controller;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+import javax.jms.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.activemq.ActiveMQConnection;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.nrtcollector.api.model.CollectionJob;
+import org.opennms.nrtcollector.api.model.SnmpCollectionJob;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.servlet.MissingParameterException;
@@ -231,26 +236,44 @@ public class GraphResultsController extends AbstractController implements Initia
 
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
         
+        //TODO Tak
+        publishCollectionJob(model.getGraphResultSets().get(0).getGraphs().get(0).getPrefabGraph(), request.getRemoteUser());
+        
         return modelAndView;
     }
 
-    private PrefabGraph resolveMetricsForColumns(PrefabGraph prefabGraph, int nodeId) {
-        String[] metrics = null; 
-        try {
-                    metrics = new String[prefabGraph.getColumns().length];
-                    for (int i = 0; i < metrics.length; i++) {
-                        BufferedReader bufferedReader = new BufferedReader(new FileReader("/opt/opennms/share/rrd/snmp/" + nodeId + "/" + prefabGraph.getColumns()[i] + ".meta"));
-                        String line = bufferedReader.readLine();
-                        String metric = line.subSequence(0, line.lastIndexOf("=")).toString();
-                        metrics[i] = metric;
-                        bufferedReader.close();
-                    }
-                } catch (Exception e) {
-                    logger.info("columns to matricId matching caused an exception '{}'", e.getMessage());
-                }
-        prefabGraph.setMetricIds(metrics);
-        return prefabGraph;
+    private void publishCollectionJob(PrefabGraph prefabGraph, String user) {
+        //TODO Tak this collectionJob is just a dummy
+        CollectionJob collectionJob = new SnmpCollectionJob();
+        Set<String> destinations = new HashSet<String>();
+        destinations.add(user + "_" + prefabGraph.getName() + "_" + "results");
+        for (String metric : prefabGraph.getMetricIds()) {
+            collectionJob.addMetric(metric, destinations);
+        }
+        collectionJob.setNetInterface("127.0.0.1");
+        publishCollectionJobViaJms(collectionJob);
     }
+    
+    private void publishCollectionJobViaJms(CollectionJob collectionJob) {
+        //TODO Tak
+        try {
+            String url = ActiveMQConnection.DEFAULT_BROKER_URL;
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+            Connection connection = connectionFactory.createConnection();
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            String jobQueueDestination = collectionJob.getResults().get(0).getDestinationString().replace("_results", "");
+            Destination destination = session.createQueue(jobQueueDestination);
+            
+            MessageProducer messageProducer = session.createProducer(destination);
+            messageProducer.send(session.createObjectMessage(collectionJob));
+            
+        } catch (JMSException ex) {
+            logger.info("Sending CollectionJob '{}' via Jms faild '{}'", collectionJob, ex.getMessage());
+        }
+    }
+    
+    
     /**
      * <p>getGraphResultsService</p>
      *

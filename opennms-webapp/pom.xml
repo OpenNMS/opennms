@@ -212,6 +212,11 @@
     <!-- indirect dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
     <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>CollectionModel</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
@@ -479,7 +484,11 @@
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-
-    
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>5.6.0</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

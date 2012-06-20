@@ -376,7 +376,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                     columnsToMetrics.put(column, metric);
                 }
             } catch (Exception ex) {
-                logger.error("Problem by looking up metrics for cloumns in context of prefabgraphs from meta files '{}'", ex.getMessage());
+                logger.error("Problem by looking up metrics for cloumns in context of prefabgraphs from meta file '{}' '{}'", fileName, ex.getMessage());
             }
         }
         /**
