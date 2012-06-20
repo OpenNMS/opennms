@@ -8,6 +8,7 @@ import java.util.Map;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 
+import com.vaadin.data.Item;
 import com.vaadin.event.Action;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -85,8 +86,18 @@ public class CommandManager  {
         return new MenuBar.Command() {
             
             public void menuSelected(MenuItem selectedItem) {
+                List<Object> targets = new ArrayList<Object>();
+                //Adding a check for selected vertices.
+                for(Object vId : operationContext.getGraphContainer().getVertexIds()) {
+                    Item vItem = operationContext.getGraphContainer().getVertexItem(vId);
+                    boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
+                    if(selected) {
+                        targets.add(vItem.getItemProperty("key").getValue());
+                    }
+                }
                 
-                command.doCommand(null, operationContext);
+                
+                command.doCommand(targets, operationContext);
                 m_commandHistoryList.add(command);
             }
         };

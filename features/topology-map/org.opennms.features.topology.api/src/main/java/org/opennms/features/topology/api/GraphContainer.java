@@ -22,5 +22,7 @@ public interface GraphContainer extends DisplayState {
 	public Collection<?> getEndPointIdsForEdge(Object edgeId);
 	
 	public Collection<?> getEdgeIdsForVertex(Object vertexId);
+
+    public Object getVertexItemIdForVertexKey(Object key);
 	
 }

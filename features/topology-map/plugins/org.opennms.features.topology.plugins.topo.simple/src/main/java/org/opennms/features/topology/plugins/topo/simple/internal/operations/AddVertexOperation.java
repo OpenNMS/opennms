@@ -49,7 +49,8 @@ public class AddVertexOperation implements Operation{
 
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         System.err.println("/*** Executing add Vertex in AddVertexOperation ***/");
-        Object vertexId = targets.isEmpty() ? null : targets.get(0);
+        Object vertexKey = targets.isEmpty() ? null : targets.get(0);
+        Object vertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(vertexKey);
         String icon = getIcon();
         if (vertexId == null) {
             if (operationContext.getGraphContainer().getVertexContainer().containsId(Constants.CENTER_VERTEX_ID)) {

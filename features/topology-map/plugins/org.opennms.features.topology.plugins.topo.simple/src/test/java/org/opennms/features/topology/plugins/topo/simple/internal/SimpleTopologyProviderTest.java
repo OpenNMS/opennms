@@ -1,6 +1,7 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.GROUP_ICON;
 import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.SERVER_ICON;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
+import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.CreateGroupOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
@@ -106,8 +109,7 @@ public class SimpleTopologyProviderTest {
 
         @Override
         public Item getVertexItem(Object vertexId) {
-            // TODO Auto-generated method stub
-            return null;
+            return m_vertContainer.getItem(vertexId);
         }
 
         @Override
@@ -126,6 +128,12 @@ public class SimpleTopologyProviderTest {
         public Collection<?> getEdgeIdsForVertex(Object vertexId) {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        @Override
+        public Object getVertexItemIdForVertexKey(Object key) {
+            Item vertexItem = getVertexItem(key);
+            return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
         }
         
     }
@@ -198,8 +206,9 @@ public class SimpleTopologyProviderTest {
 	
 	@Test
 	public void testAddVertexWithOperation() {
+	    
 	    List<Object> targets = Collections.EMPTY_LIST;
-	    OperationContext operationContext = getOperationContext();
+	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
 	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON, m_topologyProvider);
 	    addOperation.execute(targets, operationContext);
@@ -211,13 +220,21 @@ public class SimpleTopologyProviderTest {
 
 	@Test
 	public void testAddVertexToAnotherVertexOperation() {
-	    //Add existing vertex
-	    Object vertexId = addVertexToTopr();
+	  //Add existing vertex
+        Object vertexId = addVertexToTopr();
+	    
+	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
+	    
+	    EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("1")).andReturn(vertexId);
+	    graphContainer.redoLayout();
+	    
+	    EasyMock.replay(graphContainer);
+	    
 	    
 	    List<Object> targets = new ArrayList<Object>();
-	    targets.add(vertexId);
+	    targets.add("1");
 	    
-	    OperationContext operationContext = getOperationContext();
+	    OperationContext operationContext = getOperationContext(graphContainer);
 	    AddVertexOperation addOperation = new AddVertexOperation(SERVER_ICON, m_topologyProvider);
         addOperation.execute(targets, operationContext);
 	    
@@ -226,6 +243,8 @@ public class SimpleTopologyProviderTest {
         
         Collection<?> edgeIds = m_topologyProvider.getEdgeIds();
         assertEquals(1, edgeIds.size());
+        
+        EasyMock.verify(graphContainer);
 	    
 	}
 	
@@ -256,9 +275,11 @@ public class SimpleTopologyProviderTest {
     
     @Test
     public void testRemoveVertexOperation() {
+        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
+        
         Object vertexId = addVertexToTopr();
         
-        OperationContext operationContext = getOperationContext();
+        OperationContext operationContext = getOperationContext(graphContainer);
         RemoveVertexOperation removeOperation = new RemoveVertexOperation(m_topologyProvider);
         removeOperation.execute(Arrays.asList(vertexId), operationContext);
         
@@ -271,9 +292,15 @@ public class SimpleTopologyProviderTest {
         Object vertexId = addVertexToTopr();
         Object vertexId2 = addVertexToTopr();
         
-        CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
-        groupOperation.execute(Arrays.asList(vertexId, vertexId2), getOperationContext());
+        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
+        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("1")).andReturn(vertexId);
+        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("2")).andReturn(vertexId2);
+        
+        EasyMock.replay(graphContainer);
+        
+        CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
+        groupOperation.execute(Arrays.asList((Object)"1", (Object)"2"), getOperationContext(graphContainer));
         
         Item vertexItem1 = m_topologyProvider.getVertexItem(vertexId);
         SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
@@ -282,6 +309,7 @@ public class SimpleTopologyProviderTest {
         
         m_topologyProvider.addGroup(GROUP_ICON);
         
+        EasyMock.verify(graphContainer);
     }
     
     @Test
@@ -308,10 +336,45 @@ public class SimpleTopologyProviderTest {
         
         assertEquals(2, eventsReceived.get());
     }
+    
+    @Test
+    public void testConnectVerticesOperation() {
+        Object vertexId1 = addVertexToTopr();
+        Object vertexId2 = addVertexToTopr();
+        
+        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
+        
+        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("1")).andReturn(vertexId1);
+        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("2")).andReturn(vertexId2);
+        
+        EasyMock.replay(graphContainer);
+        
+        List<Object> targets = new ArrayList<Object>();
+        targets.add("1");
+        targets.add("2");
+        
+        ConnectOperation connectOperation = new ConnectOperation(m_topologyProvider);
+        connectOperation.execute(targets, getOperationContext(graphContainer));
+        
+        Collection<?> edgeIds = m_topologyProvider.getEdgeIds();
+        assertEquals(1, edgeIds.size());
+        
+        for(Object edgeId : edgeIds) {
+            Item edgeItem = m_topologyProvider.getEdgeItem(edgeId);
+            SimpleLeafVertex source = (SimpleLeafVertex) edgeItem.getItemProperty("source").getValue();
+            SimpleLeafVertex target = (SimpleLeafVertex) edgeItem.getItemProperty("target").getValue();
+            assertNotNull(source);
+            assertNotNull(target);
+            assertEquals(vertexId1, source.getId());
+            assertEquals(vertexId2, target.getId());
+        }
+        
+        EasyMock.verify(graphContainer);
+    }
 	
 	
-	private TestOperationContext getOperationContext() {
-        return new TestOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
+	private TestOperationContext getOperationContext(GraphContainer mockedContainer) {
+        return new TestOperationContext(mockedContainer);
     }
 	
 	private Object addVertexToTopr() {

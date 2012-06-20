@@ -472,4 +472,11 @@ public class SimpleGraphContainer implements GraphContainer {
         }
     }
 
+
+    @Override
+    public Object getVertexItemIdForVertexKey(Object key) {
+        Item vertexItem = getVertexItem(key);
+        return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
+    }
+
 }

@@ -52,7 +52,7 @@ public class Graph{
 
             @Override
 			protected Vertex update(Vertex element) {
-				Object groupId = m_dataSource.getVertexContainer().getParent(element.getKey());
+				Object groupId = m_dataSource.getVertexContainer().getParent(element.getItemId());
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				
 				element.setGroupId(groupId);
