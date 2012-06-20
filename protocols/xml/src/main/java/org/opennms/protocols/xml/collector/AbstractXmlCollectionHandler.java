@@ -168,7 +168,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (group.hasMultipleResourceKey()) {
             List<String> keys = new ArrayList<String>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
-                log().debug("getResourceName: getting key for resource'name using " + key);
+                log().debug("getResourceName: getting key for resource's name using " + key);
                 Node keyNode = (Node) xpath.evaluate(key, resource, XPathConstants.NODE);
                 keys.add(keyNode.getNodeValue() == null ? keyNode.getTextContent() : keyNode.getNodeValue());
             }
@@ -179,7 +179,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return "node";
         }
         // Processing single-key resource name.
-        log().debug("getResourceName: getting key for resource'name using " + group.getKeyXpath());
+        log().debug("getResourceName: getting key for resource's name using " + group.getKeyXpath());
         Node keyNode = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
         return keyNode.getNodeValue() == null ? keyNode.getTextContent() : keyNode.getNodeValue();
     }
@@ -275,9 +275,12 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         String url = unformattedUrl.replace("{ipaddr}", agent.getHostAddress());
         url = url.replace("{step}", collectionStep.toString());
         url = url.replace("{nodeId}", node.getNodeId());
-        url = url.replace("{nodeLabel}", node.getLabel());
-        url = url.replace("{foreignId}", node.getForeignId());
-        url = url.replace("{foreignSource}", node.getForeignSource());
+        if (node.getLabel() != null)
+            url = url.replace("{nodeLabel}", node.getLabel());
+        if (node.getForeignId() != null)
+            url = url.replace("{foreignId}", node.getForeignId());
+        if (node.getForeignSource() != null)
+            url = url.replace("{foreignSource}", node.getForeignSource());
         if (node.getAssetRecord() != null) {
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {

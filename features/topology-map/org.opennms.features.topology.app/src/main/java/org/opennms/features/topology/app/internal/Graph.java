@@ -47,7 +47,6 @@ public class Graph{
 
             @Override
             List<Vertex> getElements() {
-                String toast = "toast";
                 return super.getElements();
             }
 
@@ -118,7 +117,6 @@ public class Graph{
 	}
 	
 	public List<Edge> getEdges(){
-	    System.err.println("Graph getEdges calling m_edgeHolder.getElements()");
 		return m_edgeHolder.getElements();
 	}
 	
@@ -160,7 +158,8 @@ public class Graph{
 	}
 
 	public Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
-		if(vertex.getGroupId() == null || vertex.getSemanticZoomLevel() <= semanticZoomLevel) {
+		int szl = vertex.getSemanticZoomLevel();
+        if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
 			return vertex;
 		}else {
 			Vertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());

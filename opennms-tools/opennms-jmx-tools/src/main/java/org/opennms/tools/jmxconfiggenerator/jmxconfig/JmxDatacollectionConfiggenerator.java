@@ -251,7 +251,7 @@ public class JmxDatacollectionConfiggenerator {
 
             for (String key : keys) {
                 Object compositeEntry = compositeData.get(key);
-                if (numbers.contains(compositeEntry.getClass().toString())) {
+                if (numbers.contains(compositeEntry.getClass().getName())) {
                     contentAdded = true;
                     CompMember xmlCompMember = xmlObjectFactory.createCompMember();
                     xmlCompMember.setName(key);
@@ -264,6 +264,9 @@ public class JmxDatacollectionConfiggenerator {
 
                     xmlCompMember.setType("gauge");
                     xmlCompAttrib.getCompMember().add(xmlCompMember);
+                    
+                } else {
+                    logger.debug("composite member key '{}' object's class '{}' was not a number.", key, compositeEntry.getClass().getName());
                 }
             }
 

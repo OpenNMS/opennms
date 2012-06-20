@@ -15,6 +15,7 @@
             <excludes>
                 <exclude>**/demos/**</exclude>
                 <exclude>bin/**</exclude>
+                <exclude>etc/custom.properties</exclude>
                 <exclude>etc/system.properties</exclude>
                 <exclude>etc/users.properties</exclude>
                 <exclude>etc/org.apache.karaf.features.cfg</exclude>
@@ -74,6 +75,12 @@
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/opennms-branding.jar</source>
+            <outputDirectory>/lib</outputDirectory>
+            <destName>opennms-branding.jar</destName>
+            <fileMode>0644</fileMode>
         </file>
     </files>
 

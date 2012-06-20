@@ -65,7 +65,7 @@ import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class JaxbUtils {
+public abstract class JaxbUtils {
     private static final class LoggingValidationEventHandler implements ValidationEventHandler {
 		private final Class<?> m_clazz;
 

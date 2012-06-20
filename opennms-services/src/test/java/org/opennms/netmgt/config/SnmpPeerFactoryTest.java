@@ -33,9 +33,9 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ByteArrayResource;
 
 public class SnmpPeerFactoryTest extends TestCase {

@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.StreamUtils;
-import org.opennms.web.MissingParameterException;
+import org.opennms.web.servlet.MissingParameterException;
 
 /**
  * <p>MailerServlet class.</p>

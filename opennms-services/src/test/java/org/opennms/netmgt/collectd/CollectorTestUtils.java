@@ -44,7 +44,7 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 
-public class CollectorTestUtils {
+public abstract class CollectorTestUtils {
 
     static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector, String collectionName) {
         Package pkg = new Package();

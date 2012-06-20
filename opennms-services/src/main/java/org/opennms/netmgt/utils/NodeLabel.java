@@ -42,7 +42,7 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.PropertyConstants;
+import org.opennms.netmgt.dao.NodeDao;
 
 /**
  * <P>
@@ -71,37 +71,37 @@ public class NodeLabel {
      * The SQL statement to update the 'nodelabel' and 'nodelabelsource' fields
      * of 'node' table
      */
-    final static String SQL_DB_UPDATE_NODE_LABEL = "UPDATE node SET nodelabel=?,nodelabelsource=? WHERE nodeid=?";
+    private final static String SQL_DB_UPDATE_NODE_LABEL = "UPDATE node SET nodelabel=?,nodelabelsource=? WHERE nodeid=?";
 
     /**
      * The SQL statement to retrieve the NetBIOS name associated with a
      * particular nodeID
      */
-    final static String SQL_DB_RETRIEVE_NETBIOS_NAME = "SELECT nodenetbiosname FROM node WHERE nodeid=?";
+    private final static String SQL_DB_RETRIEVE_NETBIOS_NAME = "SELECT nodenetbiosname FROM node WHERE nodeid=?";
 
     /**
      * The SQL statement to retrieve all managed IP address & hostName values
      * associated with a particular nodeID
      */
-    final static String SQL_DB_RETRIEVE_MANAGED_INTERFACES = "SELECT ipaddr,iphostname FROM ipinterface WHERE nodeid=? AND ismanaged='M'";
+    private final static String SQL_DB_RETRIEVE_MANAGED_INTERFACES = "SELECT ipaddr,iphostname FROM ipinterface WHERE nodeid=? AND ismanaged='M'";
 
     /**
      * The SQL statement to retrieve all non-managed IP address & hostName
      * values associated with a particular nodeID
      */
-    final static String SQL_DB_RETRIEVE_NON_MANAGED_INTERFACES = "SELECT ipaddr,iphostname FROM ipinterface WHERE nodeid=? AND ismanaged!='M'";
+    private final static String SQL_DB_RETRIEVE_NON_MANAGED_INTERFACES = "SELECT ipaddr,iphostname FROM ipinterface WHERE nodeid=? AND ismanaged!='M'";
 
     /**
      * The SQL statement to retrieve the MIB-II sysname field from the node
      * table
      */
-    final static String SQL_DB_RETRIEVE_SYSNAME = "SELECT nodesysname FROM node WHERE nodeid=?";
+    private final static String SQL_DB_RETRIEVE_SYSNAME = "SELECT nodesysname FROM node WHERE nodeid=?";
 
     /**
      * The SQL statement to retrieve the current node label and node label
      * source values associated with a node.
      */
-    final static String SQL_DB_RETRIEVE_NODELABEL = "SELECT nodelabel,nodelabelsource FROM node WHERE nodeid=?";
+    private final static String SQL_DB_RETRIEVE_NODELABEL = "SELECT nodelabel,nodelabelsource FROM node WHERE nodeid=?";
 
     /**
      * Valid values for node label source flag
@@ -121,7 +121,7 @@ public class NodeLabel {
     public final static char SOURCE_ADDRESS = 'A';
 
     /**
-     * Initalization value for node label source flag
+     * Initialization value for node label source flag
      */
     public final static char SOURCE_UNKNOWN = 'X';
 
@@ -152,12 +152,18 @@ public class NodeLabel {
     /**
      * Node label
      */
-    private String m_nodeLabel;
+    private final String m_nodeLabel;
 
     /**
      * Flag describing source of node label
      */
-    private char m_nodeLabelSource;
+    private final char m_nodeLabelSource;
+
+    /**
+     * The property string in the properties file which specifies the method to
+     * use for determining which interface is primary on a multi-interface box.
+     */
+    public static final String PROP_PRIMARY_INTERFACE_SELECT_METHOD = "org.opennms.bluebird.dp.primaryInterfaceSelectMethod";
 
     /**
      * Default constructor
@@ -167,6 +173,10 @@ public class NodeLabel {
         m_nodeLabelSource = SOURCE_UNKNOWN;
     }
 
+    public NodeLabel(String nodeLabel, String nodeLabelSource) {
+        this(nodeLabel, nodeLabelSource.charAt(0));
+    }
+
     /**
      * Constructor
      *
@@ -174,10 +184,19 @@ public class NodeLabel {
      *            Node label
      * @param nodeLabelSource
      *            Flag indicating source of node label
-     * @param nodeLabelSource
-     *            Flag indicating source of node label
      */
     public NodeLabel(String nodeLabel, char nodeLabelSource) {
+        switch(nodeLabelSource) {
+            case SOURCE_ADDRESS:
+            case SOURCE_HOSTNAME:
+            case SOURCE_NETBIOS:
+            case SOURCE_SYSNAME:
+            case SOURCE_UNKNOWN:
+            case SOURCE_USERDEFINED:
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid value for node label source: " + nodeLabelSource);
+        }
         m_nodeLabel = nodeLabel;
         m_nodeLabelSource = nodeLabelSource;
     }
@@ -201,26 +220,6 @@ public class NodeLabel {
     }
 
     /**
-     * Sets the node label.
-     *
-     * @param nodeLabel
-     *            Node label
-     */
-    public void setLabel(String nodeLabel) {
-        m_nodeLabel = nodeLabel;
-    }
-
-    /**
-     * Sets the node label source flag
-     *
-     * @param nodeLabelSource
-     *            Flag indicating source of node label
-     */
-    public void setSource(char nodeLabelSource) {
-        m_nodeLabelSource = nodeLabelSource;
-    }
-
-    /**
      * This method queries the 'node' table for the value of the 'nodelabel' and
      * 'nodelabelsource' fields for the node with the provided nodeID. A
      * NodeLabel object is returned initialized with the retrieved values.
@@ -233,6 +232,8 @@ public class NodeLabel {
      *            Unique identifier of the node to be updated.
      * @return Object containing label and source values.
      * @throws java.sql.SQLException if any.
+     * 
+     * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
     public static NodeLabel retrieveLabel(int nodeID) throws SQLException {
         NodeLabel label = null;
@@ -258,6 +259,8 @@ public class NodeLabel {
      *            SQL database connection
      * @return object initialized with node label & source flag
      * @throws java.sql.SQLException if any.
+     * 
+     * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
     public static NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
         String nodeLabel = null;
@@ -309,6 +312,8 @@ public class NodeLabel {
      * @param nodeLabel
      *            Object containing label and source values.
      * @throws java.sql.SQLException if any.
+     * 
+     * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
     public static void assignLabel(int nodeID, NodeLabel nodeLabel) throws SQLException {
         Connection dbConnection = Vault.getDbConnection();
@@ -334,6 +339,8 @@ public class NodeLabel {
      * @param dbConnection
      *            SQL database connection
      * @throws java.sql.SQLException if any.
+     * 
+     * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
     public static void assignLabel(int nodeID, NodeLabel nodeLabel, Connection dbConnection) throws SQLException {
         if (nodeLabel == null) {
@@ -389,6 +396,8 @@ public class NodeLabel {
      *            Unique identifier of the node to be updated.
      * @return NodeLabel Object containing label and source values
      * @throws java.sql.SQLException if any.
+     * 
+     * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
     public static NodeLabel computeLabel(int nodeID) throws SQLException {
         Connection dbConnection = Vault.getDbConnection();
@@ -427,6 +436,8 @@ public class NodeLabel {
      * @return NodeLabel Object containing label and source values or null if
      *         node does not have a primary interface.
      * @throws java.sql.SQLException if any.
+     * 
+     * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
     public static NodeLabel computeLabel(int nodeID, Connection dbConnection) throws SQLException {
         // Issue SQL query to retrieve NetBIOS name associated with the node
@@ -470,7 +481,7 @@ public class NodeLabel {
         // the method to use for determining which interface on a multi-interface
         // system is to be deemed the primary interface. The primary interface
         // will then determine what the node's label is.
-        String method = System.getProperty(PropertyConstants.PROP_PRIMARY_INTERFACE_SELECT_METHOD);
+        String method = System.getProperty(NodeLabel.PROP_PRIMARY_INTERFACE_SELECT_METHOD);
         if (method == null) {
             method = DEFAULT_SELECT_METHOD;
         }

@@ -29,8 +29,19 @@
     <listener-class>org.apache.karaf.web.WebAppListener</listener-class>
   </listener>
 
-  <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
-		
+  <listener>
+    <listener-class>org.apache.felix.http.proxy.ProxyListener</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>proxy</servlet-name>
+    <servlet-class>org.apache.felix.http.proxy.ProxyServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>proxy</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
 </web-app>

@@ -41,7 +41,7 @@
 		org.opennms.web.event.Event,
 		org.opennms.web.filter.Filter,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.netmgt.model.OnmsSeverity
 	"
 %>

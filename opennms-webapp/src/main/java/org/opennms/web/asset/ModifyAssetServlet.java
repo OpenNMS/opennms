@@ -39,11 +39,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.servlet.MissingParameterException;
 
 /**
  * <p>ModifyAssetServlet class.</p>

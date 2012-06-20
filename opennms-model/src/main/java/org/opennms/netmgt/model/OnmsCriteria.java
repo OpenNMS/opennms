@@ -51,7 +51,7 @@ public class OnmsCriteria {
     /** Constant <code>LEFT_JOIN=Criteria.LEFT_JOIN</code> */
     public static final int LEFT_JOIN = Criteria.LEFT_JOIN;
     
-    private OnmsDetachedCriteria m_criteria;
+    private OnmsCriteria.OnmsDetachedCriteria m_criteria;
     private String m_entityName;
     private Integer m_firstResult = null;
     private Integer m_maxResults = null;
@@ -62,7 +62,7 @@ public class OnmsCriteria {
      * @param entityName a {@link java.lang.String} object.
      */
     public OnmsCriteria(String entityName) {
-        this(entityName, OnmsDetachedCriteria.forEntityName(entityName));
+        this(entityName, OnmsCriteria.OnmsDetachedCriteria.forEntityName(entityName));
     }
     
     /**
@@ -72,7 +72,7 @@ public class OnmsCriteria {
      * @param alias a {@link java.lang.String} object.
      */
     public OnmsCriteria(String entityName, String alias) {
-        this(entityName, OnmsDetachedCriteria.forEntityName(entityName, alias));
+        this(entityName, OnmsCriteria.OnmsDetachedCriteria.forEntityName(entityName, alias));
     }
     
     /**
@@ -81,7 +81,7 @@ public class OnmsCriteria {
      * @param clazz a {@link java.lang.Class} object.
      */
     public OnmsCriteria(Class<?> clazz) {
-        this(clazz.getName(), OnmsDetachedCriteria.forClass(clazz));
+        this(clazz.getName(), OnmsCriteria.OnmsDetachedCriteria.forClass(clazz));
     }
     
     /**
@@ -91,7 +91,7 @@ public class OnmsCriteria {
      * @param alias a {@link java.lang.String} object.
      */
     public OnmsCriteria(Class<?> clazz, String alias) {
-        this(clazz.getName(), OnmsDetachedCriteria.forClass(clazz, alias));
+        this(clazz.getName(), OnmsCriteria.OnmsDetachedCriteria.forClass(clazz, alias));
     }
     
     /**
@@ -100,7 +100,7 @@ public class OnmsCriteria {
      * @param entityName a {@link java.lang.String} object.
      * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria.OnmsDetachedCriteria} object.
      */
-    protected OnmsCriteria(String entityName, OnmsDetachedCriteria criteria) {
+    protected OnmsCriteria(String entityName, OnmsCriteria.OnmsDetachedCriteria criteria) {
         m_entityName = entityName;
         m_criteria = criteria;
     }
@@ -234,7 +234,7 @@ public class OnmsCriteria {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsCriteria.OnmsDetachedCriteria} object.
      */
-    public OnmsDetachedCriteria getDetachedCriteria() {
+    public OnmsCriteria.OnmsDetachedCriteria getDetachedCriteria() {
         return m_criteria;
     }
 
@@ -330,41 +330,41 @@ public class OnmsCriteria {
             m_impl = impl;
         }
         
-        public static OnmsDetachedCriteria forEntityName(String entityName) {
-            return new OnmsDetachedCriteria(entityName);
+        public static OnmsCriteria.OnmsDetachedCriteria forEntityName(String entityName) {
+            return new OnmsCriteria.OnmsDetachedCriteria(entityName);
         }
         
-        public static OnmsDetachedCriteria forEntityName(String entityName, String alias) {
-            return new OnmsDetachedCriteria(entityName, alias);
+        public static OnmsCriteria.OnmsDetachedCriteria forEntityName(String entityName, String alias) {
+            return new OnmsCriteria.OnmsDetachedCriteria(entityName, alias);
         }
         
-        public static OnmsDetachedCriteria forClass(Class<?> clazz) {
-            return new OnmsDetachedCriteria(clazz.getName());
+        public static OnmsCriteria.OnmsDetachedCriteria forClass(Class<?> clazz) {
+            return new OnmsCriteria.OnmsDetachedCriteria(clazz.getName());
         }
         
-        public static OnmsDetachedCriteria forClass(Class<?> clazz, String alias) {
-            return new OnmsDetachedCriteria(clazz.getName() , alias);
+        public static OnmsCriteria.OnmsDetachedCriteria forClass(Class<?> clazz, String alias) {
+            return new OnmsCriteria.OnmsDetachedCriteria(clazz.getName() , alias);
         }
         
-        public OnmsDetachedCriteria createAlias(String associationPath, String alias, int joinType) {
+        public OnmsCriteria.OnmsDetachedCriteria createAlias(String associationPath, String alias, int joinType) {
             m_impl.createAlias(associationPath, alias, joinType);
             return this;
         }
 
-        public OnmsDetachedCriteria createCriteria(String associationPath, int joinType) {
-            return new OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath, joinType));
+        public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath, int joinType) {
+            return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath, joinType));
         }
         
-        public OnmsDetachedCriteria createCriteria(String associationPath, String alias) {
-            return new OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath));
+        public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath, String alias) {
+            return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath));
         }
 
-        public OnmsDetachedCriteria createCriteria(String associationPath, String alias, int joinType) {
-            return new OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath, alias, joinType));
+        public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath, String alias, int joinType) {
+            return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath, alias, joinType));
         }
 
-        public OnmsDetachedCriteria createCriteria(String associationPath) throws HibernateException {
-            return new OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath));
+        public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath) throws HibernateException {
+            return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath));
         }
     }
 }

@@ -44,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.collectd.IfResourceType;
@@ -68,7 +69,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>

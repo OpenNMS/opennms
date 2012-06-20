@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -25,7 +26,6 @@ import org.opennms.netmgt.ncs.persistence.NCSComponentDao;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {

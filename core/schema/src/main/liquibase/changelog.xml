@@ -50,7 +50,8 @@
 	<include file="1.9.91/changelog.xml"/>
 	<include file="1.9.92/changelog.xml"/>
 	<include file="1.10.1/changelog.xml"/>
-
+	<include file="1.10.4/changelog.xml"/>
+        <include file="1.11.1-SNAPSHOT/AlarmNotes.xml"/>
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
 	<include file="stored-procedures/getManagedOutageForIntfInWindow.xml" />

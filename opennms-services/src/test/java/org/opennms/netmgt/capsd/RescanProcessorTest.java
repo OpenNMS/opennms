@@ -34,6 +34,7 @@ import java.util.HashSet;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -41,7 +42,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
-import org.opennms.test.mock.MockLogAppender;
 
 public class RescanProcessorTest extends TestCase {
     

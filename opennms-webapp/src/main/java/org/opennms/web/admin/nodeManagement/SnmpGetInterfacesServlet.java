@@ -45,8 +45,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles querying the database for node, interface, service
@@ -93,7 +93,7 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         String nodeIdString = request.getParameter( "node" );
 
         if( nodeIdString == null ) {
-            throw new org.opennms.web.MissingParameterException( "node" );
+            throw new org.opennms.web.servlet.MissingParameterException( "node" );
         }
 
         int nodeid = WebSecurityUtils.safeParseInt( nodeIdString );

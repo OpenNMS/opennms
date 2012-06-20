@@ -29,7 +29,7 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="false" import="java.util.*,org.opennms.web.WebSecurityUtils,org.opennms.web.MissingParameterException" %>
+<%@page language="java" contentType="text/html" session="false" import="java.util.*,org.opennms.core.utils.WebSecurityUtils,org.opennms.web.servlet.MissingParameterException" %>
 
 <%!
     protected static final String DEFAULT_LIMIT_PARAM_NAME    = "limit";

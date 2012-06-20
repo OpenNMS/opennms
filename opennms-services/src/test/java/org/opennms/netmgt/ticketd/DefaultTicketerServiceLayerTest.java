@@ -36,9 +36,9 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 import org.opennms.api.integration.ticketing.*;
+import org.opennms.core.test.MockLogAppender;
 
 import junit.framework.TestCase;
 

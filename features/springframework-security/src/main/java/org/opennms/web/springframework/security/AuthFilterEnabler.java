@@ -41,7 +41,6 @@ import javax.servlet.ServletResponse;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.FilterManager;
-import org.opennms.web.AclUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**

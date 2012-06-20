@@ -35,6 +35,7 @@ import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
@@ -58,7 +59,6 @@ import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 public class NotificationsTestCase {

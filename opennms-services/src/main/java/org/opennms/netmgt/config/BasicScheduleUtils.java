@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.poller.Outage;
  * @author ranger
  * @version $Id: $
  */
-public class BasicScheduleUtils {
+public abstract class BasicScheduleUtils {
 
     /**
      * The day of the week values to name mapping

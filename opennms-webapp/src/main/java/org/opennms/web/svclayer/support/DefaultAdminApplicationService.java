@@ -33,11 +33,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AdminApplicationService;
 
 /**

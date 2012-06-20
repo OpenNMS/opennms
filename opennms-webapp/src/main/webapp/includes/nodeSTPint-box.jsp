@@ -38,7 +38,7 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="
-  org.opennms.web.WebSecurityUtils,
+  org.opennms.core.utils.WebSecurityUtils,
   org.opennms.web.element.*,
   org.opennms.netmgt.model.OnmsNode
 "%>
@@ -51,7 +51,7 @@
     String nodeIdString = request.getParameter("node");
 
     if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("node");
+        throw new org.opennms.web.servlet.MissingParameterException("node");
     }
         
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);

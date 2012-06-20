@@ -34,8 +34,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
+
 /**
- * EventListener
+ * Annotation that is used to denote methods on a class that act as event listener callbacks.
+ * The {@link AnnotationBasedEventListenerAdapter} is used inside a Spring context to activate
+ * classes that are {@link EventListener}-annotated by using its 
+ * {@link AnnotationBasedEventListenerAdapter#setAnnotatedListener(Object)} method.
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $

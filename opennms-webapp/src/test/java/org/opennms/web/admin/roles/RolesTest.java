@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.IntervalTestCase;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 public class RolesTest extends IntervalTestCase {
     private GroupManager m_groupManager;

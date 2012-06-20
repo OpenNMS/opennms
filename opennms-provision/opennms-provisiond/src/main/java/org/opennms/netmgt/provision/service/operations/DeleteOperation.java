@@ -52,6 +52,7 @@ public class DeleteOperation extends ImportOperation {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	return "DELETE: Node "+m_nodeId;
     }
@@ -59,6 +60,7 @@ public class DeleteOperation extends ImportOperation {
 	/**
 	 * <p>scan</p>
 	 */
+	@Override
 	public void scan() {
 		// no additional data to gather
 	}

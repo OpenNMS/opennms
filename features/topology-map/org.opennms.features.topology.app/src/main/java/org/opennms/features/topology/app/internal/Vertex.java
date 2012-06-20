@@ -41,7 +41,8 @@ public class Vertex implements Paintable {
 	}
 	
 	public boolean isLeaf() {
-		return (Boolean) m_item.getItemProperty(LEAF_PROPERTY).getValue();
+		Object value = m_item.getItemProperty(LEAF_PROPERTY).getValue();
+        return (Boolean) value;
 	}
 	
 	public int getX() {
@@ -90,7 +91,8 @@ public class Vertex implements Paintable {
 	}
 	
 	public int getSemanticZoomLevel() {
-		return (Integer) m_item.getItemProperty(SEMANTIC_ZOOM_LEVEL).getValue();
+		Integer zoomLevel = (Integer) m_item.getItemProperty(SEMANTIC_ZOOM_LEVEL).getValue();
+        return zoomLevel;
 	}
 
 	public void setGroupId(Object groupId) {

@@ -163,4 +163,19 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     public boolean isWrapperFor(final Class<?> iface) throws SQLException {
         return false;  //TODO
     }
+
+    protected static void validateJdbcUrl(String url) {
+        try {
+            if (url == null) {
+                throw new IllegalArgumentException("Null JDBC URL");
+            } else if (url.length() == 0) {
+                throw new IllegalArgumentException("Blank JDBC URL");
+            } else if (url.matches("\\$\\{.*\\}")) {
+                throw new IllegalArgumentException("JDBC URL cannot contain replacement tokens");
+            }
+        } catch (IllegalArgumentException e) {
+            LogUtils.errorf(e, e, "Invalid JDBC URL specified: %s", e.getMessage());
+            throw e;
+        }
+    }
 }

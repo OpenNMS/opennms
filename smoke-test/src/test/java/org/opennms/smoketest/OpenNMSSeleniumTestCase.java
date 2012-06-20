@@ -2,7 +2,7 @@ package org.opennms.smoketest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.firefox.FirefoxDriver;

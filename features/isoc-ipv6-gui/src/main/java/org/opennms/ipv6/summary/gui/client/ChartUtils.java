@@ -35,10 +35,10 @@ import java.util.List;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 
-public class ChartUtils {
+public abstract class ChartUtils {
     
     public static final String[] SUPPORTED_APPLICATIONS = {"IPV6", "IPV4", "QUAD A", "SINGLE A"};
     

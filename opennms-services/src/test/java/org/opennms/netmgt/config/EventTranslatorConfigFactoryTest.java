@@ -31,12 +31,12 @@ package org.opennms.netmgt.config;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.translator.EventTranslator;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author mhuot
