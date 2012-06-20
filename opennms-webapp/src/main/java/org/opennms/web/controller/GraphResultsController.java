@@ -42,9 +42,11 @@ import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
+
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.nrtcollector.api.model.CollectionJob;
 import org.opennms.nrtcollector.api.model.SnmpCollectionJob;
+
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.servlet.MissingParameterException;
@@ -55,6 +57,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
 
 
 /**
@@ -242,6 +248,7 @@ public class GraphResultsController extends AbstractController implements Initia
         return modelAndView;
     }
 
+
     private void publishCollectionJob(PrefabGraph prefabGraph, String user) {
         //TODO Tak this collectionJob is just a dummy
         CollectionJob collectionJob = new SnmpCollectionJob();
@@ -273,7 +280,7 @@ public class GraphResultsController extends AbstractController implements Initia
         }
     }
     
-    
+
     /**
      * <p>getGraphResultsService</p>
      *
