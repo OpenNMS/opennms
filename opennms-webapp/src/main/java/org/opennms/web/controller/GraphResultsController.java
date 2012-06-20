@@ -40,9 +40,7 @@ import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.web.graph.Graph;
 import org.opennms.web.graph.GraphResults;
-import org.opennms.web.graph.GraphResults.GraphResultSet;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.GraphResultsService;
@@ -228,16 +226,7 @@ public class GraphResultsController extends AbstractController implements Initia
             m_graphResultsService.findResults(resourceIds,
                                               reports, startLong,
                                               endLong, relativeTime);
-        for (GraphResultSet graphResultset : model.getGraphResultSets()) {
-            for(Graph graph : graphResultset.getGraphs()) {
-                logger.info("Graph name '{}' title '{}'", graph.getName(), graph.getTitle());
-                this.resolveMetricsForColumns(graph.getPrefabGraph(), Integer.parseInt(resourceIds[0].substring(resourceIds[0].indexOf("[")+1, resourceIds[0].indexOf("]"))));
-                
-                for (int i = 0; i < graph.getPrefabGraph().getColumns().length; i++) {
-                    logger.info("column '{}' represents metric '{}'", graph.getPrefabGraph().getColumns()[i].toString(), graph.getPrefabGraph().getM_metricIds()[i].toString());
-                }
-            }
-        }
+        
         ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
 
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
