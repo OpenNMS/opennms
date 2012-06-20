@@ -28,8 +28,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
-import java.util.Vector;
 
+@SuppressWarnings({"serial","unused"})
 public class JCTermSwingFrame extends JFrame
                               implements Frame, ActionListener, Runnable{
   static String COPYRIGHT="JCTerm 0.0.11\nCopyright (C) 2002,2012 ymnk<ymnk@jcraft.com>, JCraft,Inc.\n"
@@ -59,7 +59,7 @@ public class JCTermSwingFrame extends JFrame
   private Proxy proxy=null;
 
   private int compression=0;
-
+  
   private Splash splash=null;
 
   private JCTermSwing term=null;

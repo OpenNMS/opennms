@@ -30,9 +30,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.opennms.sandbox.jcterm.agentproxy.usocket;
 
 import org.opennms.sandbox.jcterm.agentproxy.*;
-import org.opennms.sandbox.jcterm.agentproxy.connector.*;
-import org.opennms.sandbox.jcterm.agentproxy.usocket.*;
-
 import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
 import org.newsclub.net.unix.AFUNIXSocketException;

@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.image.*;
 
+@SuppressWarnings("serial")
 public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     Term{
   OutputStream out;
@@ -64,6 +65,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
   //private int line_space=0;
   private int line_space=-2;
+  @SuppressWarnings("unused")
   private int compression=0;
 
   private boolean antialiasing=true;

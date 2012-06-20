@@ -28,19 +28,22 @@ import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
+@SuppressWarnings("serial")
 public class JCTermApplet extends JApplet {
   JDesktopPane desktop=new JDesktopPane();
 
   private String configName = "default";
 
-  public void init(){
+  @SuppressWarnings("static-access")
+public void init(){
     JCTermSwingFrame.resetCounter();
     String s;
 
     s = getParameter("jcterm.config.repository");
     if(s!=null){
       try{
-        Class c = Class.forName(s);
+        @SuppressWarnings("rawtypes")
+		Class c = Class.forName(s);
         ConfigurationRepository cr =
           (ConfigurationRepository)(c.newInstance());
         JCTermSwing.setCR(cr);

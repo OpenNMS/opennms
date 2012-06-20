@@ -29,7 +29,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.opennms.sandbox.jcterm.agentproxy;
 
-
+@SuppressWarnings("unused")
 public class AgentProxy {
 
   private static final byte SSH_AGENTC_REQUEST_RSA_IDENTITIES = 1;

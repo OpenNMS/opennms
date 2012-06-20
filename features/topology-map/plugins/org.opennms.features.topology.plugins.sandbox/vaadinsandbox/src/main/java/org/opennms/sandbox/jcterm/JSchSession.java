@@ -28,12 +28,14 @@ public class JSchSession{
   private static JSch jsch=null;
   private static SessionFactory sessionFactory=null;
 
-  private static java.util.Hashtable pool=new java.util.Hashtable();
+  @SuppressWarnings("rawtypes")
+private static java.util.Hashtable pool=new java.util.Hashtable();
 
   private String key=null;
   private Session session=null;
 
-  public static JSchSession getSession(String username, String password,
+  @SuppressWarnings("unchecked")
+public static JSchSession getSession(String username, String password,
       String hostname, int port, UserInfo userinfo, Proxy proxy)
       throws JSchException{
     String key=getPoolKey(username, hostname, port);
@@ -140,7 +142,8 @@ public class JSchSession{
     IdentityRepository ir = null;
     if(use){
       try{
-        Class c = Class.forName("com.jcraft.jcterm.JCTermIdentityRepository");
+        @SuppressWarnings("rawtypes")
+		Class c = Class.forName("com.jcraft.jcterm.JCTermIdentityRepository");
         ir = (IdentityRepository)(c.newInstance());
       }
       catch(java.lang.NoClassDefFoundError e){

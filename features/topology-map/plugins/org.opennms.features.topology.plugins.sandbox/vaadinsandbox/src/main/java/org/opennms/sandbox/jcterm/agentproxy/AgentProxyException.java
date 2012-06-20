@@ -29,6 +29,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.opennms.sandbox.jcterm.agentproxy;
 
+@SuppressWarnings("serial")
 public class AgentProxyException extends Exception {
   public AgentProxyException(String message){
     super(message);

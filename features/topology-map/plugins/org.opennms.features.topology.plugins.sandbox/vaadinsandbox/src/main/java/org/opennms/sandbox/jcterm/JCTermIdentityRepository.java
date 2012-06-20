@@ -22,13 +22,8 @@
 
 package org.opennms.sandbox.jcterm;
 
-import com.jcraft.jsch.*;
-import org.opennms.sandbox.jcterm.*;
 import org.opennms.sandbox.jcterm.agentproxy.connector.*;
 import org.opennms.sandbox.jcterm.agentproxy.usocket.*;
-
-import java.util.Vector;
-
 import org.opennms.sandbox.jcterm.agentproxy.AgentProxyException;
 import org.opennms.sandbox.jcterm.agentproxy.Connector;
 import org.opennms.sandbox.jcterm.agentproxy.RemoteIdentityRepository;

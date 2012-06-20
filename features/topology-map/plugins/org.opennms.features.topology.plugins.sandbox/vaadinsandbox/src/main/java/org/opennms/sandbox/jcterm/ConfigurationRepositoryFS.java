@@ -22,7 +22,6 @@
 
 package org.opennms.sandbox.jcterm;
 import java.io.*;
-import java.util.Vector;
 
 /**
  * This class will save the configuration into  ~/.ssh/jcterm.properties
