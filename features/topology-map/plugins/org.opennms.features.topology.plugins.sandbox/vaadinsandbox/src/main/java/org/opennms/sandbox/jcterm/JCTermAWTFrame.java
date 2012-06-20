@@ -27,15 +27,13 @@ import com.jcraft.jsch.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.awt.font.*;
-import java.awt.geom.*;
-import java.awt.image.*;
 
+@SuppressWarnings({"serial","unused"})
 public class JCTermAWTFrame  extends java.awt.Frame implements ActionListener, Runnable{
 
   private static final int SHELL=0;
   private static final int SFTP=1;
-  private static final int EXEC=2;
+//  private static final int EXEC=2;
 
   private int mode=SHELL;
   int port=22;
@@ -300,7 +298,8 @@ public class JCTermAWTFrame  extends java.awt.Frame implements ActionListener, R
   Button ok=null;
   Label label=null;
 
-  private Dialog getDialog(){
+  @SuppressWarnings("deprecation")
+private Dialog getDialog(){
     if(dialog==null){
       dialog=new Dialog(new java.awt.Frame(), "", true);
       ok = new Button("OK");  
@@ -672,7 +671,8 @@ public class JCTermAWTFrame  extends java.awt.Frame implements ActionListener, R
     String result=null;
     Dialog dialog=null;
     TextField textf=null;
-    InputDialog(String title, String text, boolean passwd){
+    @SuppressWarnings("deprecation")
+	InputDialog(String title, String text, boolean passwd){
       super();
       dialog=new Dialog(new java.awt.Frame(), title, true);
       Button ok = new Button("OK");  

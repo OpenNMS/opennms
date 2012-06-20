@@ -27,6 +27,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.awt.image.*;
 
+@SuppressWarnings("serial")
 public class JCTermPanelG2D extends Panel implements KeyListener, Term{
 
   static String COPYRIGHT="JCTerm 0.0.11\nCopyright (C) 2002,2007 ymnk<ymnk@jcraft.com>, JCraft,Inc.\n"

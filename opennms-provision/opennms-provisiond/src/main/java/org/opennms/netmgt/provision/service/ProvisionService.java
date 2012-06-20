@@ -280,7 +280,8 @@ public interface ProvisionService {
     @Transactional
     public abstract void setNodeParentAndDependencies(
             String foreignSource, String foreignId, 
-            String parentForeignId, String parentNodeLabel
+            String parentForeignSource, String parentForeignId, 
+            String parentNodeLabel
            );
     
     /**

@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 
 /**
  * A servlet that manages the pathOutage table in the DB

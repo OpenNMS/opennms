@@ -40,13 +40,13 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -106,7 +106,12 @@ public class CachingForeignSourceRepositoryTest implements InitializingBean {
         createRequisition();
         ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
         Set<ForeignSource> foreignSources = m_foreignSourceRepository.getForeignSources();
-        assertEquals("number of foreign sources must be 1", 1, foreignSources.size());
+        String names = "", separator = "";
+        for (ForeignSource fs : foreignSources) {
+            names += (separator + "\"" + fs.getName() + "\"");
+            separator = ", ";
+        }
+        assertEquals("number of foreign sources must be 1: " + names, 1, foreignSources.size());
         assertEquals("getAll() foreign source name must match", m_defaultForeignSourceName, foreignSources.iterator().next().getName());
         
         // check that the foreign source matches

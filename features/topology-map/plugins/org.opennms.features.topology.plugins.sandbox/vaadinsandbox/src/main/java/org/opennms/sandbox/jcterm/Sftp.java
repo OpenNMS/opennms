@@ -39,9 +39,11 @@ public class Sftp implements Runnable{
     this.out=out;
   }
 
-  public void run(){
+  @SuppressWarnings("unchecked")
+public void run(){
     try{
-      java.util.Vector cmds=new java.util.Vector();
+      @SuppressWarnings("rawtypes")
+	  java.util.Vector cmds=new java.util.Vector();
       byte[] buf=new byte[1024];
       int i;
       String str;
@@ -266,7 +268,8 @@ public class Sftp implements Runnable{
           if(cmds.size()==2)
             path=(String)cmds.elementAt(1);
           try{
-            java.util.Vector vv=c.ls(path);
+            @SuppressWarnings("rawtypes")
+			java.util.Vector vv=c.ls(path);
             if(vv!=null){
               for(int ii=0; ii<vv.size(); ii++){
                 //out.print(vv.elementAt(ii)+"\n");

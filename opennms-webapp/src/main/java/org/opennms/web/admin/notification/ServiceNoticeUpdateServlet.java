@@ -44,7 +44,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 
 /**
  * A servlet that handles updating the ifservices table with the notice status

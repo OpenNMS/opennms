@@ -38,11 +38,8 @@ import org.opennms.netmgt.config.capsd.SmbAuth;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
-public class SmbUtils {
+public abstract class SmbUtils {
     // NetBIOS Node Name Suffix Codes
     //
     /** Constant <code>WORKSTATION_SERVICE=0x00</code> */

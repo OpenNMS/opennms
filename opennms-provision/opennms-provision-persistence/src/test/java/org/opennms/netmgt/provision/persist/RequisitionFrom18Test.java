@@ -34,10 +34,11 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 
 @JUnitConfigurationEnvironment
@@ -56,9 +57,23 @@ public class RequisitionFrom18Test {
     public void test18Requisitions() {
         final Set<Requisition> requisitions = m_foreignSourceRepository.getRequisitions();
         assertEquals(11, requisitions.size());
+        int nodeCount = 0;
+        int interfaceCount = 0;
         for (final Requisition r : requisitions) {
             LogUtils.debugf(this, "got requisition: %s", r);
+            nodeCount += r.getNodeCount();
+            for (RequisitionNode node : r.getNode()) {
+                interfaceCount += node.getInterfaceCount();
+                if ("pgvip-master.somemediathing.net".equals(node.getNodeLabel())) {
+                    // Make sure that parent-foreign-source and parent-foreign-id work
+                    assertEquals("postgres", node.getParentForeignSource());
+                    assertEquals("1241674181872", node.getParentForeignId());
+                    assertEquals("barbacoa.somemediathing.net", node.getParentNodeLabel());
+                }
+            }
         }
+        assertEquals("There is an unexpected number of nodes in the test requisitions", 49, nodeCount);
+        assertEquals("There is an unexpected number of interfaces in the test requisitions", 60, interfaceCount);
     }
 
 }

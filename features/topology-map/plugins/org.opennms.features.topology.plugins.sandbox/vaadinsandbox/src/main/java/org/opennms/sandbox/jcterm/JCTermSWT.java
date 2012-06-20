@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
+@SuppressWarnings({"unused","deprecation"})
 public class JCTermSWT extends Canvas implements PaintListener,
     ControlListener, DisposeListener, KeyListener, Term{
 

@@ -40,10 +40,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.groups.Time;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * Servlet implementation class for Servlet: AdminRoleServlet

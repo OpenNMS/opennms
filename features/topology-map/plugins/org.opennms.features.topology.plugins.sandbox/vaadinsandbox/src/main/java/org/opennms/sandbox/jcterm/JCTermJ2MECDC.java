@@ -26,10 +26,8 @@ import com.jcraft.jsch.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.awt.font.*;
-import java.awt.geom.*;
-import java.awt.image.*;
 
+@SuppressWarnings({"serial","unused"})
 public class JCTermJ2MECDC  extends Panel implements KeyListener, ActionListener, Runnable, Term{
   static String COPYRIGHT=
 "JCTerm 0.0.11\nCopyright (C) 2002,2007 ymnk<ymnk@jcraft.com>, JCraft,Inc.\n"+
@@ -997,7 +995,8 @@ if(len!=buf.length){
 
 
     try{
-      Class c=Class.forName("org.bouncycastle.LICENSE");
+      @SuppressWarnings("rawtypes")
+	Class c=Class.forName("org.bouncycastle.LICENSE");
       c=Class.forName("com.jcraft.jsch.bc.DH");
       c=Class.forName("com.jcraft.jsch.bc.BlowfishCBC");
       c=Class.forName("com.jcraft.jsch.bc.TripleDESCBC");

@@ -37,7 +37,6 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.daemon.DaemonUtils;
 import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -112,7 +111,7 @@ public class Capsd extends AbstractServiceDaemon {
      */
 
     static {
-    	m_address = DaemonUtils.getLocalHostAddress();
+    	m_address = InetAddressUtils.getLocalHostAddressAsString();
     } // end static class initialization
 
     /**

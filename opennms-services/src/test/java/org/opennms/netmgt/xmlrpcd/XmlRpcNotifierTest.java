@@ -40,6 +40,7 @@ import java.util.Hashtable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
@@ -51,7 +52,6 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author brozow@opennms.org

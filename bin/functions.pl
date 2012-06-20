@@ -114,6 +114,12 @@ if (not defined $JAVA_HOME) {
 }
 $ENV{'JAVA_HOME'} = $JAVA_HOME;
 
+
+if (not exists $ENV{'JAVA_VENDOR'}) {
+	warning("You do not have \$JAVA_VENDOR set. This is probably OK, but on some platforms");
+	warning("you might need to set it, eg, to 'Sun' or 'openjdk'.");
+}
+
 $MAVEN_VERSION = `$MVN --version`;
 $MAVEN_VERSION =~ s/^.*Apache Maven ([\d\.]+).*?$/$1/gs;
 chomp($MAVEN_VERSION);

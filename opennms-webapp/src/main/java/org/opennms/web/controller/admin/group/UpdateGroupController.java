@@ -38,8 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.users.DutySchedule;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.group.WebGroup;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;

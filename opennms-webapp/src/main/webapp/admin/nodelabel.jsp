@@ -33,8 +33,8 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.netmgt.utils.NodeLabel,
-		org.opennms.web.MissingParameterException,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.web.servlet.MissingParameterException,
+		org.opennms.core.utils.WebSecurityUtils,
 		java.util.*,
 		java.sql.*
 	"

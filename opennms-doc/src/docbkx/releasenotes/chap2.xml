@@ -87,6 +87,22 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.3">
+		<title>Changes in OpenNMS 1.10.3</title>
+
+		<section id="opennms-1.10.3-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Path-Outage: parent-foreign-id is not recognized when defined in another requisition (Issue <ulink url='http://issues.opennms.org/browse/NMS-4109'>NMS-4109</ulink>)</para></listitem>
+				<listitem><para>JRobinRrdStrategy: JRobin: Unrecognized graph argument: (Issue <ulink url='http://issues.opennms.org/browse/NMS-4757'>NMS-4757</ulink>)</para></listitem>
+				<listitem><para>Provisiond leaks file handles, eventually causing &quot;Too many open files&quot; crashes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4846'>NMS-4846</ulink>)</para></listitem>
+				<listitem><para>Scheduled outages applied on latency thresholds are ignored by Pollerd. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5357'>NMS-5357</ulink>)</para></listitem>
+				<listitem><para>Unable to create reports after upgrade from 1.10.1 to 1.10.2 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5359'>NMS-5359</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.2">
 		<title>Changes in OpenNMS 1.10.2</title>
 

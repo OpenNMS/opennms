@@ -28,7 +28,7 @@
 
 package org.opennms.core.utils;
 
-public class RrdLabelUtils {
+public abstract class RrdLabelUtils {
     
     public static String computeNameForRRD(String ifname, String ifdescr) {
         String label = null;

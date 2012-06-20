@@ -31,11 +31,11 @@ package org.opennms.web.controller.outage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.OutageIdNotFoundException;
 import org.opennms.web.outage.WebOutageRepository;
+import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

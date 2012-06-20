@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.MissingParameterException"
+	import="org.opennms.web.servlet.MissingParameterException"
 %>
 
 <% 

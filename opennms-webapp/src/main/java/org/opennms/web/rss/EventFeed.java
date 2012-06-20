@@ -33,8 +33,8 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.EventFactory;

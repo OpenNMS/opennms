@@ -25,10 +25,8 @@ package org.opennms.sandbox.jcterm;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.awt.font.*;
-import java.awt.geom.*;
-import java.awt.image.*;
 
+@SuppressWarnings("serial")
 public class JCTermAWT  extends Panel implements KeyListener,  /*Runnable,*/ Term{
 
   static String COPYRIGHT=
@@ -81,7 +79,7 @@ public class JCTermAWT  extends Panel implements KeyListener,  /*Runnable,*/ Ter
   private int proxy_socks5_port=0;
   */
 
-  private boolean antialiasing=true;
+//  private boolean antialiasing=true;
 //  private int line_space=0;
   private int line_space=-2;
   private int compression=0;
@@ -155,7 +153,7 @@ public class JCTermAWT  extends Panel implements KeyListener,  /*Runnable,*/ Ter
     this.term_area=term_area;
   }
 
-  private Thread thread=null;
+//  private Thread thread=null;
 
   public void start(Connection connection){
     this.connection=connection;

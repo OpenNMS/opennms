@@ -94,6 +94,7 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
     @Override
     public void setUrl(final String url) {
+        validateJdbcUrl(url);
         m_pool.setJdbcUrl(url);
     }
 

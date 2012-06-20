@@ -30,10 +30,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.opennms.sandbox.jcterm.agentproxy.usocket;
 
 import org.opennms.sandbox.jcterm.agentproxy.*;
-import org.opennms.sandbox.jcterm.agentproxy.connector.*;
-import org.opennms.sandbox.jcterm.agentproxy.usocket.*;
-
-
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -88,7 +84,6 @@ public class JNAUSocketFactory implements USocketFactory {
 
     public void write(byte[] buf, int s, int len) throws IOException {
       byte[] _buf = buf;
-      int _len = len;
       if(s != 0){
         _buf = new byte[len];
         System.arraycopy(buf, s, _buf, 0, len);

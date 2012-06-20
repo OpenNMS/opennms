@@ -41,13 +41,13 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.WebSecurityUtils,
+	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.category.*,
 		org.opennms.web.element.*,
 		org.opennms.netmgt.model.OnmsNode,
 		java.util.*,
         org.springframework.util.Assert,
-        org.opennms.web.MissingParameterException
+        org.opennms.web.servlet.MissingParameterException
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

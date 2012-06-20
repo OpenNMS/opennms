@@ -36,7 +36,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
 /**

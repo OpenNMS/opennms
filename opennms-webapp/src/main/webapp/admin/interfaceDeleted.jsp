@@ -34,10 +34,10 @@
 	session="true"
 	import="org.opennms.web.element.*,
 		org.opennms.web.category.*,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		java.util.*,
 		org.opennms.web.event.*,
-		org.opennms.web.MissingParameterException
+		org.opennms.web.servlet.MissingParameterException
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

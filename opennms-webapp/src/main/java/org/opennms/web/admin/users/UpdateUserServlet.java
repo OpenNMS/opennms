@@ -41,12 +41,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles saving a user

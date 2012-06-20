@@ -31,15 +31,12 @@ package org.opennms.sandbox.jcterm.agentproxy.connector;
 
 
 import org.opennms.sandbox.jcterm.agentproxy.*;
-import org.opennms.sandbox.jcterm.agentproxy.connector.*;
-import org.opennms.sandbox.jcterm.agentproxy.usocket.*;
 
-import com.sun.jna.Platform;
 import com.sun.jna.Native;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-
+import com.sun.jna.Platform;
 import com.sun.jna.win32.W32APIOptions;
 
 import com.sun.jna.platform.win32.WinDef.WPARAM;
@@ -133,16 +130,16 @@ public class PageantConnector implements Connector {
     long rcode = 0;
     try {
       sharedMemory.write(0, buffer.buffer, 0, buffer.getLength());
-//      if(Platform.is64Bit()){
-//        COPYDATASTRUCT64 cds64 = new COPYDATASTRUCT64();
-//        data = install64(mapname, cds64);
-//        rcode = sendMessage(hwnd, data);
-//      }
-//      else {
-//        COPYDATASTRUCT32 cds32 = new COPYDATASTRUCT32();
-//        data = install32(mapname, cds32);
-//        rcode = sendMessage(hwnd, data);
-//      }
+      if(Platform.is64Bit()){
+        COPYDATASTRUCT64 cds64 = new COPYDATASTRUCT64();
+        data = install64(mapname, cds64);
+        rcode = sendMessage(hwnd, data);
+      }
+      else {
+        COPYDATASTRUCT32 cds32 = new COPYDATASTRUCT32();
+        data = install32(mapname, cds32);
+        rcode = sendMessage(hwnd, data);
+      }
 
       buffer.rewind();
       if(rcode!=0){

@@ -31,11 +31,11 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 public class NotificationsConfigTest {

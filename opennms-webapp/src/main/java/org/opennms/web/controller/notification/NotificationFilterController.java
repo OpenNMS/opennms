@@ -38,9 +38,9 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;

@@ -22,6 +22,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.karaf.main.Main;
+import org.osgi.framework.BundleContext;
 
 public class WebAppListener implements ServletContextListener {
 
@@ -42,7 +43,9 @@ public class WebAppListener implements ServletContextListener {
             System.setProperty("karaf.lock", "false");
 			main = new Main(new String[0]);
             main.launch();
-		} catch (Exception e) {
+            final BundleContext context = main.getFramework().getBundleContext();
+            sce.getServletContext().setAttribute(BundleContext.class.getName(), context);
+		} catch (final Exception e) {
 			main = null;
 			e.printStackTrace();
 		}
@@ -54,7 +57,7 @@ public class WebAppListener implements ServletContextListener {
 			if (main != null) {
                 main.destroy();
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}

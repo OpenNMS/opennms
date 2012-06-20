@@ -40,7 +40,7 @@ import javax.swing.filechooser.FileSystemView;
  * @author ranger
  * @version $Id: $
  */
-public class StringUtils {
+public abstract class StringUtils {
 
     /**
      * Convenience method for creating arrays of strings suitable for use as

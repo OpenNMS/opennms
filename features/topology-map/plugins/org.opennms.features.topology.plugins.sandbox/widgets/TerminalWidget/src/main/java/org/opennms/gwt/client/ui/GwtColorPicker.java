@@ -56,9 +56,7 @@ public class GwtColorPicker extends Composite implements ClickHandler {
 
                 // For dark colors, the button label must be in white.
                 if ("black navy maroon blue purple".indexOf(colors[colornum]) != -1) {
-                    DOM
-                            .setStyleAttribute(button.getElement(), "color",
-                                    "white");
+                    DOM.setStyleAttribute(button.getElement(), "color", "white");
                 }
             }
         }

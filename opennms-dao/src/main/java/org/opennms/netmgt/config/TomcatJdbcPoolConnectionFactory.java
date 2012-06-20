@@ -89,6 +89,7 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
 
     @Override
     public void setUrl(final String url) {
+    	validateJdbcUrl(url);
     	m_dataSource.setUrl(url);
     }
 

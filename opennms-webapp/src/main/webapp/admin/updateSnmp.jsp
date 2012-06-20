@@ -34,7 +34,8 @@
 	session="true"
 	import="org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
-		org.opennms.web.*,
+		org.opennms.core.utils.WebSecurityUtils,
+		org.opennms.web.servlet.MissingParameterException,
 		org.opennms.web.api.Util,
 		org.opennms.core.utils.InetAddressUtils"
 %>
