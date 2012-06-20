@@ -28,6 +28,8 @@
 
 package org.opennms.web.controller;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,10 +39,15 @@ import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.web.graph.Graph;
 import org.opennms.web.graph.GraphResults;
+import org.opennms.web.graph.GraphResults.GraphResultSet;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.GraphResultsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -55,6 +62,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class GraphResultsController extends AbstractController implements InitializingBean {
+    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + GraphResultsController.class);
+    
     private GraphResultsService m_graphResultsService;
     
     private static RelativeTimePeriod[] s_periods = RelativeTimePeriod.getDefaultPeriods();
@@ -219,7 +228,16 @@ public class GraphResultsController extends AbstractController implements Initia
             m_graphResultsService.findResults(resourceIds,
                                               reports, startLong,
                                               endLong, relativeTime);
-
+        for (GraphResultSet graphResultset : model.getGraphResultSets()) {
+            for(Graph graph : graphResultset.getGraphs()) {
+                logger.info("Graph name '{}' title '{}'", graph.getName(), graph.getTitle());
+                this.resolveMetricsForColumns(graph.getPrefabGraph(), Integer.parseInt(resourceIds[0].substring(resourceIds[0].indexOf("[")+1, resourceIds[0].indexOf("]"))));
+                
+                for (int i = 0; i < graph.getPrefabGraph().getColumns().length; i++) {
+                    logger.info("column '{}' represents metric '{}'", graph.getPrefabGraph().getColumns()[i].toString(), graph.getPrefabGraph().getM_metricIds()[i].toString());
+                }
+            }
+        }
         ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
 
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
@@ -227,6 +245,23 @@ public class GraphResultsController extends AbstractController implements Initia
         return modelAndView;
     }
 
+    private PrefabGraph resolveMetricsForColumns(PrefabGraph prefabGraph, int nodeId) {
+        String[] metrics = null; 
+        try {
+                    metrics = new String[prefabGraph.getColumns().length];
+                    for (int i = 0; i < metrics.length; i++) {
+                        BufferedReader bufferedReader = new BufferedReader(new FileReader("/opt/opennms/share/rrd/snmp/" + nodeId + "/" + prefabGraph.getColumns()[i] + ".meta"));
+                        String line = bufferedReader.readLine();
+                        String metric = line.subSequence(0, line.lastIndexOf("=")).toString();
+                        metrics[i] = metric;
+                        bufferedReader.close();
+                    }
+                } catch (Exception e) {
+                    logger.info("columns to matricId matching caused an exception '{}'", e.getMessage());
+                }
+        prefabGraph.setMetricIds(metrics);
+        return prefabGraph;
+    }
     /**
      * <p>getGraphResultsService</p>
      *

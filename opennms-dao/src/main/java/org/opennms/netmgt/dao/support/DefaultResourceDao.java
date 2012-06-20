@@ -117,11 +117,13 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @return a {@link java.io.File} object.
      */
+    @Override
     public File getRrdDirectory() {
         return m_rrdDirectory;
     }
     
     /** {@inheritDoc} */
+    @Override
     public File getRrdDirectory(boolean verify) {
         if (verify && !getRrdDirectory().isDirectory()) {
             throw new ObjectRetrievalFailureException("RRD directory does not exist: " + getRrdDirectory().getAbsolutePath(), getRrdDirectory());
@@ -311,6 +313,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<OnmsResourceType> getResourceTypes() {
         return m_resourceTypes.values();
     }
@@ -321,6 +324,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @throws IllegalArgumentException When the resource ID string does not match the expected regex pattern
      * @throws ObjectRetrievalFailureException If any exceptions are thrown while searching for the resource
      */
+    @Override
     public OnmsResource getResourceById(String id) {
         OnmsResource resource = null;
 
@@ -364,6 +368,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @throws IllegalArgumentException When the resource ID string does not match the expected regex pattern
      * @throws ObjectRetrievalFailureException If any exceptions are thrown while searching for the resource
      */
+    @Override
     public List<OnmsResource> getResourceListById(String id) throws IllegalArgumentException, ObjectRetrievalFailureException {
         OnmsResource topLevelResource = null;
 
@@ -459,6 +464,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsResource> findNodeResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
 
@@ -503,6 +509,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsResource> findDomainResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
         
@@ -671,6 +678,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsResource getResourceForNode(OnmsNode node) {
         Assert.notNull(node, "node argument must not be null");
         
@@ -702,6 +710,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @return OnmsResource for the <code>responseTime</code> resource on the interface or 
      * null if the <code>responseTime</code> resource cannot be found for the given IP interface.
      */ 
+    @Override
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
@@ -714,6 +723,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @return OnmsResource for the <code>distributedStatus</code> resource on the interface or 
      * null if the <code>distributedStatus</code> resource cannot be found for the given IP interface.
      */ 
+    @Override
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locMon) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         Assert.notNull(locMon, "locMon argument must not be null");
@@ -728,6 +738,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsResource> findTopLevelResources() {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         resources.addAll(findNodeResources());
