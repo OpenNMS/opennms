@@ -290,19 +290,19 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
          */
 
         long end = System.currentTimeMillis() + 300000;
-        while (!selenium.isElementPresent("//input[@value='Delete Group']") && System.currentTimeMillis() < end) {
+        while (!selenium.isElementPresent("//input[@value='Delete Requisition']") && System.currentTimeMillis() < end) {
         	
         	Thread.sleep(10000);
         	
         	if (System.currentTimeMillis() >= end) {
-        		throw new NoSuchElementException("Could not find the 'Delete Group' button after refreshing for 5 minutes");
+        		throw new NoSuchElementException("Could not find the 'Delete Requisition' button after refreshing for 5 minutes");
         	} else {
         		selenium.refresh();
         		waitForPageToLoad();
         	}
         }        
 
-        selenium.click("//input[@value='Delete Group']");
+        selenium.click("//input[@value='Delete Requisition']");
         waitForPageToLoad();
         selenium.click("link=Log out");
         waitForPageToLoad();

@@ -210,7 +210,7 @@
     <url-pattern>/alarm/list.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>AddRefreshHeader-30</filter-name>
+    <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/alarm/detail.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
