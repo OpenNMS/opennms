@@ -269,8 +269,7 @@ public class GraphResultsController extends AbstractController implements Initia
             Connection connection = connectionFactory.createConnection();
             connection.start();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String jobQueueDestination = ((SnmpCollectionJob)collectionJob).getMeasurementSetsByDestination().keySet().iterator().next().replace("_results", "");
-            Destination destination = session.createQueue(jobQueueDestination);
+            Destination destination = session.createQueue("NrtCollectMe");
             
             MessageProducer messageProducer = session.createProducer(destination);
             messageProducer.send(session.createObjectMessage(collectionJob));
