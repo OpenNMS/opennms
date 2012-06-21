@@ -36,7 +36,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import junit.framework.TestCase;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.InvdConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.FilterDao;

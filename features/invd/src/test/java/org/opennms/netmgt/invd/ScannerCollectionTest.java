@@ -11,7 +11,7 @@ import org.opennms.netmgt.config.invd.InvdService;
 import org.opennms.netmgt.config.invd.InvdServiceParameter;
 import org.opennms.netmgt.dao.InvdConfigDao;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 
 import junit.framework.TestCase;
 
