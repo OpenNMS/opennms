@@ -16,13 +16,7 @@
 
 package org.opennms;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 
@@ -38,12 +32,23 @@ public class ColorPickerApplication extends com.vaadin.Application {
     @Override
     public void init() {
         setMainWindow(main);
-        setTheme("mytheme");
-        Panel mainPanel = new Panel("SSH");
-        mainPanel.setSizeUndefined();
-        //ThemeResource htmlFile = new ThemeResource("layouts/SSHWindow.html");
-        CustomLayout layout = new CustomLayout("example");
-        mainPanel.setContent(layout);
-        getMainWindow().setContent(mainPanel);
+        
+        Button openWindow = new Button("Open Window");
+        openWindow.addListener(new Button.ClickListener() {
+			
+			public void buttonClick(ClickEvent event) {
+				showSSHWindow();
+			}
+		});
+        getMainWindow().addComponent(openWindow);
+
     }
+
+	private void showSSHWindow() {
+		getMainWindow().addWindow(getSSHWindow());
+	}
+
+	private Window getSSHWindow() {
+		return new SSHWindow((int)getMainWindow().getWidth(), (int)getMainWindow().getHeight());
+	}
 }

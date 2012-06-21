@@ -31,7 +31,6 @@ public class ColorPicker extends AbstractField {
 
     public ColorPicker() {
         super();
-        setValue(new String("white"));
     }
 
     /** The property value of the field is a String. */
@@ -76,4 +75,5 @@ public class ColorPicker extends AbstractField {
             setValue(newValue, true);
         }
     }
+    
 }

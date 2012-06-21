@@ -65,30 +65,6 @@ public class VColorPicker extends GwtColorPicker implements Paintable {
         // Save the UIDL identifier for the component
         uidlId = uidl.getId();
 
-        // Get value received from server and actualize it in the GWT component
-        setColor(uidl.getStringVariable("colorname"));
     }
 
-    /** Override the method to communicate the new value to server. */
-    @Override
-    public void setColor(String newcolor) {
-        // Ignore if no change
-        if (newcolor.equals(currentcolor.getText())) {
-            return;
-        }
-
-        // Let the original implementation to do whatever it needs to do
-        super.setColor(newcolor);
-
-        // Updating the state to the server can not be done before
-        // the server connection is known, i.e., before updateFromUIDL()
-        // has been called.
-        if (uidlId == null || client == null) {
-            return;
-        }
-
-        // Communicate the user interaction parameters to server. This call will
-        // initiate an AJAX request to the server.
-        client.updateVariable(uidlId, "colorname", newcolor, true);
-    }
 }
