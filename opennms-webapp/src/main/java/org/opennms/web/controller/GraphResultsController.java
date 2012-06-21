@@ -262,14 +262,14 @@ public class GraphResultsController extends AbstractController implements Initia
     }
     
     private void publishCollectionJobViaJms(CollectionJob collectionJob) {
-        //TODO Tak
+        //TODO Tak get the NRTCollectionModel in shape.... soon
         try {
             String url = ActiveMQConnection.DEFAULT_BROKER_URL;
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
             Connection connection = connectionFactory.createConnection();
             connection.start();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String jobQueueDestination = collectionJob.getResults().get(0).getDestinationString().replace("_results", "");
+            String jobQueueDestination = ((SnmpCollectionJob)collectionJob).getMeasurementSetsByDestination().keySet().iterator().next().replace("_results", "");
             Destination destination = session.createQueue(jobQueueDestination);
             
             MessageProducer messageProducer = session.createProducer(destination);
