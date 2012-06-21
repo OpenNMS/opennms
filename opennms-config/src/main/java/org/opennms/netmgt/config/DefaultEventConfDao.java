@@ -40,12 +40,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.beans.factory.InitializingBean;

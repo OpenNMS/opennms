@@ -34,12 +34,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Time;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 

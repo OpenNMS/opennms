@@ -45,6 +45,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao.PrefabGraphTypeDao;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.ExternalValueAttribute;

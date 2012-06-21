@@ -26,13 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package org.opennms.core.xml;
 
 
+import org.opennms.core.utils.FileReloadCallback;
+import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.dao.support.FileReloadCallback;
-import org.opennms.netmgt.dao.support.FileReloadContainer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;

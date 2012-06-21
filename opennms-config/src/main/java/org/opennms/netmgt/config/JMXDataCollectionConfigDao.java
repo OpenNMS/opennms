@@ -31,11 +31,11 @@ package org.opennms.netmgt.config;
 import java.io.File;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbeans;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.springframework.core.io.FileSystemResource;
 
 /**

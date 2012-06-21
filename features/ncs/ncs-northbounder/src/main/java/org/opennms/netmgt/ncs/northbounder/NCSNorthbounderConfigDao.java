@@ -1,6 +1,6 @@
 package org.opennms.netmgt.ncs.northbounder;
 
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 
 public class NCSNorthbounderConfigDao extends AbstractJaxbConfigDao<NCSNorthbounderConfig, NCSNorthbounderConfig> {
 
