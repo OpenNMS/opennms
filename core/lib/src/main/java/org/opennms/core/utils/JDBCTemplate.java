@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,7 +34,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.utils.DBUtils;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**

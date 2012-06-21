@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PassiveStatusKey;
 import org.opennms.netmgt.config.PassiveStatusValue;
@@ -43,7 +44,6 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

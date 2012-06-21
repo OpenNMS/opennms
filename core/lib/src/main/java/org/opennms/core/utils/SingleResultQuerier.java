@@ -26,79 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.utils.DBUtils;
-
 
 /**
- * <p>Querier class.</p>
+ * <p>SingleResultQuerier class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class Querier extends JDBCTemplate implements RowProcessor {
-    private int m_count;
-    private RowProcessor m_rowProcessor;
+public class SingleResultQuerier extends Querier {
     /**
-     * <p>Constructor for Querier.</p>
+     * <p>Constructor for SingleResultQuerier.</p>
      *
      * @param db a {@link javax.sql.DataSource} object.
      * @param sql a {@link java.lang.String} object.
-     * @param rowProcessor a {@link org.opennms.netmgt.utils.RowProcessor} object.
      */
-    public Querier(DataSource db, String sql, RowProcessor rowProcessor) {
+    public SingleResultQuerier(DataSource db, String sql) {
         super(db, sql);
-        if (rowProcessor == null)
-            m_rowProcessor = this;
-        else 
-            m_rowProcessor = rowProcessor;
-        m_count = 0;
     }
-     
+    
+    private Object m_result;
+    
     /**
-     * <p>Constructor for Querier.</p>
+     * <p>getResult</p>
      *
-     * @param db a {@link javax.sql.DataSource} object.
-     * @param sql a {@link java.lang.String} object.
+     * @return a {@link java.lang.Object} object.
      */
-    public Querier(DataSource db, String sql) {
-        this(db, sql, null);
-    }
-     
-    /**
-     * <p>getCount</p>
-     *
-     * @return a int.
-     */
-    public int getCount() {
-        return m_count;
-    }
-     
-    /** {@inheritDoc} */
-    protected void executeStmt(PreparedStatement stmt) throws SQLException {
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            m_count = 0;
-            while (rs.next()) {
-                m_rowProcessor.processRow(rs);
-                m_count++;
-            }
-        } finally {
-            d.cleanUp();
-        }
-    }
-
+    public Object getResult() { return m_result; }
+    
     /** {@inheritDoc} */
     public void processRow(ResultSet rs) throws SQLException {
+        m_result = rs.getObject(1);
     }
-
- }
+    
+}

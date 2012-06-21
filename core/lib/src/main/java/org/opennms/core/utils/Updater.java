@@ -26,23 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+
 /**
- * Represents a RowProcessor
+ * <p>Updater class.</p>
  *
  * @author brozow
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  * @version $Id: $
  */
-public interface RowProcessor {
+public class Updater extends JDBCTemplate {
+    
     /**
-     * <p>processRow</p>
+     * <p>Constructor for Updater.</p>
      *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @throws java.sql.SQLException if any.
+     * @param db a {@link javax.sql.DataSource} object.
+     * @param sql a {@link java.lang.String} object.
      */
-    public void processRow(ResultSet rs) throws SQLException;
+    public Updater(DataSource db, String sql) {
+        super(db, sql);
+    }
+
+    void executeStmt(PreparedStatement stmt) throws SQLException {
+        stmt.executeUpdate();
+    }
+
 }

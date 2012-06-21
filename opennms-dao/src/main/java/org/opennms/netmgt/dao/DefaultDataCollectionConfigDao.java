@@ -42,6 +42,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.DataCollectionConfigParser;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import org.opennms.netmgt.config.datacollection.Systems;
-import org.opennms.netmgt.dao.castor.DataCollectionConfigParser;
 import org.opennms.netmgt.model.RrdRepository;
 import org.springframework.core.io.Resource;
 

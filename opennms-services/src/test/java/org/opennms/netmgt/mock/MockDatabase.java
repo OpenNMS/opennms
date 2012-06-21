@@ -40,12 +40,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.Querier;
+import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.Parameter;
-import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
