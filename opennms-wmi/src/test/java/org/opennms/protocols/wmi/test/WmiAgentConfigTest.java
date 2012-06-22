@@ -62,7 +62,7 @@ public class WmiAgentConfigTest  extends TestCase {
 	 * "all", "none", "some" and "one" but does not work for other arbitrary values.
 	 *
 	 * Test method for
-	 * {@link org.opennms.protocols.wmi.WmiAgentConfig#isValidMatchType(java.lang.String)}.
+	 * {@link org.opennms.netmgt.config.wmi.WmiAgentConfig#isValidMatchType(java.lang.String)}.
 	 */
 	public final void testIsValidMatchType() {
 

@@ -39,9 +39,6 @@ import org.opennms.netmgt.capsd.Plugin;
  *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class CapsdProtocolInfo {
     public enum Action { 

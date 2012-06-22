@@ -26,64 +26,66 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.wmi;
+package org.opennms.netmgt.config.ami;
 
 import java.net.InetAddress;
 
 /**
- * <p>WmiAgentConfig class.</p>
+ * <p>AmiAgentConfig class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class WmiAgentConfig {
+public class AmiAgentConfig {
     /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
     public static final int DEFAULT_TIMEOUT = 3000;
     /** Constant <code>DEFAULT_RETRIES=1</code> */
     public static final int DEFAULT_RETRIES = 1;
     /** Constant <code>DEFAULT_PASSWORD=""</code> */
     public static final String DEFAULT_PASSWORD = "";
-    /** Constant <code>DEFAULT_USERNAME="Administrator"</code> */
-    public static final String DEFAULT_USERNAME="Administrator";
-    /** Constant <code>DEFAULT_DOMAIN="WORKGROUP"</code> */
-    public static final String DEFAULT_DOMAIN="WORKGROUP";
+    /** Constant <code>DEFAULT_USERNAME="opennms"</code> */
+    public static final String DEFAULT_USERNAME="opennms";
+    /** Constant <code>DEFAULT_PORT=5038</code> */
+    public static final int DEFAULT_PORT = 5038;
+    /** Constant <code>DEFAULT_TLS_PORT=5039</code> */
+    public static final int DEFAULT_TLS_PORT = 5039;
+    /** Constant <code>DEFAULT_USE_TLS=false</code> */
+    public static final boolean DEFAULT_USE_TLS = false;
     
-    private InetAddress m_Address;
-    private int m_Timeout;
-    private int m_Retries;
-    private String m_Username;
-    private String m_Domain;
-    private String m_Password;
+    private InetAddress m_address;
+    private int m_timeout;
+    private int m_retries;
+    private String m_username;
+    private String m_password;
+    private int m_port;
+    private boolean m_useTls;
     
-    
-	String user = "";
+    String user = "";
 	String pass = "";
-	String domain = "";
 	String matchType = "all";
-	String compVal = "";
-	String compOp = "NOOP";
-	String wmiClass = "";
-	String wmiObject = "";
     /**
-     * <p>Constructor for WmiAgentConfig.</p>
+     * <p>Constructor for AmiAgentConfig.</p>
      */
-    public WmiAgentConfig() {
+    public AmiAgentConfig() {
         setDefaults();
     }
     
     /**
-     * <p>Constructor for WmiAgentConfig.</p>
+     * <p>Constructor for AmiAgentConfig.</p>
      *
      * @param agentAddress a {@link java.net.InetAddress} object.
      */
-    public WmiAgentConfig(InetAddress agentAddress) {
-        m_Address = agentAddress;
+    public AmiAgentConfig(InetAddress agentAddress) {
+        m_address = agentAddress;
         setDefaults();
     }
 
     private void setDefaults() {
-        m_Timeout = DEFAULT_TIMEOUT;
-        m_Retries = DEFAULT_RETRIES;
+        m_timeout = DEFAULT_TIMEOUT;
+        m_retries = DEFAULT_RETRIES;
+        m_port = DEFAULT_PORT;
+        m_useTls = DEFAULT_USE_TLS;
+        m_username = DEFAULT_USERNAME;
     }
     
     /**
@@ -93,10 +95,13 @@ public class WmiAgentConfig {
      */
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
-        buff.append("Address: "+m_Address);
-        buff.append(", Password: "+String.valueOf(m_Password)); //use valueOf to handle null values of m_password
-        buff.append(", Timeout: "+m_Timeout);
-        buff.append(", Retries: "+m_Retries);
+        buff.append("Address: "+m_address);
+        buff.append(", Port: " +m_port);
+        buff.append(", TLS: "+m_useTls);
+        buff.append(", Username: "+String.valueOf(m_username)); //use valueOf to handle null values of m_username
+        buff.append(", Password: "+String.valueOf(m_password)); //use valueOf to handle null values of m_password
+        buff.append(", Timeout: "+m_timeout);
+        buff.append(", Retries: "+m_retries);
         buff.append("]");
         return buff.toString();
     }
@@ -108,7 +113,7 @@ public class WmiAgentConfig {
      * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getAddress() {
-        return m_Address;
+        return m_address;
     }
 
     /**
@@ -117,7 +122,7 @@ public class WmiAgentConfig {
      * @param address a {@link java.net.InetAddress} object.
      */
     public void setAddress(InetAddress address) {
-        m_Address = address;
+        m_address = address;
     }
 
     /**
@@ -126,7 +131,7 @@ public class WmiAgentConfig {
      * @return a int.
      */
     public int getTimeout() {
-        return m_Timeout;
+        return m_timeout;
     }
 
     /**
@@ -135,7 +140,7 @@ public class WmiAgentConfig {
      * @param timeout a int.
      */
     public void setTimeout(int timeout) {
-        m_Timeout = timeout;
+        m_timeout = timeout;
     }
 
     /**
@@ -144,7 +149,7 @@ public class WmiAgentConfig {
      * @return a int.
      */
     public int getRetries() {
-        return m_Retries;
+        return m_retries;
     }
 
     /**
@@ -153,7 +158,7 @@ public class WmiAgentConfig {
      * @param retries a int.
      */
     public void setRetries(int retries) {
-        m_Retries = retries;
+        m_retries = retries;
     }
 
     /**
@@ -162,7 +167,7 @@ public class WmiAgentConfig {
      * @param password a {@link java.lang.String} object.
      */
     public void setPassword(String password) {
-        m_Password = password;
+        m_password = password;
     }
 
     /**
@@ -171,7 +176,7 @@ public class WmiAgentConfig {
      * @return a {@link java.lang.String} object.
      */
     public String getPassword() {
-        return m_Password;
+        return m_password;
     }
 
 
@@ -181,7 +186,7 @@ public class WmiAgentConfig {
      * @return a {@link java.lang.String} object.
      */
     public String getUsername() {
-        return m_Username;
+        return m_username;
     }
     
     /**
@@ -190,25 +195,42 @@ public class WmiAgentConfig {
      * @param username a {@link java.lang.String} object.
      */
     public void setUsername(String username) {
-    	m_Username = username;
+    	m_username = username;
+    }
+    
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
+    public int getPort() {
+        return m_port;
+    }
+    
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
+    public void setPort(int port) {
+        m_port = port;
+    }
+    
+    /**
+     * <p>getUseTls</p>
+     *
+     * @return a boolean.
+     */
+    public boolean getUseTls() {
+        return m_useTls;
     }
 
     /**
-     * <p>Getter for the field <code>domain</code>.</p>
+     * <p>setUseTls</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @param useTls a boolean.
      */
-    public String getDomain() {
-        return m_Domain;
+    public void setUseTls(boolean useTls) {
+        m_useTls = useTls;
     }
-    
-    /**
-     * <p>Setter for the field <code>domain</code>.</p>
-     *
-     * @param domain a {@link java.lang.String} object.
-     */
-    public void setDomain(String domain) {
-    	m_Domain = domain;
-    }
-    
 }

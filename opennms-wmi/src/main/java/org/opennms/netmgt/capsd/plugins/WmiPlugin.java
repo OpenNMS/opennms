@@ -36,7 +36,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.protocols.wmi.WmiAgentConfig;
+import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;

@@ -41,13 +41,13 @@ public class Outage {
     Timestamp m_lostEventTime;
     Timestamp m_regainedEventTime;
 
-    Outage(int nodeId, String ipAddr, int serviceId) {
+    public Outage(int nodeId, String ipAddr, int serviceId) {
         m_nodeId = nodeId;
         m_ipAddr = ipAddr;
         m_serviceId = serviceId;
     }
     
-    Outage(MockService svc) {
+    public Outage(MockService svc) {
         this(svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }
 

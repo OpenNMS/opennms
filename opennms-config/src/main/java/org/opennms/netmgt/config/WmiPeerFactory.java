@@ -54,8 +54,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.wmi.Definition;
 import org.opennms.netmgt.config.wmi.Range;
+import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
-import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 
 /**
