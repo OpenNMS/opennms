@@ -337,7 +337,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	    
 	    m_topologyProvider = topologyProvider;
 	    
-        m_vertexHolder = new ElementHolder<GVertex>(m_topologyProvider.getVertexContainer()) {
+        m_vertexHolder = new ElementHolder<GVertex>(m_topologyProvider.getVertexContainer(), "gcV") {
 
             @Override
             protected void remove(GVertex element) {
@@ -366,7 +366,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         };
         
-        m_edgeHolder = new ElementHolder<GEdge>(m_topologyProvider.getEdgeContainer()) {
+        m_edgeHolder = new ElementHolder<GEdge>(m_topologyProvider.getEdgeContainer(), "gcE") {
 
             @Override
             protected GEdge make(String key, Object itemId, Item item) {

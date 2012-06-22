@@ -154,7 +154,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         for(Vertex vert : getGraph().getVertices()) {
         	if (vert.isLeaf()) {
         		target.startTag("vertex");
-        		target.addAttribute("id", vert.getKey());
+        		target.addAttribute("key", vert.getKey());
         		target.addAttribute("x", vert.getX());
         		target.addAttribute("y", vert.getY());
         		target.addAttribute("selected", vert.isSelected());

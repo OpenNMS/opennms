@@ -305,7 +305,6 @@ public class SimpleTopologyProviderTest {
         Item vertexItem1 = m_topologyProvider.getVertexItem(vertexId);
         SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
         assertEquals(2, parent.getMembers().size());
-        assertEquals(0, parent.getSemanticZoomLevel());
         
         m_topologyProvider.addGroup(GROUP_ICON);
         

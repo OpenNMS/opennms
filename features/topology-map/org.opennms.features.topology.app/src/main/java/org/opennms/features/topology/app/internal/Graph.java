@@ -43,7 +43,7 @@ public class Graph{
 		
 		m_dataSource = dataSource;
 		
-		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer()) {
+		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer(), "tcV") {
 
             @Override
             List<Vertex> getElements() {
@@ -70,7 +70,7 @@ public class Graph{
 
 		};
 		
-		m_edgeHolder = new ElementHolder<Edge>(m_dataSource.getEdgeContainer()) {
+		m_edgeHolder = new ElementHolder<Edge>(m_dataSource.getEdgeContainer(), "tcE") {
 
 			@Override
 			protected Edge make(String key, Object itemId, Item item) {

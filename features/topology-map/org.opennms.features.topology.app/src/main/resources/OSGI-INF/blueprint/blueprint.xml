@@ -99,6 +99,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
+            <entry key="operation.menuLocation" value="Edit|Layout"/>
             <entry key="operation.label" value="Redo Layout"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>

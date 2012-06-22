@@ -19,8 +19,8 @@ public final class GWTEdge extends JavaScriptObject {
         return this.target;
     }-*/;
     
-    public static final native GWTEdge create(GWTVertex source, GWTVertex target) /*-{
-        return {"source":source, "target":target, "actions":[]};
+    public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
+        return {"id":id, "source":source, "target":target, "actions":[]};
     }-*/;
 
     public String getId() {

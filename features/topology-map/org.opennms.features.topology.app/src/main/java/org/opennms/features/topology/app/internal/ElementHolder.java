@@ -11,17 +11,18 @@ import java.util.Set;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.terminal.KeyMapper;
 
 public abstract class ElementHolder<T> {
 	Container m_itemContainer;
 	List<T> m_graphElements = Collections.emptyList();
 	List<Object> m_itemIds = Collections.emptyList();
-	KeyMapper m_elementKey2ItemId = new KeyMapper();
+	KeyMapper m_elementKey2ItemId;
 	Map<String, T> m_keyToElementMap = new HashMap<String, T>();
 	
-	ElementHolder(Container container) {
+	ElementHolder(Container container, String prefix) {
 		m_itemContainer = container;
+		
+		m_elementKey2ItemId  = new KeyMapper(prefix);
 		
 		update();
 	}

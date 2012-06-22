@@ -7,14 +7,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.VertexContainer;
-import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
-import org.opennms.features.topology.plugins.topo.onmsdao.internal.SimpleVertexContainer;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -129,6 +125,12 @@ public class OnmsTopologyProviderTest {
 
         @Override
         public Collection<?> getEdgeIdsForVertex(Object vertexId) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Object getVertexItemIdForVertexKey(Object key) {
             // TODO Auto-generated method stub
             return null;
         }
