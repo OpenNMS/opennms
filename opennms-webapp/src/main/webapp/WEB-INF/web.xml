@@ -18,20 +18,6 @@
     <session-timeout>-1</session-timeout>
   </session-config>
   -->
-
-    <!-- NrtCollection-->
-    <context-param>
-        <param-name>org.apache.activemq.brokerURL</param-name>
-        <param-value>vm://localhost</param-value>
-        <description>The URL of the Message Broker to connect to</description>
-    </context-param>
-
-    <context-param>
-        <param-name>org.apache.activemq.embeddedBroker</param-name>
-        <param-value>false</param-value>
-        <description>Whether we should include an embedded broker or not</description>
-    </context-param>
-
   
   <context-param>
     <param-name>dontBlameOpenNMS</param-name>
@@ -273,6 +259,18 @@
   </listener>
   
   <!-- NrtCollection -->
+    <context-param>
+        <param-name>org.apache.activemq.brokerURL</param-name>
+        <param-value>tcp://localhost:61616</param-value>
+        <description>The URL of the Message Broker to connect to</description>
+    </context-param>
+
+    <context-param>
+        <param-name>org.apache.activemq.embeddedBroker</param-name>
+        <param-value>true</param-value>
+        <description>Whether we should include an embedded broker or not</description>
+    </context-param>
+  
   <servlet>
       <servlet-name>AjaxServlet</servlet-name>
       <servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class>
