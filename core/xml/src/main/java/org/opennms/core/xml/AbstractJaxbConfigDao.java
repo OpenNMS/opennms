@@ -155,7 +155,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.dao.support.FileReloadContainer} object.
      */
-    protected FileReloadContainer<V> getContainer() {
+    public FileReloadContainer<V> getContainer() {
         return m_container;
     }
     

@@ -33,6 +33,8 @@ import java.util.List;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.mock.MockNotification;
+import org.opennms.netmgt.mock.NotificationAnticipator;
 import org.opennms.netmgt.notifd.NotificationStrategy;
 import org.opennms.test.mock.MockUtil;
 /**

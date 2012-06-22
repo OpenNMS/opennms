@@ -42,23 +42,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.http</artifactId>
+      <artifactId>org.opennms.core.test-api.db</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     -->

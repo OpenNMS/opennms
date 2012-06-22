@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-config-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

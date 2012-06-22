@@ -29,9 +29,9 @@
 package org.opennms.netmgt.threshd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -62,6 +62,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -99,7 +100,6 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;

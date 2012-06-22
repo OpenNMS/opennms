@@ -11,6 +11,7 @@
   <name>OpenNMS Core Test APIs</name>
   <packaging>pom</packaging>
   <modules>
+    <module>db</module>
     <module>dns</module>
     <module>lib</module>
     <module>http</module>

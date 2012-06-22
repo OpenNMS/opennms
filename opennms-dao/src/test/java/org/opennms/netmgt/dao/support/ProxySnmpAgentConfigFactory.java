@@ -36,12 +36,12 @@ import java.net.InetAddress;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.ConfigurationTestUtils;
 
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 

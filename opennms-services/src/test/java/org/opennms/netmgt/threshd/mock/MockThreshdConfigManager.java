@@ -41,11 +41,13 @@ public class MockThreshdConfigManager extends ThreshdConfigManager {
         super(stream, localServer, verifyServer);
     }
 
+    @Override
     public void reloadXML() throws IOException, MarshalException, ValidationException {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     protected void saveXML(String xmlString) throws IOException {
         // TODO Auto-generated method stub
 

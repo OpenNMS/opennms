@@ -46,6 +46,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
@@ -60,7 +61,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;

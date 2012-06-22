@@ -70,16 +70,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>

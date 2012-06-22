@@ -46,11 +46,11 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
