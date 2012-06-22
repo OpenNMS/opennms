@@ -8,5 +8,9 @@ public abstract class VertexContainer<K, T> extends BeanContainer<K,T> implement
     public VertexContainer(Class<? super T> type) {
         super(type);
     }
+    
+    public void fireItemSetChange() {
+        super.fireItemSetChange();
+    }
 
 }

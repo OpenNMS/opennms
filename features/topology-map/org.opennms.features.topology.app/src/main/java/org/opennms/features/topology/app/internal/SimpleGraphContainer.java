@@ -469,6 +469,7 @@ public class SimpleGraphContainer implements GraphContainer {
     public void redoLayout() {
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
+            getVertexContainer().fireItemSetChange();
         }
     }
 
