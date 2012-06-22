@@ -28,44 +28,37 @@
 
 
 /**
- * <p>AutoIntegerReplacement class.</p>
+ * <p>TimeStampReplacement class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class AutoIntegerReplacement implements ColumnChangeReplacement {
-    private int m_value;
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class TimeStampReplacement implements ColumnChangeReplacement {
+    private final Date m_replacement;
     
     /**
-     * <p>Constructor for AutoIntegerReplacement.</p>
+     * <p>Constructor for TimeStampReplacement.</p>
      *
-     * @param initialValue a int.
+     * @param value a {@link java.util.Date} object.
      */
-    public AutoIntegerReplacement(int initialValue) {
-        m_value = initialValue;
-    }
-    
-    /**
-     * <p>getInt</p>
-     *
-     * @return a int.
-     */
-    public int getInt() {
-        return m_value++;
-    }
-    
-    /** {@inheritDoc} */
-    public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) {
-        return getInt();
+    public TimeStampReplacement(Date value) {
+        m_replacement = value;
     }
 
+    /** {@inheritDoc} */
+    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+        return m_replacement;
+    }
+    
     /**
      * <p>addColumnIfColumnIsNew</p>
      *

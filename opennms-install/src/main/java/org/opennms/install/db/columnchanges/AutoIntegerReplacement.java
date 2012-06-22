@@ -28,23 +28,42 @@
 
 
 /**
- * <p>DoNotAddColumnReplacement class.</p>
+ * <p>AutoIntegerReplacement class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class DoNotAddColumnReplacement implements ColumnChangeReplacement {
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class AutoIntegerReplacement implements ColumnChangeReplacement {
+    private int m_value;
+    
+    /**
+     * <p>Constructor for AutoIntegerReplacement.</p>
+     *
+     * @param initialValue a int.
+     */
+    public AutoIntegerReplacement(int initialValue) {
+        m_value = initialValue;
+    }
+    
+    /**
+     * <p>getInt</p>
+     *
+     * @return a int.
+     */
+    public int getInt() {
+        return m_value++;
+    }
+    
     /** {@inheritDoc} */
-    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-        return null;
+    public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) {
+        return getInt();
     }
 
     /**
@@ -53,9 +72,8 @@ public class DoNotAddColumnReplacement implements ColumnChangeReplacement {
      * @return a boolean.
      */
     public boolean addColumnIfColumnIsNew() {
-        return false;
+        return true;
     }
-
     
     /**
      * <p>close</p>

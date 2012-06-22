@@ -28,34 +28,30 @@
 
 
 /**
- * <p>VarCharReplacement class.</p>
+ * <p>NullReplacement class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class VarCharReplacement implements ColumnChangeReplacement {
-    private final String m_replacement;
-    
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class NullReplacement implements ColumnChangeReplacement {
     /**
-     * <p>Constructor for VarCharReplacement.</p>
-     *
-     * @param value a {@link java.lang.String} object.
+     * <p>Constructor for NullReplacement.</p>
      */
-    public VarCharReplacement(String value) {
-        m_replacement = value;
+    public NullReplacement() {
+        // do nothing
     }
-
+    
     /** {@inheritDoc} */
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-        return m_replacement;
+        return null;
     }
     
     /**

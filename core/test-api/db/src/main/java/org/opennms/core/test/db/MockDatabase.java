@@ -43,6 +43,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.mock.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;

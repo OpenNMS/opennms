@@ -33,15 +33,15 @@
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement {

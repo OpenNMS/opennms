@@ -26,9 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.db;
+package org.opennms.install.db;
 
 import junit.framework.TestCase;
+
+import org.opennms.install.db.Column;
 
 /**
  * 

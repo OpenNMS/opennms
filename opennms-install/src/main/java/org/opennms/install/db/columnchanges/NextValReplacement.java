@@ -33,7 +33,7 @@
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,8 +43,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
 public class NextValReplacement implements ColumnChangeReplacement {
         private final String m_sequence;
         

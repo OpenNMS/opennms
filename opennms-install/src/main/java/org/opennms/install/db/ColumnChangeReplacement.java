@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,30 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.db;
+package org.opennms.install.db;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
-/**
- * <p>DatabaseConnectionException class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class DatabaseConnectionException extends SQLException {
-
+public interface ColumnChangeReplacement {
     /**
-     * 
-     */
-    private static final long serialVersionUID = -6548231456647908279L;
-
-    /**
-     * <p>Constructor for DatabaseConnectionException.</p>
+     * <p>getColumnReplacement</p>
      *
-     * @param reason a {@link java.lang.String} object.
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @param columnChanges a {@link java.util.Map} object.
+     * @return a {@link java.lang.Object} object.
+     * @throws java.sql.SQLException if any.
      */
-    public DatabaseConnectionException(String reason) {
-        super(reason);
-    }
+    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException;
+    /**
+     * <p>addColumnIfColumnIsNew</p>
+     *
+     * @return a boolean.
+     */
+    public boolean addColumnIfColumnIsNew();
+    /**
+     * <p>close</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
+    public void close() throws SQLException;
 }

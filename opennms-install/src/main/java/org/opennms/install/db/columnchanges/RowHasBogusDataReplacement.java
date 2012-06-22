@@ -28,43 +28,49 @@
 
 
 /**
- * <p>MapStoreIdGetterReplacement class.</p>
+ * <p>RowHasBogusDataReplacement class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class MapStoreIdGetterReplacement implements ColumnChangeReplacement {
-    private final AutoIntegerIdMapStoreReplacement m_storeFoo;
-    private final String[] m_indexColumns;
-    private final boolean m_noMatchOkay;
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class RowHasBogusDataReplacement implements ColumnChangeReplacement {
+    private final String m_table;
+    private final String m_column;
     
     /**
-     * <p>Constructor for MapStoreIdGetterReplacement.</p>
+     * <p>Constructor for RowHasBogusDataReplacement.</p>
      *
-     * @param storeFoo a {@link org.opennms.netmgt.dao.db.columnchanges.AutoIntegerIdMapStoreReplacement} object.
-     * @param columns an array of {@link java.lang.String} objects.
-     * @param noMatchOkay a boolean.
+     * @param table a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
      */
-    public MapStoreIdGetterReplacement(AutoIntegerIdMapStoreReplacement storeFoo,
-            String[] columns, boolean noMatchOkay) {
-        m_storeFoo = storeFoo;
-        m_indexColumns = columns;
-        m_noMatchOkay = noMatchOkay;
-    }
-
-    /** {@inheritDoc} */
-    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-        return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns, m_noMatchOkay);
+    public RowHasBogusDataReplacement(String table, String column) {
+        m_table = table;
+        m_column = column;
     }
     
+    /** {@inheritDoc} */
+    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+        throw new IllegalArgumentException("The '" + m_column
+                                           + "' column in the '"
+                                           + m_table
+                                           + "' table should never be "
+                                           + "null, but the entry for this "
+                                           + "row does have a null '"
+                                           + m_column + "' column.  "
+                                           + "It needs to be "
+                                           + "removed or udpated to "
+                                           + "reflect a valid '"
+                                           + m_column + "' value.");
+    }
+
     /**
      * <p>addColumnIfColumnIsNew</p>
      *

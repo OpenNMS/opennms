@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.db;
+package org.opennms.install.db;
 
 import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
 import java.io.PrintStream;
-
-import org.opennms.netmgt.dao.db.InstallerDb;
+import java.io.StringReader;
 
 import junit.framework.TestCase;
+
+import org.opennms.install.db.InstallerDb;
 
 public class InstallerSQLTest extends TestCase {
     private InstallerDb m_installerDb;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,50 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.db;
+
+/**
+ * <p>VarCharReplacement class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-public interface ColumnChangeReplacement {
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class VarCharReplacement implements ColumnChangeReplacement {
+    private final String m_replacement;
+    
     /**
-     * <p>getColumnReplacement</p>
+     * <p>Constructor for VarCharReplacement.</p>
      *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @param columnChanges a {@link java.util.Map} object.
-     * @return a {@link java.lang.Object} object.
-     * @throws java.sql.SQLException if any.
+     * @param value a {@link java.lang.String} object.
      */
-    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException;
+    public VarCharReplacement(String value) {
+        m_replacement = value;
+    }
+
+    /** {@inheritDoc} */
+    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+        return m_replacement;
+    }
+    
     /**
      * <p>addColumnIfColumnIsNew</p>
      *
      * @return a boolean.
      */
-    public boolean addColumnIfColumnIsNew();
+    public boolean addColumnIfColumnIsNew() {
+        return true;
+    }
+    
     /**
      * <p>close</p>
-     *
-     * @throws java.sql.SQLException if any.
      */
-    public void close() throws SQLException;
+    public void close() {
+    }
 }

@@ -28,30 +28,34 @@
 
 
 /**
- * <p>NullReplacement class.</p>
+ * <p>FixedIntegerReplacement class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class NullReplacement implements ColumnChangeReplacement {
-    /**
-     * <p>Constructor for NullReplacement.</p>
-     */
-    public NullReplacement() {
-        // do nothing
-    }
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class FixedIntegerReplacement implements ColumnChangeReplacement {
+    private final Integer m_replacement;
     
+    /**
+     * <p>Constructor for FixedIntegerReplacement.</p>
+     *
+     * @param value a int.
+     */
+    public FixedIntegerReplacement(int value) {
+        m_replacement = value;
+    }
+
     /** {@inheritDoc} */
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-        return null;
+        return m_replacement;
     }
     
     /**

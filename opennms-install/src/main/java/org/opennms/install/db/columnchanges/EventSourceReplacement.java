@@ -28,30 +28,27 @@
 
 
 /**
- * <p>TimeStampReplacement class.</p>
+ * <p>EventSourceReplacement class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+package org.opennms.install.db.columnchanges;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class TimeStampReplacement implements ColumnChangeReplacement {
-    private final Date m_replacement;
+import org.opennms.install.db.ColumnChange;
+import org.opennms.install.db.ColumnChangeReplacement;
+public class EventSourceReplacement implements ColumnChangeReplacement {
+    private static final String m_replacement = "OpenNMS.Eventd";
     
     /**
-     * <p>Constructor for TimeStampReplacement.</p>
-     *
-     * @param value a {@link java.util.Date} object.
+     * <p>Constructor for EventSourceReplacement.</p>
      */
-    public TimeStampReplacement(Date value) {
-        m_replacement = value;
+    public EventSourceReplacement() {
+        // we do nothing!
     }
 
     /** {@inheritDoc} */

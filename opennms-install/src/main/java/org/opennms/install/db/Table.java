@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.db;
+package org.opennms.install.db;
 
 import java.util.List;
 

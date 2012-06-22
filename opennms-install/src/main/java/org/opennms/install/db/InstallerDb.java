@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.db;
+package org.opennms.install.db;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,12 +59,12 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.db.columnchanges.AutoIntegerReplacement;
-import org.opennms.netmgt.dao.db.columnchanges.DoNotAddColumnReplacement;
-import org.opennms.netmgt.dao.db.columnchanges.EventSourceReplacement;
-import org.opennms.netmgt.dao.db.columnchanges.FixedIntegerReplacement;
-import org.opennms.netmgt.dao.db.columnchanges.NextValReplacement;
-import org.opennms.netmgt.dao.db.columnchanges.RowHasBogusDataReplacement;
+import org.opennms.install.db.columnchanges.AutoIntegerReplacement;
+import org.opennms.install.db.columnchanges.DoNotAddColumnReplacement;
+import org.opennms.install.db.columnchanges.EventSourceReplacement;
+import org.opennms.install.db.columnchanges.FixedIntegerReplacement;
+import org.opennms.install.db.columnchanges.NextValReplacement;
+import org.opennms.install.db.columnchanges.RowHasBogusDataReplacement;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

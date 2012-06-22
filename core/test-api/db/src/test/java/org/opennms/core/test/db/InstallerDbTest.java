@@ -47,6 +47,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.install.db.BackupTablesFoundException;
+import org.opennms.install.db.Column;
+import org.opennms.install.db.Constraint;
+import org.opennms.install.db.InstallerDb;
+import org.opennms.install.db.Table;
+import org.opennms.install.db.Trigger;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.util.StringUtils;
 

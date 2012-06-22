@@ -43,7 +43,6 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.TestContext;

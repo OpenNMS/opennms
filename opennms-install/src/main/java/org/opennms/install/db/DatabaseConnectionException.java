@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,48 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.install.db;
+
+import java.sql.SQLException;
 
 /**
- * <p>EventSourceReplacement class.</p>
+ * <p>DatabaseConnectionException class.</p>
  *
  * @author ranger
  * @version $Id: $
+ * @since 1.8.1
  */
-package org.opennms.netmgt.dao.db.columnchanges;
+public class DatabaseConnectionException extends SQLException {
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Map;
-
-import org.opennms.netmgt.dao.db.ColumnChange;
-import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-public class EventSourceReplacement implements ColumnChangeReplacement {
-    private static final String m_replacement = "OpenNMS.Eventd";
-    
     /**
-     * <p>Constructor for EventSourceReplacement.</p>
+     * 
      */
-    public EventSourceReplacement() {
-        // we do nothing!
-    }
+    private static final long serialVersionUID = -6548231456647908279L;
 
-    /** {@inheritDoc} */
-    public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-        return m_replacement;
-    }
-    
     /**
-     * <p>addColumnIfColumnIsNew</p>
+     * <p>Constructor for DatabaseConnectionException.</p>
      *
-     * @return a boolean.
+     * @param reason a {@link java.lang.String} object.
      */
-    public boolean addColumnIfColumnIsNew() {
-        return true;
-    }
-    
-    /**
-     * <p>close</p>
-     */
-    public void close() {
+    public DatabaseConnectionException(String reason) {
+        super(reason);
     }
 }

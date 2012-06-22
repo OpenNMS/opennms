@@ -39,6 +39,7 @@ import javax.sql.DataSource;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.opennms.install.db.SimpleDataSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
