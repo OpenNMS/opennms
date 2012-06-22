@@ -24,6 +24,7 @@
     <karaf.version>2.2.7</karaf.version>
     <vaadin.version>6.7.3</vaadin.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
+    <pax.vaadin.version>0.1.0-ONMS-20120621</pax.vaadin.version>
   </properties>
 
   <modules>
@@ -162,7 +163,7 @@
       <dependency>
         <groupId>org.ops4j.pax.vaadin</groupId>
         <artifactId>service</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>${pax.vaadin.version}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -198,6 +199,13 @@
       <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
 
