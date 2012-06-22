@@ -36,6 +36,8 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsNode;
@@ -47,21 +49,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import static junit.framework.Assert.assertEquals;
 import junit.framework.Assert;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-	InvdConfigurationExecutionListener.class,
-	TemporaryDatabaseExecutionListener.class,
-	DependencyInjectionTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={		
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-invDatabasePopulator.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
 public class InventoryAssetDaoHibernateTest {
 	@Autowired
@@ -73,11 +72,13 @@ public class InventoryAssetDaoHibernateTest {
     }
 	
 	@Test
+	@Transactional
     public void testInitialize() {
         // do nothing, just test that setUp() / tearDown() works
     }
 
 	@Test
+	@Transactional
     public void testSaveOnmsInventoryAsset() {
         // Create a new inventory category.
         OnmsInventoryCategory invCat = getDbPopulator().getInventoryCategoryDao().findByName("Network Equipment");
@@ -102,6 +103,7 @@ public class InventoryAssetDaoHibernateTest {
     }
 
 	@Test
+	@Transactional
     public void testFindByAssetName() {
         Collection<OnmsInventoryAsset> assets = getDbPopulator().getInventoryAssetDao().findByName("Network Card");
         Assert.assertEquals("number of assets found", 1, assets.size());
@@ -116,6 +118,7 @@ public class InventoryAssetDaoHibernateTest {
     }
 
 	@Test
+	@Transactional
     public void testFindByAssetId() {
         // Fetch the one we create in DatabasePopulator
         OnmsInventoryAsset invAsset1 = getDbPopulator().getInvAsset1();
@@ -129,6 +132,7 @@ public class InventoryAssetDaoHibernateTest {
     }
 	
 	@Test
+	@Transactional
 	public void testFindByNameAndNodeId() {
 		OnmsInventoryAsset invAsset1 = getDbPopulator().getInvAsset1();
 		
@@ -143,6 +147,7 @@ public class InventoryAssetDaoHibernateTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testFindByNameNodeAndCategory() {
 		OnmsInventoryAsset invAsset1 = getDbPopulator().getInvAsset1();
 		
@@ -155,6 +160,7 @@ public class InventoryAssetDaoHibernateTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testFindByNodeAndCategory() {
 		OnmsInventoryAsset invAsset1 = getDbPopulator().getInvAsset1();
 		
@@ -169,12 +175,14 @@ public class InventoryAssetDaoHibernateTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testFindByAssetDoesNotExist() {
 		OnmsInventoryAsset invAsset = getDbPopulator().getInventoryAssetDao().findByAssetId(999);
 		Assert.assertNull("Asset ID 999 should not exist and the value should be null.", invAsset);
 	}
 
 	@Test
+	@Transactional
     public void testGetAssetProperties() {
         // Retrieve an asset from the populator
         OnmsInventoryAsset invAsset = getDbPopulator().getInventoryAssetDao().findByAssetId(getDbPopulator().getInvAsset1().getId());

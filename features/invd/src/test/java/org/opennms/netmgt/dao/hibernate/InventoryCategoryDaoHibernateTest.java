@@ -39,6 +39,8 @@ import static junit.framework.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsNode;
@@ -48,18 +50,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-	InvdConfigurationExecutionListener.class,
-	TemporaryDatabaseExecutionListener.class,
-	DependencyInjectionTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={		
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-invDatabasePopulator.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
 public class InventoryCategoryDaoHibernateTest {
 	@Autowired
@@ -71,11 +70,13 @@ public class InventoryCategoryDaoHibernateTest {
     }
 	
 	@Test
+	@Transactional
     public void testInitialize() {
         // do nothing, just test that setUp() / tearDown() works
     }
 
 	@Test
+	@Transactional
     public void testSaveOnmsInventoryCategory() {
         // Create a new inventory category.
         OnmsInventoryCategory invCat = new OnmsInventoryCategory("Example Category");
@@ -96,12 +97,14 @@ public class InventoryCategoryDaoHibernateTest {
     }
 
 	@Test
+	@Transactional
     public void testFindByName() {
         OnmsInventoryCategory invCat = getDbPopulator().getInventoryCategoryDao().findByName("Network Equipment");
         Assert.assertEquals("Network Equipment", invCat.getCategoryName());
     }
     
 	@Test
+	@Transactional
 	public void testfindCategoriesUsedByNode() {
 		OnmsNode node = getDbPopulator().getNode1();
 		

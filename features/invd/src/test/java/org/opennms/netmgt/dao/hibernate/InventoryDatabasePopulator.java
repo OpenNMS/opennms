@@ -21,6 +21,9 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.inventory.OnmsInventoryAsset;
 import org.opennms.netmgt.model.inventory.OnmsInventoryAssetProperty;
 import org.opennms.netmgt.model.inventory.OnmsInventoryCategory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class InventoryDatabasePopulator {
     private NodeDao m_nodeDao;
@@ -29,15 +32,32 @@ public class InventoryDatabasePopulator {
     private DistPollerDao m_distPollerDao;
     private ServiceTypeDao m_serviceTypeDao;
     
-	private InventoryCategoryDao m_inventoryCategoryDao;
+    private InventoryCategoryDao m_inventoryCategoryDao;
     private InventoryAssetDao m_inventoryAssetDao;	
     private InventoryAssetPropertyDao m_inventoryAssetPropertyDao;
 	
     private OnmsNode m_node1;
     private OnmsInventoryAsset m_invAsset1;
     OnmsInventoryCategory m_inventoryCategory1;
-    
+
+    private TransactionTemplate m_transTemplate;
+
+    private static boolean POPULATE_DATABASE_IN_SEPARATE_TRANSACTION = true;
+
     public void populateDatabase() {
+        if (POPULATE_DATABASE_IN_SEPARATE_TRANSACTION) {
+            m_transTemplate.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction(final TransactionStatus status) {
+                    doPopulateDatabase();
+                    return null;
+                }
+            });
+        } else {
+            doPopulateDatabase();
+        }
+    }
+    
+    public void doPopulateDatabase() {
         OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
         
         OnmsCategory ac = getCategory("DEV_AC");
@@ -251,6 +271,11 @@ public class InventoryDatabasePopulator {
 	public void setInventoryCategory1(OnmsInventoryCategory inventoryCategory1) {
 		this.m_inventoryCategory1 = inventoryCategory1;
 	}
-	
-	
+    public TransactionTemplate getTransactionTemplate() {
+        return m_transTemplate;
+    }
+
+    public void setTransactionTemplate(final TransactionTemplate transactionTemplate) {
+        m_transTemplate = transactionTemplate;
+    }
 }

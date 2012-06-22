@@ -70,7 +70,7 @@ public class InventoryAssetDaoHibernate extends AbstractDaoHibernate<OnmsInvento
     		effstStr = "and asset.effStatus = true ";
     	}
     	
-    	return	"select asset from OnmsInventoryAsset asset " +
+    	return	"from OnmsInventoryAsset asset " +
     			"where asset.effectiveDate = (select max(asset2.effectiveDate) "+
     			"					  from OnmsInventoryAsset asset2 " +
     			"                     where asset2.id = asset.id " +
