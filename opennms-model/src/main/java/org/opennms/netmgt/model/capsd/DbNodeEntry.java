@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.model.capsd;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -40,11 +40,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * <p>
@@ -72,51 +72,51 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-final class DbNodeEntry {
+public final class DbNodeEntry {
     /**
      * The character returned if the node is active
      */
-    static final char NODE_TYPE_ACTIVE = 'A';
+    public static final char NODE_TYPE_ACTIVE = 'A';
 
     /**
      * The character returned if the node is deleted
      */
-    static final char NODE_TYPE_DELETED = 'D';
+    public static final char NODE_TYPE_DELETED = 'D';
 
     /**
      * The character returned if the node type is unset/unknown.
      */
-    static final char NODE_TYPE_UNKNOWN = ' ';
+    public static final char NODE_TYPE_UNKNOWN = ' ';
 
     /**
      * Label source set by user
      */
-    static final char LABEL_SOURCE_USER = 'U';
+    public static final char LABEL_SOURCE_USER = 'U';
 
     /**
      * Label source set by netbios
      */
-    static final char LABEL_SOURCE_NETBIOS = 'N';
+    public static final char LABEL_SOURCE_NETBIOS = 'N';
 
     /**
      * Label source set by hostname
      */
-    static final char LABEL_SOURCE_HOSTNAME = 'H';
+    public static final char LABEL_SOURCE_HOSTNAME = 'H';
 
     /**
      * Label source set by SNMP sysname
      */
-    static final char LABEL_SOURCE_SYSNAME = 'S';
+    public static final char LABEL_SOURCE_SYSNAME = 'S';
 
     /**
      * Label source set by IP Address
      */
-    static final char LABEL_SOURCE_ADDRESS = 'A';
+    public static final char LABEL_SOURCE_ADDRESS = 'A';
 
     /**
      * Label source unset/unknown
      */
-    static final char LABEL_SOURCE_UNKNOWN = ' ';
+    public static final char LABEL_SOURCE_UNKNOWN = ' ';
 
     /**
      * The default distributed poller name to use if one is not supplied
@@ -947,7 +947,7 @@ final class DbNodeEntry {
      * returned.
      * 
      */
-    int getNodeId() {
+public     int getNodeId() {
         return m_nodeId;
     }
 
@@ -956,21 +956,21 @@ final class DbNodeEntry {
      * non-mutable element of the record.
      * 
      */
-    String getDistributedPollerName() {
+public     String getDistributedPollerName() {
         return m_dpName;
     }
 
     /**
      * Gets the creation time of the record.
      */
-    Timestamp getCreationTime() {
+    public Timestamp getCreationTime() {
         return m_createTime;
     }
 
     /**
      * Gets the creation time of the record.
      */
-    String getFormattedCreationTime() {
+    public String getFormattedCreationTime() {
         String result = null;
         if (m_createTime != null) {
             result = m_createTime.toString();
@@ -985,7 +985,7 @@ final class DbNodeEntry {
      *            The creation time.
      * 
      */
-    void setCreationTime(String time) throws ParseException {
+    public void setCreationTime(String time) throws ParseException {
         if (time == null) {
             m_createTime = null;
         } else {
@@ -1002,7 +1002,7 @@ final class DbNodeEntry {
      *            The creation time.
      * 
      */
-    void setCreationTime(Date time) {
+    public void setCreationTime(Date time) {
         m_createTime = new Timestamp(time.getTime());
         m_changed |= CHANGED_CREATE_TIME;
     }
@@ -1014,7 +1014,7 @@ final class DbNodeEntry {
      *            The creation time.
      * 
      */
-    void setCreationTime(Timestamp time) {
+    public void setCreationTime(Timestamp time) {
         m_createTime = time;
         m_changed |= CHANGED_CREATE_TIME;
     }
@@ -1023,14 +1023,14 @@ final class DbNodeEntry {
      * Returns true if the entry has a parent identity.
      * 
      */
-    boolean hasParentId() {
+    public boolean hasParentId() {
         return m_parentId != -1;
     }
 
     /**
      * Returns the id of the parent.
      */
-    int getParentId() {
+    public int getParentId() {
         return m_parentId;
     }
 
@@ -1040,19 +1040,19 @@ final class DbNodeEntry {
      * @param id
      *            The new parent id.
      */
-    void setParentId(int id) {
+    public void setParentId(int id) {
         m_parentId = id;
         m_changed |= CHANGED_PARENT_ID;
     }
 
-    boolean hasParentIdChanged() {
+    public boolean hasParentIdChanged() {
         if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID)
             return true;
         else
             return false;
     }
 
-    boolean updateParentId(int newparentId) {
+    public boolean updateParentId(int newparentId) {
         if (newparentId != m_parentId) {
             setParentId(newparentId);
             return true;
@@ -1063,7 +1063,7 @@ final class DbNodeEntry {
     /**
      * Returns the current node type
      */
-    char getNodeType() {
+    public char getNodeType() {
         return m_type;
     }
 
@@ -1074,19 +1074,19 @@ final class DbNodeEntry {
      *            The new node type.
      * 
      */
-    void setNodeType(char type) {
+    public void setNodeType(char type) {
         m_type = type;
         m_changed |= CHANGED_TYPE;
     }
 
-    boolean hasNodeTypeChanged() {
+    public boolean hasNodeTypeChanged() {
         if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
             return true;
         else
             return false;
     }
 
-    boolean updateNodeType(char newtype) {
+    public boolean updateNodeType(char newtype) {
         if (newtype != m_type) {
             setNodeType(newtype);
             return true;
@@ -1097,19 +1097,19 @@ final class DbNodeEntry {
     /**
      * Returns the current SNMP system object id, if any.
      */
-    String getSystemOID() {
+    public String getSystemOID() {
         return m_sysoid;
     }
 
     /**
      * Sets the current SNMP system object id.
      */
-    void setSystemOID(String oid) {
+    public void setSystemOID(String oid) {
         m_sysoid = oid;
         m_changed |= CHANGED_SYSOID;
     }
 
-    boolean hasSystemOIDChanged() {
+    public boolean hasSystemOIDChanged() {
         if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID)
             return true;
         else
@@ -1120,7 +1120,7 @@ final class DbNodeEntry {
      * Update the value of sysoid associated with this node entry.
      * 
      */
-    boolean updateSystemOID(String newsysoid) {
+    public boolean updateSystemOID(String newsysoid) {
         if (newsysoid == null || newsysoid.equals(m_sysoid))
             return false;
         else {
@@ -1132,7 +1132,7 @@ final class DbNodeEntry {
     /**
      * Gets the current system name
      */
-    String getSystemName() {
+    public String getSystemName() {
         return m_sysname;
     }
 
@@ -1142,19 +1142,19 @@ final class DbNodeEntry {
      * @param name
      *            The new system name
      */
-    void setSystemName(String name) {
+    public void setSystemName(String name) {
         m_sysname = name;
         m_changed |= CHANGED_SYSNAME;
     }
 
-    boolean hasSystemNameChanged() {
+    public boolean hasSystemNameChanged() {
         if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME)
             return true;
         else
             return false;
     }
 
-    boolean updateSystemName(String newsysname) {
+    public boolean updateSystemName(String newsysname) {
         if (newsysname == null || newsysname.equals(m_sysname))
             return false;
         else {
@@ -1166,7 +1166,7 @@ final class DbNodeEntry {
     /**
      * Returns the current system description
      */
-    String getSystemDescription() {
+    public String getSystemDescription() {
         return m_sysdescr;
     }
 
@@ -1176,19 +1176,19 @@ final class DbNodeEntry {
      * @param descr
      *            The new system description.
      */
-    void setSystemDescription(String descr) {
+    public void setSystemDescription(String descr) {
         m_sysdescr = descr;
         m_changed |= CHANGED_SYSDESCR;
     }
 
-    boolean hasSystemDescriptionChanged() {
+    public boolean hasSystemDescriptionChanged() {
         if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR)
             return true;
         else
             return false;
     }
 
-    boolean updateSystemDescription(String newsysdescr) {
+    public boolean updateSystemDescription(String newsysdescr) {
         if (newsysdescr == null || newsysdescr.equals(m_sysdescr))
             return false;
         else {
@@ -1200,7 +1200,7 @@ final class DbNodeEntry {
     /**
      * Returns the current system location
      */
-    String getSystemLocation() {
+    public String getSystemLocation() {
         return m_syslocation;
     }
 
@@ -1210,19 +1210,19 @@ final class DbNodeEntry {
      * @param loc
      *            The new location
      */
-    void setSystemLocation(String loc) {
+    public void setSystemLocation(String loc) {
         m_syslocation = loc;
         m_changed |= CHANGED_SYSLOC;
     }
 
-    boolean hasSystemLocationChanged() {
+    public boolean hasSystemLocationChanged() {
         if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC)
             return true;
         else
             return false;
     }
 
-    boolean updateSystemLocation(String newsyslocation) {
+    public boolean updateSystemLocation(String newsyslocation) {
         if (newsyslocation == null || newsyslocation.equals(m_syslocation))
             return false;
         else {
@@ -1234,7 +1234,7 @@ final class DbNodeEntry {
     /**
      * Returns the current system contact.
      */
-    String getSystemContact() {
+    public String getSystemContact() {
         return m_syscontact;
     }
 
@@ -1244,19 +1244,19 @@ final class DbNodeEntry {
      * @param contact
      *            The new system contact
      */
-    void setSystemContact(String contact) {
+    public void setSystemContact(String contact) {
         m_syscontact = contact;
         m_changed |= CHANGED_SYSCONTACT;
     }
 
-    boolean hasSystemContactChanged() {
+    public boolean hasSystemContactChanged() {
         if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT)
             return true;
         else
             return false;
     }
 
-    boolean updateSystemContact(String newsyscontact) {
+    public boolean updateSystemContact(String newsyscontact) {
         if (newsyscontact == null || newsyscontact.equals(m_syscontact))
             return false;
         else {
@@ -1268,7 +1268,7 @@ final class DbNodeEntry {
     /**
      * Returns the entry's label.
      */
-    String getLabel() {
+    public String getLabel() {
         return m_label;
     }
 
@@ -1278,19 +1278,19 @@ final class DbNodeEntry {
      * @param label
      *            The new label.
      */
-    void setLabel(String label) {
+    public void setLabel(String label) {
         m_label = label;
         m_changed |= CHANGED_LABEL;
     }
 
-    boolean hasLabelChanged() {
+    public boolean hasLabelChanged() {
         if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL)
             return true;
         else
             return false;
     }
 
-    boolean updateLabel(String newlabel) {
+    public boolean updateLabel(String newlabel) {
         boolean doUpdate = false;
         if (newlabel != null && m_label != null) {
             if (!newlabel.equals(m_label))
@@ -1311,7 +1311,7 @@ final class DbNodeEntry {
     /**
      * Returns the current label source.
      */
-    char getLabelSource() {
+    public char getLabelSource() {
         return m_labelSource;
     }
 
@@ -1321,19 +1321,19 @@ final class DbNodeEntry {
      * @param src
      *            The new label source.
      */
-    void setLabelSource(char src) {
+    public void setLabelSource(char src) {
         m_labelSource = src;
         m_changed |= CHANGED_LABEL_SOURCE;
     }
 
-    boolean hasLabelSourceChanged() {
+    public boolean hasLabelSourceChanged() {
         if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE)
             return true;
         else
             return false;
     }
 
-    boolean updateLabelSource(char newlabelSource) {
+    public boolean updateLabelSource(char newlabelSource) {
         if (newlabelSource != m_labelSource) {
             setLabelSource(newlabelSource);
             return true;
@@ -1344,7 +1344,7 @@ final class DbNodeEntry {
     /**
      * Returns the current NetBIOS name.
      */
-    String getNetBIOSName() {
+    public String getNetBIOSName() {
         return m_nbName;
     }
 
@@ -1354,7 +1354,7 @@ final class DbNodeEntry {
      * @param name
      *            The new NetBIOS name.
      */
-    void setNetBIOSName(String name) {
+    public void setNetBIOSName(String name) {
         if (name != null) {
             m_nbName = name.toUpperCase();
         } else {
@@ -1363,14 +1363,14 @@ final class DbNodeEntry {
         m_changed |= CHANGED_NETBIOS_NAME;
     }
 
-    boolean hasNetBIOSNameChanged() {
+    public boolean hasNetBIOSNameChanged() {
         if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME)
             return true;
         else
             return false;
     }
 
-    boolean updateNetBIOSName(String newnbName) {
+    public boolean updateNetBIOSName(String newnbName) {
         boolean doUpdate = false;
         if (newnbName != null && m_nbName != null) {
             if (!newnbName.toUpperCase().equals(m_nbName))
@@ -1391,7 +1391,7 @@ final class DbNodeEntry {
     /**
      * Returns the current domain name.
      */
-    String getDomainName() {
+    public String getDomainName() {
         return m_nbDomainName;
     }
 
@@ -1401,19 +1401,19 @@ final class DbNodeEntry {
      * @param domain
      *            The new domain name.
      */
-    void setDomainName(String domain) {
+    public void setDomainName(String domain) {
         m_nbDomainName = domain;
         m_changed |= CHANGED_DOMAIN_NAME;
     }
 
-    boolean hasDomainNameChanged() {
+    public boolean hasDomainNameChanged() {
         if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME)
             return true;
         else
             return false;
     }
 
-    boolean updateDomainName(String domain) {
+    public boolean updateDomainName(String domain) {
         boolean doUpdate = false;
         if (domain != null && m_nbDomainName != null) {
             if (!domain.equals(m_nbDomainName))
@@ -1434,7 +1434,7 @@ final class DbNodeEntry {
     /**
      * Returns the current operating system string
      */
-    String getOS() {
+    public String getOS() {
         return m_os;
     }
 
@@ -1444,19 +1444,19 @@ final class DbNodeEntry {
      * @param os
      *            The OS string
      */
-    void setOS(String os) {
+    public void setOS(String os) {
         m_os = os;
         m_changed |= CHANGED_OS;
     }
 
-    boolean hasOSChanged() {
+    public boolean hasOSChanged() {
         if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME)
             return true;
         else
             return false;
     }
 
-    boolean updateOS(String newos) {
+    public boolean updateOS(String newos) {
         boolean doUpdate = false;
         if (newos != null && m_os != null) {
             if (!newos.equals(m_os))
@@ -1477,7 +1477,7 @@ final class DbNodeEntry {
     /**
      * Gets the last poll time of the record
      */
-    String getLastPollString() {
+    public String getLastPollString() {
         String result = null;
         if (m_lastPoll != null) {
             result = m_lastPoll.toString();
@@ -1488,7 +1488,7 @@ final class DbNodeEntry {
     /**
      * Gets the last poll time of the record
      */
-    Timestamp getLastPoll() {
+    public Timestamp getLastPoll() {
         return m_lastPoll;
     }
 
@@ -1499,7 +1499,7 @@ final class DbNodeEntry {
      *            The last poll time.
      * 
      */
-    void setLastPoll(String time) throws ParseException {
+    public void setLastPoll(String time) throws ParseException {
         if (time == null) {
             m_lastPoll = null;
         } else {
@@ -1516,7 +1516,7 @@ final class DbNodeEntry {
      *            The last poll time.
      * 
      */
-    void setLastPoll(Date time) {
+    public void setLastPoll(Date time) {
         m_lastPoll = new Timestamp(time.getTime());
         m_changed |= CHANGED_POLLTIME;
     }
@@ -1528,7 +1528,7 @@ final class DbNodeEntry {
      *            The last poll time.
      * 
      */
-    void setLastPoll(Timestamp time) {
+    public void setLastPoll(Timestamp time) {
         m_lastPoll = time;
         m_changed |= CHANGED_POLLTIME;
     }
@@ -1536,7 +1536,7 @@ final class DbNodeEntry {
     /**
      * Returns the current foreignSource.
      */
-    String getForeignSource() {
+    public String getForeignSource() {
         return m_foreignSource;
     }
 
@@ -1546,19 +1546,19 @@ final class DbNodeEntry {
      * @param name
      *            The new NetBIOS name.
      */
-    void setForeignSource(String foreignSource) {
+    public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
         m_changed |= CHANGED_FOREIGN_SOURCE;
     }
 
-    boolean hasForeignSource() {
+    public boolean hasForeignSource() {
         if ((m_changed & CHANGED_FOREIGN_SOURCE) == CHANGED_FOREIGN_SOURCE)
             return true;
         else
             return false;
     }
 
-    boolean updateForeignSource(String newForeignSource) {
+    public boolean updateForeignSource(String newForeignSource) {
         boolean doUpdate = false;
         if (newForeignSource != null && m_foreignSource != null) {
             if (!newForeignSource.toUpperCase().equals(m_foreignSource))
@@ -1580,7 +1580,7 @@ final class DbNodeEntry {
     /**
      * Returns the current foreignSource.
      */
-    String getForeignId() {
+    public String getForeignId() {
         return m_foreignId;
     }
 
@@ -1590,19 +1590,19 @@ final class DbNodeEntry {
      * @param name
      *            The new NetBIOS name.
      */
-    void setForeignId(String foreignId) {
+    public void setForeignId(String foreignId) {
         m_foreignId = foreignId;
         m_changed |= CHANGED_FOREIGN_ID;
     }
 
-    boolean hasForeignId() {
+    public boolean hasForeignId() {
         if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID)
             return true;
         else
             return false;
     }
 
-    boolean updateForeignId(String newForeignId) {
+    public boolean updateForeignId(String newForeignId) {
         boolean doUpdate = false;
         if (newForeignId != null && m_foreignId != null) {
             if (!newForeignId.toUpperCase().equals(m_foreignId))
@@ -1628,7 +1628,7 @@ final class DbNodeEntry {
      * changes to the node.
      * 
      */
-    void store() throws SQLException {
+    public void store() throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             Connection db = null;
             try {
@@ -1657,7 +1657,7 @@ final class DbNodeEntry {
      * @param db
      *            The database connection used to write the record.
      */
-    void store(Connection db) throws SQLException {
+    public void store(Connection db) throws SQLException {
         ThreadCategory log = log();
         log.debug("DbNodeEntry: changed map = 0x" + Integer.toHexString(m_changed));
         if (m_changed != 0 || m_fromDb == false) {
@@ -1668,7 +1668,7 @@ final class DbNodeEntry {
         }
     }
 
-    DbIpInterfaceEntry[] getInterfaces() throws SQLException {
+    public DbIpInterfaceEntry[] getInterfaces() throws SQLException {
         DbIpInterfaceEntry[] entries = null;
 
         Connection db = null;
@@ -1687,7 +1687,7 @@ final class DbNodeEntry {
         return entries;
     }
 
-    DbIpInterfaceEntry[] getInterfaces(Connection db) throws SQLException {
+    public DbIpInterfaceEntry[] getInterfaces(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
         final DBUtils d = new DBUtils(getClass());
@@ -1729,7 +1729,7 @@ final class DbNodeEntry {
         return l.toArray(entries);
     }
 
-    DbIpInterfaceEntry[] getManagedInterfaces() throws SQLException {
+    public DbIpInterfaceEntry[] getManagedInterfaces() throws SQLException {
         DbIpInterfaceEntry[] entries = null;
 
         Connection db = null;
@@ -1745,7 +1745,7 @@ final class DbNodeEntry {
         return entries;
     }
 
-    DbIpInterfaceEntry[] getManagedInterfaces(Connection db) throws SQLException {
+    public DbIpInterfaceEntry[] getManagedInterfaces(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
         final DBUtils d = new DBUtils(getClass());
@@ -1787,7 +1787,7 @@ final class DbNodeEntry {
         return l.toArray(entries);
     }
 
-    static DbIpInterfaceEntry getPrimarySnmpInterface(DbIpInterfaceEntry[] ipInterfaces) {
+    public static DbIpInterfaceEntry getPrimarySnmpInterface(DbIpInterfaceEntry[] ipInterfaces) {
         if (ipInterfaces == null)
             return null;
 
@@ -1798,7 +1798,7 @@ final class DbNodeEntry {
         return null;
     }
 
-    DbSnmpInterfaceEntry[] getSnmpInterfaces() throws SQLException {
+    public DbSnmpInterfaceEntry[] getSnmpInterfaces() throws SQLException {
         DbSnmpInterfaceEntry[] entries = null;
 
         Connection db = null;
@@ -1817,7 +1817,7 @@ final class DbNodeEntry {
         return entries;
     }
 
-    DbSnmpInterfaceEntry[] getSnmpInterfaces(Connection db) throws SQLException {
+    public DbSnmpInterfaceEntry[] getSnmpInterfaces(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
         final DBUtils d = new DBUtils(getClass());
@@ -1862,7 +1862,7 @@ final class DbNodeEntry {
      * 
      * @return A new node record.
      */
-    static DbNodeEntry create() {
+    public static DbNodeEntry create() {
         return new DbNodeEntry(DEFAULT_DP_NAME);
     }
 
@@ -1875,7 +1875,7 @@ final class DbNodeEntry {
      * 
      * @return A new node record.
      */
-    static DbNodeEntry create(String poller) {
+    public static DbNodeEntry create(String poller) {
         if (poller == null)
             poller = DEFAULT_DP_NAME;
 
@@ -1890,7 +1890,7 @@ final class DbNodeEntry {
      * 
      * @return a new DbNodeEntry identical to the original
      */
-    static DbNodeEntry clone(DbNodeEntry entry) {
+    public static DbNodeEntry clone(DbNodeEntry entry) {
         DbNodeEntry clonedEntry = create();
         clonedEntry.m_fromDb = entry.m_fromDb;
         clonedEntry.m_nodeId = entry.m_nodeId;
@@ -1923,7 +1923,7 @@ final class DbNodeEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbNodeEntry get(int nid) throws SQLException {
+    public static DbNodeEntry get(int nid) throws SQLException {
         return get(nid, DEFAULT_DP_NAME);
     }
 
@@ -1938,7 +1938,7 @@ final class DbNodeEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbNodeEntry get(int nid, String dpName) throws SQLException {
+    public static DbNodeEntry get(int nid, String dpName) throws SQLException {
         Connection db = null;
         try {
             db = DataSourceFactory.getInstance().getConnection();
@@ -1966,7 +1966,7 @@ final class DbNodeEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbNodeEntry get(Connection db, int nid) throws SQLException {
+    public static DbNodeEntry get(Connection db, int nid) throws SQLException {
         return get(db, nid, DEFAULT_DP_NAME);
     }
 
@@ -1985,7 +1985,7 @@ final class DbNodeEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbNodeEntry get(Connection db, int nid, String dpName) throws SQLException {
+    public static DbNodeEntry get(Connection db, int nid, String dpName) throws SQLException {
         DbNodeEntry entry = new DbNodeEntry(nid, dpName);
         if (!entry.load(db))
             entry = null;

@@ -35,7 +35,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.test.mock.EasyMockUtils;
 
 import junit.framework.TestCase;

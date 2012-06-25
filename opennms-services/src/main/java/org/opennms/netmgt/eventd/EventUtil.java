@@ -39,11 +39,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
-import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
+import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;

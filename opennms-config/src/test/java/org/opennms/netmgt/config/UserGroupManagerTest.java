@@ -48,8 +48,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.notifd.mock.MockGroupManager;
-import org.opennms.netmgt.notifd.mock.MockUserManager;
 
 public class UserGroupManagerTest {
     private GroupManager m_groupManager;

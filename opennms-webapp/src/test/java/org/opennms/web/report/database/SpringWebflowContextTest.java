@@ -34,8 +34,8 @@ import javax.servlet.ServletException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockServletConfig;

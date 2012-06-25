@@ -37,11 +37,11 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;

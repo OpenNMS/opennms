@@ -38,7 +38,6 @@ import org.opennms.core.xml.MarshallingExceptionTranslator;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
-import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;

@@ -41,6 +41,7 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.jdbc.datasource.DelegatingDataSource;

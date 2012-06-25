@@ -40,6 +40,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.C3P0ConnectionFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 
 /**

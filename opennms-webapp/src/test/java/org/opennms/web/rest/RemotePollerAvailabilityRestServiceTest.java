@@ -43,10 +43,10 @@ import javax.servlet.ServletException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.LocationMonitorDao;

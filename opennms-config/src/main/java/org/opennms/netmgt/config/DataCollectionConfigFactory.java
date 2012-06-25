@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
 import org.springframework.core.io.FileSystemResource;
 
 /**

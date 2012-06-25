@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.model.capsd;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -38,11 +38,11 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  *
@@ -89,13 +89,13 @@ public final class DbIfServiceEntry {
     /** Constant <code>STATUS_REMOTE='X'</code> */
     public final static char STATUS_REMOTE = 'X';
 
-    final static char SOURCE_PLUGIN = 'P';
+    public final static char SOURCE_PLUGIN = 'P';
 
     final static char SOURCE_FORCED = 'F';
 
     final static char SOURCE_UNKNOWN = ' ';
 
-    final static char NOTIFY_ON = 'Y';
+    public final static char NOTIFY_ON = 'Y';
 
     final static char NOTIFY_OFF = 'N';
 
@@ -595,7 +595,7 @@ public final class DbIfServiceEntry {
      * returned.
      * 
      */
-    long getNodeId() {
+    public long getNodeId() {
         return m_nodeId;
     }
 
@@ -604,21 +604,21 @@ public final class DbIfServiceEntry {
      * non-mutable element of the record.
      * 
      */
-    InetAddress getIfAddress() {
+    public InetAddress getIfAddress() {
         return m_ipAddr;
     }
 
     /**
      * Returns the service id of this service entry.
      */
-    int getServiceId() {
+    public int getServiceId() {
         return m_serviceId;
     }
 
     /**
      * Gets the last good poll time of the record
      */
-    String getLastGoodString() {
+    public String getLastGoodString() {
         String result = null;
         if (m_lastGood != null) {
             result = m_lastGood.toString();
@@ -629,7 +629,7 @@ public final class DbIfServiceEntry {
     /**
      * Gets the last good poll time of the record
      */
-    Timestamp getLastGood() {
+    public Timestamp getLastGood() {
         return m_lastGood;
     }
 
@@ -640,7 +640,7 @@ public final class DbIfServiceEntry {
      *            The poll time.
      * 
      */
-    void setLastGood(String time) throws ParseException {
+    public void setLastGood(String time) throws ParseException {
         if (time == null) {
             m_lastGood = null;
         } else {
@@ -657,7 +657,7 @@ public final class DbIfServiceEntry {
      *            The poll time.
      * 
      */
-    void setLastGood(Date time) {
+    public void setLastGood(Date time) {
         m_lastGood = new Timestamp(time.getTime());
         m_changed |= CHANGED_LASTGOOD;
     }
@@ -669,7 +669,7 @@ public final class DbIfServiceEntry {
      *            The poll time.
      * 
      */
-    void setLastGood(Timestamp time) {
+    public void setLastGood(Timestamp time) {
         m_lastGood = time;
         m_changed |= CHANGED_LASTGOOD;
     }
@@ -677,7 +677,7 @@ public final class DbIfServiceEntry {
     /**
      * Gets the last fail poll time of the record
      */
-    String getLastFailString() {
+    public String getLastFailString() {
         String result = null;
         if (m_lastFail != null) {
             result = m_lastFail.toString();
@@ -688,7 +688,7 @@ public final class DbIfServiceEntry {
     /**
      * Gets the last fail poll time of the record
      */
-    Timestamp getLastFail() {
+    public Timestamp getLastFail() {
         return m_lastFail;
     }
 
@@ -699,7 +699,7 @@ public final class DbIfServiceEntry {
      *            The poll time.
      * 
      */
-    void setLastFail(String time) throws ParseException {
+    public void setLastFail(String time) throws ParseException {
         if (time == null) {
             m_lastFail = null;
         } else {
@@ -716,7 +716,7 @@ public final class DbIfServiceEntry {
      *            The poll time.
      * 
      */
-    void setLastFail(Date time) {
+    public void setLastFail(Date time) {
         m_lastFail = new Timestamp(time.getTime());
         m_changed |= CHANGED_LASTFAIL;
     }
@@ -728,7 +728,7 @@ public final class DbIfServiceEntry {
      *            The poll time.
      * 
      */
-    void setLastFail(Timestamp time) {
+    public void setLastFail(Timestamp time) {
         m_lastFail = time;
         m_changed |= CHANGED_LASTFAIL;
     }
@@ -736,14 +736,14 @@ public final class DbIfServiceEntry {
     /**
      * Returns true if the ifIndex is defined.
      */
-    boolean hasIfIndex() {
+    public boolean hasIfIndex() {
         return m_ifIndex != -1;
     }
 
     /**
      * Returns the current ifIndex
      */
-    int getIfIndex() {
+    public int getIfIndex() {
         return m_ifIndex;
     }
 
@@ -753,19 +753,19 @@ public final class DbIfServiceEntry {
      * @param ndx
      *            The new ifIndex.
      */
-    void setIfIndex(int ndx) {
+    public void setIfIndex(int ndx) {
         m_ifIndex = ndx;
         m_changed |= CHANGED_IFINDEX;
     }
 
-    boolean hasIfIndexChanged() {
+    public boolean hasIfIndexChanged() {
         if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
             return true;
         else
             return false;
     }
 
-    boolean updateIfIndex(int newIfIndex) {
+    public boolean updateIfIndex(int newIfIndex) {
         if (newIfIndex != m_ifIndex) {
             setIfIndex(newIfIndex);
             return true;
@@ -776,7 +776,7 @@ public final class DbIfServiceEntry {
     /**
      * Gets the current operational status field
      */
-    char getStatus() {
+    public char getStatus() {
         return m_status;
     }
 
@@ -787,19 +787,19 @@ public final class DbIfServiceEntry {
      *            The new status.
      * 
      */
-    void setStatus(char status) {
+    public void setStatus(char status) {
         m_status = status;
         m_changed |= CHANGED_STATUS;
     }
 
-    boolean hasStatusChanged() {
+    public boolean hasStatusChanged() {
         if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
             return true;
         else
             return false;
     }
 
-    boolean updateStatus(char newStatus) {
+    public boolean updateStatus(char newStatus) {
         if (newStatus != m_status) {
             setStatus(newStatus);
             return true;
@@ -810,26 +810,26 @@ public final class DbIfServiceEntry {
     /**
      * Gets the source of the interface service.
      */
-    char getSource() {
+    public char getSource() {
         return m_source;
     }
 
     /**
      * Sets the source of the interface service
      */
-    void setSource(char src) {
+    public void setSource(char src) {
         m_source = src;
         m_changed |= CHANGED_SOURCE;
     }
 
-    boolean hasSourceChanged() {
+    public boolean hasSourceChanged() {
         if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
             return true;
         else
             return false;
     }
 
-    boolean updateSource(char newSource) {
+    public boolean updateSource(char newSource) {
         if (newSource != m_source) {
             setSource(newSource);
             return true;
@@ -840,26 +840,26 @@ public final class DbIfServiceEntry {
     /**
      * Gets the notification state.
      */
-    char getNotify() {
+    public char getNotify() {
         return m_notify;
     }
 
     /**
      * Sets the notification state
      */
-    void setNotify(char notify) {
+    public void setNotify(char notify) {
         m_notify = notify;
         m_changed |= CHANGED_NOTIFY;
     }
 
-    boolean hasNotifyChanged() {
+    public boolean hasNotifyChanged() {
         if ((m_changed & CHANGED_NOTIFY) == CHANGED_NOTIFY)
             return true;
         else
             return false;
     }
 
-    boolean updateNotify(char newNotify) {
+    public boolean updateNotify(char newNotify) {
         if (newNotify != m_notify) {
             setNotify(newNotify);
             return true;
@@ -867,23 +867,23 @@ public final class DbIfServiceEntry {
         return false;
     }
 
-    String getQualifier() {
+    public String getQualifier() {
         return m_qualifier;
     }
 
-    void setQualifier(String qualifier) {
+    public void setQualifier(String qualifier) {
         m_qualifier = qualifier;
         m_changed |= CHANGED_QUALIFIER;
     }
 
-    boolean hasQualifierChanged() {
+    public boolean hasQualifierChanged() {
         if ((m_changed & CHANGED_QUALIFIER) == CHANGED_QUALIFIER)
             return true;
         else
             return false;
     }
 
-    boolean updateQualifier(String newQualifier) {
+    public boolean updateQualifier(String newQualifier) {
         boolean doUpdate = false;
         if (newQualifier != null && m_qualifier != null) {
             if (!newQualifier.equals(m_qualifier))
@@ -907,7 +907,7 @@ public final class DbIfServiceEntry {
      * element already exists then it's current row is updated as needed based
      * upon the current changes to the node.
      */
-    void store() throws SQLException {
+    public void store() throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             Connection db = null;
             try {
@@ -936,11 +936,11 @@ public final class DbIfServiceEntry {
      * @param db
      *            The database connection used to write the record.
      */
-    void store(Connection db) throws SQLException {
+    public void store(Connection db) throws SQLException {
         store(db, false);
     }
 
-    void store(Connection db, boolean noRollback) throws SQLException {
+    public void store(Connection db, boolean noRollback) throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb) {
                 update(db);
@@ -963,7 +963,7 @@ public final class DbIfServiceEntry {
      * 
      * @return A new interface record.
      */
-    static DbIfServiceEntry create(int nid, InetAddress address, int sid) {
+    public static DbIfServiceEntry create(int nid, InetAddress address, int sid) {
         return new DbIfServiceEntry(nid, address, sid, false);
     }
 
@@ -982,7 +982,7 @@ public final class DbIfServiceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIfServiceEntry get(int nid, InetAddress addr, int sid) throws SQLException {
+    public static DbIfServiceEntry get(int nid, InetAddress addr, int sid) throws SQLException {
         Connection db = null;
         try {
             db = DataSourceFactory.getInstance().getConnection();
@@ -1013,7 +1013,7 @@ public final class DbIfServiceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIfServiceEntry get(Connection db, long nodeId, InetAddress addr, int sid) throws SQLException {
+    public static DbIfServiceEntry get(Connection db, long nodeId, InetAddress addr, int sid) throws SQLException {
         DbIfServiceEntry entry = new DbIfServiceEntry(nodeId, addr, sid, true);
         if (!entry.load(db)) {
             entry = null;

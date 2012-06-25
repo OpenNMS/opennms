@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.model.capsd;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -40,11 +40,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  *
@@ -579,7 +579,7 @@ public final class DbIpInterfaceEntry {
      * returned.
      * 
      */
-    long getNodeId() {
+    public long getNodeId() {
         return m_nodeId;
     }
 
@@ -588,14 +588,14 @@ public final class DbIpInterfaceEntry {
      * non-mutable element of the record.
      * 
      */
-    InetAddress getIfAddress() {
+    public InetAddress getIfAddress() {
         return m_ipAddr;
     }
 
     /**
      * Gets the last poll time of the record
      */
-    String getLastPollString() {
+    public String getLastPollString() {
         String result = null;
         if (m_lastPoll != null) {
             result = m_lastPoll.toString();
@@ -606,7 +606,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Gets the last poll time of the record
      */
-    Timestamp getLastPoll() {
+    public Timestamp getLastPoll() {
         return m_lastPoll;
     }
 
@@ -617,7 +617,7 @@ public final class DbIpInterfaceEntry {
      *            The creation time.
      * 
      */
-    void setLastPoll(String time) throws ParseException {
+    public void setLastPoll(String time) throws ParseException {
         if (time == null) {
             m_lastPoll = null;
         } else {
@@ -634,7 +634,7 @@ public final class DbIpInterfaceEntry {
      *            The creation time.
      * 
      */
-    void setLastPoll(Date time) {
+    public void setLastPoll(Date time) {
         m_lastPoll = new Timestamp(time.getTime());
         m_changed |= CHANGED_POLLTIME;
     }
@@ -646,7 +646,7 @@ public final class DbIpInterfaceEntry {
      *            The creation time.
      * 
      */
-    void setLastPoll(Timestamp time) {
+    public void setLastPoll(Timestamp time) {
         m_lastPoll = time;
         m_changed |= CHANGED_POLLTIME;
     }
@@ -654,7 +654,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Returns true if the ifIndex is defined.
      */
-    boolean hasIfIndex() {
+    public boolean hasIfIndex() {
         return m_ifIndex != -1;
     }
 
@@ -671,12 +671,12 @@ public final class DbIpInterfaceEntry {
      * @param ndx
      *            The new ifIndex.
      */
-    void setIfIndex(int ndx) {
+    public void setIfIndex(int ndx) {
         m_ifIndex = ndx;
         m_changed |= CHANGED_IFINDEX;
     }
 
-    boolean hasIfIndexChanged() {
+    public boolean hasIfIndexChanged() {
         if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
             return true;
         } else {
@@ -684,7 +684,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    boolean updateIfIndex(int newIfIndex) {
+    public boolean updateIfIndex(int newIfIndex) {
         if (newIfIndex != -1 && newIfIndex != m_ifIndex) {
             setIfIndex(newIfIndex);
             return true;
@@ -695,7 +695,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Returns the current hostname.
      */
-    String getHostname() {
+    public String getHostname() {
         return m_hostname;
     }
 
@@ -705,12 +705,12 @@ public final class DbIpInterfaceEntry {
      * @param name
      *            The new hostname
      */
-    void setHostname(String name) {
+    public void setHostname(String name) {
         m_hostname = name;
         m_changed |= CHANGED_HOSTNAME;
     }
 
-    boolean hasHostnameChanged() {
+    public boolean hasHostnameChanged() {
         if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME) {
             return true;
         } else {
@@ -718,7 +718,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    boolean updateHostname(String newHostname) {
+    public boolean updateHostname(String newHostname) {
         boolean doUpdate = false;
         if (newHostname != null && m_hostname != null) {
             if (!newHostname.equals(m_hostname)) {
@@ -742,7 +742,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Returns the current managed state of the interface
      */
-    char getManagedState() {
+    public char getManagedState() {
         return m_managedState;
     }
 
@@ -752,12 +752,12 @@ public final class DbIpInterfaceEntry {
      * @param state
      *            The new managed state
      */
-    void setManagedState(char state) {
+    public void setManagedState(char state) {
         m_managedState = state;
         m_changed |= CHANGED_MANAGED;
     }
 
-    boolean hasManagedStateChanged() {
+    public boolean hasManagedStateChanged() {
         if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
             return true;
         } else {
@@ -765,7 +765,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    boolean updateManagedState(char newManagedState) {
+    public boolean updateManagedState(char newManagedState) {
         if (newManagedState != m_managedState) {
             setManagedState(newManagedState);
             return true;
@@ -777,7 +777,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Gets the current operational status field
      */
-    int getStatus() {
+    public int getStatus() {
         return m_status;
     }
 
@@ -788,12 +788,12 @@ public final class DbIpInterfaceEntry {
      *            The new status.
      * 
      */
-    void setStatus(int status) {
+    public void setStatus(int status) {
         m_status = status;
         m_changed |= CHANGED_STATUS;
     }
 
-    boolean hasStatusChanged() {
+    public boolean hasStatusChanged() {
         if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
             return true;
         } else {
@@ -801,7 +801,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    boolean updateStatus(int newStatus) {
+    public boolean updateStatus(int newStatus) {
         if (newStatus != -1 && newStatus != m_status) {
             setStatus(newStatus);
             return true;
@@ -813,7 +813,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Returns the current primary state.
      */
-    char getPrimaryState() {
+    public char getPrimaryState() {
         return m_primaryState;
     }
 
@@ -823,12 +823,12 @@ public final class DbIpInterfaceEntry {
      * @param state
      *            The new primary state.
      */
-    void setPrimaryState(char state) {
+    public void setPrimaryState(char state) {
         m_primaryState = state;
         m_changed |= CHANGED_PRIMARY;
     }
 
-    boolean hasPrimaryStateChanged() {
+    public boolean hasPrimaryStateChanged() {
         if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY) {
             return true;
         } else {
@@ -836,7 +836,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    boolean updatePrimaryState(char newPrimaryState) {
+    public boolean updatePrimaryState(char newPrimaryState) {
         if (newPrimaryState != SNMP_UNKNOWN && newPrimaryState != m_primaryState) {
             setPrimaryState(newPrimaryState);
             return true;
@@ -851,7 +851,7 @@ public final class DbIpInterfaceEntry {
      * element already exists then it's current row is updated as needed based
      * upon the current changes to the node.
      */
-    void store() throws SQLException {
+    public void store() throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             Connection db = null;
             try {
@@ -882,7 +882,7 @@ public final class DbIpInterfaceEntry {
      * @param db
      *            The database connection used to write the record.
      */
-    void store(Connection db) throws SQLException {
+    public void store(Connection db) throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb) {
                 update(db);
@@ -892,7 +892,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    DbIfServiceEntry[] getServices() throws SQLException {
+    public DbIfServiceEntry[] getServices() throws SQLException {
         DbIfServiceEntry[] entries = null;
 
         Connection db = null;
@@ -912,7 +912,7 @@ public final class DbIpInterfaceEntry {
         return entries;
     }
 
-    DbIfServiceEntry[] getServices(Connection db) throws SQLException {
+    public DbIfServiceEntry[] getServices(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
         final DBUtils d = new DBUtils(getClass());
@@ -954,7 +954,7 @@ public final class DbIpInterfaceEntry {
      * 
      * @return A new interface record.
      */
-    static DbIpInterfaceEntry create(long l, InetAddress address) {
+    public static DbIpInterfaceEntry create(long l, InetAddress address) {
         return new DbIpInterfaceEntry(l, address, false);
     }
 
@@ -971,7 +971,7 @@ public final class DbIpInterfaceEntry {
      * 
      * @return A new interface record.
      */
-    static DbIpInterfaceEntry create(int nid, InetAddress address, int ifIndex) {
+    public static DbIpInterfaceEntry create(int nid, InetAddress address, int ifIndex) {
         return new DbIpInterfaceEntry(nid, address, ifIndex, false);
     }
 
@@ -983,7 +983,7 @@ public final class DbIpInterfaceEntry {
      * 
      * @return a new DbIpInterfaceEntry identical to the original
      */
-    static DbIpInterfaceEntry clone(DbIpInterfaceEntry entry) {
+    public static DbIpInterfaceEntry clone(DbIpInterfaceEntry entry) {
         DbIpInterfaceEntry clonedEntry = create(entry.getNodeId(), entry.getIfAddress());
         clonedEntry.m_fromDb = entry.m_fromDb;
         clonedEntry.m_ifIndex = entry.m_ifIndex;
@@ -1008,7 +1008,7 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(int nid, InetAddress addr) throws SQLException {
+    public static DbIpInterfaceEntry get(int nid, InetAddress addr) throws SQLException {
         Connection db = null;
         try {
             db = DataSourceFactory.getInstance().getConnection();
@@ -1039,7 +1039,7 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(int nid, InetAddress addr, int ifIndex) throws SQLException {
+    public static DbIpInterfaceEntry get(int nid, InetAddress addr, int ifIndex) throws SQLException {
         Connection db = null;
         try {
             db = DataSourceFactory.getInstance().getConnection();
@@ -1096,7 +1096,7 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(Connection db, long nid, InetAddress addr, int ifIndex) throws SQLException {
+    public static DbIpInterfaceEntry get(Connection db, long nid, InetAddress addr, int ifIndex) throws SQLException {
         DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, ifIndex, true);
         if (!entry.load(db)) {
             entry = null;

@@ -42,9 +42,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventsArchiverConfigFactory;
 
 /**

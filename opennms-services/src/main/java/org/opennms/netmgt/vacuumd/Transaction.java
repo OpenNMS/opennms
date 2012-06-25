@@ -39,9 +39,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * <p>Transaction class.</p>

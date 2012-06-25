@@ -37,9 +37,8 @@ package org.opennms.netmgt.config;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.ServiceMonitorLocator;
+
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
     private static final long serialVersionUID = 4852206182208816721L;
