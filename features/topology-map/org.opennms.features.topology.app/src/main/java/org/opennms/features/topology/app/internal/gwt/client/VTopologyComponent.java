@@ -857,7 +857,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				}
         		
         	}else if(child.getTag().equals("edge")) {
-        		GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), graphConverted.findVertexById(child.getStringAttribute("source")), graphConverted.findVertexById( child.getStringAttribute("target") ));
+        		GWTVertex source = graphConverted.findVertexById(child.getStringAttribute("source"));
+                GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), source, graphConverted.findVertexById( child.getStringAttribute("target") ));
         		String[] actionKeys = child.getStringArrayAttribute("actionKeys");
         		edge.setActionKeys(actionKeys);
         		graphConverted.addEdge(edge);
