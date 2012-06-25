@@ -162,6 +162,7 @@ public class NotifdConfigFactory extends NotifdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
+    @Override
     public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
         sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
         configuration.setStatus("on");
@@ -179,6 +180,7 @@ public class NotifdConfigFactory extends NotifdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
+    @Override
     public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
         sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
         configuration.setStatus("off");
@@ -187,6 +189,7 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_notifdConfFile), "UTF-8");
@@ -203,6 +206,7 @@ public class NotifdConfigFactory extends NotifdConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     protected synchronized void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_notifdConfFile.lastModified()) {
             NotifdConfigFactory.getInstance().reload();

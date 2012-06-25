@@ -57,12 +57,14 @@ public class MockGroupManager extends GroupManager {
         }
     }
 
+    @Override
     public void update() throws IOException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }
     }
 
+    @Override
     protected void saveXml(String data) throws IOException {
         m_xmlString = data;
         updateNeeded = true;

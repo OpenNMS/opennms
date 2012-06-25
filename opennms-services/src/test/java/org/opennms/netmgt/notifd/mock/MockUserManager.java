@@ -57,17 +57,20 @@ public class MockUserManager extends UserManager {
         m_lastModified = System.currentTimeMillis();
     }
 
+    @Override
     protected void saveXML(String writerString) throws IOException {
         m_xmlString = writerString;
         updateNeeded = true;
     }
 
+    @Override
     protected void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }
     }
 
+    @Override
     public boolean isUpdateNeeded() {
         return updateNeeded;
     }

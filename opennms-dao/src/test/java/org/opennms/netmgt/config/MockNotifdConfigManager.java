@@ -63,6 +63,7 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.NotifdConfigManager#update()
      */
+    @Override
     protected void update() throws IOException, MarshalException, ValidationException {
 
     }
@@ -70,12 +71,14 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.NotifdConfigManager#saveXml(java.lang.String)
      */
+    @Override
     protected void saveXml(String xml) throws IOException {
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.NotifdConfigManager#getNextNotifIdSql()
      */
+    @Override
     public String getNextNotifIdSql() throws IOException, MarshalException,
             ValidationException {
         return m_nextNotifIdSql;
@@ -85,6 +88,7 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
         m_nextNotifIdSql = sql;
     }
 
+    @Override
     public String getNextUserNotifIdSql() throws IOException, MarshalException, ValidationException {
         // TODO Auto-generated method stub
         return m_nextUserNotifIdSql;
