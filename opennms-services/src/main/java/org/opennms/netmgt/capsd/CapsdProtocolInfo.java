@@ -26,11 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.capsd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.capsd.Plugin;
 
 /**
  * This class is used to encapsulate the basic protocol information read
