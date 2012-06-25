@@ -1,0 +1,2 @@
+serviceClass: org.opennms.term.client.GreetingService
+path: D7CC898A2B83677F48C3794F975C2479.gwt.rpc
