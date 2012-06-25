@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.db;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
