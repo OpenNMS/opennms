@@ -42,7 +42,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.collectd.Attr;
+import org.opennms.netmgt.config.collectd.jmx.Attr;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.CompMember;

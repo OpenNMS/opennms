@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collectd.jmx;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
