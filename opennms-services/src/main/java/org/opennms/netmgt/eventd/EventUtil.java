@@ -212,11 +212,6 @@ public final class EventUtil {
 	final static String ASSET_END_SUFFIX = "]";
 
 	/**
-	 * The '%' sign used to indicate parms to be expanded
-	 */
-	final static char PERCENT = '%';
-
-	/**
 	 * The string that should be expanded to a list of all parm names
 	 */
 	final static String PARMS_NAMES = "parm[names-all]";
@@ -839,7 +834,7 @@ public final class EventUtil {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static String expandParms(String inp, Event event) {
-        return EventUtil.expandParms(inp, event, null);
+        return expandParms(inp, event, null);
     }
 
     /**
@@ -863,73 +858,7 @@ public final class EventUtil {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
-        int index1 = -1;
-        int index2 = -1;
-
-        if (inp == null) {
-            return null;
-        }
-
-        StringBuffer ret = new StringBuffer();
-
-        String tempInp = inp;
-        int inpLen = inp.length();
-
-        // check input string to see if it has any %xxx% substring
-        while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
-            // copy till first %
-            ret.append(tempInp.substring(0, index1));
-            tempInp = tempInp.substring(index1);
-
-            index2 = tempInp.indexOf(PERCENT, 1);
-            if (index2 != -1) {
-                // Get the value between the %s
-                String parm = tempInp.substring(1, index2);
-                // m_logger.debug("parm: " + parm + " found in value");
-
-                // If there's any whitespace in between the % signs, then do not try to 
-                // expand it with a parameter value
-                if (parm.matches(".*\\s.*")) {
-                    ret.append(PERCENT);
-                    tempInp = tempInp.substring(1);
-                    continue;
-                }
-
-                String parmVal = getValueOfParm(parm, event);
-                // m_logger.debug("value of parm: " + parmVal);
-
-                if (parmVal != null) {
-                    if (decode != null && decode.containsKey(parm) && decode.get(parm).containsKey(parmVal)) {
-                        ret.append(decode.get(parm).get(parmVal));
-                        ret.append("(");
-                        ret.append(parmVal);
-                        ret.append(")");
-                    } else {
-                        ret.append(parmVal);
-                    }
-                }
-
-                if (index2 < (inpLen - 1)) {
-                    tempInp = tempInp.substring(index2 + 1);
-                } else {
-                    tempInp = null;
-                }
-            }
-            else {
-                break;
-            }
-        }
-
-        if ((index1 == -1 || index2 == -1) && (tempInp != null)) {
-            ret.append(tempInp);
-        }
-
-        String retStr = ret.toString();
-        if (retStr != null && !retStr.equals(inp)) {
-            return retStr;
-        } else {
-            return null;
-        }
+        return org.opennms.netmgt.eventd.datablock.EventUtil.expandParms(inp, event, decode);
     }
 
 

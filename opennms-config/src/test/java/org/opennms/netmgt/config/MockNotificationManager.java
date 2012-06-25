@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.notifd.mock;
+package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -39,8 +39,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
 /**
- * Copied from {@link org.opennms.netmgt.config.MockNotificationManager}.
- * 
  * @author david
  */
 public class MockNotificationManager extends NotificationManager {

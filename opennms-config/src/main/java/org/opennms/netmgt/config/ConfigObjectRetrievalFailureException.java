@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.config;
 
 import org.springframework.orm.ObjectRetrievalFailureException;
-public class CastorObjectRetrievalFailureException extends ObjectRetrievalFailureException {
+public class ConfigObjectRetrievalFailureException extends ObjectRetrievalFailureException {
     private static final long serialVersionUID = -5906087948002738350L;
 
     /**
@@ -38,7 +38,7 @@ public class CastorObjectRetrievalFailureException extends ObjectRetrievalFailur
      * @param message a {@link java.lang.String} object.
      * @param throwable a {@link java.lang.Throwable} object.
      */
-    public CastorObjectRetrievalFailureException(String message, Throwable throwable) {
+    public ConfigObjectRetrievalFailureException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }

@@ -424,7 +424,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      * Expand parms in the event logmsg
      */
     private void expandParms(Logmsg logmsg, Event event, Map<String, Map<String, String>> decode) {
-        String strRet = EventUtil.expandParms(logmsg.getContent(), event, decode);
+        String strRet = org.opennms.netmgt.eventd.datablock.EventUtil.expandParms(logmsg.getContent(), event, decode);
         if (strRet != null) {
             logmsg.setContent(strRet);
         }
@@ -495,7 +495,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
         // description
         if (event.getDescr() != null) {
-            strRet = EventUtil.expandParms(event.getDescr(), event,decode);
+            strRet = org.opennms.netmgt.eventd.datablock.EventUtil.expandParms(event.getDescr(), event,decode);
             if (strRet != null) {
                 event.setDescr(strRet);
                 strRet = null;

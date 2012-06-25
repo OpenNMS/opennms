@@ -36,8 +36,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotifdConfigManager;
 /**
- * Copied from {@link org.opennms.netmgt.config.MockNotifdConfigManager}.
- * 
  * @author David Hustace <david@opennms.org>
  */
 public class MockNotifdConfigManager extends NotifdConfigManager {
@@ -67,7 +65,6 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
      */
     @Override
     protected void update() throws IOException, MarshalException, ValidationException {
-
     }
 
     /* (non-Javadoc)

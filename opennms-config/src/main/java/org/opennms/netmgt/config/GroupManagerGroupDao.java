@@ -304,7 +304,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     
     public static class GroupManagerCastorExceptionTranslator extends MarshallingExceptionTranslator {
         public DataAccessException translate(String task, Throwable e) {
-            return new CastorObjectRetrievalFailureException("General error while " + task + ": " + e, e);
+            return new ConfigObjectRetrievalFailureException("General error while " + task + ": " + e, e);
         }
     }
 

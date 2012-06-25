@@ -1011,7 +1011,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     }
                 } catch (final ClassNotFoundException e) {
                     LogUtils.warnf(this, e, "Unable to location monitor for service: %s class-name: %s", monitor.getService(), monitor.getClassName());
-                } catch (CastorObjectRetrievalFailureException e) {
+                } catch (ConfigObjectRetrievalFailureException e) {
                     LogUtils.warnf(this, e, e.getMessage(), e.getRootCause());
                 }
             }

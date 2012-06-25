@@ -73,10 +73,10 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
             mon.initialize((Map<String,Object>)null);
             return mon;
         } catch (InstantiationException e) {
-            throw new CastorObjectRetrievalFailureException("Unable to instantiate monitor for service "
+            throw new ConfigObjectRetrievalFailureException("Unable to instantiate monitor for service "
                     +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
         } catch (IllegalAccessException e) {
-            throw new CastorObjectRetrievalFailureException("Illegal access trying to instantiate monitor for service "
+            throw new ConfigObjectRetrievalFailureException("Illegal access trying to instantiate monitor for service "
                     +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
         }
     }
