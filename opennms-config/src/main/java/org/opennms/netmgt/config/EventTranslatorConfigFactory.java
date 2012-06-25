@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.translator.Mapping;
 import org.opennms.netmgt.config.translator.Translation;
 import org.opennms.netmgt.config.translator.Value;
+import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.BeanWrapper;
