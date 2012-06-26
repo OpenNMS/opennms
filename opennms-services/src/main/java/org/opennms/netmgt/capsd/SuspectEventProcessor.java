@@ -453,7 +453,7 @@ final class SuspectEventProcessor implements Runnable {
     }
 
     /**
-     * This method is responsble for inserting new entries into the
+     * This method is responsible for inserting new entries into the
      * ipInterface table for each interface found to be associated with the
      * suspect interface during the capabilities scan.
      * 

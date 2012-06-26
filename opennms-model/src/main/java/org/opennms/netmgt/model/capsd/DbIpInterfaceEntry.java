@@ -59,6 +59,9 @@ import org.opennms.netmgt.EventConstants;
  * NOTE: if the connection is passed in and is not in auto commit mode, then the
  * caller must call <code>commit</code> to inform the database that the
  * transaction is complete.
+ * 
+ * @deprecated Objects like this that control their own data access are deprecated in favor
+ * of the JAXB beans (opennms-model) and DAO objects (opennms-dao).
  *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
