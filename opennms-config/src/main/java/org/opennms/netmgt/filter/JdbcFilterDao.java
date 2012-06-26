@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.filter;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -54,9 +54,6 @@ import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
-import org.opennms.netmgt.dao.FilterDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
@@ -78,7 +75,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
 	private DataSource m_dataSource;
     private DatabaseSchemaConfigFactory m_databaseSchemaConfigFactory;
-    private NodeDao m_nodeDao;
 
     /**
      * <p>setDataSource</p>
@@ -125,28 +121,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
     }
 
-    /**
-     * <p>setNodeDao</p>
-     *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
-     */
-    public void setNodeDao(final NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    /**
-     * <p>getNodeDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
-     */
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
     /** {@inheritDoc} */
     public void walkMatchingNodes(final String rule, final EntityVisitor visitor) {
-        Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
-
         SortedMap<Integer, String> map;
         try {
             map = getNodeMap(rule);

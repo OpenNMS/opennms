@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;

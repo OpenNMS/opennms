@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.springframework.core.io.FileSystemResource;
 

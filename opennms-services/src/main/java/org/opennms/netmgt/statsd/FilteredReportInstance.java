@@ -31,7 +31,6 @@ package org.opennms.netmgt.statsd;
 import java.util.Date;
 import java.util.SortedSet;
 
-import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
@@ -39,6 +38,7 @@ import org.opennms.netmgt.dao.support.FilterWalker;
 import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.RrdStatisticAttributeVisitor;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,7 +71,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_walker.setFilterDao(filterDao);

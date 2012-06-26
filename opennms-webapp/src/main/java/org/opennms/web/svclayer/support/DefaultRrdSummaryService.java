@@ -36,10 +36,10 @@ import java.util.Map;
 import org.opennms.netmgt.config.attrsummary.Attribute;
 import org.opennms.netmgt.config.attrsummary.Resource;
 import org.opennms.netmgt.config.attrsummary.Summary;
-import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.support.NodeSnmpResourceType;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
@@ -402,7 +402,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;

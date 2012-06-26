@@ -30,8 +30,6 @@ package org.opennms.netmgt.filter;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.dao.FilterDao;
-import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

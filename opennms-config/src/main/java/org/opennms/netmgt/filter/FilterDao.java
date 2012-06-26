@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.filter;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.EntityVisitor;
 
 /**

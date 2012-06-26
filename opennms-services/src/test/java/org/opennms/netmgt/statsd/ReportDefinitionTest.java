@@ -37,13 +37,13 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
 import org.opennms.netmgt.dao.support.BottomNAttributeStatisticVisitor;
 import org.opennms.netmgt.dao.support.MockResourceType;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.ExternalValueAttribute;

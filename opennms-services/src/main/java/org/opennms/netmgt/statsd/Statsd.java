@@ -34,9 +34,9 @@ import java.util.List;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -359,7 +359,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getFilterDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
@@ -368,7 +368,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;

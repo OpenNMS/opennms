@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.statsd;
 
-import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -246,7 +246,7 @@ public class ReportDefinition implements InitializingBean {
      *
      * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
      * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      * @return a {@link org.opennms.netmgt.statsd.ReportInstance} object.
      * @throws java.lang.Exception if any.
      */

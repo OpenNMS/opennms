@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.EntityVisitor;
 

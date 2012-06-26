@@ -55,6 +55,7 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
