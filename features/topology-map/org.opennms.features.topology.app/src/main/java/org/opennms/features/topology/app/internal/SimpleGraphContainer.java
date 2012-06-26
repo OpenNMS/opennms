@@ -168,7 +168,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_item = item;
         }
 
-        private GVertex getSource() {
+        public GVertex getSource() {
             return m_source;
         }
 
@@ -176,7 +176,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_source = source;
         }
 
-        private GVertex getTarget() {
+        public GVertex getTarget() {
             return m_target;
         }
 
