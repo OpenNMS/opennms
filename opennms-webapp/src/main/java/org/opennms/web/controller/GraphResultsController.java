@@ -28,24 +28,10 @@
 
 package org.opennms.web.controller;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
-import javax.jms.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQConnectionFactory;
-
 import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
-
-import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.nrtcollector.api.model.CollectionJob;
-import org.opennms.nrtcollector.api.model.SnmpCollectionJob;
 
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
@@ -223,62 +209,21 @@ public class GraphResultsController extends AbstractController implements Initia
                 relativeTime = s_periods[0].getId();
             }
 
-            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(
-                                                                                  s_periods,
-                                                                                  relativeTime,
-                                                                                  s_periods[0]);
+            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(s_periods, relativeTime, s_periods[0]);
 
             long[] times = period.getStartAndEndTimes();
             startLong = times[0];
             endLong = times[1];
         }
         
-        GraphResults model =
-            m_graphResultsService.findResults(resourceIds,
-                                              reports, startLong,
-                                              endLong, relativeTime);
+        GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
         
         ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
 
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
-        
-        //TODO Tak
-        publishCollectionJob(model.getGraphResultSets().get(0).getGraphs().get(0).getPrefabGraph(), request.getRemoteUser());
-        
+
         return modelAndView;
     }
-
-
-    private void publishCollectionJob(PrefabGraph prefabGraph, String user) {
-        //TODO Tak this collectionJob is just a dummy
-        CollectionJob collectionJob = new SnmpCollectionJob();
-        Set<String> destinations = new HashSet<String>();
-        destinations.add(user + "_" + prefabGraph.getName() + "_" + "results");
-        for (String metric : prefabGraph.getMetricIds()) {
-            collectionJob.addMetric(metric, destinations);
-        }
-        collectionJob.setNetInterface("127.0.0.1");
-        publishCollectionJobViaJms(collectionJob);
-    }
-    
-    private void publishCollectionJobViaJms(CollectionJob collectionJob) {
-        //TODO Tak get the NRTCollectionModel in shape.... soon
-        try {
-            String url = ActiveMQConnection.DEFAULT_BROKER_URL;
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = session.createQueue("NrtCollectMe");
-            
-            MessageProducer messageProducer = session.createProducer(destination);
-            messageProducer.send(session.createObjectMessage(collectionJob));
-            
-        } catch (JMSException ex) {
-            logger.info("Sending CollectionJob '{}' via Jms faild '{}'", collectionJob, ex.getMessage());
-        }
-    }
-    
 
     /**
      * <p>getGraphResultsService</p>

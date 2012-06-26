@@ -25,9 +25,7 @@
  */
 package org.opennms.web.svclayer.support;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.*;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -82,12 +80,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         m_periods = RelativeTimePeriod.getDefaultPeriods();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public GraphResults findResults(String[] resourceIds,
-            String[] reports, long start, long end, String relativeTime) {
+    public GraphResults findResults(String[] resourceIds, String[] reports, long start, long end, String relativeTime) {
         if (resourceIds == null) {
             throw new IllegalArgumentException("resourceIds argument cannot be null");
         }
@@ -204,13 +198,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         for (String report : reports) {
             PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
             Graph graph = new Graph(prefabGraph, resource, graphResults.getStart(), graphResults.getEnd());
-            //TODO Tak check if we get duplicates this way...
-            List<String> filesToPromoteForThisGraph = new ArrayList<String>();
-            getAttributeFiles(graph, filesToPromoteForThisGraph);
-            filesToPromote.addAll(filesToPromoteForThisGraph);
             getAttributeFiles(graph, filesToPromote);
             graphs.add(graph);
-            lookUpMetricsForColumnsOfPrefabGraphs(graph.getPrefabGraph(), filesToPromoteForThisGraph);
         }
 
         sendEvent(filesToPromote);
@@ -345,47 +334,5 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
-
-    /**
-     * Adds the Metrics corresponding to the columns into the prefabGraph. Based
-     * on a meta file lookup. The files to check for metric to column name
-     * mappings are provided by the filesToPromote. At the moment this method
-     * will check for the filenames in the list and expects to file a file with
-     * this name and a .meta ending.
-     *
-     * @param prefabGraph
-     * @param filesToPromoteForThisGraph
-     */
-    public void lookUpMetricsForColumnsOfPrefabGraphs(PrefabGraph prefabGraph, List<String> filesToPromoteForThisGraph) {
-        //Build a Hashmap with all columns to metrics from the files
-        Map<String, String> columnsToMetrics = new HashMap<String, String>();
-
-        //get all metrics to columns mappings from the files in to hashmap
-        for (String fileName : filesToPromoteForThisGraph) {
-            try {
-                //get meta files instead of rrd or jrb
-                fileName = fileName.substring(0, fileName.lastIndexOf("."));
-                fileName = fileName.concat(".meta");
-                BufferedReader bf = new BufferedReader(new FileReader(fileName));
-
-                String mappingLine = "";
-                while (mappingLine != null) {
-                    mappingLine = bf.readLine();
-                    String metric = mappingLine.substring(0, mappingLine.lastIndexOf("="));
-                    String column = mappingLine.substring(mappingLine.lastIndexOf("=") + 1);
-                    columnsToMetrics.put(column, metric);
-                }
-            } catch (Exception ex) {
-                logger.error("Problem by looking up metrics for cloumns in context of prefabgraphs from meta file '{}' '{}'", fileName, ex.getMessage());
-            }
-        }
-        /**
-         * put the metrics from the columnsToMetrics map into the metrics array of the prefabGraph.
-         */
-        String[] metrics = new String[prefabGraph.getColumns().length];
-        for (int i = 0; i < prefabGraph.getColumns().length; i++) {
-            metrics[i] = columnsToMetrics.get(prefabGraph.getColumns()[i]);
-        }
-        prefabGraph.setMetricIds(metrics);
-    }
+    
 }

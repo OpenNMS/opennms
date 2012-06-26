@@ -13,7 +13,6 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.nrtcollector.api.model.CollectionJob;
 import org.opennms.nrtcollector.api.model.SnmpCollectionJob;
-import org.opennms.web.graph.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +71,11 @@ public class NrtController {
             collectionJob.addMetric(prefabGraph.getColumns()[i], resultDestinations);
         }
         logger.debug("CollectionJob '{}'", collectionJob.toString());
+        this.publishCollectionJobViaJms(collectionJob);
         
-        Map<String, String> model = new HashMap<String, String>();
-        model.put("collectionJob", collectionJob.toString());
-        return new ModelAndView("realtime", model);
+        ModelAndView modelAndView = new ModelAndView("nrt/realtime");
+        modelAndView.addObject("collectionJob", collectionJob);
+        return modelAndView;
     }
     
         /**
@@ -101,9 +101,6 @@ public class NrtController {
      * mappings are provided by the filesToPromote. At the moment this method
      * will check for the filenames in the list and expects to file a file with
      * this name and a .meta ending.
-     *
-     * @param prefabGraph
-     * @param filesToPromoteForThisGraph
      */
     public void lookUpMetricsForColumnsOfPrefabGraphs(PrefabGraph prefabGraph, OnmsResource onmsResource) {
         //Build a Hashmap with all columns to metrics from the files
@@ -140,5 +137,9 @@ public class NrtController {
             metrics[i] = columnsToMetrics.get(prefabGraph.getColumns()[i]);
         }
         prefabGraph.setMetricIds(metrics);
+    }
+
+    private void publishCollectionJobViaJms(CollectionJob collectionJob) {
+        logger.error("Jms publishing of CollectionJobs not implemented yet: '{}'", collectionJob);
     }
 }

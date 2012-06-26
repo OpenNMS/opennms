@@ -1,10 +1,10 @@
 <html>
   <head>
-    <title>Realtime</title>
-    <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="js/amq_jquery_adapter.js"></script>
-    <script type="text/javascript" src="js/amq.js"></script>
-    <script type="text/javascript" src="js/d3.v2.js"></script>
+    <title>NearRealTime</title>
+    <script type="text/javascript" src="../../../js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="../../../js/amq_jquery_adapter.js"></script>
+    <script type="text/javascript" src="../../../js/amq.js"></script>
+    <script type="text/javascript" src="../../../js/d3.v2.js"></script>
     <style type="text/css">
 
 svg {
