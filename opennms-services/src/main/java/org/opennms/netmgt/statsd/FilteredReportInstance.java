@@ -35,7 +35,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
-import org.opennms.netmgt.dao.support.FilterWalker;
+import org.opennms.netmgt.dao.support.FilterResourceWalker;
 import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.RrdStatisticAttributeVisitor;
@@ -55,7 +55,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     private final RrdStatisticAttributeVisitor m_rrdVisitor = new RrdStatisticAttributeVisitor();
     private final AttributeMatchingResourceVisitor m_attributeVisitor = new AttributeMatchingResourceVisitor();
     private final ResourceTypeFilteringResourceVisitor m_resourceTypeVisitor = new ResourceTypeFilteringResourceVisitor();
-    private final FilterWalker m_walker = new FilterWalker();
+    private final FilterResourceWalker m_walker = new FilterResourceWalker();
     private String m_resourceAttributeKey;
     private String m_resourceAttributeValueMatch;
     private ResourceAttributeFilteringResourceVisitor m_resourceAttributeVisitor;

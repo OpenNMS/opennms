@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.dao.support;
 
+import java.util.Collections;
 import java.util.SortedMap;
 
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceVisitor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -43,22 +48,43 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public class FilterWalker implements InitializingBean {
+public class FilterResourceWalker implements InitializingBean {
 
     private NodeDao m_nodeDao;
     private FilterDao m_filterDao;
     private String m_filter;
-    private EntityVisitor m_visitor;
+    private ResourceDao m_resourceDao;
+    private ResourceVisitor m_visitor;
+
+    private ResourceTreeWalker m_resourceWalker = new ResourceTreeWalker();
 
     /**
      * <p>walk</p>
      */
     public void walk() {
+        EntityVisitor visitor = new AbstractEntityVisitor() {
+            @Override
+            public void visitNode(OnmsNode node) {
+                walk(node);
+            }
+
+        };
+
         SortedMap<Integer, String> map = getFilterDao().getNodeMap(m_filter);
         for (final Integer nodeId : map.keySet()) {
             final OnmsNode node = getNodeDao().load(nodeId);
-            m_visitor.visitNode(node);
+            visitor.visitNode(node);
         }
+    }
+
+    /**
+     * <p>walk</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
+    public void walk(OnmsNode node) {
+        OnmsResource resource = getResourceDao().getResourceForNode(node);
+        m_resourceWalker.walk(Collections.singleton(resource));
     }
 
     /**
@@ -66,10 +92,15 @@ public class FilterWalker implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() {
+        Assert.state(m_resourceDao !=  null, "property resourceDao must be set to a non-null value");
         Assert.state(m_visitor !=  null, "property visitor must be set to a non-null value");
         Assert.state(m_filterDao !=  null, "property filterDao must be set to a non-null value");
         Assert.state(m_nodeDao !=  null, "property nodeDao must be set to a non-null value");
         Assert.state(m_filter !=  null, "property filter must be set to a non-null value");
+
+        m_resourceWalker.setResourceDao(getResourceDao());
+        m_resourceWalker.setVisitor(getVisitor());
+        m_resourceWalker.afterPropertiesSet();
     }
 
     /**
@@ -87,11 +118,29 @@ public class FilterWalker implements InitializingBean {
     }
 
     /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
+    public ResourceDao getResourceDao() {
+        return m_resourceDao;
+    }
+
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
+    public void setResourceDao(ResourceDao resourceDao) {
+        m_resourceDao = resourceDao;
+    }
+
+    /**
      * <p>getVisitor</p>
      *
      * @return a {@link org.opennms.netmgt.model.ResourceVisitor} object.
      */
-    public EntityVisitor getVisitor() {
+    public ResourceVisitor getVisitor() {
         return m_visitor;
     }
 
@@ -100,7 +149,7 @@ public class FilterWalker implements InitializingBean {
      *
      * @param visitor a {@link org.opennms.netmgt.model.ResourceVisitor} object.
      */
-    public void setVisitor(EntityVisitor visitor) {
+    public void setVisitor(ResourceVisitor visitor) {
         m_visitor = visitor;
     }
 

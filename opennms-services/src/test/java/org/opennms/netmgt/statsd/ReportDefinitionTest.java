@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
 import org.opennms.netmgt.dao.support.BottomNAttributeStatisticVisitor;
+import org.opennms.netmgt.dao.support.FilterWalker;
 import org.opennms.netmgt.dao.support.MockResourceType;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
@@ -181,7 +182,12 @@ public class ReportDefinitionTest extends TestCase {
         def.setResourceAttributeValueMatch("100000000");
         ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
 
-        m_filterDao.walkMatchingNodes(EasyMock.eq(""), EasyMock.isA(EntityVisitor.class));
+        FilterWalker walker = new FilterWalker();
+        walker.setFilterDao(m_filterDao);
+        //walker.setNodeDao(m_nodeDao);
+        walker.setFilter(EasyMock.eq(""));
+        walker.setVisitor(EasyMock.isA(EntityVisitor.class));
+        walker.walk();
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
             public Object answer() throws Throwable {
                 ((EntityVisitor) EasyMock.getCurrentArguments()[1]).visitNode(node);
@@ -221,7 +227,12 @@ public class ReportDefinitionTest extends TestCase {
         def.setResourceAttributeValueMatch(externalValueAttribute.getValue());
         ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
 
-        m_filterDao.walkMatchingNodes(EasyMock.eq(""), EasyMock.isA(EntityVisitor.class));
+        FilterWalker walker = new FilterWalker();
+        walker.setFilterDao(m_filterDao);
+        //walker.setNodeDao(m_nodeDao);
+        walker.setFilter(EasyMock.eq(""));
+        walker.setVisitor(EasyMock.isA(EntityVisitor.class));
+        walker.walk();
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
             public Object answer() throws Throwable {
                 ((EntityVisitor) EasyMock.getCurrentArguments()[1]).visitNode(node);

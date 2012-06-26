@@ -50,10 +50,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
@@ -131,6 +134,61 @@ public abstract class NotificationManager {
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;
     
+    /**
+     * A regular expression for matching an expansion parameter delimited by
+     * percent signs.
+     */
+    private static final String NOTIFD_EXPANSION_PARM = "%(noticeid)%";
+
+    private static RE m_expandRE;
+
+    /**
+     * Initializes the expansion regular expression. The exception is going to
+     * be thrown away if the RE can't be compiled, thus the compilation should
+     * be tested prior to runtime.
+     */
+    static {
+        try {
+            m_expandRE = new RE(NOTIFD_EXPANSION_PARM);
+        } catch (RESyntaxException e) {
+            // this shouldn't throw an exception, should be tested prior to
+            // runtime
+            LogUtils.errorf(NotificationManager.class, e, "failed to compile RE %s", NOTIFD_EXPANSION_PARM);
+            // FIXME: wrap this in runtime exception since SOMETIMES we are using
+            // an incorrect version of regexp pulled from xalan that is doesn't
+            // extend RuntimeException only Exception.  We really need to fix that.
+            // See Bug# 1736 in Bugzilla.
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * A parameter expansion algorithm, designed to replace strings delimited by
+     * percent signs '%' with a value supplied by a Map object.
+     *
+     * <p>NOTE: This function only replaces one particular parameter, the
+     * <code>%noticeid%</code> parameter.</p>
+     *
+     * @param input
+     *            the input string
+     * @param paramMap
+     *            a map that will supply the substitution values
+     * @return a {@link java.lang.String} object.
+     */
+    public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
+        String expanded = input;
+
+        if (m_expandRE.match(expanded)) {
+            String key = m_expandRE.getParen(1);
+            Assert.isTrue("noticeid".equals(key));
+            String replace = paramMap.get(key);
+            if (replace != null) {
+                expanded = m_expandRE.subst(expanded, replace);
+            }
+        }
+        return expanded;
+    }
+
     /**
      * <p>Constructor for NotificationManager.</p>
      *
@@ -1058,7 +1116,7 @@ public abstract class NotificationManager {
                  */
                 parmMap.put(
                     NotificationManager.PARAM_TEXT_MSG, 
-                    BroadcastEventProcessor.expandNotifParms(
+                    expandNotifParms(
                         resolutionPrefix, 
                         Collections.singletonMap("noticeid", String.valueOf(notifId))
                     ) + rs.getString("textMsg")
@@ -1071,7 +1129,7 @@ public abstract class NotificationManager {
                 } else {
                     parmMap.put(
                         NotificationManager.PARAM_NUM_MSG, 
-                        BroadcastEventProcessor.expandNotifParms(
+                        expandNotifParms(
                             resolutionPrefix, 
                             Collections.singletonMap("noticeid", String.valueOf(notifId))
                         ) + rs.getString("numericMsg")
@@ -1079,7 +1137,7 @@ public abstract class NotificationManager {
                 }
                 parmMap.put(
                     NotificationManager.PARAM_SUBJECT, 
-                    BroadcastEventProcessor.expandNotifParms(
+                    expandNotifParms(
                         resolutionPrefix, 
                         Collections.singletonMap("noticeid", String.valueOf(notifId))
                     ) + rs.getString("subject")
