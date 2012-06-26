@@ -29,7 +29,9 @@
 package org.opennms.netmgt.dao.support;
 
 import java.util.Collections;
+import java.util.SortedMap;
 
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
@@ -47,6 +49,8 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class FilterWalker implements InitializingBean {
+
+    private NodeDao m_nodeDao;
     private FilterDao m_filterDao;
     private String m_filter;
     private ResourceDao m_resourceDao;
@@ -65,7 +69,12 @@ public class FilterWalker implements InitializingBean {
             }
 
         };
-        getFilterDao().walkMatchingNodes(m_filter, visitor);
+
+        SortedMap<Integer, String> map = getFilterDao().getNodeMap(m_filter);
+        for (final Integer nodeId : map.keySet()) {
+            final OnmsNode node = getNodeDao().load(nodeId);
+            visitor.visitNode(node);
+        }
     }
 
     /**
@@ -86,11 +95,26 @@ public class FilterWalker implements InitializingBean {
         Assert.state(m_resourceDao !=  null, "property resourceDao must be set to a non-null value");
         Assert.state(m_visitor !=  null, "property visitor must be set to a non-null value");
         Assert.state(m_filterDao !=  null, "property filterDao must be set to a non-null value");
+        Assert.state(m_nodeDao !=  null, "property nodeDao must be set to a non-null value");
         Assert.state(m_filter !=  null, "property filter must be set to a non-null value");
 
         m_resourceWalker.setResourceDao(getResourceDao());
         m_resourceWalker.setVisitor(getVisitor());
         m_resourceWalker.afterPropertiesSet();
+    }
+
+    /**
+     * @return the nodeDao
+     */
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    /**
+     * @param nodeDao the nodeDao to set
+     */
+    public void setNodeDao(NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
     }
 
     /**
