@@ -44,13 +44,20 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.jaxb.WmiInvScanConfigDaoJaxb;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.collectd.JUnitCollectorExecutionListener;
+import org.opennms.netmgt.config.invd.InvdServiceParameter;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -58,30 +65,26 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.invd.scanners.wmi.WmiScanner;
+import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.EasyMockUtils;
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    TemporaryDatabaseExecutionListener.class,
-    JUnitCollectorExecutionListener.class,
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
-})
-@ContextConfiguration(locations={
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={		
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml"/*,
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"*/
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-invDatabasePopulator.xml"
 })
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase()
 public class WmiScannerTest {
-    @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
+	EasyMockUtils m_easyMockUtils = new EasyMockUtils();
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -95,13 +98,19 @@ public class WmiScannerTest {
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
 
-    private TestContext m_context;
+    private WmiInvScanConfigDaoJaxb m_wmiInvScanConfigDao;
+    
+    private WmiScanner m_scanner;
 
     private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
     private final String m_testHostName = "127.0.0.1";
 
     private ScannerSpecification m_scannerSpecification;
+    
+    private Map<String, String> m_scannerParameters = new HashMap<String, String>();
+
+    private ScanningClient m_scanningClient;
 
     private OnmsServiceType getServiceType(String name) {
         OnmsServiceType serviceType = m_serviceTypeDao.findByName(name);
@@ -115,7 +124,7 @@ public class WmiScannerTest {
 
     @Before
     public void setUp() throws Exception {
-        assertNotNull(m_mockEventIpcManager);
+        //assertNotNull(m_mockEventIpcManager);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_nodeDao);
 
@@ -134,35 +143,59 @@ public class WmiScannerTest {
             m_nodeDao.flush();
         }
 
-        WmiScanner scanner = new WmiScanner();
+        m_wmiInvScanConfigDao = m_easyMockUtils.createMock(WmiInvScanConfigDaoJaxb.class);
+        /* mock:
+         * 1. getWmiInventoryByName - return WmiInventory
+         * 2. getWmiCategories - return List<WmiCategory>
+         * 3. category.getWmiAssets() - return WmiAsset
+         * 4. asset.getName(), asset.getRecheckInterval()
+         * asset.getName()
+         * 
+         */
+
+        m_scanner = new WmiScanner();
+        m_scanner.setWmiInvScanConfigDao(m_wmiInvScanConfigDao);
 
         Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
         assertEquals(1, ifaces.size());
-        //OnmsIpInterface iface = ifaces.iterator().next();
+        OnmsIpInterface iface = ifaces.iterator().next();
 
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("collection", "default");
-        scanner.initialize(parameters);
 
-        m_scannerSpecification = ScannerTestUtils.createScannerSpec("WMI", scanner, "default");
-        //m_scanningClient = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_scannerParameters.put("collection", "default");
+        m_scanner.initialize(Collections.<String, String>emptyMap());
+
+//        m_scannerSpecification = ScannerTestUtils.createScannerSpec("WMI", m_scanner, "default");
+//        m_scanningClient = new ScanningClient(iface.getId(), m_ipInterfaceDao);
     }
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
      */
+//    @Test
+//    @JUnitScanner(scannerConfig="/wmi-invscan-config.xml", scannerType="wmi")
+//    @Transactional
+//    public final void testScan() throws Exception {
+//    	assertNotNull(m_scanningClient.getInetAddress());
+//        m_scannerSpecification.initialize(m_scanningClient);
+//
+//        InventorySet inventorySet = m_scannerSpecification.collect(m_scanningClient);
+//        assertEquals("scan status", InventoryScanner.SCAN_SUCCEEDED, inventorySet.getStatus());
+//
+//        // TODO Add this back when persisting exists.
+//        //ScannerTestUtils.persistCollectionSet(m_scannerSpecification, inventorySet);
+//
+//        m_scannerSpecification.release(m_scanningClient);
+//    }
+    
     @Test
-    @JUnitScanner(scannerConfig="/wmi-invscan-config.xml", scannerType="wmi")
+    @Transactional
     public final void testScan() throws Exception {
-        //m_scannerSpecification.initialize(m_collectionAgent);
-
-        //InventorySet inventorySet = m_scannerSpecification.collect(m_collectionAgent);
-        //assertEquals("scan status", InventoryScanner.SCAN_SUCCEEDED, inventorySet.getStatus());
-
-        // TODO Add this back when persisting exists.
-        //ScannerTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
-
-        //m_collectionSpecification.release(m_collectionAgent);
+    	WmiScanner scanner = new WmiScanner();
+    	scanner.initialize(Collections.<String, String>emptyMap());
+    	scanner.setWmiInvScanConfigDao(m_wmiInvScanConfigDao);
+    	
+    	// TODO: add the event proxy mock.
+    	scanner.collect(m_scanningClient, null, m_scannerParameters);
     }
 }
