@@ -75,6 +75,7 @@ import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
 /**

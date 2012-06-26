@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
