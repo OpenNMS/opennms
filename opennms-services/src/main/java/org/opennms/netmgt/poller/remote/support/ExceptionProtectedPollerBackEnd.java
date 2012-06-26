@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -65,6 +67,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     /**
      * <p>checkForDisconnectedMonitors</p>
      */
+    @Override
     public void checkForDisconnectedMonitors() {
         try {
             m_delegate.checkForDisconnectedMonitors();
@@ -77,6 +80,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     /**
      * <p>configurationUpdated</p>
      */
+    @Override
     public void configurationUpdated() {
         try {
             m_delegate.configurationUpdated();
@@ -87,6 +91,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMonitorName(int locationMonitorId) {
         try {
             return m_delegate.getMonitorName(locationMonitorId);
@@ -101,6 +106,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         try {
             return m_delegate.getMonitoringLocations();
@@ -111,6 +117,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
@@ -121,6 +128,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         try {
             return m_delegate.getServiceMonitorLocators(context);
@@ -131,6 +139,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
         try {
             return m_delegate.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
@@ -141,6 +150,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
         try {
             return m_delegate.pollerStarting(locationMonitorId, pollerDetails);
@@ -151,6 +161,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void pollerStopping(int locationMonitorId) {
         try {
             m_delegate.pollerStopping(locationMonitorId);
@@ -161,6 +172,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int registerLocationMonitor(String monitoringLocationId) {
         try {
             return m_delegate.registerLocationMonitor(monitoringLocationId);
@@ -171,10 +183,21 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportResult(int locationMonitorID, int serviceId,
             PollStatus status) {
         try {
             m_delegate.reportResult(locationMonitorID, serviceId, status);
+        } catch (Throwable t) {
+            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
+        try {
+            m_delegate.saveResponseTimeData(locationMonitor, monSvc, responseTime, pkg);
         } catch (Throwable t) {
             LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);

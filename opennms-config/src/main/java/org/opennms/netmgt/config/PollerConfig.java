@@ -39,9 +39,9 @@ import java.util.concurrent.locks.Lock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -64,7 +64,7 @@ public interface PollerConfig {
      *
      * @return true if need to notify an external xmlrpc server
      */
-    public abstract boolean shouldNotifyXmlrpc();
+    boolean shouldNotifyXmlrpc();
 
     /**
      * This method returns the configured critical service name.
@@ -72,7 +72,7 @@ public interface PollerConfig {
      * @return the name of the configured critical service, or null if none is
      *         present
      */
-    public abstract String getCriticalService();
+    String getCriticalService();
 
     /**
      * This method returns the configured value of the
@@ -88,14 +88,14 @@ public interface PollerConfig {
      *
      * @return true or false based on configured value
      */
-    public abstract boolean shouldPollAllIfNoCriticalServiceDefined();
+    boolean shouldPollAllIfNoCriticalServiceDefined();
 
     /**
      * Returns true if node outage processing is enabled.
      *
      * @return a boolean.
      */
-    public abstract boolean isNodeOutageProcessingEnabled();
+    boolean isNodeOutageProcessingEnabled();
 
     /**
      * Returns true if serviceUnresponsive behavior is enabled. If enabled a
@@ -106,7 +106,7 @@ public interface PollerConfig {
      *
      * @return a boolean.
      */
-    public abstract boolean isServiceUnresponsiveEnabled();
+    boolean isServiceUnresponsiveEnabled();
 
     /**
      * Returns true if the path outage feature is enabled. If enabled, the code
@@ -118,7 +118,7 @@ public interface PollerConfig {
      *
      * @return a boolean.
      */
-    public abstract boolean isPathOutageEnabled();
+    boolean isPathOutageEnabled();
 
     /**
      * This method is used to rebuild the package against ip list mapping when
@@ -127,7 +127,9 @@ public interface PollerConfig {
      * newly added one, the package ip list should be rebuilt so that poller
      * could know which package this ip/service pair is in.
      */
-    public abstract void rebuildPackageIpListMap();
+    void rebuildPackageIpListMap();
+
+    Iterable<Parameter> parameters(final Service svc);
 
     /**
      * Determine the list of IPs the filter rule for this package allows
@@ -135,7 +137,7 @@ public interface PollerConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<InetAddress> getIpList(Package pkg);
+    List<InetAddress> getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package
@@ -152,7 +154,7 @@ public interface PollerConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public abstract boolean isInterfaceInPackage(String iface, Package pkg);
+    boolean isInterfaceInPackage(String iface, Package pkg);
 
     /**
      * Returns true if the service is part of the package and the status of the
@@ -165,7 +167,7 @@ public interface PollerConfig {
      *            The package to lookup up service.
      * @return a boolean.
      */
-    public abstract boolean isServiceInPackageAndEnabled(String svcName, Package pkg);
+    boolean isServiceInPackageAndEnabled(String svcName, Package pkg);
 
     /**
      * Return the Service object with the given name from the give Package.
@@ -174,7 +176,7 @@ public interface PollerConfig {
      * @param pkg the packe to lookup the the service in
      * @return the Service object from the package with the give name, null if its not in the pkg
      */
-    public abstract Service getServiceInPackage(String svcName, Package pkg);
+    Service getServiceInPackage(String svcName, Package pkg);
 
     /**
      * Returns true if the service has a monitor configured, false otherwise.
@@ -183,7 +185,7 @@ public interface PollerConfig {
      *            The service name to lookup.
      * @return a boolean.
      */
-    public abstract boolean isServiceMonitored(String svcName);
+    boolean isServiceMonitored(String svcName);
 
     /**
      * Returns the first package that the ip belongs to, null if none.
@@ -195,7 +197,7 @@ public interface PollerConfig {
      *            the interface to check
      * @return the first package that the ip belongs to, null if none
      */
-    public abstract Package getFirstPackageMatch(String ipaddr);
+    Package getFirstPackageMatch(String ipaddr);
 
     /**
      * Returns the first package that the ip belongs to that is not marked as remote, null if none.
@@ -207,7 +209,7 @@ public interface PollerConfig {
      *            the interface to check
      * @return the first package that the ip belongs to, null if none
      */
-    public abstract Package getFirstLocalPackageMatch(String ipaddr);
+    Package getFirstLocalPackageMatch(String ipaddr);
 
     /**
      * Returns true if the ip is part of at least one package.
@@ -219,7 +221,7 @@ public interface PollerConfig {
      *            the interface to check
      * @return true if the ip is part of at least one package, false otherwise
      */
-    public abstract boolean isPolled(String ipaddr);
+    boolean isPolled(String ipaddr);
 
     /**
      * Returns true if the ip is part of at least one package that is NOT marked
@@ -232,7 +234,7 @@ public interface PollerConfig {
      *            the interface to check
      * @return true if the ip is part of at least one package, false otherwise
      */
-    public abstract boolean isPolledLocally(String ipaddr);
+    boolean isPolledLocally(String ipaddr);
 
     /**
      * Returns true if this package has the service enabled and if there is a
@@ -248,7 +250,7 @@ public interface PollerConfig {
      * @return true if the ip is part of at least one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
-    public abstract boolean isPolled(String svcName, Package pkg);
+    boolean isPolled(String svcName, Package pkg);
 
     /**
      * Returns true if the ip is part of at least one package and if this package
@@ -264,7 +266,7 @@ public interface PollerConfig {
      * @return true if the ip is part of at least one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
-    public abstract boolean isPolled(String ipaddr, String svcName);
+    boolean isPolled(String ipaddr, String svcName);
 
     
     /**
@@ -282,7 +284,7 @@ public interface PollerConfig {
      * @return true if the ip is part of at least one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
-    public abstract boolean isPolledLocally(String ipaddr, String svcName);
+    boolean isPolledLocally(String ipaddr, String svcName);
 
     /**
      * Retrieves configured RRD step size.
@@ -291,7 +293,7 @@ public interface PollerConfig {
      *            Name of the data collection
      * @return RRD step size for the specified collection
      */
-    public abstract int getStep(Package pkg);
+    int getStep(Package pkg);
 
     /**
      * Retrieves configured list of RoundRobin Archive statements.
@@ -300,7 +302,7 @@ public interface PollerConfig {
      *            Name of the data collection
      * @return list of RRA strings.
      */
-    public abstract List<String> getRRAList(Package pkg);
+    List<String> getRRAList(Package pkg);
     
     /**
      * <p>getAllPackageMatches</p>
@@ -308,14 +310,14 @@ public interface PollerConfig {
      * @param ipAddr a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<String> getAllPackageMatches(String ipAddr);
+    List<String> getAllPackageMatches(String ipAddr);
     
     /**
      * <p>getNextOutageIdSql</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getNextOutageIdSql();
+    String getNextOutageIdSql();
     
     /**
      * <p>enumeratePackage</p>
@@ -391,7 +393,7 @@ public interface PollerConfig {
      *
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      */
-    public abstract void addPackage(Package pkg);
+    void addPackage(Package pkg);
     
     /**
      * <p>addMonitor</p>
@@ -399,24 +401,14 @@ public interface PollerConfig {
      * @param svcName a {@link java.lang.String} object.
      * @param className a {@link java.lang.String} object.
      */
-    public abstract void addMonitor(String svcName, String className);
+    void addMonitor(String svcName, String className);
 
     /**
      * <p>getConfiguration</p>
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
-    public abstract PollerConfiguration getConfiguration();
-
-    /**
-     * <p>saveResponseTimeData</p>
-     *
-     * @param locationMonitor a {@link java.lang.String} object.
-     * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-     * @param responseTime a double.
-     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
-     */
-    public abstract void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg);
+    PollerConfiguration getConfiguration();
 
     /**
      * <p>getServiceMonitorLocators</p>
@@ -424,10 +416,10 @@ public interface PollerConfig {
      * @param context a {@link org.opennms.netmgt.poller.DistributionContext} object.
      * @return a {@link java.util.Collection} object.
      */
-    public abstract Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+    Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
 
-    public abstract Lock getReadLock();
+    Lock getReadLock();
 
-    public abstract Lock getWriteLock();
+    Lock getWriteLock();
 
 }

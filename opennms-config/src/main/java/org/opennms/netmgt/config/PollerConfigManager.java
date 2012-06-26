@@ -29,10 +29,8 @@
 package org.opennms.netmgt.config;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -70,13 +68,11 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.springframework.dao.PermissionDeniedDataAccessException;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -105,10 +101,12 @@ abstract public class PollerConfigManager implements PollerConfig {
         setUpInternalData();
     }
 
+    @Override
     public Lock getReadLock() {
         return m_readLock;
     }
     
+    @Override
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -129,6 +127,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public abstract void update() throws IOException, MarshalException, ValidationException;
 
     /**
@@ -193,6 +192,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void save() throws MarshalException, IOException, ValidationException {
         getWriteLock().lock();
         try {
@@ -214,6 +214,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
+    @Override
     public PollerConfiguration getConfiguration() {
         getReadLock().lock();
         try {
@@ -224,6 +225,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Package getPackage(final String name) {
         getReadLock().lock();
         try {
@@ -239,6 +241,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
     
     /** {@inheritDoc} */
+    @Override
     public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
         getReadLock().lock();
         try {
@@ -255,6 +258,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addPackage(final Package pkg) {
         getWriteLock().lock();
         try {
@@ -265,6 +269,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void addMonitor(final String svcName, final String className) {
         getWriteLock().lock();
         try {
@@ -323,6 +328,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return true if need to notify an external xmlrpc server
      */
+    @Override
     public boolean shouldNotifyXmlrpc() {
         getReadLock().lock();
         try {
@@ -338,6 +344,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return true if pathOutageEnabled
      */
+    @Override
     public boolean isPathOutageEnabled() {
         getReadLock().lock();
         try {
@@ -353,6 +360,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return the name of the configured critical service, or null if none is
      *         present
      */
+    @Override
     public String getCriticalService() {
         getReadLock().lock();
         try {
@@ -377,6 +385,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return true or false based on configured value
      */
+    @Override
     public boolean shouldPollAllIfNoCriticalServiceDefined() {
         getReadLock().lock();
         try {
@@ -391,6 +400,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isNodeOutageProcessingEnabled() {
         getReadLock().lock();
         try {
@@ -409,6 +419,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isServiceUnresponsiveEnabled() {
         getReadLock().lock();
         try {
@@ -456,6 +467,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<InetAddress> getIpList(final Package pkg) {
         getReadLock().lock();
         try {
@@ -481,6 +493,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * newly added one, the package iplist should be rebuilt so that poller
      * could know which package this ip/service pair is in.
      */
+    @Override
     public void rebuildPackageIpListMap() {
         createPackageIpListMap();
     }
@@ -496,6 +509,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      */
+    @Override
     public boolean isInterfaceInPackage(final String iface, final Package pkg) {
         boolean filterPassed = false;
         final InetAddress ifaceAddr = addr(iface);
@@ -578,6 +592,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * service is set to "on". Returns false if the service is not in the
      * package or it is but the status of the service is set to "off".
      */
+    @Override
     public boolean isServiceInPackageAndEnabled(final String svcName, final Package pkg) {
         getReadLock().lock();
         try {
@@ -609,6 +624,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Return the Service object with the given name from the give Package.
      */
+    @Override
     public Service getServiceInPackage(final String svcName, final Package pkg) {
         getReadLock().lock();
         try {
@@ -626,6 +642,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Returns true if the service has a monitor configured, false otherwise.
      */
+    @Override
     public boolean isServiceMonitored(final String svcName) {
         getReadLock().lock();
         try {
@@ -648,6 +665,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
+    @Override
     public Package getFirstPackageMatch(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -663,6 +681,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Package getFirstLocalPackageMatch(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -685,6 +704,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
+    @Override
     public List<String> getAllPackageMatches(final String ipaddr) {
         List<String> matchingPkgs = new ArrayList<String>();
 
@@ -710,6 +730,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
+    @Override
     public boolean isPolled(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -723,6 +744,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isPolledLocally(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -746,6 +768,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
+    @Override
     public boolean isPolled(final String svcName, final Package pkg) {
         if (isServiceInPackageAndEnabled(svcName, pkg)) {
             return isServiceMonitored(svcName);
@@ -767,6 +790,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return true if the ip is part of atleast one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
+    @Override
     public boolean isPolled(final String ipaddr, final String svcName) {
         getReadLock().lock();
         
@@ -787,6 +811,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isPolledLocally(final String ipaddr, final String svcName) {
         getReadLock().lock();
         try {
@@ -809,6 +834,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Retrieves configured RRD step size.
      */
+    @Override
     public int getStep(final Package pkg) {
         getReadLock().lock();
         try {
@@ -823,6 +849,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Retrieves configured list of RoundRobin Archive statements.
      */
+    @Override
     public List<String> getRRAList(final Package pkg) {
         getReadLock().lock();
         try {
@@ -837,24 +864,11 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.util.Enumeration} object.
      */
+    @Override
     public Enumeration<Package> enumeratePackage() {
         getReadLock().lock();
         try {
             return getConfiguration().enumeratePackage();
-        } finally {
-            getReadLock().unlock();
-        }
-    }
-    
-    /**
-     * <p>enumerateMonitor</p>
-     *
-     * @return a {@link java.util.Enumeration} object.
-     */
-    public Enumeration<Monitor> enumerateMonitor() {
-        getReadLock().lock();
-        try {
-            return getConfiguration().enumerateMonitor();
         } finally {
             getReadLock().unlock();
         }
@@ -866,7 +880,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<Service> services(final Package pkg) {
+    private Iterable<Service> services(final Package pkg) {
         getReadLock().lock();
         try {
             return pkg.getServiceCollection();
@@ -881,7 +895,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<String> includeURLs(final Package pkg) {
+    private Iterable<String> includeURLs(final Package pkg) {
         getReadLock().lock();
         try {
             return pkg.getIncludeUrlCollection();
@@ -896,6 +910,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param svc a {@link org.opennms.netmgt.config.poller.Service} object.
      * @return a {@link java.lang.Iterable} object.
      */
+    @Override
     public Iterable<Parameter> parameters(final Service svc) {
         getReadLock().lock();
         try {
@@ -910,7 +925,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<Package> packages() {
+    private Iterable<Package> packages() {
         getReadLock().lock();
         try {
             return getConfiguration().getPackageCollection();
@@ -924,7 +939,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<Monitor> monitors() {
+    private Iterable<Monitor> monitors() {
         getReadLock().lock();
         try {
             return getConfiguration().getMonitorCollection();
@@ -938,6 +953,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a int.
      */
+    @Override
     public int getThreads() {
         getReadLock().lock();
         try {
@@ -974,6 +990,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, ServiceMonitor> getServiceMonitors() {
         getReadLock().lock();
         try {
@@ -984,6 +1001,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ServiceMonitor getServiceMonitor(final String svcName) {
         getReadLock().lock();
         try {
@@ -994,6 +1012,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
     
     /** {@inheritDoc} */
+    @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
         List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
 
@@ -1052,6 +1071,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getNextOutageIdSql() {
         getReadLock().lock();
         try {
@@ -1064,6 +1084,7 @@ abstract public class PollerConfigManager implements PollerConfig {
 	/**
 	 * <p>releaseAllServiceMonitors</p>
 	 */
+    @Override
 	public void releaseAllServiceMonitors() {
 	    getWriteLock().lock();
 	    try {
@@ -1076,54 +1097,4 @@ abstract public class PollerConfigManager implements PollerConfig {
 	        getWriteLock().unlock();
 	    }
 	}
-
-    /** {@inheritDoc} */
-    public void saveResponseTimeData(final String locationMonitor, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
-        getReadLock().lock();
-        try {
-            final String svcName = monSvc.getServiceName();
-            final Service svc = getServiceInPackage(svcName, pkg);
-            
-            final String dsName = getServiceParameter(svc, "ds-name");
-            if (dsName == null) {
-                return;
-            }
-            
-            final String rrdRepository = getServiceParameter(svc, "rrd-repository");
-            if (rrdRepository == null) {
-                return;
-            }
-            
-            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+str(monSvc.getIpAddress());
-    
-            try {
-                final File rrdFile = new File(rrdDir, dsName);
-                if (!rrdFile.exists()) {
-                    RrdUtils.createRRD(locationMonitor, rrdDir, dsName, getStep(pkg), "GAUGE", 600, "U", "U", getRRAList(pkg));
-                }
-                RrdUtils.updateRRD(locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
-            } catch (final RrdException e) {
-                throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
-            }
-        } finally {
-            getReadLock().unlock();
-        }
-    }
-    
-    
-
-    private String getServiceParameter(final Service svc, final String key) {
-        for(final Parameter parm : parameters(svc)) {
-
-            if (key.equals(parm.getKey())) {
-            	if (parm.getValue() != null) {
-            		return parm.getValue();
-            	} else if (parm.getAnyObject() != null) {
-            		return parm.getAnyObject().toString();
-            	}
-            }
-        }
-        return null;
-    }
-    
 }

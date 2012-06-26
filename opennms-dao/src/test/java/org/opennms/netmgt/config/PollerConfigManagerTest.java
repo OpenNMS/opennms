@@ -66,10 +66,6 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.EasyMockUtils;
 
 public class PollerConfigManagerTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    @SuppressWarnings("unchecked")
-    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -81,9 +77,6 @@ public class PollerConfigManagerTest extends TestCase {
         replay(filterDao);
         FilterDaoFactory.setInstance(filterDao);
         
-        RrdTestUtils.initializeNullStrategy();
-        RrdUtils.setStrategy(m_rrdStrategy);
-        
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml")));
     }
 
@@ -93,62 +86,6 @@ public class PollerConfigManagerTest extends TestCase {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    public void testSaveResponseTimeDataWithLocaleThatUsesCommasForDecimals() throws Exception {
-    	Properties p = new Properties();
-    	p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
-    	MockLogAppender.setupLogging(p);
-
-        Locale.setDefault(Locale.FRENCH);
-        
-        // Make sure we actually have a valid test
-        NumberFormat nf = NumberFormat.getInstance();
-        assertEquals("ensure that the newly set default locale (" + Locale.getDefault() + ") uses ',' as the decimal marker", "1,5", nf.format(1.5));
-        
-        PollerConfigManager mgr = new TestPollerConfigManager();
-        
-        OnmsMonitoredService svc = new OnmsMonitoredService();
-        OnmsServiceType svcType = new OnmsServiceType();
-        svcType.setName("HTTP");
-        svc.setServiceType(svcType);
-        OnmsIpInterface intf = new OnmsIpInterface();
-        intf.setIpAddress(InetAddressUtils.addr("1.2.3.4"));
-        svc.setIpInterface(intf);
-        
-        Package pkg = new Package();
-        Service pkgService = new Service();
-        pkgService.setName("HTTP");
-        addParameterToService(pkgService, "ds-name", "http");
-        addParameterToService(pkgService, "rrd-repository", "/foo");
-        pkg.addService(pkgService);
-        Rrd rrd = new Rrd();
-        rrd.setStep(300);
-        rrd.addRra("bogusRRA");
-        pkg.setRrd(rrd);
-        
-        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
-        expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
-        m_rrdStrategy.createFile(isA(Object.class));
-        expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
-        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":1.5"));
-        m_rrdStrategy.closeFile(isA(Object.class));
-
-        m_mocks.replayAll();
-        mgr.saveResponseTimeData("Tuvalu", svc, 1.5, pkg);
-        m_mocks.verifyAll();
-    }
-
-    private void addParameterToService(Service pkgService, String key, String value) {
-        Parameter param = new Parameter();
-        param.setKey(key);
-        param.setValue(value);
-        pkgService.addParameter(param);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static <T> List<T> isAList(Class<T> clazz) {
-        return isA(List.class);
-    }
-    
     public static class TestPollerConfigManager extends PollerConfigManager {
         public TestPollerConfigManager() throws MarshalException, ValidationException, IOException {
             super(ConfigurationTestUtils.getInputStreamForConfigFile("poller-configuration.xml"), "foo", false);

@@ -29,7 +29,9 @@
 
 package org.opennms.netmgt.poller.remote;
 
+import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.endsWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
@@ -38,6 +40,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +48,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import junit.framework.TestCase;
@@ -53,18 +58,23 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.easymock.IArgumentMatcher;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -78,10 +88,17 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
+import org.opennms.netmgt.rrd.RrdDataSource;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.EasyMockUtils;
 import org.quartz.Scheduler;
 
 public class PollerBackEndTest extends TestCase {
+    private EasyMockUtils m_mocks = new EasyMockUtils();
+    @SuppressWarnings("unchecked")
+    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
 
     public static class EventEquals implements IArgumentMatcher {
 
@@ -389,6 +406,8 @@ public class PollerBackEndTest extends TestCase {
         m_pollerDetails.put("os.name", "WonkaOS");
         m_pollerDetails.put("os.version", "1.2.3");
 
+        RrdTestUtils.initializeNullStrategy();
+        RrdUtils.setStrategy(m_rrdStrategy);
 
     }
 
@@ -608,7 +627,7 @@ public class PollerBackEndTest extends TestCase {
 
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
 
-        m_pollerConfig.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
+        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
 
         // TODO: make anticipate method
         EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "PollerBackEnd")
@@ -725,7 +744,7 @@ public class PollerBackEndTest extends TestCase {
 
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
 
-        m_pollerConfig.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
+        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
 
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
@@ -751,7 +770,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
         // expect to save performance data
-        m_pollerConfig.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_httpService, 1776, m_package);
+        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_httpService, 1776, m_package);
 
         // expect no status change
 
@@ -827,5 +846,58 @@ public class PollerBackEndTest extends TestCase {
         verifyMocks();
     }
 
+    public void testSaveResponseTimeDataWithLocaleThatUsesCommasForDecimals() throws Exception {
+        Properties p = new Properties();
+        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
+        MockLogAppender.setupLogging(p);
 
+        Locale.setDefault(Locale.FRENCH);
+        
+        // Make sure we actually have a valid test
+        NumberFormat nf = NumberFormat.getInstance();
+        assertEquals("ensure that the newly set default locale (" + Locale.getDefault() + ") uses ',' as the decimal marker", "1,5", nf.format(1.5));
+        
+        OnmsMonitoredService svc = new OnmsMonitoredService();
+        OnmsServiceType svcType = new OnmsServiceType();
+        svcType.setName("HTTP");
+        svc.setServiceType(svcType);
+        OnmsIpInterface intf = new OnmsIpInterface();
+        intf.setIpAddress(InetAddressUtils.addr("1.2.3.4"));
+        svc.setIpInterface(intf);
+        
+        Package pkg = new Package();
+        Service pkgService = new Service();
+        pkgService.setName("HTTP");
+        addParameterToService(pkgService, "ds-name", "http");
+        addParameterToService(pkgService, "rrd-repository", "/foo");
+        pkg.addService(pkgService);
+        Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        rrd.addRra("bogusRRA");
+        pkg.setRrd(rrd);
+        
+        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
+        expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
+        m_rrdStrategy.createFile(isA(Object.class));
+        expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
+        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":1.5"));
+        m_rrdStrategy.closeFile(isA(Object.class));
+
+        m_mocks.replayAll();
+        m_backEnd.saveResponseTimeData("Tuvalu", svc, 1.5, pkg);
+        m_mocks.verifyAll();
+    }
+
+    private void addParameterToService(Service pkgService, String key, String value) {
+        Parameter param = new Parameter();
+        param.setKey(key);
+        param.setValue(value);
+        pkgService.addParameter(param);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> isAList(Class<T> clazz) {
+        return isA(List.class);
+    }
+    
 }
