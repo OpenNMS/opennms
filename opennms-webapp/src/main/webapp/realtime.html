@@ -36,8 +36,9 @@ amq.init({
 var realTimeHandler = {
   receiveMessage: function(message) {
     if (message != null) {
-      line.addPoint(message.textContent);
-      document.getElementById("outputDiv").innerText=message.textContent;
+      var arr = message.textContent.split(";");
+      line.addPoint(parseFloat(arr[1]));
+      document.getElementById("outputDiv").innerText=arr[1];
     }
   }
 };
