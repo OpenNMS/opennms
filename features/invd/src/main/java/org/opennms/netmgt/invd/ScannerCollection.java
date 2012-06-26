@@ -70,7 +70,7 @@ public class ScannerCollection {
         /*
          * Load up an instance of each collector from the config
          * so that the event processor will have them for
-         * new incomming events to create collectable service objects.
+         * new incoming events to create scannable service objects.
          */
         Collection<InvdScanner> scanners = getInvdConfigDao().getScanners();
         for (InvdScanner scanner : scanners) {
@@ -83,7 +83,6 @@ public class ScannerCollection {
                 }
                 Class<?> cc = Class.forName(scanner.getClassName());
                 InventoryScanner sc = (InventoryScanner) cc.newInstance();
-
 
                 sc.initialize(Collections.<String, String>emptyMap());
 

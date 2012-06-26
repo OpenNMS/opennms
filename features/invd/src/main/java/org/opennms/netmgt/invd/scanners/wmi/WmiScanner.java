@@ -87,7 +87,9 @@ public class WmiScanner implements InventoryScanner {
         m_scheduledNodes.clear();
         
         // Retrieve the DAO for our configuration file.
-        m_wmiInvScanConfigDao = BeanUtils.getBean("daoContext", "wmiInvScanConfigDao", WmiInvScanConfigDao.class);
+        if(m_wmiInvScanConfigDao == null) {
+        	m_wmiInvScanConfigDao = BeanUtils.getBean("daoContext", "wmiInvScanConfigDao", WmiInvScanConfigDao.class);
+        }
         
         initWMIPeerFactory();
         initDatabaseConnectionFactory();

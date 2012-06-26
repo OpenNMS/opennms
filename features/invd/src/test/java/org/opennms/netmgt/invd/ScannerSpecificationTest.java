@@ -67,6 +67,11 @@ public class ScannerSpecificationTest extends TestCase {
 		Assert.assertEquals("Ensure that the \"collection\" key's value is \"default\".", "default", params.get("collection"));		
 	}
 	
+	public void testCollect()
+	{
+		
+	}
+	
 //	public void testCheckScheduledOutages() {
 //		expect(m_pollOutageFactory.isCurTimeInOutage("junit_test")).andReturn(true);
 //		expect(m_client.getNodeId()).andReturn(1);

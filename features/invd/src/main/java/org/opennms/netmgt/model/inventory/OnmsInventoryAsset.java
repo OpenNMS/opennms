@@ -37,6 +37,7 @@ import org.springframework.core.style.ToStringCreator;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlID;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Id;
@@ -94,17 +95,17 @@ public class OnmsInventoryAsset {
     private Boolean effStatus;
 
     @XmlTransient
-    @OneToMany(mappedBy="inventoryAsset", fetch=FetchType.EAGER)
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE })
+    @OneToMany(mappedBy="inventoryAsset", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     private Set<OnmsInventoryAssetProperty> properties = new LinkedHashSet<OnmsInventoryAssetProperty>();
 
     /**
      * Default constructor.
      */
     public OnmsInventoryAsset() {
-        // do nothing.
+        this.effectiveDate = new Date();
+        this.scanDate = new Date();
+        this.assetSource = "Invd";
+        this.effStatus = true;
     }
 
     /**
@@ -251,10 +252,12 @@ public class OnmsInventoryAsset {
     }
 
     public boolean addProperty(OnmsInventoryAssetProperty prop) {
+    	prop.setInventoryAsset(this);
         return getProperties().add(prop);
     }
 
     public boolean removeProperty(OnmsInventoryAssetProperty prop) {
+    	prop.setInventoryAsset(null);
         return getProperties().remove(prop);
     }
 

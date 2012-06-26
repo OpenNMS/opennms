@@ -12,32 +12,26 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.InventoryAssetDao;
 import org.opennms.netmgt.dao.InventoryAssetPropertyDao;
 import org.opennms.netmgt.dao.InventoryCategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.dao.hibernate.InvdConfigurationExecutionListener;
 import org.opennms.netmgt.dao.hibernate.InventoryDatabasePopulator;
 import org.opennms.netmgt.model.inventory.OnmsInventoryAsset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-	InvdConfigurationExecutionListener.class,
-	TemporaryDatabaseExecutionListener.class,
-	DependencyInjectionTestExecutionListener.class
-})
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={		
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-invDatabasePopulator.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
 public class InventoryResourcePersisterTest {
 	@Autowired
@@ -69,6 +63,7 @@ public class InventoryResourcePersisterTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testNewInventoryAsset() {
 		assertEquals("total asset count ", 1, m_invAssetDao.countAll());
 
@@ -121,6 +116,7 @@ public class InventoryResourcePersisterTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testUpdateInventoryAsset() {
 		assertEquals("total asset count ", 1, m_invAssetDao.countAll());
 		OnmsInventoryAsset asset = m_dbPopulator.getInvAsset1();
@@ -176,15 +172,19 @@ public class InventoryResourcePersisterTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testInventoryAssetNewProperty() {
 		// TODO
 	}
 	
+	@Test
+	@Transactional
 	public void testUpdateInventoryAssetNoProps() {
 		// TODO
 	}
 	
 	@Test
+	@Transactional
 	public void testUpdatePropsNoInventoryAsset() {
 		// TODO
 	}

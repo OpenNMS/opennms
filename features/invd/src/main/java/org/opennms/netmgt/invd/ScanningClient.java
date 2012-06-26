@@ -40,16 +40,16 @@ import java.net.InetAddress;
 public class ScanningClient extends InetNetworkInterface {
 	private static final long serialVersionUID = -1976925187647808430L;
 	private int m_nodeId = -1;
-    private InetAddress m_inetAddress = null;
+    //private InetAddress m_inetAddress = null;
 
     private Integer m_ifaceId;
     private IpInterfaceDao m_ifaceDao;
 
     public InetAddress getAddress() {
-        if (m_inetAddress == null) {
-            m_inetAddress = getIpInterface().getIpAddress();
+        if (m_address == null) {
+        	m_address = getIpInterface().getIpAddress();
         }
-        return m_inetAddress;
+        return m_address;
     }
 
     public ScanningClient(Integer ifaceId, IpInterfaceDao ifaceDao) {
@@ -57,11 +57,15 @@ public class ScanningClient extends InetNetworkInterface {
         
         m_ifaceDao = ifaceDao;
         m_ifaceId = ifaceId;
-
     }
 
     public String getHostAddress() {
         return getAddress().getHostAddress();
+    }
+    
+    @Override
+    public InetAddress getInetAddress() {
+    	return getAddress();
     }
 
     public int getNodeId() {

@@ -39,19 +39,16 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.inventory.OnmsInventoryAsset;
 import org.opennms.netmgt.model.inventory.OnmsInventoryAssetProperty;
 import org.opennms.netmgt.model.inventory.OnmsInventoryCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import junit.framework.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -193,6 +190,13 @@ public class InventoryAssetDaoHibernateTest {
         //Assert.assertEquals("the populator asset properties found", 2, populatorAsset.getProperties().size());
         Assert.assertEquals("number of asset properties found", 2, props.size());
     }
+	
+	@Test
+	@Transactional
+	public void testFindAllEffectiveDatedAssets() {
+		Assert.assertEquals("total active assets ", 1, getDbPopulator().getInventoryAssetDao().findAllEffectiveDate(null,true).size());
+	}
+	
 
 	public InventoryDatabasePopulator getDbPopulator() {
 		return m_dbPopulator;

@@ -43,7 +43,7 @@ public class InventoryDatabasePopulator {
     private TransactionTemplate m_transTemplate;
 
     private static boolean POPULATE_DATABASE_IN_SEPARATE_TRANSACTION = true;
-
+    
     public void populateDatabase() {
         if (POPULATE_DATABASE_IN_SEPARATE_TRANSACTION) {
             m_transTemplate.execute(new TransactionCallback<Object>() {
@@ -133,24 +133,25 @@ public class InventoryDatabasePopulator {
 
         // Create an inventory asset within the previous inventory category, associated with node1.
         OnmsInventoryAsset invAsset = new OnmsInventoryAsset(invCat, "Network Card", getNode1());
-        getInventoryAssetDao().save(invAsset);
-        getInventoryAssetDao().flush();
-        setInvAsset1(invAsset);
+        invAsset.setEffectiveDate(new Date());
+        
 
         // Create an inventory asset properties and assign it to the previous asset.
         OnmsInventoryAssetProperty invAssetProp = new OnmsInventoryAssetProperty(
                 "manufacturer",
                 "Intel");
-        invAssetProp.setInventoryAsset(invAsset);
-        getInventoryAssetPropertyDao().save(invAssetProp);
-        getInventoryAssetPropertyDao().flush();
-
+        invAssetProp.setEffectiveDate(new Date());
+        invAsset.addProperty(invAssetProp);
+        
         OnmsInventoryAssetProperty invAssetProp2 = new OnmsInventoryAssetProperty(
                 "serialnum",
                 "3235488862NB92");
-        invAssetProp2.setInventoryAsset(invAsset);
-        getInventoryAssetPropertyDao().save(invAssetProp2);
-        getInventoryAssetPropertyDao().flush(); 
+        invAssetProp2.setEffectiveDate(new Date());
+        invAsset.addProperty(invAssetProp2);
+        
+        getInventoryAssetDao().save(invAsset);
+        getInventoryAssetDao().flush();
+        setInvAsset1(invAsset);
     }
 
     private OnmsCategory getCategory(String categoryName) {
@@ -278,4 +279,5 @@ public class InventoryDatabasePopulator {
     public void setTransactionTemplate(final TransactionTemplate transactionTemplate) {
         m_transTemplate = transactionTemplate;
     }
+    
 }
