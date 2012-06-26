@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.opennms.netmgt.model.EntityVisitor;
-
 /**
  * <p>FilterDao interface.</p>
  *
@@ -43,14 +41,6 @@ import org.opennms.netmgt.model.EntityVisitor;
  * @version $Id: $
  */
 public interface FilterDao {
-
-    /**
-     * <p>walkMatchingNodes</p>
-     *
-     * @param rule a {@link java.lang.String} object.
-     * @param visitor a {@link org.opennms.netmgt.model.EntityVisitor} object.
-     */
-    public void walkMatchingNodes(String rule, EntityVisitor visitor);
 
     /**
      * This method returns a map of all node IDs and node labels that match
