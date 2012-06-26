@@ -60,7 +60,7 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
