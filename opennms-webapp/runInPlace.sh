@@ -29,7 +29,7 @@ function runInPlace() {
         OFFLINE_ARGS="-o"
     fi
 	if $DEBUG; then
-			MAVEN_OPTS="${MAVEN_OPTS} -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8001,server=y,suspend=n"
+			MAVEN_OPTS="${MAVEN_OPTS} -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=n"
 			export MAVEN_OPTS;
 	fi
 	echo $MAVEN_OPTS;
@@ -82,7 +82,7 @@ function usage() {
     err "\t-h : print this help"
     err "\t-C : clean up completely"
     err "\t-b : build in place before running"
-		err "\t-t : start jetty with debug port 8001 open"
+		err "\t-t : start jetty with debug port 8002 open"
     err "\t-c : remove WEB-INF/lib, WEB-INF/classes and META_INF dirs"
     err "\t-g : remove gwt generated files"
     err "\t-n : no-run: this is useful if you want to only build in place"
