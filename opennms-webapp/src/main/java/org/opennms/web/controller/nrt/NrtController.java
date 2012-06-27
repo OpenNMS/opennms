@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
+import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -16,6 +17,7 @@ import org.opennms.nrtcollector.api.model.SnmpCollectionJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,8 +30,11 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/nrt/starter.htm")
 public class NrtController {
-    private static Logger logger = LoggerFactory.getLogger(NrtController.class);
+    private static Logger logger = LoggerFactory.getLogger("OpenNMS.Web." + NrtController.class);
 
+    @Autowired
+    private JmsTemplate m_jmsTemplate;
+    
     @Autowired
     private GraphDao m_graphDao;
     
@@ -40,12 +45,18 @@ public class NrtController {
     private ResourceDao m_resourceDao;
     
     @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
-    public ModelAndView nrtStart(String resourceId, String report) {
+    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
+        
+        logger.debug("JmsTemplate '{}'", m_jmsTemplate.toString());
+        
         assert(resourceId != null);
         logger.debug("resourceId: '{}'", resourceId);
         
         assert(report != null);
         logger.debug("report: '{}'", report);
+        
+        //Todo Tak there is you session to manage the CollectionSessions
+        logger.debug(httpSession.toString());
         
         OnmsResource reportResource = m_resourceDao.getResourceById(resourceId);
         OnmsResource topResource = reportResource.getParent();
@@ -68,7 +79,7 @@ public class NrtController {
         
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
-            collectionJob.addMetric(prefabGraph.getColumns()[i], resultDestinations);
+            collectionJob.addMetric(prefabGraph.getMetricIds()[i], resultDestinations);
         }
         logger.debug("CollectionJob '{}'", collectionJob.toString());
         this.publishCollectionJobViaJms(collectionJob);
@@ -140,6 +151,8 @@ public class NrtController {
     }
 
     private void publishCollectionJobViaJms(CollectionJob collectionJob) {
-        logger.error("Jms publishing of CollectionJobs not implemented yet: '{}'", collectionJob);
+        logger.debug("JmsTemplate '{}'", m_jmsTemplate.toString());
+        m_jmsTemplate.convertAndSend("NrtCollectMe", collectionJob);
+//        logger.error("Jms publishing of CollectionJobs not implemented yet: '{}'", collectionJob);
     }
 }

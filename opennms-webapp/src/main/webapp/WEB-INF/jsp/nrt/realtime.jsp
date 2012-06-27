@@ -27,7 +27,7 @@ line {
 var amq = org.activemq.Amq;
 
 amq.init({
-  uri: 'amq', 
+  uri: '/amq', 
   logging: true, 
   timeout: 45, 
   clientId:(new Date()).getTime().toString() 
@@ -54,8 +54,8 @@ amq.addListener('RealtimeHandler', 'NrtResults', realTimeHandler.receiveMessage)
     
     <script type="text/javascript">
 
-  var width = 300;
-  var height = 100;
+  var width = 600;
+  var height = 200;
 
   vis = d3.select("#content")
     .append("svg")
@@ -71,7 +71,7 @@ amq.addListener('RealtimeHandler', 'NrtResults', realTimeHandler.receiveMessage)
   g.append("svg:path")
 
 
-  var max = 100;
+  var max = 1000;
   y = d3.scale.linear()
     .domain([0, max])
     .range([height, 0]);

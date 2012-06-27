@@ -46,6 +46,7 @@
         classpath:/META-INF/opennms/applicationContext-reportingJasperReports.xml
 
         classpath:/META-INF/opennms/applicationContext-reporting.xml
+        /WEB-INF/applicationContext-jms.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
         /WEB-INF/applicationContext-spring-webflow.xml
