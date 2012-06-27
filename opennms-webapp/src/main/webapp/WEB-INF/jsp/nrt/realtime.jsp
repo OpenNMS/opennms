@@ -50,7 +50,11 @@ var realTimeHandler = {
       var arr = message.textContent.split(";");
       line.addPoint(parseFloat(arr[1]));
       updateGraphValueList(arr[0], arr[1]);
-      //document.getElementById("outputDiv").innerText=arr[1];
+      if(arr[1] > maxGraphScale) {
+        // Increase the scale to 110% of the value received.
+        maxGraphScale = parseInt(arr[1]) * 1.1;
+        refreshGraphScale();
+      }
     }
   }
 };
@@ -64,12 +68,15 @@ amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMess
 // The time in seconds to request a new job.
 var refreshIntervalInSeconds = 5;
 
-var refreshTimerId = setInterval(function() {
+setTimeout(ajaxJobSubmit, refreshIntervalInSeconds*1000);
+
+function ajaxJobSubmit() {
 	$.get("/nrt/starter.htm",
 		"collectionTask="+collectionTaskId,
 		function(data) { $("#errorDiv").text(data); },
 		"html");
-}, refreshIntervalInSeconds*1000);
+	setTimeout(ajaxJobSubmit, refreshIntervalInSeconds*1000);
+}
     </script>
 
   </head>
@@ -78,20 +85,7 @@ var refreshTimerId = setInterval(function() {
     <div id="content"></div>
     <div id="outputDiv"></div>
     <div id="errorDiv"></div>
-
-    <!-- Create AJAX timer. -->
-    <script type="text/javascript">
-// The time in seconds to request a new job.
-var refreshIntervalInSeconds = 10;
-
-var refreshTimerId = setInterval(function() {
-	alert("refreshing collection job.");
-}, refreshIntervalInSeconds*1000);
-
-function refreshCollectionJob() {
-	alert("refreshing collection job.");
-}
-    </script>
+    <div>Refresh Interval <input type="text" name="refreshInterval" value=""></div>
     
     <script type="text/javascript">
 // Define graph defaults.
@@ -112,6 +106,14 @@ $(function() {
 		// Call the functions to resize the graph and adjust the scale.
 		resizeGraph();
 		refreshGraphScale();
+	});
+
+	// set the input box default to the refresh value.
+	$('input[name|="refreshInterval"]').val(refreshIntervalInSeconds);
+
+	// When the interval input is changd update the internal variable.
+	$('input[name|="refreshInterval"]').bind('change', function(){
+		refreshIntervalInSeconds= $(this).val();
 	});
 });
 
@@ -143,7 +145,7 @@ var graphSvgLine = g.append("svg:line")
 // Call the function to resize the visible graph space.
 resizeGraph();
 
-var maxGraphScale = 1000;
+var maxGraphScale = 100;
 var y = d3.scale.linear()
     .domain([0, maxGraphScale])
     .range([height, 0]);
