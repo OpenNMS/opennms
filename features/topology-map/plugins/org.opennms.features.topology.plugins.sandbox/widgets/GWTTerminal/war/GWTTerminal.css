@@ -63,12 +63,27 @@ table {
 
 .focusPanel {
 	width: 657px;
-	height: 377px;
+	height: 427px;
 	margin: 0px auto;
 }
 
 .cursor {
-	background: #ffffff;
+	background: orange;
 	font-family: monospace;
 	font-size: 11pt;
+}
+
+.sshSpan {
+	width: 50px !important;
+	height: 50px !important;
+	background: orange;
+	font-family: monospace !important;
+	font-size: 11pt;
+	color: black;
+	overflow-x: auto;
+	white-space: pre-wrap;      /* CSS3 */   
+    white-space: -moz-pre-wrap; /* Firefox */    
+    white-space: -pre-wrap;     /* Opera <7 */   
+    white-space: -o-pre-wrap;   /* Opera 7 */    
+    word-wrap: break-word;      /* IE */
 }
