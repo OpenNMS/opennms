@@ -104,7 +104,7 @@ public class SnmpInterfaceBuilder {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsEntity} object.
      */
-    public OnmsEntity getSnmpInterface() {
+    public OnmsSnmpInterface getSnmpInterface() {
         return m_snmpIf;
     }
     
