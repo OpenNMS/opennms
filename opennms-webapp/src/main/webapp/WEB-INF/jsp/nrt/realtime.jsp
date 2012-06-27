@@ -55,14 +55,43 @@ var realTimeHandler = {
   }
 };
 
-amq.addListener('RealtimeHandler', 'NrtResults', realTimeHandler.receiveMessage);
+amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMessage);
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													
     </script>
+
+    <!-- Create AJAX timer. -->
+    <script type="text/javascript">
+// The time in seconds to request a new job.
+var refreshIntervalInSeconds = 5;
+
+var refreshTimerId = setInterval(function() {
+	$.get("/nrt/starter.htm",
+		"collectionTask="+collectionTaskId,
+		function(data) { $("#errorDiv").text(data); },
+		"html");
+}, refreshIntervalInSeconds*1000);
+    </script>
+
   </head>
   <body>
     <h1>Realtime Graph</div>
     <div id="content"></div>
     <div id="outputDiv"></div>
+    <div id="errorDiv"></div>
+
+    <!-- Create AJAX timer. -->
+    <script type="text/javascript">
+// The time in seconds to request a new job.
+var refreshIntervalInSeconds = 10;
+
+var refreshTimerId = setInterval(function() {
+	alert("refreshing collection job.");
+}, refreshIntervalInSeconds*1000);
+
+function refreshCollectionJob() {
+	alert("refreshing collection job.");
+}
+    </script>
     
     <script type="text/javascript">
 // Define graph defaults.
