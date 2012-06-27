@@ -1,7 +1,8 @@
 package org.opennms.netmgt.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class NetworkBuilderTest {
@@ -20,5 +21,28 @@ public class NetworkBuilderTest {
 		assertEquals("foo", node.getForeignId());
 		assertEquals(2, node.getIpInterfaces().size());
 		assertEquals(1, node.getSnmpInterfaces().size());
+	}
+
+	@Test
+	@Ignore
+	public void testAddSnmpToMultipleIp() {
+		final NetworkBuilder builder = new NetworkBuilder();
+		builder.addNode("foo");
+        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").addSnmpInterface(2)
+	        .setCollectionEnabled(true)
+	        .setIfOperStatus(1)
+	        .setIfSpeed(10000000)
+	        .setIfName("eth0")
+	        .setIfType(6);
+	    builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface(2)
+	        .setCollectionEnabled(true)
+	        .setIfOperStatus(1)
+	        .setIfSpeed(10000000)
+	        .setIfName("eth0")
+	        .setIfType(6);
+	    final OnmsNode node = builder.getCurrentNode();
+	    assertEquals("foo", node.getLabel());
+	    assertEquals(2, node.getIpInterfaces().size());
+	    assertEquals(1, node.getSnmpInterfaces().size());
 	}
 }
