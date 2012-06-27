@@ -39,7 +39,7 @@ import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GroupPersister;
@@ -52,8 +52,6 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
-import org.opennms.core.test.MockLogAppender;
-
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 

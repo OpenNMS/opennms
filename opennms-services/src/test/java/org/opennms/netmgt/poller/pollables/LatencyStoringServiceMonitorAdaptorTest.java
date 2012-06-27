@@ -64,7 +64,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
@@ -95,7 +95,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        RrdTestUtils.initializeNullStrategy();
+        RrdUtils.setStrategy(new NullRrdStrategy());
         RrdUtils.setStrategy(m_rrdStrategy);
 
         System.setProperty("opennms.home", "src/test/resources");

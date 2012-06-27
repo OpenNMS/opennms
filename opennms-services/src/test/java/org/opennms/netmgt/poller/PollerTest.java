@@ -59,7 +59,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockElement;
@@ -80,6 +80,7 @@ import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.mock.MockUtil;
@@ -210,7 +211,7 @@ public class PollerTest {
 		MockOutageConfig config = new MockOutageConfig();
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
 		
-		RrdTestUtils.initializeNullStrategy();
+		RrdUtils.setStrategy(new NullRrdStrategy());
 
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);

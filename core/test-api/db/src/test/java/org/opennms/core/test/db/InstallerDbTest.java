@@ -77,9 +77,9 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().setDatabaseName(getTestDatabase());
         m_installerDb.setPostgresOpennmsUser("opennms");
 
-        getInstallerDb().setCreateSqlLocation("../opennms-base-assembly/src/main/filtered/etc/create.sql");
+        getInstallerDb().setCreateSqlLocation("../../../opennms-base-assembly/src/main/filtered/etc/create.sql");
 
-        getInstallerDb().setStoredProcedureDirectory("../opennms-base-assembly/src/main/filtered/etc");
+        getInstallerDb().setStoredProcedureDirectory("../../../opennms-base-assembly/src/main/filtered/etc");
 
         getInstallerDb().setDebug(true);
 

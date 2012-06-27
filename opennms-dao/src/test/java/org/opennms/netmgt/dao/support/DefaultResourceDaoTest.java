@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -106,7 +107,7 @@ public class DefaultResourceDaoTest extends TestCase {
         m_resourceDao.setRrdDirectory(m_fileAnticipator.getTempDir());
         m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
         
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         

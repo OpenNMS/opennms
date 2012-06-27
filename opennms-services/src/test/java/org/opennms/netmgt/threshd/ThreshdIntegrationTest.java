@@ -34,9 +34,10 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
@@ -55,7 +56,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
         DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(dbConfig.getInputStream());
         DatabaseSchemaConfigFactory.setInstance(dscf);
 
-        RrdTestUtils.initializeNullStrategy();
+        RrdUtils.setStrategy(new NullRrdStrategy());
 
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
 

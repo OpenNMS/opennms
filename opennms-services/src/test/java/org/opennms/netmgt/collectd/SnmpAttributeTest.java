@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -71,7 +70,6 @@ public class SnmpAttributeTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
     }
 

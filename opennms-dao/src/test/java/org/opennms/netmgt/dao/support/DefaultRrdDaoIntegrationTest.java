@@ -44,6 +44,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 /**
@@ -60,7 +61,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
         m_rrdStrategy = RrdUtils.getStrategy();
         
         m_fileAnticipator = new FileAnticipator();

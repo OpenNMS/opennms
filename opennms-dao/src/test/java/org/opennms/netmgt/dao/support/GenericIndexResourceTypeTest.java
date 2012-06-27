@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -50,7 +51,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        RrdTestUtils.initializeNullStrategy();
+        RrdUtils.setStrategy(new NullRrdStrategy());
 
         // Don't initialize by default since not all tests need it.
         m_fileAnticipator = new FileAnticipator(false);

@@ -70,7 +70,7 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -406,7 +406,7 @@ public class PollerBackEndTest extends TestCase {
         m_pollerDetails.put("os.name", "WonkaOS");
         m_pollerDetails.put("os.version", "1.2.3");
 
-        RrdTestUtils.initializeNullStrategy();
+        RrdUtils.setStrategy(new NullRrdStrategy());
         RrdUtils.setStrategy(m_rrdStrategy);
 
     }
