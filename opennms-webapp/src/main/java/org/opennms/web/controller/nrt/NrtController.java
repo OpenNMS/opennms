@@ -44,9 +44,22 @@ public class NrtController {
     @Autowired
     private ResourceDao m_resourceDao;
     
+    //ToDo Tak, böser draft!
+    @RequestMapping(method = RequestMethod.GET, params = {"collectionTask"})
+    public void nrtCollectionJobTrigger(String collectionTask, HttpSession httpSession) {
+        logger.debug("Republish CollectionJobTrigger for '{}'", collectionTask);
+        logger.debug("CollectionJob is '{}'", httpSession.getAttribute(collectionTask));
+        if(httpSession.getAttribute(collectionTask) != null) {
+            m_jmsTemplate.convertAndSend(collectionTask, httpSession.getAttribute(collectionTask));
+            logger.debug("collectionJob was send!");
+        }else {
+            logger.debug("collectionTask is unknowen!");
+        }
+    }
+    
     @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
-        
+    
         logger.debug("JmsTemplate '{}'", m_jmsTemplate.toString());
         
         assert(resourceId != null);
@@ -66,6 +79,8 @@ public class NrtController {
         //TODO Tak graph service is able to check is a graph is propper for a given resource, check that later.
         lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
         
+        String collectionTask = "CollectionTaksId_" + new Date();
+        
         CollectionJob collectionJob = new SnmpCollectionJob();
         collectionJob.setService("SNMP");
 
@@ -75,7 +90,7 @@ public class NrtController {
         collectionJob.setNetInterface(netInterface);
         
         Set<String> resultDestinations = new HashSet<String>();
-        resultDestinations.add("NrtResults");
+        resultDestinations.add(collectionTask);
         
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
@@ -83,9 +98,10 @@ public class NrtController {
         }
         logger.debug("CollectionJob '{}'", collectionJob.toString());
         this.publishCollectionJobViaJms(collectionJob);
+        httpSession.setAttribute(collectionTask, collectionJob);
         
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
-        modelAndView.addObject("collectionJob", collectionJob);
+        modelAndView.addObject("collectionTask", collectionTask);
         return modelAndView;
     }
     
