@@ -50,6 +50,7 @@
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

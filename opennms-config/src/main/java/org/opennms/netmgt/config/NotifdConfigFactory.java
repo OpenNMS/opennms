@@ -152,42 +152,6 @@ public class NotifdConfigFactory extends NotifdConfigManager {
         return status;
     }
 
-    /**
-     * Turns the notifd service on
-     * TODO: this was pulled up into the base class but is still here
-     * because of a reference from the webapp.  Fix up by renaming the
-     * method in the base class can calling that method from here.
-     *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Override
-    public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
-        sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
-        configuration.setStatus("on");
-
-        saveCurrent();
-    }
-
-    /**
-     * Turns the notifd service off
-     * TODO: this was pulled up into the base class but is still here
-     * because of a reference from the webapp.  Fix up by renaming the
-     * method in the base class can calling that method from here.
-     *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Override
-    public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
-        sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
-        configuration.setStatus("off");
-
-        saveCurrent();
-    }
-
     /** {@inheritDoc} */
     @Override
     protected void saveXml(String xml) throws IOException {

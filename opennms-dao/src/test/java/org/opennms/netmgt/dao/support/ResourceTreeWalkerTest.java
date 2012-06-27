@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceVisitor;

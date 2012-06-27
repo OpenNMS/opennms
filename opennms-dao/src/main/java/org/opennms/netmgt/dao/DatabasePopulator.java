@@ -30,8 +30,6 @@ package org.opennms.netmgt.dao;
 
 import java.util.Date;
 
-import junit.framework.Assert;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
@@ -146,7 +144,6 @@ public class DatabasePopulator {
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").getNode());
-        Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.addCategory(ac);
         builder.addCategory(mid);
         builder.addCategory(ops);

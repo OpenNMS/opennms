@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.support;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;

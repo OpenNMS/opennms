@@ -32,11 +32,11 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -45,8 +45,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 
-    public ProxySnmpAgentConfigFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        super(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml"));
+    public ProxySnmpAgentConfigFactory(InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        super(config);
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {

@@ -41,8 +41,6 @@ import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notifications.Notification;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -118,10 +116,8 @@ public abstract class NotifdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
-        sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
+    public final void turnNotifdOn() throws MarshalException, ValidationException, IOException {
         configuration.setStatus("on");
-
         saveCurrent();
     }
 
@@ -132,10 +128,8 @@ public abstract class NotifdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
-        sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
+    public final void turnNotifdOff() throws MarshalException, ValidationException, IOException {
         configuration.setStatus("off");
-
         saveCurrent();
     }
 
@@ -177,20 +171,6 @@ public abstract class NotifdConfigManager {
      * @throws java.io.IOException if any.
      */
     protected abstract void saveXml(String xml) throws IOException;
-
-    /**
-     * <p>sendEvent</p>
-     *
-     * @param uei a {@link java.lang.String} object.
-     */
-    protected void sendEvent(String uei) {
-        EventBuilder bldr = new EventBuilder(uei, "NotifdConfigFactory");
-    
-        try {
-            EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
-        } catch (Throwable t) {
-        }
-    }
 
     /**
      * <p>getNextNotifIdSql</p>

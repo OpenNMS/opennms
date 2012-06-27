@@ -48,6 +48,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao.PrefabGraphTypeDao;
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
