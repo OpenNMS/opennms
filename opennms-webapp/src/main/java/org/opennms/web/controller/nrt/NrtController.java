@@ -3,8 +3,15 @@ package org.opennms.web.controller.nrt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpSession;
+
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -13,7 +20,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.nrtcollector.api.model.CollectionJob;
-import org.opennms.nrtcollector.api.model.SnmpCollectionJob;
+import org.opennms.nrtcollector.protocolcollector.snmp.SnmpCollectionJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

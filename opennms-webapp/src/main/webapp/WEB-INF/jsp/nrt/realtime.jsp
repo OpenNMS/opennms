@@ -1,7 +1,10 @@
 <html>
   <head>
     <title>NearRealTime</title>
-    <script type="text/javascript" src="../../../js/jquery-1.4.2.min.js"></script>
+    <link type="text/css" href="../../../css/jquery-ui-1.7.3.custom.css" rel="Stylesheet" />	
+    <!-- <script type="text/javascript" src="../../../js/jquery-1.4.2.min.js"></script> -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../../../js/amq_jquery_adapter.js"></script>
     <script type="text/javascript" src="../../../js/amq.js"></script>
     <script type="text/javascript" src="../../../js/d3.v2.js"></script>
@@ -22,10 +25,18 @@ line {
   stroke: #ececec;
 }
     </style>
-    <script type="text/javascript">
 
+    <!-- Receive inbound JavaScript variables from the controller. -->
+    <script type="text/javascript">
+        var collectionTaskId = "${collectionTask}";
+    </script>
+
+    <!-- Create and initialize the AMQ object and listener -->
+    <script type="text/javascript">
+// Create AMQ object.
 var amq = org.activemq.Amq;
 
+// L
 amq.init({
   uri: '/amq', 
   logging: true, 
@@ -38,13 +49,14 @@ var realTimeHandler = {
     if (message != null) {
       var arr = message.textContent.split(";");
       line.addPoint(parseFloat(arr[1]));
-      document.getElementById("outputDiv").innerText=arr[1];
+      updateGraphValueList(arr[0], arr[1]);
+      //document.getElementById("outputDiv").innerText=arr[1];
     }
   }
 };
 
 amq.addListener('RealtimeHandler', 'NrtResults', realTimeHandler.receiveMessage);
-
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													
     </script>
   </head>
   <body>
@@ -53,33 +65,65 @@ amq.addListener('RealtimeHandler', 'NrtResults', realTimeHandler.receiveMessage)
     <div id="outputDiv"></div>
     
     <script type="text/javascript">
+// Define graph defaults.
+var width = 600;
+var height = 200;
 
-  var width = 600;
-  var height = 200;
+// JQuery to facilitate the resize functionality.
+$(function() {
+	// Flag the graph container as resizable.
+	$( "#resizable" ).resizable();
 
-  vis = d3.select("#content")
-    .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-  g = vis.append("svg:g")
-    .attr("class", "sparkline");
-  g.append("svg:line")
+	// Catch that the container has been resized and alter the size of the graph.
+	$( "#resizable" ).resize(function() {
+		var elem = $( "#resizable" );
+		height = elem.height();
+		width = elem.width();
+		
+		// Call the functions to resize the graph and adjust the scale.
+		resizeGraph();
+		refreshGraphScale();
+	});
+});
+
+function resizeGraph() {
+	vis.attr("height", height);
+	vis.attr("width", width);
+	graphSvgLine.attr("y1", height / 2);
+	graphSvgLine.attr("y2", height / 2);
+	graphSvgLine.attr("x2", width)
+}
+
+function refreshGraphScale() {
+	y.domain([0, maxGraphScale]).range([height, 0]);
+	x.domain([0, width]).range([0, width]);
+}
+
+function updateGraphValueList(graphKey, graphValue) {
+	$("#outputDiv").text("Key: " + graphKey + " Value: " + graphValue);
+}
+
+// Create the d3 graph.
+var vis = d3.select("#content").append("svg");
+var g = vis.append("svg:g").attr("class", "sparkline");
+
+var graphSvgLine = g.append("svg:line")
     .attr("x1", 0)
-    .attr("y1", height / 2)
-    .attr("x2", width)
-    .attr("y2", height / 2)
   g.append("svg:path")
 
+// Call the function to resize the visible graph space.
+resizeGraph();
 
-  var max = 1000;
-  y = d3.scale.linear()
-    .domain([0, max])
+var maxGraphScale = 1000;
+var y = d3.scale.linear()
+    .domain([0, maxGraphScale])
     .range([height, 0]);
-  x = d3.scale.linear()
+
+var x = d3.scale.linear()
     .domain([0, width])
     .range([0, width]);
 
-  plot = d3.svg.line()
+var plot = d3.svg.line()
     .x(function(d,i) { return x(i)})
     .y(function(d) { return y(d)})
     .interpolate("linear")
