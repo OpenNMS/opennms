@@ -3,12 +3,7 @@ package org.opennms.web.controller.nrt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -37,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/nrt/starter.htm")
 public class NrtController {
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.Web." + NrtController.class);
+    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
 
     @Autowired
     private JmsTemplate m_jmsTemplate;

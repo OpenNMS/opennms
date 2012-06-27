@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Neumann
  */
 public class JmsExceptionListener implements ExceptionListener {
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.Web." + JmsExceptionListener.class);
+    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + JmsExceptionListener.class);
     
     @Override
     public void onException(final JMSException e) {
