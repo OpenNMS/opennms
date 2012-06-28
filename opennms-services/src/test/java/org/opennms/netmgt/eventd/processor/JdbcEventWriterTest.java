@@ -119,7 +119,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
      * Tests writing nulls to postgres db and the db encoding.
      * @throws SQLException
      */
-    public void testWriteEventLogmsgWithNull() throws Exception {
+	public void testWriteEventLogmsgWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
         bldr.setLogDest("logndisplay");
 

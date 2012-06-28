@@ -40,7 +40,8 @@ public class MenuBarBuilder {
                 menu.put(first, subMenu);
                 add(menuPath.subList(1, menuPath.size()), command, subMenu);
             }else if(item instanceof Map) {
-                Map<String, Object> subMenu = (Map<String, Object>) item;
+                @SuppressWarnings("unchecked")
+				Map<String, Object> subMenu = (Map<String, Object>) item;
                 add(menuPath.subList(1, menuPath.size()), command, subMenu);
             }else {
                 List<String> newMenuPath = new LinkedList<String>();
@@ -52,7 +53,8 @@ public class MenuBarBuilder {
         }
     }
 
-    public MenuBar get() {
+    @SuppressWarnings("unchecked")
+	public MenuBar get() {
         MenuBar menuBar = new MenuBar();
         
         for(Entry<String, Object> entry : m_menuBar.entrySet()) {
@@ -67,7 +69,8 @@ public class MenuBarBuilder {
         return menuBar;
     }
 
-    private void addMenuItems(MenuItem subMenu, Map<String, Object> value) {
+    @SuppressWarnings("unchecked")
+	private void addMenuItems(MenuItem subMenu, Map<String, Object> value) {
         for(Entry<String, Object> entry : value.entrySet()) {
             if(entry.getValue() instanceof Map) {
                 MenuBar.MenuItem subMenuItem = subMenu.addItem(entry.getKey(), null);
@@ -85,7 +88,7 @@ public class MenuBarBuilder {
 
     public void addMenuCommand(Command command, String menuPosition) {
         if(menuPosition != null) {
-            LinkedList<String> menuPath = new LinkedList(Arrays.asList(menuPosition.split("\\|")));
+            LinkedList<String> menuPath = new LinkedList<String>(Arrays.asList(menuPosition.split("\\|")));
             add(menuPath, command);
         }
     }

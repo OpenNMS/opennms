@@ -43,7 +43,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public class HostFileSystemStorageStrategyTest {
 
-    @Test
+    @SuppressWarnings("deprecation")
+	@Test
     public void testStrategy() throws Exception {
         // Create Mocks
         StorageStrategyService service = EasyMock.createMock(StorageStrategyService.class);
