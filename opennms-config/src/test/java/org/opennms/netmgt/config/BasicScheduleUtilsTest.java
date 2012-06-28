@@ -33,7 +33,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.test.IntervalTestCase;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.OwnedInterval;
+import org.opennms.core.utils.OwnedIntervalSequence;
+import org.opennms.core.utils.Owner;
+import org.opennms.core.utils.TimeInterval;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.groups.Schedule;
 

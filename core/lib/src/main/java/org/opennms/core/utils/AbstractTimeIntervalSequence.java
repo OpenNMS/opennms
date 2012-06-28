@@ -26,13 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
 
 // TODO make this implement Collection
 /**
@@ -80,7 +81,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>Constructor for TimeIntervalSequence.</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public AbstractTimeIntervalSequence(T interval) {
         this(interval, null);
@@ -111,7 +112,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>addInterval</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public void addInterval(T interval) {
         if (m_interval == null) {
@@ -142,8 +143,8 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>combineIntervals</p>
      *
-     * @param currentInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
-     * @param newInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param currentInterval a {@link org.opennms.core.utils.TimeInterval} object.
+     * @param newInterval a {@link org.opennms.core.utils.TimeInterval} object.
      * @return a {@link java.util.Collection} object.
      */
     protected Collection<T> combineIntervals(T currentInterval, T newInterval) {
@@ -204,15 +205,15 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
      *
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
-     * @return a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @return a {@link org.opennms.core.utils.TimeInterval} object.
      */
     protected abstract T createInterval(Date start, Date end);
     
     /**
      * <p>createTail</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
-     * @return a {@link org.opennms.netmgt.config.AbstractTimeIntervalSequence} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
+     * @return a {@link org.opennms.core.utils.AbstractTimeIntervalSequence} object.
      */
     protected abstract AbstractTimeIntervalSequence<T> createTail(T interval);
     
@@ -228,7 +229,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>removeInterval</p>
      *
-     * @param removedInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param removedInterval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public void removeInterval(T removedInterval) {
         if (m_interval == null) {
@@ -261,8 +262,8 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>separateIntervals</p>
      *
-     * @param origInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
-     * @param removedInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param origInterval a {@link org.opennms.core.utils.TimeInterval} object.
+     * @param removedInterval a {@link org.opennms.core.utils.TimeInterval} object.
      * @return a {@link java.util.Collection} object.
      */
     protected Collection<T> separateIntervals(T origInterval, T removedInterval) {
@@ -303,7 +304,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>bound</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public void bound(T interval) {
         bound(interval.getStart(), interval.getEnd());
@@ -333,7 +334,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>getBounds</p>
      *
-     * @return a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @return a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public TimeInterval getBounds() {
         Date start = getStart();
@@ -344,7 +345,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>addAll</p>
      *
-     * @param intervals a {@link org.opennms.netmgt.config.AbstractTimeIntervalSequence} object.
+     * @param intervals a {@link org.opennms.core.utils.AbstractTimeIntervalSequence} object.
      */
     public void addAll(AbstractTimeIntervalSequence<T> intervals) {
         for (Iterator<T> it = intervals.iterator(); it.hasNext();) {
@@ -368,7 +369,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
     /**
      * <p>removeAll</p>
      *
-     * @param intervals a {@link org.opennms.netmgt.config.AbstractTimeIntervalSequence} object.
+     * @param intervals a {@link org.opennms.core.utils.AbstractTimeIntervalSequence} object.
      */
     public void removeAll(AbstractTimeIntervalSequence<T> intervals) {
         for (Iterator<T> it = intervals.iterator(); it.hasNext();) {

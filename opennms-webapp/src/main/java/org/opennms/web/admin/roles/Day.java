@@ -35,10 +35,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.core.utils.OwnedInterval;
+import org.opennms.core.utils.OwnedIntervalSequence;
+import org.opennms.core.utils.Owner;
 import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.OwnedInterval;
-import org.opennms.netmgt.config.OwnedIntervalSequence;
-import org.opennms.netmgt.config.Owner;
 import org.opennms.netmgt.config.groups.Role;
 
 /**

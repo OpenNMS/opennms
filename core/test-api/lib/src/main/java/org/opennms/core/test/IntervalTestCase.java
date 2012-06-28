@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,6 +35,11 @@ import java.util.Date;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+
+import org.opennms.core.utils.AbstractTimeIntervalSequence;
+import org.opennms.core.utils.OwnedInterval;
+import org.opennms.core.utils.Owner;
+import org.opennms.core.utils.TimeInterval;
 
 public class IntervalTestCase extends TestCase {
 

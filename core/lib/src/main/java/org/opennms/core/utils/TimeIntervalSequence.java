@@ -26,9 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 import java.util.Date;
+
 
 /**
  * <p>OwnedIntervalSequence class.</p>

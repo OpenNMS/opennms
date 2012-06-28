@@ -26,13 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.test;
 
 import java.util.Date;
 
-
-
-
+import org.opennms.core.utils.OwnedInterval;
+import org.opennms.core.utils.OwnedIntervalSequence;
+import org.opennms.core.utils.TimeInterval;
+import org.opennms.core.utils.TimeIntervalSequence;
 
 public class TimeIntervalSequenceTest extends IntervalTestCase {
     

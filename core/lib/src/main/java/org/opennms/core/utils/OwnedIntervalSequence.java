@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class OwnedIntervalSequence extends AbstractTimeIntervalSequence<OwnedInt
     /**
      * <p>Constructor for OwnedIntervalSequence.</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.OwnedInterval} object.
+     * @param interval a {@link org.opennms.core.utils.OwnedInterval} object.
      */
     public OwnedIntervalSequence(OwnedInterval interval) {
         super(interval);

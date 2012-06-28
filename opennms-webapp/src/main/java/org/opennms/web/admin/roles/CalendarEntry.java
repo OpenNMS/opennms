@@ -31,7 +31,7 @@ package org.opennms.web.admin.roles;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.config.Owner;
+import org.opennms.core.utils.Owner;
 
 /**
  * <p>CalendarEntry class.</p>

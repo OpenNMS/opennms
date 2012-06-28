@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>Constructor for OwnedInterval.</p>
      *
-     * @param owned a {@link org.opennms.netmgt.config.OwnedInterval} object.
+     * @param owned a {@link org.opennms.core.utils.OwnedInterval} object.
      */
     public OwnedInterval(OwnedInterval owned) {
         this(owned.getOwners(), owned.getStart(), owned.getEnd());
@@ -54,7 +54,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>Constructor for OwnedInterval.</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public OwnedInterval(TimeInterval interval) {
         this(interval.getStart(), interval.getEnd());
@@ -64,7 +64,7 @@ public class OwnedInterval extends TimeInterval {
      * <p>Constructor for OwnedInterval.</p>
      *
      * @param owner a {@link org.opennms.netmgt.config.Owner} object.
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public OwnedInterval(Owner owner, TimeInterval interval) {
         this(owner, interval.getStart(), interval.getEnd());
@@ -74,7 +74,7 @@ public class OwnedInterval extends TimeInterval {
      * <p>Constructor for OwnedInterval.</p>
      *
      * @param owners a {@link java.util.List} object.
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public OwnedInterval(List<Owner> owners, TimeInterval interval) {
         this(owners, interval.getStart(), interval.getEnd());

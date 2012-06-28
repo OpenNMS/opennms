@@ -47,6 +47,9 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.OwnedInterval;
+import org.opennms.core.utils.OwnedIntervalSequence;
+import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
@@ -657,7 +660,7 @@ public abstract class GroupManager {
      * @param roleid a {@link java.lang.String} object.
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
-     * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
+     * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.

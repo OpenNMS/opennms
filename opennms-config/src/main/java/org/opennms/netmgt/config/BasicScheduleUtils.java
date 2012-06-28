@@ -40,6 +40,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.OwnedInterval;
+import org.opennms.core.utils.OwnedIntervalSequence;
+import org.opennms.core.utils.Owner;
+import org.opennms.core.utils.TimeInterval;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.poller.Outage;
 
@@ -410,8 +414,8 @@ public abstract class BasicScheduleUtils {
      *
      * @param ref a {@link java.util.Date} object.
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
-     * @return a {@link org.opennms.netmgt.config.OwnedInterval} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
+     * @return a {@link org.opennms.core.utils.OwnedInterval} object.
      */
     public static OwnedInterval getInterval(final Date ref, final Time time, final Owner owner) {
         if (isWeekly(time)) {
@@ -470,8 +474,8 @@ public abstract class BasicScheduleUtils {
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
-     * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
+     * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
      */
     public static OwnedIntervalSequence getIntervals(final Date start, final Date end, final Time time, final Owner owner) {
         final OwnedIntervalSequence seq = new OwnedIntervalSequence();
@@ -504,10 +508,10 @@ public abstract class BasicScheduleUtils {
     /**
      * <p>getIntervals</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
-     * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
+     * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
      */
     public static OwnedIntervalSequence getIntervals(final TimeInterval interval, final Time time, final Owner owner) {
         return getIntervals(interval.getStart(), interval.getEnd(), time, owner);
@@ -519,8 +523,8 @@ public abstract class BasicScheduleUtils {
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
      * @param sched a {@link org.opennms.netmgt.config.common.BasicSchedule} object.
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
-     * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
+     * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
      */
     public static OwnedIntervalSequence getIntervalsCovering(final Date start, final Date end, final BasicSchedule sched, final Owner owner) {
         final OwnedIntervalSequence seq = new OwnedIntervalSequence();
@@ -535,10 +539,10 @@ public abstract class BasicScheduleUtils {
     /**
      * <p>getIntervalsCovering</p>
      *
-     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      * @param sched a {@link org.opennms.netmgt.config.common.BasicSchedule} object.
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
-     * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
+     * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
      */
     public static OwnedIntervalSequence getIntervalsCovering(final TimeInterval interval, final BasicSchedule sched, final Owner owner) {
         return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched, owner);

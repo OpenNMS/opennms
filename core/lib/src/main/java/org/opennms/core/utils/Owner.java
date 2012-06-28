@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 /**
  * <p>Owner class.</p>
@@ -65,7 +65,7 @@ public class Owner implements Comparable<Owner> {
     /**
      * <p>Constructor for Owner.</p>
      *
-     * @param base a {@link org.opennms.netmgt.config.Owner} object.
+     * @param base a {@link org.opennms.core.utils.Owner} object.
      * @param timeIndex a int.
      */
     public Owner(Owner base, int timeIndex) {
@@ -132,7 +132,7 @@ public class Owner implements Comparable<Owner> {
         return m_user;
     }
     
-    Owner addTimeIndex(int timeIndex) {
+    public Owner addTimeIndex(int timeIndex) {
         return new Owner(this, timeIndex);
     }
     
@@ -157,7 +157,7 @@ public class Owner implements Comparable<Owner> {
     /**
      * <p>compareTo</p>
      *
-     * @param o a {@link org.opennms.netmgt.config.Owner} object.
+     * @param o a {@link org.opennms.core.utils.Owner} object.
      * @return a int.
      */
     public int compareTo(Owner o) {

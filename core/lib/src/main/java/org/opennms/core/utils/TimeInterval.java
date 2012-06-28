@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 import java.util.Date;
 
@@ -125,7 +125,7 @@ public class TimeInterval implements Comparable<TimeInterval> {
     /**
      * <p>compareTo</p>
      *
-     * @param t a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param t a {@link org.opennms.core.utils.TimeInterval} object.
      * @return a int.
      */
     public int compareTo(TimeInterval t) {
@@ -136,15 +136,15 @@ public class TimeInterval implements Comparable<TimeInterval> {
         else return 0;
     }
 
-    boolean preceeds(TimeInterval interval) {
+    public boolean preceeds(TimeInterval interval) {
         return compareTo(interval) < 0;
     }
 
-    boolean follows(TimeInterval interval) {
+    public boolean follows(TimeInterval interval) {
         return compareTo(interval) > 0;
     }
 
-    boolean overlaps(TimeInterval interval) {
+    public boolean overlaps(TimeInterval interval) {
         return compareTo(interval) == 0;
     }
     
