@@ -3,7 +3,9 @@ package org.opennms.features.topology.app.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
@@ -132,6 +134,7 @@ public class TopologyComponentTest {
         GraphContainer dataSource = new SimpleGraphContainer(topoProvider);
         TestTopologyComponent topoComponent = new TestTopologyComponent(dataSource);
         Graph graph = topoComponent.getGraph();
+        
         List<Edge> edges = graph.getEdges();
         assertEquals(1, edges.size());
         
@@ -147,6 +150,7 @@ public class TopologyComponentTest {
         
         EasyMock.verify(target);
         
+        System.err.println("\n****** Right before Creation of a Group ******\n");
         
         Collection<?> vertIds = topoProvider.getVertexIds();
         
@@ -167,18 +171,27 @@ public class TopologyComponentTest {
        
         for(Vertex g : graph.getVertices()) {
             if (!g.isLeaf()) {
-                mockGroupWithKey(target2, g.getKey());
+                String key = g.getKey();
+                mockGroupWithKey(target2, key);
             }
         }
         
         for(Vertex v : graph.getVertices()) {
             if (v.isLeaf()) {
-                mockVertexWithKey(target2, v.getKey());
+                String key = v.getKey();
+                mockVertexWithKey(target2, key);
             }
         }
         
+        Map<Object, String> verticesKeyMapper = new HashMap<Object, String>();
+        for(Vertex v : graph.getVertices()) {
+            verticesKeyMapper.put(v.getItemId(), v.getKey());
+        }
+        
         for(Edge e: graph.getEdges()) {
-            mockEdgeWithKeys(target2, edge.getKey(), edge.getSource().getKey(), edge.getTarget().getKey());
+            String sourceKey = verticesKeyMapper.get(edge.getSource().getItemId());
+            String targetKey = verticesKeyMapper.get(edge.getTarget().getItemId());
+            mockEdgeWithKeys(target2, edge.getKey(), sourceKey, targetKey);
         }
         mockGraphTagEnd(target2);
         

@@ -173,11 +173,13 @@ public class SimpleGraphContainerTest {
         eventsReceived.set(0);
         
         topologyProvider.setParent(vertId, groupId);
-        assertEquals(2, eventsReceived.get());
+        //assertEquals(2, eventsReceived.get());
+        assertEquals(1, eventsReceived.get());
         eventsReceived.set(0);
         
         topologyProvider.setParent(vertId2, groupId);
-        assertEquals(2, eventsReceived.get());
+        //assertEquals(2, eventsReceived.get());
+        assertEquals(1, eventsReceived.get());
         eventsReceived.set(0);
         
         Collection<?> vertexKeys = graphContainer.getVertexIds();
