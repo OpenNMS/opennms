@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -44,7 +45,6 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
