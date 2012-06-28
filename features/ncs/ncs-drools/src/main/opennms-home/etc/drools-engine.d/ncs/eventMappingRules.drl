@@ -141,7 +141,7 @@ end
 rule "cfmd_ccmd_defect component down"
 	salience 100
 when
-	$e : Event( uei matches ".*cfmd_ccm_defect.*" ) and Event( uei not matches ".*cfmd_ccmd_defect_none" )
+	$e : Event( uei matches ".*cfmd_ccm_defect.*" ) and Event( uei not matches ".*cfmd_ccm_defect_none" )
 then
 	retract( $e );
 	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("cfmLevel", 1), map("cfmMD",2), map("cfmMA", 3), map("cfmMEPInterface", 4) );
