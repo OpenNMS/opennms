@@ -101,6 +101,10 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             
             throw new IllegalArgumentException("Provider not registered with interface " + serviceInterface);
         }
+        
+        public Object getProvider() {
+        	return m_provider;
+        }
 
         public ServiceRegistry getRegistry() {
             return DefaultServiceRegistry.this;
