@@ -17,7 +17,7 @@ function warInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../compile.pl $OFFLINE_ARGS $DEFINES '-P!jspc' compile war:inplace
+    ../compile.pl $OFFLINE_ARGS $DEFINES -DonmsLibScope=compile '-P!jspc' compile war:inplace
     mkdir -p src/main/webapp/{WEB-INF,META-INF}
     sed -e "s,\${install.dir},$OPENNMS_ROOT,g" src/web-inf/configuration.properties > src/main/webapp/WEB-INF/configuration.properties
     sed -e "s,\${install.servlet.dir},`pwd`/src/main/webapp,g" src/meta-inf/context.xml > src/main/webapp/META-INF/context.xml
@@ -28,7 +28,13 @@ function runInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT '-P!jspc' jetty:run-exploded
+	if $DEBUG; then
+			MAVEN_OPTS="${MAVEN_OPTS} -XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1g -XX:ReservedCodeCacheSize=512m"
+			MAVEN_OPTS="${MAVEN_OPTS} -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=n"
+			export MAVEN_OPTS;
+	fi
+	echo $MAVEN_OPTS;
+  ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT -DonmsLibScope=compile '-P!jspc' jetty:run-exploded
 }
 
 function removeGwtModuleFiles() {
@@ -77,10 +83,11 @@ function usage() {
     err "\t-h : print this help"
     err "\t-C : clean up completely"
     err "\t-b : build in place before running"
+		err "\t-t : start jetty with debug port 8002 open"
     err "\t-c : remove WEB-INF/lib, WEB-INF/classes and META_INF dirs"
     err "\t-g : remove gwt generated files"
     err "\t-n : no-run: this is useful if you want to only build in place"
-	err "\t-o : offline: run in offline mode"
+    err "\t-o : offline: run in offline mode"
     err "\t-p portnum : the port to run the webapp at"
     exit 1
 }
@@ -92,9 +99,10 @@ REMOVE_CODE=false
 OFFLINE=false
 CLEAN=false
 WEB_PORT=8080
+DEBUG=false
 DEFINES=""
 
-while getopts bcChgnp: OPT; do
+while getopts bcChgntp: OPT; do
     case $OPT in
 	b)  WAR_INPLACE=true
 	    ;;
@@ -112,6 +120,8 @@ while getopts bcChgnp: OPT; do
 	    ;;
 	p)  WEB_PORT=$OPTARG
 	    ;;
+	t)  DEBUG=true
+      ;;
 	*)  usage
 	    ;;
     esac

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.opennms.features.topology</groupId>
+    <artifactId>features</artifactId>
+    <version>1.11.1-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.osgi.features.topology</groupId>
+  <artifactId>vaadin</artifactId>
+
+  <name>OpenNMS :: Topology :: Vaadin + Dependencies</name>
+
+  <description>The Vaadin web application framework.</description>
+
+  <packaging>pom</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <features>
+            <feature>http-whiteboard</feature>
+          </features>
+          <bundles>
+            <bundle>wrap:mvn:org.vaadin.addons/refresher/1.1.1</bundle>
+          </bundles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.vaadin</groupId>
+      <artifactId>service</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- this will actually get skipped because it's wrapped above -->
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>refresher</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+        <id>vaadin-addons</id>
+        <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
+
+</project>

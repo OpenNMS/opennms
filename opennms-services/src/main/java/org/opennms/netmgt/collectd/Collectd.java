@@ -758,7 +758,7 @@ public class Collectd extends AbstractServiceDaemon implements
             } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
                 handleReloadDaemonConfig(event);
             } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
-            	handleNodeCategoryMembershipChanged(event);
+                handleNodeCategoryMembershipChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);

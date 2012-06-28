@@ -13,6 +13,9 @@
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
+		<!-- this is used by runInPlace.sh to get the overwise provided 
+				 onms libs into the WEB-INF/lib for jetty -->
+		<onmsLibScope>provided</onmsLibScope>
   </properties>
   <build>
     <plugins>
@@ -78,6 +81,7 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
+					<contextPath>/opennms</contextPath>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
             <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -240,47 +244,47 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.core</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.api</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.availability</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.model</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.dao</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.repository</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.request-tracker</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.system-report</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
@@ -310,7 +314,7 @@
     <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.soa</artifactId>
-        <scope>provided</scope>
+        <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
