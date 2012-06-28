@@ -67,8 +67,11 @@ public class IPAddressTableTracker extends TableTracker {
     public static final SnmpObjId IP_ADDRESS_LAST_CHANGED_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "9");
     public static final SnmpObjId IP_ADDRESS_ROW_STATUS_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "10");
     public static final SnmpObjId IP_ADDRESS_STORAGE_TYPE_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "11");
-    public static final int TYPE_IPV4 = 1;
-    public static final int TYPE_IPV6 = 2;
+    public static final int TYPE_IPV4  = 1;
+    public static final int TYPE_IPV6  = 2;
+    public static final int TYPE_IPV4Z = 3;
+    public static final int TYPE_IPV6Z = 4;
+    public static final int TYPE_DNS   = 16;
 
     private static final int IP_ADDRESS_TYPE_UNICAST = 1;
     // private static final int IP_ADDRESS_TYPE_ANYCAST = 2;
@@ -118,7 +121,7 @@ public class IPAddressTableTracker extends TableTracker {
                 return null;
             }
 
-            if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
+            if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6 || addressType == TYPE_IPV6Z) {
                 final InetAddress address = getInetAddress(instanceIds, addressIndex, addressLength);
                 return str(address);
             }
@@ -147,6 +150,7 @@ public class IPAddressTableTracker extends TableTracker {
             final int mask = rawIds[rawIds.length - 1];
             int addressLength = rawIds[2];
             int addressIndex = 3;
+
             // Begin NMS-4906 Lame Force 10 agent!
             if (addressType == TYPE_IPV4 && rawIds.length != 1+6+1) {
                 LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
@@ -159,6 +163,7 @@ public class IPAddressTableTracker extends TableTracker {
                 addressLength = 16;
             }
             // End NMS-4906 Lame Force 10 agent!
+
             if (addressIndex < 0 || addressIndex + addressLength > rawIds.length) {
                 LogUtils.warnf(this, "BAD AGENT: Returned instanceId %s does not enough bytes to contain address!. Skipping.", netmaskRef);
                 return null;
