@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.config.mock;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

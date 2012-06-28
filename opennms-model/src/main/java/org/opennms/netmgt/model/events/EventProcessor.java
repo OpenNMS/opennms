@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
+import java.sql.SQLException;
+
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Header;
+
 
 /**
- * <p>EventIpcManager interface.</p>
+ * Event processor interface.  Classes that want to modify or react to
+ * events within eventd implement this interface and are dependency
+ * injected into the eventProcessors List in EventHandler.
  *
  * @author ranger
  * @version $Id: $
  */
-public interface EventIpcManager extends EventSubscriptionService, EventProxy, EventForwarder {
-
+public interface EventProcessor {
+    /**
+     * <p>process</p>
+     *
+     * @param eventHeader a {@link org.opennms.netmgt.xml.event.Header} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.sql.SQLException if any.
+     */
+    void process(Header eventHeader, Event event) throws SQLException;
 }

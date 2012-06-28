@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.eventd.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,15 +45,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.EventExpander;
 import org.opennms.netmgt.config.EventdConfigManager;
-import org.opennms.netmgt.eventd.EventIpcBroadcaster;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventIpcManagerProxy;
-import org.opennms.netmgt.eventd.processor.EventExpander;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventIpcBroadcaster;
+import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManagerProxy;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.model.events.EventWriter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.springframework.beans.factory.InitializingBean;

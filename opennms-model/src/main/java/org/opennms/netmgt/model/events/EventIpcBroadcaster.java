@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,56 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jmx;
+package org.opennms.netmgt.model.events;
 
+import org.opennms.netmgt.xml.event.Event;
 
-public class ServiceDaemonStub implements ServiceDaemonStubMBean {
-	
-	private boolean startCalled = false;
-	private String statusStr = "UNDEFINED";
-	private String name;
-
-	public ServiceDaemonStub(String name) {
-		this.name = name;
-	}
-	public String getStatusText() {
-		// TODO Auto-generated method stub
-		return statusStr;
-	}
-
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public String getName() {
-		// TODO Auto-generated method stub
-		return name;
-	}
-
-	public int getStatus() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void start() {
-		// TODO Auto-generated method stub
-		startCalled = true;
-		statusStr = "Started";
-	}
-
-	public boolean getStartCalled() {
-		return startCalled;
-	}
-	
-	public void stop() {
-		// TODO Auto-generated method stub
-
-	}
-
+/**
+ * Back-end interface for the EventIpcManager.  Used by eventd to send events
+ * to interested listeners.
+ */
+public interface EventIpcBroadcaster {
+    /**
+     * Called by eventd to send an event to all interested listeners.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    void broadcastNow(Event event);
 }

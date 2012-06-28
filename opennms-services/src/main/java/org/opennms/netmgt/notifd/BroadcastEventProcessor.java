@@ -62,10 +62,10 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -1043,7 +1043,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -1052,7 +1052,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;

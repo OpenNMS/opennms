@@ -60,6 +60,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-api</artifactId>
       <scope>compile</scope>
@@ -80,6 +84,10 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -161,6 +169,7 @@
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.jcraft</groupId>

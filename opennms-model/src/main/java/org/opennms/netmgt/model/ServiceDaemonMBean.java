@@ -26,19 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.model;
 
-import org.opennms.netmgt.xml.event.Event;
 
-/**
- * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-public interface EventWriter {
-    /**
-     * @param e
-     */
-    public void writeEvent(Event e);
+public interface ServiceDaemonMBean extends ServiceDaemon {
+
 }

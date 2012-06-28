@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,27 +26,55 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.model;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+public class DefaultServiceDaemonMBean implements ServiceDaemonMBean {
+	
+	private boolean startCalled = false;
+	private String statusStr = "UNDEFINED";
+	private String name;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.mock.MockMonitoredService;
+	public DefaultServiceDaemonMBean(String name) {
+		this.name = name;
+	}
+	public String getStatusText() {
+		// TODO Auto-generated method stub
+		return statusStr;
+	}
 
-public abstract class MonitorTestUtils {
+	public void pause() {
+		// TODO Auto-generated method stub
 
-    public static MockMonitoredService getMonitoredService(int nodeId, InetAddress addr, String svcName) throws UnknownHostException {
-        return new MockMonitoredService(nodeId, InetAddressUtils.str(addr), addr, svcName);
-    }
+	}
 
-    public static MockMonitoredService getMonitoredService(int nodeId, String hostname, String svcName) throws UnknownHostException {
-        return getMonitoredService(nodeId, hostname, svcName, false);
-    }
+	public void resume() {
+		// TODO Auto-generated method stub
 
-    public static MockMonitoredService getMonitoredService(int nodeId, String hostname, String svcName, boolean preferInet6Address) throws UnknownHostException {
-        InetAddress myAddress = InetAddressUtils.resolveHostname(hostname, preferInet6Address);
-        return new MockMonitoredService(nodeId, hostname, myAddress, svcName);
-    }
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return name;
+	}
+
+	public int getStatus() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void start() {
+		// TODO Auto-generated method stub
+		startCalled = true;
+		statusStr = "Started";
+	}
+
+	public boolean getStartCalled() {
+		return startCalled;
+	}
+	
+	public void stop() {
+		// TODO Auto-generated method stub
+
+	}
 
 }

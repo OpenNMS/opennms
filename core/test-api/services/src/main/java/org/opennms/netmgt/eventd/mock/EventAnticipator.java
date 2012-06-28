@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.eventd.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;

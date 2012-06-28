@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.poller.mock;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

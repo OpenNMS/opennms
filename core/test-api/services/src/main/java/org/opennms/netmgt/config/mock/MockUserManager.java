@@ -26,48 +26,58 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.notifd.mock;
+package org.opennms.netmgt.config.mock;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.UserManager;
 
-public class MockGroupManager extends GroupManager {
-    
+public class MockUserManager extends UserManager {
+
     String m_xmlString;
-    boolean updateNeeded = false;
+    boolean updateNeeded = true;
+    private long m_lastModified;
     
-    public MockGroupManager(String xmlString) throws MarshalException, ValidationException {
+    public MockUserManager(GroupManager groupManager, String xmlString) throws MarshalException, ValidationException {
+        super(groupManager);
         m_xmlString = xmlString;
         parseXML();
     }
 
     private void parseXML() throws MarshalException, ValidationException {
-        try {
-            InputStream reader = new ByteArrayInputStream(m_xmlString.getBytes("UTF-8"));
-            parseXml(reader);
-            updateNeeded = false;
-        } catch (UnsupportedEncodingException e) {
-            // Can't happen with UTF-8
-        }
+        InputStream in = new ByteArrayInputStream(m_xmlString.getBytes());
+        parseXML(in);
+        updateNeeded = false;
+        m_lastModified = System.currentTimeMillis();
     }
 
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    protected void saveXML(String writerString) throws IOException {
+        m_xmlString = writerString;
+        updateNeeded = true;
+    }
+
+    @Override
+    protected void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }
     }
 
     @Override
-    protected void saveXml(String data) throws IOException {
-        m_xmlString = data;
-        updateNeeded = true;
+    public boolean isUpdateNeeded() {
+        return updateNeeded;
+    }
+
+    @Override
+    public long getLastModified() {
+        return m_lastModified;
     }
 
 }

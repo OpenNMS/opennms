@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.eventd.mock.EventWrapper;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockUtil;

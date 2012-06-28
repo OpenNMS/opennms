@@ -36,7 +36,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
 import org.opennms.test.mock.MockUtil;

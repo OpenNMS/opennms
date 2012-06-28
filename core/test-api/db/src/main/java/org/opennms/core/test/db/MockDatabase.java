@@ -43,7 +43,6 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.mock.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
@@ -52,6 +51,7 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.Outage;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventWriter;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 

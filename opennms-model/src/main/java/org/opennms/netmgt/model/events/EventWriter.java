@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,61 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.model.events;
 
-package org.opennms.netmgt.mock;
-
-
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Need this class because Event doesn't properly implement hashCode
+ * @author brozow
  *
- * @author ranger
- * @version $Id: $
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
-public class EventWrapper {
-    private Event m_event;
-
+public interface EventWriter {
     /**
-     * <p>Constructor for EventWrapper.</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e
      */
-    public EventWrapper(Event event) {
-        m_event = event;
-    }
-
-    /** {@inheritDoc} */
-    public boolean equals(Object o) {
-        EventWrapper w = (EventWrapper) o;
-        return MockEventUtil.eventsMatch(m_event, w.m_event);
-    }
-
-    /**
-     * <p>getEvent</p>
-     *
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public Event getEvent() {
-        return m_event;
-    }
-
-    /**
-     * <p>hashCode</p>
-     *
-     * @return a int.
-     */
-    public int hashCode() {
-        return m_event.getUei().hashCode();
-    }
-    
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String toString() {
-    	return EventUtils.toString(m_event);
-    }
+    public void writeEvent(Event e);
 }

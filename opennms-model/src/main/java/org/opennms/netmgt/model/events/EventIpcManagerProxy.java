@@ -26,13 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.model.events;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.springframework.util.Assert;
@@ -158,7 +156,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>getDelegate</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getDelegate() {
         return m_delegate;
@@ -167,7 +165,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>setDelegate</p>
      *
-     * @param delegate a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param delegate a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setDelegate(EventIpcManager delegate) {
         m_delegate = delegate;

@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;

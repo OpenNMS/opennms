@@ -26,10 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jmx;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.ServiceDaemon;
 
-public interface ServiceDaemonStubMBean extends ServiceDaemon {
+/**
+ * <p>EventIpcManager interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
+public interface EventIpcManager extends EventSubscriptionService, EventProxy, EventForwarder {
 
 }

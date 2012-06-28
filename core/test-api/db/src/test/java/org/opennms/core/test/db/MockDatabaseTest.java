@@ -33,7 +33,6 @@ import java.sql.SQLException;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;

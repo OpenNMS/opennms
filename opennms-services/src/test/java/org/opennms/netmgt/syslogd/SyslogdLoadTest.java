@@ -68,7 +68,7 @@ import org.opennms.netmgt.config.syslogd.Match;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.eventd.Eventd;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxy;

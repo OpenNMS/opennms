@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,19 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.poller.mock;
 
-import org.opennms.netmgt.xml.event.Event;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-/**
- * Back-end interface for the EventIpcManager.  Used by eventd to send events
- * to interested listeners.
- */
-public interface EventIpcBroadcaster {
-    /**
-     * Called by eventd to send an event to all interested listeners.
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    void broadcastNow(Event event);
+import org.opennms.core.utils.InetAddressUtils;
+
+public abstract class MonitorTestUtils {
+
+    public static MockMonitoredService getMonitoredService(int nodeId, InetAddress addr, String svcName) throws UnknownHostException {
+        return new MockMonitoredService(nodeId, InetAddressUtils.str(addr), addr, svcName);
+    }
+
+    public static MockMonitoredService getMonitoredService(int nodeId, String hostname, String svcName) throws UnknownHostException {
+        return getMonitoredService(nodeId, hostname, svcName, false);
+    }
+
+    public static MockMonitoredService getMonitoredService(int nodeId, String hostname, String svcName, boolean preferInet6Address) throws UnknownHostException {
+        InetAddress myAddress = InetAddressUtils.resolveHostname(hostname, preferInet6Address);
+        return new MockMonitoredService(nodeId, hostname, myAddress, svcName);
+    }
+
 }

@@ -53,7 +53,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
