@@ -18,8 +18,8 @@ public class KeyBuffer {
 			head = newKey;
 			tail = newKey;
 		} else {
-			tail.setPrev(newKey);
-			newKey.setNext(tail);
+			tail.setNext(newKey);
+			newKey.setPrev(tail);
 			tail = newKey;
 		}
 		size++;
@@ -28,8 +28,8 @@ public class KeyBuffer {
 	public String pop(){
 		if (head != null){
 			String headValue = head.getValue();
-			if (head.getPrev() != null){
-				head = head.getPrev();
+			if (head.getNext() != null){
+				head = head.getNext();
 			} else {
 				head = null;
 				tail = null;
@@ -41,6 +41,17 @@ public class KeyBuffer {
 
 	public int size() {
 		return this.size;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		Key current = head;
+		while (current != null) {
+			s += current.getValue();
+			current = current.getNext(); 
+		}
+		return s;
 	}
 
 }

@@ -13,8 +13,8 @@ public class Code {
 	private boolean isCtrlDown;
 	private boolean isAltDown;
 	private boolean isShiftDown;
-	private boolean isSpecialCode;
-	private final int[] keyCodes = new int[] { 9, 8, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 };
+	private boolean isFunctionKey;
+	private final int[] keyCodes = new int[] { 9, 8, 13, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 };
 
 	@SuppressWarnings("rawtypes")
 	public Code(KeyEvent event){
@@ -34,10 +34,10 @@ public class Code {
 		} else if (kD_Event != null){
 			temp = keyCode = kD_Event.getNativeKeyCode();
 		} 
-		isSpecialCode = false;
+		isFunctionKey = false;
 		for (int k : keyCodes){
 			if (temp == k) {
-				isSpecialCode = true;
+				isFunctionKey = true;
 				break;
 			}
 		}
@@ -63,7 +63,11 @@ public class Code {
 		return isShiftDown;
 	}
 	
-	public boolean is1337() {
-		return isSpecialCode;
+	public boolean isFunctionKey() {
+		return isFunctionKey;
+	}
+	
+	public boolean isControlKey() {
+		return (getKeyCode() >= 16 && getKeyCode() <= 18);
 	}
 }

@@ -53,6 +53,9 @@ public class GWTTerminal implements EntryPoint {
 	public void onModuleLoad() {
 		GwtTerm term = new GwtTerm();
 		inputSpan = term.getInputSpan();
+		TermHandler termHandler = new TermHandler(inputSpan);
+		term.addKeyDownHandler(termHandler);
+		term.addKeyPressHandler(termHandler);
 		RootPanel.get().add(term);
 	}
 	// Create a handler for the sendButton and nameField

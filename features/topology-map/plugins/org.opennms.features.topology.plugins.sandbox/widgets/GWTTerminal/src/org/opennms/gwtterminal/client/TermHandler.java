@@ -9,51 +9,87 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 //import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Element;
 
 
 public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandler{
 
 //	private int sending = 0;
 //	private Timer updateTimer = null;
-	public KeyBuffer keybuf;
+	private KeyBuffer keybuf;
+	private Element output;
 	private Code code;
 
 	public TermHandler(){
 		keybuf = new KeyBuffer();
 		code = null;
+		this.output = null;
+	}
+	
+	public TermHandler(Element output){
+		keybuf = new KeyBuffer();
+		code = null;
+		this.output = output;
 	}
 
 	@Override
 	public void onKeyPress(KeyPressEvent event) {
 		code = new Code(event);
-		processCode(code);	
+		if (code.getCharCode() > 31 && code.getCharCode() < 127) processCode(code);
+		if (!keybuf.toString().equals("") && output != null){
+			for (int i = 0; i < keybuf.toString().getBytes().length; i++){
+				output.setInnerHTML(output.getInnerHTML() + "[ " + keybuf.toString().getBytes()[i] + " ]");
+			}
+		}
+		keybuf = new KeyBuffer();
+		event.stopPropagation();
+		event.preventDefault();
 	}
 
 	@Override
 	public void onKeyDown(KeyDownEvent event) {
 		code = new Code(event);
-		processCode(code);
+		if (!code.isControlKey()){
+			if (code.isFunctionKey() || code.isCtrlDown() || code.isAltDown()) processCode(code);
+		}
+		if (!keybuf.toString().equals("") && output != null){
+			for (int i = 0; i < keybuf.toString().getBytes().length; i++){
+				output.setInnerHTML(output.getInnerHTML() + "[ " + keybuf.toString().getBytes()[i] + " ]");
+			}
+		}
+		keybuf = new KeyBuffer();
+//		event.stopPropagation();
+//		event.preventDefault();
+	}
+
+	public KeyBuffer getKeybuf() {
+		return keybuf;
 	}
 
 	@Override
 	public void onKeyUp(KeyUpEvent event) {}
 
-	public String processCode(Code c){
+	public void processCode(Code c){
 		int k = 0;
-		if (c.getCharCode() != 0) k = c.getCharCode();
+		boolean isCharCode = false;
+		if (c.getCharCode() != 0) {
+			k = c.getCharCode();
+		}
 		else if (c.getKeyCode() != 0) k = c.getKeyCode();
 		
 		if (c.isCtrlDown()) {
 			k = ctrlPressed(k);
-			if (k == -1) return null;
-		} else if (c.is1337() || c.isAltDown()) {
+			if (k == -1) return;
+		} else if (c.isFunctionKey() || c.isAltDown()) {
 			k = fromKeyDownSwitch(k);
-			if (k == -1) return null;
+			if (k == -1) return;
 		}
-		return buildCharacter(k);
+		if (buildCharacter(k, isCharCode) != null){
+			keybuf.add(buildCharacter(k, isCharCode));
+		}
 	}
 
-	private String buildCharacter(int k) {
+	private String buildCharacter(int k, boolean isCharCode) {
 		String s;
 		// Build character
 		switch (k) {
@@ -89,6 +125,7 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 		switch(k) {
 		case 8: break;			     // Backspace
 		case 9: break;               // Tab
+		case 13: break;				 // Enter
 		case 27: break;			     // ESC
 		case 33:  k = 63276; break; // PgUp
 		case 34:  k = 63277; break; // PgDn
@@ -130,7 +167,7 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 			case 219: k=27; break;	// Ctrl-[
 			case 220: k=28; break;	// Ctrl-\
 			case 221: k=29; break;	// Ctrl-]
-			default: return -1;
+			default: break;
 			}
 		}
 		return k;

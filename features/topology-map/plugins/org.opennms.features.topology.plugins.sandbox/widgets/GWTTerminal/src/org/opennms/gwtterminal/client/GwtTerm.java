@@ -48,8 +48,8 @@ public class GwtTerm extends Composite implements HasAllKeyHandlers, ClickHandle
     public GwtTerm() {
         
         mainPanel = new FocusPanel();
-        DOM.setElementAttribute(mainPanel.getElement(), "onkeydown", "keydown(event)");
-        DOM.setElementAttribute(mainPanel.getElement(), "onkeypress", "keypress(event, false)");
+        //DOM.setElementAttribute(mainPanel.getElement(), "onkeydown", "keydown(event)");
+        //DOM.setElementAttribute(mainPanel.getElement(), "onkeypress", "keypress(event, false)");
         DOM.setElementAttribute(mainPanel.getElement(), "class", "focusPanel");
         pre = DOM.createElement("pre");
         DOM.setElementAttribute(pre, "class", "preContainer");

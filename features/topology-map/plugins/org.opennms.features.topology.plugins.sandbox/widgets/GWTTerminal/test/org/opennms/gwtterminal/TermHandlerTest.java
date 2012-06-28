@@ -18,10 +18,12 @@ public class TermHandlerTest {
 	private TermHandler termHandler;
 	private final int CTRL_KEY = KeyCodes.KEY_CTRL;
 	private final int ALT_KEY = KeyCodes.KEY_ALT;
+	private final int SHIFT = KeyCodes.KEY_SHIFT;
 	private final int ENTER = KeyCodes.KEY_ENTER;
 	private final int TAB = KeyCodes.KEY_TAB;
 	private final int BACKSPACE = KeyCodes.KEY_BACKSPACE;
-	private final int BACKSLASH = 220; //KeyCodes class doesnt have backslash so i made my own :)
+	private final int BACKSLASH = 220; //backslash javascript keycode
+	private final int F1 = 112; //F1 javascript keycode
 	
 	@Before
 	public void setUp() throws Exception {
@@ -30,30 +32,56 @@ public class TermHandlerTest {
 
 	
 	@Test
-	public void testOnKeyDownHoldCtrl() {
-		String expected = String.valueOf((char)CTRL_KEY);
+	public void testHoldCtrl() {
 		SudoKeyDownEvent ctrlPress = new SudoKeyDownEvent(CTRL_KEY, false, false, false);
-		assertArrayEquals(expected.getBytes(), termHandler.processCode(new Code(ctrlPress)).getBytes()); //Holding down Ctr
+		termHandler.onKeyDown(ctrlPress);
+		assertEquals("", termHandler.getKeybuf().toString()); //Holding ctrl key
 	}
 	
 	@Test
-	public void testOnKeyPressCtrlD() {
+	public void testHoldShift() {
+		SudoKeyDownEvent shiftPress = new SudoKeyDownEvent(SHIFT, false, false, false);
+		termHandler.onKeyDown(shiftPress);
+		assertEquals("", termHandler.getKeybuf().toString());
+	}
+	
+	@Test
+	public void testHoldAlt() {
+		SudoKeyDownEvent altPress = new SudoKeyDownEvent(ALT_KEY, false, false, false);
+		termHandler.onKeyDown(altPress);
+		assertEquals("", termHandler.getKeybuf().toString());
+	}
+	
+	@Test
+	public void testCtrl_D() {
 		String expected = String.valueOf((char)(0x04)); //Ctrl-D
-		String ctrlString = String.valueOf((char)CTRL_KEY);
-		SudoKeyDownEvent ctrlPress = new SudoKeyDownEvent(CTRL_KEY, false, false, false);
-		SudoKeyPressEvent dPress = new SudoKeyPressEvent(0x64, true, false, false);
-		assertArrayEquals(ctrlString.getBytes(), termHandler.processCode(new Code(ctrlPress)).getBytes()); //Holding down Ctr
-		assertArrayEquals(expected.getBytes(), termHandler.processCode(new Code(dPress)).getBytes()); //Pressing 'd' on keyboard
+		SudoKeyDownEvent dPress = new SudoKeyDownEvent(68, true, false, false); // Pressing 'd' key
+		termHandler.onKeyDown(dPress);
+		assertArrayEquals(expected.getBytes(), termHandler.getKeybuf().toString().getBytes());
 	}
 	
 	@Test
-	public void testOnKeyDownCtrlBackslash() {
+	public void testCtrl_Backslash() {
 		String expected = String.valueOf((char)(0x1C)); //Ctrl-\
-		String ctrlString = String.valueOf((char)CTRL_KEY);
-		SudoKeyDownEvent ctrlPress = new SudoKeyDownEvent(CTRL_KEY, false, false, false);
 		SudoKeyDownEvent bSlashPress = new SudoKeyDownEvent(BACKSLASH, true, false, false); 
-		assertArrayEquals(ctrlString.getBytes(), termHandler.processCode(new Code(ctrlPress)).getBytes()); //Holding down Ctr
-		assertArrayEquals(expected.getBytes(), termHandler.processCode(new Code(bSlashPress)).getBytes()); //Pressing '\' on keyboard
+		termHandler.processCode(new Code(bSlashPress));
+		assertArrayEquals(expected.getBytes(), termHandler.getKeybuf().toString().getBytes()); //Pressing '\' key
+	}
+	
+	@Test
+	public void testBackspace() {
+		String expected = String.valueOf((char)(KeyCodes.KEY_BACKSPACE));
+		SudoKeyDownEvent backspacePress = new SudoKeyDownEvent(KeyCodes.KEY_BACKSPACE, false, false, false);
+		termHandler.processCode(new Code(backspacePress));
+		assertArrayEquals(expected.getBytes(), termHandler.getKeybuf().toString().getBytes());
+	}
+	
+	@Test
+	public void testF1() {
+		String expected = "~a";
+		SudoKeyDownEvent F1Press = new SudoKeyDownEvent(F1, false, false, false);
+		termHandler.processCode(new Code(F1Press));
+		assertArrayEquals(expected.getBytes(), termHandler.getKeybuf().toString().getBytes());
 	}
 	
 	@After
