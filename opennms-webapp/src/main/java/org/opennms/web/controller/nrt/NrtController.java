@@ -52,7 +52,7 @@ public class NrtController {
         logger.debug("Republish CollectionJobTrigger for '{}'", collectionTask);
         logger.debug("CollectionJob is '{}'", httpSession.getAttribute(collectionTask));
         if(httpSession.getAttribute(collectionTask) != null) {
-            m_jmsTemplate.convertAndSend(collectionTask, httpSession.getAttribute(collectionTask));
+            m_jmsTemplate.convertAndSend("NrtCollectMe", httpSession.getAttribute(collectionTask));
             logger.debug("collectionJob was send!");
         }else {
             logger.debug("collectionTask is unknowen!");
