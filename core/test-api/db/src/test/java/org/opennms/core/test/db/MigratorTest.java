@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.schema;
+package org.opennms.core.test.db;
 
 import static org.junit.Assert.assertTrue;
 
@@ -44,6 +44,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.schema.ExistingResourceAccessor;
+import org.opennms.core.schema.Migration;
+import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.TemporaryDatabase;

@@ -21,7 +21,7 @@
     DataSourceFactory has been changed to return TransactionAwareDataSources so
     legacy code can participate in transactions properly.
   -->
-  <bean id="dataSource" class="org.opennms.netmgt.config.DataSourceFactoryBean" />
+  <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
 
   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
     <property name="dataSource" ref="dataSource" />

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.db;
 
 import javax.sql.DataSource;
 
@@ -35,7 +35,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 
 /**

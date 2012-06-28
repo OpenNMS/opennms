@@ -40,7 +40,6 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.test.ConfigurationTestUtils;
 
 /**
  * 
@@ -115,7 +114,7 @@ public class C3P0ConnectionFactoryTest extends TestCase {
     }
 
     private C3P0ConnectionFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException {
-        InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "opennms-datasources.xml");
+        InputStream stream = this.getClass().getResourceAsStream("opennms-datasources.xml");
         try {
             return new C3P0ConnectionFactory(stream, database);
         } finally {
