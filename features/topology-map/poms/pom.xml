@@ -82,6 +82,23 @@
                            <ignore></ignore>
                         </action>
                      </pluginExecution>
+                     <pluginExecution>
+                        <pluginExecutionFilter>
+                           <groupId>com.vaadin</groupId>
+                           <artifactId>
+                              vaadin-maven-plugin
+                           </artifactId>
+                           <versionRange>
+                              [1.0.2,)
+                           </versionRange>
+                           <goals>
+                              <goal>update-widgetset</goal>
+                           </goals>
+                        </pluginExecutionFilter>
+                        <action>
+                           <ignore></ignore>
+                        </action>
+                     </pluginExecution>
                   </pluginExecutions>
                </lifecycleMappingMetadata>
             </configuration>
