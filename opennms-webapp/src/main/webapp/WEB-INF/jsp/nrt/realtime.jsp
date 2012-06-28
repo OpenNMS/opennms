@@ -48,11 +48,14 @@ var realTimeHandler = {
   receiveMessage: function(message) {
     if (message != null) {
       var arr = message.textContent.split(";");
-      line.addPoint(parseFloat(arr[1]));
-      updateGraphValueList(arr[0], arr[1]);
-      if(arr[1] > maxGraphScale) {
-        // Increase the scale to 110% of the value received.
-        maxGraphScale = parseInt(arr[1]) * 1.1;
+      var graphValue = parseInt(arr[1]);
+
+      line.addPoint(parseFloat(graphValue));
+      updateGraphValueList(arr[0], graphValue);
+
+      // Increase the scale to 110% of the value received.
+      if(graphValue > maxGraphScale) {  
+        maxGraphScale = graphValue * 1.1;
         refreshGraphScale();
       }
     }
@@ -60,23 +63,35 @@ var realTimeHandler = {
 };
 
 amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMessage);
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													
     </script>
 
     <!-- Create AJAX timer. -->
     <script type="text/javascript">
 // The time in seconds to request a new job.
-var refreshIntervalInSeconds = 5;
+var refreshTimerJob = {
+	/// Submits the AJAX collection job request and requeues the timer.
+	submitJob: function() {
+		$.get("/nrt/starter.htm","collectionTask="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+		var self = this;
+		this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshIntervalInSeconds*1000);
+	},
 
-setTimeout(ajaxJobSubmit, refreshIntervalInSeconds*1000);
+	/// Used for setting up and starting the refresh timer job.
+	setup: function(refreshTicks) {
+		this.stop();
+		var self = this;
+		this.refreshIntervalInSeconds = refreshTicks;
+		this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshIntervalInSeconds*1000);
+	},
 
-function ajaxJobSubmit() {
-	$.get("/nrt/starter.htm",
-		"collectionTask="+collectionTaskId,
-		function(data) { $("#errorDiv").text(data); },
-		"html");
-	setTimeout(ajaxJobSubmit, refreshIntervalInSeconds*1000);
-}
+	/// Used for stopping the refresh timer.
+	stop: function() {
+		if(typeof this.timeoutID == "number") {
+			clearTimeout(this.timeoutID);
+			delete this.timeoutID;
+		}
+	}
+};
     </script>
 
   </head>
@@ -91,9 +106,13 @@ function ajaxJobSubmit() {
 // Define graph defaults.
 var width = 600;
 var height = 200;
+var defaultRefreshIntervalInSeconds = 5;
 
 // JQuery to facilitate the resize functionality.
 $(function() {
+	// Start the AJAX job timer.
+	refreshTimerJob.setup(defaultRefreshIntervalInSeconds);
+
 	// Flag the graph container as resizable.
 	$( "#resizable" ).resizable();
 
@@ -109,11 +128,12 @@ $(function() {
 	});
 
 	// set the input box default to the refresh value.
-	$('input[name|="refreshInterval"]').val(refreshIntervalInSeconds);
+	$('input[name|="refreshInterval"]').val(defaultRefreshIntervalInSeconds);
 
 	// When the interval input is changd update the internal variable.
 	$('input[name|="refreshInterval"]').bind('change', function(){
-		refreshIntervalInSeconds= $(this).val();
+		//defaultRefreshIntervalInSeconds= $(this).val();
+		refreshTimerJob.setup($(this).val());
 	});
 });
 
