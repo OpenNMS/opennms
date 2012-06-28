@@ -47,16 +47,16 @@ public abstract class PingerFactory {
      */
     public static Pinger getInstance() {
         if (m_pinger == null) {
-            String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger");
+            final String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger");
             Class<? extends Pinger> clazz = null;
             try {
                 clazz = Class.forName(pingerClassName).asSubclass(Pinger.class);
                 m_pinger = clazz.newInstance();
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 throw new IllegalArgumentException("Unable to find class named " + pingerClassName, e);
-            } catch (InstantiationException e) {
+            } catch (final InstantiationException e) {
                 throw new IllegalArgumentException("Error trying to create pinger of type " + clazz, e);
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 throw new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
             }
         }
@@ -68,7 +68,7 @@ public abstract class PingerFactory {
      *
      * @param pinger a {@link Pinger} object.
      */
-    public static void setInstance(Pinger pinger) {
+    public static void setInstance(final Pinger pinger) {
         m_pinger = pinger;
     }
     

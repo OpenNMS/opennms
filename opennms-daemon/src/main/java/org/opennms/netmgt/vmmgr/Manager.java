@@ -81,6 +81,7 @@ public class Manager implements ManagerMBean {
      * The log4j category used to log debug messages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
+    private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
 
     /**
      * <p>stop</p>
@@ -222,8 +223,8 @@ public class Manager implements ManagerMBean {
     private void testPinger() {
         final Pinger pinger = PingerFactory.getInstance();
 
-        final boolean hasV4 = pinger.isV4Available();
-        final boolean hasV6 = pinger.isV6Available();
+        boolean hasV4 = pinger.isV4Available();
+        boolean hasV6 = pinger.isV6Available();
 
         log().info("Using ICMP implementation: " + pinger.getClass().getName());
         log().info("IPv4 ICMP available? " + hasV4);
@@ -232,6 +233,7 @@ public class Manager implements ManagerMBean {
         if (!hasV4) {
             try {
                 pinger.initialize4();
+                hasV4 = true;
             } catch (final Exception e) {
                 log().warn("Failed to initialize IPv4 stack.", e);
             }
@@ -240,37 +242,36 @@ public class Manager implements ManagerMBean {
         if (!hasV6) {
             try {
                 pinger.initialize6();
+                hasV6 = true;
             } catch (final Exception e) {
                 log().warn("Failed to initialize IPv6 stack.", e);
             }
 
         }
 
-        final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4", "detect");
-        final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6", "detect");
+        if (!hasV4 && !hasV6) {
+            throwPingError("Neither IPv4 nor IPv6 are avaialable.  Bailing.");
+        }
+
+        final String requireV4String = System.getProperty("org.opennms.netmgt.icmp.requireV4");
+        final String requireV6String = System.getProperty("org.opennms.netmgt.icmp.requireV6");
         
-        String errorMessage = null;
         if ("true".equalsIgnoreCase(requireV4String) && !hasV4) {
-            errorMessage = "org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.";
+            throwPingError("org.opennms.netmgt.icmp.requireV4 is true, but IPv4 ICMP could not be initialized.");
         }
         if ("true".equalsIgnoreCase(requireV6String) && !hasV6) {
-            errorMessage = "org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.";
+            throwPingError("org.opennms.netmgt.icmp.requireV6 is true, but IPv6 ICMP could not be initialized.");
         }
         
-        // If they don't specify any preference, start up as long as one available.
-        if ("detect".equals(requireV4String) || "detect".equals(requireV6String)) {
-            if (!hasV4 && !hasV6) {
-                errorMessage = "Unable to initialize any ICMP support.  Bailing out.";
-            }
+        // at least one is initialized, and we haven't said otherwise, so barrel ahead
+    }
+
+    private void throwPingError(final String message) throws IllegalStateException {
+        String errorMessage = message;
+        if (m_osName.contains("win")) {
+            errorMessage += " On Windows, you can see this error if you are not running OpenNMS in an Administrator shell.";
         }
-        
-        if (errorMessage != null) {
-            final String osName = System.getProperty("os.name").toLowerCase();
-            if (osName.contains("win")) {
-                errorMessage += " On Windows, you can see this error if you are not running OpenNMS in an Administrator shell.";
-            }
-            throw new IllegalStateException(errorMessage);
-        }
+        throw new IllegalStateException(errorMessage);
     }
 
     private void setLogPrefix() {

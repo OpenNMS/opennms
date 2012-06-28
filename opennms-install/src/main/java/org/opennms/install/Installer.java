@@ -297,7 +297,6 @@ public class Installer {
 		final IPv6Validator v6Validator = new IPv6Validator();
         if (!v6Validator.isPlatformIPv6Ready()) {
         	System.out.println("Your OS does not support IPv6.");
-        	System.exit(1);
         }
 	}
 
