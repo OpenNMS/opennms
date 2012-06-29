@@ -206,6 +206,14 @@ public class MockSnmpAgentTest extends TestCase {
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
     }
 
+    public void testSnmpWalkWithStringQuotes() throws Exception {
+        // alternate property file
+        m_agent.shutDownAndWait();
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("walk-with-quotes.properties"), "127.0.0.1/1691");
+
+        assertResultFromGet("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1", SMIConstants.SYNTAX_OCTET_STRING, new OctetString("FastEthernet2"));
+    }
+
     private void assertResultFromGet(String oidStr, int expectedSyntax, Variable expected) throws Exception {
         assertResult(PDU.GET, oidStr, oidStr, expectedSyntax, expected);
     }
