@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.test.mock.MockUtil;
 

@@ -32,15 +32,14 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+
 import java.io.IOException;
+
+import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResponseTimeResourceType;
 import org.opennms.netmgt.model.OnmsNode;
-
-import junit.framework.TestCase;
 
 public class ResponseTimeResourceTypeTest extends TestCase {
     public void testGetResourcesUsingDao() throws IOException {

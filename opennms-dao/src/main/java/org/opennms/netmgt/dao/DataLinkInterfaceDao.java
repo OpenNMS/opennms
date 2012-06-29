@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
-import org.opennms.netmgt.model.DataLinkInterface;
-
 import java.sql.Timestamp;
 import java.util.Collection;
+
+import org.opennms.netmgt.model.DataLinkInterface;
 
 /**
  * <p>DataLinkInterfaceDao interface.</p>
