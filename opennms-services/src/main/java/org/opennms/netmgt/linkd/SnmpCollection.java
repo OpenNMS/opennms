@@ -478,7 +478,7 @@ public final class SnmpCollection implements ReadyRunnable {
 			// Schedule SNMP VLAN collection only on VLAN.
 			// If it has not VLAN collection no data download is done.
 			
-			OnmsVlan vlan = null;
+			//OnmsVlan vlan = null;
 
 			if (this.hasVlanTable()) {
 				if (!m_vlanClass.equals(CiscoVlanTable.class.getName())
@@ -499,18 +499,19 @@ public final class SnmpCollection implements ReadyRunnable {
 						Integer status = ent.getInt32(VlanCollectorEntry.VLAN_STATUS);
 
 						if (status == null || status != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL) {
-						    LogUtils.infof(this, "run: skipping VLAN %s: NOT ACTIVE or null", vlan);
+						    LogUtils.infof(this, "run: skipping VLAN %s: NOT ACTIVE or null", vlanindex);
 							continue;
 						}
 
 						String community = m_agentConfig.getReadCommunity();
-						LogUtils.debugf(this, "run: peer community: %s with VLAN %s", community, vlan);
+						LogUtils.debugf(this, "run: peer community: %s with VLAN %s", community, vlanindex);
 
 						Integer type = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
 						if (type == null || type != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
-						    LogUtils.infof(this, "run: skipping VLAN %s NOT ETHERNET TYPE", vlan);
+						    LogUtils.infof(this, "run: skipping VLAN %s NOT ETHERNET TYPE", vlanindex);
 							continue;
 						}
+						if (vlanindex != 1)
 						m_agentConfig.setReadCommunity(community + "@" + vlanindex);
 
 						runAndSaveSnmpVlanCollection(new OnmsVlan(vlanindex,vlanname,status));
