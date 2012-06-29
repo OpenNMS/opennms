@@ -20,12 +20,9 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
-public class VColorPicker extends GwtColorPicker implements Paintable {
+public class VTerminal extends GwtTerminal implements Paintable {
 
-    /** Set the CSS class name to allow styling. */
-    public static final String CLASSNAME = "example-colorpicker";
-
-    /** Component identifier in UIDL communications. */
+	/** Component identifier in UIDL communications. */
     String uidlId;
 
     /** Reference to the server connection object. */
@@ -35,13 +32,13 @@ public class VColorPicker extends GwtColorPicker implements Paintable {
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
      */
-    public VColorPicker() {
+    public VTerminal() {
         // The superclass has a lot of relevant initialization
         super();
-
-        // This method call of the Paintable interface sets the component
-        // style name in DOM tree
-        setStyleName(CLASSNAME);
+        TermHandler termHandler = new TermHandler(this);
+        addKeyDownHandler(termHandler);
+        addKeyPressHandler(termHandler);
+        addKeyUpHandler(termHandler);
     }
 
     /**
@@ -64,7 +61,11 @@ public class VColorPicker extends GwtColorPicker implements Paintable {
 
         // Save the UIDL identifier for the component
         uidlId = uidl.getId();
-
+        super.dump(uidl.getStringVariable("fromSSH"));
+    }
+    
+    public void sendBytes(String inputKeys){
+    	client.updateVariable(uidlId, "toSSH", inputKeys, true);
     }
 
 }

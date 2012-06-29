@@ -25,14 +25,16 @@ import com.vaadin.ui.Button.ClickEvent;
  * GWT component, the ColorPicker.
  */
 @SuppressWarnings("serial")
-public class ColorPickerApplication extends com.vaadin.Application {
+public class TerminalApplication extends com.vaadin.Application {
     
-	Window main = new Window("Javascript Demo");
+	Window main = new Window("Vaadin Application");
+	private int TERM_WIDTH = 700;
+	private int TERM_HEIGHT = 400;
 
     @Override
     public void init() {
         setMainWindow(main);
-        
+        setTheme("mytheme");
         Button openWindow = new Button("Open Window");
         openWindow.addListener(new Button.ClickListener() {
 			
@@ -49,6 +51,6 @@ public class ColorPickerApplication extends com.vaadin.Application {
 	}
 
 	private Window getSSHWindow() {
-		return new SSHWindow((int)getMainWindow().getWidth(), (int)getMainWindow().getHeight());
+		return new SSHWindow(TERM_WIDTH, TERM_HEIGHT);
 	}
 }

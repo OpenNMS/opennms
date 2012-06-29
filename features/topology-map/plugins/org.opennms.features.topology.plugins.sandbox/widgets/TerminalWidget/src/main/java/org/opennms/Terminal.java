@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SuppressWarnings("unused")
 public class Terminal {
 
     enum State {
