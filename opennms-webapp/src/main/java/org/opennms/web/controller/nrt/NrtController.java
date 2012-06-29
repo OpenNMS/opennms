@@ -3,7 +3,13 @@ package org.opennms.web.controller.nrt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.ws.soap.Addressing;
@@ -58,7 +64,7 @@ public class NrtController {
     public void nrtCollectionJobTrigger(String collectionTask, HttpSession httpSession) {
         logger.debug("Republish CollectionJobTrigger for '{}'", collectionTask);
         logger.debug("CollectionJob is '{}'", httpSession.getAttribute(collectionTask));
-        
+
         Map<String, CollectionJob> nrtCollectoinTasks = null;
         try {
             nrtCollectoinTasks = (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectoinTasks");
