@@ -67,21 +67,21 @@ public class SSHDetectorTest implements ApplicationContextAware, InitializingBea
 	@Test
 	public void testDetectorSuccess() throws UnknownHostException{
 		//m_detector.init();
-		//assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+		//assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
 	}
 	
 	@Test
     public void testDetectorFailWrongPort() throws UnknownHostException{
 	    //m_detector.setPort(30);
         //m_detector.init();
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 	
 	@Test
     public void testDetectorFailBanner() throws UnknownHostException{
 	    //m_detector.setBanner("Hello there crazy");
         //m_detector.init();
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103"), new NullDetectorMonitor()));
+        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 
     @Override

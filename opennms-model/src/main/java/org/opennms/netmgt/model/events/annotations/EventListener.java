@@ -47,4 +47,6 @@ public @interface EventListener {
 
     String name();
 
+    String logPrefix() default "";
+
 }

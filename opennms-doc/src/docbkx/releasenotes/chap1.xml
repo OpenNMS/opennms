@@ -4,7 +4,36 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<!-- Start 1.11 -->
+
+	<section id="introduction-1.11.0">
+		<title>Release 1.11.0</title>
+
+		<para>
+			Release 1.11.0 is the first in the latest unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.0 is <emphasis>MCA</emphasis>
+		</para>
+	</section>
+
+
 	<!-- Start 1.10 -->
+
+	<section id="introduction-1.10.2">
+		<title>Release 1.10.2</title>
+
+		<para>
+			Release 1.10.2 is the latest in the stable series of OpenNMS releases.
+			It contains bugfixes, including a fix for a filehandle leak regression,
+         Windows installer fixes, and some minor enhancements.
+		</para>
+		<para>
+			The codename for 1.10.2 is <emphasis>Charango</emphasis>
+		</para>
+	</section>
 
 	<section id="introduction-1.10.1">
 		<title>Release 1.10.1</title>

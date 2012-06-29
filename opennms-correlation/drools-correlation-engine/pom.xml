@@ -38,7 +38,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>drools-correlation-engine</artifactId>
-  <name>Drools Correlation Engine</name>
+  <name>OpenNMS Drools Correlation Engine</name>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>

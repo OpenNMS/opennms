@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -242,11 +243,11 @@ public class ImportOperationsManager {
     	m_stats.setDeleteCount(getDeleteCount());
     	m_stats.setInsertCount(getInsertCount());
     	m_stats.setUpdateCount(getUpdateCount());
-    	ExecutorService dbPool = Executors.newFixedThreadPool(m_writeThreads);
+    	ExecutorService pool = Executors.newFixedThreadPool(m_writeThreads, new LogPreservingThreadFactory(getClass().getSimpleName() + ".persistOperations", m_writeThreads, false));
 
-		preprocessOperations(template, dao, new OperationIterator(), dbPool);
+		preprocessOperations(template, dao, new OperationIterator(), pool);
 
-		shutdownAndWaitForCompletion(dbPool, "persister interrupted!");
+		shutdownAndWaitForCompletion(pool, "persister interrupted!");
 
 		m_stats.finishProcessingOps();
     	
@@ -256,7 +257,7 @@ public class ImportOperationsManager {
 		
 		m_stats.beginPreprocessingOps();
 		
-		ExecutorService threadPool = Executors.newFixedThreadPool(m_scanThreads);
+		ExecutorService pool = Executors.newFixedThreadPool(m_scanThreads, new LogPreservingThreadFactory(getClass().getSimpleName() + ".preprocessOperations", m_scanThreads, false));
 		for (Iterator<ImportOperation> it = iterator; it.hasNext();) {
     		final ImportOperation oper = it.next();
     		Runnable r = new Runnable() {
@@ -264,11 +265,11 @@ public class ImportOperationsManager {
     				preprocessOperation(oper, template, dao, dbPool);
     			}
     		};
-    		threadPool.execute(r);
+    		pool.execute(r);
 
     	}
 		
-		shutdownAndWaitForCompletion(threadPool, "preprocessor interrupted!");
+		shutdownAndWaitForCompletion(pool, "preprocessor interrupted!");
 		
 		m_stats.finishPreprocessingOps();
 	}

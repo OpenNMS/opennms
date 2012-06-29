@@ -18,5 +18,10 @@
       <artifactId>mina-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>netty-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 </project>

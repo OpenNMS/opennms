@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -45,7 +45,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.MemcachedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -101,9 +100,9 @@ public class MemcachedDetectorTest implements InitializingBean {
         try {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(100);
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
-            future.awaitUninterruptibly();
+            future.awaitForUninterruptibly();
             assertTrue(future.isServiceDetected());
         } finally {
             m_server.stopServer();
@@ -128,9 +127,9 @@ public class MemcachedDetectorTest implements InitializingBean {
         try {
             m_detector.setPort(m_server.getLocalPort());
             m_detector.setIdleTime(100);
-            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
-            future.awaitUninterruptibly();
+            future.awaitForUninterruptibly();
             assertFalse(future.isServiceDetected());
         } finally {
             m_server.stopServer();

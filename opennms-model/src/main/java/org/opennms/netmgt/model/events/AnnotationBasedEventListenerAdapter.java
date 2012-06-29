@@ -278,6 +278,14 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             m_name = listenerInfo.name();
         }
         
+        if (m_logPrefix == null) {
+            if (listenerInfo.logPrefix() != null && !"".equals(listenerInfo.logPrefix())) {
+                m_logPrefix = listenerInfo.logPrefix();
+            } else {
+                m_logPrefix = m_name;
+            }
+        }
+        
         populatePreProcessorList();
         
         populateUeiToHandlerMap();

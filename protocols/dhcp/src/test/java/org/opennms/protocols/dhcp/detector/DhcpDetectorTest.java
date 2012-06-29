@@ -46,8 +46,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dhcpd.Dhcpd;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.protocols.dhcp.detector.DhcpDetector;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +98,7 @@ public class DhcpDetectorTest implements InitializingBean {
 	public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
 	    m_detector.setTimeout(5000);
 	    m_detector.init();
-	    assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP), new NullDetectorMonitor()));
+	    assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
 	    
 	}
 	

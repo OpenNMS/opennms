@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
@@ -273,7 +274,9 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     
     ScheduledExecutorService getScheduler() {
         if (m_scheduler == null) {
-            m_scheduler = Executors.newSingleThreadScheduledExecutor();
+            m_scheduler = Executors.newSingleThreadScheduledExecutor(
+                new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+            );
         }
         return m_scheduler;
     }

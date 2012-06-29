@@ -38,6 +38,7 @@ import java.util.concurrent.Executors;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -511,7 +512,10 @@ public final class RTCManager extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        m_updaterPool = Executors.newFixedThreadPool(rFactory.getUpdaters());
+        m_updaterPool = Executors.newFixedThreadPool(
+            rFactory.getUpdaters(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), rFactory.getUpdaters(), false)
+        );
 
         if (log().isDebugEnabled())
             log().debug("Created updater pool");

@@ -19,5 +19,11 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
+    <fileSet>
+      <directory>target/classes/xsds</directory>
+      <outputDirectory>xsds</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
   </fileSets>
 </assembly>

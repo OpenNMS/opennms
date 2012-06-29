@@ -2185,6 +2185,7 @@
   <event-file>events/VMWare.obsolete.events.xml</event-file>
   <event-file>events/VMWare.events.xml</event-file>
   <event-file>events/Waverider.3000.events.xml</event-file>
+  <event-file>events/Websense.events.xml</event-file>
   <event-file>events/Xerox-V2.events.xml</event-file>
   <event-file>events/Xerox.events.xml</event-file>
 

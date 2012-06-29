@@ -39,7 +39,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,21 +77,21 @@ public class BSFDetectorTest implements InitializingBean {
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/testa.groovy");
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
     public void testDetectorWrongBanner() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/testb.groovy");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
     public void testDetectorFileNotFound() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/unknown.groovy");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
@@ -100,7 +99,7 @@ public class BSFDetectorTest implements InitializingBean {
         m_detector.setRunType("eval");
         m_detector.setFileName("src/test/resources/testa.groovy");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
     @Test
@@ -111,7 +110,7 @@ public class BSFDetectorTest implements InitializingBean {
         m_detector.setBsfEngine("org.apache.bsf.engines.jython.JythonEngine");
         m_detector.setFileName("src/test/resources/test.py");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
 }

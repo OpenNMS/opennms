@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -65,7 +64,7 @@ public class IcmpDetector extends AbstractDetector {
     }
     
     /** {@inheritDoc} */
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
+    public boolean isServiceDetected(InetAddress address) {
         
         LogUtils.debugf(this, "isServiceDetected: Testing ICMP based service for address: %s...", address);
 

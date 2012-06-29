@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.support;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
 /**
@@ -100,7 +99,7 @@ public abstract class AbstractDetector implements SyncServiceDetector {
     abstract protected void onInit();
 
     /** {@inheritDoc} */
-    abstract public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
+    abstract public boolean isServiceDetected(InetAddress address);
     
     /**
      * <p>dispose</p>

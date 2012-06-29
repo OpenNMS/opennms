@@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
@@ -358,8 +359,21 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
                 // check the ranges
                 //
+                final ByteArrayComparator comparator = new ByteArrayComparator();
+
                 for (final Range rng : def.getRangeCollection()) {
-                    if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
+                    final byte[] addr = agentConfig.getAddress().getAddress();
+                    final byte[] begin = InetAddressUtils.toIpAddrBytes(rng.getBegin());
+                    final byte[] end = InetAddressUtils.toIpAddrBytes(rng.getEnd());
+                    
+                    boolean inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
+                    if (comparator.compare(begin, end) <= 0) {
+                        inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
+                    } else {
+                        LogUtils.warnf(this, "%s has an 'end' that is earlier than its 'beginning'!", rng);
+                        inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
+                    }
+                    if (inRange) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }

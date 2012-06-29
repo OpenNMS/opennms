@@ -52,11 +52,11 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @version $Id: $
  */
 public final class Scriptd extends AbstractServiceDaemon {
+
+    /** Constant <code>NAME="OpenNMS.Scriptd"</code> */
+    public static final String NAME = "OpenNMS.Scriptd";
 
     /**
      * The singleton instance.
@@ -77,7 +77,7 @@ public final class Scriptd extends AbstractServiceDaemon {
      * Constructs a new Script execution daemon.
      */
     private Scriptd() {
-    	super("OpenNMS.Scriptd");
+    	super(NAME);
         m_execution = null;
         m_eventReader = null;
     }

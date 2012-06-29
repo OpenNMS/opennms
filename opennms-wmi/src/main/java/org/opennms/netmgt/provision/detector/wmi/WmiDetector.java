@@ -32,7 +32,6 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.WmiException;
@@ -89,7 +88,7 @@ public class WmiDetector extends AbstractDetector {
     }
 
     @Override
-    public boolean isServiceDetected(final InetAddress address, final DetectorMonitor detectMonitor) {
+    public boolean isServiceDetected(final InetAddress address) {
         WmiParams clientParams = null;
 
         if(getWmiWqlStr().equals(DEFAULT_WMI_WQL)) {

@@ -36,7 +36,6 @@ import java.net.NoRouteToHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
@@ -75,26 +74,21 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         super(serviceName, port);
     }
 
-    /**
-     * <p>onInit</p>
-     */
-    abstract protected void onInit();
-    
     /** {@inheritDoc} */
-    public boolean isServiceDetected(final InetAddress address, final DetectorMonitor detectorMonitor) {
+    @Override
+    public final boolean isServiceDetected(final InetAddress address) {
     	final String ipAddr = InetAddressUtils.str(address);
     	final int port = getPort();
     	final int retries = getRetries();
         final int timeout = getTimeout();
-        LogUtils.infof(this, "isServiceDetected: Address: %s, port: %s", ipAddr, getPort());
-        detectorMonitor.start(this, "isServiceDetected: Checking address: %s for %s capability", ipAddr, getServiceName());
+        LogUtils.infof(this, "isServiceDetected: Checking address: %s for %s capability on port %s", ipAddr, getServiceName(), getPort());
 
         final Client<Request, Response> client = getClient();
         for (int attempts = 0; attempts <= retries; attempts++) {
 
             try {
                 client.connect(address, port, timeout);
-                detectorMonitor.attempt(this, attempts, "isServiceDetected: Attempting to connect to address: %s, port: %d, attempt: #%s", ipAddr, port, attempts);
+                LogUtils.infof(this, "isServiceDetected: Attempting to connect to address: %s, port: %d, attempt: #%s", ipAddr, port, attempts);
                 
                 if (attemptConversation(client)) {
                     return true;
@@ -102,17 +96,17 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
-                detectorMonitor.info(this, e, "isServiceDetected: %s: Unable to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr, port, attempts);
+                LogUtils.infof(this, e, "isServiceDetected: %s: Unable to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr, port, attempts);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
-                detectorMonitor.info(this, e, "isServiceDetected: %s: No route to address %s was available", getServiceName(), ipAddr);
+                LogUtils.infof(this, e, "isServiceDetected: %s: No route to address %s was available", getServiceName(), ipAddr);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                detectorMonitor.info(this, e, "isServiceDetected: %s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
+                LogUtils.infof(this, e, "isServiceDetected: %s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
-                detectorMonitor.error(this, e, "isServiceDetected: %s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
+                LogUtils.errorf(this, e, "isServiceDetected: %s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
-                detectorMonitor.error(this, t, "isServiceDetected: %s: Unexpected error trying to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
+                LogUtils.errorf(this, t, "isServiceDetected: %s: Unexpected error trying to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
             } finally {
                 client.close();
             }
@@ -123,8 +117,9 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     /**
      * <p>dispose</p>
      */
+    @Override
     public void dispose(){
-        
+        // Do nothing by default
     }
 
     /**
@@ -143,7 +138,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
      *
      * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
      */
-    protected void expectBanner(ResponseValidator<Response> bannerValidator) {
+    protected final void expectBanner(ResponseValidator<Response> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
     }
     
@@ -153,7 +148,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
      * @param requestBuilder a {@link org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder} object.
      * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
      */
-    protected void send(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> responseValidator) {
+    protected final void send(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(requestBuilder, responseValidator);
     }
     /**
@@ -171,7 +166,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
      *
      * @return a {@link org.opennms.netmgt.provision.support.ClientConversation} object.
      */
-    protected ClientConversation<Request, Response> getConversation() {
+    protected final ClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }
     

@@ -64,8 +64,6 @@
                 <artifactItem>
                   <groupId>org.opennms.core.build</groupId>
                   <artifactId>org.opennms.core.build.keystore</artifactId>
-                  <classifier>keystore</classifier>
-                  <type>tar.gz</type>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -117,8 +115,6 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms.core.build</groupId>
       <artifactId>org.opennms.core.build.keystore</artifactId>
-      <classifier>keystore</classifier>
-      <type>tar.gz</type>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>

@@ -75,7 +75,8 @@ public class TcpDetector extends AsyncLineOrientedDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit() {
+    @Override
+    protected void onInit() {
         if(getBanner() != null) {
             expectBanner(matches(getBanner()));
         }else {
@@ -84,7 +85,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
             
     }
     
-    private AsyncExchange<LineOrientedRequest, LineOrientedResponse> testBannerlessConnection() {
+    private static AsyncExchange<LineOrientedRequest, LineOrientedResponse> testBannerlessConnection() {
         
         return new AsyncExchange<LineOrientedRequest, LineOrientedResponse>(){
 
@@ -103,7 +104,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      * @param regex a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
-    public ResponseValidator<LineOrientedResponse> matches(final String regex){
+    public static ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
             public boolean validate(final LineOrientedResponse response) {

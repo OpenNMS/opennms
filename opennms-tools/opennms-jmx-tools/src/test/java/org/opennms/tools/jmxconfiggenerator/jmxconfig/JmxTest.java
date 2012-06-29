@@ -36,6 +36,8 @@ public class JmxTest implements JmxTestMBean {
     
     int x = 42;
 
+    int writable = 0;
+
     @Override
     public String getName() {
         return name;
@@ -46,8 +48,23 @@ public class JmxTest implements JmxTestMBean {
         return x;
     }
 
-//    @Override
-//    public void setX(int x) {
-//        this.x = x;
-//    }
+    @Override
+    public Integer getInteger() {
+        return new Integer(42);
+    }
+
+    @Override
+    public Long getLong() {
+        return new Long(42);
+    }
+
+    @Override
+    public void setWritableY(int writable) {
+        this.writable = writable;
+    }
+
+    @Override
+    public int getWritableY() {
+        return writable;
+    }
 }

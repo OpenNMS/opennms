@@ -167,7 +167,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                 // TODO Add important events here
             }
             m_snmpInterfaceDao.save(snmpInterface);
-            return Response.ok().build();
+            return Response.ok(snmpInterface).build();
         } finally {
             writeUnlock();
         }

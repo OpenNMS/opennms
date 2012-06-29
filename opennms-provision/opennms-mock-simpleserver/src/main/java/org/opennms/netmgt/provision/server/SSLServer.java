@@ -76,6 +76,7 @@ public class SSLServer extends SimpleServer{
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void init() throws Exception {
         super.init();
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(getKeyManagerAlgorithm(), getKeyManagerProvider());

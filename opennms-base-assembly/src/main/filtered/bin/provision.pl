@@ -119,7 +119,17 @@ if (not defined $command) {
 
 =item B<list>
 
+=over 8
+
+=item B<list>
+
 List the available requisition foreign sources.
+
+=item B<list E<lt>foreign-sourceE<gt>>
+
+List the requisition with the given foreign source.
+
+=back
 
 =cut
 
@@ -135,6 +145,10 @@ sub cmd_list {
 =item B<requisition>
 
 =over 8
+
+=item B<requisition list E<lt>foreign-sourceE<gt>>
+
+List the requisition with the given foreign source.
 
 =item B<requisition add E<lt>foreign-sourceE<gt>>
 
@@ -165,7 +179,9 @@ sub cmd_requisition {
 		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 
-	if (is_add($command)) {
+	if ($command eq 'list') {
+		cmd_list($foreign_source);
+	} elsif (is_add($command)) {
 		my $xml = get_element('model-import');
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
@@ -653,7 +669,11 @@ sub dump_xml {
 	my $content = shift;
 
 	$XML->parse($content);
-	dump_requisitions($XML->root);
+	if ($content =~ m/[<]requisitions/) {
+		dump_requisitions($XML->root);
+	} else {
+		dump_requisition($XML->root);
+	}
 	#$XML->flush;
 }
 

@@ -65,17 +65,10 @@ public class ImapDetector extends AsyncLineOrientedDetector {
     /**
      * <p>onInit</p>
      */
-    public void onInit(){
+    @Override
+    protected void onInit(){
         expectBanner(startsWith("* OK "));
         send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
-    }
-    
-    /**
-     * <p>expectClose</p>
-     */
-    public void expectClose() {
         send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
     }
-
 }

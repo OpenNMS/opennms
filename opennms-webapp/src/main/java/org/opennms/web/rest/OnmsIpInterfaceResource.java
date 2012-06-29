@@ -192,7 +192,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.ok().build();
+            return Response.ok(ipInterface).build();
         } finally {
             writeUnlock();
         }

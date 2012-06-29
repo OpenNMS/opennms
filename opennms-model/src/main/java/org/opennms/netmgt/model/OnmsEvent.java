@@ -499,7 +499,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
 	 */
-	@XmlTransient
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="serviceId", nullable=true)
 	public OnmsServiceType getServiceType() {
@@ -1030,6 +1029,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	@JoinColumn(name="nodeId")
 	public OnmsNode getNode() {
 		return m_node;
+	}
+
+	@Transient
+	@XmlElement(name="nodeLabel", required=false)
+	public String getNodeLabel() {
+	    if (m_node == null) return null;
+	    return m_node.getLabel();
 	}
 
 	/**

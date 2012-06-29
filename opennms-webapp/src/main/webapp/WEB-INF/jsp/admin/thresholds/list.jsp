@@ -31,6 +31,8 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="org.opennms.web.api.Util" %>
+
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Thresholds Configuration" />
 	<jsp:param name="headTitle" value="List" />
@@ -53,7 +55,7 @@
                 <tr>
                         <td class="standard">${mapEntry.key}</td>
                         <td class="standard">${mapEntry.value.rrdRepository}</td>
-                        <td class="standard"><a href="admin/thresholds/index.htm?groupName=${mapEntry.key}&editGroup">Edit</a></td>
+                        <td class="standard"><a href="<%= Util.calculateUrlBase(request, "admin/thresholds/index.htm") %>?groupName=${mapEntry.key}&editGroup">Edit</a></td>
                 </tr>
         </c:forEach>
 </table>
@@ -61,7 +63,7 @@
 <script type="text/javascript">
 function doReload() {
     if (confirm("Are you sure you want to do this?")) {
-        document.location = "admin/thresholds/index.htm?reloadThreshdConfig";
+        document.location = "<%= Util.calculateUrlBase(request, "admin/thresholds/index.htm") %>?reloadThreshdConfig";
     }
 }
 </script>
