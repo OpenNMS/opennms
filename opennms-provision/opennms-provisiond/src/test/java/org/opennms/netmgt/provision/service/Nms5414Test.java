@@ -140,9 +140,6 @@ public class Nms5414Test {
         
         final OnmsSnmpInterface onmsinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(1, 160);
 
-        System.err.println("\""+onmsinterface.getIfDescr()+"\"");
-        System.err.println("\""+onmsinterface.getIfName()+"\"");
-        System.err.println("\""+onmsinterface.getPhysAddr()+"\"");
         assertEquals("Avaya Virtual Services Platform 7024XLS Module - Unit 2 Port 32  ", onmsinterface.getIfDescr());
         assertEquals("ifc160 (Slot: 2 Port: 32)", onmsinterface.getIfName());
         assertEquals("8dd69b5cafba",onmsinterface.getPhysAddr());
