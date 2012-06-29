@@ -41,7 +41,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class WebAppListener implements ServletContextListener, RegistrationHook, ServiceListener {
-
+	
 	private static final String ONMS_SOURCE = "onms";
 	private static final String OSGI_SOURCE = "osgi";
 	private static final String REGISTRATION_EXPORT = "registration.export";
@@ -69,6 +69,7 @@ public class WebAppListener implements ServletContextListener, RegistrationHook,
 			System.setProperty("karaf.startLocalConsole", "false");
 			System.setProperty("karaf.startRemoteShell", "true");
             System.setProperty("karaf.lock", "false");
+            System.setProperty("karaf.framework.factory", OnmsFelixFrameworkFactory.class.getName());
 			main = new Main(new String[0]);
             main.launch();
             
