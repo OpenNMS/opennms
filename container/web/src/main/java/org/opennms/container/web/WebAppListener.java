@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.karaf.web;
+package org.opennms.container.web;
 
 import java.io.File;
 import java.util.Arrays;
@@ -54,6 +54,7 @@ public class WebAppListener implements ServletContextListener, RegistrationHook,
 	private ServletContext m_servletContext;
 
 	public void contextInitialized(ServletContextEvent sce) {
+
 		try {
 			m_servletContext = sce.getServletContext();
 			
@@ -88,12 +89,13 @@ public class WebAppListener implements ServletContextListener, RegistrationHook,
 
 			// forward any existing exported OSGi services with ONMS service registry
             ServiceReference[] osgiServices = m_framework.getAllServiceReferences(null, exportFilter);
-            for(ServiceReference reference : osgiServices) {
-            	registerWithOnmsRegistry(reference);
+
+            if (osgiServices != null) {
+	            for(ServiceReference reference : osgiServices) {
+	            	registerWithOnmsRegistry(reference);
+	            }
             }
-            
-            
-            
+
 		} catch (final Exception e) {
 			main = null;
 			e.printStackTrace();

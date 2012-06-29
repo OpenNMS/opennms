@@ -26,7 +26,7 @@
   <display-name>Karaf Embedded Example</display-name>
 
   <listener>
-    <listener-class>org.apache.karaf.web.WebAppListener</listener-class>
+    <listener-class>org.opennms.container.web.WebAppListener</listener-class>
   </listener>
 
   <listener>
