@@ -526,5 +526,11 @@
       <version>5.6.0</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.api</artifactId>
+      <version>1.11.1-SNAPSHOT</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

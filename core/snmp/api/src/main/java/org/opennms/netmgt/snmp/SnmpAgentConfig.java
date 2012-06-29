@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,7 +44,7 @@ import org.opennms.core.xml.bind.InetAddressXmlAdapter;
  *
  */
 @XmlRootElement(name="snmpAgentConfig")
-public class SnmpAgentConfig extends SnmpConfiguration {
+public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     
     private InetAddress m_address;
     private InetAddress m_proxyFor;
