@@ -7,7 +7,8 @@
       <!--  inherit css based theme -->
       <inherits name='com.google.gwt.user.theme.standard.Standard'/>
 
-	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
+	  <inherits name="org.opennms.features.dashboard.style.Style"/>
+	  <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
 
       <!-- Specify the app entry point class.                         -->
       <entry-point class='org.opennms.features.dashboard.client.Application'/>
