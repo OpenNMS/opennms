@@ -24,6 +24,8 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.Map;
+import com.Ostermiller.util.NoCloseInputStream;
+import com.Ostermiller.util.NoCloseOutputStream;
 
 import org.opennms.gwt.client.ui.VTerminal;
 
@@ -32,14 +34,19 @@ import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
 
-@SuppressWarnings("serial")
 @ClientWidget(VTerminal.class)
 public class SSHTerminal extends AbstractComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8914800725736485264L;
 	private int TERM_WIDTH;
 	private int TERM_HEIGHT;
 	private SessionTerminal st;
 	private String dumpContents;
+	private SudoSSHServer sshServer;
+	private boolean forceUpdate = false;
 
 	public SSHTerminal(int width, int height) {
 		super();
@@ -48,6 +55,8 @@ public class SSHTerminal extends AbstractComponent {
 		dumpContents = null;
 		try {
 			st = new SessionTerminal();
+			st.start();
+			forceUpdate = true;
 		} catch (IOException e) { e.printStackTrace(); }
 	}
 
@@ -59,7 +68,9 @@ public class SSHTerminal extends AbstractComponent {
 
 		// Add the currently selected color as a variable in the paint
 		// target.
-		target.addVariable(this, "fromSSH", dumpContents); //TODO add dump contents to variable
+			target.addVariable(this, "fromSSH", dumpContents);
+			target.addVariable(this, "update", forceUpdate);
+			forceUpdate = false;
 	}
 
 	/** Deserialize changes received from client. */
@@ -69,7 +80,7 @@ public class SSHTerminal extends AbstractComponent {
 		if (variables.containsKey("toSSH") && !isReadOnly()) {
 			final String bytesToSSH = (String) variables.get("toSSH");
 			try {
-				if (st == null || st.isClosed()) {
+				if (st == null) {
 					st = new SessionTerminal();
 				}
 				dumpContents = st.handle(bytesToSSH, true);
@@ -78,12 +89,11 @@ public class SSHTerminal extends AbstractComponent {
 		}
 	}
 
-	public class SessionTerminal implements Runnable {
+	public class SessionTerminal extends Thread {
 
 		private Terminal terminal;
 		private PipedOutputStream in;
 		private PipedInputStream out;
-		private boolean closed;
 
 		public SessionTerminal() throws IOException {
 			try {
@@ -94,38 +104,36 @@ public class SSHTerminal extends AbstractComponent {
 				out = new PipedInputStream();
 				PrintStream pipedOut = new PrintStream(new PipedOutputStream(out), true);
 				PipedInputStream pipedIn = new PipedInputStream(in);
-				SudoSSHServer sshServer = new SudoSSHServer(pipedIn, pipedOut, pipedOut);
-				new Thread(sshServer).start();
+				sshServer = new SudoSSHServer(new NoCloseInputStream(pipedIn), new NoCloseOutputStream(pipedOut), null);
 				//TODO start SSH session and pass in streams
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			new Thread(this).start();
+		}
+		@Override
+		public void start(){
+			super.start();
+			sshServer.start();
 		}
 
-		public boolean isClosed() {
-			return closed;
-		}
-
-		public String handle(String str, boolean forceDump) throws IOException {
-			try {
-				if (str != null && str.length() > 0) {
-					String d = terminal.pipe(str);
-					for (byte b : d.getBytes()) {
-						in.write(b);
+		public synchronized String handle(String str, boolean forceDump) throws IOException {
+				try {
+					if (str != null && str.length() > 0) {
+						String d = terminal.pipe(str);
+						for (byte b : d.getBytes()) {
+							in.write(b);
+						}
+						in.flush();
 					}
-					in.flush();
+				} catch (IOException e) {
+					throw e;
 				}
-			} catch (IOException e) {
-				closed = true;
-				throw e;
-			}
-			try {
-				return terminal.dump(10, forceDump);
-			} catch (InterruptedException e) {
-				throw new InterruptedIOException(e.toString());
-			}
+				try {
+					return terminal.dump(10, forceDump);
+				} catch (InterruptedException e) {
+					throw new InterruptedIOException(e.toString());
+				}
 		}
 
 		public void run() {
@@ -153,7 +161,6 @@ public class SSHTerminal extends AbstractComponent {
 					}
 				}
 			} catch (IOException e) {
-				closed = true;
 				e.printStackTrace();
 			}
 		}

@@ -7,7 +7,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Timer;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
 
 public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandler{
 
@@ -57,25 +56,28 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 		if (buildCharacter(k, isCharCode) != null){
 			queue(buildCharacter(k, isCharCode));
 		}
-		
-		
 	}
 
 	private void queue(String keyString) {
 		keybuf.add(keyString);
 		Timer updateTimer = new Timer() {
-
 			@Override
 			public void run() {
 				update();
 			}
-			
 		};
 		updateTimer.schedule(1);
 	}
 
 	protected void update() {
 		vTerm.sendBytes(keybuf.drain());
+		Timer updateTimer = new Timer() {
+			@Override
+			public void run() {
+				update();
+			}
+		};
+		updateTimer.schedule(1000);
 	}
 
 	private int ctrlPressed(int k){

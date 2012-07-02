@@ -28,8 +28,8 @@ import com.vaadin.ui.Button.ClickEvent;
 public class TerminalApplication extends com.vaadin.Application {
     
 	Window main = new Window("Vaadin Application");
-	private int TERM_WIDTH = 700;
-	private int TERM_HEIGHT = 400;
+	private String host = "localhost";
+	private int port = 8080;
 
     @Override
     public void init() {
@@ -39,18 +39,19 @@ public class TerminalApplication extends com.vaadin.Application {
         openWindow.addListener(new Button.ClickListener() {
 			
 			public void buttonClick(ClickEvent event) {
-				showSSHWindow();
+				showAuthWindow();
 			}
 		});
         getMainWindow().addComponent(openWindow);
 
     }
 
-	private void showSSHWindow() {
-		getMainWindow().addWindow(getSSHWindow());
+	private void showAuthWindow() {
+		getMainWindow().addWindow(getAuthWindow());
 	}
 
-	private Window getSSHWindow() {
-		return new SSHWindow(TERM_WIDTH, TERM_HEIGHT);
+	private Window getAuthWindow() {
+		return new AuthWindow(getMainWindow(), host, port);
 	}
+
 }

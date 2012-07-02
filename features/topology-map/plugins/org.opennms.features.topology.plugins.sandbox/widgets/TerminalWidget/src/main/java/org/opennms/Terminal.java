@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@SuppressWarnings("unused")
 public class Terminal {
 
     enum State {
@@ -1425,7 +1426,7 @@ public class Terminal {
         if (!dirty.get() && timeout > 0) {
             wait(timeout);
         }
-        if (dirty.compareAndSet(true, false) || forceDump) {
+        if (/*dirty.compareAndSet(true, false) || */forceDump) {
             StringBuilder sb = new StringBuilder();
             int prev_attr = -1;
             int cx = Math.min(this.cx, width - 1);

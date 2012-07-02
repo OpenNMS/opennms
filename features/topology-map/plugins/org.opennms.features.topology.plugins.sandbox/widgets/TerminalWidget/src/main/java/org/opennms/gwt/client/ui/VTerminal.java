@@ -23,49 +23,55 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class VTerminal extends GwtTerminal implements Paintable {
 
 	/** Component identifier in UIDL communications. */
-    String uidlId;
+	String uidlId;
 
-    /** Reference to the server connection object. */
-    ApplicationConnection client;
+	/** Reference to the server connection object. */
+	ApplicationConnection client;
 
-    /**
-     * The constructor should first call super() to initialize the component and
-     * then handle any initialization relevant to Vaadin.
-     */
-    public VTerminal() {
-        // The superclass has a lot of relevant initialization
-        super();
-        TermHandler termHandler = new TermHandler(this);
-        addKeyDownHandler(termHandler);
-        addKeyPressHandler(termHandler);
-        addKeyUpHandler(termHandler);
-    }
+	private TermHandler termHandler;
 
-    /**
-     * This method must be implemented to update the client-side component from
-     * UIDL data received from server.
-     * 
-     * This method is called when the page is loaded for the first time, and
-     * every time UI changes in the component are received from the server.
-     */
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        // This call should be made first. Ensure correct implementation,
-        // and let the containing layout manage caption, etc.
-        if (client.updateComponent(this, uidl, true)) {
-            return;
-        }
+	/**
+	 * The constructor should first call super() to initialize the component and
+	 * then handle any initialization relevant to Vaadin.
+	 */
+	public VTerminal() {
+		// The superclass has a lot of relevant initialization
+		super();
+		termHandler = new TermHandler(this);
+		addKeyDownHandler(termHandler);
+		addKeyPressHandler(termHandler);
+		addKeyUpHandler(termHandler);
+	}
 
-        // Save reference to server connection object to be able to send
-        // user interaction later
-        this.client = client;
+	public void update() {
+		termHandler.update();
+	}
 
-        // Save the UIDL identifier for the component
-        uidlId = uidl.getId();
-        super.dump(uidl.getStringVariable("fromSSH"));
-    }
-    
-    public void sendBytes(String inputKeys){
-    	client.updateVariable(uidlId, "toSSH", inputKeys, true);
-    }
+	/**
+	 * This method must be implemented to update the client-side component from
+	 * UIDL data received from server.
+	 * 
+	 * This method is called when the page is loaded for the first time, and
+	 * every time UI changes in the component are received from the server.
+	 */
+	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+		// This call should be made first. Ensure correct implementation,
+		// and let the containing layout manage caption, etc.
+		if (client.updateComponent(this, uidl, true)) {
+			return;
+		}
+
+		// Save reference to server connection object to be able to send
+		// user interaction later
+		this.client = client;
+		// Save the UIDL identifier for the component
+		uidlId = uidl.getId();
+		if (uidl.getBooleanVariable("update")) update();
+		dump(uidl.getStringVariable("fromSSH"));
+	}
+
+	public void sendBytes(String inputKeys){
+		client.updateVariable(uidlId, "toSSH", inputKeys, true);
+	}
 
 }
