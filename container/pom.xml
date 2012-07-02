@@ -15,7 +15,8 @@
   <modules>
     <module>branding</module>
     <module>standalone</module>
-    <module>web</module>
+    <module>web-karaf</module>
+    <module>web-servlet</module>
   </modules>
 
   <repositories>
