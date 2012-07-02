@@ -1,14 +1,8 @@
+<jsp:include page="/includes/header.jsp" flush="false" />
+
 <html>
   <head>
     <title>NearRealTime</title>
-    <link type="text/css" href="../../../css/jquery-ui-1.7.3.custom.css" rel="Stylesheet" />	
-    <!-- <script type="text/javascript" src="../../../js/jquery-1.4.2.min.js"></script> -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../../../js/amq_jquery_adapter.js"></script>
-    <script type="text/javascript" src="../../../js/amq.js"></script>
-    <script type="text/javascript" src="../../../js/d3.v2.js"></script>
-    <style type="text/css">
 
 svg {
   border: 1px solid #ccc;
