@@ -11,15 +11,16 @@
     <dependencySets>
         <dependencySet>
             <unpack>true</unpack>
-            <outputDirectory>WEB-INF</outputDirectory>
+            <outputDirectory>WEB-INF/karaf</outputDirectory>
             <useProjectArtifact>false</useProjectArtifact>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.standalone:tar.gz:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.web-karaf:tar.gz:${project.version}</include>
             </includes>
             <unpackOptions>
                 <excludes>
+<!--
                     <exclude>**/lib/*</exclude>
                     <exclude>**/*.txt</exclude>
                     <exclude>**/bin/*</exclude>
@@ -27,11 +28,36 @@
                     <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
                     <exclude>**/custom.properties</exclude>
                     <exclude>**/org.apache.karaf.features.cfg</exclude>
+-->
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+        <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <scope>provided</scope>
+            <includes>
+                <include>org.opennms.container:org.opennms.container.web-servlet:war:${project.version}</include>
+            </includes>
+            <unpackOptions>
+                <excludes>
+<!--
+                    <exclude>**/lib/*</exclude>
+                    <exclude>**/*.txt</exclude>
+                    <exclude>**/bin/*</exclude>
+                    <exclude>**/demos/**</exclude>
+                    <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
+                    <exclude>**/custom.properties</exclude>
+                    <exclude>**/org.apache.karaf.features.cfg</exclude>
+-->
                 </excludes>
             </unpackOptions>
         </dependencySet>
     </dependencySets>
 
+<!--
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}/classes/etc</directory>
@@ -50,5 +76,6 @@
             <lineEnding>unix</lineEnding>
         </file>
     </files>
+-->
 
 </assembly>

@@ -18,64 +18,46 @@
     <properties>
         <jetty.port>8080</jetty.port>
         <maven-jetty-plugin.version>6.1.26</maven-jetty-plugin.version>
-	<karaf.version>2.2.7</karaf.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.branding</artifactId>
+            <artifactId>org.opennms.container.web-karaf</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core</groupId>
-            <artifactId>org.opennms.core.soa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.jaas</groupId>
-            <artifactId>org.apache.karaf.jaas.boot</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.proxy</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>apache-karaf</artifactId>
-            <type>zip</type>
-            <scope>provided</scope>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <type>tar.gz</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.standalone</artifactId>
+            <artifactId>org.opennms.container.web-servlet</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
+            <type>war</type>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-              <directory>src/main/filtered-resources</directory>
-              <filtering>true</filtering>
-            </resource>
-        </resources>
-
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>karaf</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/web.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
@@ -99,25 +81,7 @@
                      
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>karaf</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/karaf.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -139,6 +103,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
         </plugins>
     </build>
 

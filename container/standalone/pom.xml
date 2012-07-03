@@ -138,7 +138,7 @@
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>src/main/descriptors/bin.xml</descriptor>
+                <descriptor>src/assembly/bin.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>gnu</tarLongFileMode>

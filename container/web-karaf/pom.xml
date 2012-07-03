@@ -71,33 +71,12 @@
                             <descriptors>
                                 <descriptor>src/assembly/karaf.xml</descriptor>
                             </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-karaf</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <move todir="${project.build.directory}/${project.build.finalName}/WEB-INF/karaf">
-                                    <fileset dir="${project.build.directory}/${project.build.finalName}/WEB-INF/org.opennms.container.standalone-${project.version}" />
-                                </move>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
--->
         </plugins>
     </build>
 

@@ -3,7 +3,7 @@
     <id>karaf</id>
 
     <formats>
-        <format>dir</format>
+        <format>tar.gz</format>
     </formats>
 
     <includeBaseDirectory>false</includeBaseDirectory>    
@@ -20,10 +20,9 @@
             </includes>
             <unpackOptions>
                 <excludes>
-                    <exclude>**/lib/*</exclude>
                     <exclude>**/*.txt</exclude>
-                    <exclude>**/bin/*</exclude>
-                    <exclude>**/demos/**</exclude>
+                    <exclude>bin/*</exclude>
+                    <exclude>demos/**</exclude>
                     <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
                     <exclude>**/custom.properties</exclude>
                     <exclude>**/org.apache.karaf.features.cfg</exclude>
@@ -32,25 +31,24 @@
         </dependencySet>
     </dependencySets>
 
-<!--
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/classes/etc</directory>
-            <outputDirectory>WEB-INF/org.opennms.container.standalone-${project.version}/etc</outputDirectory>
+            <directory>src/main/filtered-resources/etc</directory>
+            <outputDirectory>etc</outputDirectory>
             <lineEnding>unix</lineEnding>
             <fileMode>0644</fileMode>
+            <filtered>true</filtered>
         </fileSet>
     </fileSets>
 
     <files>
         <file>
-            <source>${project.build.directory}/classes/features/features.xml</source>
-            <outputDirectory>WEB-INF/org.opennms.container.standalone-${project.version}/system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <source>src/main/filtered-resources/features/features.xml</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
         </file>
     </files>
--->
 
 </assembly>

@@ -6,6 +6,8 @@
         <format>tar.gz</format>
     </formats>
 
+    <includeBaseDirectory>false</includeBaseDirectory>    
+
     <fileSets>
 
         <!-- Expanded Karaf Standard Distribution -->
