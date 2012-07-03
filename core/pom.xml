@@ -27,6 +27,7 @@
     <module>criteria</module>
     <module>daemon</module>
     <module>db</module>
+    <module>db-install</module>
     <module>doc</module>
     <module>icmp-jna</module>
     <module>lib</module>

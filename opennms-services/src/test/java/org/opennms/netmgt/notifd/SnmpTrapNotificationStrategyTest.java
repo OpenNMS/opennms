@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.Argument;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 public class SnmpTrapNotificationStrategyTest extends TestCase {
 
     protected void setUp() throws Exception {

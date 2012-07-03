@@ -33,9 +33,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.PrintStream;
 
+import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.install.db.InstallerDb;
 import org.springframework.util.StringUtils;
 
 /**

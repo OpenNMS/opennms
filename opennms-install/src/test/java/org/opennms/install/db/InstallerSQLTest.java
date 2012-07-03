@@ -34,7 +34,7 @@ import java.io.StringReader;
 
 import junit.framework.TestCase;
 
-import org.opennms.install.db.InstallerDb;
+import org.opennms.core.db.install.InstallerDb;
 
 public class InstallerSQLTest extends TestCase {
     private InstallerDb m_installerDb;

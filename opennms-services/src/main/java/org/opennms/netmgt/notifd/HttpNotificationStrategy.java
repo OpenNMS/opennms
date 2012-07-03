@@ -50,6 +50,7 @@ import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**

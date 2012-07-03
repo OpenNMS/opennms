@@ -30,7 +30,7 @@ package org.opennms.install.db;
 
 import junit.framework.TestCase;
 
-import org.opennms.install.db.Column;
+import org.opennms.core.db.install.Column;
 
 /**
  * 

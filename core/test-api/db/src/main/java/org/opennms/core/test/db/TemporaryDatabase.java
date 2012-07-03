@@ -45,9 +45,9 @@ import java.util.Map.Entry;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.db.install.InstallerDb;
+import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.install.db.InstallerDb;
-import org.opennms.install.db.SimpleDataSource;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;

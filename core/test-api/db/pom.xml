@@ -35,13 +35,17 @@
       <artifactId>org.opennms.core.db</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db.install</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-install</artifactId>
+      <artifactId>opennms-test</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

@@ -34,6 +34,7 @@ import java.util.List;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 
 /**
