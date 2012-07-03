@@ -39,9 +39,23 @@ public class WebAppListener implements ServletContextListener {
 		try {
 			
 			m_servletContext = sce.getServletContext();
-			
+
+			File karafRoot = new File(m_servletContext.getRealPath("/") + "/WEB-INF/karaf");
+
+			final String opennmsHome = System.getProperty("opennms.home");
+			if (opennmsHome != null) {
+				karafRoot = new File(opennmsHome);
+			}
+
+			/*
+			String karafHome = System.getProperty("karaf.home");
+			if (karafHome != null) {
+				karafRoot = new File(karafHome);
+			}
+			*/
+
 			System.err.println("contextInitialized");
-			String root = new File(m_servletContext.getRealPath("/") + "/WEB-INF/karaf").getAbsolutePath();
+			final String root = karafRoot.getAbsolutePath();
 			System.err.println("Root: " + root);
 			System.setProperty("karaf.home", root);
             System.setProperty("karaf.base", root);

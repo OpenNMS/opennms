@@ -193,6 +193,12 @@
   </modules>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>org.opennms.container.karaf</artifactId>
+      <type>tar.gz</type>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>root-webapp</artifactId>
       <type>war</type>

@@ -16,7 +16,7 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.web-karaf:tar.gz:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.karaf:tar.gz:${project.version}</include>
             </includes>
             <unpackOptions>
                 <excludes>
@@ -39,7 +39,7 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.web-servlet:war:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.servlet:war:${project.version}</include>
             </includes>
             <unpackOptions>
                 <excludes>

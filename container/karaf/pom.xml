@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>org.opennms.container.web-karaf</artifactId>
+    <artifactId>org.opennms.container.karaf</artifactId>
     <packaging>pom</packaging>
     <name>OpenNMS OSGi Container - Embedded Karaf</name>
 

@@ -22,15 +22,39 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.soa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.main</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.main</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.http.proxy</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.web-karaf</artifactId>
+            <artifactId>org.opennms.container.karaf</artifactId>
             <version>${project.version}</version>
             <type>tar.gz</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.web-servlet</artifactId>
+            <artifactId>org.opennms.container.servlet</artifactId>
             <version>${project.version}</version>
             <type>war</type>
             <scope>provided</scope>
@@ -74,6 +98,11 @@
                         <systemProperty>
                             <name>com.sun.management.jmxremote</name>
                             <value />
+                        </systemProperty>
+                        <!-- override karaf home -->
+                        <systemProperty>
+                            <name>opennms.home</name>
+                            <value>${project.build.directory}/${project.build.finalName}/WEB-INF/karaf</value>
                         </systemProperty>
                     </systemProperties>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
