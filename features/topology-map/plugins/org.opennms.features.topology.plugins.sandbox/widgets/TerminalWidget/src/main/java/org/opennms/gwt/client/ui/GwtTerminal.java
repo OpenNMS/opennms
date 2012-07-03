@@ -19,22 +19,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class GwtTerminal extends Composite implements HasAllKeyHandlers {
 
 	private Element div;
-	private VerticalPanel vPanel;
 	private FocusPanel fPanel;
-	public Button closeButton;
 
 	public GwtTerminal() {
-		vPanel = new VerticalPanel();
 		fPanel = new FocusPanel();
-		closeButton = new Button("Close Session");
-		vPanel.getElement().setClassName("vertPanel");
 		fPanel.getElement().setClassName("focusPanel");
 		div = DOM.createDiv();
 		div.setClassName("term");
 		DOM.appendChild(fPanel.getElement(), div);
-		vPanel.add(fPanel);
-		vPanel.add(closeButton);
-		initWidget(vPanel);
+		initWidget(fPanel);
 	}
 
 	

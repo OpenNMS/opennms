@@ -40,13 +40,6 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	public VTerminal() {
 		// The superclass has a lot of relevant initialization
 		super();
-		closeButton.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event) {
-				termHandler.close();
-				isClosed = "true";
-				sendBytes("");
-			}
-		});
 		termHandler = new TermHandler(this);
 		addKeyDownHandler(termHandler);
 		addKeyPressHandler(termHandler);
@@ -65,7 +58,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	 * This method is called when the page is loaded for the first time, and
 	 * every time UI changes in the component are received from the server.
 	 */
-	public synchronized void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 		// This call should be made first. Ensure correct implementation,
 		// and let the containing layout manage caption, etc.
 		if (client.updateComponent(this, uidl, true)) {
@@ -77,11 +70,16 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		this.client = client;
 		// Save the UIDL identifier for the component
 		this.uidlId = uidl.getId();
+		if (uidl.getStringVariable("closeClient").equals("true")) {
+			termHandler.close();
+			isClosed = "true";
+			sendBytes("");
+		}
 		if (uidl.getBooleanVariable("update")) update();
 		dump(uidl.getStringVariable("fromSSH"));
 	}
 
-	public synchronized void sendBytes(String inputKeys){
+	public void sendBytes(String inputKeys){
 		client.updateVariable(uidlId, "isClosed", isClosed, true);
 		if (isClosed.equals("false")) client.updateVariable(uidlId, "toSSH", inputKeys, true);
 	}

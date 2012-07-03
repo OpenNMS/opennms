@@ -23,7 +23,7 @@ public class AuthWindow extends Window {
 	private String host;
 	private int port;
 	private int TERM_WIDTH = 650;
-	private int TERM_HEIGHT = 500;
+	private int TERM_HEIGHT = 454;
 	private ClientSession session = null;
 	private Window mainWindow;
 	private TerminalApplication app;
@@ -34,16 +34,17 @@ public class AuthWindow extends Window {
 		host = h;
 		port = p;
 		setModal(true);
-		setWidth("300px");
-		setHeight("200px");
+		setCaption("Login");
+		setWidth("260px");
+		setHeight("180px");
 		int posX = (int)(app.getMainWindow().getWidth() - this.getWidth())/2;
 		int posY = (int)(app.getMainWindow().getHeight() - this.getHeight())/2;
 		this.setPositionX(posX);
 		this.setPositionY(posY);
 		setResizable(false);
-		final Label usernameLabel = new Label("Username");
+		final Label usernameLabel = new Label("Username: ");
 		final TextField usernameField = new TextField();
-		final Label passwordLabel = new Label("Password");
+		final Label passwordLabel = new Label("Password: ");
 		final PasswordField passwordField = new PasswordField();
 		final Button loginButton = new Button("Login");
 		final SshClient client = SshClient.setUpDefaultClient();
@@ -65,9 +66,7 @@ public class AuthWindow extends Window {
 //							getWindow().showNotification("Failed to Login");
 //							return;
 //						}
-//					} else {
-						getWindow().showNotification("Host and/or Port is incorrect");
-					//}
+//					} 
 					showSSHWindow();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -79,7 +78,8 @@ public class AuthWindow extends Window {
 		grid.addComponent(usernameField);
 		grid.addComponent(passwordLabel);
 		grid.addComponent(passwordField);
-		grid.setMargin(true);
+		grid.setSpacing(true);
+		grid.setMargin(false, false, true, false);
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(grid);
 		layout.addComponent(loginButton);

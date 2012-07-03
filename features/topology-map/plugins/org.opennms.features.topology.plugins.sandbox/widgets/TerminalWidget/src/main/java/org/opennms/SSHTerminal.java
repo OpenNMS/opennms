@@ -49,7 +49,9 @@ public class SSHTerminal extends AbstractComponent {
 	private String dumpContents;
 	private SudoSSHServer sshServer;
 	private boolean forceUpdate = false;
+	private boolean closeServer;
 	private String isClosed;
+	private String closeClient;
 	private Application app;
 	private SSHWindow sshWindow;
 
@@ -58,6 +60,8 @@ public class SSHTerminal extends AbstractComponent {
 		TERM_WIDTH = width;
 		TERM_HEIGHT = height;
 		dumpContents = null;
+		closeClient = "false";
+		closeServer = false;
 		this.app = app;
 		this.sshWindow = sshWindow;
 		try {
@@ -68,28 +72,24 @@ public class SSHTerminal extends AbstractComponent {
 
 		} catch (IOException e) { e.printStackTrace(); }
 	}
-
-	private void closeWindow() throws InterruptedException{
-		if (isClosed.equals("true")){
-			//Thread.sleep(1000);
-			Window mainWindow = app.getMainWindow();
-			mainWindow.removeWindow(sshWindow);
-		}
+	
+	public void close() {
+		closeClient = "true";
+		requestRepaint();
 	}
 
 	/** Paint (serialize) the component for the client. */
 	@Override
 	public synchronized void paintContent(PaintTarget target) throws PaintException {
 		// Superclass writes any common attributes in the paint target.
-		if (isClosed.equals("false")){
 			super.paintContent(target);
 
 			// Add the currently selected color as a variable in the paint
 			// target.
 			target.addVariable(this, "fromSSH", dumpContents);
 			target.addVariable(this, "update", forceUpdate);
+			target.addVariable(this, "closeClient", closeClient);
 			forceUpdate = false;
-		}
 	}
 
 	/** Deserialize changes received from client. */
@@ -99,12 +99,8 @@ public class SSHTerminal extends AbstractComponent {
 		if (variables.containsKey("isClosed")) {
 			isClosed = ((String)variables.get("isClosed"));
 			if (isClosed.equals("true")){
-				try {
-					closeWindow();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				closeServer = true;
+				requestRepaint();
 			}
 		}
 		if (variables.containsKey("toSSH") && !isReadOnly()) {
@@ -169,8 +165,9 @@ public class SSHTerminal extends AbstractComponent {
 		public void run() {
 			try {
 				for (;;) {
-					if (isClosed.equals("true")) {
+					if (closeServer) {
 						sshServer.close();
+						app.getMainWindow().removeWindow(sshWindow);
 						return;
 					}
 					byte[] buf = new byte[8192];
