@@ -8,8 +8,10 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * A regular GWT component without integration with IT Mill Toolkit.
@@ -17,15 +19,22 @@ import com.google.gwt.user.client.ui.FocusPanel;
 public class GwtTerminal extends Composite implements HasAllKeyHandlers {
 
 	private Element div;
+	private VerticalPanel vPanel;
 	private FocusPanel fPanel;
+	public Button closeButton;
 
 	public GwtTerminal() {
+		vPanel = new VerticalPanel();
 		fPanel = new FocusPanel();
+		closeButton = new Button("Close Session");
+		vPanel.getElement().setClassName("vertPanel");
 		fPanel.getElement().setClassName("focusPanel");
 		div = DOM.createDiv();
 		div.setClassName("term");
 		DOM.appendChild(fPanel.getElement(), div);
-		initWidget(fPanel);
+		vPanel.add(fPanel);
+		vPanel.add(closeButton);
+		initWidget(vPanel);
 	}
 
 	
@@ -46,8 +55,5 @@ public class GwtTerminal extends Composite implements HasAllKeyHandlers {
     	div.setInnerHTML(receivedBytes);
     }
 
-	public void fireEvent(GwtEvent<?> event) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void fireEvent(GwtEvent<?> event) {}
 }

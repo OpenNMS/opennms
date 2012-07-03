@@ -16,6 +16,8 @@
 
 package org.opennms.gwt.client.ui;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -29,6 +31,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	ApplicationConnection client;
 
 	private TermHandler termHandler;
+	private String isClosed;
 
 	/**
 	 * The constructor should first call super() to initialize the component and
@@ -37,10 +40,18 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	public VTerminal() {
 		// The superclass has a lot of relevant initialization
 		super();
+		closeButton.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event) {
+				termHandler.close();
+				isClosed = "true";
+				sendBytes("");
+			}
+		});
 		termHandler = new TermHandler(this);
 		addKeyDownHandler(termHandler);
 		addKeyPressHandler(termHandler);
 		addKeyUpHandler(termHandler);
+		isClosed = "false";
 	}
 
 	public void update() {
@@ -54,7 +65,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	 * This method is called when the page is loaded for the first time, and
 	 * every time UI changes in the component are received from the server.
 	 */
-	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+	public synchronized void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 		// This call should be made first. Ensure correct implementation,
 		// and let the containing layout manage caption, etc.
 		if (client.updateComponent(this, uidl, true)) {
@@ -65,13 +76,14 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		// user interaction later
 		this.client = client;
 		// Save the UIDL identifier for the component
-		uidlId = uidl.getId();
+		this.uidlId = uidl.getId();
 		if (uidl.getBooleanVariable("update")) update();
 		dump(uidl.getStringVariable("fromSSH"));
 	}
 
-	public void sendBytes(String inputKeys){
-		client.updateVariable(uidlId, "toSSH", inputKeys, true);
+	public synchronized void sendBytes(String inputKeys){
+		client.updateVariable(uidlId, "isClosed", isClosed, true);
+		if (isClosed.equals("false")) client.updateVariable(uidlId, "toSSH", inputKeys, true);
 	}
 
 }

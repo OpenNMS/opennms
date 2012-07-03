@@ -29,10 +29,12 @@ import com.Ostermiller.util.NoCloseOutputStream;
 
 import org.opennms.gwt.client.ui.VTerminal;
 
+import com.vaadin.Application;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
+import com.vaadin.ui.Window;
 
 @ClientWidget(VTerminal.class)
 public class SSHTerminal extends AbstractComponent {
@@ -47,36 +49,64 @@ public class SSHTerminal extends AbstractComponent {
 	private String dumpContents;
 	private SudoSSHServer sshServer;
 	private boolean forceUpdate = false;
+	private String isClosed;
+	private Application app;
+	private SSHWindow sshWindow;
 
-	public SSHTerminal(int width, int height) {
+	public SSHTerminal(TerminalApplication app, SSHWindow sshWindow, int width, int height) {
 		super();
 		TERM_WIDTH = width;
 		TERM_HEIGHT = height;
 		dumpContents = null;
+		this.app = app;
+		this.sshWindow = sshWindow;
 		try {
+			isClosed = "false";
 			st = new SessionTerminal();
 			st.start();
 			forceUpdate = true;
+
 		} catch (IOException e) { e.printStackTrace(); }
+	}
+
+	private void closeWindow() throws InterruptedException{
+		if (isClosed.equals("true")){
+			//Thread.sleep(1000);
+			Window mainWindow = app.getMainWindow();
+			mainWindow.removeWindow(sshWindow);
+		}
 	}
 
 	/** Paint (serialize) the component for the client. */
 	@Override
-	public void paintContent(PaintTarget target) throws PaintException {
+	public synchronized void paintContent(PaintTarget target) throws PaintException {
 		// Superclass writes any common attributes in the paint target.
-		super.paintContent(target);
+		if (isClosed.equals("false")){
+			super.paintContent(target);
 
-		// Add the currently selected color as a variable in the paint
-		// target.
+			// Add the currently selected color as a variable in the paint
+			// target.
 			target.addVariable(this, "fromSSH", dumpContents);
 			target.addVariable(this, "update", forceUpdate);
 			forceUpdate = false;
+		}
 	}
 
 	/** Deserialize changes received from client. */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void changeVariables(Object source, Map variables) {
+	public synchronized void changeVariables(Object source, Map variables) {
+		if (variables.containsKey("isClosed")) {
+			isClosed = ((String)variables.get("isClosed"));
+			if (isClosed.equals("true")){
+				try {
+					closeWindow();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		if (variables.containsKey("toSSH") && !isReadOnly()) {
 			final String bytesToSSH = (String) variables.get("toSSH");
 			try {
@@ -117,28 +147,32 @@ public class SSHTerminal extends AbstractComponent {
 			sshServer.start();
 		}
 
-		public synchronized String handle(String str, boolean forceDump) throws IOException {
-				try {
-					if (str != null && str.length() > 0) {
-						String d = terminal.pipe(str);
-						for (byte b : d.getBytes()) {
-							in.write(b);
-						}
-						in.flush();
+		public String handle(String str, boolean forceDump) throws IOException {
+			try {
+				if (str != null && str.length() > 0) {
+					String d = terminal.pipe(str);
+					for (byte b : d.getBytes()) {
+						in.write(b);
 					}
-				} catch (IOException e) {
-					throw e;
+					in.flush();
 				}
-				try {
-					return terminal.dump(10, forceDump);
-				} catch (InterruptedException e) {
-					throw new InterruptedIOException(e.toString());
-				}
+			} catch (IOException e) {
+				throw e;
+			}
+			try {
+				return terminal.dump(10, forceDump);
+			} catch (InterruptedException e) {
+				throw new InterruptedIOException(e.toString());
+			}
 		}
 
 		public void run() {
 			try {
 				for (;;) {
+					if (isClosed.equals("true")) {
+						sshServer.close();
+						return;
+					}
 					byte[] buf = new byte[8192];
 					int l = out.read(buf);
 					InputStreamReader r = new InputStreamReader(new ByteArrayInputStream(buf, 0, l));

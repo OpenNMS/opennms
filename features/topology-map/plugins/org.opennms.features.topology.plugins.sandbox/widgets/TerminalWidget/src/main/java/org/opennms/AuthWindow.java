@@ -26,14 +26,20 @@ public class AuthWindow extends Window {
 	private int TERM_HEIGHT = 500;
 	private ClientSession session = null;
 	private Window mainWindow;
+	private TerminalApplication app;
 	
-	public AuthWindow(Window mainWindow, String h, int p) {
+	public AuthWindow(TerminalApplication app, Window mainWindow, String h, int p) {
 		this.mainWindow = mainWindow;
+		this.app = app;
 		host = h;
 		port = p;
 		setModal(true);
 		setWidth("300px");
 		setHeight("200px");
+		int posX = (int)(app.getMainWindow().getWidth() - this.getWidth())/2;
+		int posY = (int)(app.getMainWindow().getHeight() - this.getHeight())/2;
+		this.setPositionX(posX);
+		this.setPositionY(posY);
 		setResizable(false);
 		final Label usernameLabel = new Label("Username");
 		final TextField usernameField = new TextField();
@@ -87,7 +93,9 @@ public class AuthWindow extends Window {
 	}
 
 	private Window getSSHWindow() {
-		return new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
+		SSHWindow sshWindow = new SSHWindow(app, session, TERM_WIDTH, TERM_HEIGHT);
+		sshWindow.addListener(app);
+		return sshWindow;
 	}
 	
 }

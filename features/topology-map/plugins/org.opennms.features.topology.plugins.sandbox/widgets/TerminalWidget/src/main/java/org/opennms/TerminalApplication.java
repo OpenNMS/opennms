@@ -19,13 +19,15 @@ package org.opennms;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 
 /**
  * Demonstration application that shows how to use a simple custom client-side
  * GWT component, the ColorPicker.
  */
 @SuppressWarnings("serial")
-public class TerminalApplication extends com.vaadin.Application {
+public class TerminalApplication extends com.vaadin.Application implements CloseListener{
     
 	Window main = new Window("Vaadin Application");
 	private String host = "localhost";
@@ -51,7 +53,11 @@ public class TerminalApplication extends com.vaadin.Application {
 	}
 
 	private Window getAuthWindow() {
-		return new AuthWindow(getMainWindow(), host, port);
+		return new AuthWindow(this, getMainWindow(), host, port);
+	}
+
+	public void windowClose(CloseEvent e) {
+		
 	}
 
 }

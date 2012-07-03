@@ -13,11 +13,15 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 	private KeyBuffer keybuf;
 	private Code code;
 	private VTerminal vTerm;
+	private boolean isClosed;
+	private Timer updateTimer;
 
 	public TermHandler(VTerminal vTerm){
 		this.vTerm = vTerm;
 		keybuf = new KeyBuffer();
 		code = null;
+		isClosed = false;
+		updateTimer = null;
 	}
 
 	public KeyBuffer getKeybuf() {
@@ -69,15 +73,22 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 		updateTimer.schedule(1);
 	}
 
-	protected void update() {
-		vTerm.sendBytes(keybuf.drain());
-		Timer updateTimer = new Timer() {
-			@Override
-			public void run() {
-				update();
-			}
-		};
-		updateTimer.schedule(1000);
+	protected synchronized void update() {
+		if (!isClosed) {
+			vTerm.sendBytes(keybuf.drain());
+			updateTimer = new Timer() {
+				@Override
+				public void run() {
+					update();
+				}
+			};
+			updateTimer.schedule(1000);
+		}
+	}
+	
+	public synchronized void close() {
+		isClosed = true;
+		updateTimer.cancel();
 	}
 
 	private int ctrlPressed(int k){
