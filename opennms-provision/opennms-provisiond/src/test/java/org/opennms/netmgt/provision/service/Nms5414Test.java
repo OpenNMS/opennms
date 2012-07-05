@@ -47,11 +47,13 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -60,6 +62,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -82,6 +85,9 @@ public class Nms5414Test {
     
     @Autowired
     private ResourceLoader m_resourceLoader;
+    
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
@@ -129,6 +135,14 @@ public class Nms5414Test {
 
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
+        //Verify snmpinterface count
+        assertEquals(79,getSnmpInterfaceDao().countAll());
+        
+        final OnmsSnmpInterface onmsinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(1, 160);
+
+        assertEquals("Avaya Virtual Services Platform 7024XLS Module - Unit 2 Port 32  ", onmsinterface.getIfDescr());
+        assertEquals("ifc160 (Slot: 2 Port: 32)", onmsinterface.getIfName());
+        assertEquals("8dd69b5cafba",onmsinterface.getPhysAddr());
         
     }
     
@@ -159,5 +173,9 @@ public class Nms5414Test {
 
     private IpInterfaceDao getInterfaceDao() {
         return m_ipInterfaceDao;
+    }
+    
+    private SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
     }
 }
