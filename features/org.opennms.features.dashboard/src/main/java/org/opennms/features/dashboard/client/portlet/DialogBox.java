@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.Widget;
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
+@Deprecated
 public class DialogBox  extends AbsPopup
 {
 	private HandlerRegistration okBtnHandler;

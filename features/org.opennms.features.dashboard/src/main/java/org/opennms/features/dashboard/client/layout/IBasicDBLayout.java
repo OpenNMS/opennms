@@ -28,13 +28,22 @@
 
 package org.opennms.features.dashboard.client.layout;
 
-import com.google.gwt.user.client.ui.AbsolutePanel;
+import org.opennms.features.dashboard.client.portlet.IBasicPortlet;
 
 /**
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
-@Deprecated
-public class GridDesktopPanel extends AbsolutePanel{
+public interface IBasicDBLayout {
+    int addNewPortlet(IBasicPortlet visItem);
+    
+    int addNewPortlet(int x, int y, IBasicPortlet visItem);
+    void setContent(int index);
+    void closePortlet(int window);
 
+    void setHeaderCaption(int window, String text);
+
+    void selectPortlet(int window);
+
+    void clearDashboard();
 }

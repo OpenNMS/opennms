@@ -35,70 +35,66 @@ import com.allen_sauer.gwt.dnd.client.drop.BoundaryDropController;
 import java.util.HashMap;
 
 import org.opennms.features.dashboard.client.portlet.AbsPopup;
-import org.opennms.features.dashboard.client.portlet.AbsPopup.DirectionConstant;
+import org.opennms.features.dashboard.client.portlet.DirectionConstant;
+import org.opennms.features.dashboard.client.portlet.IBasicPortlet;
 
 /**
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
-public final class ResizeDragController extends AbstractDragController
-{
+public final class ResizeDragController extends AbstractDragController {
+    private static final int MIN_WIDGET_SIZE = 50;
 
-	private static final int MIN_WIDGET_SIZE = 10;
-	private HashMap<Widget, DirectionConstant> directionMap = new HashMap<Widget, DirectionConstant>();
-	private AbsPopup windowPanel = null;
+    private HashMap<Widget, DirectionConstant> directionMap = new HashMap<Widget, DirectionConstant>();
 
-	public ResizeDragController( AbsolutePanel boundaryPanel )
-	{
-		super( boundaryPanel );
-	}
+    private IBasicPortlet portlet = null;
 
-	@Override
-	public void dragMove()
-	{
-		int direction = ( ( ResizeDragController ) context.dragController ).getDirection( context.draggable ).directionBits;
-		if ( ( direction & AbsPopup.DIRECTION_SOUTH ) != 0 )
-		{
-			int delta = context.desiredDraggableY - context.draggable.getAbsoluteTop();
-			if ( delta != 0 && (windowPanel.getContentHeight() + delta)>0)
-			{
-				windowPanel.setContentSize( windowPanel.getContentWidth(), windowPanel.getContentHeight() + delta );
-			}
-		}
-		if ( ( direction & AbsPopup.DIRECTION_EAST ) != 0 )
-		{
-			int delta = context.desiredDraggableX - context.draggable.getAbsoluteLeft();
-			if ( delta != 0 && (windowPanel.getContentWidth() + delta)>0)
-			{
-				windowPanel.setContentSize( windowPanel.getContentWidth() + delta, windowPanel.getContentHeight() );
-			}
-		}
-	}
+    public ResizeDragController(AbsolutePanel boundaryPanel) {
+        super(boundaryPanel);
+    }
 
-	@Override
-	public void dragStart()
-	{
-		super.dragStart();
-		windowPanel = ( AbsPopup ) context.draggable.getParent().getParent();
-	}
+    @Override
+    public void dragMove() {
+        int direction = ((ResizeDragController) context.dragController).getDirection(context.draggable).directionBits;
+        if ((direction & AbsPopup.DIRECTION_SOUTH) != 0) {
+            int delta = context.desiredDraggableY
+                    - context.draggable.getAbsoluteTop();
+            if (delta != 0 && (portlet.getContentHeight() + delta) > 0) {
+                portlet.setContentSize(portlet.getContentWidth(),
+                                           portlet.getContentHeight()
+                                                   + delta);
+            }
+        }
+        if ((direction & AbsPopup.DIRECTION_EAST) != 0) {
+            int delta = context.desiredDraggableX
+                    - context.draggable.getAbsoluteLeft();
+            if (delta != 0 && (portlet.getContentWidth() + delta) > 0) {
+                portlet.setContentSize(portlet.getContentWidth()
+                        + delta, portlet.getContentHeight());
+            }
+        }
+    }
 
-	public void makeDraggable( Widget widget, AbsPopup.DirectionConstant direction )
-	{
-		super.makeDraggable( widget );
-		directionMap.put( widget, direction );
-	}
+    @Override
+    public void dragStart() {
+        super.dragStart();
+        portlet = (IBasicPortlet) context.draggable.getParent().getParent();
+    }
 
-	protected BoundaryDropController newBoundaryDropController( AbsolutePanel boundaryPanel, boolean allowDroppingOnBoundaryPanel )
-	{
-		if ( allowDroppingOnBoundaryPanel )
-		{
-			throw new IllegalArgumentException();
-		}
-		return new BoundaryDropController( boundaryPanel, false );
-	}
+    public void makeDraggable(Widget widget, DirectionConstant direction) {
+        super.makeDraggable(widget);
+        directionMap.put(widget, direction);
+    }
 
-	private DirectionConstant getDirection( Widget draggable )
-	{
-		return directionMap.get( draggable );
-	}
+    protected BoundaryDropController newBoundaryDropController(
+            AbsolutePanel boundaryPanel, boolean allowDroppingOnBoundaryPanel) {
+        if (allowDroppingOnBoundaryPanel) {
+            throw new IllegalArgumentException();
+        }
+        return new BoundaryDropController(boundaryPanel, false);
+    }
+
+    private DirectionConstant getDirection(Widget draggable) {
+        return directionMap.get(draggable);
+    }
 }

@@ -49,6 +49,7 @@ import com.allen_sauer.gwt.dnd.client.drop.VerticalPanelDropController;
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
+@Deprecated
 public final class GridViewWidget
 {
 	private static final String CSS_GRID_PANEL = "demo-gridview";

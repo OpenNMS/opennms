@@ -58,24 +58,11 @@ import com.google.gwt.user.client.ui.Widget;
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
+@Deprecated
 public abstract class AbsPopup extends FocusPanel
 {
 	protected WidgetResource imageResource = WidgetResource.WIDGETRESOURCE;
 //	protected WidgetCssResource cssResource = imageResource.widgetsCssResource();
-
-	public static class DirectionConstant
-	{
-
-		public final int directionBits;
-
-		public final String directionLetters;
-
-		private DirectionConstant( int directionBits, String directionLetters )
-		{
-			this.directionBits = directionBits;
-			this.directionLetters = directionLetters;
-		}
-	}
 
 	public static final int DIRECTION_EAST = 0x0001;
 	public static final int DIRECTION_NORTH = 0x0002;

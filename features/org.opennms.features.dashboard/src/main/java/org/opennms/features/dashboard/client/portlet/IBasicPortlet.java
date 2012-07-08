@@ -26,15 +26,57 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.dashboard.client.layout;
+package org.opennms.features.dashboard.client.portlet;
 
+import org.opennms.features.dashboard.client.dnd.ResizeDragController;
+
+import com.allen_sauer.gwt.dnd.client.DragController;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
-@Deprecated
-public class GridDesktopPanel extends AbsolutePanel{
+public interface IBasicPortlet {
 
+    void makeDraggable(DragController moveDragController);
+
+    void makeResizable(ResizeDragController resizeDragController);
+
+    void makeNotResizable();
+
+    void makeNotDraggable();
+
+    void setContentSize(int width, int height);
+
+    void setHeight(String height);
+
+    void setWidth(String width);
+
+    void setPixelSize(int width, int height);
+
+    void setSize(String width, String height);
+    
+    void clearPortletContent();
+    
+    void addPortletContent(Widget w);
+    
+    void setTitle(String title);
+    
+    void setContent(Widget w);
+    
+    void selectPortlet();
+    
+    void restoreWidget( );
+    
+    int getContentHeight();
+
+    int getContentWidth();
+    
+    Widget getContentWidget();
+    
+    Widget asWidget() ;
+    
+    void removeFromParent();
 }

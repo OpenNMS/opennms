@@ -11,7 +11,7 @@
 	  <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
 
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.opennms.features.dashboard.client.Application'/>
+      <!-- entry-point class='org.opennms.features.dashboard.client.Application'/-->
 
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Application.css' />

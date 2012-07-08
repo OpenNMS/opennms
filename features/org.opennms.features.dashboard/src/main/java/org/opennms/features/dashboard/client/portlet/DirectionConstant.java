@@ -26,15 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.dashboard.client.layout;
-
-import com.google.gwt.user.client.ui.AbsolutePanel;
+package org.opennms.features.dashboard.client.portlet;
 
 /**
  * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
  * org.opennms.features.dashboard
  */
-@Deprecated
-public class GridDesktopPanel extends AbsolutePanel{
+public class DirectionConstant
+{
+	public final int directionBits;
 
+	public final String directionLetters;
+
+	DirectionConstant( int directionBits, String directionLetters )
+	{
+		this.directionBits = directionBits;
+		this.directionLetters = directionLetters;
+	}
 }

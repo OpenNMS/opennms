@@ -41,27 +41,26 @@ import com.allen_sauer.gwt.dnd.client.VetoDragException;
  */
 public final class GridViewDragHandler implements DragHandler {
 
-	public GridViewDragHandler() {
-	}
+    public GridViewDragHandler() {
+    }
 
-	public void onDragEnd(DragEndEvent event) {
-		// TODO Auto-generated method stub
+    public void onDragEnd(DragEndEvent event) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public void onDragStart(DragStartEvent event) {
-		// TODO Auto-generated method stub
+    public void onDragStart(DragStartEvent event) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public void onPreviewDragEnd(DragEndEvent event) throws VetoDragException {
-		// TODO Auto-generated method stub
+    public void onPreviewDragEnd(DragEndEvent event) throws VetoDragException {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public void onPreviewDragStart(DragStartEvent event)
-			throws VetoDragException {
-		// TODO Auto-generated method stub
-
-	}
+    public void onPreviewDragStart(DragStartEvent event)
+            throws VetoDragException {
+        // TODO Auto-generated method stub
+    }
 }
