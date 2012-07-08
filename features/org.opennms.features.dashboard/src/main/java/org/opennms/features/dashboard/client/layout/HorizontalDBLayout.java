@@ -36,13 +36,13 @@ import org.opennms.features.dashboard.client.portlet.IBasicPortlet;
  */
 public class HorizontalDBLayout extends BasicDBLayout {
     @Override
-    public int addNewPortlet(IBasicPortlet visItem) {
+    public int addNewPortlet(IBasicPortlet portlet) {
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public int addNewPortlet(int x, int y, IBasicPortlet visItem) {
+    public int addNewPortlet(int x, int y, IBasicPortlet portlet) {
         // TODO Auto-generated method stub
         return 0;
     }

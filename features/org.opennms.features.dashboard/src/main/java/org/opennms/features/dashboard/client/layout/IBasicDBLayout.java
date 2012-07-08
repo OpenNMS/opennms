@@ -35,10 +35,12 @@ import org.opennms.features.dashboard.client.portlet.IBasicPortlet;
  * org.opennms.features.dashboard
  */
 public interface IBasicDBLayout {
-    int addNewPortlet(IBasicPortlet visItem);
-    
-    int addNewPortlet(int x, int y, IBasicPortlet visItem);
+    int addNewPortlet(IBasicPortlet portlet);
+
+    int addNewPortlet(int x, int y, IBasicPortlet portlet);
+
     void setContent(int index);
+
     void closePortlet(int window);
 
     void setHeaderCaption(int window, String text);
