@@ -75,8 +75,8 @@ public class DashletLoader extends Composite {
             m_panel.setWidget(m_progressIcon);
             break;
         case COMPLETE:
-            if (m_panel.getWidget() != null) {
-              m_panel.remove(m_panel.getWidget());
+            if (m_panel.getContentWidget() != null) {
+              m_panel.remove(m_panel.getContentWidget());
             }
             break;
         }
