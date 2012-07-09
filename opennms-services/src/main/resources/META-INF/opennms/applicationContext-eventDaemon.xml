@@ -23,15 +23,6 @@
 
   <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigManager-init" factory-method="getInstance"/>
 
-  <bean id="eventconfFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.EventconfFactory.setInstance</value></property>
-    <property name="arguments">
-      <list>
-        <ref bean="eventConfDao"/>
-      </list>
-    </property>
-  </bean>
-
   <bean id="eventExpander" class="org.opennms.netmgt.eventd.processor.EventExpander">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>

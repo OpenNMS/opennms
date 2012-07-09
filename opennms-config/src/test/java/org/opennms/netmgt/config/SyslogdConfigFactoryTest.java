@@ -118,7 +118,7 @@ public class SyslogdConfigFactoryTest {
 
     @Test
     public void testImportFiles() throws Exception {
-        SyslogdConfigFactory factory = new SyslogdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration-with-imports.xml"));
+        SyslogdConfigFactory factory = new SyslogdConfigFactory(this.getClass().getResourceAsStream("syslogd-configuration-with-imports.xml"));
         Assert.assertEquals(22, factory.getUeiList().getUeiMatchCount());
         Assert.assertEquals(4, factory.getHideMessages().getHideMatchCount());
         int countMatch = 0;

@@ -44,7 +44,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventExpander;
-import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
@@ -165,7 +164,6 @@ public class OpenNMSTestCase extends TestCase {
                 DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
                 eventConfDao.setConfigResource(new FileSystemResource(configFile));
                 eventConfDao.afterPropertiesSet();
-                EventconfFactory.setInstance(eventConfDao);
                 
                 EventExpander eventExpander = new EventExpander();
                 eventExpander.setEventConfDao(eventConfDao);

@@ -52,9 +52,7 @@ public class DiscoveryConfigFactoryTest {
     @Test
     public void testAddToSpecificsFromURLViaURL() throws Exception {
         final List<IPPollAddress> specifics = new ArrayList<IPPollAddress>();
-        final URL in = Thread.currentThread().getContextClassLoader().getResource(
-                "org/opennms/netmgt/config/validDiscoveryIncludeFile.txt"
-        );
+        final URL in = this.getClass().getResource("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in.toString(), timeout, retries);
@@ -72,9 +70,7 @@ public class DiscoveryConfigFactoryTest {
     @Test
     public void testAddToSpecificsFromURLViaStream() throws Exception {
         final List<IPPollAddress> specifics = new ArrayList<IPPollAddress>();
-        final InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                "org/opennms/netmgt/config/validDiscoveryIncludeFile.txt"
-        );
+        final InputStream in = this.getClass().getResourceAsStream("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, timeout, retries);

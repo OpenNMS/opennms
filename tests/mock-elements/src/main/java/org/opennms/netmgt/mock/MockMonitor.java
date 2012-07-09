@@ -42,6 +42,12 @@ public class MockMonitor implements ServiceMonitor {
     private String m_svcName;
 
     /**
+     * Simple constructor so that the MockMonitor can be used as a placeholder {@link ServiceMonitor}
+     * inside config files.
+     */
+    public MockMonitor() {}
+
+    /**
      * @param network
      * @param svcName
      */

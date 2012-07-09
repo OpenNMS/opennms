@@ -62,7 +62,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.test.DaoTestConfigBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -81,29 +80,28 @@ public class EventconfFactoryTest {
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
     private static final String unknownUEI1="uei.opennms.org/foo/thisShouldBeAnUnknownUEI";
     
+    DefaultEventConfDao m_eventConfDao;
 
     @Before
     public void setUp() throws Exception {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
-        daoTestConfig.afterPropertiesSet();
-
-        EventconfFactory.reinit();
+        m_eventConfDao = new DefaultEventConfDao();
+        m_eventConfDao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        m_eventConfDao.afterPropertiesSet();
     }
 
     @Test
     public void testIsSecureTagWhenExists() {
-        assertTrue("isSecureTag(\"logmsg\") should be true", EventconfFactory.getInstance().isSecureTag("logmsg"));
+        assertTrue("isSecureTag(\"logmsg\") should be true", m_eventConfDao.isSecureTag("logmsg"));
     }
 
     @Test
     public void testIsSecureTagWhenDoesNotExist() {
-        assertFalse("isSecureTag(\"foobarbaz\") should be false", EventconfFactory.getInstance().isSecureTag("foobarbaz"));
+        assertFalse("isSecureTag(\"foobarbaz\") should be false", m_eventConfDao.isSecureTag("foobarbaz"));
     }
     
     @Test
     public void testFindByUeiKnown() {
-        Event eventConf = EventconfFactory.getInstance().findByUei(knownUEI1);
+        Event eventConf = m_eventConfDao.findByUei(knownUEI1);
         assertNotNull("returned event configuration for known UEI '" + knownUEI1 + "' should not be null", eventConf);
         assertEquals("UEI", knownUEI1, eventConf.getUei());
         assertEquals("label", knownLabel1, eventConf.getEventLabel());
@@ -111,7 +109,7 @@ public class EventconfFactoryTest {
 
     @Test
     public void testFindByUeiUnknown() {
-        Event eventConf = EventconfFactory.getInstance().findByUei(unknownUEI1);
+        Event eventConf = m_eventConfDao.findByUei(unknownUEI1);
         assertNull("returned event configuration for unknown UEI '" + unknownUEI1 + "' should be null", eventConf);
     }
     
@@ -119,7 +117,7 @@ public class EventconfFactoryTest {
     public void testFindByEventUeiKnown() {
         EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
 
-        Event eventConf = EventconfFactory.getInstance().findByEvent(bldr.getEvent());
+        Event eventConf = m_eventConfDao.findByEvent(bldr.getEvent());
         assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
         assertEquals("UEI", bldr.getEvent().getUei(), eventConf.getUei());
     }
@@ -127,7 +125,7 @@ public class EventconfFactoryTest {
     @Test
     public void testFindByEventUnknown() {
         EventBuilder bldr = new EventBuilder(unknownUEI1, "testFindByEventUnknown");
-        Event eventConf = EventconfFactory.getInstance().findByEvent(bldr.getEvent());
+        Event eventConf = m_eventConfDao.findByEvent(bldr.getEvent());
         assertNull("returned event configuration for event with unknown UEI '" + unknownUEI1 + "' should be null", eventConf);
     }
 
@@ -152,21 +150,21 @@ public class EventconfFactoryTest {
     }
     
     private List<Event> getEventsByLabel() {
-        return EventconfFactory.getInstance().getEventsByLabel();
+        return m_eventConfDao.getEventsByLabel();
     }
     
     @Test
     public void testGetEventByUEI() {
-        List<Event> result=EventconfFactory.getInstance().getEvents(knownUEI1);
+        List<Event> result=m_eventConfDao.getEvents(knownUEI1);
         assertEquals("Should only be one result", 1, result.size());
         Event firstEvent=(Event)result.get(0);
         assertEquals("UEI should be "+knownUEI1, knownUEI1, firstEvent.getUei());
         
-        result=EventconfFactory.getInstance().getEvents("uei.opennms.org/internal/capsd/nonexistent");
+        result=m_eventConfDao.getEvents("uei.opennms.org/internal/capsd/nonexistent");
         assertNull("Should be null list for non-existent URI", result);
         
         //Find an event that's in a sub-file
-        result=EventconfFactory.getInstance().getEvents(knownSubfileUEI1);
+        result=m_eventConfDao.getEvents(knownSubfileUEI1);
         assertEquals("Should only be one result", 1, result.size());
         firstEvent=(Event)result.get(0);
         assertEquals("UEI should be "+knownSubfileUEI1,knownSubfileUEI1, firstEvent.getUei());
@@ -174,18 +172,14 @@ public class EventconfFactoryTest {
     
     @Test
     public void testGetEventUEIS() {
-        List<String> ueis=EventconfFactory.getInstance().getEventUEIs();
-        //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 10011, ueis.size());
+        List<String> ueis=m_eventConfDao.getEventUEIs();
         assertTrue("Must contain known UEI", ueis.contains(knownUEI1));
         assertTrue("Must contain known UEI", ueis.contains(knownSubfileUEI1));
     }
     
     @Test
     public void testGetLabels() {
-        Map<String,String> labels=EventconfFactory.getInstance().getEventLabels();
-        //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 10011, labels.size());
+        Map<String,String> labels=m_eventConfDao.getEventLabels();
         assertTrue("Must contain known UEI", labels.containsKey(knownUEI1));
         assertEquals("Must have known Label", labels.get(knownUEI1), knownLabel1);
         assertTrue("Must contain known UEI", labels.containsKey(knownSubfileUEI1));
@@ -194,8 +188,8 @@ public class EventconfFactoryTest {
     
     @Test
     public void testGetLabel() {
-        assertEquals("Must have correct label"+knownLabel1, knownLabel1, EventconfFactory.getInstance().getEventLabel(knownUEI1));
-        assertEquals("Must have correct label"+knownSubfileLabel1, knownSubfileLabel1, EventconfFactory.getInstance().getEventLabel(knownSubfileUEI1));
+        assertEquals("Must have correct label"+knownLabel1, knownLabel1, m_eventConfDao.getEventLabel(knownUEI1));
+        assertEquals("Must have correct label"+knownSubfileLabel1, knownSubfileLabel1, m_eventConfDao.getEventLabel(knownSubfileUEI1));
     }
     
     @Test
@@ -217,12 +211,12 @@ public class EventconfFactoryTest {
     @Test
     public void testReload() {
         String newUEI="uei.opennms.org/custom/newTestUEI";
-        List<Event> events=EventconfFactory.getInstance().getEvents(knownUEI1);
+        List<Event> events=m_eventConfDao.getEvents(knownUEI1);
         Event event=(Event)events.get(0);
         event.setUei(newUEI);
         
         //Check that the new UEI is there
-        List<Event> events2=EventconfFactory.getInstance().getEvents(newUEI);
+        List<Event> events2=m_eventConfDao.getEvents(newUEI);
         Event event2=((Event)events2.get(0));
         assertNotNull("Must have some events", event2);
         assertEquals("Must be exactly 1 event", 1, events2.size());
@@ -231,19 +225,19 @@ public class EventconfFactoryTest {
 
         //Now reload without saving - should not find the new one, but should find the old one
         try {
-            EventconfFactory.getInstance().reload();
+            m_eventConfDao.reload();
         } catch (Throwable e) {
             e.printStackTrace();
             fail("Should not have had exception while reloading factory "+e.getMessage());
         }
-        List<Event> events3=EventconfFactory.getInstance().getEvents(knownUEI1);
+        List<Event> events3=m_eventConfDao.getEvents(knownUEI1);
         assertNotNull("Must have some events", events3);
         assertEquals("Must be exactly 1 event", 1, events3.size());
         Event event3=(Event)events3.get(0);
         assertEquals("uei must be the new one", knownUEI1, event3.getUei());       
         
         //Check that the new UEI is *not* there this time
-        List<Event> events4=EventconfFactory.getInstance().getEvents(newUEI);
+        List<Event> events4=m_eventConfDao.getEvents(newUEI);
         assertNull("Must be no events by that name", events4);
     }
     
@@ -368,7 +362,7 @@ public class EventconfFactoryTest {
      */
     @Test
     public void testIncludedEventFilesExistAndNoExtras() throws Exception {
-        File eventConfFile = new File("src/test/resources/etc/eventconf.xml");
+        File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());

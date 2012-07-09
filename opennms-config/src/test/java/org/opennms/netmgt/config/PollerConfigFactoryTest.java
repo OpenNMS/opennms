@@ -81,7 +81,7 @@ public class PollerConfigFactoryTest extends TestCase {
             "       </service>\n" +
             "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
             "   </package>\n" +
-            "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.poller.monitors.LdapMonitor\"/>\n"+
+            "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>\n"+
             "</poller-configuration>\n";
 
     protected void setUp() throws Exception {

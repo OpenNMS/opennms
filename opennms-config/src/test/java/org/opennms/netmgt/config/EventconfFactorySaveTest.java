@@ -97,7 +97,7 @@ public class EventconfFactorySaveTest extends TestCase {
      * @param destDir
      * @param relativeFilePath
      */
-    private File createTempCopy(FileAnticipator fa, File sourceDir, File destDir, String file) throws Exception {
+    private static File createTempCopy(FileAnticipator fa, File sourceDir, File destDir, String file) throws Exception {
         FileUtils.copyFile(new File(sourceDir, file), new File(destDir, file));
         return fa.expecting(destDir, file);
     }
@@ -151,7 +151,7 @@ public class EventconfFactorySaveTest extends TestCase {
 
     }
 
-    private Event getAddableEvent() {
+    private static Event getAddableEvent() {
         Event event=new Event();
         event.setUei(newUEI);
         event.setEventLabel(newEventLabel);
@@ -164,7 +164,7 @@ public class EventconfFactorySaveTest extends TestCase {
         return event;
     }
     
-    private void checkAddableEvent(Event event) {
+    private static void checkAddableEvent(Event event) {
         assertEquals("Should be the new UEI", newUEI, event.getUei());
         assertEquals(newEventLabel, event.getEventLabel());
         assertEquals(newDescr, event.getDescr());

@@ -36,15 +36,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.DataCollectionConfigParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -54,9 +54,9 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 88;
-    private static final int systemDefCount = 141;
-    private static final int groupsCount = 204;
+    private static final int resourceTypesCount = 92;
+    private static final int systemDefCount = 143;
+    private static final int groupsCount = 212;
     private Level errorLevel;
 
     @Before
@@ -96,7 +96,7 @@ public class DataCollectionConfigParserTest {
     @Test
     public void testLoadWithOnlyExternalReferences() throws Exception {
         // Create DatacollectionConfig
-        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-onlyimports.xml");
+        Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-onlyimports.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
 
         // Validate default datacollection content
@@ -111,14 +111,14 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(systemDefCount, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(141, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(162, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
     @Test
     public void testLoadHybridConfiguration() throws Exception {
         // Create DatacollectionConfig
-        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-hybrid.xml");
+        Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-hybrid.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
 
         // Validate default datacollection content
@@ -140,7 +140,7 @@ public class DataCollectionConfigParserTest {
     @Test
     public void testLoadSimple() throws Exception {
         // Create DatacollectionConfig
-        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-simple.xml");
+        Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-simple.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
 
         // Validate default datacollection content
@@ -162,7 +162,7 @@ public class DataCollectionConfigParserTest {
     @Test
     public void testLoadSimpleWithExclusions() throws Exception {
         // Create DatacollectionConfig
-        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-excludes.xml");
+        Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-excludes.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
 
         // Validate default datacollection content
@@ -184,7 +184,7 @@ public class DataCollectionConfigParserTest {
     @Test
     public void testSingleSystemDefs() throws Exception {
         // Create DatacollectionConfig
-        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-single-systemdef.xml");
+        Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-single-systemdef.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
 
         // Validate default datacollection content
@@ -207,7 +207,7 @@ public class DataCollectionConfigParserTest {
     public void testPrecedence() throws Exception {
         // Create DatacollectionConfig
         errorLevel = Level.ERROR;
-        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-hybrid-precedence.xml");
+        Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-hybrid-precedence.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
 
         // Validate default datacollection content
@@ -240,22 +240,22 @@ public class DataCollectionConfigParserTest {
         }
     }
 
-    private File getDatacollectionDirectory() {
-        File configFile = new File("src/test/opennms-home/etc", "datacollection-config.xml");
+    private static File getDatacollectionDirectory() {
+        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
         File configFolder = new File(configFile.getParentFile(), "datacollection");
         System.err.println(configFolder.getAbsolutePath());
         Assert.assertTrue(configFolder.isDirectory());
         return configFolder;
     }
 
-    private void executeParser(SnmpCollection collection) {
+    private static void executeParser(SnmpCollection collection) {
         File configFolder = getDatacollectionDirectory();
         DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
         parser.parseCollection(collection);
         validateParser(parser);
     }
 
-    private void validateParser(DataCollectionConfigParser parser) {
+    private static void validateParser(DataCollectionConfigParser parser) {
         Map<String,DatacollectionGroup> groupMap = parser.getExternalGroupMap();
         int currentResourceTypes = 0;
         int currentSystemDefs = 0;
