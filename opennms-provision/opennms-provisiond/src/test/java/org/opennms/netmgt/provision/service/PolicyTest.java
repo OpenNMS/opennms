@@ -104,14 +104,14 @@ public class PolicyTest {
         fs.setName("default");
         fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         
-        PluginConfig policy1 = new PluginConfig("poll-vlan-600", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
-        policy1.addParameter("ifDescr", "~^.*VLAN.*600.*L3.*$");
+        PluginConfig policy1 = new PluginConfig("poll-trunk-1", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        policy1.addParameter("ifDescr", "~^.*Trunk 1.*$");
         policy1.addParameter("action", "ENABLE_POLLING");
         policy1.addParameter("matchBehavior", "ANY_PARAMETER");
         
-        PluginConfig policy2 = new PluginConfig("poll-trunk-1", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
-        policy2.addParameter("ifDescr", "~^.*Trunk.*1.*$");
-        policy2.addParameter("action", "ENABLE_POLLING");
+        PluginConfig policy2 = new PluginConfig("poll-vlan-600", "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
+        policy2.addParameter("ipAddress", "~^10\\.102\\..*$");
+        policy2.addParameter("action", "ENABLE_SNMP_POLL");
         policy2.addParameter("matchBehavior", "ANY_PARAMETER");
 
         System.err.println(policy1.toString());
@@ -166,12 +166,22 @@ public class PolicyTest {
         assertEquals(10600, onmsinterface.getIfIndex().intValue());
         assertEquals(1, onmsinterface.getIpInterfaces().size());
         assertEquals("P", onmsinterface.getPoll());
+
+        criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.add(Restrictions.ilike("ifName", "ifc3 (Slot: 1 Port: 3)", MatchMode.ANYWHERE));
+        onmssnmpifaces = getSnmpInterfaceDao().findMatching(criteria);
+        assertEquals(1, onmssnmpifaces.size());
         
+        onmsinterface = onmssnmpifaces.get(0);
+        assertEquals("1", onmsinterface.getNode().getNodeId());
+        assertEquals(3, onmsinterface.getIfIndex().intValue());
+        assertEquals(1, onmsinterface.getIpInterfaces().size());
+        assertEquals("P", onmsinterface.getPoll());
+
         criteria = new OnmsCriteria(OnmsSnmpInterface.class);
         criteria.add(Restrictions.eq("poll", "P"));
-        assertEquals(2, getSnmpInterfaceDao().countMatching(criteria));
-        
-        
+        assertEquals(3, getSnmpInterfaceDao().countMatching(criteria));
+                
     }
     
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
