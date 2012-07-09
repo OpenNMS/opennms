@@ -29,18 +29,29 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 	}
 	
 	public void onKeyDown(KeyDownEvent event) {
+		
 		code = new Code(event);
 		if (!code.isControlKey()){
-			if (code.isFunctionKey() || code.isCtrlDown() || code.isAltDown()) processCode(code);
+			if (code.isFunctionKey() || code.isCtrlDown() || code.isAltDown()) {
+				processCode(code);
+				event.getNativeEvent().stopPropagation();
+				event.getNativeEvent().preventDefault();
+			}
 		}
 	}
 	
 	public void onKeyPress(KeyPressEvent event) {
 		code = new Code(event);
-		if (code.getCharCode() > 31 && code.getCharCode() < 127) processCode(code);
+		if (code.getCharCode() > 31 && code.getCharCode() < 127) {
+			processCode(code);
+			event.getNativeEvent().stopPropagation();
+			event.getNativeEvent().preventDefault();
+		}
 	}
 	
-	public void onKeyUp(KeyUpEvent event) {}
+	public void onKeyUp(KeyUpEvent event) {
+		
+	}
 
 	public void processCode(Code c){
 		int k = 0;

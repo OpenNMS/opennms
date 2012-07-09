@@ -30,8 +30,8 @@ import com.vaadin.ui.Window.CloseListener;
 public class TerminalApplication extends com.vaadin.Application implements CloseListener{
     
 	Window main = new Window("Vaadin Application");
-	private String host = "localhost";
-	private int port = 8080;
+	private String host = "debian.opennms.org";
+	private int port = 22;
 
     @Override
     public void init() {

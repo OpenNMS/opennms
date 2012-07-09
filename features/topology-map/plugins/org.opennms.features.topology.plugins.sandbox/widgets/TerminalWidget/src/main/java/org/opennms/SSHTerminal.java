@@ -27,6 +27,8 @@ import java.util.Map;
 import com.Ostermiller.util.NoCloseInputStream;
 import com.Ostermiller.util.NoCloseOutputStream;
 
+import org.apache.sshd.ClientChannel;
+import org.apache.sshd.ClientSession;
 import org.opennms.gwt.client.ui.VTerminal;
 
 import com.vaadin.Application;
@@ -46,6 +48,7 @@ public class SSHTerminal extends AbstractComponent {
 	private int TERM_WIDTH;
 	private int TERM_HEIGHT;
 	private SessionTerminal st;
+	private ClientSession session;
 	private String dumpContents;
 	private SudoSSHServer sshServer;
 	private boolean forceUpdate = false;
@@ -55,11 +58,12 @@ public class SSHTerminal extends AbstractComponent {
 	private Application app;
 	private SSHWindow sshWindow;
 
-	public SSHTerminal(TerminalApplication app, SSHWindow sshWindow, int width, int height) {
+	public SSHTerminal(TerminalApplication app, SSHWindow sshWindow, ClientSession session, int width, int height) {
 		super();
 		TERM_WIDTH = width;
 		TERM_HEIGHT = height;
 		dumpContents = null;
+		this.session = session;
 		closeClient = "false";
 		closeServer = false;
 		this.app = app;
@@ -120,17 +124,21 @@ public class SSHTerminal extends AbstractComponent {
 		private Terminal terminal;
 		private PipedOutputStream in;
 		private PipedInputStream out;
+		private ClientChannel channel;
 
 		public SessionTerminal() throws IOException {
 			try {
 				this.terminal = new Terminal(TERM_WIDTH, TERM_HEIGHT);
 				terminal.write("\u001b\u005B20\u0068"); // set newline mode on
-				terminal.write("lmbell@localhost~: ");
 				in = new PipedOutputStream();
 				out = new PipedInputStream();
 				PrintStream pipedOut = new PrintStream(new PipedOutputStream(out), true);
 				PipedInputStream pipedIn = new PipedInputStream(in);
-				sshServer = new SudoSSHServer(new NoCloseInputStream(pipedIn), new NoCloseOutputStream(pipedOut), null);
+//				sshServer = new SudoSSHServer(new NoCloseInputStream(pipedIn), new NoCloseOutputStream(pipedOut), null);
+				channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
+				channel.setIn(new NoCloseInputStream(pipedIn));
+				channel.setOut(new NoCloseOutputStream(pipedOut));
+				channel.setErr(System.out);
 				//TODO start SSH session and pass in streams
 
 			} catch (Exception e) {
@@ -140,7 +148,11 @@ public class SSHTerminal extends AbstractComponent {
 		@Override
 		public void start(){
 			super.start();
-			sshServer.start();
+			try {
+				channel.open();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		public String handle(String str, boolean forceDump) throws IOException {

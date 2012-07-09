@@ -54,20 +54,20 @@ public class AuthWindow extends Window {
 				String login = (String)usernameField.getValue();
 				String password = (String)passwordField.getValue();
 				try {
-//					session = client.connect(host, port).getSession();
-//
-//					int ret = ClientSession.WAIT_AUTH;
-//					if (session != null){
-//						while ((ret & ClientSession.WAIT_AUTH) != 0) {
-//							session.authPassword(login, password);
-//							ret = session.waitFor(ClientSession.WAIT_AUTH | ClientSession.CLOSED | ClientSession.AUTHED, 0);
-//						}
-//						if ((ret & ClientSession.CLOSED) != 0) {
-//							getWindow().showNotification("Failed to Login");
-//							return;
-//						}
-//					} 
-					showSSHWindow();
+					session = client.connect(host, port).await().getSession();
+
+					int ret = ClientSession.WAIT_AUTH;
+					if (session != null){
+						while ((ret & ClientSession.WAIT_AUTH) != 0) {
+							session.authPassword(login, password);
+							ret = session.waitFor(ClientSession.WAIT_AUTH | ClientSession.CLOSED | ClientSession.AUTHED, 0);
+						}
+						if ((ret & ClientSession.CLOSED) != 0) {
+							getApplication().getMainWindow().showNotification("Failed to Login");
+							return;
+						}
+						showSSHWindow();
+					} 
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

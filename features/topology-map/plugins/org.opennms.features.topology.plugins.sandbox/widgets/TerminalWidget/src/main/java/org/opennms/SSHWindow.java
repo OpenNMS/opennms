@@ -17,7 +17,7 @@ public class SSHWindow extends Window {
 		setResizable(false);
 		this.setWidth("" + width + "px");
 		this.setHeight(""+ height + "px");
-		terminal = new SSHTerminal(app, this, 80, 24);
+		terminal = new SSHTerminal(app, this, session, 80, 24);
 		VerticalLayout vPanel = new VerticalLayout();
 		vPanel.setWidth("100%");
 		vPanel.setHeight("100%");
