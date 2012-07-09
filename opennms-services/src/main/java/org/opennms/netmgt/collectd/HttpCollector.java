@@ -800,7 +800,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId()));
+            return new File(repository.getRrdBaseDir(), getParent());
         }
 
         public void visit(CollectionSetVisitor visitor) {
@@ -826,7 +826,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         public String getParent() {
-            return Integer.toString(m_agent.getNodeId());
+            return m_agent.getStorageDir().toString();
         }
 
         public TimeKeeper getTimeKeeper() {

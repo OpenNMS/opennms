@@ -219,9 +219,8 @@ public final class IfInfo extends SnmpCollectionResource {
     /** {@inheritDoc} */
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir, String.valueOf(getNodeId()));
-        File ifDir = new File(nodeDir, getLabel());
-        return ifDir;
+        File dir = new File (rrdBaseDir, getCollectionAgent().getStorageDir().toString());
+        return new File(dir, getLabel());
     }
 
     /**
@@ -268,6 +267,6 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     public String getParent() {
-        return Integer.toString(getNodeId());
+        return getCollectionAgent().getStorageDir().toString();
     }
 } // end class

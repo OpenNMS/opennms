@@ -43,6 +43,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.support.NodeSourceResourceType;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -116,6 +117,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String parent = values[0];
             String childType = values[1];
             String childName = values[2];
+            log().debug("findResults: parent, childType, childName = " + values[0] + ", " + values[1] + ", " + values[2]);
             OnmsResource resource = null;
             if (!resourcesMap.containsKey(parent)) {
                 List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
@@ -244,7 +246,14 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         
         Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
         for(RrdGraphAttribute rrdAttr : attrs) {
-            filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+rrdAttr.getRrdRelativePath());
+            log().debug("getAttributeFiles: ResourceType, ParentResourceType = "
+                        + rrdAttr.getResource().getResourceType().getLabel() + ", "
+                        + rrdAttr.getResource().getParent().getResourceType().getLabel());
+            if (rrdAttr.getResource().getParent().getResourceType().getLabel().equals("nodeSource")) {
+                filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+"foreignSource"+File.separator+rrdAttr.getRrdRelativePath());
+            } else {
+                filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+rrdAttr.getRrdRelativePath());
+            }
         }
         
     }

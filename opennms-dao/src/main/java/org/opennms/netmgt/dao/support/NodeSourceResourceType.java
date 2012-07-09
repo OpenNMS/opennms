@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,34 +36,39 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.LazyList;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
 /**
- * <p>DomainResourceType class.</p>
+ * <p>NodeSourceResourceType class.</p>
  */
-public class DomainResourceType implements OnmsResourceType {
+public class NodeSourceResourceType implements OnmsResourceType {
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
     private ResourceDao m_resourceDao;
+    private NodeDao m_nodeDao;
 
     /**
-     * <p>Constructor for DomainResourceType.</p>
+     * <p>Constructor for NodeSourceResourceType.</p>
      *
      * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param nodeDao 
      */
-    public DomainResourceType(ResourceDao resourceDao) {
+    public NodeSourceResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
+        m_nodeDao = nodeDao;
     }
-    
+
     /**
      * <p>getLabel</p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getLabel() {
-        return "Domain";
+        return "Foreign Source";
     }
 
     /**
@@ -72,11 +77,11 @@ public class DomainResourceType implements OnmsResourceType {
      * @return a {@link java.lang.String} object.
      */
     public String getName() {
-        return "domain";
+        return "nodeSource";
     }
 
     /** {@inheritDoc} */
-    public List<OnmsResource> getResourcesForDomain(String domain) {
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         return null;
     }
 
@@ -86,12 +91,12 @@ public class DomainResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
-    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+    public List<OnmsResource> getResourcesForDomain(String domain) {
         return null;
     }
 
     /** {@inheritDoc} */
-    public boolean isResourceTypeOnDomain(String domain) {
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         return false;
     }
 
@@ -101,37 +106,45 @@ public class DomainResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
-    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
-        return false;
-    }
+        public boolean isResourceTypeOnDomain(String domain) {
+                return false;
+        }
+
 
     /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
-        // Need a search for hosts in a domain. The present nodeList capability won't support it.
-        // Just return null for now
-        return null;
+        String ident[] = resource.getName().split(":");
+        int nodeId = m_nodeDao.findByForeignId(ident[0], ident[1]).getId();
+        return "element/node.jsp?node=" + nodeId;
     }
-    
+
     /**
      * <p>createChildResource</p>
      *
-     * @param domain a {@link java.lang.String} object.
+     * @param nodeSource a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
-    public OnmsResource createChildResource(String domain) {
-        DomainChildResourceLoader loader = new DomainChildResourceLoader(domain);
-        OnmsResource resource = new OnmsResource(domain, domain, this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
+    public OnmsResource createChildResource(String nodeSource) {
+        String[] ident = nodeSource.split(":");
+        String label = ident[0] + ":" + m_nodeDao.findByForeignId(ident[0], ident[1]).getLabel();
+        NodeSourceChildResourceLoader loader = new NodeSourceChildResourceLoader(nodeSource);
+        OnmsResource resource = new OnmsResource(nodeSource, label, this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
         loader.setParent(resource);
         
         return resource;
     }
-    
-    public class DomainChildResourceLoader implements LazyList.Loader<OnmsResource> {
-        private String m_domain;
+
+    public class NodeSourceChildResourceLoader implements LazyList.Loader<OnmsResource> {
+        private String m_nodeSource;
         private OnmsResource m_parent;
         
-        public DomainChildResourceLoader(String domain) {
-            m_domain = domain;
+        private int nodeSourceToNodeId() {
+                String[] ident = m_nodeSource.split(":");
+            return m_nodeDao.findByForeignId(ident[0], ident[1]).getId();
+        }
+        
+        public NodeSourceChildResourceLoader(String nodeSource) {
+            m_nodeSource = nodeSource;
         }
         
         public void setParent(OnmsResource parent) {
@@ -141,24 +154,31 @@ public class DomainResourceType implements OnmsResourceType {
         public List<OnmsResource> load() {
             List<OnmsResource> children = new LinkedList<OnmsResource>();
 
-            for (OnmsResourceType resourceType : getResourceTypesForDomain(m_domain)) {
-                for (OnmsResource resource : resourceType.getResourcesForDomain(m_domain)) {
+            for (OnmsResourceType resourceType : getResourceTypesForNodeSource(m_nodeSource)) {
+                for (OnmsResource resource : resourceType.getResourcesForNodeSource(m_nodeSource, nodeSourceToNodeId())) {
                     resource.setParent(m_parent);
                     children.add(resource);
+                    log().debug("load: adding resource " + resource.toString());
                 }
             }
 
             return children;
         }
         
-        private Collection<OnmsResourceType> getResourceTypesForDomain(String domain) {
+        private Collection<OnmsResourceType> getResourceTypesForNodeSource(String nodeSource) {
             Collection<OnmsResourceType> resourceTypes = new LinkedList<OnmsResourceType>();
             for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
-                if (resourceType.isResourceTypeOnDomain(domain)) {
+                if (resourceType.isResourceTypeOnNodeSource(nodeSource, nodeSourceToNodeId())) {
                     resourceTypes.add(resourceType);
+                    log().debug("getResourceTypesForNodeSource: adding type " + resourceType.getName());
                 }
             }
             return resourceTypes;
         }
     }
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(NodeSourceResourceType.class);
+    }
+
+
 }
