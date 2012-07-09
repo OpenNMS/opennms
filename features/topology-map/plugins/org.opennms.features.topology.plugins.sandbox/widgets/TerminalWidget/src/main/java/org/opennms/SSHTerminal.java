@@ -122,23 +122,24 @@ public class SSHTerminal extends AbstractComponent {
 	public class SessionTerminal extends Thread {
 
 		private Terminal terminal;
-		private PipedOutputStream in;
-		private PipedInputStream out;
+		private NoClosePipedOutputStream in;
+		private NoClosePipedInputStream out;
 		private ClientChannel channel;
 
 		public SessionTerminal() throws IOException {
 			try {
 				this.terminal = new Terminal(TERM_WIDTH, TERM_HEIGHT);
-				terminal.write("\u001b\u005B20\u0068"); // set newline mode on
-				in = new PipedOutputStream();
-				out = new PipedInputStream();
-				PrintStream pipedOut = new PrintStream(new PipedOutputStream(out), true);
-				PipedInputStream pipedIn = new PipedInputStream(in);
+//				terminal.write("\u001b\u005B20\u0068"); // set newline mode on
+				in = new NoClosePipedOutputStream();
+				out = new NoClosePipedInputStream();
+//				PrintStream pipedOut = new PrintStream(new PipedOutputStream(out), true);
+				NoClosePipedOutputStream pipedOut = new NoClosePipedOutputStream(out);
+				NoClosePipedInputStream pipedIn = new NoClosePipedInputStream(in);
 //				sshServer = new SudoSSHServer(new NoCloseInputStream(pipedIn), new NoCloseOutputStream(pipedOut), null);
 				channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
-				channel.setIn(new NoCloseInputStream(pipedIn));
-				channel.setOut(new NoCloseOutputStream(pipedOut));
-				channel.setErr(System.out);
+				channel.setIn(pipedIn);
+				channel.setOut(pipedOut);
+				channel.setErr(pipedOut);
 				//TODO start SSH session and pass in streams
 
 			} catch (Exception e) {
