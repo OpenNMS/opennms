@@ -166,6 +166,13 @@
 	    position: relative;
 	    margin-right: 2%;
 	}
+	/* Wrapping fix for IE7,8,9 */
+	div.TwoColLeft.IEWrapFix {
+        	word-wrap: break-word\0/; /* ie8,9 */
+        	table-layout:fixed\0/;
+        	*word-wrap: break-word; /* ie7 */
+        	*table-layout:fixed;
+	}
 	div.TwoColRight {
 	    width: 57%;
 	    float: left;
@@ -188,6 +195,15 @@
     :: Tables
     -------------------------------------------------- */
     table {
+	table-layout: fixed;
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    node_table {
+	table-layout: fixed;
         border-collapse: collapse;
         width: 100%;
         margin-top: 0;
@@ -195,6 +211,8 @@
     }
     
     table.o-box{ margin-bottom:0px; }
+
+    node_table.o-box{ margin-bottom:0px; }
     
     td.bright { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
     

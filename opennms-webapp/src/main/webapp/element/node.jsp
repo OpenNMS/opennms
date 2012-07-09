@@ -296,7 +296,7 @@
   </ul>
 </div>
 </div>
-<div class="TwoColLeft">
+<div class="TwoColLeft IEWrapFix">
   
   
 
