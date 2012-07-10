@@ -200,6 +200,7 @@
       <groupId>org.opennms.netmgt.mib2events</groupId>
       <artifactId>mib2events</artifactId>
       <version>${project.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.percederberg.grammatica</groupId>
@@ -223,6 +224,7 @@
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
       <version>1.1.7</version>
+      <scope>compile</scope>
     </dependency>
  
     <!-- Tests -->

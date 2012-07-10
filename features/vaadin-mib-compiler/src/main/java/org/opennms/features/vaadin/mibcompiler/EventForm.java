@@ -46,13 +46,16 @@ public abstract class EventForm extends Form implements ClickListener {
     /** The Constant FORM_ITEMS. */
     public static final String[] FORM_ITEMS = new String[] { "uei", "eventLabel", "descr", "logmsgContent", "logmsgDest", "severity", "maskElements", "maskVarbinds", "varbindsdecodeCollection" };
 
-    /** The save. */
+    /** The Edit button. */
+    private final Button edit = new Button("Edit");
+
+    /** The Delete button. */
+    private final Button delete = new Button("Delete");
+
+    /** The Save button. */
     private final Button save = new Button("Save");
     
-    /** The edit. */
-    private final Button edit = new Button("Edit");
-    
-    /** The cancel. */
+    /** The Cancel button. */
     private final Button cancel = new Button("Cancel");
 
     /**
@@ -67,17 +70,19 @@ public abstract class EventForm extends Form implements ClickListener {
     }
 
     /**
-     * Inits the toolbar.
+     * Initialize the Toolbar.
      */
     private void initToolbar() {
         save.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
         cancel.addListener((ClickListener)this);
+        edit.addListener((ClickListener)this);
+        delete.addListener((ClickListener)this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
-        toolbar.addComponent(save);
         toolbar.addComponent(edit);
+        toolbar.addComponent(delete);
+        toolbar.addComponent(save);
         toolbar.addComponent(cancel);
 
         setFooter(toolbar);
@@ -99,6 +104,7 @@ public abstract class EventForm extends Form implements ClickListener {
         save.setVisible(!readOnly);
         cancel.setVisible(!readOnly);
         edit.setVisible(readOnly);
+        delete.setVisible(readOnly);
     }
 
     /* (non-Javadoc)
@@ -111,12 +117,15 @@ public abstract class EventForm extends Form implements ClickListener {
             customCommit();
             setReadOnly(true);
         }
+        if (source == cancel) {
+            discard();
+            setReadOnly(true);
+        }
         if (source == edit) {
             setReadOnly(false);
         }
-        if (source== cancel) {
-            discard();
-            setReadOnly(true);
+        if (source == delete) {
+            getApplication().getMainWindow().showNotification("Sorry, not implemented yet!");
         }
     }
 

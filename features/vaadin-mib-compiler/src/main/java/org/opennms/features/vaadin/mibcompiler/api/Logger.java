@@ -25,40 +25,41 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.mibcompiler;
-
-import com.vaadin.Application;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
+package org.opennms.features.vaadin.mibcompiler.api;
 
 /**
- * The Class MIB Compiler Application.
+ * The Interface Logger.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-@SuppressWarnings("serial")
-public class MibCompilerApplication extends Application {
+public interface Logger {
 
-    /* (non-Javadoc)
-     * @see com.vaadin.Application#init()
+    /**
+     * Error.
+     *
+     * @param message the message
      */
-    @Override
-    public void init() {
-        setTheme(Runo.THEME_NAME);
+    void error(String message);
 
-        final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
-        final MibConsole mibConsole = new MibConsole();
-        final MibTreePanel mibsTree = new MibTreePanel(mibConsole);
+    /**
+     * Warn.
+     *
+     * @param message the message
+     */
+    void warn(String message);
 
-        mainPanel.setSizeFull();
-        mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
-        mainPanel.addComponent(mibsTree);
-        mainPanel.addComponent(mibConsole);
-        
-        final Window mainWindow = new Window("MIB Compiler Application", mainPanel);
-        setMainWindow(mainWindow);
-    }
+    /**
+     * Info.
+     *
+     * @param message the message
+     */
+    void info(String message);
+
+    /**
+     * Debug.
+     *
+     * @param message the message
+     */
+    void debug(String message);
 
 }

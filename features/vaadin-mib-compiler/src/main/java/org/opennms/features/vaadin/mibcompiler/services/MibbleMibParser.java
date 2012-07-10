@@ -42,6 +42,7 @@ import net.percederberg.mibble.MibLoaderException;
 import net.percederberg.mibble.MibLoaderLog;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.mib2events.Mib2Events;
 import org.opennms.netmgt.xml.eventconf.Events;
 

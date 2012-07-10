@@ -53,22 +53,22 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public final class EventFieldFactory implements FormFieldFactory {
-    
+
     /** The Constant ACTION_ADD_MASK_ELEMENT. */
     private static final Action ACTION_ADD_MASK_ELEMENT = new Action("Add New Element");
-    
+
     /** The Constant ACTION_DELETE_MASK_ELEMENT. */
     private static final Action ACTION_DELETE_MASK_ELEMENT = new Action("Delete Selected Element");
-    
+
     /** The Constant ACTION_ADD_MASK_VARBIND. */
     private static final Action ACTION_ADD_MASK_VARBIND = new Action("Add New Mask Varbind");
-    
+
     /** The Constant ACTION_DELETE_MASK_VARBIND. */
     private static final Action ACTION_DELETE_MASK_VARBIND = new Action("Delete Selected Mask Varbind");
-    
+
     /** The Constant ACTION_ADD_VARBIND_DECODE. */
     private static final Action ACTION_ADD_VARBIND_DECODE = new Action("Add New Varbind Decode");
-    
+
     /** The Constant ACTION_DELETE_VARBIND_DECODE. */
     private static final Action ACTION_DELETE_VARBIND_DECODE = new Action("Delete Selected Varbind Decode");
 
@@ -140,14 +140,18 @@ public final class EventFieldFactory implements FormFieldFactory {
                     return new Action[] { ACTION_ADD_MASK_ELEMENT, ACTION_DELETE_MASK_ELEMENT };
                 }
                 public void handleAction(Action action, Object sender, Object target) {
-                    if (action == ACTION_ADD_MASK_ELEMENT) {
-                        // TODO Apparently this is not working or it is not enough
-                        container.addBean(new MaskElementDTO());
-                    }
-                    if (action == ACTION_DELETE_MASK_ELEMENT) { // FIXME Confirm ?
-                        MaskElementDTO me = ((MaskElementDTO) target);
-                        container.removeItem(me);
-                        elements.select(null);
+                    if (elements.isReadOnly()) {
+                        elements.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
+                    } else {
+                        if (action == ACTION_ADD_MASK_ELEMENT) {
+                            // TODO Apparently this is not working or it is not enough
+                            container.addBean(new MaskElementDTO());
+                        }
+                        if (action == ACTION_DELETE_MASK_ELEMENT) { // FIXME Confirm ?
+                            MaskElementDTO me = ((MaskElementDTO) target);
+                            container.removeItem(me);
+                            elements.select(null);
+                        }
                     }
                 }
             });
@@ -182,14 +186,18 @@ public final class EventFieldFactory implements FormFieldFactory {
                     return new Action[] { ACTION_ADD_MASK_VARBIND, ACTION_DELETE_MASK_VARBIND };
                 }
                 public void handleAction(Action action, Object sender, Object target) {
-                    if (action == ACTION_ADD_MASK_VARBIND) {
-                        // TODO Apparently this is not working or it is not enough
-                        container.addBean(new VarbindDTO());
-                    }
-                    if (action == ACTION_DELETE_MASK_VARBIND) { // FIXME Confirm ?
-                        VarbindDTO vb = ((VarbindDTO) target);
-                        container.removeItem(vb);
-                        varbinds.select(null);
+                    if (varbinds.isReadOnly()) {
+                        varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
+                    } else {
+                        if (action == ACTION_ADD_MASK_VARBIND) {
+                            // TODO Apparently this is not working or it is not enough
+                            container.addBean(new VarbindDTO());
+                        }
+                        if (action == ACTION_DELETE_MASK_VARBIND) { // FIXME Confirm ?
+                            VarbindDTO vb = ((VarbindDTO) target);
+                            container.removeItem(vb);
+                            varbinds.select(null);
+                        }
                     }
                 }
             });
@@ -224,13 +232,18 @@ public final class EventFieldFactory implements FormFieldFactory {
                     return new Action[] { ACTION_ADD_VARBIND_DECODE, ACTION_DELETE_VARBIND_DECODE };
                 }
                 public void handleAction(Action action, Object sender, Object target) {
-                    if (action == ACTION_ADD_VARBIND_DECODE) {
-                        container.addBean(new VarbindsDecodeDTO());
-                    }
-                    if (action == ACTION_DELETE_VARBIND_DECODE) { // FIXME Confirm ?
-                        VarbindsDecodeDTO vb = ((VarbindsDecodeDTO) target);
-                        container.removeItem(vb);
-                        varbinds.select(null);
+                    if (varbinds.isReadOnly()) {
+                        varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
+                    } else {
+                        if (action == ACTION_ADD_VARBIND_DECODE) {
+                            // TODO Apparently this is not working or it is not enough
+                            container.addBean(new VarbindsDecodeDTO());
+                        }
+                        if (action == ACTION_DELETE_VARBIND_DECODE) { // FIXME Confirm ?
+                            VarbindsDecodeDTO vb = ((VarbindsDecodeDTO) target);
+                            container.removeItem(vb);
+                            varbinds.select(null);
+                        }
                     }
                 }
             });
