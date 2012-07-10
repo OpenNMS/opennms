@@ -25,10 +25,12 @@ STDERR->fdopen( \*MYLOG, 'w' );
 				system("sh /opt/opennms/contrib/failover/scripts/failover.sh >> $log 2>&1");
 				my $running = isServiceRunning();
 				if ($running == 0) {	
+				  if (isDevIpConfigured()){
+				# if there is no dev management IP,
+				# VIP is the snmp target, so no need to resync 
                                 	print "trigger snmp target reset\n";
-                                	system("touch $pendingDD");
                                 	system("touch $snmpTargetReset");
-                                	system("touch $ear");
+				  }
 				}else {
 					print "ERROR: service opennms failed to run\n";
 				}
@@ -79,5 +81,15 @@ if ($done == 1) {
         print "\n##ERROR: waited 100 seconds, failed faileover";
         return 1;
 }
+}
+
+sub isDevIpConfigured {
+    my $str = `ifconfig eth3 | grep 'inet addr'`;
+    if ($str eq '') {
+	return 0;	
+    }
+    else {
+	return 1;
+    }
 }
 
