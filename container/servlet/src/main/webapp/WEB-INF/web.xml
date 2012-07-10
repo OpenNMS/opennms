@@ -46,7 +46,7 @@
   <!-- WARMERGE: begin servlet-mapping -->
   <servlet-mapping>
     <servlet-name>proxy</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/osgi/*</url-pattern>
   </servlet-mapping>
   <!-- WARMERGE: end servlet-mapping -->
 
