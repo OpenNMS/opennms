@@ -33,7 +33,7 @@ import org.opennms.features.vaadin.mibcompiler.model.DecodeDTO;
 import org.opennms.features.vaadin.mibcompiler.model.DecodeDTOList;
 import org.vaadin.addon.customfield.FieldWrapper;
 
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 
 /**
  * The Class VarbindDecodeListField.
@@ -42,28 +42,15 @@ import com.vaadin.ui.TextArea;
  */
 @SuppressWarnings("serial")
 public class VarbindDecodeListField extends FieldWrapper<ArrayList<DecodeDTO>> {
-    
-    /** The area. */
-    private TextArea area;
-    
+
     /**
      * Instantiates a new VarbindDecode list field.
      *
      */
     public VarbindDecodeListField() {
-        super(new TextArea(),  new VarbindDecodeListConverter(), DecodeDTOList.class);
-        this.area = (TextArea) getWrappedField();
-        this.area.setRows(3);
-        setCompositionRoot(this.area);
-    }
-    
-    /**
-     * Gets the text area.
-     *
-     * @return the text area
-     */
-    public TextArea getTextArea() {
-        return this.area;
+        super(new TextField(),  new VarbindDecodeListConverter(), DecodeDTOList.class);
+        TextField f = (TextField) getWrappedField();
+        setCompositionRoot(f);
     }
 
 }

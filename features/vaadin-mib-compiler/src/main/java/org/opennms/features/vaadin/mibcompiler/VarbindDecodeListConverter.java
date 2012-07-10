@@ -54,7 +54,7 @@ public class VarbindDecodeListConverter extends PropertyConverter<ArrayList<Deco
      */
     @Override
     public String format(ArrayList<DecodeDTO> propertyValue) {
-        return StringUtils.join(propertyValue, "\n");
+        return StringUtils.join(propertyValue, ',');
     }
 
     /* (non-Javadoc)
@@ -63,7 +63,7 @@ public class VarbindDecodeListConverter extends PropertyConverter<ArrayList<Deco
     @Override
     public ArrayList<DecodeDTO> parse(String fieldValue) {
         ArrayList<DecodeDTO> list = new ArrayList<DecodeDTO>();
-        for (String s : fieldValue.split("\n")) {
+        for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
             DecodeDTO d = new DecodeDTO();
             d.setVarbindvalue(parts[0].trim());

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import org.opennms.features.vaadin.mibcompiler.model.StringList;
 import org.vaadin.addon.customfield.FieldWrapper;
 
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 
 /**
  * The Class CustomListField.
@@ -42,27 +42,14 @@ import com.vaadin.ui.TextArea;
 @SuppressWarnings("serial")
 public class CustomListField extends FieldWrapper<ArrayList<String>> {
     
-    /** The area. */
-    private TextArea area;
-    
     /**
      * Instantiates a new custom list field.
      *
      */
     public CustomListField() {
-        super(new TextArea(),  new CustomListConverter(), StringList.class);
-        this.area = (TextArea) getWrappedField();
-        this.area.setRows(3);
-        setCompositionRoot(this.area);
+        super(new TextField(),  new CustomListConverter(), StringList.class);
+        TextField f = (TextField) getWrappedField();
+        setCompositionRoot(f);
     }
     
-    /**
-     * Gets the text area.
-     *
-     * @return the text area
-     */
-    public TextArea getTextArea() {
-        return this.area;
-    }
-
 }
