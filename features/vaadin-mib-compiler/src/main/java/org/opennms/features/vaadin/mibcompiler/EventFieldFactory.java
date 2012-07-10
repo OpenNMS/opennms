@@ -45,7 +45,9 @@ import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.Runo;
 
+// FIXME Alarm Data ?
 /**
  * A factory for creating EventField objects.
  * 
@@ -114,6 +116,7 @@ public final class EventFieldFactory implements FormFieldFactory {
             final BeanItemContainer<MaskElementDTO> container = new BeanItemContainer<MaskElementDTO>(MaskElementDTO.class);
             container.addAll(maskList);
             final Table elements = new Table("Mask Elements");
+            elements.setStyleName(Runo.TABLE_SMALL);
             elements.setContainerDataSource(container);
             elements.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
             elements.setColumnHeader("mename", "Element Name");
@@ -162,6 +165,7 @@ public final class EventFieldFactory implements FormFieldFactory {
             final BeanItemContainer<VarbindDTO> container = new BeanItemContainer<VarbindDTO>(VarbindDTO.class);
             container.addAll(varbindList);
             final Table varbinds = new Table("Mask Varbinds");
+            varbinds.setStyleName(Runo.TABLE_SMALL);
             varbinds.setContainerDataSource(container);
             varbinds.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
             varbinds.setColumnHeader("vbnumber", "Varbind Number");
@@ -208,6 +212,7 @@ public final class EventFieldFactory implements FormFieldFactory {
             final BeanItemContainer<VarbindsDecodeDTO> container = new BeanItemContainer<VarbindsDecodeDTO>(VarbindsDecodeDTO.class);
             container.addAll(varbindList);
             final Table varbinds = new Table("Varbind Decodes");
+            varbinds.setStyleName(Runo.TABLE_SMALL);
             varbinds.setContainerDataSource(container);
             varbinds.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
             varbinds.setColumnHeader("parmid", "Parameter ID");

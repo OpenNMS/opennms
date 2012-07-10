@@ -27,15 +27,22 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+
 import org.opennms.features.vaadin.mibcompiler.model.EventDTO;
+import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class EventTable.
@@ -50,14 +57,15 @@ public abstract class EventTable extends Table {
 
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "Generated Events" };
-
+    
     /**
      * Instantiates a new event table.
      *
      * @param events the events
      */
-    public EventTable(List<EventDTO> events) {
-        setContainerDataSource(new BeanItemContainer<EventDTO>(EventDTO.class, events));
+    public EventTable(final Events events) {
+        setContainerDataSource(new BeanItemContainer<EventDTO>(EventDTO.class, getDtoEvents(events)));
+        setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
         setVisibleColumns(COLUMN_NAMES);
@@ -88,11 +96,57 @@ public abstract class EventTable extends Table {
         item.addItemProperty("maskVarbinds", new NestedMethodProperty(item.getBean(), "mask.varbindCollection"));
         return item;
     }
-
+    
     /**
      * Update external source.
      *
      * @param item the item
      */
     public abstract void updateExternalSource(BeanItem<EventDTO> item);
+    
+    /**
+     * Gets the OpenNMS events.
+     *
+     * @param eventDtoList the Event DTO list
+     * @return the OpenNMS events
+     */
+    @SuppressWarnings("unchecked")
+    public List<org.opennms.netmgt.xml.eventconf.Event> getOnmsEvents() {
+        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
+        List<org.opennms.netmgt.xml.eventconf.Event> events = new ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
+        Collection<EventDTO> eventDtoList = ((BeanItemContainer<EventDTO>)getContainerDataSource()).getItemIds();
+        for (EventDTO dto : eventDtoList) {
+            org.opennms.netmgt.xml.eventconf.Event e = mapper.map(dto, org.opennms.netmgt.xml.eventconf.Event.class);
+            e.setDescr(encodeHtml(e.getDescr()));
+            e.getLogmsg().setContent(encodeHtml(e.getLogmsg().getContent()));
+            events.add(e);
+        }
+        return events;
+    }
+    
+    /**
+     * Gets the DTO events.
+     *
+     * @param events the OpenNMS events
+     * @return the list
+     */
+    private List<EventDTO> getDtoEvents(Events events) {
+        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
+        List<EventDTO> dtoEvents = new ArrayList<EventDTO>();
+        for (org.opennms.netmgt.xml.eventconf.Event e : events.getEventCollection()) {
+            EventDTO dto = mapper.map(e, EventDTO.class);
+            dtoEvents.add(dto);
+        }
+        return dtoEvents;
+    }
+    
+    /**
+     * Encode HTML.
+     *
+     * @param html the HTML
+     * @return the encoded string
+     */
+    private String encodeHtml(String html) {
+        return html.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
 }

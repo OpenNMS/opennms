@@ -273,7 +273,6 @@ public class MibTreePanel extends Panel {
                 void generateEventFile() { // FIXME This is not elegant.
                     StringWriter writer = new StringWriter();
                     try {
-                        events.setEvent(this.getOnmsEvents());
                         events.marshal(writer);
                         logger.info("<pre>" + writer.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") + "</pre>");
                     } catch (Exception e) {

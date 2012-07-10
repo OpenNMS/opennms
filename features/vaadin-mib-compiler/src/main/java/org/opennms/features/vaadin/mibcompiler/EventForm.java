@@ -27,6 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
+import org.opennms.features.vaadin.mibcompiler.model.EventDTO;
+
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -54,7 +57,7 @@ public abstract class EventForm extends Form implements ClickListener {
 
     /** The Save button. */
     private final Button save = new Button("Save");
-    
+
     /** The Cancel button. */
     private final Button cancel = new Button("Cancel");
 
@@ -88,6 +91,20 @@ public abstract class EventForm extends Form implements ClickListener {
         setFooter(toolbar);
     }
 
+    /**
+     * Gets the event.
+     *
+     * @return the event
+     */
+    @SuppressWarnings("unchecked")
+    private EventDTO getEvent() {
+        if (getItemDataSource() instanceof BeanItem) {
+            BeanItem<EventDTO> item = (BeanItem<EventDTO>) getItemDataSource();
+            return item.getBean();
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see com.vaadin.ui.Form#setReadOnly(boolean)
      */
@@ -114,8 +131,8 @@ public abstract class EventForm extends Form implements ClickListener {
         Button source = event.getButton();
         if (source == save) {
             commit();
-            customCommit();
             setReadOnly(true);
+            saveEvent(getEvent());
         }
         if (source == cancel) {
             discard();
@@ -124,14 +141,24 @@ public abstract class EventForm extends Form implements ClickListener {
         if (source == edit) {
             setReadOnly(false);
         }
-        if (source == delete) {
-            getApplication().getMainWindow().showNotification("Sorry, not implemented yet!");
+        if (source == delete) { // FIXME Confirm ?
+            setVisible(false);
+            deleteEvent(getEvent());
         }
     }
 
     /**
-     * Custom commit.
+     * Save event.
+     *
+     * @param event the event
      */
-    public abstract void customCommit();
+    public abstract void saveEvent(EventDTO event);
+
+    /**
+     * Delete event.
+     *
+     * @param event the event
+     */
+    public abstract void deleteEvent(EventDTO event);
 
 }

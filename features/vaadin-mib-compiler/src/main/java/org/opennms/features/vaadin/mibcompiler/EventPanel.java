@@ -27,12 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.opennms.features.vaadin.mibcompiler.model.EventDTO;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -60,14 +55,12 @@ public abstract class EventPanel extends Panel {
     /** The event form. */
     private final EventForm eventForm;
 
-    private List<EventDTO> eventDtoList;
-
     /**
      * Instantiates a new event panel.
      *
      * @param events the OpenNMS events
      */
-    public EventPanel(Events events) {
+    public EventPanel(final Events events) {
         setCaption("Events");
         addStyleName(Runo.PANEL_LIGHT);
 
@@ -83,14 +76,14 @@ public abstract class EventPanel extends Panel {
         }));
         toolbar.addComponent(new Button("Generate Evenst File", new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
+                events.setEvent(eventTable.getOnmsEvents());
                 generateEventFile();
             }
         }));
         mainLayout.addComponent(toolbar);
         mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        eventDtoList = getDtoEvents(events);
-        eventTable = new EventTable(eventDtoList) {
+        eventTable = new EventTable(events) {
             public void updateExternalSource(BeanItem<EventDTO> item) {
                 eventForm.setItemDataSource(item, Arrays.asList(EventForm.FORM_ITEMS));
                 eventForm.setVisible(true);
@@ -100,46 +93,17 @@ public abstract class EventPanel extends Panel {
         mainLayout.addComponent(eventTable);
 
         eventForm = new EventForm() {
-            public void customCommit() {
+            public void saveEvent(EventDTO event) {
+                eventTable.refreshRowCache();
+            }
+            public void deleteEvent(EventDTO event) {
+                getApplication().getMainWindow().showNotification("Delete? " + eventTable.removeItem(event));
                 eventTable.refreshRowCache();
             }
         };
         mainLayout.addComponent(eventForm);
 
         setContent(mainLayout);
-    }
-
-    /**
-     * Gets the DTO events.
-     *
-     * @param events the OpenNMS events
-     * @return the list
-     */
-    private List<EventDTO> getDtoEvents(Events events) {
-        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
-        List<EventDTO> dtoEvents = new ArrayList<EventDTO>();
-        for (org.opennms.netmgt.xml.eventconf.Event e : events.getEventCollection()) {
-            EventDTO dto = mapper.map(e, EventDTO.class);
-            dtoEvents.add(dto);
-        }
-        return dtoEvents;
-    }
-
-    /**
-     * Gets the OpenNMS events.
-     *
-     * @return the OpenNMS events
-     */
-    public List<org.opennms.netmgt.xml.eventconf.Event> getOnmsEvents() {
-        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
-        List<org.opennms.netmgt.xml.eventconf.Event> events = new ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
-        for (EventDTO dto : eventDtoList) {
-            org.opennms.netmgt.xml.eventconf.Event e = mapper.map(dto, org.opennms.netmgt.xml.eventconf.Event.class);
-            e.setDescr(encodeHtml(e.getDescr()));
-            e.getLogmsg().setContent(encodeHtml(e.getLogmsg().getContent()));
-            events.add(e);
-        }
-        return events;
     }
 
     /**
@@ -151,15 +115,5 @@ public abstract class EventPanel extends Panel {
      * Generate event file.
      */
     abstract void generateEventFile();
-    
-    /**
-     * Encode HTML.
-     *
-     * @param html the HTML
-     * @return the encoded string
-     */
-    private String encodeHtml(String html) {
-        return html.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
 
 }
