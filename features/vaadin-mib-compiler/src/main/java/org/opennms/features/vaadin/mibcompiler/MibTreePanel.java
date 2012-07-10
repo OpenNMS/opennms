@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.StringWriter;
 import java.util.List;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
@@ -62,7 +63,7 @@ public class MibTreePanel extends Panel {
     private static final String COMPILED = "compiled";
 
     /** The Constant MIBS_ROOT_DIR. */
-    private static final File MIBS_ROOT_DIR = new File("/Users/agalue/temporal"); // FIXME
+    private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // FIXME Must be configurable
 
     /** The Constant MIBS_COMPILED_DIR. */
     private static final File MIBS_COMPILED_DIR = new File(MIBS_ROOT_DIR, COMPILED);
@@ -134,9 +135,10 @@ public class MibTreePanel extends Panel {
      * @param logger the logger
      */
     private void initMibTree(final Logger logger) {
-        if (! MIBS_ROOT_DIR.exists()) {
-            MIBS_ROOT_DIR.mkdirs();
+        if (! MIBS_COMPILED_DIR.exists()) {
             MIBS_COMPILED_DIR.mkdirs();
+        }
+        if (! MIBS_PENDING_DIR.exists()) {
             MIBS_PENDING_DIR.mkdirs();
         }
 
@@ -262,7 +264,7 @@ public class MibTreePanel extends Panel {
             w.setScrollable(true);
             w.setClosable(false);
             w.setDraggable(false);
-            w.addStyleName(Runo.PANEL_LIGHT);
+            w.addStyleName(Runo.WINDOW_DIALOG);
             w.setSizeFull();
             w.setContent(new EventPanel(events) {
                 void cancelProcessing() {
