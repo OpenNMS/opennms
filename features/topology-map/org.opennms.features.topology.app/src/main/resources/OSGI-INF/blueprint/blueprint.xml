@@ -5,7 +5,7 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
     
     
-    <cm:property-placeholder persistent-id="TopologyAppConfig" update-strategy="reload">
+    <cm:property-placeholder persistent-id="org.opennms.features.topology.app" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="toplevelMenuOrder" value="File,Edit,View,Additional,Help"/>
         </cm:default-properties>

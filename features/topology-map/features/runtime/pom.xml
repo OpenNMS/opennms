@@ -26,6 +26,12 @@
           <features>
             <feature>opennms-topology-api</feature>
           </features>
+          <configs>
+            <config>
+                <name>org.opennms.features.topology.app</name>
+                <contents>toplevelMenuOrder=Edit,File,View,Additional,Help</contents>
+            </config>
+          </configs>
         </configuration>
       </plugin>
     </plugins>
