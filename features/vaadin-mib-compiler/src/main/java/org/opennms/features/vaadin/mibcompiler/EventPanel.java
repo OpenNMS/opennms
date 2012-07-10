@@ -97,7 +97,7 @@ public abstract class EventPanel extends Panel {
                 eventTable.refreshRowCache();
             }
             public void deleteEvent(EventDTO event) {
-                getApplication().getMainWindow().showNotification("Delete? " + eventTable.removeItem(event));
+                eventTable.removeItem(event);
                 eventTable.refreshRowCache();
             }
         };
