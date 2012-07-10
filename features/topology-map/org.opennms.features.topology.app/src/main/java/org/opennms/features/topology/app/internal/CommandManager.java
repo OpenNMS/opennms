@@ -42,6 +42,7 @@ public class CommandManager  {
     private List<Command> m_commandList = new ArrayList<Command>();
     private List<Command> m_commandHistoryList = new ArrayList<Command>();
     private List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
+    private List<String> m_topLevelMenuOrder = new ArrayList<String>();
     
     public CommandManager() {}
     
@@ -72,6 +73,7 @@ public class CommandManager  {
     MenuBar getMenuBar(SimpleGraphContainer graphContainer, Window mainWindow) {
         OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
         MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
+        menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
         
         for(Command command : getCommandList()) {
             String menuPosition = command.getMenuPosition();
@@ -178,6 +180,11 @@ public class CommandManager  {
     private void removeCommand(Command command) {
         m_commandList.remove(command);
         updateCommandListeners();
+    }
+
+    public void setTopLevelMenuOrder(List<String> menuOrderList) {
+        m_topLevelMenuOrder  = menuOrderList;
+        
     }
     
 }

@@ -1,5 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,6 +40,11 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 
     public void setTopologyProvider(TopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
+    }
+    
+    public void setToplevelMenuOrder(String menuOrder) {
+        List<String> menuOrderList = Arrays.asList(menuOrder.split(","));
+        getCommandManager().setTopLevelMenuOrder(menuOrderList);
     }
 
 }
