@@ -41,6 +41,13 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!--  TEMPORARILY ADDED SO SOURCE IS ADDED TO ECLIPSE -->
+        <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
+          <version>3.0.9</version>
+          <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

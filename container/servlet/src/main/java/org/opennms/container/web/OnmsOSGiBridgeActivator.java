@@ -17,6 +17,7 @@
 package org.opennms.container.web;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 	@Override
 	public void registrationAdded(Registration onmsRegistration) {
 		
-		Map<String, String> onmsProperties = onmsRegistration.getProperties();
+		Map<String, String> onmsProperties = onmsRegistration.getProperties() == null ? Collections.<String,String>emptyMap() : onmsRegistration.getProperties();
 		if (OSGI_SOURCE.equals(onmsProperties.get(REGISTRATION_SOURCE))) return;
 		
 		
