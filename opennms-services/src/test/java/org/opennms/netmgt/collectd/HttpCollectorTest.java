@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.After;
@@ -278,14 +279,17 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
 
         File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
-        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+        File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+        File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
 
         // Total Accesses: 175483
-        assertEquals("documentCount", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
 
         // IdleWorkers: 12
-        assertEquals("documentType", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
 
+        // CPU Load: .497069
+        assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, stepSizeInMillis));
         m_collectionSpecification.release(m_collectionAgent);
     }
 
@@ -334,6 +338,45 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         m_collectd.start();
         Thread.sleep(10000);
         m_collectd.stop();
+    }
+
+    public final void testPersistApacheStatsAlternateLocale() throws Exception {
+        final Locale defaultLocale = Locale.getDefault();
+
+        try {
+            Locale.setDefault(Locale.FRANCE);
+
+            File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+            FileAnticipator anticipator = (FileAnticipator)m_context.getAttribute("fileAnticipator");
+    
+            int numUpdates = 2;
+            int stepSizeInSecs = 1;
+            
+            int stepSizeInMillis = stepSizeInSecs*1000;
+    
+            m_collectionSpecification.initialize(m_collectionAgent);
+            
+            CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+            
+            // node level collection
+            File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
+    
+            File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
+            File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+            File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
+    
+            // Total Accesses: 175483
+            assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
+    
+            // IdleWorkers: 12
+            assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+    
+            // CPU Load: .497069
+            assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, stepSizeInMillis));
+            m_collectionSpecification.release(m_collectionAgent);
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Test
