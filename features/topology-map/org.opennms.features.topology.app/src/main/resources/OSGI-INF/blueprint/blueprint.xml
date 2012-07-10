@@ -7,7 +7,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <cm:property-placeholder persistent-id="TopologyAppConfig" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name=toplevelMenuOrder value="File,Edit,View,Additional,Help"/>
+            <cm:property name="toplevelMenuOrder" value="File,Edit,View,Additional,Help"/>
         </cm:default-properties>
     </cm:property-placeholder>
     
