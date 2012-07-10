@@ -29,7 +29,10 @@
           <configs>
             <config>
                 <name>org.opennms.features.topology.app</name>
-                <contents>toplevelMenuOrder=Edit,File,View,Additional,Help</contents>
+                <contents>
+                    toplevelMenuOrder=Edit,File,View,Additional,Help
+                    servletAlias=/topology
+                </contents>
             </config>
           </configs>
         </configuration>
