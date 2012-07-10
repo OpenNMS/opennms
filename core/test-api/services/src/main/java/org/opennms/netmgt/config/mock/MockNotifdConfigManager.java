@@ -35,6 +35,7 @@ import java.io.InputStream;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotifdConfigManager;
+
 /**
  * @author David Hustace <david@opennms.org>
  */
