@@ -44,6 +44,15 @@ import com.vaadin.ui.themes.Runo;
 /**
  * The Class EventPanel.
  * 
+ * The need for DTO is because of the usage of BeanItemContainer as explained here:
+ * 
+ * <p><a href="https://vaadin.com/api/com/vaadin/data/util/BeanItemContainer.html">BeanItemContainer</a>
+ * uses the beans themselves as identifiers. The Object.hashCode()
+ * of a bean is used when storing and looking up beans so it must not change during the
+ * lifetime of the bean (it should not depend on any part of the bean that can be modified).
+ * Typically this restricts the implementation of Object.equals(Object) as well in order for
+ * it to fulfill the contract between equals() and hashCode().</p>
+ * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")

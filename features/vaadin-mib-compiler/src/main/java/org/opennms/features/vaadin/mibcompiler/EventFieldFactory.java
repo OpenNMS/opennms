@@ -27,26 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import java.util.List;
-
-import org.opennms.features.vaadin.mibcompiler.model.MaskElementDTO;
-import org.opennms.features.vaadin.mibcompiler.model.VarbindDTO;
-import org.opennms.features.vaadin.mibcompiler.model.VarbindsDecodeDTO;
-
-import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.Action;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormFieldFactory;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.Runo;
 
 // FIXME Alarm Data ?
 /**
@@ -57,28 +44,9 @@ import com.vaadin.ui.themes.Runo;
 @SuppressWarnings("serial")
 public final class EventFieldFactory implements FormFieldFactory {
 
-    /** The Constant ACTION_ADD_MASK_ELEMENT. */
-    private static final Action ACTION_ADD_MASK_ELEMENT = new Action("Add New Element");
-
-    /** The Constant ACTION_DELETE_MASK_ELEMENT. */
-    private static final Action ACTION_DELETE_MASK_ELEMENT = new Action("Delete Selected Element");
-
-    /** The Constant ACTION_ADD_MASK_VARBIND. */
-    private static final Action ACTION_ADD_MASK_VARBIND = new Action("Add New Mask Varbind");
-
-    /** The Constant ACTION_DELETE_MASK_VARBIND. */
-    private static final Action ACTION_DELETE_MASK_VARBIND = new Action("Delete Selected Mask Varbind");
-
-    /** The Constant ACTION_ADD_VARBIND_DECODE. */
-    private static final Action ACTION_ADD_VARBIND_DECODE = new Action("Add New Varbind Decode");
-
-    /** The Constant ACTION_DELETE_VARBIND_DECODE. */
-    private static final Action ACTION_DELETE_VARBIND_DECODE = new Action("Delete Selected Varbind Decode");
-
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
-    @SuppressWarnings("unchecked")
     public Field createField(Item item, Object propertyId, Component uiContext) {
         if ("logmsgDest".equals(propertyId)) {
             ComboBox dest = new ComboBox("Destination");
@@ -86,12 +54,14 @@ public final class EventFieldFactory implements FormFieldFactory {
             dest.addItem("donotpersist");
             dest.addItem("discardtraps");
             dest.setNullSelectionAllowed(false);
+            dest.setRequired(true);
             return dest;
         }
         if ("logmsgContent".equals(propertyId)) {
             TextArea content = new TextArea("Log Message");
             content.setWidth("100%");
             content.setRows(10);
+            content.setRequired(true);
             return content;
         }
         if ("severity".equals(propertyId)) {
@@ -104,153 +74,30 @@ public final class EventFieldFactory implements FormFieldFactory {
             severity.addItem("Mayor");
             severity.addItem("Critical");
             severity.setNullSelectionAllowed(false);
+            severity.setRequired(true);
             return severity;
         }
         if ("descr".equals(propertyId)) {
             TextArea descr = new TextArea("Description");
             descr.setWidth("100%");
             descr.setRows(10);
+            descr.setRequired(true);
             return descr;
         }
         if ("maskElements".equals(propertyId)) {
-            final List<MaskElementDTO> maskList = (List<MaskElementDTO>) item.getItemProperty(propertyId).getValue();
-            final BeanItemContainer<MaskElementDTO> container = new BeanItemContainer<MaskElementDTO>(MaskElementDTO.class);
-            container.addAll(maskList);
-            final Table elements = new Table("Mask Elements");
-            elements.setStyleName(Runo.TABLE_SMALL);
-            elements.setContainerDataSource(container);
-            elements.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
-            elements.setColumnHeader("mename", "Element Name");
-            elements.setColumnHeader("mevalueCollection", "Element Values");
-            elements.setColumnExpandRatio("mevalueCollection", 1);
-            elements.setSelectable(true);
-            elements.setEditable(true);
-            elements.setHeight("125px");
-            elements.setWidth("100%");
-            elements.setTableFieldFactory(new DefaultFieldFactory() {
-                @Override
-                public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                    if (propertyId.equals("mevalueCollection")) {
-                        return new CustomListField();
-                    }
-                    return super.createField(container, itemId, propertyId, uiContext);
-                }
-            });
-            /*
-             * FIXME add/remove elements from the inner table is not working.
-             * 
-            elements.addActionHandler(new Action.Handler() {
-                public Action[] getActions(Object target, Object sender) {
-                    return new Action[] { ACTION_ADD_MASK_ELEMENT, ACTION_DELETE_MASK_ELEMENT };
-                }
-                public void handleAction(Action action, Object sender, Object target) {
-                    if (elements.isReadOnly()) {
-                        elements.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
-                    } else {
-                        if (action == ACTION_ADD_MASK_ELEMENT) {
-                            BeanItem<MaskElementDTO> item = new BeanItem<MaskElementDTO>(new MaskElementDTO());
-                            elements.addItem(item);
-                        }
-                        if (action == ACTION_DELETE_MASK_ELEMENT) { // TODO Confirm ?
-                            elements.removeItem(target);
-                            elements.select(null);
-                        }
-                    }
-                }
-            });*/
-            return elements;
+            final MaskElementTable field = new MaskElementTable();
+            field.setCaption("Mask Elements");
+            return field;
         }
         if ("maskVarbinds".equals(propertyId)) {
-            List<VarbindDTO> varbindList = (List<VarbindDTO>) item.getItemProperty(propertyId).getValue();
-            final BeanItemContainer<VarbindDTO> container = new BeanItemContainer<VarbindDTO>(VarbindDTO.class);
-            container.addAll(varbindList);
-            final Table varbinds = new Table("Mask Varbinds");
-            varbinds.setStyleName(Runo.TABLE_SMALL);
-            varbinds.setContainerDataSource(container);
-            varbinds.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
-            varbinds.setColumnHeader("vbnumber", "Varbind Number");
-            varbinds.setColumnHeader("vbvalueCollection", "Varbind Values");
-            varbinds.setColumnExpandRatio("vbvalueCollection", 1);
-            varbinds.setSelectable(true);
-            varbinds.setEditable(true);
-            varbinds.setHeight("125px");
-            varbinds.setWidth("100%");
-            varbinds.setTableFieldFactory(new DefaultFieldFactory() {
-                @Override
-                public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                    if (propertyId.equals("vbvalueCollection")) {
-                        return new CustomListField();
-                    }
-                    return super.createField(container, itemId, propertyId, uiContext);
-                }
-            });
-            /*
-             * FIXME add/remove elements from the inner table is not working.
-             * 
-            varbinds.addActionHandler(new Action.Handler() {
-                public Action[] getActions(Object target, Object sender) {
-                    return new Action[] { ACTION_ADD_MASK_VARBIND, ACTION_DELETE_MASK_VARBIND };
-                }
-                public void handleAction(Action action, Object sender, Object target) {
-                    if (varbinds.isReadOnly()) {
-                        varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
-                    } else {
-                        if (action == ACTION_ADD_MASK_VARBIND) { 
-                            container.addBean(new VarbindDTO());
-                        }
-                        if (action == ACTION_DELETE_MASK_VARBIND) { // TODO Confirm ?
-                            container.removeItem(target);
-                        }
-                    }
-                }
-            });*/
-            return varbinds;
+            final MaskVarbindTable field = new MaskVarbindTable();
+            field.setCaption("Mask Varbinds");
+            return field;
         }
         if ("varbindsdecodeCollection".equals(propertyId)) {
-            List<VarbindsDecodeDTO> varbindList = (List<VarbindsDecodeDTO>) item.getItemProperty(propertyId).getValue();
-            final BeanItemContainer<VarbindsDecodeDTO> container = new BeanItemContainer<VarbindsDecodeDTO>(VarbindsDecodeDTO.class);
-            container.addAll(varbindList);
-            final Table varbinds = new Table("Varbind Decodes");
-            varbinds.setStyleName(Runo.TABLE_SMALL);
-            varbinds.setContainerDataSource(container);
-            varbinds.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
-            varbinds.setColumnHeader("parmid", "Parameter ID");
-            varbinds.setColumnHeader("decodeCollection", "Decode Values");
-            varbinds.setColumnExpandRatio("decodeCollection", 1);
-            varbinds.setSelectable(true);
-            varbinds.setEditable(true);
-            varbinds.setHeight("125px");
-            varbinds.setWidth("100%");
-            varbinds.setTableFieldFactory(new DefaultFieldFactory() {
-                @Override
-                public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                    if (propertyId.equals("decodeCollection")) {
-                        return new VarbindDecodeListField();
-                    }
-                    return super.createField(container, itemId, propertyId, uiContext);
-                }
-            });
-            /*
-             * FIXME add/remove elements from the inner table is not working.
-             * 
-            varbinds.addActionHandler(new Action.Handler() {
-                public Action[] getActions(Object target, Object sender) {
-                    return new Action[] { ACTION_ADD_VARBIND_DECODE, ACTION_DELETE_VARBIND_DECODE };
-                }
-                public void handleAction(Action action, Object sender, Object target) {
-                    if (varbinds.isReadOnly()) {
-                        varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
-                    } else {
-                        if (action == ACTION_ADD_VARBIND_DECODE) {
-                            container.addBean(new VarbindsDecodeDTO());
-                        }
-                        if (action == ACTION_DELETE_VARBIND_DECODE) { // TODO Confirm ?
-                            container.removeItem(target);
-                        }
-                    }
-                }
-            });*/
-            return varbinds;
+            final VarbindDecodeTable field = new VarbindDecodeTable();
+            field.setCaption("Varbind Decodes");
+            return field;
         }
         TextField f = new TextField((String)propertyId);
         if ("uei".equals(propertyId)) {
