@@ -94,6 +94,10 @@ public abstract class EventTable extends Table {
         item.addItemProperty("logmsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));
         item.addItemProperty("maskElements", new NestedMethodProperty(item.getBean(), "mask.maskelementCollection"));
         item.addItemProperty("maskVarbinds", new NestedMethodProperty(item.getBean(), "mask.varbindCollection"));
+        item.addItemProperty("alarmReductionKey", new NestedMethodProperty(item.getBean(), "alarmData.reductionKey"));
+        item.addItemProperty("alarmClearKey", new NestedMethodProperty(item.getBean(), "alarmData.clearKey"));
+        item.addItemProperty("alarmType", new NestedMethodProperty(item.getBean(), "alarmData.alarmType"));
+        item.addItemProperty("alarmAutoClean", new NestedMethodProperty(item.getBean(), "alarmData.autoClean"));
         return item;
     }
     

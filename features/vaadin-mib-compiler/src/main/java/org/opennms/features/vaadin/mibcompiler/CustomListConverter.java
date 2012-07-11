@@ -53,7 +53,7 @@ public class CustomListConverter extends PropertyConverter<ArrayList<String>, St
      */
     @Override
     public String format(ArrayList<String> propertyValue) {
-        return StringUtils.join(propertyValue, ',');
+        return propertyValue == null ? null : StringUtils.join(propertyValue, ',');
     }
 
     /* (non-Javadoc)
@@ -62,8 +62,10 @@ public class CustomListConverter extends PropertyConverter<ArrayList<String>, St
     @Override
     public ArrayList<String> parse(String fieldValue) {
         ArrayList<String> list = new ArrayList<String>();
-        for (String s : fieldValue.split(",")) {
-            list.add(s);
+        if (fieldValue != null) {
+            for (String s : fieldValue.split(",")) {
+                list.add(s);
+            }
         }
         return list;
     }

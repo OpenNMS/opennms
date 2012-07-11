@@ -47,7 +47,21 @@ import com.vaadin.ui.Table;
 public abstract class EventForm extends Form implements ClickListener {
 
     /** The Constant FORM_ITEMS. */
-    public static final String[] FORM_ITEMS = new String[] { "uei", "eventLabel", "descr", "logmsgContent", "logmsgDest", "severity", "maskElements", "maskVarbinds", "varbindsdecodeCollection" };
+    public static final String[] FORM_ITEMS = new String[] {
+        "uei",
+        "eventLabel",
+        "descr",
+        "logmsgContent",
+        "logmsgDest",
+        "severity",
+//        "alarmReductionKey",
+//        "alarmClearKey",
+//        "alarmType",
+//        "alarmAutoClean",
+        "maskElements",
+        "maskVarbinds",
+        "varbindsdecodeCollection"
+    };
 
     /** The Edit button. */
     private final Button edit = new Button("Edit");

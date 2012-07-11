@@ -35,6 +35,7 @@ import org.opennms.features.vaadin.mibcompiler.model.VarbindsDecodeDTO;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.ComboBox;
@@ -90,7 +91,7 @@ public final class EventFieldFactory implements FormFieldFactory {
         if ("logmsgContent".equals(propertyId)) {
             TextArea content = new TextArea("Log Message");
             content.setWidth("100%");
-            content.setRows(5);
+            content.setRows(10);
             return content;
         }
         if ("severity".equals(propertyId)) {
@@ -108,7 +109,7 @@ public final class EventFieldFactory implements FormFieldFactory {
         if ("descr".equals(propertyId)) {
             TextArea descr = new TextArea("Description");
             descr.setWidth("100%");
-            descr.setRows(5);
+            descr.setRows(10);
             return descr;
         }
         if ("maskElements".equals(propertyId)) {
@@ -124,9 +125,6 @@ public final class EventFieldFactory implements FormFieldFactory {
             elements.setColumnExpandRatio("mevalueCollection", 1);
             elements.setSelectable(true);
             elements.setEditable(true);
-            elements.setImmediate(true);
-            elements.setWriteThrough(false);
-            elements.setInvalidCommitted(false);
             elements.setHeight("125px");
             elements.setWidth("100%");
             elements.setTableFieldFactory(new DefaultFieldFactory() {
@@ -138,6 +136,9 @@ public final class EventFieldFactory implements FormFieldFactory {
                     return super.createField(container, itemId, propertyId, uiContext);
                 }
             });
+            /*
+             * FIXME add/remove elements from the inner table is not working.
+             * 
             elements.addActionHandler(new Action.Handler() {
                 public Action[] getActions(Object target, Object sender) {
                     return new Action[] { ACTION_ADD_MASK_ELEMENT, ACTION_DELETE_MASK_ELEMENT };
@@ -147,14 +148,16 @@ public final class EventFieldFactory implements FormFieldFactory {
                         elements.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
                     } else {
                         if (action == ACTION_ADD_MASK_ELEMENT) {
-                            elements.addItem(new MaskElementDTO()); // FIXME It is not working
+                            BeanItem<MaskElementDTO> item = new BeanItem<MaskElementDTO>(new MaskElementDTO());
+                            elements.addItem(item);
                         }
-                        if (action == ACTION_DELETE_MASK_ELEMENT) { // FIXME Confirm ?
-                            elements.removeItem(target); // FIXME It is not working
+                        if (action == ACTION_DELETE_MASK_ELEMENT) { // TODO Confirm ?
+                            elements.removeItem(target);
+                            elements.select(null);
                         }
                     }
                 }
-            });
+            });*/
             return elements;
         }
         if ("maskVarbinds".equals(propertyId)) {
@@ -170,7 +173,6 @@ public final class EventFieldFactory implements FormFieldFactory {
             varbinds.setColumnExpandRatio("vbvalueCollection", 1);
             varbinds.setSelectable(true);
             varbinds.setEditable(true);
-            varbinds.setImmediate(true);
             varbinds.setHeight("125px");
             varbinds.setWidth("100%");
             varbinds.setTableFieldFactory(new DefaultFieldFactory() {
@@ -182,6 +184,9 @@ public final class EventFieldFactory implements FormFieldFactory {
                     return super.createField(container, itemId, propertyId, uiContext);
                 }
             });
+            /*
+             * FIXME add/remove elements from the inner table is not working.
+             * 
             varbinds.addActionHandler(new Action.Handler() {
                 public Action[] getActions(Object target, Object sender) {
                     return new Action[] { ACTION_ADD_MASK_VARBIND, ACTION_DELETE_MASK_VARBIND };
@@ -191,14 +196,14 @@ public final class EventFieldFactory implements FormFieldFactory {
                         varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
                     } else {
                         if (action == ACTION_ADD_MASK_VARBIND) { 
-                            varbinds.addItem(new VarbindDTO()); // FIXME It is not working
+                            container.addBean(new VarbindDTO());
                         }
-                        if (action == ACTION_DELETE_MASK_VARBIND) { // FIXME Confirm ?
-                            varbinds.removeItem(target); // FIXME It is not working
+                        if (action == ACTION_DELETE_MASK_VARBIND) { // TODO Confirm ?
+                            container.removeItem(target);
                         }
                     }
                 }
-            });
+            });*/
             return varbinds;
         }
         if ("varbindsdecodeCollection".equals(propertyId)) {
@@ -214,7 +219,6 @@ public final class EventFieldFactory implements FormFieldFactory {
             varbinds.setColumnExpandRatio("decodeCollection", 1);
             varbinds.setSelectable(true);
             varbinds.setEditable(true);
-            varbinds.setImmediate(true);
             varbinds.setHeight("125px");
             varbinds.setWidth("100%");
             varbinds.setTableFieldFactory(new DefaultFieldFactory() {
@@ -226,6 +230,9 @@ public final class EventFieldFactory implements FormFieldFactory {
                     return super.createField(container, itemId, propertyId, uiContext);
                 }
             });
+            /*
+             * FIXME add/remove elements from the inner table is not working.
+             * 
             varbinds.addActionHandler(new Action.Handler() {
                 public Action[] getActions(Object target, Object sender) {
                     return new Action[] { ACTION_ADD_VARBIND_DECODE, ACTION_DELETE_VARBIND_DECODE };
@@ -235,14 +242,14 @@ public final class EventFieldFactory implements FormFieldFactory {
                         varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
                     } else {
                         if (action == ACTION_ADD_VARBIND_DECODE) {
-                            varbinds.addItem(new VarbindsDecodeDTO()); // FIXME It is not working
+                            container.addBean(new VarbindsDecodeDTO());
                         }
-                        if (action == ACTION_DELETE_VARBIND_DECODE) { // FIXME Confirm ?
-                            varbinds.removeItem(target); // FIXME It is not working
+                        if (action == ACTION_DELETE_VARBIND_DECODE) { // TODO Confirm ?
+                            container.removeItem(target);
                         }
                     }
                 }
-            });
+            });*/
             return varbinds;
         }
         TextField f = new TextField((String)propertyId);
