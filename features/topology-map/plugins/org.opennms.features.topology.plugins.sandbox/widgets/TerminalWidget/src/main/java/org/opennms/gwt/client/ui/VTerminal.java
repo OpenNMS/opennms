@@ -1,85 +1,93 @@
-/* 
- * Copyright 2009 IT Mill Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
 package org.opennms.gwt.client.ui;
 
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
+/**
+ * The VTerminal class is associated with the GwtTerminal widget and handles all of the communication 
+ * from the client and sends it to the server.  It also listens for responses from the server and 
+ * updates the client side view.
+ * @author Leonardo Bell
+ * @author Philip Grenon
+ */
 public class VTerminal extends GwtTerminal implements Paintable {
 
-	/** Component identifier in UIDL communications. */
-	String uidlId;
-
-	/** Reference to the server connection object. */
-	ApplicationConnection client;
-
-	private TermHandler termHandler;
-	private String isClosed;
+	String uidlId; //Component identifier in UIDL communications.
+	ApplicationConnection client; //Reference to the server connection object.
+	private TermHandler termHandler; //Key handler for VT100 codes
+	private String isClosed; //A String boolean variable letting the server know the status of the Handler
 
 	/**
-	 * The constructor should first call super() to initialize the component and
-	 * then handle any initialization relevant to Vaadin.
+	 * The VTerminal() constructor creates a GwtTerminal Widget and assigns the TermHandler
+	 * to each of its key handlers and initializes the status of the Terminal
 	 */
 	public VTerminal() {
-		// The superclass has a lot of relevant initialization
 		super();
 		termHandler = new TermHandler(this);
 		addKeyDownHandler(termHandler);
 		addKeyPressHandler(termHandler);
 		addKeyUpHandler(termHandler);
 		isClosed = "false";
-		
 	}
 
+	/**
+	 * The update method is used by the server whenever it requests an update from 
+	 * the TermHandler in order to receive the current key presses from the client.
+	 */
 	public void update() {
 		termHandler.update();
 	}
 
 	/**
-	 * This method must be implemented to update the client-side component from
-	 * UIDL data received from server.
-	 * 
-	 * This method is called when the page is loaded for the first time, and
-	 * every time UI changes in the component are received from the server.
+	 * The updateFromUIDL method handles all communication from the server and passes
+	 * the data along to the GwtTerminal widget which updates the client side view.
 	 */
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-		// This call should be made first. Ensure correct implementation,
-		// and let the containing layout manage caption, etc.
+		/************************************************ 
+		This call should be made first. Ensure correct implementation,
+		and let the containing layout manage caption, etc.
+		************************************************/
 		if (client.updateComponent(this, uidl, true)) {
 			return;
 		}
-
-		// Save reference to server connection object to be able to send
-		// user interaction later
+		/************************************************
+		Save reference to server connection object to be able to send
+		user interaction later
+		************************************************/
 		this.client = client;
-		// Save the UIDL identifier for the component
+		/************************************************
+		Save the UIDL identifier for the component
+		************************************************/
 		this.uidlId = uidl.getId();
+		/************************************************
+		Check if the server wants the TermHandler to close, if so, send a
+		response back to the server that it was closed successfully
+		************************************************/
 		if (uidl.getStringVariable("closeClient").equals("true")) {
 			termHandler.close();
 			isClosed = "true";
 			sendBytes("");
 		}
+		/************************************************
+		Check if the server wants the TermHandler to update manually
+		************************************************/
 		if (uidl.getBooleanVariable("update")) update();
+		/************************************************
+		Take the current representation of the Terminal from the server
+		and set the Inner HTML of the widget
+		************************************************/
 		dump(uidl.getStringVariable("fromSSH"));
 	}
 
 	public void sendBytes(String inputKeys){
+		/************************************************
+		Send the server the current state of the TermHandler
+		************************************************/
 		client.updateVariable(uidlId, "isClosed", isClosed, true);
+		/************************************************
+		Send the server the current KeyBuffer from the client
+		************************************************/
 		if (isClosed.equals("false")) {
 			client.updateVariable(uidlId, "toSSH", inputKeys, true);
 		}
