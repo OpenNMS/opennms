@@ -63,7 +63,7 @@ public class LinkdTopologyProviderTest {
 	
 	@Test
 	public void testSave() {
-	    m_topologyProvider.save("test-map.xml");	    
+	    m_topologyProvider.save("target/test-map.xml");	    
             m_databasePopulator.check(m_topologyProvider);
             
 
@@ -79,14 +79,14 @@ public class LinkdTopologyProviderTest {
 	@Test
 	public void testOperationSave() {
             List<Object> targets = new ArrayList<Object>(1);
-            targets.add("test-graph.xml");
+            targets.add("target/test-graph.xml");
             m_saveOperation.execute(targets, m_operationContext);	            
 	}
 
 	@Test
 	public void testOperationOpenExistingFile() {
 	    List<Object> targets = new ArrayList<Object>(1);
-            targets.add("test-map.xml");
+            targets.add("target/test-map.xml");
             m_openOperation.execute(targets, m_operationContext);
 	    
 	}
