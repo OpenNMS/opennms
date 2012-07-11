@@ -40,25 +40,37 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Window;
 
+/**
+ * 
+ * 
+ * @author lmbell
+ * @author pdgrenon
+ *
+ */
 @ClientWidget(VTerminal.class)
 public class SSHTerminal extends AbstractComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8914800725736485264L;
-	private int TERM_WIDTH;
-	private int TERM_HEIGHT;
-	private SessionTerminal st;
-	private ClientSession session;
-	private String dumpContents;
-	private boolean forceUpdate = false;
-	private String isClosed;
-	private String closeClient;
-	private Application app;
-	private SSHWindow sshWindow;
-	private ClientChannel channel;
+	private static final long serialVersionUID = -8914800725736485264L; // serialization ID
+	private int TERM_WIDTH;  // The width of the terminal
+	private int TERM_HEIGHT;  // The height of the terminal 
+	private SessionTerminal st;  // The terminal specific to the current session
+	private ClientSession session;  // The client instance used in the authorization of user names and passwords 
+	private String dumpContents; // The content from the server to be displayed by the client
+	private boolean forceUpdate = false;  // Tracks whether the client should be forced to update 
+	private String isClosed;  // Tracks whether the whether is closed
+	private String closeClient;  // Boolean sent from the server to close the client
+	private Application app;  // The main application
+	private SSHWindow sshWindow;  // The window that holds the terminal
+	private ClientChannel channel;  // The connection between the client and the server
 
+	/**
+	 * Constructor for the SSH Terminal 
+	 * @param app The main application
+	 * @param sshWindow The window holding the terminal
+	 * @param session The client instance used in the authorization of user names and passwords
+	 * @param width The width of the terminal
+	 * @param height The height of the terminal
+	 */
 	public SSHTerminal(TerminalApplication app, SSHWindow sshWindow, ClientSession session, int width, int height) {
 		super();
 		TERM_WIDTH = width;
@@ -76,6 +88,9 @@ public class SSHTerminal extends AbstractComponent {
 		} catch (IOException e) { e.printStackTrace(); }
 	}
 
+	/**
+	 * Closes the client window
+	 */
 	public void close() {
 		closeClient = "true";
 		requestRepaint();
@@ -119,12 +134,23 @@ public class SSHTerminal extends AbstractComponent {
 		}
 	}
 
+	/**
+	 * Nested class used to create the client side terminal
+	 * 
+	 * @author pdgrenon
+	 * @author lmbell
+	 */
 	public class SessionTerminal implements Runnable {
 
-		private Terminal terminal;
-		private NoClosePipedOutputStream in;
-		private NoClosePipedInputStream out;
+		private Terminal terminal;  // The terminal to be displayed
+		private NoClosePipedOutputStream in;  // The input stream to be used by the terminal
+		private NoClosePipedInputStream out;  // The output stream to be used by the terminal
 
+		/**
+		 * Constructor that creates creates the terminal and
+		 * connects the I/O streams to the server
+		 * @throws IOException
+		 */
 		public SessionTerminal() throws IOException {
 			try {
 				this.terminal = new Terminal(TERM_WIDTH, TERM_HEIGHT);
@@ -142,7 +168,15 @@ public class SSHTerminal extends AbstractComponent {
 				e.printStackTrace();
 			}
 		}
-
+		
+		/**
+		 * Handles the content recieved from the server
+		 * 
+		 * @param str The content recieved
+		 * @param forceDump Whether the terminal is forced to dump the content
+		 * @return The contents dumped to terminal
+		 * @throws IOException
+		 */
 		public String handle(String str, boolean forceDump) throws IOException {
 			try {
 				if (str != null && str.length() > 0) {
@@ -162,6 +196,9 @@ public class SSHTerminal extends AbstractComponent {
 			}
 		}
 
+		/**
+		 * Runs the terminal and reads/writes when necessary
+		 */
 		public void run() {
 			try {
 				for (;;) {

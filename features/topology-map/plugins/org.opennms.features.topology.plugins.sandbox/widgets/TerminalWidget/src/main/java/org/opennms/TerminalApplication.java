@@ -26,16 +26,21 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
 /**
- * Demonstration application that shows how to use a simple custom client-side
- * GWT component, the ColorPicker.
+ * Vaadin application for terminal emulation and SSH functionality
+ * 
+ * @author pdgrenon
+ * @author lmbell
  */
 @SuppressWarnings("serial")
-public class TerminalApplication extends com.vaadin.Application implements CloseListener{
-    
-	Window main = new Window("Vaadin Application");
-	private String host = "debian.opennms.org";
-	private int port = 22;
+public class TerminalApplication extends com.vaadin.Application {
 
+    Window main = new Window("Vaadin Application"); // The main window used as the background of the application
+    private String host = "debian.opennms.org"; // The host name to be connected to through SSH
+    private int port = 22; // The port number to be connected to through SSH
+
+    /**
+     * Initialize the application and sets the theme
+     */
     @Override
     public void init() {
         final SSHOperation operation = new SSHOperation();
@@ -51,10 +56,16 @@ public class TerminalApplication extends com.vaadin.Application implements Close
 				
 			}
 		});
+
         getMainWindow().addComponent(openWindow);
 
     }
-
+    /**
+     * This methods adds (shows) the authorization window to the main application
+     */
+    private void showAuthWindow() {
+        getMainWindow().addWindow(getAuthWindow());
+    }
 	protected OperationContext getOperationContext() {
         return new OperationContext() {
             
@@ -81,5 +92,4 @@ public class TerminalApplication extends com.vaadin.Application implements Close
 	public void windowClose(CloseEvent e) {
 		
 	}
-
 }

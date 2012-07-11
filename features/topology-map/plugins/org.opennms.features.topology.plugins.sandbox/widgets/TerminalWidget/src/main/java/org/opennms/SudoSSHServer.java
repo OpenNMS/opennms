@@ -3,14 +3,29 @@ package org.opennms;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
+/**
+ * This class is can be used to test the client side code
+ * by playing the part of the server
+ * 
+ * @author pdgrenon
+ * @author lmbell
+ *
+ */
 public class SudoSSHServer extends Thread {
 
-	private InputStream in;
-	private OutputStream out;
-	private OutputStream err;
-	private int counter;
-	private boolean closed = false;
+	private InputStream in; // The input stream the pseudo server will read from
+	private OutputStream out; // The output stream the pseudo server will write to 
+	private OutputStream err; // The error stream the pseudo server will write to
+	private int counter;  // Counter used to simulate I/O in to/from the server
+	private boolean closed = false; // Tracks whether the wid
 	
+	/**
+	 * constructor for the pseduo server
+	 * @param in The input stream to use
+	 * @param out The output stream to use 
+	 * @param err The error stream to use
+	 */
 	public SudoSSHServer (InputStream in, OutputStream out, OutputStream err) {
 		this.in = in;
 		this.out = out;
@@ -18,10 +33,16 @@ public class SudoSSHServer extends Thread {
 		counter = 0;
 	}
 	
+	/**
+	 * Closes the connection to the pseudo server
+	 */
 	public void close() {
 		closed = true;
 	}
-
+	/**
+	 * Thread used to simulate I/O to/from the server by counting upwards each 
+	 * time a new SSH window is open
+	 */
 	public void run() {
 		try {
 		while (true) {

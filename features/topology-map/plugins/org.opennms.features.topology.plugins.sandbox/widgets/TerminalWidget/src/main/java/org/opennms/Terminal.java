@@ -35,6 +35,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class provides terminal emulation and was provided
+ * by the karaf gogo plugin
+ */
 @SuppressWarnings("unused")
 public class Terminal {
 

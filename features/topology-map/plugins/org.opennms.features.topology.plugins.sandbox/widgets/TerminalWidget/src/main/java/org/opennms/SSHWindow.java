@@ -6,11 +6,26 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+/**
+ * This class creates a window to hold the terminal emulator
+ * 
+ * @author lmbell
+ * @author pdgrenon
+ *
+ */
 @SuppressWarnings("serial")
 public class SSHWindow extends Window {
 
-	private SSHTerminal terminal;
+	private SSHTerminal terminal; // The terminal emulator
 	
+	/**
+	 * The constructor for the SSH window
+	 * 
+	 * @param app The main application to which this window should be attached
+	 * @param session The current SSH session
+	 * @param width The width of the window
+	 * @param height The height of the window
+	 */
 	public SSHWindow(TerminalApplication app, ClientSession session, int width, int height) {
 		setCaption("SSH");
 		setImmediate(true);
@@ -30,6 +45,9 @@ public class SSHWindow extends Window {
         addComponent(vPanel);
 	}
 	
+	/**
+	 * Overrides the window close method to instead close the terminal
+	 */
 	@Override
 	public void close(){
 		terminal.close();

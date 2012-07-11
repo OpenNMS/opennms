@@ -23,19 +23,35 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 
+/**
+ * This class creates a window to authorize usernames
+ * and passwords for the SSH server. 
+ * @author pdgrenon
+ * @author lmbell
+ *
+ */
 @SuppressWarnings("serial")
 public class AuthWindow extends Window {
 
-	private String host;
-	private int port;
-	private int TERM_WIDTH = 650;
-	private int TERM_HEIGHT = 460;
-	private ClientSession session = null;
-	private Window mainWindow;
-	private TerminalApplication app;
+	private String host;  // The hostname to connect to
+	private int port;  // The port to connect to
+	private int TERM_WIDTH = 650;  // The width of the terminal
+	private int TERM_HEIGHT = 460;   // The height of the terminal
+	private ClientSession session = null; // The ClientSession object used to track each SSH session
+	private TerminalApplication app; // The instance of the application used to spawn and destroy windows
 	
-	public AuthWindow(TerminalApplication app, Window mainWindow, String h, int p) {
-		this.mainWindow = mainWindow;
+	/**
+	 * This constructor method spawns a window to authorize the
+	 * username and password input by the user. If the authroization
+	 * is sucessful, the user will be connected to the host at the 
+	 * given port through SSH, and the terminal emulator this window
+	 * will be replaced by a terminal emulator. 
+	 * 
+	 * @param app - The current application
+	 * @param h - The host name to connect to 
+	 * @param p - The port number to connect to
+	 */
+	public AuthWindow(TerminalApplication app, String h, int p) {
 		this.app = app;
 		host = h;
 		port = p;
@@ -93,15 +109,20 @@ public class AuthWindow extends Window {
 		layout.setComponentAlignment(loginButton, Alignment.BOTTOM_RIGHT);
 		addComponent(layout);
 	}
-	
+	 /**
+	  * This methods adds (shows) the SSH Window to the main application
+	  */
 	private void showSSHWindow() {
-		mainWindow.addWindow(getSSHWindow());
+		app.getMainWindow().addWindow(getSSHWindow());
 		this.close();
 	}
 
+	/**
+	 * This method creates a new SSH window 
+	 * @return The newly created SSH window
+	 */
 	private Window getSSHWindow() {
 		SSHWindow sshWindow = new SSHWindow(app, session, TERM_WIDTH, TERM_HEIGHT);
-		sshWindow.addListener(app);
 		return sshWindow;
 	}
 	
