@@ -16,9 +16,12 @@
 
 package org.opennms;
 
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
@@ -35,20 +38,39 @@ public class TerminalApplication extends com.vaadin.Application implements Close
 
     @Override
     public void init() {
+        final SSHOperation operation = new SSHOperation();
         setMainWindow(main);
         setTheme("mytheme");
         Button openWindow = new Button("Open Window");
         openWindow.addListener(new Button.ClickListener() {
 			
+            
 			public void buttonClick(ClickEvent event) {
-				showAuthWindow();
+				//showAuthWindow();
+				operation.execute(null, getOperationContext());
+				
 			}
 		});
         getMainWindow().addComponent(openWindow);
 
     }
 
-	private void showAuthWindow() {
+	protected OperationContext getOperationContext() {
+        return new OperationContext() {
+            
+            public Window getMainWindow() {
+                
+                return getMainWindow();
+            }
+            
+            public GraphContainer getGraphContainer() {
+               
+                return null;
+            }
+        };
+    }
+
+    private void showAuthWindow() {
 		getMainWindow().addWindow(getAuthWindow());
 	}
 

@@ -249,6 +249,15 @@
         <version>1.6.6</version>
     </dependency>     
     
+    <!-- TOPOLOGY API DEPENDENCIES -->
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
+      <version>1.11.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    
   </dependencies>
 
 </project>
