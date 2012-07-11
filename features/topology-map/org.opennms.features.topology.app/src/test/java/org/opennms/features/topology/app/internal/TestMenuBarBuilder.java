@@ -75,6 +75,28 @@ public class TestMenuBarBuilder {
         assertEquals("Test2", menuItems.get(4).getText());
         assertEquals("View", menuItems.get(5).getText());
     }
+    
+    @Test
+    public void menuOrderNoAdditionalTest() {
+        MenuBarBuilder builder = new MenuBarBuilder();
+        builder.setTopLevelMenuOrder(Arrays.asList("File", "Edit", "View", "Help"));
+        builder.addMenuCommand(null, "Edit");
+        builder.addMenuCommand(null, "Test2");
+        builder.addMenuCommand(null, "File");
+        builder.addMenuCommand(null, "Test1");
+        builder.addMenuCommand(null, "Help");
+        builder.addMenuCommand(null, "View");
+        
+        MenuBar menuBar = builder.get();
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(6, menuItems.size());
+        assertEquals("File", menuItems.get(0).getText());
+        assertEquals("Edit", menuItems.get(1).getText());
+        assertEquals("View", menuItems.get(2).getText());
+        assertEquals("Help", menuItems.get(3).getText());
+        assertEquals("Test1", menuItems.get(4).getText());
+        assertEquals("Test2", menuItems.get(5).getText());
+    }
 
     private Command createEmpyCommand() {
         

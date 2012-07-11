@@ -91,6 +91,8 @@ public class MenuBarBuilder {
                 }else {
                     if(m_menuOrder.contains("Additional")) {
                         index1 = m_menuOrder.indexOf("Additional");
+                    }else {
+                        index1 = m_menuOrder.size();
                     }
                 }
                 
@@ -99,6 +101,8 @@ public class MenuBarBuilder {
                 }else {
                     if(m_menuOrder.contains("Additional")) {
                         index2 = m_menuOrder.indexOf("Additional");
+                    }else {
+                        index2 = m_menuOrder.size();
                     }
                 }
                 
