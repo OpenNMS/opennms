@@ -37,10 +37,15 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -51,11 +56,17 @@ import com.vaadin.ui.themes.Runo;
 @SuppressWarnings("serial")
 public class VarbindDecodeTable extends CustomField {
 
-    /** The table. */
+    /** The Table. */
     private Table table = new Table();
 
-    /** The container. */
+    /** The Container. */
     private BeanItemContainer<VarbindsDecodeDTO> container = new BeanItemContainer<VarbindsDecodeDTO>(VarbindsDecodeDTO.class);
+
+    /** The Layout. */
+    private VerticalLayout layout = new VerticalLayout();
+
+    /** The Toolbar. */
+    private HorizontalLayout toolbar = new HorizontalLayout();
 
     /**
      * Instantiates a new varbind decode table.
@@ -68,6 +79,7 @@ public class VarbindDecodeTable extends CustomField {
         table.setColumnHeader("decodeCollection", "Decode Values");
         table.setColumnExpandRatio("decodeCollection", 1);
         table.setEditable(!isReadOnly());
+        table.setSelectable(true);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
@@ -79,7 +91,28 @@ public class VarbindDecodeTable extends CustomField {
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
-        setCompositionRoot(table);
+        Button add = new Button("Add", new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+                Object itemId = container.addBean(new VarbindsDecodeDTO());
+                table.addItem(itemId);
+                table.setPageLength(container.size()); // TODO: Is this really necessary?
+            }
+        });
+        Button delete = new Button("Delete", new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.removeItem(itemId);
+                }
+            }
+        });
+        toolbar.addComponent(add);
+        toolbar.addComponent(delete);
+        toolbar.setVisible(table.isEditable());
+        layout.addComponent(table);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+        setCompositionRoot(layout);
     }
 
     /* (non-Javadoc)
@@ -126,29 +159,8 @@ public class VarbindDecodeTable extends CustomField {
     @Override
     public void setReadOnly(boolean readOnly) {
         table.setEditable(!readOnly);
+        toolbar.setVisible(!readOnly);
         super.setReadOnly(readOnly);
     }
 
-    /*
-    private static final Action ACTION_ADD_VARBIND_DECODE = new Action("Add New Varbind Decode");
-    private static final Action ACTION_DELETE_VARBIND_DECODE = new Action("Delete Selected Varbind Decode");
-
-            varbinds.addActionHandler(new Action.Handler() {
-                public Action[] getActions(Object target, Object sender) {
-                    return new Action[] { ACTION_ADD_VARBIND_DECODE, ACTION_DELETE_VARBIND_DECODE };
-                }
-                public void handleAction(Action action, Object sender, Object target) {
-                    if (varbinds.isReadOnly()) {
-                        varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
-                    } else {
-                        if (action == ACTION_ADD_VARBIND_DECODE) {
-                            container.addBean(new VarbindsDecodeDTO());
-                        }
-                        if (action == ACTION_DELETE_VARBIND_DECODE) { // TODO Confirm ?
-                            container.removeItem(target);
-                        }
-                    }
-                }
-            });
-     */
 }

@@ -33,10 +33,8 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
 
 /**
  * The Class EventForm.
@@ -125,13 +123,6 @@ public abstract class EventForm extends Form implements ClickListener {
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        String[] tables = new String[] { "maskElements", "maskVarbinds", "varbindsdecodeCollection" };
-        for (String tableId : tables ) {
-            Field f = getField(tableId);
-            if (f != null && f instanceof Table) {
-                ((Table) f).setEditable(!readOnly);
-            }
-        }
         save.setVisible(!readOnly);
         cancel.setVisible(!readOnly);
         edit.setVisible(readOnly);

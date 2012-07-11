@@ -37,10 +37,15 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -51,11 +56,17 @@ import com.vaadin.ui.themes.Runo;
 @SuppressWarnings("serial")
 public class MaskVarbindTable extends CustomField {
 
-    /** The table. */
+    /** The Table. */
     private Table table = new Table();
 
-    /** The container. */
+    /** The Container. */
     private BeanItemContainer<VarbindDTO> container = new BeanItemContainer<VarbindDTO>(VarbindDTO.class);
+
+    /** The Layout. */
+    private VerticalLayout layout = new VerticalLayout();
+
+    /** The Toolbar. */
+    private HorizontalLayout toolbar = new HorizontalLayout();
 
     /**
      * Instantiates a new mask varbind table.
@@ -68,6 +79,7 @@ public class MaskVarbindTable extends CustomField {
         table.setColumnHeader("vbvalueCollection", "Varbind Values");
         table.setColumnExpandRatio("vbvalueCollection", 1);
         table.setEditable(!isReadOnly());
+        table.setSelectable(true);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
@@ -79,7 +91,28 @@ public class MaskVarbindTable extends CustomField {
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
-        setCompositionRoot(table);
+        Button add = new Button("Add", new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+                Object itemId = container.addBean(new VarbindDTO());
+                table.addItem(itemId);
+                table.setPageLength(container.size()); // TODO: Is this really necessary?
+            }
+        });
+        Button delete = new Button("Delete", new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.removeItem(itemId);
+                }
+            }
+        });
+        toolbar.addComponent(add);
+        toolbar.addComponent(delete);
+        toolbar.setVisible(table.isEditable());
+        layout.addComponent(table);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+        setCompositionRoot(layout);
     }
 
     /* (non-Javadoc)
@@ -126,29 +159,8 @@ public class MaskVarbindTable extends CustomField {
     @Override
     public void setReadOnly(boolean readOnly) {
         table.setEditable(!readOnly);
+        toolbar.setVisible(!readOnly);
         super.setReadOnly(readOnly);
     }
 
-    /*
-    private static final Action ACTION_ADD_MASK_VARBIND = new Action("Add New Mask Varbind");
-    private static final Action ACTION_DELETE_MASK_VARBIND = new Action("Delete Selected Mask Varbind");
-
-            varbinds.addActionHandler(new Action.Handler() {
-                public Action[] getActions(Object target, Object sender) {
-                    return new Action[] { ACTION_ADD_MASK_VARBIND, ACTION_DELETE_MASK_VARBIND };
-                }
-                public void handleAction(Action action, Object sender, Object target) {
-                    if (varbinds.isReadOnly()) {
-                        varbinds.getApplication().getMainWindow().showNotification("This table is read-only. Click on edit.");
-                    } else {
-                        if (action == ACTION_ADD_MASK_VARBIND) { 
-                            container.addBean(new VarbindDTO());
-                        }
-                        if (action == ACTION_DELETE_MASK_VARBIND) { // TODO Confirm ?
-                            container.removeItem(target);
-                        }
-                    }
-                }
-            });
-     */
 }
