@@ -56,8 +56,24 @@ public class KeyBuffer {
 	
 	public String drain() {
 		String keybufContents = toString();
-		head = null; tail = null;
+		free();
 		return keybufContents;
+	}
+	
+	public void free() {
+		Key current = head;
+		Key next = null;
+		while (current != null) {
+			if (current.getNext() != null) {
+				next = current.getNext();
+			}
+			current.setNext(null);
+			current.setPrev(null);
+			current.setValue(null);
+			current = next;
+			next = null;
+		}
+		head = tail = null;
 	}
 
 }

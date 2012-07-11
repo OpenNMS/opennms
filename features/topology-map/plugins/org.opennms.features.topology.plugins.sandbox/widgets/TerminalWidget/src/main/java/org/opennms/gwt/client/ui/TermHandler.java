@@ -21,7 +21,12 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 		keybuf = new KeyBuffer();
 		code = null;
 		isClosed = false;
-		updateTimer = null;
+		updateTimer = new Timer() {
+			@Override
+			public void run() {
+				update();
+			}
+		};
 	}
 
 	public KeyBuffer getKeybuf() {
@@ -75,25 +80,13 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 
 	private void queue(String keyString) {
 		keybuf.add(keyString);
-		Timer updateTimer = new Timer() {
-			@Override
-			public void run() {
-				update();
-			}
-		};
 		updateTimer.schedule(1);
 	}
 
 	protected synchronized void update() {
 		if (!isClosed) {
 			vTerm.sendBytes(keybuf.drain());
-			updateTimer = new Timer() {
-				@Override
-				public void run() {
-					update();
-				}
-			};
-			updateTimer.schedule(1000);
+			updateTimer.schedule(50);
 		}
 	}
 	

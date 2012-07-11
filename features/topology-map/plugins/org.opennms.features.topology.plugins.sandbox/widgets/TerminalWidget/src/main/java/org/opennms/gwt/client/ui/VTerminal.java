@@ -16,8 +16,6 @@
 
 package org.opennms.gwt.client.ui;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -45,6 +43,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		addKeyPressHandler(termHandler);
 		addKeyUpHandler(termHandler);
 		isClosed = "false";
+		
 	}
 
 	public void update() {
@@ -81,7 +80,9 @@ public class VTerminal extends GwtTerminal implements Paintable {
 
 	public void sendBytes(String inputKeys){
 		client.updateVariable(uidlId, "isClosed", isClosed, true);
-		if (isClosed.equals("false")) client.updateVariable(uidlId, "toSSH", inputKeys, true);
+		if (isClosed.equals("false")) {
+			client.updateVariable(uidlId, "toSSH", inputKeys, true);
+		}
 	}
 
 }

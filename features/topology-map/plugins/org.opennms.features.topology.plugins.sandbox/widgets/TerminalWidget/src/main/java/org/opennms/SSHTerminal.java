@@ -23,6 +23,8 @@ import java.io.InterruptedIOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Map;
 import com.Ostermiller.util.NoCloseInputStream;
 import com.Ostermiller.util.NoCloseOutputStream;
@@ -50,13 +52,12 @@ public class SSHTerminal extends AbstractComponent {
 	private SessionTerminal st;
 	private ClientSession session;
 	private String dumpContents;
-	private SudoSSHServer sshServer;
 	private boolean forceUpdate = false;
-	private boolean closeServer;
 	private String isClosed;
 	private String closeClient;
 	private Application app;
 	private SSHWindow sshWindow;
+	private ClientChannel channel;
 
 	public SSHTerminal(TerminalApplication app, SSHWindow sshWindow, ClientSession session, int width, int height) {
 		super();
@@ -65,18 +66,16 @@ public class SSHTerminal extends AbstractComponent {
 		dumpContents = null;
 		this.session = session;
 		closeClient = "false";
-		closeServer = false;
 		this.app = app;
 		this.sshWindow = sshWindow;
 		try {
 			isClosed = "false";
 			st = new SessionTerminal();
-			st.start();
 			forceUpdate = true;
 
 		} catch (IOException e) { e.printStackTrace(); }
 	}
-	
+
 	public void close() {
 		closeClient = "true";
 		requestRepaint();
@@ -86,14 +85,14 @@ public class SSHTerminal extends AbstractComponent {
 	@Override
 	public synchronized void paintContent(PaintTarget target) throws PaintException {
 		// Superclass writes any common attributes in the paint target.
-			super.paintContent(target);
+		super.paintContent(target);
 
-			// Add the currently selected color as a variable in the paint
-			// target.
-			target.addVariable(this, "fromSSH", dumpContents);
-			target.addVariable(this, "update", forceUpdate);
-			target.addVariable(this, "closeClient", closeClient);
-			forceUpdate = false;
+		// Add the currently selected color as a variable in the paint
+		// target.
+		target.addVariable(this, "fromSSH", dumpContents);
+		target.addVariable(this, "update", forceUpdate);
+		target.addVariable(this, "closeClient", closeClient);
+		forceUpdate = false;
 	}
 
 	/** Deserialize changes received from client. */
@@ -103,7 +102,8 @@ public class SSHTerminal extends AbstractComponent {
 		if (variables.containsKey("isClosed")) {
 			isClosed = ((String)variables.get("isClosed"));
 			if (isClosed.equals("true")){
-				closeServer = true;
+				channel.close(true);
+				app.getMainWindow().removeWindow(sshWindow);
 				requestRepaint();
 			}
 		}
@@ -119,37 +119,24 @@ public class SSHTerminal extends AbstractComponent {
 		}
 	}
 
-	public class SessionTerminal extends Thread {
+	public class SessionTerminal implements Runnable {
 
 		private Terminal terminal;
 		private NoClosePipedOutputStream in;
 		private NoClosePipedInputStream out;
-		private ClientChannel channel;
 
 		public SessionTerminal() throws IOException {
 			try {
 				this.terminal = new Terminal(TERM_WIDTH, TERM_HEIGHT);
-//				terminal.write("\u001b\u005B20\u0068"); // set newline mode on
 				in = new NoClosePipedOutputStream();
 				out = new NoClosePipedInputStream();
-//				PrintStream pipedOut = new PrintStream(new PipedOutputStream(out), true);
 				NoClosePipedOutputStream pipedOut = new NoClosePipedOutputStream(out);
 				NoClosePipedInputStream pipedIn = new NoClosePipedInputStream(in);
-//				sshServer = new SudoSSHServer(new NoCloseInputStream(pipedIn), new NoCloseOutputStream(pipedOut), null);
 				channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
 				channel.setIn(pipedIn);
 				channel.setOut(pipedOut);
 				channel.setErr(pipedOut);
-				//TODO start SSH session and pass in streams
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		@Override
-		public void start(){
-			super.start();
-			try {
+				new Thread(this).start();
 				channel.open();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -178,11 +165,6 @@ public class SSHTerminal extends AbstractComponent {
 		public void run() {
 			try {
 				for (;;) {
-					if (closeServer) {
-						sshServer.close();
-						app.getMainWindow().removeWindow(sshWindow);
-						return;
-					}
 					byte[] buf = new byte[8192];
 					int l = out.read(buf);
 					InputStreamReader r = new InputStreamReader(new ByteArrayInputStream(buf, 0, l));
@@ -208,7 +190,6 @@ public class SSHTerminal extends AbstractComponent {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 }

@@ -7,6 +7,12 @@ import java.io.InputStreamReader;
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
@@ -23,7 +29,7 @@ public class AuthWindow extends Window {
 	private String host;
 	private int port;
 	private int TERM_WIDTH = 650;
-	private int TERM_HEIGHT = 454;
+	private int TERM_HEIGHT = 460;
 	private ClientSession session = null;
 	private Window mainWindow;
 	private TerminalApplication app;
@@ -36,7 +42,7 @@ public class AuthWindow extends Window {
 		setModal(true);
 		setCaption("Login");
 		setWidth("260px");
-		setHeight("180px");
+		setHeight("190px");
 		int posX = (int)(app.getMainWindow().getWidth() - this.getWidth())/2;
 		int posY = (int)(app.getMainWindow().getHeight() - this.getHeight())/2;
 		this.setPositionX(posX);
@@ -47,6 +53,7 @@ public class AuthWindow extends Window {
 		final Label passwordLabel = new Label("Password: ");
 		final PasswordField passwordField = new PasswordField();
 		final Button loginButton = new Button("Login");
+		loginButton.setClickShortcut(KeyCode.ENTER);
 		final SshClient client = SshClient.setUpDefaultClient();
 		client.start();
 		loginButton.addListener(new Button.ClickListener() {
