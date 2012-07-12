@@ -12,11 +12,11 @@
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
-            <param-value>org.opennms.TerminalApplication</param-value>
+            <param-value>org.opennms.features.topology.netutils.internal.TerminalApplication</param-value>
         </init-param>
         <init-param>
             <param-name>widgetset</param-name>
-            <param-value>org.opennms.gwt.TerminalWidgetSet</param-value>
+            <param-value>org.opennms.features.topology.netutils.internal.gwt.TerminalWidgetSet</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
