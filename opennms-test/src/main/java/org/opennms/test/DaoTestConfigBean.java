@@ -86,6 +86,7 @@ public class DaoTestConfigBean implements InitializingBean {
         }
         // Do any necessary substitutions that are normally handled by maven
         Properties substitutions = new Properties();
+        substitutions.setProperty("install.database.driver", "org.postgres.Driver");
         substitutions.setProperty("install.share.dir", "target/test/share");
         substitutions.setProperty("install.webapplogs.dir", "target/test/logs/webapp");
         for (Map.Entry<Object, Object> entry : opennmsProperties.entrySet()) {

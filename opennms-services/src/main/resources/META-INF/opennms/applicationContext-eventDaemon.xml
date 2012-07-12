@@ -23,7 +23,7 @@
 
   <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigManager-init" factory-method="getInstance"/>
 
-  <bean id="eventExpander" class="org.opennms.netmgt.eventd.processor.EventExpander">
+  <bean id="eventExpander" class="org.opennms.netmgt.config.EventExpander">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
 

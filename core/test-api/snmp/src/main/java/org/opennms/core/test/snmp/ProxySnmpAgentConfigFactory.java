@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.core.test.snmp;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 

@@ -73,6 +73,11 @@
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-simple</artifactId>
       <scope>test</scope>
     </dependency>

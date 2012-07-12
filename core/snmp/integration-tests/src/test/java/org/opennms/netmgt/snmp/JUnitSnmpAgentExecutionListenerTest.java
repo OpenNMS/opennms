@@ -39,10 +39,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
