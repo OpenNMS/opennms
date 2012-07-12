@@ -228,11 +228,6 @@
       <classifier>sources</classifier>
       <scope>provided</scope>
 	</dependency>
-	<dependency>
-		<groupId>org.ostermiller</groupId>
-		<artifactId>utils</artifactId>
-		<version>1.07.00</version>
-	</dependency>
     <dependency>
  		<groupId>org.apache.sshd</groupId>
  		<artifactId>sshd-core</artifactId>
@@ -254,7 +249,7 @@
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.api</artifactId>
       <version>1.11.1-SNAPSHOT</version>
-      <scope>provided</scope>
+      <!--  <scope>provided</scope>  -->
     </dependency>
     
     

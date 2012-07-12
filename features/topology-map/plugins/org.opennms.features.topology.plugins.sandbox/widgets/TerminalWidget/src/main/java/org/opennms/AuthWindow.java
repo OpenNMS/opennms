@@ -1,18 +1,9 @@
 package org.opennms;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
@@ -38,7 +29,6 @@ public class AuthWindow extends Window {
 	private int TERM_WIDTH = 650;  // The width of the terminal
 	private int TERM_HEIGHT = 460;   // The height of the terminal
 	private ClientSession session = null; // The ClientSession object used to track each SSH session
-	private TerminalApplication app; // The instance of the application used to spawn and destroy windows
 	
 	/**
 	 * This constructor method spawns a window to authorize the
@@ -51,18 +41,13 @@ public class AuthWindow extends Window {
 	 * @param h - The host name to connect to 
 	 * @param p - The port number to connect to
 	 */
-	public AuthWindow(TerminalApplication app, String h, int p) {
-		this.app = app;
+	public AuthWindow(String h, int p) {
 		host = h;
 		port = p;
 		setModal(true);
 		setCaption("Login");
 		setWidth("260px");
 		setHeight("190px");
-		int posX = (int)(app.getMainWindow().getWidth() - this.getWidth())/2;
-		int posY = (int)(app.getMainWindow().getHeight() - this.getHeight())/2;
-		this.setPositionX(posX);
-		this.setPositionY(posY);
 		setResizable(false);
 		final Label usernameLabel = new Label("Username: ");
 		final TextField usernameField = new TextField();
@@ -109,11 +94,22 @@ public class AuthWindow extends Window {
 		layout.setComponentAlignment(loginButton, Alignment.BOTTOM_RIGHT);
 		addComponent(layout);
 	}
+	
+	@Override
+	public void attach() {
+		super.attach();
+		
+		int posX = (int)(getApplication().getMainWindow().getWidth() - this.getWidth())/2;
+		int posY = (int)(getApplication().getMainWindow().getHeight() - this.getHeight())/2;
+		setPositionX(posX);
+		setPositionY(posY);
+	}
+	
 	 /**
 	  * This methods adds (shows) the SSH Window to the main application
 	  */
 	private void showSSHWindow() {
-		app.getMainWindow().addWindow(getSSHWindow());
+		getApplication().getMainWindow().addWindow(getSSHWindow());
 		this.close();
 	}
 
@@ -122,7 +118,7 @@ public class AuthWindow extends Window {
 	 * @return The newly created SSH window
 	 */
 	private Window getSSHWindow() {
-		SSHWindow sshWindow = new SSHWindow(app, session, TERM_WIDTH, TERM_HEIGHT);
+		SSHWindow sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
 		return sshWindow;
 	}
 	

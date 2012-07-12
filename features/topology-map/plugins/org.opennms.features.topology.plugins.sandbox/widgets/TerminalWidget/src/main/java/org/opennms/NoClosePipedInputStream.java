@@ -322,9 +322,6 @@ public class NoClosePipedInputStream extends InputStream{
                 /* closed by writer, return EOF */
                 return -1;
             }
-//            if ((writeSide != null) && (!writeSide.isAlive()) && (--trials < 0)) {
-//                throw new IOException("Pipe broken");
-//            }
             /* might be a writer waiting */
             notifyAll();
             try {

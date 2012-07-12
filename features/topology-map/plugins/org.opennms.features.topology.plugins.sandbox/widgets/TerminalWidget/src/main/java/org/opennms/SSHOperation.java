@@ -9,41 +9,43 @@ import com.vaadin.data.Item;
 
 public class SSHOperation implements Operation {
 
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
-        
-        for(Object target : targets) {
-            String host = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("host").getValue();
-            int port = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port").getValue();
-        }
-        String host = "";
-        int port = 0;
-        AuthWindow authWindow = new AuthWindow(this, operationContext.getMainWindow(), host, port);
-        
-        return null;
-    }
+	public Undoer execute(List<Object> targets, OperationContext operationContext) {
+		//Default server info
+		String host = "debian.opennms.org";
+		int port = 22;
 
-    public boolean display(List<Object> targets, OperationContext operationContext) {
-        
-        return false;
-    }
+		if (targets != null) {
+			for(Object target : targets) {
+				host = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("host").getValue();
+				port = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port").getValue();
+			}
+		}
+		operationContext.getMainWindow().addWindow(new AuthWindow(host, port));
+		return null;
+	}
 
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
-        if(targets.size() == 1) {
-            return true;
-        }
-        for(Object target : targets) {
-            Object itemId = target;
-            Item vertexItem = operationContext.getGraphContainer().getVertexItem(itemId);
-            if(vertexItem.getItemProperty("host").getValue() != null) {
-                
-            }
-        }
-        return false;
-    }
+	public boolean display(List<Object> targets, OperationContext operationContext) {
+		return true;
+	}
 
-    public String getId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public boolean enabled(List<Object> targets, OperationContext operationContext) {
+		if (targets != null) {
+			if(targets.size() == 1) {
+				return true;
+			}
+			for(Object target : targets) {
+				Object itemId = target;
+				Item vertexItem = operationContext.getGraphContainer().getVertexItem(itemId);
+				if(vertexItem.getItemProperty("host").getValue() != null) {
+
+				}
+			}
+		}
+		return true;
+	}
+
+	public String getId() {
+		return "sshoperation";
+	}
 
 }

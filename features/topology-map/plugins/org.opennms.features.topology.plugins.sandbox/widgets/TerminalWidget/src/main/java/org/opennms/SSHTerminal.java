@@ -20,46 +20,33 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Map;
-import com.Ostermiller.util.NoCloseInputStream;
-import com.Ostermiller.util.NoCloseOutputStream;
-
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.opennms.gwt.client.ui.VTerminal;
-
-import com.vaadin.Application;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Window;
 
 /**
- * 
- * 
+ * The SSHTerminal class is a custom Vaadin component that emulates VT100
+ * terminals and connects remotely to servers via SSH
  * @author lmbell
  * @author pdgrenon
- *
  */
 @ClientWidget(VTerminal.class)
 public class SSHTerminal extends AbstractComponent {
 
 	private static final long serialVersionUID = -8914800725736485264L; // serialization ID
 	private int TERM_WIDTH;  // The width of the terminal
-	private int TERM_HEIGHT;  // The height of the terminal 
+	private int TERM_HEIGHT;  // The height of the terminal
+	private boolean forceUpdate = false;  // Tracks whether the client should be forced to update 
+	private boolean isClosed;  // Tracks whether the whether is closed
+	private boolean closeClient;  // Boolean sent from the server to close the client
 	private SessionTerminal st;  // The terminal specific to the current session
 	private ClientSession session;  // The client instance used in the authorization of user names and passwords 
 	private String dumpContents; // The content from the server to be displayed by the client
-	private boolean forceUpdate = false;  // Tracks whether the client should be forced to update 
-	private String isClosed;  // Tracks whether the whether is closed
-	private String closeClient;  // Boolean sent from the server to close the client
-	private Application app;  // The main application
 	private SSHWindow sshWindow;  // The window that holds the terminal
 	private ClientChannel channel;  // The connection between the client and the server
 
@@ -71,20 +58,18 @@ public class SSHTerminal extends AbstractComponent {
 	 * @param width The width of the terminal
 	 * @param height The height of the terminal
 	 */
-	public SSHTerminal(TerminalApplication app, SSHWindow sshWindow, ClientSession session, int width, int height) {
+	public SSHTerminal(SSHWindow sshWindow, ClientSession session, int width, int height) {
 		super();
+		this.sshWindow = sshWindow;
+		this.session = session;
 		TERM_WIDTH = width;
 		TERM_HEIGHT = height;
 		dumpContents = null;
-		this.session = session;
-		closeClient = "false";
-		this.app = app;
-		this.sshWindow = sshWindow;
+		closeClient = false;
+		isClosed = false;
 		try {
-			isClosed = "false";
 			st = new SessionTerminal();
 			forceUpdate = true;
-
 		} catch (IOException e) { e.printStackTrace(); }
 	}
 
@@ -92,7 +77,7 @@ public class SSHTerminal extends AbstractComponent {
 	 * Closes the client window
 	 */
 	public void close() {
-		closeClient = "true";
+		closeClient = true;
 		requestRepaint();
 	}
 
@@ -102,8 +87,6 @@ public class SSHTerminal extends AbstractComponent {
 		// Superclass writes any common attributes in the paint target.
 		super.paintContent(target);
 
-		// Add the currently selected color as a variable in the paint
-		// target.
 		target.addVariable(this, "fromSSH", dumpContents);
 		target.addVariable(this, "update", forceUpdate);
 		target.addVariable(this, "closeClient", closeClient);
@@ -115,10 +98,10 @@ public class SSHTerminal extends AbstractComponent {
 	@Override
 	public synchronized void changeVariables(Object source, Map variables) {
 		if (variables.containsKey("isClosed")) {
-			isClosed = ((String)variables.get("isClosed"));
-			if (isClosed.equals("true")){
+			isClosed = ((Boolean)variables.get("isClosed"));
+			if (isClosed){
 				channel.close(true);
-				app.getMainWindow().removeWindow(sshWindow);
+				getApplication().getMainWindow().removeWindow(sshWindow);
 				requestRepaint();
 			}
 		}

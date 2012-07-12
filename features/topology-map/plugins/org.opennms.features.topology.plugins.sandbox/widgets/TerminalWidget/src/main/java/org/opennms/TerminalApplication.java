@@ -22,8 +22,6 @@ import org.opennms.features.topology.api.OperationContext;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
 
 /**
  * Vaadin application for terminal emulation and SSH functionality
@@ -35,61 +33,38 @@ import com.vaadin.ui.Window.CloseListener;
 public class TerminalApplication extends com.vaadin.Application {
 
     Window main = new Window("Vaadin Application"); // The main window used as the background of the application
-    private String host = "debian.opennms.org"; // The host name to be connected to through SSH
-    private int port = 22; // The port number to be connected to through SSH
-
+    OperationContext opContext;
+    
     /**
      * Initialize the application and sets the theme
      */
     @Override
     public void init() {
-        final SSHOperation operation = new SSHOperation();
         setMainWindow(main);
         setTheme("mytheme");
+    	
+        final SSHOperation operation = new SSHOperation();
+        opContext = new OperationContext() {
+            
+            public Window getMainWindow() {
+                return main;
+            }
+            
+            public GraphContainer getGraphContainer() {
+                return null;
+            }
+        };
+  
         Button openWindow = new Button("Open Window");
         openWindow.addListener(new Button.ClickListener() {
-			
-            
 			public void buttonClick(ClickEvent event) {
 				//showAuthWindow();
-				operation.execute(null, getOperationContext());
+				operation.execute(null, opContext);
 				
 			}
 		});
 
         getMainWindow().addComponent(openWindow);
-
-    }
-    /**
-     * This methods adds (shows) the authorization window to the main application
-     */
-    private void showAuthWindow() {
-        getMainWindow().addWindow(getAuthWindow());
-    }
-	protected OperationContext getOperationContext() {
-        return new OperationContext() {
-            
-            public Window getMainWindow() {
-                
-                return getMainWindow();
-            }
-            
-            public GraphContainer getGraphContainer() {
-               
-                return null;
-            }
-        };
     }
 
-    private void showAuthWindow() {
-		getMainWindow().addWindow(getAuthWindow());
-	}
-
-	private Window getAuthWindow() {
-		return new AuthWindow(this, getMainWindow(), host, port);
-	}
-
-	public void windowClose(CloseEvent e) {
-		
-	}
 }

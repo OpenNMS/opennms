@@ -16,7 +16,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	String uidlId; //Component identifier in UIDL communications.
 	ApplicationConnection client; //Reference to the server connection object.
 	private TermHandler termHandler; //Key handler for VT100 codes
-	private String isClosed; //A String boolean variable letting the server know the status of the Handler
+	private boolean isClosed; //Lets the server know the status of the Handler
 
 	/**
 	 * The VTerminal() constructor creates a GwtTerminal Widget and assigns the TermHandler
@@ -28,7 +28,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		addKeyDownHandler(termHandler);
 		addKeyPressHandler(termHandler);
 		addKeyUpHandler(termHandler);
-		isClosed = "false";
+		isClosed = false;
 	}
 
 	/**
@@ -64,9 +64,9 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		Check if the server wants the TermHandler to close, if so, send a
 		response back to the server that it was closed successfully
 		************************************************/
-		if (uidl.getStringVariable("closeClient").equals("true")) {
+		if (uidl.getBooleanVariable("closeClient")) {
 			termHandler.close();
-			isClosed = "true";
+			isClosed = true;
 			sendBytes("");
 		}
 		/************************************************
@@ -88,7 +88,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		/************************************************
 		Send the server the current KeyBuffer from the client
 		************************************************/
-		if (isClosed.equals("false")) {
+		if (!isClosed) {
 			client.updateVariable(uidlId, "toSSH", inputKeys, true);
 		}
 	}
