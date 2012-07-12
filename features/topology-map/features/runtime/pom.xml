@@ -26,11 +26,14 @@
           <features>
             <feature>opennms-topology-api</feature>
           </features>
+          <bundles>
+	    <bundle>mvn:com.mycompany/com.mycompany.bundle/1.0-SNAPSHOT</bundle>
+          </bundles>
           <configs>
             <config>
                 <name>org.opennms.features.topology.app</name>
                 <contents>
-                    toplevelMenuOrder=Edit,File,View,Additional,Help
+                    toplevelMenuOrder=File,Edit,View,Additional,Help
                     servletAlias=/topology
                 </contents>
             </config>
