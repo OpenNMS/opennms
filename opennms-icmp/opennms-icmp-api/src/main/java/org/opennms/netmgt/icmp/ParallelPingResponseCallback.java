@@ -63,7 +63,9 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         try {
-            m_responseTimes[request.getSequenceNumber()] = null;
+            if (request != null) {
+                m_responseTimes[request.getSequenceNumber()] = null;
+            }
             m_error = t;
         } finally {
             m_latch.countDown();
@@ -73,7 +75,9 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, EchoPacket response) {
         try {
-            m_responseTimes[response.getSequenceNumber()] = response.elapsedTime(TimeUnit.MICROSECONDS);
+            if (response != null) {
+                m_responseTimes[response.getSequenceNumber()] = response.elapsedTime(TimeUnit.MICROSECONDS);
+            }
         } finally {
             m_latch.countDown();
         }
@@ -82,7 +86,9 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     public void handleTimeout(InetAddress address, EchoPacket request) {
         try {
-            m_responseTimes[request.getSequenceNumber()] = null;
+            if (request != null) {
+                m_responseTimes[request.getSequenceNumber()] = null;
+            }
         } finally {
             m_latch.countDown();
         }
