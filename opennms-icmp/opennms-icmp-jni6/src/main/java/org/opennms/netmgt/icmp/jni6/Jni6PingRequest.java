@@ -278,47 +278,38 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
 
     @Override
     public boolean isEchoReply() {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        return requestPacket == null? false : requestPacket.getType() == Type.EchoReply;
+        return getRequestPacket().getType() == Type.EchoReply;
     }
 
     @Override
     public int getIdentifier() {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        return requestPacket == null? 0 : requestPacket.getIdentifier();
+        return getRequestPacket().getIdentifier();
     }
 
     @Override
     public int getSequenceNumber() {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        return requestPacket == null? 0 : requestPacket.getSequenceNumber();
+        return getRequestPacket().getSequenceNumber();
     }
 
     @Override
     public long getThreadId() {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        return requestPacket == null? 0l : requestPacket.getThreadId();
+        return getRequestPacket().getThreadId();
     }
     @Override
     public long getReceivedTimeNanos() {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        return requestPacket == null? 0l : requestPacket.getReceiveTime() * 1000000;
+        return getRequestPacket().getReceiveTime() * 1000000;
     }
 
     @Override
     public long getSentTimeNanos() {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        return requestPacket == null? 0l : requestPacket.getSentTime() * 1000000;
+        return getRequestPacket().getSentTime() * 1000000;
     }
 
     @Override
     public double elapsedTime(final TimeUnit timeUnit) {
-        final ICMPv6EchoRequest requestPacket = getRequestPacket();
-        if (requestPacket == null) return 0d;
-
         // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
         final double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
-        return (requestPacket.getRoundTripTime() * 1000) / nanosPerUnit;
+        return (getRequestPacket().getRoundTripTime() * 1000) / nanosPerUnit;
     }
 
 }
