@@ -289,38 +289,47 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
 
     @Override
     public boolean isEchoReply() {
-        return getRequestPacket().isEchoReply();
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        return requestPacket == null? false : requestPacket.isEchoReply();
     }
 
     @Override
     public int getIdentifier() {
-        return getRequestPacket().getIdentity();
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        return requestPacket == null? 0 : requestPacket.getIdentity();
     }
 
     @Override
     public int getSequenceNumber() {
-        return getRequestPacket().getSequenceId();
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        return requestPacket == null? 0 : requestPacket.getSequenceId();
     }
 
     @Override
     public long getThreadId() {
-        return getRequestPacket().getTID();
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        return requestPacket == null? 0 : requestPacket.getTID();
     }
     @Override
     public long getReceivedTimeNanos() {
-        return getRequestPacket().getReceivedTime();
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        return requestPacket == null? 0l : requestPacket.getReceivedTime();
     }
 
     @Override
     public long getSentTimeNanos() {
-        return getRequestPacket().getSentTime();
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        return requestPacket == null? 0l : requestPacket.getSentTime();
     }
 
     @Override
     public double elapsedTime(TimeUnit timeUnit) {
+        final ICMPEchoPacket requestPacket = getRequestPacket();
+        if (requestPacket == null) return 0d;
+        
         // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
-        return (getRequestPacket().getPingRTT() * 1000) / nanosPerUnit;
+        return (requestPacket.getPingRTT() * 1000) / nanosPerUnit;
     }
 
 }
