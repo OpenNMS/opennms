@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>org.opennms.features.topology</artifactId>
-  <version>1.11.1-SNAPSHOT</version>
+  <version>1.11.1</version>
 
   <name>org.opennms.features.topology (OSGi project)</name>
 
