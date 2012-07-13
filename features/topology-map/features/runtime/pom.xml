@@ -26,9 +26,6 @@
           <features>
             <feature>opennms-topology-api</feature>
           </features>
-          <bundles>
-	    <bundle>mvn:com.mycompany/com.mycompany.bundle/1.0-SNAPSHOT</bundle>
-          </bundles>
           <configs>
             <config>
                 <name>org.opennms.features.topology.app</name>
@@ -90,6 +87,11 @@
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.ui.tree</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.netutils</artifactId>
       <version>${project.version}</version>
     </dependency>
 
