@@ -17,6 +17,10 @@
 	
 	<!-- <set-property name="user.agent" value="safari" /> -->
 
-
     <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+
+<<<<<<< HEAD
+    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+=======
+>>>>>>> 372d6264e8e68c7ed83a0b1f8c40d21fe312ddda
 </module>
