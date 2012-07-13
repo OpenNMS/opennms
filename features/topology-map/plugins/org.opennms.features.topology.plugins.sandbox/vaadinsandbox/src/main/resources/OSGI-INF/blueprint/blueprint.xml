@@ -18,6 +18,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Traceroute"/>
+            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation"/>
     </service>
@@ -26,6 +27,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Events/Alarms"/>
+            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation"/>
     </service>
@@ -34,6 +36,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Resource Graphs"/>
+            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation"/>
     </service>
@@ -42,6 +45,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Node Info"/>
+            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.netutils.internal.operations.NodeInfoOperation"/>
     </service>

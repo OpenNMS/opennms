@@ -304,16 +304,6 @@
 			<classifier>sources</classifier>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addons</groupId>
-			<artifactId>contextmenu</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addons</groupId>
-			<artifactId>console</artifactId>
-			<version>1.1.6</version>
-		</dependency>
 		
 		 <!-- TOPOLOGY API DEPENDENCIES -->
     	<dependency>

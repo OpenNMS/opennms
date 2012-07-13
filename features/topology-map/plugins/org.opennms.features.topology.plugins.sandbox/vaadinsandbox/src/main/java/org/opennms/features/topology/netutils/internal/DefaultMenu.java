@@ -10,9 +10,9 @@ import org.opennms.features.topology.netutils.internal.operations.NodeInfoOperat
 import org.opennms.features.topology.netutils.internal.operations.PingOperation;
 import org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation;
 import org.opennms.features.topology.netutils.internal.operations.TracerouteOperation;
-import org.vaadin.peter.contextmenu.ContextMenu;
-import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
-import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
+//import org.vaadin.peter.contextmenu.ContextMenu;
+//import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
+//import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.terminal.ClassResource;
@@ -48,8 +48,8 @@ public class DefaultMenu extends Application{
 	private NodeInfoOperation infoOperation = null; //Sub-window which contains the functionality for getting node information
 	private Label cartman = new Label("<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">Cartman</div>"); //Name of the node which is displayed at the top of the Left side of the split panel.
 	private Label butters = new Label("<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">Butters</div>"); //Name of the node which is displayed at the top of the right side of the split panel.
-	private ContextMenu cartmanMenu = new ContextMenu(); //Context Menu that appears when right clicking on the left side of the split panel.
-	private ContextMenu buttersMenu = new ContextMenu(); //Context Menu that appears when right clicking on the right side of the split panel.
+//	private ContextMenu cartmanMenu = new ContextMenu(); //Context Menu that appears when right clicking on the left side of the split panel.
+//	private ContextMenu buttersMenu = new ContextMenu(); //Context Menu that appears when right clicking on the right side of the split panel.
 
 	/*Test Data*/
 	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
@@ -130,10 +130,10 @@ public class DefaultMenu extends Application{
 
 			public void layoutClick(LayoutClickEvent event) {
 				if (LayoutClickEvent.BUTTON_RIGHT == event.getButton()) {
-					cartmanMenu.show(event.getClientX(), event.getClientY());
+//					cartmanMenu.show(event.getClientX(), event.getClientY());
 				}else if(LayoutClickEvent.BUTTON_LEFT == event.getButton()) {
 					if(event.isCtrlKey()){
-						cartmanMenu.show(event.getClientX(), event.getClientY());
+//						cartmanMenu.show(event.getClientX(), event.getClientY());
 					}
 				}
 			}
@@ -145,10 +145,10 @@ public class DefaultMenu extends Application{
 
 			public void layoutClick(LayoutClickEvent event) {
 				if (LayoutClickEvent.BUTTON_RIGHT == event.getButton()) {
-					buttersMenu.show(event.getClientX(), event.getClientY());
+//					buttersMenu.show(event.getClientX(), event.getClientY());
 				}else if(LayoutClickEvent.BUTTON_LEFT == event.getButton()) {
 					if(event.isCtrlKey()){
-						buttersMenu.show(event.getClientX(), event.getClientY());
+//						buttersMenu.show(event.getClientX(), event.getClientY());
 					}
 				}
 			}
@@ -160,8 +160,8 @@ public class DefaultMenu extends Application{
 
 		/*Adds all of the layouts and components to the main window for the Application.*/
 		getMainWindow().setContent(mainLayout);
-		getMainWindow().addComponent(cartmanMenu);
-		getMainWindow().addComponent(buttersMenu);
+//		getMainWindow().addComponent(cartmanMenu);
+//		getMainWindow().addComponent(buttersMenu);
 	}
 
 	/**
@@ -237,29 +237,29 @@ public class DefaultMenu extends Application{
 	 * left side of the split panel
 	 */
 	private void buildCartmanMenu() {
-		final ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
-		final ContextMenuItem ping = cartmanMenu.addItem("Ping");
-		final ContextMenuItem traceroute = cartmanMenu.addItem("Traceroute");
-		final ContextMenuItem eventsAlarms = cartmanMenu.addItem("Events/Alarms");
-		final ContextMenuItem resourceGraphs = cartmanMenu.addItem("Resource Graphs");
-		cartmanMenu.addListener(new ContextMenu.ClickListener() {
-
-			public void contextItemClick(ClickEvent event) {
-				try {
-					if (eventsAlarms == event.getClickedItem()){
-						eaOperation.execute(testTargets1, opContext);
-					} else if (resourceGraphs == event.getClickedItem()){
-						rgOperation.execute(testTargets1, opContext);
-					} else if (ping == event.getClickedItem()) {
-						pingOperation.execute(testTargets1, opContext);
-					} else if (traceroute == event.getClickedItem()) {
-						traceOperation.execute(testTargets1, opContext);
-					} else if (nodeInfo == event.getClickedItem()) {
-						infoOperation.execute(testTargets1, opContext);
-					}
-				} catch (Exception e) { e.printStackTrace(); }
-			}
-		});
+//		final ContextMenuItem nodeInfo = cartmanMenu.addItem("Node Info");
+//		final ContextMenuItem ping = cartmanMenu.addItem("Ping");
+//		final ContextMenuItem traceroute = cartmanMenu.addItem("Traceroute");
+//		final ContextMenuItem eventsAlarms = cartmanMenu.addItem("Events/Alarms");
+//		final ContextMenuItem resourceGraphs = cartmanMenu.addItem("Resource Graphs");
+//		cartmanMenu.addListener(new ContextMenu.ClickListener() {
+//
+//			public void contextItemClick(ClickEvent event) {
+//				try {
+//					if (eventsAlarms == event.getClickedItem()){
+//						eaOperation.execute(testTargets1, opContext);
+//					} else if (resourceGraphs == event.getClickedItem()){
+//						rgOperation.execute(testTargets1, opContext);
+//					} else if (ping == event.getClickedItem()) {
+//						pingOperation.execute(testTargets1, opContext);
+//					} else if (traceroute == event.getClickedItem()) {
+//						traceOperation.execute(testTargets1, opContext);
+//					} else if (nodeInfo == event.getClickedItem()) {
+//						infoOperation.execute(testTargets1, opContext);
+//					}
+//				} catch (Exception e) { e.printStackTrace(); }
+//			}
+//		});
 	}
 
 	/**
@@ -267,23 +267,23 @@ public class DefaultMenu extends Application{
 	 * right side of the split panel
 	 */
 	private void buildButtersMenu() {
-		final ContextMenuItem nodeInfo = buttersMenu.addItem("Node Info");
-		final ContextMenuItem eventsAlarms = buttersMenu.addItem("Events/Alarms");
-		final ContextMenuItem resourceGraphs = buttersMenu.addItem("Resource Graphs");
-		buttersMenu.addListener(new ContextMenu.ClickListener() {
-
-			public void contextItemClick(ClickEvent event) {
-				try {
-					if (eventsAlarms == event.getClickedItem()){
-						eaOperation.execute(testTargets2, opContext);
-					} else if (resourceGraphs == event.getClickedItem()){
-						rgOperation.execute(testTargets2, opContext);
-					} else if (nodeInfo == event.getClickedItem()) {
-						infoOperation.execute(testTargets2, opContext);
-					}
-				} catch (Exception e) { e.printStackTrace(); }
-			}
-		});
+//		final ContextMenuItem nodeInfo = buttersMenu.addItem("Node Info");
+//		final ContextMenuItem eventsAlarms = buttersMenu.addItem("Events/Alarms");
+//		final ContextMenuItem resourceGraphs = buttersMenu.addItem("Resource Graphs");
+//		buttersMenu.addListener(new ContextMenu.ClickListener() {
+//
+//			public void contextItemClick(ClickEvent event) {
+//				try {
+//					if (eventsAlarms == event.getClickedItem()){
+//						eaOperation.execute(testTargets2, opContext);
+//					} else if (resourceGraphs == event.getClickedItem()){
+//						rgOperation.execute(testTargets2, opContext);
+//					} else if (nodeInfo == event.getClickedItem()) {
+//						infoOperation.execute(testTargets2, opContext);
+//					}
+//				} catch (Exception e) { e.printStackTrace(); }
+//			}
+//		});
 	}
 
 }
