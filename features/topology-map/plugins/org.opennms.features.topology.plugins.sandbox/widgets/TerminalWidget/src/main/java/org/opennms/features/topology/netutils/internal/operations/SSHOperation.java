@@ -46,7 +46,7 @@ public class SSHOperation implements Operation {
 	}
 
 	public String getId() {
-		return "sshoperation";
+		return "ssh";
 	}
 
 }

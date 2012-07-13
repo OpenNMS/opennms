@@ -11,12 +11,12 @@ public class PingOperation implements Operation {
 
 	public boolean display(List<Object> targets, OperationContext operationContext) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
@@ -29,7 +29,7 @@ public class PingOperation implements Operation {
 
 	public String getId() {
 		// TODO Auto-generated method stub
-		return null;
+		return "ping";
 	}
 
 }

@@ -21,60 +21,6 @@
 
 	<inherits name="org.vaadin.console.ConsoleWidgetset" />
 
-	<inherits name="org.vaadin.rpc.WidgetRPC" />
-
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
 
     <inherits name="org.vaadin.rpc.WidgetRPC" />
 

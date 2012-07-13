@@ -2,6 +2,45 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
+	
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Ping"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.PingOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Traceroute"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Events/Alarms"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Resource Graphs"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Node Info"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.NodeInfoOperation"/>
+    </service>
 
 </beans>

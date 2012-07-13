@@ -54,7 +54,8 @@ public class DefaultMenu extends Application{
 	/*Test Data*/
 	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
 	private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
-	private List<Object> testTargets = new ArrayList<Object>();
+	private List<Object> testTargets1 = new ArrayList<Object>();
+	private List<Object> testTargets2 = new ArrayList<Object>();
 	private OperationContext opContext;
 
 	/**
@@ -73,8 +74,8 @@ public class DefaultMenu extends Application{
 		setMainWindow(main);
 		getMainWindow().setImmediate(true);
 
-		testTargets.add(testNode1);
-		testTargets.add(testNode2);
+		testTargets1.add(testNode1);
+		testTargets2.add(testNode2);
 		eaOperation = new EventsAlarmsOperation();
 		rgOperation = new ResourceGraphsOperation();
 		pingOperation = new PingOperation();
@@ -175,7 +176,7 @@ public class DefaultMenu extends Application{
 		MenuBar.Command EA_Select = new MenuBar.Command() {
 			public void menuSelected(MenuItem selectedItem) {
 				try {
-					eaOperation.execute(testTargets, opContext);
+					eaOperation.execute(testTargets1, opContext);
 				} catch (Exception e) { e.printStackTrace(); }
 			}
 		};
@@ -184,7 +185,7 @@ public class DefaultMenu extends Application{
 		MenuBar.Command RG_Select = new MenuBar.Command() {
 			public void menuSelected(MenuItem selectedItem) {
 				try {
-					rgOperation.execute(testTargets, opContext);
+					rgOperation.execute(testTargets1, opContext);
 				} catch (Exception e) { e.printStackTrace(); }
 			}
 		};
@@ -192,14 +193,14 @@ public class DefaultMenu extends Application{
 		/*Sets up command for clicking on Node -> Ping option*/
 		MenuBar.Command Ping_Select = new MenuBar.Command() {
 			public void menuSelected(MenuItem selectedItem) {
-				pingOperation.execute(testTargets, opContext);
+				pingOperation.execute(testTargets1, opContext);
 			}
 		};
 
 		/*Sets up command for clicking on Node -> Traceroute option*/
 		MenuBar.Command Trace_Select = new MenuBar.Command() {
 			public void menuSelected(MenuItem selectedItem) {
-				traceOperation.execute(testTargets, opContext);
+				traceOperation.execute(testTargets1, opContext);
 			}
 		};
 
@@ -207,7 +208,7 @@ public class DefaultMenu extends Application{
 		MenuBar.Command NodeInfo_Select = new MenuBar.Command() {
 			public void menuSelected(MenuItem selectedItem) {
 				try {
-					infoOperation.execute(testTargets, opContext);
+					infoOperation.execute(testTargets1, opContext);
 				} catch (Exception e) { e.printStackTrace(); }
 			}
 		};
@@ -246,15 +247,15 @@ public class DefaultMenu extends Application{
 			public void contextItemClick(ClickEvent event) {
 				try {
 					if (eventsAlarms == event.getClickedItem()){
-						eaOperation.execute(testTargets, opContext);
+						eaOperation.execute(testTargets1, opContext);
 					} else if (resourceGraphs == event.getClickedItem()){
-						rgOperation.execute(testTargets, opContext);
+						rgOperation.execute(testTargets1, opContext);
 					} else if (ping == event.getClickedItem()) {
-						pingOperation.execute(testTargets, opContext);
+						pingOperation.execute(testTargets1, opContext);
 					} else if (traceroute == event.getClickedItem()) {
-						traceOperation.execute(testTargets, opContext);
+						traceOperation.execute(testTargets1, opContext);
 					} else if (nodeInfo == event.getClickedItem()) {
-						infoOperation.execute(testTargets, opContext);
+						infoOperation.execute(testTargets1, opContext);
 					}
 				} catch (Exception e) { e.printStackTrace(); }
 			}
@@ -274,11 +275,11 @@ public class DefaultMenu extends Application{
 			public void contextItemClick(ClickEvent event) {
 				try {
 					if (eventsAlarms == event.getClickedItem()){
-						eaOperation.execute(testTargets, opContext);
+						eaOperation.execute(testTargets2, opContext);
 					} else if (resourceGraphs == event.getClickedItem()){
-						rgOperation.execute(testTargets, opContext);
+						rgOperation.execute(testTargets2, opContext);
 					} else if (nodeInfo == event.getClickedItem()) {
-						infoOperation.execute(testTargets, opContext);
+						infoOperation.execute(testTargets2, opContext);
 					}
 				} catch (Exception e) { e.printStackTrace(); }
 			}
