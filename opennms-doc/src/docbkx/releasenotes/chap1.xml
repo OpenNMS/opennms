@@ -6,6 +6,19 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="introduction-1.11.1">
+		<title>Release 1.11.1</title>
+
+		<para>
+			Release 1.11.1 is the latest in the unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.1 is <emphasis>Mike Doughty</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.11.0">
 		<title>Release 1.11.0</title>
 

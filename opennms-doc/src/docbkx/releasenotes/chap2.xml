@@ -6,6 +6,30 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.1">
+		<title>Changes in OpenNMS 1.11.1</title>
+
+		<section id="opennms-1.11.1-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Passwords Cannot Contain non-ASCII Characters (Issue <ulink url='http://issues.opennms.org/browse/NMS-5312'>NMS-5312</ulink>)</para></listitem>
+				<listitem><para>IpAddressTableEntry: Unable to determine IP address type (4)  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5414'>NMS-5414</ulink>)</para></listitem>
+				<listitem><para>MockSnmpAgent does not parse properly STRING with quotes &quot;&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5415'>NMS-5415</ulink>)</para></listitem>
+				<listitem><para>Provision service does not persist ifPhysAddress for snmp interfaces without a corresponding ip interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-5418'>NMS-5418</ulink>)</para></listitem>
+				<listitem><para>The Poll Snmp Interface Policy is overwritten if the interface has a valid ip address (Issue <ulink url='http://issues.opennms.org/browse/NMS-5425'>NMS-5425</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.1-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Snmp Monitor reports Down when the Agent is not responding (Issue <ulink url='http://issues.opennms.org/browse/NMS-4632'>NMS-4632</ulink>)</para></listitem>
+				<listitem><para>Modify the remote poller to make it friendlier to run multiple instances on the same machine (Issue <ulink url='http://issues.opennms.org/browse/NMS-5072'>NMS-5072</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.0">
 		<title>Changes in OpenNMS 1.11.0</title>
 
