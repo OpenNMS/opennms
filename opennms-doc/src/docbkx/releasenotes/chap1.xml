@@ -22,6 +22,18 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.4">
+		<title>Release 1.10.4</title>
+
+		<para>
+			Release 1.10.4 is the latest in the stable series of OpenNMS releases.
+			It contains a few minor bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.4 is <emphasis>Archlute</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.10.3">
 		<title>Release 1.10.3</title>
 

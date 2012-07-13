@@ -4,6 +4,12 @@ opennms (1.11.0-1) unstable; urgency=low
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 11:21:00 -0400
 
+opennms (1.10.4-1) stable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 12 Jul 2012 16:35:00 -0400
+
 opennms (1.10.3-1) stable; urgency=high
 
   * New upstream release.  Includes a fix for a potential deadlock in provisiond.
