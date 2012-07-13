@@ -27,76 +27,69 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import com.vaadin.data.Property;
-import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class MIB Edit Window.
+ * The Class Event Generator Window.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibEditWindow extends Window implements Button.ClickListener {
+public abstract class EventGenerationWindow extends Window implements Button.ClickListener {
 
-    /** The MIB editor area. */
-    private final TextArea editor;
+    /** The Event UEI base. */
+    private final TextField ueiBase;
 
-    /** The cancel button. */
-    private final Button cancel;
-
-    /** The save button. */
-    private final Button save;
+    /** The cancel. */
+    private final Button okButton;
 
     /**
-     * Instantiates a new MIB edit window.
+     * Instantiates a new Event Generator window.
      *
-     * @param document the document
      */
-    public MibEditWindow(Property document) {
+    public EventGenerationWindow() {
         setCaption("Edit MIB");
         setModal(true);
-        setWidth(800, Sizeable.UNITS_PIXELS);
-        setHeight(540, Sizeable.UNITS_PIXELS);
+        setWidth("400px");
+        setHeight("150px");
+        setResizable(false);
+        setClosable(false);
+        addStyleName(Runo.WINDOW_DIALOG);
 
-        editor = new TextArea();
-        editor.setPropertyDataSource(document);
-        editor.setWriteThrough(false);
-        editor.setSizeFull();
-        editor.setRows(30);
+        ueiBase = new TextField("UEI Base");
+        ueiBase.setNullSettingAllowed(false);
+        ueiBase.setWriteThrough(false);
+        ueiBase.setWidth("100%");
 
-        cancel = new Button("Cancel");
-        cancel.addListener(this);
-        save = new Button("Save");
-        save.addListener(this);
+        okButton = new Button("Continue");
+        okButton.addListener(this);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.addComponent(cancel);
-        toolbar.addComponent(save);
+        addComponent(ueiBase);
+        addComponent(okButton);
 
-        addComponent(editor);
-        addComponent(toolbar);
-
-        ((VerticalLayout)getContent()).setExpandRatio(editor, 1.0f);
+        ((VerticalLayout) getContent()).setComponentAlignment(okButton, Alignment.BOTTOM_RIGHT);
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
-    public void buttonClick(ClickEvent event) {
-        if (event.getButton().equals(save)) {
-            editor.commit();
+    public void buttonClick(Button.ClickEvent event) {
+        if (ueiBase.getValue() != null) {
             getApplication().getMainWindow().removeWindow(this);
-        }
-        if (event.getButton().equals(cancel)) {
-            editor.discard();
-            getApplication().getMainWindow().removeWindow(this);
+            changeUeiHandler((String)ueiBase.getValue());
         }
     }
+
+    /**
+     * Change UEI handler.
+     *
+     * @param ueiBase the UEI base
+     */
+    public abstract void changeUeiHandler(String ueiBase);
 
 }

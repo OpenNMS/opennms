@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
+import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
+
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -50,7 +52,7 @@ public class MibCompilerApplication extends Application {
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsole mibConsole = new MibConsole();
-        final MibTreePanel mibsTree = new MibTreePanel(mibConsole);
+        final MibTreePanel mibsTree = new MibTreePanel(new MibbleMibParser(), mibConsole); // TODO Find a better way to pass the MIB parser.
 
         mainPanel.setSizeFull();
         mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);

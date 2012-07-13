@@ -35,7 +35,6 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.util.HierarchicalContainer;
@@ -63,7 +62,7 @@ public class MibTreePanel extends Panel {
     private static final String COMPILED = "compiled";
 
     /** The Constant MIBS_ROOT_DIR. */
-    private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // FIXME Must be configurable
+    private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // TODO Must be configurable
 
     /** The Constant MIBS_COMPILED_DIR. */
     private static final File MIBS_COMPILED_DIR = new File(MIBS_ROOT_DIR, COMPILED);
@@ -97,12 +96,12 @@ public class MibTreePanel extends Panel {
      *
      * @param logger the logger
      */
-    public MibTreePanel(final Logger logger) {
+    public MibTreePanel(final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
 
         // Parser Configuration
 
-        mibParser = new MibbleMibParser();
+        this.mibParser = mibParser;
         mibParser.addMibDirectory(MIBS_COMPILED_DIR);
 
         // Initialize Toolbar
@@ -240,15 +239,6 @@ public class MibTreePanel extends Panel {
         }
         return false;
     }
-    
-    /**
-     * Gets the events.
-     *
-     * @return the events
-     */
-    private Events getEvents() {
-        return mibParser.getEvents("uei.example/traps"); // FIXME must show a modal event to request the base UEI
-    }
 
     /**
      * Generate events.
@@ -258,31 +248,51 @@ public class MibTreePanel extends Panel {
      */
     private void generateEvents(final Logger logger, final String fileName) {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
-            final Events events = getEvents();
-            logger.info("Found " + events.getEventCount() + " events.");
-            final Window w = new Window(fileName);
-            w.setScrollable(true);
-            w.setClosable(false);
-            w.setDraggable(false);
-            w.addStyleName(Runo.WINDOW_DIALOG);
-            w.setSizeFull();
-            w.setContent(new EventPanel(events) {
-                void cancelProcessing() {
-                    getApplication().getMainWindow().removeWindow(w);
+            final EventGenerationWindow w = new EventGenerationWindow() {
+                @Override
+                public void changeUeiHandler(String ueiBase) {
+                    showEventsWindow(logger, fileName, ueiBase);
                 }
-                void generateEventFile() { // FIXME This is not elegant.
-                    StringWriter writer = new StringWriter();
-                    try {
-                        events.marshal(writer);
-                        logger.info("<pre>" + writer.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") + "</pre>");
-                    } catch (Exception e) {
-                        logger.error(e.getMessage());
-                    }
-                    getApplication().getMainWindow().removeWindow(w);
-                }
-            });
+            };
             getApplication().getMainWindow().addWindow(w);
         }
+    }
+
+    /**
+     * Shows the events window.
+     *
+     * @param logger the logger
+     * @param fileName the file name
+     * @param ueiBase the UEI base
+     * @return the events window
+     */
+    private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
+        final Events events =  mibParser.getEvents(ueiBase);
+        logger.info("Found " + events.getEventCount() + " events.");
+        final Window w = new Window(fileName);
+        w.setScrollable(true);
+        w.setModal(false);
+        w.setClosable(false);
+        w.setDraggable(false);
+        w.setResizable(false);
+        w.addStyleName(Runo.WINDOW_DIALOG);
+        w.setSizeFull();
+        w.setContent(new EventPanel(events) {
+            void cancelProcessing() {
+                getApplication().getMainWindow().removeWindow(w);
+            }
+            void generateEventFile() { // FIXME This is not elegant.
+                StringWriter writer = new StringWriter();
+                try {
+                    events.marshal(writer);
+                    logger.info("The XML for the file " + fileName + ":<pre>" + writer.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") + "</pre>");
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+                getApplication().getMainWindow().removeWindow(w);
+            }
+        });
+        getApplication().getMainWindow().addWindow(w);
     }
 
     /**

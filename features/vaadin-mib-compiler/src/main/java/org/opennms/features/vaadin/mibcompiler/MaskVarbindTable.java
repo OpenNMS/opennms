@@ -45,8 +45,11 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class MaskVarbindTable.
@@ -54,7 +57,7 @@ import com.vaadin.ui.themes.Runo;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindTable extends CustomField {
+public class MaskVarbindTable extends CustomField implements Button.ClickListener {
 
     /** The Table. */
     private Table table = new Table();
@@ -62,11 +65,14 @@ public class MaskVarbindTable extends CustomField {
     /** The Container. */
     private BeanItemContainer<VarbindDTO> container = new BeanItemContainer<VarbindDTO>(VarbindDTO.class);
 
-    /** The Layout. */
-    private VerticalLayout layout = new VerticalLayout();
-
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
+
+    /** The add button. */
+    private Button add;
+
+    /** The delete button. */
+    private Button delete;
 
     /**
      * Instantiates a new mask varbind table.
@@ -91,24 +97,12 @@ public class MaskVarbindTable extends CustomField {
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
-        Button add = new Button("Add", new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                Object itemId = container.addBean(new VarbindDTO());
-                table.addItem(itemId);
-                table.setPageLength(container.size()); // TODO: Is this really necessary?
-            }
-        });
-        Button delete = new Button("Delete", new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                Object itemId = table.getValue();
-                if (itemId != null) {
-                    table.removeItem(itemId);
-                }
-            }
-        });
+        add = new Button("Add", (Button.ClickListener) this);
+        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
+        VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
@@ -163,4 +157,50 @@ public class MaskVarbindTable extends CustomField {
         super.setReadOnly(readOnly);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+     */
+    public void buttonClick(Button.ClickEvent event) {
+        final Button btn = event.getButton();
+        if (btn == add) {
+            addHandler();
+        }
+        if (btn == delete) {
+            deleteHandler();
+        }
+    }
+
+    /**
+     * Adds the handler.
+     */
+    private void addHandler() {
+        Object itemId = container.addBean(new VarbindDTO());
+        table.addItem(itemId);
+        table.setPageLength(container.size()); // TODO: Is this really necessary?
+    }
+
+    /**
+     * Delete handler.
+     */
+    private void deleteHandler() {
+        final Object itemId = table.getValue();
+        if (itemId == null) {
+            getApplication().getMainWindow().showNotification("Please select a Mask Varbind from the table.");
+        } else {
+            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                                           "Are you sure?",
+                                           MessageBox.Icon.QUESTION,
+                                           "Do you really want to continue?",
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+            mb.addStyleName(Runo.WINDOW_DIALOG);
+            mb.show(new EventListener() {
+                public void buttonClicked(ButtonType buttonType) {
+                    if (buttonType == MessageBox.ButtonType.YES) {
+                        table.removeItem(itemId);
+                    }
+                }
+            });
+        }
+    }
 }
