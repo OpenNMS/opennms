@@ -43,6 +43,7 @@ import net.percederberg.mibble.MibLoaderLog;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.mib2events.Mib2Events;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -135,6 +136,14 @@ public class MibbleMibParser implements MibParser {
         }
         Mib2Events converter = new Mib2Events();
         return converter.convertMibToEvents(mib, ueibase);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection(java.lang.String)
+     */
+    public DatacollectionGroup getDataCollection(String groupname) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**

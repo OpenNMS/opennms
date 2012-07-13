@@ -30,26 +30,26 @@ package org.opennms.features.vaadin.mibcompiler;
 import com.vaadin.data.Item;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-// FIXME Alarm Data ?
 /**
  * A factory for creating EventField objects.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public final class EventFieldFactory implements FormFieldFactory {
+public final class EventFormFieldFactory implements FormFieldFactory {
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
     public Field createField(Item item, Object propertyId, Component uiContext) {
         if ("logmsgDest".equals(propertyId)) {
-            ComboBox dest = new ComboBox("Destination");
+            final ComboBox dest = new ComboBox("Destination");
             dest.addItem("logndisplay");
             dest.addItem("donotpersist");
             dest.addItem("discardtraps");
@@ -58,14 +58,14 @@ public final class EventFieldFactory implements FormFieldFactory {
             return dest;
         }
         if ("logmsgContent".equals(propertyId)) {
-            TextArea content = new TextArea("Log Message");
+            final TextArea content = new TextArea("Log Message");
             content.setWidth("100%");
             content.setRows(10);
             content.setRequired(true);
             return content;
         }
         if ("severity".equals(propertyId)) {
-            ComboBox severity = new ComboBox("Severity");
+            final ComboBox severity = new ComboBox("Severity");
             severity.addItem("Indeterminate");
             severity.addItem("Clear");
             severity.addItem("Normal");
@@ -78,7 +78,7 @@ public final class EventFieldFactory implements FormFieldFactory {
             return severity;
         }
         if ("descr".equals(propertyId)) {
-            TextArea descr = new TextArea("Description");
+            final TextArea descr = new TextArea("Description");
             descr.setWidth("100%");
             descr.setRows(10);
             descr.setRequired(true);
@@ -99,15 +99,24 @@ public final class EventFieldFactory implements FormFieldFactory {
             field.setCaption("Varbind Decodes");
             return field;
         }
-        TextField f = new TextField((String)propertyId);
+        if ("alarmData".equals(propertyId)) {
+            final AlarmDataField field = new AlarmDataField();
+            field.setCaption("Alarm Data");
+            return field;
+        }
         if ("uei".equals(propertyId)) {
-            f.setCaption("Event UEI");
+            final TextField f = new TextField("Event UEI");
             f.setRequired(true);
+            f.setWidth("100%");
+            return f;
         }
         if ("eventLabel".equals(propertyId)) {
-            f.setCaption("Event Label");
+            final TextField f = new TextField("Event Label");
             f.setRequired(true);
+            f.setWidth("100%");
+            return f;
         }
+        final Field f = DefaultFieldFactory.get().createField(item, propertyId, uiContext);
         f.setWidth("100%");
         return f;
     }

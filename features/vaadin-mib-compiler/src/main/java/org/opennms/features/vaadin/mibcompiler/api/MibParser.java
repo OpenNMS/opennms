@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.mibcompiler.api;
 import java.io.File;
 import java.util.List;
 
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 /**
@@ -75,5 +76,13 @@ public interface MibParser {
      * @return the event list
      */
     Events getEvents(String ueibase);
+
+    /**
+     * Gets the data collection.
+     *
+     * @param groupname the group name
+     * @return the data collection group
+     */
+    DatacollectionGroup getDataCollection(String groupname);
 
 }

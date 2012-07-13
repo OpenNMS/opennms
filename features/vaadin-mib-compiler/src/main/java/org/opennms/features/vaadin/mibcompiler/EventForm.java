@@ -33,8 +33,13 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class EventForm.
@@ -52,10 +57,7 @@ public abstract class EventForm extends Form implements ClickListener {
         "logmsgContent",
         "logmsgDest",
         "severity",
-//        "alarmReductionKey",
-//        "alarmClearKey",
-//        "alarmType",
-//        "alarmAutoClean",
+        "alarmData",
         "maskElements",
         "maskVarbinds",
         "varbindsdecodeCollection"
@@ -80,7 +82,7 @@ public abstract class EventForm extends Form implements ClickListener {
         setCaption("Event Detail");
         setWriteThrough(false);
         setVisible(false);
-        setFormFieldFactory(new EventFieldFactory());
+        setFormFieldFactory(new EventFormFieldFactory());
         initToolbar();
     }
 
@@ -146,9 +148,22 @@ public abstract class EventForm extends Form implements ClickListener {
         if (source == edit) {
             setReadOnly(false);
         }
-        if (source == delete) { // FIXME Confirm ?
-            setVisible(false);
-            deleteEvent(getEvent());
+        if (source == delete) {
+            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                                           "Are you sure?",
+                                           MessageBox.Icon.QUESTION,
+                                           "Do you really want to continue?",
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+            mb.addStyleName(Runo.WINDOW_DIALOG);
+            mb.show(new EventListener() {
+                public void buttonClicked(ButtonType buttonType) {
+                    if (buttonType == MessageBox.ButtonType.YES) {
+                        setVisible(false);
+                        deleteEvent(getEvent());
+                    }
+                }
+            });
         }
     }
 
