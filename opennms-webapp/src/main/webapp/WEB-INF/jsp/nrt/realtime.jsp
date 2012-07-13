@@ -5,6 +5,7 @@
 svg {
   border: 1px solid #ccc;
   background-color: white;
+  font: 10px sans-serif;
 }
 
 path {
@@ -67,8 +68,8 @@ var axisY = null;
 var refreshInterval = 500;
 
 // Define the graph dimensions.
-var margin = {top: 10, right: 10, bottom: 20, left: 40},
-    width = 960 - margin.left - margin.right,
+var margin = {top: 10, right: 10, bottom: 20, left: 60},
+    width = 860 - margin.left - margin.right,
     height = 300 - margin.top - margin.bottom;
 
 // Represents the graph duration.
@@ -177,14 +178,6 @@ graphManager = {
 };
 
 function init() {
-	// Create an empty series to force the creation of lines.
-	//series = [
-	//	[{time: new Date(new Date()), value: 0}],
-	//	[{time: new Date(new Date()), value: 0}],
-	//	[{time: new Date(new Date()), value: 0}],
-	//	[{time: new Date(new Date()), value: 0}]
-	//];
-	
 	var svg = d3.select("#main").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
@@ -199,7 +192,7 @@ function init() {
 	var myStartDate = new Date(myEndDate - duration);
 	var domain0 = [myStartDate, myEndDate];
 	
-	x = d3.time.scale.utc()
+	x = d3.time.scale()
 		.domain(domain0)
 		.range([0, width]);
 	
@@ -216,13 +209,6 @@ function init() {
    
 	group = svg.append("g").attr("clip-path", "url(#clip)");
 
-//	group.selectAll(".line")
-//		.data(series)
-//		.enter().append("path")
-//			.attr("class", "line")
-//			.attr("id", function(d,i) { return 'id-'+i; })
-//			.attr("d", line);
-	
 	axis = svg.append("g")
 		.attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
@@ -237,15 +223,12 @@ function tick(incomingData) {
 	graphManager.addJsonDataPoint(incomingData);
 
 	// Retrieve the maximum value.
-	//var curMax = d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.value;});});
 	var curMax = graphManager.seriesMaxValue();
 
 	// Retrieve the maximum date.
-	//var dt = new Date(d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.time;});}));
 	var dt = graphManager.seriesMaxTime();
   
 	// Retrieve the minimum value.
-	//var curMin = d3.min(graphManager.series, function(a) {return d3.min(a,function(b){return b.value;});});
 	var curMin = graphManager.seriesMinValue();
   
 	// update the domain for the graph axis
@@ -277,9 +260,6 @@ function tick(incomingData) {
 	var valuesDebug = $('#valuesDebug').html();
 	valuesDebug += "Cur Min: " + curMin + " Cur Max: " + curMax + "<br/>\n";
 	$('#valuesDebug').html(valuesDebug);
-	//seriesMaxValue
-	//seriesMinValue
-	//seriesMinTime
 }
 
 // Initialize the ActiveMQ listener.
