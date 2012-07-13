@@ -1,19 +1,10 @@
 <jsp:include page="/includes/header.jsp" flush="false" />
 
-<html>
-  <head>
-    <title>NearRealTime</title>
-    <link type="text/css" href="../../../css/jquery-ui-1.7.3.custom.css" rel="Stylesheet" />	
-    <!-- <script type="text/javascript" src="../../../js/jquery-1.4.2.min.js"></script> -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../../../js/amq_jquery_adapter.js"></script>
-    <script type="text/javascript" src="../../../js/amq.js"></script>
-    <script type="text/javascript" src="../../../js/d3.v2.js"></script>
     <style type="text/css">
 
 svg {
   border: 1px solid #ccc;
+  background-color: white;
 }
 
 path {
@@ -78,7 +69,7 @@ var refreshInterval = 500;
 // Define the graph dimensions.
 var margin = {top: 10, right: 10, bottom: 20, left: 40},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 300 - margin.top - margin.bottom;
 
 // Represents the graph duration.
 var graphWindowDuration = 60;
@@ -99,6 +90,10 @@ graphManager = {
 
 	// Tracks whether we've received a data point yet.
 	'isFirstDataSet': true,
+
+	'overallMinValue': 0,
+
+	'overallMaxValue': 100,
 
 	// Retrieves a mapped line ID based on metric ID. Creates a new line if no line ID exists.
 	'retrieveLineId': function(metricId) {
@@ -132,6 +127,7 @@ graphManager = {
 
 	// Adds a new JSON data point to the time series data in the correct manner.
 	'addJsonDataPoint':function(incomingData) {
+		var dataPointHtml = "";
 		// Push some new data into the time series.
 		for(var i = 0; i < incomingData.length; i++) {
 			// Retrieve the relevant data from the incoming message.
@@ -142,8 +138,11 @@ graphManager = {
 			// Create the new data point and append it to the array.
 			var dataSetPoint = {};
 			dataSetPoint.time = incomingLine.timestamp;
-			dataSetPoint.value = incomingLine.value;
+			dataSetPoint.value = parseFloat(incomingLine.value);
 			dataSetLine.push(dataSetPoint);
+
+			// Build the HTML string for display purposes.
+			dataPointHtml += "Metric (" + incomingLine.metricId + ") Value: " + incomingLine.value + "<br/>\n";
 		}
 
 		// Create the paths if this is the first set of data retrieved.
@@ -156,7 +155,25 @@ graphManager = {
 					.attr("d", line);
 			this.isFirstDataSet = false;
 		}
- 	} 
+
+		// Set the debug value div with the last received data set information.
+		$('#valuesDebug').html(dataPointHtml);
+ 	},
+
+	// Retrieve the maximum value.
+	'seriesMaxValue': function() {
+		return d3.max(this.series, function(a) {return d3.max(a,function(b){return b.value;});});
+	},
+
+	// Retrieve the maximum date.
+	'seriesMaxTime': function() {
+		return new Date(d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.time;});}));
+	},
+
+	// Retrieve the minimum value.
+	'seriesMinValue': function() {
+		return d3.min(graphManager.series, function(a) {return d3.min(a,function(b){return b.value;});});
+	}
 };
 
 function init() {
@@ -220,20 +237,23 @@ function tick(incomingData) {
 	graphManager.addJsonDataPoint(incomingData);
 
 	// Retrieve the maximum value.
-	var curMax = d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.value;});});
+	//var curMax = d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.value;});});
+	var curMax = graphManager.seriesMaxValue();
 
 	// Retrieve the maximum date.
-	var dt = new Date(d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.time;});}));
+	//var dt = new Date(d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.time;});}));
+	var dt = graphManager.seriesMaxTime();
   
 	// Retrieve the minimum value.
-	var curMin = d3.min(graphManager.series, function(a) {return d3.min(a,function(b){return b.value;});});
+	//var curMin = d3.min(graphManager.series, function(a) {return d3.min(a,function(b){return b.value;});});
+	var curMin = graphManager.seriesMinValue();
   
 	// update the domain for the graph axis
 	x.domain([new Date(dt-duration), dt]);
   
 	// update the domain for the graph line
 	y.domain([curMin, curMax]);
-  
+
 	// slide the x-axis left
 	axis.transition()
 		.duration(0)
@@ -253,14 +273,21 @@ function tick(incomingData) {
 
 	// Clean up any old data from the time series.
 	graphManager.cleanSeriesData(dt);
+
+	var valuesDebug = $('#valuesDebug').html();
+	valuesDebug += "Cur Min: " + curMin + " Cur Max: " + curMax + "<br/>\n";
+	$('#valuesDebug').html(valuesDebug);
+	//seriesMaxValue
+	//seriesMinValue
+	//seriesMinTime
 }
 
 // Initialize the ActiveMQ listener.
 amq.init({
-  uri: '/amq', 
-  logging: true, 
-  timeout: 45, 
-  clientId:(new Date()).getTime().toString() 
+	uri: '/amq', 
+	logging: true, 
+	timeout: 45, 
+	clientId:(new Date()).getTime().toString() 
 });
 
 // Define the AMQ message handler logic and create it.
@@ -326,12 +353,10 @@ $(function() {
 });
     </script>
 
-</head>
-<body>
 	<h1>NRT Graph</h1>
 	<div id="main"></div>
 	<div>Refresh Interval (in ms)<input name="refreshInterval"></input></div>
 	<div>Graph Duration (in seconds)<input name="durationInterval"></input></div>
-<body>
-</html>
+	<div id="valuesDebug"></div>
 
+<jsp:include page="/includes/footer.jsp" flush="false" />
