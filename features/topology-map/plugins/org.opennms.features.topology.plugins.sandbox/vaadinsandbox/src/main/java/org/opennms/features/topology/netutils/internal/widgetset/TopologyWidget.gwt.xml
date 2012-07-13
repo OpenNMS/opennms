@@ -16,13 +16,6 @@
 		webkit based browsers including Google Chrome. -->
 	<set-property name="user.agent" value="safari" />
 
+    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
 
-	<inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
-
-	<inherits name="org.vaadin.console.ConsoleWidgetset" />
-
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
-
-    <inherits name="org.vaadin.rpc.WidgetRPC" />
 </module>
