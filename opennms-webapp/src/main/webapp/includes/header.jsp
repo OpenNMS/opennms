@@ -127,8 +127,14 @@ final String baseHref = Util.calculateUrlBase( request );
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
-
-
+        
+        <!-- NRT JavaScript stuff -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="<%= baseHref %>js/amq_jquery_adapter.js"></script>
+        <script type="text/javascript" src="<%= baseHref %>js/amq.js"></script>
+        <script type="text/javascript" src="<%= baseHref %>js/d3.v2.js"></script>
+    
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
 	</c:if>
@@ -136,7 +142,7 @@ final String baseHref = Util.calculateUrlBase( request );
 	<c:if test="${param.enableSpringDojo == 'true'}">	
 		<script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
    		<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-    	<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
+                <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">

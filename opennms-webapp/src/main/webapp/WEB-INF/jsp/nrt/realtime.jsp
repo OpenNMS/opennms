@@ -1,3 +1,5 @@
+<jsp:include page="/includes/header.jsp" flush="false" />
+
 <html>
   <head>
     <title>NearRealTime</title>
@@ -9,6 +11,7 @@
     <script type="text/javascript" src="../../../js/amq.js"></script>
     <script type="text/javascript" src="../../../js/d3.v2.js"></script>
     <style type="text/css">
+
 svg {
   border: 1px solid #ccc;
 }
@@ -43,6 +46,7 @@ path#id-3 {
 
 line {
   stroke-width: 1;
+  stroke: #ececec;
 }
     </style>
 
