@@ -268,7 +268,7 @@
 
     <context-param>
         <param-name>org.apache.activemq.embeddedBroker</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
         <description>Whether we should include an embedded broker or not</description>
     </context-param>
   
