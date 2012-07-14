@@ -264,7 +264,7 @@ function tick(incomingData) {
 
 // Initialize the ActiveMQ listener.
 amq.init({
-	uri: '/amq', 
+	uri: '/opennms/amq', 
 	logging: true, 
 	timeout: 45, 
 	clientId:(new Date()).getTime().toString() 
@@ -288,7 +288,7 @@ amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMess
 var refreshTimerJob = {
 	/// Submits the AJAX collection job request and requeues the timer.
 	submitJob: function() {
-		$.get("/nrt/starter.htm","collectionTask="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+		$.get("/opennms/nrt/starter.htm","collectionTask="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
 		var self = this;
 		this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
 	},
