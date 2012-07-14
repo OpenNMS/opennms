@@ -139,6 +139,8 @@ graphManager = {
 			// Create the new data point and append it to the array.
 			var dataSetPoint = {};
 			dataSetPoint.time = incomingLine.timestamp;
+                        if (isNaN(incomingLine.value))
+                            dataPointHtml += "cannot parse " + incomingLine.value + " to float <br/>\n";
 			dataSetPoint.value = parseFloat(incomingLine.value);
 			dataSetLine.push(dataSetPoint);
 
