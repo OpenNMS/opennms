@@ -27,10 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -61,6 +64,8 @@ public class NrtController {
 
     //ToDo Tak, böser draft!
     @RequestMapping(method = RequestMethod.GET, params = {"collectionTask"})
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
     public void nrtCollectionJobTrigger(String collectionTask, HttpSession httpSession) {
         logger.debug("Republish CollectionJobTrigger for '{}'", collectionTask);
         logger.debug("CollectionJob is '{}'", httpSession.getAttribute(collectionTask));
