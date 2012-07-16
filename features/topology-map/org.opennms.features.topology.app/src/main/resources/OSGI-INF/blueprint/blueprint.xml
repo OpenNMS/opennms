@@ -8,6 +8,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <cm:default-properties>
             <cm:property name="toplevelMenuOrder" value="File,Edit,View,Additional,Help"/>
             <cm:property name="servletAlias" value="/topology"/>
+            <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
         </cm:default-properties>
     </cm:property-placeholder>
     
@@ -24,7 +25,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
         <service-properties>
             <entry key="alias" value="${servletAlias}"/>
-            <entry key="widgetset" value="org.opennms.features.topology.app.internal.gwt.TopologyWidget"/>
+            <entry key="widgetset" value="${widgetset}"/>
         </service-properties>
     </service>
     

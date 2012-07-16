@@ -32,6 +32,7 @@
                 <contents>
                     toplevelMenuOrder=File,Edit,View,Additional,Help
                     servletAlias=/topology
+                    widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
                 </contents>
             </config>
           </configs>
@@ -97,6 +98,11 @@
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.netutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.widgetset</artifactId>
       <version>${project.version}</version>
     </dependency>
 

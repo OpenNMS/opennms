@@ -48,6 +48,7 @@
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.features.topology.api</module>
+    <module>org.opennms.features.topology.widgetset</module>
     <module>org.opennms.features.topology.app</module>
     <module>org.opennms.features.topology.shell</module>
     <module>plugins</module>
