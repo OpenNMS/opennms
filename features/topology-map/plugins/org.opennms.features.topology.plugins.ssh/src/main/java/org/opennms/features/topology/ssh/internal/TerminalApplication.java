@@ -14,11 +14,11 @@
  * the License.
  */
 
-package org.opennms.features.topology.netutils.internal;
+package org.opennms.features.topology.ssh.internal;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.netutils.internal.operations.SSHOperation;
+import org.opennms.features.topology.ssh.internal.operations.SSHOperation;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;

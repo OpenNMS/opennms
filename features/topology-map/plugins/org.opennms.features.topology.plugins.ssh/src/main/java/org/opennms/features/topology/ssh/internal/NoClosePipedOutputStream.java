@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal;
+package org.opennms.features.topology.ssh.internal;
 
 /*
  * Copyright 1995-2006 Sun Microsystems, Inc.  All Rights Reserved.

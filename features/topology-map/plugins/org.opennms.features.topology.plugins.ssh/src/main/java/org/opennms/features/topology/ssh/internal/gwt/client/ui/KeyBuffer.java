@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal.gwt.client.ui;
+package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
 /**
  * The KeyBuffer class is a two-way linked list that keeps track

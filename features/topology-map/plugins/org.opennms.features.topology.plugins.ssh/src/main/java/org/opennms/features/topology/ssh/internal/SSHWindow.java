@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal;
+package org.opennms.features.topology.ssh.internal;
 
 import org.apache.sshd.ClientSession;
 

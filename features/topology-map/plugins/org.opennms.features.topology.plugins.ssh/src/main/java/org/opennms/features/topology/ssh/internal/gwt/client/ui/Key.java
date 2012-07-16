@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal.gwt.client.ui;
+package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
 /**
  * The Key class serves as a Node for the KeyBuffer class

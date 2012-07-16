@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal.gwt.client.ui;
+package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
 import com.google.gwt.event.dom.client.HasAllKeyHandlers;
 import com.google.gwt.event.dom.client.KeyDownHandler;
