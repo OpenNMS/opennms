@@ -201,6 +201,7 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
+<!-- NECESSARY DEPENDENCIES -->
 
   <dependencies>
     <dependency>
@@ -216,33 +217,23 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
-      <classifier>sources</classifier>
-      <scope>provided</scope>
-	</dependency>
-    <dependency>
  		<groupId>org.apache.sshd</groupId>
  		<artifactId>sshd-core</artifactId>
  		<version>0.4.0</version>
 	</dependency> 
 	<dependency>
-	    <groupId>ch.qos.logback</groupId>
-	    <artifactId>logback-classic</artifactId>
-	    <version>0.9.26</version>
-	</dependency>  
-	<dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.6.6</version>
-    </dependency>     
+    </dependency>
+
+	<dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+	</dependency>  
     
     <!-- TOPOLOGY API DEPENDENCIES -->
     <dependency>
