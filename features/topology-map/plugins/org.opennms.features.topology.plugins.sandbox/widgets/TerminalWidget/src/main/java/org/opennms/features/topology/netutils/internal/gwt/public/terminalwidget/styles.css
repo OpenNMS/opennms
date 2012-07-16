@@ -1,0 +1,150 @@
+@CHARSET "UTF-8";
+div#console {
+	font-size: 12px;
+	margin: 12px;
+}
+
+div.term {
+	display: inline-block;
+}
+
+.focusPanel {
+	font-size: 12px;
+	margin: 12px;
+}
+
+pre.stat {
+	margin: 0px;
+	padding: 4px;
+	display: block;
+	font-family: monospace;
+	white-space: pre;
+	background-color: black;
+	border-top: 1px solid black;
+	color: white;
+}
+
+pre.stat span {
+	padding: 0px;
+}
+
+pre.stat .on {
+	background-color: #080;
+	font-weight: bold;
+	color: white;
+	cursor: pointer;
+}
+
+pre.stat .off {
+	background-color: #888;
+	font-weight: bold;
+	color: white;
+	cursor: pointer;
+}
+
+pre.term {
+	margin: 0px;
+	padding: 4px;
+	display: block;
+	font-family: monospace;
+	white-space: pre;
+	background: #000;
+	border-top: 1px solid white;
+	color: #eee;
+}
+
+pre.term span.f0 {
+	color: #000000;
+}
+
+pre.term span.f1 {
+	color: #c00006;
+}
+
+pre.term span.f2 {
+	color: #1bc806;
+}
+
+pre.term span.f3 {
+	color: #c3c609;
+}
+
+pre.term span.f4 {
+	color: #0000c2;
+}
+
+pre.term span.f5 {
+	color: #bf00c2;
+}
+
+pre.term span.f6 {
+	color: #19c4c2;
+}
+
+pre.term span.f7 {
+	color: #f2f2f2;
+}
+
+pre.term span.f12 {
+	color: transparent;
+}
+
+pre.term span.f14 {
+	color: #000000;
+}
+
+pre.term span.f15 {
+	color: #bbbbbb;
+}
+
+pre.term span.b0 {
+	background-color: #000000;
+}
+
+pre.term span.b1 {
+	background-color: #cc2300;
+}
+
+pre.term span.b2 {
+	background-color: #00cc00;
+}
+
+pre.term span.b3 {
+	background-color: #cccc00;
+}
+
+pre.term span.b4 {
+	background-color: #0e2acc;
+}
+
+pre.term span.b5 {
+	background-color: #cc34cc;
+}
+
+pre.term span.b6 {
+	background-color: #00cccc;
+}
+
+pre.term span.b7 {
+	background-color: #f5f5f5;
+}
+
+pre.term span.b12 {
+	background-color: #555555;
+}
+
+pre.term span.b14 {
+	background-color: transparent;
+}
+
+pre.term span.b15 {
+	background-color: #ffffff;
+}
+
+pre.term span.ul {
+	text-decoration: underline;
+}
+
+pre.term span.b {
+	font-weight: 900;
+}
