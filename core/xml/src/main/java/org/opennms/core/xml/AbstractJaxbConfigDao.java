@@ -74,7 +74,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      * @param castorConfig a K object.
      * @return a V object.
      */
-    public abstract V translateConfig(K castorConfig);
+    protected abstract V translateConfig(K castorConfig);
 
     /**
      * <p>log</p>

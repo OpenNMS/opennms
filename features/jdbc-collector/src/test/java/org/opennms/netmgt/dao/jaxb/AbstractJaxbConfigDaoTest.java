@@ -90,7 +90,7 @@ public class AbstractJaxbConfigDaoTest extends TestCase {
         }
         
         @Override
-        public JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
+        protected JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
             return jaxbConfig;
         }
         

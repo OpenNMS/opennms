@@ -9,9 +9,6 @@
             discard-uei="DISCARD-MATCHING-MESSAGES"
             />
 
-    <import-file>syslogd/Test-01.xml</import-file>
-    <import-file>syslogd/Test-02.xml</import-file>
-
     <ueiList>
         <ueiMatch>
             <match type="substr" expression="CRISCO"/>
@@ -22,5 +19,8 @@
             <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
         </ueiMatch>
     </ueiList>
+
+    <import-file>syslogd/Test-01.xml</import-file>
+    <import-file>syslogd/Test-02.xml</import-file>
 
 </syslogd-configuration>

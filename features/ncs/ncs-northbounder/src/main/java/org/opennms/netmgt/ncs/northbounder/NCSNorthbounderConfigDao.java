@@ -9,7 +9,7 @@ public class NCSNorthbounderConfigDao extends AbstractJaxbConfigDao<NCSNorthboun
 	}
 
 	@Override
-	public NCSNorthbounderConfig translateConfig(NCSNorthbounderConfig config) {
+	protected NCSNorthbounderConfig translateConfig(NCSNorthbounderConfig config) {
 		return config;
 	}
 	

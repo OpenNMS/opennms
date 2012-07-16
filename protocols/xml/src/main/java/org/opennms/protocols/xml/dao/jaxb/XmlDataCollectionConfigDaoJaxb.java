@@ -86,7 +86,7 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
      * @see org.opennms.protocols.xml.dao.jaxb.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
      */
     @Override
-    public XmlDataCollectionConfig translateConfig(XmlDataCollectionConfig config) {
+    protected XmlDataCollectionConfig translateConfig(XmlDataCollectionConfig config) {
         for (XmlDataCollection collection : config.getXmlDataCollections()) {
             for (XmlSource source : collection.getXmlSources()) {
                 parseXmlGroups(source);

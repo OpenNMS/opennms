@@ -50,7 +50,7 @@ public class JMXDataCollectionConfigDao extends AbstractJaxbConfigDao<JmxDatacol
     }
 
     @Override
-    public JmxDatacollectionConfig translateConfig(JmxDatacollectionConfig config) {
+    protected JmxDatacollectionConfig translateConfig(JmxDatacollectionConfig config) {
         for (JmxCollection collection : config.getJmxCollection()) {
             if (collection.getMbeans() == null) {
                 collection.setMbeans(new Mbeans());

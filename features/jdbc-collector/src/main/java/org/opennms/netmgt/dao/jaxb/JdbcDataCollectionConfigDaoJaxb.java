@@ -60,7 +60,7 @@ public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcD
     }
 
     @Override
-    public JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
+    protected JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
         return jaxbConfig;
     }
 

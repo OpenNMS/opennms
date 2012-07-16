@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
@@ -82,7 +83,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     }
     
     @Override
-    public DatacollectionConfig translateConfig(final DatacollectionConfig config) {
+    protected DatacollectionConfig translateConfig(final DatacollectionConfig config) {
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
 
         // Updating Configured Collections
@@ -119,11 +120,13 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return m_configDirectory;
     }
 
+    @Override
     public String getSnmpStorageFlag(final String collectionName) {
-        final SnmpCollection collection = getSnmpCollection(collectionName);
+        final SnmpCollection collection = getSnmpCollection(getContainer(), collectionName);
         return collection == null ? null : collection.getSnmpStorageFlag();
     }
 
+    @Override
     public List<MibObject> getMibObjectList(final String cName, final String aSysoid, final String anAddress, final int ifType) {
         if (log().isDebugEnabled()) log().debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
 
@@ -133,7 +136,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         // Retrieve the appropriate Collection object
-        final SnmpCollection collection = getSnmpCollection(cName);
+        final SnmpCollection collection = getSnmpCollection(getContainer(), cName);
         if (collection == null) {
             return Collections.emptyList();
         }
@@ -268,6 +271,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return mibObjectList;
     }
 
+    @Override
     public Map<String, ResourceType> getConfiguredResourceTypes() {
         final Map<String,ResourceType> map = new HashMap<String,ResourceType>();
 
@@ -282,7 +286,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         // that calls this just to optimize out validation.
         if (!m_validated) {
             try {
-                validateResourceTypes(map.keySet());
+                validateResourceTypes(getContainer(), map.keySet());
             } catch (final RuntimeException e) {
                 m_validationException = e;
                 throw e;
@@ -295,6 +299,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return Collections.unmodifiableMap(map);
     }
 
+    @Override
     public RrdRepository getRrdRepository(final String collectionName) {
         final RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdPath()));
@@ -304,16 +309,19 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return repo;
     }
 
+    @Override
     public int getStep(final String collectionName) {
-        final SnmpCollection collection = getSnmpCollection(collectionName);
+        final SnmpCollection collection = getSnmpCollection(getContainer(), collectionName);
         return collection == null ? -1 : collection.getRrd().getStep();
     }
 
+    @Override
     public List<String> getRRAList(final String collectionName) {
-        final SnmpCollection collection = getSnmpCollection(collectionName);
+        final SnmpCollection collection = getSnmpCollection(getContainer(), collectionName);
         return collection == null ? null : collection.getRrd().getRraCollection();
     }
 
+    @Override
     public String getRrdPath() {
         final String rrdPath = getContainer().getObject().getRrdRepository();
         if (rrdPath == null) {
@@ -332,8 +340,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     /* Private Methods */
 
-    private SnmpCollection getSnmpCollection(final String collectionName) {
-        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollection()) {
+    private static SnmpCollection getSnmpCollection(final FileReloadContainer<DatacollectionConfig> container, final String collectionName) {
+        for (final SnmpCollection collection : container.getObject().getSnmpCollection()) {
             if (collection.getName().equals(collectionName)) return collection;
         }
         return null;
@@ -361,7 +369,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         ThreadCategory log = log();
 
         // Using the collector name retrieve the group map
-        final Map<String, Group> groupMap = getCollectionGroupMap().get(cName);
+        final Map<String, Group> groupMap = getCollectionGroupMap(getContainer()).get(cName);
 
         // Next use the groupName to access the Group object
         final Group group = groupMap.get(groupName);
@@ -515,7 +523,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
     }
 
-    private Map<String,Map<String,Group>> getCollectionGroupMap() {
+    private static Map<String,Map<String,Group>> getCollectionGroupMap(FileReloadContainer<DatacollectionConfig> container) {
         // Build collection map which is a hash map of Collection
         // objects indexed by collection name...also build
         // collection group map which is a hash map indexed
@@ -538,7 +546,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         // 
         final Map<String,Map<String,Group>> collectionGroupMap = new HashMap<String,Map<String,Group>>();
 
-        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : container.getObject().getSnmpCollectionCollection()) {
             // Build group map for this collection
             final Map<String,Group> groupMap = new HashMap<String,Group>();
 
@@ -553,7 +561,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return Collections.unmodifiableMap(collectionGroupMap);
     }
 
-    private void validateResourceTypes(final Set<String> allowedResourceTypes) {
+    private static void validateResourceTypes(final FileReloadContainer<DatacollectionConfig> container, final Set<String> allowedResourceTypes) {
         final String configuredString;
         if (allowedResourceTypes.size() == 0) {
             configuredString = "(none)";
@@ -562,7 +570,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         final String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
-        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : container.getObject().getSnmpCollectionCollection()) {
             final Groups groups = collection.getGroups();
             if (groups != null) {
 				for (final Group group : groups.getGroupCollection()) {

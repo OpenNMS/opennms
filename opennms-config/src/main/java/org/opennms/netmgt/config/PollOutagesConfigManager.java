@@ -84,7 +84,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
         super.afterPropertiesSet();
     }
 
-    public Outages translateConfig(final Outages outages) {
+    protected Outages translateConfig(final Outages outages) {
         return outages;
     }
     

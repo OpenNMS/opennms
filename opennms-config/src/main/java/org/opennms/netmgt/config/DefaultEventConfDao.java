@@ -129,7 +129,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
     
     /** {@inheritDoc} */
     @Override
-    public EventConfiguration translateConfig(final Events events) throws DataAccessException {
+    protected EventConfiguration translateConfig(final Events events) throws DataAccessException {
     	final EventConfiguration eventConfiguration = new EventConfiguration();
 
         processEvents(events, getConfigResource(), eventConfiguration, "root", false);

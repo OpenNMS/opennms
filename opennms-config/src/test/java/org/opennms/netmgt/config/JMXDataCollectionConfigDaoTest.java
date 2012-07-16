@@ -121,7 +121,7 @@ public class JMXDataCollectionConfigDaoTest {
         JMXDataCollectionConfigDao dao = new JMXDataCollectionConfigDao();
 
         File jmxCollectionConfig= new File("src/test/resources/etc/jmx-datacollection-split.xml");
-        assertTrue("JMX configuration file is readable", jmxCollectionConfig.canRead());
+        assertTrue("JMX configuration file is not readable", jmxCollectionConfig.canRead());
         InputStream in = new FileInputStream(jmxCollectionConfig);
 
         dao.setConfigResource(new InputStreamResource(in));

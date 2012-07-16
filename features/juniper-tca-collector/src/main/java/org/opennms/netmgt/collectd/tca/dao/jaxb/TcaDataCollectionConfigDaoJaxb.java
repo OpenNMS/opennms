@@ -58,7 +58,7 @@ public class TcaDataCollectionConfigDaoJaxb  extends AbstractJaxbConfigDao<TcaDa
 	 * @see org.opennms.netmgt.dao.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
 	 */
 	@Override
-	public TcaDataCollectionConfig translateConfig(TcaDataCollectionConfig castorConfig) {
+	protected TcaDataCollectionConfig translateConfig(TcaDataCollectionConfig castorConfig) {
 		return castorConfig;
 	}
 

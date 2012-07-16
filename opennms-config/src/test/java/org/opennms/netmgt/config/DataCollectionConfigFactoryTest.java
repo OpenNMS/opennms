@@ -29,9 +29,11 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -40,9 +42,9 @@ import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.ByteArrayResource;
 
 public class DataCollectionConfigFactoryTest {
-	private static File m_rrdRepository = new File(System.getProperty("java.io.tmpdir") + File.separator + "wonka" + File.separator + "rrd" + File.separator + "snmp");
+	private static final File m_rrdRepository = new File(System.getProperty("java.io.tmpdir") + File.separator + "wonka" + File.separator + "rrd" + File.separator + "snmp");
 
-    private static String m_xml = "<?xml version=\"1.0\"?>\n" + 
+    private static final String m_xml = "<?xml version=\"1.0\"?>\n" + 
             "<datacollection-config\n" + 
             "   rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">\n" + 
             "   <snmp-collection name=\"default\"\n" + 
@@ -96,7 +98,7 @@ public class DataCollectionConfigFactoryTest {
             "</datacollection-config>\n" + 
             "";
 
-    private String m_brocadeXmlFragment = 
+    private static final String m_brocadeXmlFragment = 
     "       <resourceType name=\"brocadeIndex\" label=\"Brocade Switches\">\n" +
     "         <persistenceSelectorStrategy class=\"foo\"/>\n" +
     "         <storageStrategy class=\"foo\"/>\n" +
@@ -106,12 +108,27 @@ public class DataCollectionConfigFactoryTest {
     public void testSetInstance() throws MarshalException, ValidationException, IOException {
         initDataCollectionFactory(m_xml);
         assertEquals(m_rrdRepository.getAbsolutePath(), DataCollectionConfigFactory.getInstance().getRrdPath());
+        assertEquals(0, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.9.9.9.9", "127.0.0.1", 0).size());
+        for (MibObject object : DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.3.6.1.4.1.200", "127.0.0.1", 0)) {
+            assertEquals("Invalid MibObject: " + object, "ifIndex", object.getInstance());
+        }
+        assertArrayEquals(new String[0], DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().keySet().toArray(new String[0]));
     }
     
     @Test
     public void testValidResourceType() throws MarshalException, ValidationException, IOException {
     	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex").replaceFirst("<groups", m_brocadeXmlFragment + "<groups");
         initDataCollectionFactory(modifiedXml);
+        assertEquals(m_rrdRepository.getAbsolutePath(), DataCollectionConfigFactory.getInstance().getRrdPath());
+        assertEquals(0, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.9.9.9.9", "127.0.0.1", 0).size());
+        List<MibObject> mibObjects = DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.3.6.1.4.1.200", "127.0.0.1", 0);
+        // Make sure that the first value was edited as intended
+        MibObject first = mibObjects.remove(0);
+        assertEquals("Invalid MibObject: " + first, "brocadeIndex", first.getInstance());
+        for (MibObject object : mibObjects) {
+            assertEquals("Invalid MibObject: " + object, "ifIndex", object.getInstance());
+        }
+        assertArrayEquals(new String[] {"brocadeIndex"}, DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().keySet().toArray(new String[0]));
     }
     
     @Test
@@ -123,6 +140,7 @@ public class DataCollectionConfigFactoryTest {
 
         try {
             initDataCollectionFactory(modifiedXml);
+            assertArrayEquals(new String[0], DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().keySet().toArray(new String[0]));
             DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes();
         } catch (Throwable t) {
             ta.throwableReceived(t);
@@ -130,9 +148,11 @@ public class DataCollectionConfigFactoryTest {
         ta.verifyAnticipated();
     }
     
-    private void initDataCollectionFactory(String xmlConfig) {
+    private static void initDataCollectionFactory(String xmlConfig) {
         DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
         dataCollectionDao.setConfigResource(new ByteArrayResource(xmlConfig.getBytes()));
+        // Set the config directory to a blank value so that it doesn't pull in any extra config files
+        dataCollectionDao.setConfigDirectory("");
         dataCollectionDao.afterPropertiesSet();
         DataCollectionConfigFactory.setInstance(dataCollectionDao);
     }
