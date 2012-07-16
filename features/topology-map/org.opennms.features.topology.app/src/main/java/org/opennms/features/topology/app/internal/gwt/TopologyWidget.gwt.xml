@@ -27,4 +27,6 @@
     
 
     <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+
+    <inherits name="org.opennms.features.topology.netutils.internal.gwt.TerminalWidgetSet" />
 </module>

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>TerminalWidget</artifactId>
-  <packaging>war</packaging>
+  <packaging>bundle</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Vaadin Web Application</name>
 
@@ -14,9 +14,36 @@
     <gwt.version>2.3.0</gwt.version>
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
   </properties>
+    
 
   <build>
+    <resources>
+            <resource>
+                <directory>src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+            <archive>
+                <manifestEntries>
+                    <Vaadin-Widgetsets>org.opennms.features.topology.netutils.internal.gwt.TerminalWidgetSet</Vaadin-Widgetsets>
+                    <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                </manifestEntries>
+            </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -205,9 +232,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.vaadin</groupId>
+      <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>vaadin</artifactId>
-      <version>${vaadin.version}</version>
+      <version>1.11.1-SNAPSHOT</version>
+      <type>pom</type>
     </dependency>
     <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
     <dependency>
@@ -215,16 +243,19 @@
       <artifactId>gwt-user</artifactId>
       <version>${gwt.version}</version>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
  		<groupId>org.apache.sshd</groupId>
  		<artifactId>sshd-core</artifactId>
  		<version>0.4.0</version>
+ 		<scope>provided</scope>
 	</dependency> 
 	<dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.6.6</version>
+        <scope>provided</scope>
     </dependency>
 
 	<dependency>
