@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal.gwt.client.ui;
+package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;

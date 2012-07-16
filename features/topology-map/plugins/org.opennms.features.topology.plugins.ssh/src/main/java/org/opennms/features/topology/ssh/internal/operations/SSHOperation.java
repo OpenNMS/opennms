@@ -1,10 +1,10 @@
-package org.opennms.features.topology.netutils.internal.operations;
+package org.opennms.features.topology.ssh.internal.operations;
 
 import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.netutils.internal.AuthWindow;
+import org.opennms.features.topology.ssh.internal.AuthWindow;
 
 import com.vaadin.data.Item;
 

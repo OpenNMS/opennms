@@ -1,4 +1,4 @@
-package org.opennms.features.topology.netutils.internal;
+package org.opennms.features.topology.ssh.internal;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.opennms.features.topology.netutils.internal;
+package org.opennms.features.topology.ssh.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.io.InterruptedIOException;
 import java.util.Map;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
-import org.opennms.features.topology.netutils.internal.gwt.client.ui.VTerminal;
+import org.opennms.features.topology.ssh.internal.gwt.client.ui.VTerminal;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
