@@ -16,10 +16,8 @@
 	<name>OpenNMS Topology NetUtils</name>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vaadin.version>6.7.8</vaadin.version>
-		<gwt.version>2.3.0</gwt.version>
-		<gwt.plugin.version>2.2.0</gwt.plugin.version>
+		<bundle.symbolicName>org.opennms.features.topology.netutils</bundle.symbolicName>
+		<bundle.namespace>org.opennms.features.topology.netutils</bundle.namespace>
 	</properties>
     
     <profiles>

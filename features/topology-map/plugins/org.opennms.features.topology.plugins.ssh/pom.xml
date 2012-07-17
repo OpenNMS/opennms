@@ -16,10 +16,6 @@
   <properties>
     <bundle.symbolicName>org.opennms.features.topology.ssh</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.topology.ssh</bundle.namespace>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>6.7.1</vaadin.version>
-    <gwt.version>2.3.0</gwt.version>
-    <gwt.plugin.version>2.2.0</gwt.plugin.version>
   </properties>
     
 
