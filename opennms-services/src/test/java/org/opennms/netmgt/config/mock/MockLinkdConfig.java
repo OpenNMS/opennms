@@ -128,7 +128,7 @@ public class MockLinkdConfig implements LinkdConfig {
     }
 
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() {
     }
 
     @Override
@@ -138,10 +138,6 @@ public class MockLinkdConfig implements LinkdConfig {
     @Override
     public LinkdConfiguration getConfiguration() {
         return new LinkdConfiguration();
-    }
-
-    @Override
-    public void updatePackageIpListMap() {
     }
 
     @Override
@@ -177,6 +173,11 @@ public class MockLinkdConfig implements LinkdConfig {
     @Override
     public String getDefaultIpRouteClassName() {
         return LinkdConfigManager.DEFAULT_IP_ROUTE_CLASS_NAME;
+    }
+
+    @Override
+    public void reload() throws IOException, MarshalException,
+            ValidationException {        
     }
 
 }

@@ -842,7 +842,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.flush();
         
-        m_linkdConfig.updatePackageIpListMap();
+        m_linkdConfig.update();
         assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
         
     }

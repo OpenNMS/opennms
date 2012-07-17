@@ -136,6 +136,7 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         juniper.addSpecific("2.9");
         iproutes.addVendor(juniper);
         m_linkdConfig.getConfiguration().setIproutes(iproutes);
+        m_linkdConfig.update();
 
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
