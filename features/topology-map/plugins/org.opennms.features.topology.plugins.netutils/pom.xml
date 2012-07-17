@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>org.opennms.features.topology</groupId>
 	<artifactId>org.opennms.features.topology.netutils</artifactId>
-	<packaging>bundle</packaging>
+	<packaging>${packaging.type}</packaging>
 	<name>OpenNMS Topology NetUtils</name>
 
 	<properties>
@@ -17,19 +17,19 @@
 		<vaadin.version>6.7.8</vaadin.version>
 		<gwt.version>2.3.0</gwt.version>
 		<gwt.plugin.version>2.2.0</gwt.plugin.version>
+		<packaging.type>bundle</packaging.type>
+		<scope.type>provided</scope.type>
 	</properties>
     
     <profiles>
         <profile>
             <id>gwt-compile</id>
-            <build>
-	        <plugins>
-	        <!-- KARAF PLUGIN -->
-	        <plugin>
-	        <groupId>org.apache.felix</groupId>
-	        <artifactId>maven-bundle-plugin</artifactId>
-	        <version>2.3.7</version>
-	      </plugin>
+            <properties>
+                <packaging.type>war</packaging.type>
+                <scope.type>compile</scope.type>
+            </properties>
+        <build>
+         <plugins>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
@@ -49,17 +49,8 @@
 	                <artifactId>gwt-maven-plugin</artifactId>
 	                <version>${gwt.plugin.version}</version>
 	                <configuration>
-	<!--                    if you don't specify any modules, the plugin will find them 
-	                    <modules> <module>org.opennms.features.vaadin.topology.gwt.MyWidgetSet</module> 
-	                        </modules>-->
-	                    <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
+	                    <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
 	                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-	                    <runTarget>org.opennms.features.vaadin-topology-widget</runTarget>
-	                    <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
-	                    <noServer>true</noServer>
-	                    <port>8080</port>
-	                    <compileReport>false</compileReport>
-	                    <draftCompile>true</draftCompile>
 	                </configuration>
 	                <executions>
 	                    <execution>
@@ -96,29 +87,6 @@
 	                </executions>
 	            </plugin>
 	
-	            <!-- A simple Jetty test server at http://localhost:8080/org.opennms.features.vaadin-topology-widget 
-	                can be launched with the Maven goal jetty:run and stopped with jetty:stop -->
-	            <plugin>
-	                <groupId>org.mortbay.jetty</groupId>
-	                <artifactId>maven-jetty-plugin</artifactId>
-	                <version>6.1.24</version>
-	                <configuration>
-	                    <stopPort>9966</stopPort>
-	                    <stopKey>org.opennms.features.vaadin-topology-widget</stopKey>
-	                    <!-- Redeploy every x seconds if changes are detected, 0 for no automatic 
-	                        redeployment -->
-	                    <scanIntervalSeconds>0</scanIntervalSeconds>
-	                    <!-- make sure Jetty also finds the widgetset -->
-	                    <webAppConfig>
-	                        <contextPath>/org.opennms.features.vaadin-topology-widget</contextPath>
-	                        <baseResource implementation="org.mortbay.resource.ResourceCollection">
-	                            <!-- Workaround for Maven/Jetty issue http://jira.codehaus.org/browse/JETTY-680 -->
-	                            <!-- <resources>src/main/webapp,${project.build.directory}/${project.build.finalName}</resources> -->
-	                            <resourcesAsCSV>src/main/webapp,${project.build.directory}/${project.build.finalName}</resourcesAsCSV>
-	                        </baseResource>
-	                    </webAppConfig>
-	                </configuration>
-	            </plugin>
 	        </plugins>
 	
 	        <!-- This is needed for the sources required by the GWT compiler to be 
@@ -131,58 +99,39 @@
 	                <directory>src/main/resources</directory>
 	            </resource>
 	        </resources>
-	        <pluginManagement>
-	            <plugins>
-	                <!--This plugin's configuration is used to store Eclipse m2e settings 
-	                    only. It has no influence on the Maven build itself. -->
+	       </build>
+        </profile>
+        
+        <profile>
+            <id>jetty-run</id>
+            <properties>
+                <packaging.type>war</packaging.type>
+                <scope.type>compile</scope.type>
+            </properties>
+            <build>
+                <plugins>
 	                <plugin>
-	                    <groupId>org.eclipse.m2e</groupId>
-	                    <artifactId>lifecycle-mapping</artifactId>
-	                    <version>1.0.0</version>
+	                    <groupId>org.mortbay.jetty</groupId>
+	                    <artifactId>maven-jetty-plugin</artifactId>
+	                    <version>6.1.24</version>
 	                    <configuration>
-	                        <lifecycleMappingMetadata>
-	                            <pluginExecutions>
-	                                <pluginExecution>
-	                                    <pluginExecutionFilter>
-	                                        <groupId>com.vaadin</groupId>
-	                                        <artifactId>
-	                                            vaadin-maven-plugin
-	                                        </artifactId>
-	                                        <versionRange>
-	                                            [1.0.2,)
-	                                        </versionRange>
-	                                        <goals>
-	                                            <goal>update-widgetset</goal>
-	                                        </goals>
-	                                    </pluginExecutionFilter>
-	                                    <action>
-	                                        <ignore></ignore>
-	                                    </action>
-	                                </pluginExecution>
-	                                <pluginExecution>
-	                                    <pluginExecutionFilter>
-	                                        <groupId>org.codehaus.mojo</groupId>
-	                                        <artifactId>
-	                                            gwt-maven-plugin
-	                                        </artifactId>
-	                                        <versionRange>
-	                                            [2.2.0,)
-	                                        </versionRange>
-	                                        <goals>
-	                                            <goal>resources</goal>
-	                                        </goals>
-	                                    </pluginExecutionFilter>
-	                                    <action>
-	                                        <ignore></ignore>
-	                                    </action>
-	                                </pluginExecution>
-	                            </pluginExecutions>
-	                        </lifecycleMappingMetadata>
+	                        <stopPort>9966</stopPort>
+	                        <stopKey>org.opennms.features.vaadin-topology-widget</stopKey>
+	                        <!-- Redeploy every x seconds if changes are detected, 0 for no automatic 
+	                            redeployment -->
+	                        <scanIntervalSeconds>0</scanIntervalSeconds>
+	                        <!-- make sure Jetty also finds the widgetset -->
+	                        <webAppConfig>
+	                            <contextPath>/webapp</contextPath>
+	                            <baseResource implementation="org.mortbay.resource.ResourceCollection">
+	                                <resourcesAsCSV>src/main/webapp,${project.build.directory}/${project.build.finalName}</resourcesAsCSV>
+	                            </baseResource>
+	                        </webAppConfig>
 	                    </configuration>
 	                </plugin>
-	            </plugins>
-	        </pluginManagement>
-	       </build>
+                </plugins>
+            </build>
+        
         </profile>
     </profiles>
     
@@ -262,7 +211,7 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<version>${gwt.version}</version>
-			<scope>provided</scope>
+			<scope>${scope.type}</scope>
 		</dependency>
 
 		<dependency>
@@ -275,41 +224,15 @@
 			<artifactId>validation-api</artifactId>
 			<version>1.0.0.GA</version>
 			<classifier>sources</classifier>
-			<scope>provided</scope>
+			<scope>${scope.type}</scope>
 		</dependency>
-		
-
-		
-		
-		
-		<!-- UNECESARY DEPENDENCIES
-		
-		<repository>
-			<id>AF_UNIX</id>
-			<url>https://team.iisys.de/nexus/content/repositories/public</url>
-		</repository>
-			
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-	      <groupId>org.apache.karaf.shell</groupId>
-	      <artifactId>org.apache.karaf.shell.console</artifactId>
-	      <version>2.2.6</version>
-	    </dependency>
-		
-		 -->
 		
 		 <!-- TOPOLOGY API DEPENDENCIES -->
     	<dependency>
       		<groupId>org.opennms.features.topology</groupId>
       		<artifactId>org.opennms.features.topology.api</artifactId>
       		<version>1.11.1-SNAPSHOT</version>
-      		 <scope>provided</scope> 
+      		 <scope>${scope.type}</scope> 
     	</dependency>
 	</dependencies>
 
