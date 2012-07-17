@@ -73,7 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
         // Override the capsd config with a stripped-down version
         "classpath:/META-INF/opennms/capsdTest.xml",
         // override snmp-config configuration
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 // TODO: this class should be the starting point for Integration tests
 // either with linkd and capsd
@@ -108,7 +108,7 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     @Transactional
     public final void testCiscoWSC2948CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -145,7 +145,7 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     @Transactional
     public final void testNETGEARSW108CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -181,7 +181,7 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt")
     })
     @Transactional
     public final void testCISCO870CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -219,7 +219,7 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     @Transactional
     public final void testLINUXUBUNTUCapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -261,7 +261,7 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt")
     })
     @Transactional
     public final void testDARWIN108CapsdCollection() throws MarshalException, ValidationException, IOException {

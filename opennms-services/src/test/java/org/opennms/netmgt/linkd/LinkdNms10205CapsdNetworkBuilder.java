@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
         // Override the capsd config with a stripped-down version
         "classpath:/META-INF/opennms/capsdTest.xml",
         // override snmp-config configuration
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 // TODO: this class should be the starting point for Integration tests
 // either with linkd and capsd
@@ -112,7 +112,7 @@ public class LinkdNms10205CapsdNetworkBuilder implements InitializingBean {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_IP+"-walk.txt")
     })
     @Transactional
     public final void testMumbay() throws MarshalException, ValidationException, IOException {
@@ -147,7 +147,7 @@ public class LinkdNms10205CapsdNetworkBuilder implements InitializingBean {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_IP+"-walk.txt")
     })
     @Transactional
     public final void testChennai() throws MarshalException, ValidationException, IOException {
@@ -176,8 +176,5 @@ public class LinkdNms10205CapsdNetworkBuilder implements InitializingBean {
         }
         
         m_capsd.stop();
-
-        
     }
-
 }
