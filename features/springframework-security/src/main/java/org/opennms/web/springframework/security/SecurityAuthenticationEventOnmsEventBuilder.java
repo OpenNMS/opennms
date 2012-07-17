@@ -28,8 +28,10 @@
 
 package org.opennms.web.springframework.security;
 
+import java.net.ConnectException;
 import java.util.Date;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -127,7 +129,11 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         try {
             m_eventProxy.send(onmsEvent);
         } catch (EventProxyException e) {
-            log().error("Failed to send OpenNMS event to event proxy (" + m_eventProxy + "): " + e, e);
+            if (ExceptionUtils.getRootCause(e) instanceof ConnectException) {
+                log().error("Failed to send OpenNMS event to event proxy (" + m_eventProxy + "): " + e);
+            } else {
+                log().error("Failed to send OpenNMS event to event proxy (" + m_eventProxy + "): " + e, e);
+            }
         }
     }
     

@@ -2,11 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
-		<artifactId>org.opennms.features</artifactId>
-		<groupId>org.opennms</groupId>
-		<version>1.11.1-SNAPSHOT</version>
+		<relativePath>../../poms/compiled/</relativePath>
+		<groupId>org.opennms.features.topology.build</groupId>
+		<artifactId>compiled-bundle-settings</artifactId>
+		<version>1.11.2-SNAPSHOT</version>
 	</parent>
+
 	<groupId>org.opennms.features.topology</groupId>
 	<artifactId>org.opennms.features.topology.netutils</artifactId>
 	<packaging>${packaging.type}</packaging>
@@ -19,6 +22,8 @@
 		<gwt.plugin.version>2.2.0</gwt.plugin.version>
 		<packaging.type>bundle</packaging.type>
 		<scope.type>provided</scope.type>
+		<bundle.symbolicName>org.opennms.features.topology.netutils</bundle.symbolicName>
+		<bundle.namespace>org.opennms.features.topology.netutils</bundle.namespace>
 	</properties>
     
     <profiles>
@@ -231,8 +236,8 @@
     	<dependency>
       		<groupId>org.opennms.features.topology</groupId>
       		<artifactId>org.opennms.features.topology.api</artifactId>
-      		<version>1.11.1-SNAPSHOT</version>
-      		 <scope>${scope.type}</scope> 
+      		<version>${project.version}</version>
+      		<scope>${scope.type}</scope> 
     	</dependency>
 	</dependencies>
 

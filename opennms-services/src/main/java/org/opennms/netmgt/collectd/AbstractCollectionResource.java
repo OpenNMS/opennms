@@ -82,7 +82,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
 
     /** {@inheritDoc} */
     public File getResourceDir(RrdRepository repository) {
-        return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId()));
+        return new File(repository.getRrdBaseDir(), m_agent.getStorageDir().toString());
     }
 
     /**

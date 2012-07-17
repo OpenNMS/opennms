@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.LazyList;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
@@ -76,13 +77,18 @@ public class NodeResourceType implements OnmsResourceType {
 
     /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForDomain(String domain) {
-        throw new UnsupportedOperationException("method not implemented");
+        return null;
     }
 
     /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
-        throw new UnsupportedOperationException("method not implemented");
+        return null;
     }
+    
+    /** {@inheritDoc} */
+       public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+           return null;
+       }
 
     /** {@inheritDoc} */
     public boolean isResourceTypeOnDomain(String domain) {
@@ -93,6 +99,11 @@ public class NodeResourceType implements OnmsResourceType {
     public boolean isResourceTypeOnNode(int nodeId) {
         return false;
     }
+    
+    /** {@inheritDoc} */
+       public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+           return false;
+       }
 
     /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
@@ -134,6 +145,7 @@ public class NodeResourceType implements OnmsResourceType {
                 for (OnmsResource resource : resourceType.getResourcesForNode(m_nodeId)) {
                     resource.setParent(m_parent);
                     children.add(resource);
+                    log().debug("load: adding resource " + resource.toString());
                 }
             }
 
@@ -150,6 +162,8 @@ public class NodeResourceType implements OnmsResourceType {
             return resourceTypes;
         }
         
-        
+        private ThreadCategory log() {
+            return ThreadCategory.getInstance(NodeResourceType.class);
+        }   
     }
 }

@@ -5,6 +5,20 @@ xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">	
 
+    <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="pingAddress" value="http://demo.opennms.org/opennms/ExecCommand.map?command=ping"/>
+            <cm:property name="tracerouteAddress" value="http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+    
+    <bean id="pingWindow" class="org.opennms.features.topology.netutils.internal.PingWindow" >
+        <property name="pingAddress" value="${pingAddress}"/>
+    </bean>
+    <bean id="tracerouteWindow" class="org.opennms.features.topology.netutils.internal.TracerouteWindow" >
+        <property name="tracerouteAddress" value="${tracerouteAddress}"/>
+    </bean>
+    
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>

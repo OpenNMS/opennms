@@ -134,7 +134,7 @@ class XmpCollectionResource extends AbstractCollectionResource
         // return what our super class would return
 
         if (nodeTypeName.equalsIgnoreCase("node")) {
-            return new File(repository.getRrdBaseDir(), Integer.toString(agent.getNodeId()));
+            return new File(repository.getRrdBaseDir(), getParent());
         }
 
         // we are a collection resource for tabular data
@@ -150,7 +150,7 @@ class XmpCollectionResource extends AbstractCollectionResource
         File instDir, rtDir;
 
         File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir,String.valueOf(agent.getNodeId()));
+        File nodeDir = new File(rrdBaseDir, getParent());
 
         // if we have a resourceType, put instances under it
         if (resourceType != null) {
@@ -264,7 +264,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     } /* visit */
 
     public String getParent() {
-        return Integer.toString(agent.getNodeId());
+        return agent.getStorageDir().toString();
     }
 
 } /* class XmpCollectionResource */

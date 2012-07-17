@@ -167,6 +167,19 @@ public class DistributedStatusResourceType implements OnmsResourceType {
                                             intf));
         return new OnmsResource(resource, label, this, set);
     }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+        // is this right?
+        return false;
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        // is this right?
+        List<OnmsResource> empty = Collections.emptyList();
+        return empty;
+    }
 
     /** {@inheritDoc} */
     public boolean isResourceTypeOnDomain(String domain) {

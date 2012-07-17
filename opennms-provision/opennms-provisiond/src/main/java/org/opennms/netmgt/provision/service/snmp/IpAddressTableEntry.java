@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
@@ -128,7 +127,12 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     	final SnmpValue value = getValue(IP_ADDR_ENT_NETMASK);
     	// LogUtils.debugf(this, "getIpAddressNetMask: value = %s", value.toDisplayString());
     	final SnmpObjId netmaskRef = value.toSnmpObjId().getInstance(IPAddressTableTracker.IP_ADDRESS_PREFIX_ORIGIN_INDEX);
-    	
+
+    	if (netmaskRef == null) {
+    	    LogUtils.warnf(this, "Unable to get netmask reference from instance.");
+    	    return null;
+    	}
+
     	final int[] rawIds = netmaskRef.getIds();
     	final int addressType = rawIds[1];
     	final int addressLength = rawIds[2];
@@ -139,10 +143,12 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     	    return InetAddressUtils.convertCidrToInetAddressV4(mask);
     	} else if (addressType == IPAddressTableTracker.TYPE_IPV6) {
     	    return InetAddressUtils.convertCidrToInetAddressV6(mask);
+    	} else if (addressType == IPAddressTableTracker.TYPE_IPV6Z) {
+    	    LogUtils.debugf(this, "Got an IPv6z address, returning %s", address);
     	} else {
-    	    LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
-    	    return null;
+    	    LogUtils.warnf(this, "Unsure how to handle IP address type (%d)", addressType);
     	}
+        return address;
     }
     
     /**
@@ -151,7 +157,7 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     public void storeResult(final SnmpResult result) {
     	final int[] instanceIds = result.getInstance().getIds();
     	final int addressType = instanceIds[1];
-		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6) {
+		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6 || addressType == IPAddressTableTracker.TYPE_IPV6Z) {
 			m_inetAddress = InetAddressUtils.getInetAddress(instanceIds, 2, addressType);
 		} else {
 			LogUtils.warnf(this, "Unable to determine IP address type (%d)", addressType);

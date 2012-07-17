@@ -96,7 +96,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public String getParent() {
-		return Integer.toString(m_agent.getNodeId());
+		return m_agent.getStorageDir().toString();
 	}
 
 	/* (non-Javadoc)
