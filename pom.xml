@@ -696,10 +696,14 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+    <opennms.osgi.version>1.11.2.A</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
+
+    <!-- install.prefix: a prefix used for installation in or chroot -->
+    <install.prefix/>
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
     <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
@@ -713,9 +717,6 @@
     <install.controllerlogs.dir>${install.logs.dir}/controller</install.controllerlogs.dir>
     <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
-
-    <!-- install.prefix: a prefix used for installation in or chroot -->
-    <install.prefix/>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
