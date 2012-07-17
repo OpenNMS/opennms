@@ -100,7 +100,7 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
      */
     public String getParent() {
-        return Integer.toString(m_agent.getNodeId());
+        return m_agent.getStorageDir().toString();
     }
 
     /* (non-Javadoc)

@@ -216,13 +216,14 @@ public interface LinkdConfig {
     long getDiscoveryLinkInterval();
 
     /**
-	 * <p>update</p>
-	 *
-	 * @throws java.io.IOException if any.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
-	 */
-	void update() throws IOException, MarshalException, ValidationException;
+     * <p>reload</p>
+     * <p>Reload the configuration file<p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
+    void reload() throws IOException, MarshalException, ValidationException;
     
     /**
      * <p>save</p>
@@ -232,18 +233,25 @@ public interface LinkdConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     void save() throws MarshalException, IOException, ValidationException;
-    
+
+    /**
+     * <p>update</p>
+     * <p>update the global helper objects<p>
+     * <p>this calls the update of the following maps<p>
+     * <p>packageIpListMap<p>
+     * <p>urlIpMap<p>
+     * <p>IpRouteClassNameMap<p>
+     * <p>VlanClassNameMap<p>
+     * 
+     */
+    void update();
+
     /**
      * <p>getConfiguration</p>
      *
      * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
-    LinkdConfiguration getConfiguration();
-
-    /**
-     * <p>createPackageIpListMap</p>
-     */
-    void updatePackageIpListMap();
+    LinkdConfiguration getConfiguration();    
     
     /**
      * <p>getVlanClassName</p>
@@ -259,9 +267,9 @@ public interface LinkdConfig {
 	 * @param sysoid a {@link java.lang.String} object.
 	 * @return a boolean.
 	 */
-	boolean hasClassName(String sysoid);
+    boolean hasClassName(String sysoid);
     
-	Lock getReadLock();
+    Lock getReadLock();
 
     Lock getWriteLock();
 

@@ -170,6 +170,11 @@ public class PhysInterfaceTableTracker extends TableTracker {
             return value == null ? null : value.toInt();
         }
         
+        private String getPhysAddr() {
+            final SnmpValue value = getValue(IF_PHYS_ADDR);
+            return value == null ? null : value.toHexString();
+        }
+        
         public OnmsSnmpInterface createInterfaceFromRow() {
             final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, getIfIndex());
             snmpIface.setIfAdminStatus(getIfAdminStatus());
@@ -179,6 +184,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
             snmpIface.setIfOperStatus(getIfOperStatus());
             snmpIface.setIfSpeed(getSpeed());
             snmpIface.setIfType(getIfType());
+            snmpIface.setPhysAddr(getPhysAddr());
             return snmpIface;
         }
 

@@ -103,7 +103,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     /**
      * minimal constructor
-     *
+     * @deprecated Use the {@link InetAddress} version instead.
      * @param ipAddr a {@link java.lang.String} object.
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */

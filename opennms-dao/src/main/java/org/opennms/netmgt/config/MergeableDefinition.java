@@ -142,7 +142,8 @@ final class MergeableDefinition {
      * @param eventDef a definition created to represent the values
      *  passed in the configureSNMP event params
      */
-    private void handleSpecificMerge(final Definition eventDef)  {
+    @SuppressWarnings("unused")
+	private void handleSpecificMerge(final Definition eventDef)  {
         
         if (hasRangeMatchingSpecific(eventDef.getSpecific(0))) {
             log().error("handleSpecificMerge: definition already contains a range that matches requested SNMP specific change: " + this);
@@ -165,7 +166,8 @@ final class MergeableDefinition {
      * @param eventDef a definition created to represent the values
      *  passed in the configureSNMP event params
      */
-    private void handleRangeMerge(final Definition eventDef) {
+    @SuppressWarnings("unused")
+	private void handleRangeMerge(final Definition eventDef) {
         
         //first remove any specifics that would be eclipsed by this new range
         while (hasSpecificMatchingNewRange(eventDef.getRange(0))) {

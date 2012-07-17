@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.support.DefaultKscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -110,7 +111,10 @@ public class FormProcViewController extends AbstractController implements Initia
                 
                 log().debug("handleRequestInternal: build report for reportType " + reportType);
                 if (reportType.equals("node")) {
-                    editor.loadWorkingReport(m_kscReportService.buildNodeReport(reportId)); 
+                    editor.loadWorkingReport(m_kscReportService.buildNodeReport(reportId));
+                } else if (reportType.equals("nodeSource")) {
+  
+                    editor.loadWorkingReport(m_kscReportService.buildNodeSourceReport(reportIdString));
                 } else if (reportType.equals("domain")) {
                     editor.loadWorkingReport(m_kscReportService.buildDomainReport(reportIdString));
                 } else { 
