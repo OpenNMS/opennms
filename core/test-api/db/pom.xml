@@ -82,6 +82,12 @@
       <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.schema</artifactId>
+      <classifier>liquibase</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.test-api.schema</groupId>
       <artifactId>org.opennms.core.test-api.schema.a</artifactId>
       <version>${project.version}</version>
