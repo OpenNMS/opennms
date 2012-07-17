@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.container</artifactId>
+        <artifactId>container</artifactId>
         <version>1.11.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>org.opennms.container.web</artifactId>
+    <artifactId>web</artifactId>
     <packaging>war</packaging>
     <name>OpenNMS OSGi Container - Web</name>
 
@@ -47,14 +47,14 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.karaf</artifactId>
+            <artifactId>karaf</artifactId>
             <version>${project.version}</version>
             <type>tar.gz</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.servlet</artifactId>
+            <artifactId>servlet</artifactId>
             <version>${project.version}</version>
             <type>war</type>
             <scope>provided</scope>
@@ -110,29 +110,6 @@
                      
                 </configuration>
             </plugin>
-<!--
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-karaf</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <move todir="${project.build.directory}/${project.build.finalName}/WEB-INF/karaf">
-                                    <fileset dir="${project.build.directory}/${project.build.finalName}/WEB-INF/org.opennms.container.standalone-${project.version}" />
-                                </move>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
--->
         </plugins>
     </build>
 

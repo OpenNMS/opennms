@@ -5,12 +5,12 @@
 
   <parent>
     <groupId>org.opennms</groupId>
-    <artifactId>org.opennms.container</artifactId>
+    <artifactId>container</artifactId>
     <version>1.11.2-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>org.opennms.container.branding</artifactId>
+    <artifactId>branding</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS OSGi Container - Branding</name>
 

@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
-    <groupId>org.opennms.features.topology</groupId>
-    <artifactId>org.opennms.features.topology</artifactId>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>topology</artifactId>
     <version>1.11.2-SNAPSHOT</version>
   </parent>
 

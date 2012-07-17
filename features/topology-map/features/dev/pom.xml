@@ -45,7 +45,7 @@
 
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.shell</artifactId>
+      <artifactId>shell</artifactId>
       <version>${project.version}</version>
     </dependency>
 

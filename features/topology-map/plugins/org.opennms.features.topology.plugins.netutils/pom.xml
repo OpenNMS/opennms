@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>org.opennms.features.topology</groupId>
-	<artifactId>org.opennms.features.topology.netutils</artifactId>
+	<artifactId>netutils</artifactId>
 	<packaging>${packaging.type}</packaging>
 	<name>OpenNMS Topology NetUtils</name>
 
@@ -235,7 +235,7 @@
 		 <!-- TOPOLOGY API DEPENDENCIES -->
     	<dependency>
       		<groupId>org.opennms.features.topology</groupId>
-      		<artifactId>org.opennms.features.topology.api</artifactId>
+      		<artifactId>api</artifactId>
       		<version>${project.version}</version>
       		<scope>${scope.type}</scope> 
     	</dependency>

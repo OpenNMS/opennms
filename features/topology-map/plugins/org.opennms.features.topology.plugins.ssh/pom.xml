@@ -9,7 +9,7 @@
     <version>1.11.2-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>org.opennms.features.topology.ssh</artifactId>
+  <artifactId>ssh</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS Topology SSH</name>
 
@@ -82,7 +82,7 @@
     <!-- TOPOLOGY API DEPENDENCIES -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <artifactId>api</artifactId>
       <version>${project.version}</version>
        <scope>provided</scope> 
     </dependency>

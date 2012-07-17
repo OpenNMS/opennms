@@ -194,7 +194,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.karaf</artifactId>
+      <artifactId>karaf</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
     </dependency>

@@ -10,7 +10,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>org.opennms.features.topology.widgetset</artifactId>
+  <artifactId>widgetset</artifactId>
 
   <name>${bundle.symbolicName}</name>
 
@@ -149,12 +149,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.app</artifactId>
+      <artifactId>app</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
         <groupId>org.opennms.features.topology</groupId>
-        <artifactId>org.opennms.features.topology.ssh</artifactId>
+        <artifactId>ssh</artifactId>
         <version>${project.version}</version>
     </dependency>
     

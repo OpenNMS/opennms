@@ -100,7 +100,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.servlet</artifactId>
+      <artifactId>servlet</artifactId>
       <type>war</type>
       <scope>runtime</scope>
       <version>${project.version}</version>

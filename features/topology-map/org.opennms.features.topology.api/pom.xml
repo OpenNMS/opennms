@@ -15,7 +15,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>org.opennms.features.topology.api</artifactId>
+  <artifactId>api</artifactId>
   <version>1.11.2-SNAPSHOT</version>
 
   <name>${bundle.symbolicName}</name>

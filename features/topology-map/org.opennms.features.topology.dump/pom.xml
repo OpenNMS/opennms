@@ -10,7 +10,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>org.opennms.features.topology.dump</artifactId>
+  <artifactId>dump</artifactId>
 
   <name>${bundle.symbolicName}</name>
 
