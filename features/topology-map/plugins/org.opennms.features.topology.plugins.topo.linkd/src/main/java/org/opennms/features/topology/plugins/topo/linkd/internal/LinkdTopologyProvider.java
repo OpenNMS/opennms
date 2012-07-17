@@ -22,6 +22,9 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class LinkdTopologyProvider implements TopologyProvider {
+    public static final String GROUP_ICON = "VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png";
+    public static final String SERVER_ICON = "VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png";
+    public static final String SWITCH_ICON = "VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/srx100.png";
 
     DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
@@ -207,22 +210,24 @@ public class LinkdTopologyProvider implements TopologyProvider {
             LinkdVertex source;
             BeanItem<LinkdVertex> item = m_vertexContainer.getItem(sourceId);
             if (item == null) {
-                source = new LinkdNodeVertex(link.getNode().getNodeId(), 0, 0);
+                source = new LinkdNodeVertex(link.getNode().getNodeId(), 0, 0, SWITCH_ICON);
                 m_vertexContainer.addBean( source);
             }
-            else
+            else {
                 source = item.getBean();
-            
+            }
+
             String targetId = link.getNodeParentId().toString();
             LinkdVertex target;
             item = m_vertexContainer.getItem(targetId);
             if (item == null) {
-                target = new LinkdNodeVertex(targetId, 0, 0);
+                target = new LinkdNodeVertex(targetId, 0, 0, SWITCH_ICON);
                 m_vertexContainer.addBean( target);                    
             }
-            else
+            else {
                 target = item.getBean();
-
+            }
+            
             m_edgeContainer.addBean(new LinkdEdge(link.getId().toString(),source,target));
         }        
     }

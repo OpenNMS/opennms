@@ -23,14 +23,16 @@ abstract public class LinkdVertex {
 	
 	public LinkdVertex() {}
 
-	public LinkdVertex(String id) {
+	public LinkdVertex(String id, String icon) {
 	    m_id=id;
+	    m_icon=icon;
 	}
 	
-	public LinkdVertex(String id, int x, int y) {
+	public LinkdVertex(String id, int x, int y, String icon) {
 	            m_id=id;
 	            m_x=x;
 	            m_y=y;
+	            m_icon=icon;
 	    }
 	
 	@XmlIDREF
