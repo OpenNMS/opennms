@@ -21,7 +21,6 @@
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
     <jung.version>2.0.1</jung.version>
     <junit.version>4.8.2</junit.version>
-    <karaf.version>2.2.7</karaf.version>
     <vaadin.version>6.7.3</vaadin.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <pax.vaadin.version>0.1.0-ONMS-20120621</pax.vaadin.version>
@@ -204,7 +203,7 @@
       <dependency>
         <groupId>org.apache.karaf.shell</groupId>
         <artifactId>org.apache.karaf.shell.console</artifactId>
-        <version>${karaf.version}</version>
+        <version>${karafVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
