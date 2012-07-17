@@ -15,21 +15,6 @@ public class TracerouteWindowTest {
 	}
 
 	@Test
-	public void testBuildURL_default() {
-		String expected = "http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute&address=172.20.1.10&hopAddress=1.1.1.1";
-		traceWindow.forcedHopField.setValue("1.1.1.1");
-		assertEquals(expected, traceWindow.buildURL().toString());
-	}
-	
-	@Test
-	public void testBuildURL_median() {
-		String expected = "http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute&address=172.20.1.10&hopAddress=128.128.128.128&numericOutput=true";
-		traceWindow.numericalDataCheckBox.setValue(true);
-		traceWindow.forcedHopField.setValue("128.128.128.128");
-		assertEquals(expected, traceWindow.buildURL().toString());
-	}
-	
-	@Test
 	public void testBuildURL_upperBounds() {
 		traceWindow.numericalDataCheckBox.setValue(true);
 		traceWindow.forcedHopField.setValue("256.256.256.256");

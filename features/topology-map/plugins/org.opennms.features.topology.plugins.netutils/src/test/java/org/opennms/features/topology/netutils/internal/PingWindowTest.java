@@ -12,22 +12,6 @@ public class PingWindowTest {
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
 		pingWindow = new PingWindow(testNode1);
 	}
-
-	@Test
-	public void testBuildURL_default() {
-		String expected = "http://demo.opennms.org/opennms/ExecCommand.map?command=ping&address=172.20.1.10&timeout=&numberOfRequests=&packetSize=8";
-		assertEquals(expected, pingWindow.buildURL().toString());
-	}
-	
-	@Test
-	public void testBuildURL_median() {
-		String expected = "http://demo.opennms.org/opennms/ExecCommand.map?command=ping&address=172.20.1.10&timeout=5000&numberOfRequests=5000&packetSize=504&numericOutput=true";
-		pingWindow.numericalDataCheckBox.setValue(true);
-		pingWindow.packetSizeDropdown.setValue("512");
-		pingWindow.requestsField.setValue("5000");
-		pingWindow.timeoutField.setValue("5000");
-		assertEquals(expected, pingWindow.buildURL().toString());
-	}
 	
 	@Test
 	public void testBuildURL_upperBounds() {

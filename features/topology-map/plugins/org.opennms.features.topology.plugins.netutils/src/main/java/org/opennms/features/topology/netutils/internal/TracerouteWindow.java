@@ -16,7 +16,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.Window;
 
 /**
@@ -41,6 +40,7 @@ public class TracerouteWindow extends Window{
 	private int margin = 40; //Padding around the results browser
 	private int splitHeight = 180;//Height from top of the window to the split location in pixels
 	private int topHeight = 220;//Set height size for everything above the split
+	private String baseAddress;
 
 	/**
 	 * The TracerouteWindow method constructs a TracerouteWindow component with a size proportionate to the 
@@ -174,6 +174,14 @@ public class TracerouteWindow extends Window{
 			resultsBrowser.setVisible(true);
 		}
 	}
+	
+	public void setTracerouteAddress(String address) {
+		baseAddress = address;
+	}
+	
+	public String getTracerouteAddress() {
+		return baseAddress;
+	}
 
 	/**
 	 * The buildURL method takes the current values in the form and formats them into the
@@ -188,8 +196,7 @@ public class TracerouteWindow extends Window{
 			return null;
 		}
 		if (validInput) {
-			String base = "http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute";
-			String options = base;
+			String options = getTracerouteAddress();
 			options += "&address=" + ipDropdown.getValue().toString();
 			options += "&hopAddress=" + forcedHopField.getValue().toString();
 			if (numericalDataCheckBox.getValue().equals(true))
