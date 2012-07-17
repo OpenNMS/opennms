@@ -61,7 +61,7 @@
 					<modules> <module>org.opennms.features.vaadin.topology.gwt.MyWidgetSet</module> 
 						</modules>-->
 					<webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
-                    <extraJvmArgs>-Xmx512M -Xss1024k -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998</extraJvmArgs>
+                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 					<runTarget>org.opennms.features.vaadin-topology-widget</runTarget>
 					<hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
 					<noServer>true</noServer>
