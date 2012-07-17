@@ -11,7 +11,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.contextMenuLocation" value=""/> <!-- Add it to the context menu -->
             <entry key="operation.label" value="SSH"/> <!-- The label for this operation -->
         </service-properties>
-        <bean class="org.opennms.features.topology.netutils.internal.operations.SSHOperation"/>
+        <bean class="org.opennms.features.topology.ssh.internal.operations.SSHOperation"/>
     </service>
 
 </blueprint>

@@ -3,9 +3,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-	<artifactId>org.opennms.features</artifactId>
-	<groupId>org.opennms</groupId>
-	<version>1.11.1-SNAPSHOT</version>
+    <relativePath>../../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>org.opennms.features.topology.ssh</artifactId>
@@ -13,6 +14,8 @@
   <name>OpenNMS Topology SSH</name>
 
   <properties>
+    <bundle.symbolicName>org.opennms.features.topology.ssh</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.ssh</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>6.7.1</vaadin.version>
     <gwt.version>2.3.0</gwt.version>
@@ -30,34 +33,6 @@
             </resource>
         </resources>
         
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-            <archive>
-                <manifestEntries>
-                    <Vaadin-Widgetsets>org.opennms.features.topology.netutils.internal.gwt.TerminalWidgetSet</Vaadin-Widgetsets>
-                    <Vaadin-Package-Version>1</Vaadin-Package-Version>
-                </manifestEntries>
-            </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-
-    </plugins>
   </build>
 
   <repositories>
@@ -104,7 +79,7 @@
 	<dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.6</version>
+        <version>1.6.4</version>
         <scope>provided</scope>
     </dependency>
 
@@ -113,7 +88,7 @@
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.api</artifactId>
       <version>1.11.1-SNAPSHOT</version>
-      <!--  <scope>provided</scope>  -->
+       <scope>provided</scope> 
     </dependency>
     
     

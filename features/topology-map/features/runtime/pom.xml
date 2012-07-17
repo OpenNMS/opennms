@@ -63,11 +63,6 @@
       <artifactId>org.opennms.features.topology.app</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>TerminalWidget</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
     
     <!-- plugins -->
     <dependency>
@@ -103,6 +98,11 @@
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.widgetset</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.ssh</artifactId>
       <version>${project.version}</version>
     </dependency>
 
