@@ -9,7 +9,13 @@
 
 	<context:annotation-config/>
 
-	<bean id="snmpPeerFactory" class="org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory" />
+	<bean id="mockSnmpConfig" class="org.opennms.core.test.ConfigurationTestUtils" factory-method="getInputStreamForConfigFile">
+		<constructor-arg value="snmp-config.xml"/>
+	</bean>
+
+	<bean id="snmpPeerFactory" class="org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory">
+		<constructor-arg ref="mockSnmpConfig"/>
+	</bean>
 
     <bean id="init-snmpPeerFactory" depends-on="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.setInstance</value></property>

@@ -8,10 +8,18 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
   <name>OpenNMS Configuration</name>
-  <!--
-  <packaging>bundle</packaging>
+  <!-- <packaging>bundle</packaging> -->
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <!--
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -26,9 +34,9 @@
           </instructions>
         </configuration>
       </plugin>
+      -->
     </plugins>
   </build>
-  -->
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
