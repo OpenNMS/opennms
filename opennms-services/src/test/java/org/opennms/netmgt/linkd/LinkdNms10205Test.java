@@ -180,7 +180,7 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(6,links.size());
+        assertEquals(1,links.size());
                 
     }
 }
