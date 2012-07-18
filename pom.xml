@@ -155,6 +155,18 @@
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals><goal>generate-features-xml</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
         <version>1.0</version>
         <executions>
