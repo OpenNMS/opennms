@@ -1,0 +1,54 @@
+<assembly>
+
+    <id>karaf</id>
+
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>    
+
+    <dependencySets>
+        <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <scope>provided</scope>
+            <includes>
+                <include>org.opennms.container:standalone:tar.gz:${project.version}</include>
+            </includes>
+            <unpackOptions>
+                <excludes>
+                    <exclude>**/*.txt</exclude>
+                    <exclude>bin/*</exclude>
+                    <exclude>demos/**</exclude>
+                    <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
+                    <exclude>**/custom.properties</exclude>
+                    <exclude>**/org.apache.karaf.features.cfg</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <directory>src/main/filtered-resources/etc</directory>
+            <outputDirectory>etc</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <file>
+            <source>src/main/filtered-resources/features/features.xml</source>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <destName>${project.groupId}.${project.artifactId}-${project.version}-features.xml</destName>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+    </files>
+
+</assembly>

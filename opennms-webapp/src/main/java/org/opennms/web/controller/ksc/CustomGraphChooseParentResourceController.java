@@ -65,6 +65,7 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
         ModelAndView modelAndView = new ModelAndView("KSC/customGraphChooseParentResource");
 
         modelAndView.addObject("nodeResources", getResourceService().findNodeResources());
+        modelAndView.addObject("nodeSourceResources", getResourceService().findNodeSourceResources());
         modelAndView.addObject("domainResources", getResourceService().findDomainResources());
         
         return modelAndView;
@@ -96,10 +97,12 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
 
         //List<OnmsResource> childResources = getResourceService().findChildResources(resource);
         List<OnmsResource> nodeResources = getResourceService().findNodeResources();
+        List<OnmsResource> nodeSourceResources = getResourceService().findNodeSourceResources();
         List<OnmsResource> domainResources = getResourceService().findDomainResources();
         
-        List<OnmsResource> childResources = new ArrayList<OnmsResource>(nodeResources.size() + domainResources.size());
+        List<OnmsResource> childResources = new ArrayList<OnmsResource>(nodeResources.size() + nodeSourceResources.size() + domainResources.size());
         childResources.addAll(nodeResources);
+        childResources.addAll(nodeSourceResources);
         childResources.addAll(domainResources);
 
         modelAndView.addObject("resources", childResources);

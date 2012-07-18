@@ -117,6 +117,28 @@ public class GenericIndexResourceTypeTest extends TestCase {
         assertNotNull("resource", resource);
         assertEquals("resource label", "hello!!!!", resource.getLabel());
     }
+    
+    public void testGetResourceByNodeSourceAndIndexGetLabelStringAttribute() throws Exception {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${stringAttribute}", m_storageStrategy);
+
+        m_fileAnticipator.initialize();
+        expect(m_resourceDao.getRrdDirectory()).andReturn(m_fileAnticipator.getTempDir());
+
+        File snmpDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(snmpDir, "fs");
+        File snmpNodeSourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File forIdDir = m_fileAnticipator.tempDir(snmpNodeSourceDir, "123");
+        File fooDir = m_fileAnticipator.tempDir(forIdDir, "foo");
+        File indexDir = m_fileAnticipator.tempDir(fooDir, "1");
+        m_fileAnticipator.tempFile(indexDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
+
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeSourceAndIndex("source1:123", "1");
+        m_mocks.verifyAll();
+
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "hello!!!!", resource.getLabel());
+    }
 
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexNumber() {
         GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(3, 1)}", m_storageStrategy);

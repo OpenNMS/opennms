@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -97,6 +97,13 @@
       <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
       <type>war</type>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>servlet</artifactId>
+      <type>war</type>
+      <scope>runtime</scope>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

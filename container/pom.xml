@@ -3,10 +3,10 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.opennms.container</artifactId>
+  <artifactId>container</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS OSGi Container</name>
   <properties>
@@ -14,7 +14,20 @@
   </properties>
   <modules>
     <module>branding</module>
+    <module>features</module>
     <module>standalone</module>
-    <module>web</module>
+    <module>karaf</module>
+    <module>servlet</module>
   </modules>
+
+  <repositories>
+    <repository>
+      <id>servicemix</id>
+      <name>Apache ServiceMix Repository</name>
+      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
 </project>

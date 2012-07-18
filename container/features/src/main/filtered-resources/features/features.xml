@@ -1,0 +1,12 @@
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-all">
+
+  <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime/${project.version}/xml/features</repository>
+  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
+
+  <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
+    <feature>opennms-topology-runtime</feature>
+    <feature>opennms-topology-dev</feature>
+  </feature>
+
+</features>

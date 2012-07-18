@@ -8,6 +8,5 @@
 Vaadin-Package-Version: 1
 Vaadin-Widgetsets: org.opennms.features.topology.app.internal.gwt.TopologyWidget
 #Export-Package: org.opennms.*
-Include-Resource: {maven-resources},target/gwt/
 Embed-Dependency: jung*|colt|concurrent|collections-generic
 Embed-Transitive: true

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -23,9 +23,23 @@
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
+          <repositories>
+            <repository>mvn:${project.groupId}/vaadin/${project.version}/xml/features</repository>
+            <repository>mvn:${project.groupId}/opennms-topology-api/${project.version}/xml/features</repository>
+          </repositories>
           <features>
             <feature>opennms-topology-api</feature>
           </features>
+          <configs>
+            <config>
+                <name>org.opennms.features.topology.app</name>
+                <contents>
+                    toplevelMenuOrder=File,Edit,View,Additional,Help
+                    servletAlias=/topology
+                    widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
+                </contents>
+            </config>
+          </configs>
         </configuration>
       </plugin>
     </plugins>
@@ -38,6 +52,7 @@
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
@@ -45,39 +60,55 @@
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
+      <scope>provided</scope>
     </dependency>
 
     <!-- main topology app -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.app</artifactId>
+      <artifactId>app</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    
     <!-- plugins -->
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.layout</artifactId>
+      <artifactId>layout</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.menu</artifactId>
+      <artifactId>menu</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>simple</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo.simple</artifactId>
+      <artifactId>status</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.status</artifactId>
+      <groupId>org.opennms.features.topology.plugins.ui</groupId>
+      <artifactId>tree</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.ui.tree</artifactId>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>netutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>widgetset</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>ssh</artifactId>
       <version>${project.version}</version>
     </dependency>
 

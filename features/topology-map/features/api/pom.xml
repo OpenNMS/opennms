@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -43,7 +43,7 @@
     -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <artifactId>api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

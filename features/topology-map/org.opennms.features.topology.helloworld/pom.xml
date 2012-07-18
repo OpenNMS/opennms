@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.2-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>helloworld</artifactId>
+
+  <name>${bundle.symbolicName}</name>
+
+  <packaging>bundle</packaging>
+  
+  <properties>
+    <bundle.symbolicName>org.opennms.features.topology.helloworld</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.helloworld</bundle.namespace>
+  </properties>
+
+  <build>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+                     <pluginExecution>
+                        <pluginExecutionFilter>
+                           <groupId>
+                              org.opennms.maven.plugins
+                           </groupId>
+                           <artifactId>
+                              features-maven-plugin
+                           </artifactId>
+                           <versionRange>
+                              [1.0-SNAPSHOT,)
+                           </versionRange>
+                           <goals>
+                              <goal>
+                                 generate-features-xml
+                              </goal>
+                           </goals>
+                        </pluginExecutionFilter>
+                        <action>
+                           <ignore></ignore>
+                        </action>
+                     </pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.codehaus.mojo</groupId>
+    								<artifactId>
+    									gwt-maven-plugin
+    								</artifactId>
+    								<versionRange>
+    									[2.2.0,)
+    								</versionRange>
+    								<goals>
+    									<goal>resources</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+</project>

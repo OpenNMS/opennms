@@ -76,6 +76,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class })
 @ContextConfiguration(locations = {
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",

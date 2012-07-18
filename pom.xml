@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.11.1-SNAPSHOT</version>
+  <version>1.11.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -88,6 +88,7 @@
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
+    <module>container</module>
     <module>features</module>
     <module>integrations</module>
     <module>protocols</module>
@@ -151,6 +152,18 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals><goal>generate-features-xml</goal></goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -695,10 +708,14 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+    <opennms.osgi.version>1.11.2.A</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
+
+    <!-- install.prefix: a prefix used for installation in or chroot -->
+    <install.prefix/>
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
     <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
@@ -712,9 +729,6 @@
     <install.controllerlogs.dir>${install.logs.dir}/controller</install.controllerlogs.dir>
     <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
-
-    <!-- install.prefix: a prefix used for installation in or chroot -->
-    <install.prefix/>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
@@ -759,6 +773,7 @@
     <!-- dependency versions -->
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
+    <karafVersion>2.2.7</karafVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.5.4.v20111024</jettyVersion>

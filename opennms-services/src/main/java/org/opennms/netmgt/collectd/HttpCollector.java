@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -431,7 +432,7 @@ public class HttpCollector implements ServiceCollector {
 
     }
 
-    private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
+    private List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
         log().debug("processResponse:");
         log().debug("responseBody = " + responseBodyAsString);
         log().debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
@@ -460,36 +461,60 @@ public class HttpCollector implements ServiceCollector {
         final boolean matches = m.matches();
         if (matches) {
             log().debug("processResponse: found matching attributes: "+matches);
-            List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
-            AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
+            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
+            final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
 
-            for (Attrib attribDef : attribDefs) {
-                if (! attribDef.getType().matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
-                    try {
-                        Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
-                        HttpCollectionAttribute bute = 
-                            new HttpCollectionAttribute(
-                                                        collectionResource,
-                                                        new HttpCollectionAttributeType(attribDef, groupType), 
-                                                        attribDef.getAlias(),
-                                                        attribDef.getType(), 
-                                                        num);
-                        log().debug("processResponse: adding found numeric attribute: "+bute);
-                        butes.add(bute);
-                    } catch (IndexOutOfBoundsException e) {
-                        log().error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: " + attribDef.getMatchGroup());
-                        log().error("Regex statement: " + collectionSet.getUriDef().getUrl().getMatches());
-                    } catch (ParseException e) {
-                        log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched \""+m.group(attribDef.getMatchGroup())+"\" instead.");
+            final List<Locale> locales = new ArrayList<Locale>();
+            locales.add(responseLocale);
+            locales.add(Locale.getDefault());
+            if (Locale.getDefault() != Locale.ENGLISH) {
+                locales.add(Locale.ENGLISH);
+            }
+
+            for (final Attrib attribDef : attribDefs) {
+                final String type = attribDef.getType();
+                String value = null;
+                try {
+                    value = m.group(attribDef.getMatchGroup());
+                } catch (final IndexOutOfBoundsException e) {
+                    log().error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: " + attribDef.getMatchGroup());
+                    log().error("Regex statement: " + collectionSet.getUriDef().getUrl().getMatches());
+                    continue;
+                }
+
+                if (! type.matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
+                    Number num = null;
+                    for (final Locale locale : locales) {
+                        try {
+                            num = NumberFormat.getNumberInstance(locale).parse(value);
+                            break;
+                        } catch (final ParseException e) {
+                            log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number with locale \"" + locale + "\"! Matched \""+value+"\" instead.");
+                        }
                     }
+
+                    if (num == null) {
+                        log().error("processResponse: gave up attempting to parse numeric value, skipping group " + attribDef.getMatchGroup());
+                        continue;
+                    }
+                    
+                    final HttpCollectionAttribute bute = new HttpCollectionAttribute(
+                         collectionResource,
+                         new HttpCollectionAttributeType(attribDef, groupType), 
+                         attribDef.getAlias(),
+                         type, 
+                         num
+                     );
+                     log().debug("processResponse: adding found numeric attribute: "+bute);
+                     butes.add(bute);
                 } else {
                     HttpCollectionAttribute bute =
                         new HttpCollectionAttribute(
                                                     collectionResource,
                                                     new HttpCollectionAttributeType(attribDef, groupType),
                                                     attribDef.getAlias(),
-                                                    attribDef.getType(),
-                                                    m.group(attribDef.getMatchGroup()));
+                                                    type,
+                                                    value);
                     log().debug("processResponse: adding found string attribute: " + bute);
                     butes.add(bute);
                 }
@@ -521,10 +546,10 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse method) throws IOException {
-        String responseString = EntityUtils.toString(method.getEntity());
+    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
+        String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
-            List<HttpCollectionAttribute> attributes = processResponse(responseString, collectionSet, collectionResource);
+            List<HttpCollectionAttribute> attributes = processResponse(response.getLocale(), responseString, collectionSet, collectionResource);
 
             if (attributes.isEmpty()) {
                 log().warn("doCollection: no attributes defined by the response: " + responseString.trim());
@@ -800,7 +825,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId()));
+            return new File(repository.getRrdBaseDir(), getParent());
         }
 
         public void visit(CollectionSetVisitor visitor) {
@@ -826,7 +851,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         public String getParent() {
-            return Integer.toString(m_agent.getNodeId());
+            return m_agent.getStorageDir().toString();
         }
 
         public TimeKeeper getTimeKeeper() {

@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -180,6 +181,23 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsResource resource = m_resourceDao.getTopLevelResource("node", node.getId().toString());
         m_easyMockUtils.verifyAll();
         
+        assertNotNull("Resource should not be null", resource);
+    }
+    
+    public void testGetTopLevelResourceNodeSourceExists() throws Exception {
+        OnmsNode node = createNode();
+        expect(m_nodeDao.findByForeignId("source1", "123")).andReturn(node).times(1);
+
+        File responseDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
+        File sourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File idDir = m_fileAnticipator.tempDir(sourceDir, "123");
+        m_fileAnticipator.tempFile(idDir, "foo" + RrdUtils.getExtension());
+
+        m_easyMockUtils.replayAll();
+        OnmsResource resource = m_resourceDao.getTopLevelResource("nodeSource", "source1:123");
+        m_easyMockUtils.verifyAll();
+
         assertNotNull("Resource should not be null", resource);
     }
     
@@ -537,6 +555,37 @@ public class DefaultResourceDaoTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         assertNotNull("Resource should exist", resource);
+    }
+    
+    public void testFindNodeSourceDirectoriesExist() throws Exception {
+
+        File responseDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
+        File sourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File idDir = m_fileAnticipator.tempDir(sourceDir, "123");
+        m_fileAnticipator.tempFile(idDir, "foo" + RrdUtils.getExtension());
+
+        m_easyMockUtils.replayAll();
+        Set<String> directories = m_resourceDao.findNodeSourceDirectories();
+        m_easyMockUtils.verifyAll();
+
+        assertNotNull("Directories should not be null", directories);
+        assertEquals("Directories set size is 1", 1, directories.size());
+    }
+    
+    public void testFindNodeSourceDirectoriesNoRrdFiles() throws Exception {
+        File responseDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
+        File sourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File idDir = m_fileAnticipator.tempDir(sourceDir, "123");
+        m_fileAnticipator.tempFile(idDir, "foo");
+
+        m_easyMockUtils.replayAll();
+        Set<String> directories = m_resourceDao.findNodeSourceDirectories();
+        m_easyMockUtils.verifyAll();
+
+        assertNotNull("Directories should not be null", directories);
+        assertEquals("Directories set size is 0", 0, directories.size());
     }
 
     public void testGetResourceForNodeNoData() {

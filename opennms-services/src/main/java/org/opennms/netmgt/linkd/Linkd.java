@@ -397,7 +397,7 @@ public class Linkd extends AbstractServiceDaemon {
 	                return false;
 		}
 		// database changed need reload packageiplist
-		m_linkdConfig.updatePackageIpListMap();
+		m_linkdConfig.update();
 		
 
 		// First of all get Linkable Node
@@ -530,7 +530,7 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 
 		// database changed need reload packageiplist
-		m_linkdConfig.updatePackageIpListMap();
+		m_linkdConfig.update();
 
 	}
 	
@@ -555,7 +555,7 @@ public class Linkd extends AbstractServiceDaemon {
 		} 
 
 		// database changed need reload packageiplist
-		m_linkdConfig.updatePackageIpListMap();
+		m_linkdConfig.update();
 
 	}
 

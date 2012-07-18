@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>container</artifactId>
+        <version>1.11.2-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.opennms.container</groupId>
+    <artifactId>karaf</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS OSGi Container - Embedded Karaf</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>branding</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.main</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <type>zip</type>
+            <scope>provided</scope>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>standalone</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+              <directory>src/main/filtered-resources</directory>
+              <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>karaf</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/karaf.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>attach-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                  <artifacts>
+                    <artifact>
+                      <file>src/main/filtered-resources/features/features.xml</file>
+                      <type>xml</type>
+                      <classifier>features</classifier>
+                    </artifact>
+                  </artifacts>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+    </build>
+
+</project>

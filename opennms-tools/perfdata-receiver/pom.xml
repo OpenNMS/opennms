@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
-      <version>1.11.1-SNAPSHOT</version>
+      <version>1.11.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

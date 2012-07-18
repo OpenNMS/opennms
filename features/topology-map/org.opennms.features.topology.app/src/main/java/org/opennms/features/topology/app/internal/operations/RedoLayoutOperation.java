@@ -28,7 +28,7 @@ public class RedoLayoutOperation implements Operation {
     public boolean enabled(List<Object> targets,
             OperationContext operationContext) {
         //Applies to background as a whole
-        return targets == null;
+        return targets == null || targets.isEmpty();
     }
 
     @Override

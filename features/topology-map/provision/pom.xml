@@ -5,11 +5,10 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.topology.build</groupId>
   <artifactId>provision</artifactId>
 
   <name>org.opennms.features.topology - imported bundles</name>
