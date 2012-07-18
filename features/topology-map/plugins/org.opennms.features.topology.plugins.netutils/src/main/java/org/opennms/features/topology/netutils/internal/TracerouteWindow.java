@@ -49,8 +49,10 @@ public class TracerouteWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public TracerouteWindow(Node node){
+	public TracerouteWindow(Node node, String baseAddress){
 
+		this.baseAddress = baseAddress;
+		
 		/*Sets up window settings*/
 		setCaption("Traceroute - " + node.getName());
 		setImmediate(true);
@@ -174,14 +176,6 @@ public class TracerouteWindow extends Window{
 			resultsBrowser.setVisible(true);
 		}
 	}
-	
-	public void setTracerouteAddress(String address) {
-		baseAddress = address;
-	}
-	
-	public String getTracerouteAddress() {
-		return baseAddress;
-	}
 
 	/**
 	 * The buildURL method takes the current values in the form and formats them into the
@@ -196,7 +190,7 @@ public class TracerouteWindow extends Window{
 			return null;
 		}
 		if (validInput) {
-			String options = getTracerouteAddress();
+			String options = baseAddress;
 			options += "&address=" + ipDropdown.getValue().toString();
 			options += "&hopAddress=" + forcedHopField.getValue().toString();
 			if (numericalDataCheckBox.getValue().equals(true))

@@ -49,8 +49,9 @@ public class PingWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public PingWindow(Node node){
+	public PingWindow(Node node, String baseAddress){
 
+		this.baseAddress = baseAddress;
 
 		/*Sets up window settings*/
 		setCaption("Ping - " + node.getName());
@@ -182,14 +183,6 @@ public class PingWindow extends Window{
 		resultsBrowser.setWidth("" + (int)(this.getWidth()-margin) + "px"); //Cuts off "close" button from window
 		resultsBrowser.setHeight("" + (int)(this.getHeight() - topHeight - margin) + "px");
 	}
-	
-	public void setPingAddress(String address) {
-		baseAddress = address;
-	}
-	
-	public String getPingAddress() {
-		return baseAddress;
-	}
 
 	/**
 	 * The changeBrowserURL method changes the address of the results browser whenever a new
@@ -224,7 +217,7 @@ public class PingWindow extends Window{
 			return null;
 		}
 		if (validInput){
-			String options = getPingAddress();
+			String options = baseAddress;
 			options += "&address=" + ipDropdown.getValue().toString();
 			options += "&timeout=" + timeoutField.getValue().toString();
 			options += "&numberOfRequests=" + requestsField.getValue().toString();

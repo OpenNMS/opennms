@@ -10,7 +10,7 @@ public class PingWindowTest {
 	@Before
 	public void setUp() throws Exception {
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
-		pingWindow = new PingWindow(testNode1);
+		pingWindow = new PingWindow(testNode1, "");
 	}
 	
 	@Test

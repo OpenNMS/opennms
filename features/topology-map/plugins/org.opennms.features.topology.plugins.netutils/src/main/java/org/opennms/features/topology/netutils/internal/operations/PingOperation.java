@@ -12,6 +12,7 @@ public class PingOperation implements Operation {
 	/*Test Data*/
 	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
 	private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
+	private String baseURL;
 	
 	public boolean display(List<Object> targets, OperationContext operationContext) {
 		// TODO Auto-generated method stub
@@ -25,7 +26,7 @@ public class PingOperation implements Operation {
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
 		try {
-			operationContext.getMainWindow().addWindow(new PingWindow(testNode1));
+			operationContext.getMainWindow().addWindow(new PingWindow(testNode1, getPingURL()));
 		} catch (Exception e) { e.printStackTrace(); }
 		return null;
 	}
@@ -33,6 +34,14 @@ public class PingOperation implements Operation {
 	public String getId() {
 		// TODO Auto-generated method stub
 		return "ping";
+	}
+	
+	public void setPingURL(String url) {
+		baseURL = url;
+	}
+	
+	public String getPingURL() {
+		return baseURL;
 	}
 
 }
