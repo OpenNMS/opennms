@@ -96,6 +96,8 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+//        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+//        p.setProperty("log4j.logger.org.springframework","WARN");
         MockLogAppender.setupLogging(p);
 
     }
@@ -110,18 +112,30 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
 
     /*
      * 
-     *  MUMBAI:port 0/1/3: ip 192.168.5.5   ------> CHENNAI:port 4/0/2:192.168.5.6
+     *  MUMBAI:port ge 0/1/3:ip 192.168.5.5   ------> CHENNAI:port ge 4/0/2: ip 192.168.5.6
+     *  MUMBAI:port ge 0/1/2:ip 192.168.5.9   ------> DELHI:port ge 1/0/2: ip 192.168.5.10
+     *  MUMBAI:port ge 0/0/1:ip 192.168.5.13   ------> BANGALORE:port ge 0/0/0: ip 192.168.5.14
+     *  DELHI:port ge 1/0/1:ip 192.168.1.5     ------> BANGALORE:port ge 0/0/1: ip 192.168.1.6
+     *  DELHI:port ge 1/1/6:ip 172.16.7.1     ------> Space-EX-SW1: port 0/0/6: ip 172.16.7.1 ???? same ip address
+     *  CHENNAI:port ge 4/0/3:ip 192.168.1.1  ------> DELHI: port ge 1/1/0: ip 192.168.1.2
      *  
+     *  a lot of duplicated ip this is a clear proof that linkd is not able to 
+     *  gather topology.
      */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+ MUMBAI_IP +"-walk.txt"),
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161,resource="classpath:linkd/nms10205/"+ CHENNAI_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CHENNAI_IP, port=161,resource="classpath:linkd/nms10205/"+ CHENNAI_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_IP+"-walk.txt")
     })
-    public void testLinkMumbaiChennai() throws Exception {
+    public void testNetwork10205Links() throws Exception {
         m_nodeDao.save(getMumbai());
         m_nodeDao.save(getChennai());
-        
+        m_nodeDao.save(getDelhi());
+        m_nodeDao.save(getSpaceExSw1());
+        m_nodeDao.save(getBangalore());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -133,7 +147,10 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
         juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
         juniper.addSpecific("2.25");
+        juniper.addSpecific("2.29");
+        juniper.addSpecific("2.30");
         juniper.addSpecific("2.9");
+        juniper.addSpecific("2.10");
         iproutes.addVendor(juniper);
         m_linkdConfig.getConfiguration().setIproutes(iproutes);
         m_linkdConfig.update();
@@ -141,21 +158,29 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode chennai = m_nodeDao.findByForeignId("linkd", CHENNAI_NAME);
-
+        final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);
+        final OnmsNode spaceexsw1 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW1_NAME);
+        final OnmsNode bangalore = m_nodeDao.findByForeignId("linkd", BANGALORE_NAME);
+        
         assertTrue(m_linkd.scheduleNodeCollection(chennai.getId()));
-
         assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(bangalore.getId()));
 
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(chennai.getId()));
-        
+        assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
+               
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(0,links.size());
+        assertEquals(6,links.size());
                 
     }
 }
