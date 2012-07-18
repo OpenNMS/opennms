@@ -14,6 +14,7 @@
   </properties>
   <modules>
     <module>branding</module>
+    <module>features</module>
     <module>standalone</module>
     <module>karaf</module>
     <module>servlet</module>

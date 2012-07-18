@@ -18,6 +18,11 @@
       <includes>
         <include>org.opennms.container:karaf:tar.gz:${project.version}</include>
       </includes>
+      <unpackOptions>
+        <excludes>
+          <exclude>etc/org.apache.karaf.features.cfg</exclude>
+        </excludes>
+      </unpackOptions>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
