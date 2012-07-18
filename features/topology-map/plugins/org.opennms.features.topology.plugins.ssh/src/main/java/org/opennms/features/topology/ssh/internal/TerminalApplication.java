@@ -18,7 +18,7 @@ package org.opennms.features.topology.ssh.internal;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.ssh.internal.operations.SSHOperation;
+import org.opennms.features.topology.ssh.internal.operations.ContextSSHOperation;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -44,7 +44,7 @@ public class TerminalApplication extends com.vaadin.Application {
         setMainWindow(main);
         setTheme("mytheme");
     	
-        final SSHOperation operation = new SSHOperation();
+        final ContextSSHOperation operation = new ContextSSHOperation();
         opContext = new OperationContext() {
             
             public Window getMainWindow() {

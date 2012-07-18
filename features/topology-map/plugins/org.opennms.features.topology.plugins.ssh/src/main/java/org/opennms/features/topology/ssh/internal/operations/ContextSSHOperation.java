@@ -8,7 +8,7 @@ import org.opennms.features.topology.ssh.internal.AuthWindow;
 
 import com.vaadin.data.Item;
 
-public class SSHOperation implements Operation {
+public class ContextSSHOperation implements Operation {
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
 		//Default server info
