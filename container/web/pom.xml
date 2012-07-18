@@ -6,26 +6,24 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.container</artifactId>
+        <artifactId>container</artifactId>
         <version>1.11.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>org.opennms.container.web</artifactId>
+    <artifactId>web</artifactId>
     <packaging>war</packaging>
     <name>OpenNMS OSGi Container - Web</name>
 
     <properties>
         <jetty.port>8080</jetty.port>
         <maven-jetty-plugin.version>6.1.26</maven-jetty-plugin.version>
-	<karaf.version>2.2.7</karaf.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.branding</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.soa</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf</groupId>
@@ -39,39 +37,51 @@
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.main</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.proxy</artifactId>
             <version>2.2.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>apache-karaf</artifactId>
-            <type>zip</type>
-            <scope>provided</scope>
-            <version>${karaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>karaf</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>org.opennms.container.standalone</artifactId>
+            <artifactId>servlet</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
+            <type>war</type>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-              <directory>src/main/filtered-resources</directory>
-              <filtering>true</filtering>
-            </resource>
-        </resources>
-
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>karaf</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/web.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
@@ -89,51 +99,16 @@
                             <name>com.sun.management.jmxremote</name>
                             <value />
                         </systemProperty>
+                        <!-- override karaf home -->
+                        <systemProperty>
+                            <name>opennms.home</name>
+                            <value>${project.build.directory}/${project.build.finalName}/WEB-INF/karaf</value>
+                        </systemProperty>
                     </systemProperties>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>
                      
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>karaf</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/karaf.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-karaf</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <move todir="${project.build.directory}/${project.build.finalName}/WEB-INF/karaf">
-                                    <fileset dir="${project.build.directory}/${project.build.finalName}/WEB-INF/org.opennms.container.standalone-${project.version}" />
-                                </move>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

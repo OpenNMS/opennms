@@ -1,29 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <!--
-   | put company details here
-  <organization>
-    <name>...</name>
-    <url>http://...</url>
-  </organization>
-  -->
-
-  <!--
-   | put license details here
-  <licenses>
-    <license>
-      <name>...</name>
-      <url>http://...</url>
-      <comments>
-      </comments>
-    </license>
-  </licenses>
-  -->
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>1.11.2-SNAPSHOT</version>
+  </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.topology</groupId>
-  <artifactId>org.opennms.features.topology</artifactId>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>topology</artifactId>
   <version>1.11.2-SNAPSHOT</version>
 
   <name>org.opennms.features.topology (OSGi project)</name>
@@ -48,6 +34,7 @@
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.features.topology.api</module>
+    <module>org.opennms.features.topology.widgetset</module>
     <module>org.opennms.features.topology.app</module>
     <module>org.opennms.features.topology.shell</module>
     <module>plugins</module>
@@ -76,8 +63,8 @@
           -->
           <provision>
             <param>--platform=equinox</param>
-            <param>scan-bundle:mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/2.2.7</param>
-            <param>scan-features:mvn:org.apache.karaf.assemblies.features/standard/2.2.7/xml/features!/karaf-framework,http-whiteboard</param>
+            <param>scan-bundle:mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/${karafVersion}</param>
+            <param>scan-features:mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features!/karaf-framework,http-whiteboard</param>
             <param>--noConsole</param>
           </provision>
         </configuration>
@@ -94,39 +81,6 @@
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>com.vaadin</groupId>
-    								<artifactId>
-    									vaadin-maven-plugin
-    								</artifactId>
-    								<versionRange>
-    									[1.0.2,)
-    								</versionRange>
-    								<goals>
-    									<goal>update-widgetset</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
-    </pluginManagement>
   </build>
 
 </project>

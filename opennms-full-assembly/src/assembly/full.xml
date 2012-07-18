@@ -17,5 +17,6 @@
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

@@ -20,7 +20,7 @@ abstract public class SimpleVertex {
 	String m_icon;
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
-	private int m_semanticZoomLevel = -1;
+//	private int m_semanticZoomLevel = -1;
 	
 	public SimpleVertex() {}
 	
@@ -142,22 +142,22 @@ abstract public class SimpleVertex {
 		return true;
 	}
 	
-	public int getSemanticZoomLevel() {
-		return m_semanticZoomLevel >= 0
-				? m_semanticZoomLevel
-				: m_parent == null 
-				? 0 
-				: m_parent.getSemanticZoomLevel() + 1;
-	}
+//	public int getSemanticZoomLevel() {
+//		return m_semanticZoomLevel >= 0
+//				? m_semanticZoomLevel
+//				: m_parent == null 
+//				? 0 
+//				: m_parent.getSemanticZoomLevel() + 1;
+//	}
 	
-	public SimpleVertex getDisplayVertex(int semanticZoomLevel) {
-		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
-			return this;
-		}else {
-			return getParent().getDisplayVertex(semanticZoomLevel);
-		}
-
-	}
+//	public SimpleVertex getDisplayVertex(int semanticZoomLevel) {
+//		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
+//			return this;
+//		}else {
+//			return getParent().getDisplayVertex(semanticZoomLevel);
+//		}
+//
+//	}
 	
 	
 }

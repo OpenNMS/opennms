@@ -99,6 +99,13 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>servlet</artifactId>
+      <type>war</type>
+      <scope>runtime</scope>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
       <type>war</type>

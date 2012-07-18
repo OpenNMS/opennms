@@ -117,6 +117,7 @@ public class ObjectFactory {
      * Create an instance of {@link Parms }
      * 
      */
+    @Deprecated
     public Parms createParms() {
     	LogUtils.debugf(this, "createParms");
         return new Parms();

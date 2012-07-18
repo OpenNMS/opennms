@@ -264,7 +264,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                             }
 
                             @SuppressWarnings("rawtypes")
-							public List transformList(List collection) {
+                            public List transformList(List collection) {
                                 return collection;
                             }
                 		    

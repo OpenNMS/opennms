@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <relativePath>../../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.2-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>org.opennms.features.topology.plugins.topo.onmsdao</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.plugins.topo.onmsdao</bundle.namespace>
+  </properties>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology.plugins.topo</groupId>
+  <artifactId>onmsdao</artifactId>
+
+  <name>${bundle.symbolicName}</name>
+
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <!--
+     | uncomment to add all imported (non-local) bundles to your compilation classpath
+    <dependency>
+      <type>pom</type>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>provision</artifactId>
+      <optional>true</optional>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>compile</scope>
+ 	  <version>${project.version}</version>
+     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+      <version>2.5.2</version>
+    </dependency>
+    
+  </dependencies>
+
+</project>

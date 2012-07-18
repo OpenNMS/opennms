@@ -2,14 +2,14 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
-    <groupId>org.opennms.features.topology</groupId>
-    <artifactId>org.opennms.features.topology</artifactId>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>topology</artifactId>
     <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.topology.plugins</groupId>
-  <artifactId>org.opennms.features.topology.plugins</artifactId>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>plugins</artifactId>
 
   <name>OpenNMS :: Topology :: Plugins</name>
 
@@ -20,8 +20,12 @@
     <module>org.opennms.features.topology.plugins.menu</module>
     <module>org.opennms.features.topology.plugins.layout</module>
     <module>org.opennms.features.topology.plugins.topo.simple</module>
+    <module>org.opennms.features.topology.plugins.topo.onmsdao</module>
+    <module>org.opennms.features.topology.plugins.topo.linkd</module>
     <module>org.opennms.features.topology.plugins.status</module>
     <module>org.opennms.features.topology.plugins.ui.tree</module>
-  </modules>
+    <module>org.opennms.features.topology.plugins.netutils</module>
+    <module>org.opennms.features.topology.plugins.ssh</module>	  
+</modules>
 
 </project>

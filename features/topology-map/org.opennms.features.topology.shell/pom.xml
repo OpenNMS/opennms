@@ -15,7 +15,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>org.opennms.features.topology.shell</artifactId>
+  <artifactId>shell</artifactId>
   <version>1.11.2-SNAPSHOT</version>
 
   <name>${bundle.symbolicName}</name>
@@ -34,7 +34,7 @@
     -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <artifactId>api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

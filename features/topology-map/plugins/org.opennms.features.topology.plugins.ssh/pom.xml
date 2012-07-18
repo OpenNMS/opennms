@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <relativePath>../../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.2-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>ssh</artifactId>
+  <packaging>bundle</packaging>
+  <name>OpenNMS Topology SSH</name>
+
+  <properties>
+    <bundle.symbolicName>org.opennms.features.topology.ssh</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.ssh</bundle.namespace>
+  </properties>
+    
+
+  <build>
+    <resources>
+            <resource>
+                <directory>src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        
+  </build>
+
+  <repositories>
+    <repository>
+      <id>vaadin-snapshots</id>
+      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
+
+  
+<!-- NECESSARY DEPENDENCIES -->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+ 		<groupId>org.apache.sshd</groupId>
+ 		<artifactId>sshd-core</artifactId>
+ 		<version>0.4.0</version>
+ 		<scope>provided</scope>
+	</dependency> 
+	<dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.4</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- TOPOLOGY API DEPENDENCIES -->
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+       <scope>provided</scope> 
+    </dependency>
+    
+    
+  </dependencies>
+
+</project>

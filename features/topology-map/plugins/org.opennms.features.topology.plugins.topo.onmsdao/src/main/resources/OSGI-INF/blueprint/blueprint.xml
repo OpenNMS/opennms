@@ -1,0 +1,95 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xsi:schemaLocation="
+http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+
+   <reference id="onmsMapDao" interface="org.opennms.netmgt.dao.OnmsMapDao" availability="mandatory" />
+   <reference id="onmsMapElementDao" interface="org.opennms.netmgt.dao.OnmsMapElementDao" availability="mandatory" />
+   <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.DataLinkInterfaceDao" availability="mandatory" />
+   
+    <bean id="onmsTopologyProvider" class="org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider">
+			<property name="onmsMapDao" ref="onmsMapDao" />
+            <property name="onmsMapElementDao" ref="onmsMapElementDao" />
+            <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+    </bean>
+    
+    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="onmsTopologyProvider"/>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Add Vertex"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.AddVertexOperation">
+            <argument value="VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png"/>
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Connect"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.ConnectOperation">
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Create Group"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.CreateGroupOperation">
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.label" value="Open"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.OpenOperation">
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Remove Vertex"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.RemoveVertexOperation">
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Reset"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.ResetOperation">
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.label" value="Save"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.SaveOperation">
+            <argument ref="onmsTopologyProvider"/>
+        </bean>
+    </service>
+    
+</blueprint>

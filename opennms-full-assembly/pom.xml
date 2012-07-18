@@ -161,6 +161,53 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>copy-filtered-resources</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+               <encoding>UTF-8</encoding>
+               <escapeString>\</escapeString>
+               <outputDirectory>target/resources</outputDirectory>
+               <resources>
+                 <resource>
+                   <directory>src/main/filtered-resources</directory>
+                   <filtering>true</filtering>
+                 </resource>
+               </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>${karafVersion}</version>
+
+        <executions>
+          <execution>
+            <id>add-features-to-repo</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-features-to-repo</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>mvn:org.opennms.osgi/all/${project.version}/xml/features</descriptor>
+              </descriptors>
+              <features>
+                <feature>opennms-all</feature>
+              </features>
+              <repository>target/features-repo</repository>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -183,7 +230,9 @@
         </configuration>
       </plugin>
     </plugins>
+
   </build>
+
   <modules>
     <module>../core/build/keystore</module>
     <module>../opennms-install</module>
@@ -191,7 +240,14 @@
     <module>../opennms-doc</module>
     <module>../opennms-base-assembly</module>
   </modules>
+
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>karaf</artifactId>
+      <type>tar.gz</type>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>root-webapp</artifactId>
@@ -459,4 +515,12 @@
       <classifier>etc</classifier>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+       <id>vaadin-addons</id>
+       <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
+
 </project>

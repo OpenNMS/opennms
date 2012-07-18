@@ -3,7 +3,9 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
@@ -15,6 +17,7 @@ import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.MethodProperty;
 
 public class SimpleGraphContainer implements GraphContainer {
@@ -43,11 +46,11 @@ public class SimpleGraphContainer implements GraphContainer {
             return m_itemId;
         }
 
-        private void setGroupId(Object groupId) {
+        public void setGroupId(Object groupId) {
             m_groupId = groupId;
         }
 
-        private void setGroupKey(String groupKey) {
+        public void setGroupKey(String groupKey) {
             m_groupKey = groupKey;
         }
 
@@ -59,23 +62,23 @@ public class SimpleGraphContainer implements GraphContainer {
             m_key = key;
         }
 
-        private Item getItem() {
+        public Item getItem() {
             return m_item;
         }
 
-        private void setItem(Item item) {
+        public void setItem(Item item) {
             m_item = item;
         }
         
-        private String getGroupKey() {
+        public String getGroupKey() {
             return m_groupKey;
         }
-
+        
         public Object getGroupId() {
             return m_groupId;
         }
 
-        private void setItemId(Object itemId) {
+        public void setItemId(Object itemId) {
             m_itemId = itemId;
         }
 
@@ -168,7 +171,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_item = item;
         }
 
-        private GVertex getSource() {
+        public GVertex getSource() {
             return m_source;
         }
 
@@ -176,7 +179,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_source = source;
         }
 
-        private GVertex getTarget() {
+        public GVertex getTarget() {
             return m_target;
         }
 
@@ -290,9 +293,52 @@ public class SimpleGraphContainer implements GraphContainer {
         public void containerItemSetChange(ItemSetChangeEvent event) {
             System.err.println("containerItemSetChange called in GVertexContainer");
             m_vertexHolder.update();
-            removeAllItems();
-            addAll(m_vertexHolder.getElements());
-            //fireItemSetChange();
+            
+            
+//            removeAllItems();
+//            addAll(m_vertexHolder.getElements());
+            
+            List<GVertex> oldVertices = getAllGVertices();
+            List<GVertex> newVertices = m_vertexHolder.getElements();
+            
+            Set<GVertex> newContainerVertices = new LinkedHashSet<GVertex>(newVertices);
+            newContainerVertices.removeAll(oldVertices);
+            
+            Set<GVertex> removedContainerVertices = new LinkedHashSet<GVertex>(oldVertices);
+            removedContainerVertices.removeAll(newVertices);
+            
+            for(GVertex v : removedContainerVertices) {
+                removeItem(v.getItemId());
+            }
+            updateAll(newVertices);
+            addAll(newContainerVertices);
+            fireItemSetChange();
+        }
+
+        private void updateAll(List<GVertex> vertices) {
+            for(GVertex v : vertices) {
+                Object key = v.getKey();
+                if(containsId(key)) {
+                    BeanItem<GVertex> item = getItem(key);
+                    item.getItemProperty("groupId").setValue(v.getGroupId());
+                    item.getItemProperty("groupKey").setValue(v.getGroupKey());
+                    item.getItemProperty("icon").setValue(v.getIcon());
+                    item.getItemProperty("item").setValue(v.getItem());
+                    item.getItemProperty("itemId").setValue(v.getItemId());
+                    item.getItemProperty("key").setValue(v.getKey());
+                    item.getItemProperty("selected").setValue(v.isSelected());
+                    item.getItemProperty("x").setValue(v.getX());
+                    item.getItemProperty("y").setValue(v.getY());
+                }
+            }
+        }
+
+        private List<GVertex> getAllGVertices() {
+            List<GVertex> allVertices = new ArrayList<GVertex>();
+            for(Object itemId : getAllItemIds()) {
+                allVertices.add(getItem(itemId).getBean());
+            }
+            return allVertices;
         }
 
         @Override
@@ -337,7 +383,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	    
 	    m_topologyProvider = topologyProvider;
 	    
-        m_vertexHolder = new ElementHolder<GVertex>(m_topologyProvider.getVertexContainer()) {
+        m_vertexHolder = new ElementHolder<GVertex>(m_topologyProvider.getVertexContainer(), "gcV") {
 
             @Override
             protected void remove(GVertex element) {
@@ -359,14 +405,14 @@ public class SimpleGraphContainer implements GraphContainer {
             protected GVertex make(String key, Object itemId, Item item) {
                 Object groupId = m_topologyProvider.getVertexContainer().getParent(itemId);
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
-                System.out.println("Parent of itemId: " + itemId + " groupId: " + groupId);
+                System.out.println("GVertex Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
                 GVertex gVertex = new GVertex(key, itemId, item, groupKey, groupId);
                 return gVertex;
             }
 
         };
         
-        m_edgeHolder = new ElementHolder<GEdge>(m_topologyProvider.getEdgeContainer()) {
+        m_edgeHolder = new ElementHolder<GEdge>(m_topologyProvider.getEdgeContainer(), "gcE") {
 
             @Override
             protected GEdge make(String key, Object itemId, Item item) {
@@ -469,6 +515,7 @@ public class SimpleGraphContainer implements GraphContainer {
     public void redoLayout() {
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
+            getVertexContainer().fireItemSetChange();
         }
     }
 

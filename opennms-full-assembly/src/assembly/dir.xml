@@ -9,5 +9,6 @@
     <componentDescriptor>src/assembly/components/ncs.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/rxtx.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
