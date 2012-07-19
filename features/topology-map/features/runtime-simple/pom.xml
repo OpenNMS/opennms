@@ -9,11 +9,11 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
-  <artifactId>opennms-topology-dev</artifactId>
+  <artifactId>opennms-topology-runtime-simple</artifactId>
 
-  <name>OpenNMS :: Topology :: Development</name>
+  <name>OpenNMS :: Topology :: Runtime (Simple)</name>
 
-  <description>All OpenNMS topology runtime features, as well as development utilities.</description>
+  <description>Simple runtime and plugins for the OpenNMS topology web app.</description>
 
   <packaging>pom</packaging>
 
@@ -24,11 +24,11 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <repositories>
-            <repository>mvn:${project.groupId}/opennms-topology-runtime/${project.version}/xml/features</repository>
+            <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
-          <bundles>
-            <bundle>wrap:mvn:junit/junit/${junit.version}</bundle>
-          </bundles>
+          <features>
+            <feature>opennms-topology-runtime-base</feature>
+          </features>
         </configuration>
       </plugin>
     </plugins>
@@ -37,7 +37,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime</artifactId>
+      <artifactId>opennms-topology-runtime-base</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
@@ -45,11 +45,10 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>shell</artifactId>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>simple</artifactId>
       <version>${project.version}</version>
     </dependency>
-
   </dependencies>
 
 </project>
