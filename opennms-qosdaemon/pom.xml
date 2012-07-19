@@ -329,7 +329,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>soa</artifactId>
+      <artifactId>org.opennms.core.soa</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
