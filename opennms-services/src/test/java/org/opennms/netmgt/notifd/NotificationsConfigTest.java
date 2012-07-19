@@ -48,7 +48,7 @@ public class NotificationsConfigTest {
         
         MockNotifdConfigManager notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
 
-        NotificationManager manager = new MockNotificationManager(notifdConfig, null, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications.xml"));
+        NotificationManager manager = new MockNotificationManager(notifdConfig, null, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications-config-test.xml"));
         Notification n = manager.getNotification("crazyTestNotification");
         assertTrue(n.getTextMessage().contains("\n"));
     }
