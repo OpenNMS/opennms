@@ -15,19 +15,39 @@ path {
 }
 
 path#id-0 {
-  stroke: blue;
+  stroke: #fce94f;
 }
 
 path#id-1 {
-  stroke: green;
+  stroke: #fcaf3e;
 }
 
 path#id-2 {
-  stroke: red;
+  stroke: #e9b96e;
 }
 
 path#id-3 {
-  stroke: yellow;
+  stroke: #8ae234;
+}
+
+path#id-4 {
+  stroke: #729fcf;
+}
+
+path#id-5 {
+  stroke: #ad7fa8;
+}
+
+path#id-6 {
+  stroke: #ef2929;
+}
+
+path#id-7 {
+  stroke: #eeeeec;
+}
+
+path#id-8 {
+  stroke: #888a85;
 }
 
 .axis path, .axis line {

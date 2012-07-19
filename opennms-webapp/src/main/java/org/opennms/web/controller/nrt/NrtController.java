@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.Date;
 
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.soap.Addressing;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 
 import org.opennms.netmgt.dao.*;
@@ -145,7 +144,7 @@ public class NrtController {
 
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("collectionTask", collectionTask);
-        modelAndView.addObject("graphCommand", prefabGraph.getCommand());
+        modelAndView.addObject("rrdGraphString", prefabGraph.getCommand());
         return modelAndView;
     }
 
