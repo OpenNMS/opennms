@@ -52,6 +52,12 @@
 <!-- NECESSARY DEPENDENCIES -->
 
   <dependencies>
+      
+     <dependency>
+	  <groupId>junit</groupId>
+	  <artifactId>junit</artifactId>
+	  <scope>test</scope>
+	</dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>vaadin</artifactId>
