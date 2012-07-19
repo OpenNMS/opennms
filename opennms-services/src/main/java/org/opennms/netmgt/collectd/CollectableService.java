@@ -386,9 +386,7 @@ final class CollectableService implements ReadyRunnable {
                             }
                         }
                        
-                        if (result.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED) {
-                            return;
-                        } else {
+                        if (result.getStatus() != ServiceCollector.COLLECTION_SUCCEEDED) {
                             throw new CollectionFailed(result.getStatus());
                         }
                     }
