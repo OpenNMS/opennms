@@ -55,7 +55,8 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
      * @param url the url to POST XML-RPC requests to.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcTransport(final URL url, final int timeout) {
+    @SuppressWarnings("deprecation")
+	public TimeoutSecureXmlRpcTransport(final URL url, final int timeout) {
         super(url, null);
         this.m_timeout = timeout;
     }

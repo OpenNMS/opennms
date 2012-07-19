@@ -57,6 +57,10 @@ public class MockResourceType implements OnmsResourceType {
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         return null;
     }
+    
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        return null;
+    }
 
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
@@ -76,5 +80,10 @@ public class MockResourceType implements OnmsResourceType {
 
     public void setName(String name) {
         m_name = name;
+    }
+
+    //@Override
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+        return false;
     }
 }

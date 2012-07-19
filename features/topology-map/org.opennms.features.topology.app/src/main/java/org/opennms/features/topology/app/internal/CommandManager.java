@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ public class CommandManager  {
     private List<Command> m_commandList = new ArrayList<Command>();
     private List<Command> m_commandHistoryList = new ArrayList<Command>();
     private List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
+    private List<String> m_topLevelMenuOrder = new ArrayList<String>();
+    private Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
     
     public CommandManager() {}
     
@@ -72,6 +75,8 @@ public class CommandManager  {
     MenuBar getMenuBar(SimpleGraphContainer graphContainer, Window mainWindow) {
         OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
         MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
+        menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
+        menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
         
         for(Command command : getCommandList()) {
             String menuPosition = command.getMenuPosition();
@@ -178,6 +183,18 @@ public class CommandManager  {
     private void removeCommand(Command command) {
         m_commandList.remove(command);
         updateCommandListeners();
+    }
+
+    public void setTopLevelMenuOrder(List<String> menuOrderList) {
+        m_topLevelMenuOrder  = menuOrderList;
+        
+    }
+
+    public void addGroupOrder(String key, List<String> orderSet) {
+        if(!m_subMenuGroupOrder.containsKey(key)) {
+            m_subMenuGroupOrder.put(key, orderSet);
+        }
+        
     }
     
 }

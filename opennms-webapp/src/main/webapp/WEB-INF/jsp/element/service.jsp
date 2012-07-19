@@ -65,7 +65,7 @@
 </jsp:include>
   
   
-<% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
+<sec:authorize url="admin/deleteService">
 
 <script type="text/javascript" >
 function doDelete() {
@@ -77,26 +77,25 @@ function doDelete() {
 }
 </script>
 
-<% } %>
+</sec:authorize>
 	
       <h2>${service.serviceName} service on ${service.ipAddress.hostAddress}</h2>
 
-        
-       <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
+       <sec:authorize url="admin/deleteService">
          <form method="post" name="delete" action="admin/deleteService">
          <input type="hidden" name="node" value="${service.ipInterface.node.id}"/>
          <input type="hidden" name="intf" value="${service.ipInterface.ipAddress.hostAddress}"/>
          <input type="hidden" name="service" value="${service.serviceType.id}"/>
-       <% } %>
+       </sec:authorize>
 
         
       <p>
          <a href="${eventUrl}">View Events</a>
          
  	
-      <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
+       <sec:authorize url="admin/deleteService">
          &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
-      <% } %>
+       </sec:authorize>
 
 	
 
@@ -104,10 +103,9 @@ function doDelete() {
  
           
 
-      <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
+      <sec:authorize url="admin/deleteService">
          </form>
-      <% } %>
-         
+      </sec:authorize>
 
 
       <div class="TwoColLeft">

@@ -63,15 +63,19 @@ public class OperationCommand extends Action implements Command  {
     }
 	
 	private List<Object> asList(Object target) {
-	    if(target instanceof Collection<?>) {
-            return new ArrayList<Object>( (Collection<?>) target);
-        }
-        
-        if(target instanceof Object[]) {
-            return  Arrays.asList( (Object[]) target);
-        }
-        
-        return Collections.singletonList(target);
+	    if(target != null) {
+    	    if(target instanceof Collection<?>) {
+                return new ArrayList<Object>( (Collection<?>) target);
+            }
+            
+            if(target instanceof Object[]) {
+                return  Arrays.asList( (Object[]) target);
+            }
+            
+            return Collections.singletonList(target);
+	    }else {
+	        return Collections.emptyList();
+	    }
         
     }
 

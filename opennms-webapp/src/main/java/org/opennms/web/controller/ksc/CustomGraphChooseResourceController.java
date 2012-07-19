@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ResourceService;
@@ -80,6 +81,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
                 r = r.getParent();
             }
             
+            log().debug("handleRequestInternal: addObject " + selectedResourceAndParents.toString());
             modelAndView.addObject("selectedResourceAndParents", selectedResourceAndParents);
         }
         
@@ -89,6 +91,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         modelAndView.addObject("parentResourcePrefabGraphs", m_resourceService.findPrefabGraphsForResource(resource));
 
         List<OnmsResource> childResources = getResourceService().findChildResources(resource);
+        log().debug("handleRequestInternal: addObject " + childResources.toString());
         modelAndView.addObject("resources", childResources);
         
         return modelAndView;
@@ -122,4 +125,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         Assert.state(m_resourceService != null, "property resourceService must be set");
     }
 
+    private static ThreadCategory log() {
+       return ThreadCategory.getInstance(CustomGraphChooseResourceController.class);
+    }
 }

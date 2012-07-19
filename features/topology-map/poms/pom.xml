@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
-    <groupId>org.opennms.features.topology</groupId>
-    <artifactId>org.opennms.features.topology</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>topology</artifactId>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -21,7 +21,6 @@
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
     <jung.version>2.0.1</jung.version>
     <junit.version>4.8.2</junit.version>
-    <karaf.version>2.2.7</karaf.version>
     <vaadin.version>6.7.3</vaadin.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <pax.vaadin.version>0.1.0-ONMS-20120621</pax.vaadin.version>
@@ -40,18 +39,6 @@
           <artifactId>maven-bundle-plugin</artifactId>
           <version>2.3.7</version>
           <extensions>true</extensions>
-        </plugin>
-        <plugin>
-          <groupId>org.opennms.maven.plugins</groupId>
-          <artifactId>features-maven-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
-          <executions>
-            <execution>
-              <id>features.xml</id>
-              <phase>process-resources</phase>
-              <goals><goal>generate-features-xml</goal></goals>
-            </execution>
-          </executions>
         </plugin>
          <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
          <plugin>
@@ -82,6 +69,23 @@
                            <ignore></ignore>
                         </action>
                      </pluginExecution>
+                     <pluginExecution>
+                        <pluginExecutionFilter>
+                           <groupId>com.vaadin</groupId>
+                           <artifactId>
+                              vaadin-maven-plugin
+                           </artifactId>
+                           <versionRange>
+                              [1.0.2,)
+                           </versionRange>
+                           <goals>
+                              <goal>update-widgetset</goal>
+                           </goals>
+                        </pluginExecutionFilter>
+                        <action>
+                           <ignore></ignore>
+                        </action>
+                     </pluginExecution>
                   </pluginExecutions>
                </lifecycleMappingMetadata>
             </configuration>
@@ -99,7 +103,7 @@
         <type>pom</type>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>provision</artifactId>
-        <version>1.11.1-SNAPSHOT</version>
+        <version>1.11.2-SNAPSHOT</version>
         <scope>provided</scope>
         <optional>true</optional>
       </dependency>
@@ -187,7 +191,7 @@
       <dependency>
         <groupId>org.apache.karaf.shell</groupId>
         <artifactId>org.apache.karaf.shell.console</artifactId>
-        <version>${karaf.version}</version>
+        <version>${karafVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

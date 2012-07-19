@@ -50,6 +50,7 @@
     final String match = req.getParameter("match");
     pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     pageContext.setAttribute("match", match);
+    pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     final String baseHref = Util.calculateUrlBase(request);
 %>
     

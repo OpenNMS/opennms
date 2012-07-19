@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.model;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
+
 /**
  * <p>SnmpInterfaceBuilder class.</p>
  */
@@ -102,9 +105,9 @@ public class SnmpInterfaceBuilder {
     /**
      * <p>getSnmpInterface</p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsEntity} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
-    public OnmsEntity getSnmpInterface() {
+    public OnmsSnmpInterface getSnmpInterface() {
         return m_snmpIf;
     }
     
@@ -139,5 +142,11 @@ public class SnmpInterfaceBuilder {
     public SnmpInterfaceBuilder setPhysAddr(String physAddr) {
         m_snmpIf.setPhysAddr(physAddr);
         return this;
+    }
+
+    public InterfaceBuilder addIpInterface(final String ipAddress) {
+    	final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), m_snmpIf.getNode());
+    	m_snmpIf.addIpInterface(iface);
+    	return new InterfaceBuilder(iface);
     }
 }

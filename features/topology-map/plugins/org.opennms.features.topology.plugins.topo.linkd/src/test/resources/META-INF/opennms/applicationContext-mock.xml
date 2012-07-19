@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="dataLinkInterfaceDao"> 
+		<constructor-arg value="org.opennms.netmgt.dao.DataLinkInterfaceDao"/>
+	</bean>        
+
+	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="operationContext"> 
+		<constructor-arg value="org.opennms.features.topology.api.OperationContext"/>
+	</bean>        
+    
+   <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EasyMockDataPopulator">
+            <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+	</bean>        
+
+   <bean id="linkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+            <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+    </bean>
+
+  <bean id ="openOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.OpenOperation">
+	  <constructor-arg ref="linkdTopologyProvider"/>
+  </bean>
+
+  <bean id ="saveOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.SaveOperation">
+	  <constructor-arg ref="linkdTopologyProvider"/>
+  </bean>
+	
+
+</beans>
+

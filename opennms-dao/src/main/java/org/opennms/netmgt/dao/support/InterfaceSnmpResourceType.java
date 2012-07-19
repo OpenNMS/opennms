@@ -42,8 +42,10 @@ import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -123,10 +125,16 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         if (node == null) {
             throw new ObjectRetrievalFailureException(OnmsNode.class, Integer.toString(nodeId), "Could not find node with node ID " + nodeId, null);
         }
+        
+        File parent = getParentResourceDirectory(Integer.toString(nodeId), true);
+        return OnmsResource.sortIntoResourceList(populateResourceList(parent, null, node, false));
+        
+    }
+    
+    private ArrayList<OnmsResource> populateResourceList(File parent, File relPath, OnmsNode node, Boolean isForeign) {
             
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
-        File parent = getParentResourceDirectory(Integer.toString(nodeId), true);
         File[] intfDirs = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         Set<OnmsSnmpInterface> snmpInterfaces = node.getSnmpInterfaces();
@@ -235,7 +243,12 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 label = descr.toString();
             }
 
-            OnmsResource resource = getResourceByNodeAndInterface(nodeId, intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
+            OnmsResource resource = null;
+            if (isForeign) {
+               resource = getResourceByNodeSourceAndInterface(relPath.toString(), intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
+            } else {
+               resource = getResourceByNodeAndInterface(node.getId(), intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
+            }
             if (snmpInterface != null) {
                 Set<OnmsIpInterface> ipInterfaces = snmpInterface.getIpInterfaces();
                 if (ipInterfaces.size() > 0) {
@@ -244,16 +257,19 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 } else {
                     int ifIndex = snmpInterface.getIfIndex();
                     if(ifIndex > -1) {
-                        resource.setLink("element/snmpinterface.jsp?node=" + nodeId + "&ifindex=" + ifIndex);
+                        resource.setLink("element/snmpinterface.jsp?node=" + node.getNodeId() + "&ifindex=" + ifIndex);
                     }
                 }
 
                 resource.setEntity(snmpInterface);
+            } else {
+                log().debug("populateResourceList: snmpInterface is null");
             }
+            log().debug("populateResourceList: adding resource toString " + resource.toString());
             resources.add(resource);
         }
-
-        return OnmsResource.sortIntoResourceList(resources);
+        
+        return resources; 
     }
 
     private OnmsResource getResourceByNodeAndInterface(int nodeId, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
@@ -261,6 +277,11 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return new OnmsResource(intf, label, this, set);
     }
 
+    private OnmsResource getResourceByNodeSourceAndInterface(String relPath, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
+        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(relPath, intf, ifSpeed, ifSpeedFriendly));
+        return new OnmsResource(intf, label, this, set);
+    }
+    
     public class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
         private String m_parent;
         private String m_resource;
@@ -335,7 +356,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             throw new IllegalArgumentException("No such directory: " + domainDir);
         }
 
-        File[] intfDirs = domainDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+        File[] intfDirs = domainDir.listFiles(RrdFileConstants.DOMAIN_INTERFACE_DIRECTORY_FILTER);
 
         if (intfDirs != null && intfDirs.length > 0) {
             intfs.ensureCapacity(intfDirs.length);
@@ -355,6 +376,28 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return null;
+    }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+        File parent = ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource);
+        return isResourceTypeOnParentResource(parent.toString());
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        String[] ident = nodeSource.split(":");
+        OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
+        if (node == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeSource, "Could not find node with nodeSource " + nodeSource, null);
+        }
+        File relPath = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, ident[0] + File.separator + ident[1]);
+        File parent = getParentResourceDirectory(relPath.toString(), true);
+        return OnmsResource.sortIntoResourceList(populateResourceList(parent, relPath, node, true));
+    }
+    
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(InterfaceSnmpResourceType.class);
     }
 
 }

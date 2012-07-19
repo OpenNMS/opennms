@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.springframework.util.Assert;
@@ -66,11 +65,7 @@ public class LinkableNode {
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 	
     private boolean m_hasrouteinterfaces = false;
-
-    private List<OnmsAtInterface> m_atinterfaces = new ArrayList<OnmsAtInterface>();
 	
-    private boolean m_hasatinterfaces = false;
-
     private boolean m_isBridgeNode = false;
 	
 	/**
@@ -178,34 +173,6 @@ public class LinkableNode {
 	}
 	
 	/**
-	 * <p>hasAtInterfaces</p>
-	 *
-	 * @return Returns the m_hasatinterfaces.
-	 */
-	public boolean hasAtInterfaces() {
-		return m_hasatinterfaces;
-	}
-
-	/**
-	 * <p>getAtInterfaces</p>
-	 *
-	 * @return Returns the m_routeinterfaces.
-	 */
-	public List<OnmsAtInterface> getAtInterfaces() {
-		return m_atinterfaces;
-	}
-	/**
-	 * <p>setAtInterfaces</p>
-	 *
-	 * @param m_atinterfaces a {@link java.util.List} object.
-	 */
-	public void setAtInterfaces(List<OnmsAtInterface> atinterfaces) {
-		if (atinterfaces == null || atinterfaces.isEmpty()) return;
-		m_hasatinterfaces = true;
-		m_atinterfaces = atinterfaces;
-	}
-	
-	/**
 	 * <p>hasRouteInterfaces</p>
 	 *
 	 * @return Returns the m_hascdpinterfaces.
@@ -276,9 +243,7 @@ public class LinkableNode {
 
 	public void addBridgeIdentifier(final String bridge, final String vlan) {
 		m_vlanBridgeIdentifiers.put(vlan, bridge);
-		if (m_bridgeIdentifiers.contains(bridge)) return;
-		m_bridgeIdentifiers.add(bridge);
-		m_isBridgeNode = true;
+		addBridgeIdentifier(bridge);
 	}
 
 	public boolean isBridgeIdentifier(final String bridge) {

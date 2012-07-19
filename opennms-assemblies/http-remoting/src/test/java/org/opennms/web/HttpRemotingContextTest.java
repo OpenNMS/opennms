@@ -78,6 +78,7 @@ public class HttpRemotingContextTest extends TestCase {
 		servletContext.addInitParameter(
 				"contextConfigLocation", 
 				"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
+				"classpath:/META-INF/opennms/applicationContext-soa.xml " +
 				"classpath:/META-INF/opennms/applicationContext-dao.xml " +
 				"classpath*:/META-INF/opennms/component-service.xml " +
 				"classpath*:/META-INF/opennms/component-dao.xml " +

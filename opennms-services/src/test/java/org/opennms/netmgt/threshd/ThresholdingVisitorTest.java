@@ -1679,6 +1679,7 @@ public class ThresholdingVisitorTest {
     private CollectionAgent createCollectionAgent() {
         CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
+        EasyMock.expect(agent.getStorageDir()).andReturn(new File(String.valueOf(1))).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.replay(agent);

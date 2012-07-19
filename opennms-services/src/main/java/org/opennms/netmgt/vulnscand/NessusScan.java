@@ -539,7 +539,8 @@ class NessusScan implements Runnable {
         return (NTP_CLIENT_ENTITY + NTP_SEP + "STOP_WHOLE_TEST" + NTP_SEP + NTP_CLIENT_ENTITY + "\n");
     }
 
-    private String buildStopScanString() {
+    @SuppressWarnings("unused")
+	private String buildStopScanString() {
         return (NTP_CLIENT_ENTITY + NTP_SEP + "STOP_ATTACK" + config.targetAddress.toString() + NTP_SEP + NTP_CLIENT_ENTITY + "\n");
     }
 

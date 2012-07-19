@@ -1,0 +1,66 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xsi:schemaLocation="
+http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">	
+
+    <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="pingURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=ping"/>
+            <cm:property name="tracerouteURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+    
+    <bean id="pingOperation" class="org.opennms.features.topology.netutils.internal.operations.PingOperation" >
+        <property name="pingURL" value="${pingURL}"/>
+    </bean>
+    <bean id="tracerouteOperation" class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation" >
+        <property name="tracerouteURL" value="${tracerouteURL}"/>
+    </bean>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Ping"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.PingOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Traceroute"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Events/Alarms"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Resource Graphs"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation"/>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device|Utils"/>
+            <entry key="operation.label" value="Node Info"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.netutils.internal.operations.NodeInfoOperation"/>
+    </service>
+
+</blueprint>

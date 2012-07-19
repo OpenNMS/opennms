@@ -10,7 +10,7 @@ if [ -z "$OPENNMS_ROOT" ]; then
 fi
 
 function err() {
-    echo "$@" 1>&2
+    echo -e "$@" 1>&2
 }
 
 function warInPlace() {
