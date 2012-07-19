@@ -12,7 +12,8 @@ public class TracerouteOperation implements Operation {
 	/*Test Data*/
 	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
 	private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
-	private String baseURL;
+	
+	private String tracerouteURL;
 	
 	public boolean display(List<Object> targets, OperationContext operationContext) {
 		// TODO Auto-generated method stub
@@ -37,11 +38,11 @@ public class TracerouteOperation implements Operation {
 	}
 	
 	public void setTracerouteURL(String url) {
-		baseURL = url;
+		tracerouteURL = url;
 	}
 	
 	public String getTracerouteURL() {
-		return baseURL;
+		return tracerouteURL;
 	}
 
 }

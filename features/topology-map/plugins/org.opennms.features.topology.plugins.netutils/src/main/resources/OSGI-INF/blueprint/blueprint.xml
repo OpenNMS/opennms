@@ -8,6 +8,10 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <cm:default-properties>
             <cm:property name="pingURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=ping"/>
             <cm:property name="tracerouteURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute"/>
+            <cm:property name="eventsURL" value="http://demo.opennms.org/opennms/event/list?filter=node%3D"/>
+            <cm:property name="alarmsURL" value="http://demo.opennms.org/opennms/alarm/list.htm?sortby=id&amp;acktype=unacklimit=20&amp;filter=node%3D"/>
+        	<cm:property name="nodeInfoURL" value="http://demo.opennms.org/opennms/element/node.jsp?node="/>
+        	<cm:property name="resourceGraphsURL" value="http://demo.opennms.org/opennms/graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
         </cm:default-properties>
     </cm:property-placeholder>
     
@@ -17,50 +21,55 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <bean id="tracerouteOperation" class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation" >
         <property name="tracerouteURL" value="${tracerouteURL}"/>
     </bean>
+    <bean id="eventsAlarmsOperation" class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation" >
+        <property name="eventsURL" value="${eventsURL}"/>
+        <property name="alarmsURL" value="${alarmsURL}"/>
+    </bean>
+    <bean id="nodeInfoOperation" class="org.opennms.features.topology.netutils.internal.operations.NodeInfoOperation" >
+        <property name="nodeInfoURL" value="${nodeInfoURL}"/>
+    </bean>
+    <bean id="resourceGraphsOperation" class="org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation" >
+        <property name="resourceGraphsURL" value="${resourceGraphsURL}"/>
+    </bean>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" ref="pingOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Ping"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.netutils.internal.operations.PingOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Traceroute"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" ref="eventsAlarmsOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Events/Alarms"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" ref="resourceGraphsOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Resource Graphs"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
+    <service interface="org.opennms.features.topology.api.Operation" ref="nodeInfoOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Node Info"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.netutils.internal.operations.NodeInfoOperation"/>
     </service>
 
 </blueprint>

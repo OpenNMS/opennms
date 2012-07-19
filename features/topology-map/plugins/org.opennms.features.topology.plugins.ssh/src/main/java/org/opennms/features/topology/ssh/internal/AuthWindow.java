@@ -26,8 +26,8 @@ public class AuthWindow extends Window {
 
 	private String m_host;  // The hostname to connect to
 	private int m_port;  // The port to connect to
-	private int TERM_WIDTH = 650;  // The width of the terminal
-	private int TERM_HEIGHT = 460;   // The height of the terminal
+	private int TERM_WIDTH = 800;  // The width of the terminal
+	private int TERM_HEIGHT = 520;   // The height of the terminal
 	private ClientSession session = null; // The ClientSession object used to track each SSH session
 	protected TextField hostField;
 	protected TextField portField;

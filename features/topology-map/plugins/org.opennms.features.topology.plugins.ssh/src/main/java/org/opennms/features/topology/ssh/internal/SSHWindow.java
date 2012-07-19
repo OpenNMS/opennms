@@ -15,6 +15,8 @@ import com.vaadin.ui.Window;
 public class SSHWindow extends Window {
 
 	private SSHTerminal terminal; // The terminal emulator
+	private final int TERM_WIDTH = 80;
+	private final int TERM_HEIGHT = 24;
 	
 	/**
 	 * The constructor for the SSH window
@@ -31,7 +33,7 @@ public class SSHWindow extends Window {
 		setWidth("" + width + "px");
 		setHeight(""+ height + "px");
 		
-		terminal = new SSHTerminal(this, session, 80, 24);
+		terminal = new SSHTerminal(this, session, TERM_WIDTH, TERM_HEIGHT);
 		VerticalLayout vPanel = new VerticalLayout();
 		vPanel.setWidth("100%");
 		vPanel.setHeight("100%");

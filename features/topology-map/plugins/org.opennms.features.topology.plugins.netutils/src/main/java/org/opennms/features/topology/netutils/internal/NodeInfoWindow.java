@@ -33,10 +33,10 @@ public class NodeInfoWindow extends Window {
      * @param height Height of the main window
      * @throws MalformedURLException
      */
-    public NodeInfoWindow(Node node) throws MalformedURLException{
+    public NodeInfoWindow(Node node, String baseURL) throws MalformedURLException{
         
     	/*Sets the web address to the Resource Graphs page of the selected node and initializes the browser*/
-    	nodeInfoURL = new URL("http://demo.opennms.org/opennms/element/node.jsp?node=" + node.getNodeID());
+    	nodeInfoURL = new URL(baseURL + node.getNodeID());
         nodeInfoBrowser = new Embedded("", new ExternalResource(nodeInfoURL));
 
         /*Sets up the properties for the sub-window*/
