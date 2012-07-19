@@ -92,6 +92,7 @@ public class KeyBuffer {
 			next = null;
 		}
 		head = tail = null;
+		size = 0;
 	}
 
 }
