@@ -30,7 +30,6 @@
 package org.opennms.netmgt.poller.remote;
 
 import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.endsWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -93,12 +92,16 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
-import org.quartz.Scheduler;
 
 public class PollerBackEndTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
-    @SuppressWarnings("unchecked")
-    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
+        
+        m_mocks.verifyAll();
+    }
 
     public static class EventEquals implements IArgumentMatcher {
 
@@ -162,7 +165,6 @@ public class PollerBackEndTest extends TestCase {
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
-    private Scheduler m_scheduler;
     private TimeKeeper m_timeKeeper;
 
     private EventIpcManager m_eventIpcManager;
@@ -232,7 +234,7 @@ public class PollerBackEndTest extends TestCase {
         anticipateEvent(createMonitorStoppedEvent());
     }
 
-    private Event createDisconnectedEvent() {
+    private static Event createDisconnectedEvent() {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI, "PollerBackEnd")
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
 
@@ -240,7 +242,7 @@ public class PollerBackEndTest extends TestCase {
         return e;
     }
 
-    private Event createMonitorRegisteredEvent() {
+    private static Event createMonitorRegisteredEvent() {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_REGISTERED_UEI, "PollerBackEnd")
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
 
@@ -248,7 +250,7 @@ public class PollerBackEndTest extends TestCase {
         return e;
     }
 
-    private Event createMonitorStartedEvent() {
+    private static Event createMonitorStartedEvent() {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STARTED_UEI, "PollerBackEnd")
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
 
@@ -256,14 +258,14 @@ public class PollerBackEndTest extends TestCase {
         return e;
     }
 
-    private Event createMonitorStoppedEvent() {
+    private static Event createMonitorStoppedEvent() {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STOPPED_UEI, "PollerBackEnd")
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
 
         return eventBuilder.getEvent();
     }
 
-    private Package createPackage(String pkgName, String filterRule) {
+    private static Package createPackage(String pkgName, String filterRule) {
         Package pkg = new Package();
         pkg.setName(pkgName);
         pkg.setFilter(new Filter());
@@ -271,14 +273,14 @@ public class PollerBackEndTest extends TestCase {
         return pkg;
     }
 
-    private Event createReconnectedEvent() {
+    private static Event createReconnectedEvent() {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_RECONNECTED_UEI, "PollerBackEnd");
         eventBuilder.addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
 
         return eventBuilder.getEvent();
     }
 
-    private Event eq(Event e) {
+    private static Event eq(Event e) {
         EasyMock.reportMatcher(new EventEquals(e));
         return null;
 
@@ -308,10 +310,10 @@ public class PollerBackEndTest extends TestCase {
             switch (oldStatus) {
             case DISCONNECTED:
             case STARTED:
-                expect(m_timeKeeper.getCurrentTime()).andReturn(now.getTime());
+                expect(m_timeKeeper.getCurrentTime()).andReturn(now.getTime()).anyTimes();
             }
         }
-        expect(m_timeKeeper.getCurrentDate()).andReturn(now);
+        expect(m_timeKeeper.getCurrentDate()).andReturn(now).anyTimes();
         expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
         m_locMonDao.update(m_locationMonitor);
         expectLastCall().andAnswer(new IAnswer<Object>() {
@@ -326,21 +328,16 @@ public class PollerBackEndTest extends TestCase {
         });
     }
 
-    private void replayMocks() {
-        replay(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper, m_eventIpcManager);
-    }
-
     protected void setUp() throws Exception {
 
 
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndTest-home");
 
-        m_locMonDao = createMock(LocationMonitorDao.class);
-        m_monSvcDao = createMock(MonitoredServiceDao.class);
-        m_pollerConfig = createMock(PollerConfig.class);
-        m_scheduler = createMock(Scheduler.class);
-        m_timeKeeper = createMock(TimeKeeper.class);
-        m_eventIpcManager = createMock(EventIpcManager.class);
+        m_locMonDao = m_mocks.createMock(LocationMonitorDao.class);
+        m_monSvcDao = m_mocks.createMock(MonitoredServiceDao.class);
+        m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+        m_timeKeeper = m_mocks.createMock(TimeKeeper.class);
+        m_eventIpcManager = m_mocks.createMock(EventIpcManager.class);
 
         m_backEnd = new DefaultPollerBackEnd();
         m_backEnd.setLocationMonitorDao(m_locMonDao);
@@ -405,10 +402,6 @@ public class PollerBackEndTest extends TestCase {
         m_pollerDetails = new HashMap<String, String>();
         m_pollerDetails.put("os.name", "WonkaOS");
         m_pollerDetails.put("os.version", "1.2.3");
-
-        RrdUtils.setStrategy(new NullRrdStrategy());
-        RrdUtils.setStrategy(m_rrdStrategy);
-
     }
 
     public void testGetMonitoringLocations() {
@@ -417,11 +410,9 @@ public class PollerBackEndTest extends TestCase {
 
         expect(m_locMonDao.findAllMonitoringLocationDefinitions()).andReturn(locations);
 
-        replayMocks();
+        m_mocks.replayAll();
 
         Collection<OnmsMonitoringLocationDefinition> returned = m_backEnd.getMonitoringLocations();
-
-        verifyMocks();
 
         assertEquals(locations, returned);
 
@@ -439,11 +430,9 @@ public class PollerBackEndTest extends TestCase {
 
         expect(m_monSvcDao.findMatchingServices(m_serviceSelector)).andReturn(Arrays.asList(m_monServices));
 
-        replayMocks();
+        m_mocks.replayAll();
 
         PollerConfiguration config = m_backEnd.getPollerConfiguration(m_locationMonitor.getId());
-
-        verifyMocks();
 
         assertNotNull(config);
         assertEquals(m_startTime, config.getConfigurationTimestamp());
@@ -465,11 +454,9 @@ public class PollerBackEndTest extends TestCase {
     public void testGetPollerConfigurationForDeletedMonitor() {
         expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(null);
 
-        replayMocks();
+        m_mocks.replayAll();
 
         PollerConfiguration config = m_backEnd.getPollerConfiguration(m_locationMonitor.getId());
-
-        verifyMocks();
 
         assertNotNull(config);
         assertTrue(m_startTime.after(config.getConfigurationTimestamp()));
@@ -484,11 +471,9 @@ public class PollerBackEndTest extends TestCase {
 
         expect(m_pollerConfig.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR)).andReturn(locators);
 
-        replayMocks();
+        m_mocks.replayAll();
 
         Collection<ServiceMonitorLocator> results = m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR);
-
-        verifyMocks();
 
         assertSame(locators, results);
 
@@ -503,7 +488,7 @@ public class PollerBackEndTest extends TestCase {
     }
 
     public void testGlobalConfigChangeFromDisconnected() {
-        testGlobalConfigChange(MonitorStatus.DISCONNECTED, MonitorStatus.STARTED, createReconnectedEvent());		
+        testGlobalConfigChange(MonitorStatus.DISCONNECTED, MonitorStatus.STARTED, createReconnectedEvent());
     }
 
     public void testGlobalConfigChangeFromStarted() {
@@ -532,11 +517,9 @@ public class PollerBackEndTest extends TestCase {
 
         expectLocationMonitorStarted();
 
-        replayMocks();
+        m_mocks.replayAll();
 
         m_backEnd.pollerStarting(1, m_pollerDetails);
-
-        verifyMocks();
     }
 
     public void testPollerStopping() {
@@ -545,19 +528,16 @@ public class PollerBackEndTest extends TestCase {
 
         expectLocationMonitorStatusChanged(null, MonitorStatus.STOPPED);
 
-        replayMocks();
+        m_mocks.replayAll();
 
         m_backEnd.pollerStopping(1);
-
-        verifyMocks();
     }
     
     public void testPollerStoppingWithBadLocationMonitorId() {
         expect(m_locMonDao.get(1)).andReturn(null);
         
-        replayMocks();
+        m_mocks.replayAll();
         m_backEnd.pollerStopping(1);
-        verifyMocks();
     }
 
     public void testRegisterLocationMonitor() {
@@ -577,11 +557,9 @@ public class PollerBackEndTest extends TestCase {
         });
         anticipateMonitorRegisteredEvent();
 
-        replayMocks();
+        m_mocks.replayAll();
 
         int locationMonitorId = m_backEnd.registerLocationMonitor(m_locationDefinition.getName());
-
-        verifyMocks();
 
         assertEquals(1, locationMonitorId);
 
@@ -590,26 +568,23 @@ public class PollerBackEndTest extends TestCase {
     public void testReportResultWithBadLocationMonitorId() {
         expect(m_locMonDao.get(1)).andReturn(null);
         
-        replayMocks();
+        m_mocks.replayAll();
         m_backEnd.reportResult(1, 1, PollStatus.up());
-        verifyMocks();
     }
 
     public void testReportResultWithBadServiceId() {
         expect(m_locMonDao.get(1)).andReturn(new OnmsLocationMonitor());
         expect(m_monSvcDao.get(1)).andReturn(null);
         
-        replayMocks();
+        m_mocks.replayAll();
         m_backEnd.reportResult(1, 1, PollStatus.up());
-        verifyMocks();
     }
     
     public void testReportResultWithNullPollResult() {
     	expect(m_locMonDao.get(1)).andThrow(new RuntimeException("crazy location monitor exception"));
 
-        replayMocks();
+        m_mocks.replayAll();
         m_backEnd.reportResult(1, 1, null);
-        verifyMocks();
     }
 
     public void testStatusChangeFromDownToUp() {
@@ -623,11 +598,12 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
+        expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).times(2);
+        expect(m_pollerConfig.parameters(m_dnsSvcConfig)).andReturn(m_dnsSvcConfig.getParameterCollection()).times(2);
+
         final PollStatus newStatus = PollStatus.available(1234.0);
 
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
-
-        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
 
         // TODO: make anticipate method
         EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "PollerBackEnd")
@@ -639,13 +615,13 @@ public class PollerBackEndTest extends TestCase {
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
 
-        replayMocks();
+        m_mocks.replayAll();
+
+        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
 
         m_backEnd.reportResult(1, 2, newStatus);
-
-        verifyMocks();
-
     }
+
     // reportResult test variations
     // what if we cant' find the locationMonitor with that ID
     // what if we can't find the service with that ID
@@ -673,12 +649,9 @@ public class PollerBackEndTest extends TestCase {
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
 
-        replayMocks();
+        m_mocks.replayAll();
 
         m_backEnd.reportResult(1, 1, newStatus);
-
-        verifyMocks();
-
     }
 
     public void testStatusDownWhenDown() {
@@ -692,11 +665,9 @@ public class PollerBackEndTest extends TestCase {
         // expect no status changes
         // expect no performance data
 
-        replayMocks();
+        m_mocks.replayAll();
 
         m_backEnd.reportResult(1, 2, newStatus);
-
-        verifyMocks();
     }
 
     public void testStatusDownWhenNoneKnown() {
@@ -718,15 +689,11 @@ public class PollerBackEndTest extends TestCase {
         .setMonitoredService(m_dnsService)
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
 
-
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
 
-        replayMocks();
+        m_mocks.replayAll();
 
         m_backEnd.reportResult(1, 2, newStatus);
-
-        verifyMocks();
-
     }
 
     public void testStatusUpWhenNoneKnown() {
@@ -740,26 +707,29 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
+        expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).times(2);
+        expect(m_pollerConfig.parameters(m_dnsSvcConfig)).andReturn(m_dnsSvcConfig.getParameterCollection()).times(2);
+
         final PollStatus newStatus = PollStatus.available(1234.0);
 
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
 
-        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
-
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
 
-        replayMocks();
+        m_mocks.replayAll();
+
+        m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
 
         m_backEnd.reportResult(1, 2, newStatus);
-
-        verifyMocks();
-
     }
 
     public void testStatusUpWhenUp() {
         expect(m_locMonDao.get(1)).andReturn(m_locationMonitor);
         expect(m_monSvcDao.get(1)).andReturn(m_httpService);
+
+        expect(m_pollerConfig.getServiceInPackage("HTTP", m_package)).andReturn(m_httpSvcConfig).times(2);
+        expect(m_pollerConfig.parameters(m_httpSvcConfig)).andReturn(m_httpSvcConfig.getParameterCollection()).times(2);
 
         expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_httpService)).andReturn(m_httpCurrentStatus);
 
@@ -769,16 +739,13 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
+        m_mocks.replayAll();
+
         // expect to save performance data
         m_backEnd.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_httpService, 1776, m_package);
 
         // expect no status change
-
-        replayMocks();
-
         m_backEnd.reportResult(1, 1, newStatus);
-
-        verifyMocks();
     }
 
     public void testTimeOutOnCheckin() {
@@ -805,25 +772,15 @@ public class PollerBackEndTest extends TestCase {
 
         });
 
-        replayMocks();
+        m_mocks.replayAll();
 
         m_backEnd.checkForDisconnectedMonitors();
-
-        verifyMocks();
     }
 
     private void updateConfiguration() {
         expect(m_timeKeeper.getCurrentDate()).andReturn(new Date());
-        replayMocks();
-
+        m_mocks.replayAll();
         m_backEnd.configurationUpdated();
-
-        verifyMocks();
-    }
-
-    private void verifyMocks() {
-        verify(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper, m_eventIpcManager);
-        reset(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper, m_eventIpcManager);
     }
 
     private void verifyPollerCheckingIn(MonitorStatus oldStatus, MonitorStatus newStatus, MonitorStatus result) {
@@ -839,14 +796,15 @@ public class PollerBackEndTest extends TestCase {
             anticipateEvent(e);
         }
 
-        replayMocks();
+        m_mocks.replayAll();
 
         assertEquals("Unexpected result state", result, m_backEnd.pollerCheckingIn(1, m_startTime));
-
-        verifyMocks();
     }
 
     public void testSaveResponseTimeDataWithLocaleThatUsesCommasForDecimals() throws Exception {
+        RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+        RrdUtils.setStrategy(m_rrdStrategy);
+
         Properties p = new Properties();
         p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
         MockLogAppender.setupLogging(p);
@@ -883,9 +841,11 @@ public class PollerBackEndTest extends TestCase {
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":1.5"));
         m_rrdStrategy.closeFile(isA(Object.class));
 
+        expect(m_pollerConfig.getServiceInPackage("HTTP", pkg)).andReturn(m_httpSvcConfig);
+        expect(m_pollerConfig.parameters(m_httpSvcConfig)).andReturn(m_httpSvcConfig.getParameterCollection());
+
         m_mocks.replayAll();
         m_backEnd.saveResponseTimeData("Tuvalu", svc, 1.5, pkg);
-        m_mocks.verifyAll();
     }
 
     private void addParameterToService(Service pkgService, String key, String value) {

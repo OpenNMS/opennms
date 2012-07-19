@@ -55,9 +55,11 @@ public class FilterWalker implements InitializingBean {
      */
     public void walk() {
         SortedMap<Integer, String> map = getFilterDao().getNodeMap(m_filter);
-        for (final Integer nodeId : map.keySet()) {
-            final OnmsNode node = getNodeDao().load(nodeId);
-            m_visitor.visitNode(node);
+        if (map != null) {
+            for (final Integer nodeId : map.keySet()) {
+                final OnmsNode node = getNodeDao().load(nodeId);
+                m_visitor.visitNode(node);
+            }
         }
     }
 

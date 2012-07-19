@@ -32,11 +32,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
@@ -61,6 +64,7 @@ import org.opennms.test.mock.EasyMockUtils;
  */
 public class ReportDefinitionTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
+    private NodeDao m_nodeDao = m_mocks.createMock(NodeDao.class);
     private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
     private RrdDao m_rrdDao = m_mocks.createMock(RrdDao.class);
     private FilterDao m_filterDao = m_mocks.createMock(FilterDao.class);
@@ -105,7 +109,7 @@ public class ReportDefinitionTest extends TestCase {
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
-        ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
 
         m_mocks.replayAll();
         
@@ -125,7 +129,7 @@ public class ReportDefinitionTest extends TestCase {
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
-        ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
 
         m_mocks.replayAll();
         
@@ -151,7 +155,7 @@ public class ReportDefinitionTest extends TestCase {
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey(externalValueAttribute.getName());
         def.setResourceAttributeValueMatch(externalValueAttribute.getValue());
-        ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
 
         EasyMock.expect(m_rrdDao.getPrintValue(rrdAttribute, def.getConsolidationFunction(), report.getStartTime(), report.getEndTime())).andReturn(1.0);
 
@@ -170,6 +174,7 @@ public class ReportDefinitionTest extends TestCase {
         final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("Node One");
+        EasyMock.expect(m_nodeDao.load(1)).andReturn(node);
         
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
@@ -180,21 +185,12 @@ public class ReportDefinitionTest extends TestCase {
         def.getReport().getPackage().setFilter("");
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
-        ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
 
-        FilterWalker walker = new FilterWalker();
-        walker.setFilterDao(m_filterDao);
-        //walker.setNodeDao(m_nodeDao);
-        walker.setFilter(EasyMock.eq(""));
-        walker.setVisitor(EasyMock.isA(EntityVisitor.class));
-        walker.walk();
-        EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
-            public Object answer() throws Throwable {
-                ((EntityVisitor) EasyMock.getCurrentArguments()[1]).visitNode(node);
-                return null;
-            }
-        });
-        
+        SortedMap<Integer,String> sortedNodeMap = new TreeMap<Integer, String>();
+        sortedNodeMap.put(node.getId(), node.getLabel());
+        EasyMock.expect(m_filterDao.getNodeMap("")).andReturn(sortedNodeMap);
+
         EasyMock.expect(m_resourceDao.getResourceForNode(node)).andReturn(resource);
 
         m_mocks.replayAll();
@@ -216,6 +212,7 @@ public class ReportDefinitionTest extends TestCase {
         final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("Node One");
+        EasyMock.expect(m_nodeDao.load(1)).andReturn(node);
         
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
@@ -225,21 +222,12 @@ public class ReportDefinitionTest extends TestCase {
         def.getReport().getPackage().setFilter("");
         def.setResourceAttributeKey(externalValueAttribute.getName());
         def.setResourceAttributeValueMatch(externalValueAttribute.getValue());
-        ReportInstance report = def.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
 
-        FilterWalker walker = new FilterWalker();
-        walker.setFilterDao(m_filterDao);
-        //walker.setNodeDao(m_nodeDao);
-        walker.setFilter(EasyMock.eq(""));
-        walker.setVisitor(EasyMock.isA(EntityVisitor.class));
-        walker.walk();
-        EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
-            public Object answer() throws Throwable {
-                ((EntityVisitor) EasyMock.getCurrentArguments()[1]).visitNode(node);
-                return null;
-            }
-        });
-        
+        SortedMap<Integer,String> sortedNodeMap = new TreeMap<Integer, String>();
+        sortedNodeMap.put(node.getId(), node.getLabel());
+        EasyMock.expect(m_filterDao.getNodeMap("")).andReturn(sortedNodeMap);
+
         EasyMock.expect(m_resourceDao.getResourceForNode(node)).andReturn(resource);
 
         EasyMock.expect(m_rrdDao.getPrintValue(rrdAttribute, def.getConsolidationFunction(), report.getStartTime(), report.getEndTime())).andReturn(1.0);
@@ -251,7 +239,7 @@ public class ReportDefinitionTest extends TestCase {
         assertEquals("results size", 1, report.getResults().size());
     }
 
-    private ReportDefinition createReportDefinition() {
+    private static ReportDefinition createReportDefinition() {
         ReportDefinition def;
         def = new ReportDefinition();
         def.setReport(createPackageReport());
@@ -265,7 +253,7 @@ public class ReportDefinitionTest extends TestCase {
         return def;
     }
 
-    private PackageReport createPackageReport() {
+    private static PackageReport createPackageReport() {
         PackageReport packageReport;
         packageReport = new PackageReport();
         packageReport.setDescription("a package!");
