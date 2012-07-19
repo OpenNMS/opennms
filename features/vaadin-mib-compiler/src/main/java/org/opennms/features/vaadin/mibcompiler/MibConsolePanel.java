@@ -34,6 +34,7 @@ import org.opennms.features.vaadin.mibcompiler.api.Logger;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -42,7 +43,7 @@ import com.vaadin.ui.themes.Runo;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibConsole extends Panel implements Logger {
+public class MibConsolePanel extends Panel implements Logger {
 
     /** The Constant ERROR. */
     private static final String ERROR = "<b><font color='red'>&nbsp;[ERROR]&nbsp;</font></b>";
@@ -59,7 +60,7 @@ public class MibConsole extends Panel implements Logger {
     /**
      * Instantiates a new MIB Console Panel.
      */
-    public MibConsole() {
+    public MibConsolePanel() {
         super("MIB Console");
         setSizeFull();
         addStyleName(Runo.PANEL_LIGHT);
@@ -75,9 +76,19 @@ public class MibConsole extends Panel implements Logger {
         String msg = new Date().toString() + level + message;
         Label error = new Label(msg, Label.CONTENT_XHTML);
         addComponent(error);
+        scrollIntoView();
         LogUtils.infof(this, message);
     }
 
+    /**
+     * Scroll into view.
+     */
+    private void scrollIntoView() {
+        final VerticalLayout layout = (VerticalLayout) getContent();
+        if (getApplication() != null && layout.getComponentCount() > 0)
+            getApplication().getMainWindow().scrollIntoView(layout.getComponent(layout.getComponentCount() - 1));
+    }
+    
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#error(java.lang.String)
      */

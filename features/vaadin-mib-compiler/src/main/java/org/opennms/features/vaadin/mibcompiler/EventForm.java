@@ -42,7 +42,7 @@ import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
- * The Class EventForm.
+ * The Class Event Form.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */

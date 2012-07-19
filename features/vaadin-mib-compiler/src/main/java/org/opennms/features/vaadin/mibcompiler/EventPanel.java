@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import java.util.Arrays;
 
+import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.model.EventDTO;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -42,7 +43,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class EventPanel.
+ * The Class Event Panel.
  * 
  * The need for DTO is because of the usage of BeanItemContainer as explained here:
  * 
@@ -68,8 +69,9 @@ public abstract class EventPanel extends Panel {
      * Instantiates a new event panel.
      *
      * @param events the OpenNMS events
+     * @param logger the logger
      */
-    public EventPanel(final Events events) {
+    public EventPanel(final Events events, final Logger logger) {
         setCaption("Events");
         addStyleName(Runo.PANEL_LIGHT);
 
@@ -80,13 +82,15 @@ public abstract class EventPanel extends Panel {
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Cancel Processing", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
+                logger.info("Event processing has been canceled");
                 cancelProcessing();
             }
         }));
         toolbar.addComponent(new Button("Generate Evenst File", new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
+                logger.info("The events have been saved.");
                 events.setEvent(eventTable.getOnmsEvents());
-                generateEventFile();
+                generateEventFile(events);
             }
         }));
         mainLayout.addComponent(toolbar);
@@ -103,9 +107,11 @@ public abstract class EventPanel extends Panel {
 
         eventForm = new EventForm() {
             public void saveEvent(EventDTO event) {
+                logger.info("Event " + event.getUei() + " has been updated.");
                 eventTable.refreshRowCache();
             }
             public void deleteEvent(EventDTO event) {
+                logger.info("Event " + event.getUei() + " has been removed.");
                 eventTable.removeItem(event);
                 eventTable.refreshRowCache();
             }
@@ -122,7 +128,9 @@ public abstract class EventPanel extends Panel {
 
     /**
      * Generate event file.
+     *
+     * @param events the OpenNMS Events
      */
-    abstract void generateEventFile();
+    abstract void generateEventFile(Events events);
 
 }

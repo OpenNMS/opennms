@@ -29,28 +29,27 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import java.util.ArrayList;
 
-import org.opennms.features.vaadin.mibcompiler.model.DecodeDTO;
-import org.opennms.features.vaadin.mibcompiler.model.DecodeDTOList;
+import org.opennms.features.vaadin.mibcompiler.model.StringList;
 import org.vaadin.addon.customfield.FieldWrapper;
 
 import com.vaadin.ui.TextField;
 
 /**
- * The Class VarbindDecodeListField.
+ * The CSV List Field Wrapper.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class VarbindDecodeListField extends FieldWrapper<ArrayList<DecodeDTO>> {
-
+public class CsvListFieldWrapper extends FieldWrapper<ArrayList<String>> {
+    
     /**
-     * Instantiates a new VarbindDecode list field.
+     * Instantiates a new CSV list field wrapper.
      *
      */
-    public VarbindDecodeListField() {
-        super(new TextField(),  new VarbindDecodeListConverter(), DecodeDTOList.class);
+    public CsvListFieldWrapper() {
+        super(new TextField(),  new CsvListConverter(), StringList.class);
         TextField f = (TextField) getWrappedField();
         setCompositionRoot(f);
     }
-
+    
 }

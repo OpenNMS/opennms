@@ -27,22 +27,27 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import com.vaadin.data.Property;
-import com.vaadin.terminal.Sizeable;
+import java.io.File;
+
+import org.opennms.features.vaadin.mibcompiler.api.Logger;
+
+import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
- * The Class MIB Edit Window.
+ * The File Editor Window.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibEditWindow extends Window implements Button.ClickListener {
+public class FileEditorWindow extends Window implements Button.ClickListener {
 
     /** The MIB editor area. */
     private final TextArea editor;
@@ -52,27 +57,42 @@ public class MibEditWindow extends Window implements Button.ClickListener {
 
     /** The save button. */
     private final Button save;
+    
+    /** The logger. */
+    protected final Logger logger;
+    
+    /** The file. */
+    protected final File file;
 
     /**
-     * Instantiates a new MIB edit window.
+     * Instantiates a new file editor window.
      *
-     * @param document the document
+     * @param file the file
+     * @param logger the logger
      */
-    public MibEditWindow(Property document) {
+    public FileEditorWindow(final File file, final Logger logger) {
+        this.file = file;
+        this.logger = logger;
+        
         setCaption("Edit MIB");
+        addStyleName(Runo.WINDOW_DIALOG);
         setModal(true);
-        setWidth(800, Sizeable.UNITS_PIXELS);
-        setHeight(540, Sizeable.UNITS_PIXELS);
+        setClosable(false);
+        setWidth("800px");
+        setHeight("540px");
 
         editor = new TextArea();
-        editor.setPropertyDataSource(document);
+        editor.setPropertyDataSource(new TextFileProperty(file));
         editor.setWriteThrough(false);
+        editor.setImmediate(false);
         editor.setSizeFull();
         editor.setRows(30);
 
         cancel = new Button("Cancel");
+        cancel.setImmediate(false);
         cancel.addListener(this);
         save = new Button("Save");
+        save.setImmediate(false);
         save.addListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
@@ -82,7 +102,8 @@ public class MibEditWindow extends Window implements Button.ClickListener {
         addComponent(editor);
         addComponent(toolbar);
 
-        ((VerticalLayout)getContent()).setExpandRatio(editor, 1.0f);
+        ((VerticalLayout) getContent()).setExpandRatio(editor, 1.0f);
+        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
     }
 
     /* (non-Javadoc)
@@ -91,12 +112,14 @@ public class MibEditWindow extends Window implements Button.ClickListener {
     public void buttonClick(ClickEvent event) {
         if (event.getButton().equals(save)) {
             editor.commit();
-            getApplication().getMainWindow().removeWindow(this);
+            logger.info("The file " + file + " has been changed.");
         }
         if (event.getButton().equals(cancel)) {
+            logger.info("The file editing has been canceled.");
             editor.discard();
-            getApplication().getMainWindow().removeWindow(this);
         }
+        close();
     }
+    
 
 }

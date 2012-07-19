@@ -65,6 +65,8 @@ public abstract class EventGenerationWindow extends Window implements Button.Cli
         ueiBase.setNullSettingAllowed(false);
         ueiBase.setWriteThrough(false);
         ueiBase.setWidth("100%");
+        ueiBase.setRequired(true);
+        ueiBase.setRequiredError("UEI Base cannot be null.");
 
         okButton = new Button("Continue");
         okButton.addListener(this);
@@ -79,8 +81,8 @@ public abstract class EventGenerationWindow extends Window implements Button.Cli
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
     public void buttonClick(Button.ClickEvent event) {
-        if (ueiBase.getValue() != null) {
-            getApplication().getMainWindow().removeWindow(this);
+        if (ueiBase.getValue() != null && ! ((String)ueiBase.getValue()).trim().equals("")) {
+            close();
             changeUeiHandler((String)ueiBase.getValue());
         }
     }

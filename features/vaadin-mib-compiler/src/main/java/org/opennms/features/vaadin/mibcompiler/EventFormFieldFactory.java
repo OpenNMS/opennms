@@ -37,7 +37,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 /**
- * A factory for creating EventField objects.
+ * A factory for creating Event Field objects.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -85,17 +85,17 @@ public final class EventFormFieldFactory implements FormFieldFactory {
             return descr;
         }
         if ("maskElements".equals(propertyId)) {
-            final MaskElementTable field = new MaskElementTable();
+            final MaskElementField field = new MaskElementField();
             field.setCaption("Mask Elements");
             return field;
         }
         if ("maskVarbinds".equals(propertyId)) {
-            final MaskVarbindTable field = new MaskVarbindTable();
+            final MaskVarbindField field = new MaskVarbindField();
             field.setCaption("Mask Varbinds");
             return field;
         }
         if ("varbindsdecodeCollection".equals(propertyId)) {
-            final VarbindDecodeTable field = new VarbindDecodeTable();
+            final VarbindsDecodeField field = new VarbindsDecodeField();
             field.setCaption("Varbind Decodes");
             return field;
         }

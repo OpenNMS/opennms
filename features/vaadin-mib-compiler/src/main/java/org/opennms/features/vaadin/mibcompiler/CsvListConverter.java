@@ -34,17 +34,17 @@ import org.opennms.features.vaadin.mibcompiler.model.StringList;
 import org.vaadin.addon.customfield.PropertyConverter;
 
 /**
- * The Class CustomListConverter.
+ * The CSV List Converter.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class CustomListConverter extends PropertyConverter<ArrayList<String>, String> {
+public class CsvListConverter extends PropertyConverter<ArrayList<String>, String> {
 
     /**
-     * Instantiates a new list converter.
+     * Instantiates a new CSV list converter.
      */
-    public CustomListConverter() {
+    public CsvListConverter() {
         super(StringList.class);
     }
 

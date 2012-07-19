@@ -51,7 +51,7 @@ public class MibCompilerApplication extends Application {
         setTheme(Runo.THEME_NAME);
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
-        final MibConsole mibConsole = new MibConsole();
+        final MibConsolePanel mibConsole = new MibConsolePanel();
         final MibTreePanel mibsTree = new MibTreePanel(new MibbleMibParser(), mibConsole); // TODO Find a better way to pass the MIB parser.
 
         mainPanel.setSizeFull();

@@ -37,7 +37,7 @@ import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import com.vaadin.ui.Upload;
 
 /**
- * The Class MIB Compiler Panel.
+ * The Class MIB Upload Button.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -45,7 +45,11 @@ import com.vaadin.ui.Upload;
 public abstract class MibUploadButton extends Upload {
 
     /**
-     * Instantiates a new compile panel.
+     * Instantiates a new MIB upload button.
+     *
+     * @param pendingDir the pending directory
+     * @param compiledDir the compiled directory
+     * @param logger the logger
      */
     public MibUploadButton(final File pendingDir, final File compiledDir, final Logger logger) {
 

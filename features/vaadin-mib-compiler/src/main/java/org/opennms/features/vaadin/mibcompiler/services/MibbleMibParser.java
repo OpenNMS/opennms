@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -50,9 +51,13 @@ import org.opennms.netmgt.xml.eventconf.Events;
 /**
  * Mibble implementation of the interface MibParser.
  * 
+ * <p>Mibble is a GPL Library.</p>
+ * <p>Mib2Events also depends on Mibble.</p>
+ * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class MibbleMibParser implements MibParser {
+@SuppressWarnings("serial")
+public class MibbleMibParser implements MibParser, Serializable {
 
     /** The errors. */
     private String errors;
@@ -134,6 +139,7 @@ public class MibbleMibParser implements MibParser {
         if (mib == null) {
             return null;
         }
+        LogUtils.infof(this, "Converting MIB %s using the following UEI Base: %s", mib.getName(), ueibase);
         Mib2Events converter = new Mib2Events();
         return converter.convertMibToEvents(mib, ueibase);
     }

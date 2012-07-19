@@ -45,7 +45,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class EventTable.
+ * The Class Event Table.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -61,7 +61,7 @@ public abstract class EventTable extends Table {
     /**
      * Instantiates a new event table.
      *
-     * @param events the events
+     * @param events the OpenNMS events
      */
     public EventTable(final Events events) {
         setContainerDataSource(new BeanItemContainer<EventDTO>(EventDTO.class, getDtoEvents(events)));

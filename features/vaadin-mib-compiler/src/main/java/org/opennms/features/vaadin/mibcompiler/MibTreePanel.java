@@ -28,7 +28,6 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import java.io.File;
-import java.io.StringWriter;
 import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
@@ -38,13 +37,13 @@ import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -92,8 +91,9 @@ public class MibTreePanel extends Panel {
     private final MibParser mibParser;
 
     /**
-     * Instantiates a new compile panel.
+     * Instantiates a new MIB tree panel.
      *
+     * @param mibParser the MIB parser
      * @param logger the logger
      */
     public MibTreePanel(final MibParser mibParser, final Logger logger) {
@@ -178,7 +178,7 @@ public class MibTreePanel extends Panel {
             public void handleAction(Action action, Object sender, Object target) {
                 String fileName = (String) target;
                 if (action == ACTION_EDIT) {
-                    Window w = new MibEditWindow(new TextFileProperty(new File(MIBS_PENDING_DIR, fileName)));
+                    Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger);
                     getApplication().getMainWindow().addWindow(w);
                 }
                 if (action == ACTION_COMPILE) {
@@ -269,30 +269,12 @@ public class MibTreePanel extends Panel {
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
         logger.info("Found " + events.getEventCount() + " events.");
-        final Window w = new Window(fileName);
-        w.setScrollable(true);
-        w.setModal(false);
-        w.setClosable(false);
-        w.setDraggable(false);
-        w.setResizable(false);
-        w.addStyleName(Runo.WINDOW_DIALOG);
-        w.setSizeFull();
-        w.setContent(new EventPanel(events) {
-            void cancelProcessing() {
-                getApplication().getMainWindow().removeWindow(w);
-            }
-            void generateEventFile() { // FIXME This is not elegant.
-                StringWriter writer = new StringWriter();
-                try {
-                    events.marshal(writer);
-                    logger.info("The XML for the file " + fileName + ":<pre>" + writer.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") + "</pre>");
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
-                getApplication().getMainWindow().removeWindow(w);
-            }
-        });
-        getApplication().getMainWindow().addWindow(w);
+        if (events.getEventCount() > 0) {
+            final EventWindow w = new EventWindow(fileName, events, logger);
+            getApplication().getMainWindow().addWindow(w);
+        } else {
+            getApplication().getMainWindow().showNotification("This MIBs doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
+        }
     }
 
     /**
@@ -302,7 +284,7 @@ public class MibTreePanel extends Panel {
      * @param fileName the file name
      */
     private void generateDataCollection(final Logger logger, final String fileName) {
-        getApplication().getMainWindow().showNotification("Not yet but comming soon!");
+        getApplication().getMainWindow().showNotification("Not yet but comming soon!", Notification.TYPE_WARNING_MESSAGE);
     }
 
 }

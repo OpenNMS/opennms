@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.mibcompiler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.vaadin.mibcompiler.model.VarbindsDecodeDTO;
+import org.opennms.features.vaadin.mibcompiler.model.MaskElementDTO;
 
 import org.vaadin.addon.customfield.CustomField;
 
@@ -52,18 +52,18 @@ import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
- * The Class VarbindDecodeTable.
+ * The Event's MaskElement Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class VarbindDecodeTable extends CustomField implements Button.ClickListener {
+public class MaskElementField extends CustomField implements Button.ClickListener {
 
     /** The Table. */
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<VarbindsDecodeDTO> container = new BeanItemContainer<VarbindsDecodeDTO>(VarbindsDecodeDTO.class);
+    private BeanItemContainer<MaskElementDTO> container = new BeanItemContainer<MaskElementDTO>(MaskElementDTO.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -75,15 +75,15 @@ public class VarbindDecodeTable extends CustomField implements Button.ClickListe
     private Button delete;
 
     /**
-     * Instantiates a new varbind decode table.
+     * Instantiates a new mask element table.
      */
-    public VarbindDecodeTable() {
+    public MaskElementField() {
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
-        table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
-        table.setColumnHeader("parmid", "Parameter ID");
-        table.setColumnHeader("decodeCollection", "Decode Values");
-        table.setColumnExpandRatio("decodeCollection", 1);
+        table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
+        table.setColumnHeader("mename", "Element Name");
+        table.setColumnHeader("mevalueCollection", "Element Values");
+        table.setColumnExpandRatio("mevalueCollection", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("125px");
@@ -91,8 +91,8 @@ public class VarbindDecodeTable extends CustomField implements Button.ClickListe
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                if (propertyId.equals("decodeCollection")) {
-                    return new VarbindDecodeListField();
+                if (propertyId.equals("mevalueCollection")) {
+                    return new CsvListFieldWrapper();
                 }
                 return super.createField(container, itemId, propertyId, uiContext);
             }
@@ -125,7 +125,7 @@ public class VarbindDecodeTable extends CustomField implements Button.ClickListe
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
             @SuppressWarnings("unchecked")
-            List<VarbindsDecodeDTO> beans = (List<VarbindsDecodeDTO>) value;
+            List<MaskElementDTO> beans = (List<MaskElementDTO>) value;
             container.removeAllItems();
             container.addAll(beans);
             table.setPageLength(beans.size());
@@ -140,7 +140,7 @@ public class VarbindDecodeTable extends CustomField implements Button.ClickListe
      */
     @Override
     public Object getValue() {
-        ArrayList<VarbindsDecodeDTO> beans = new ArrayList<VarbindsDecodeDTO>(); 
+        ArrayList<MaskElementDTO> beans = new ArrayList<MaskElementDTO>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -174,7 +174,7 @@ public class VarbindDecodeTable extends CustomField implements Button.ClickListe
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new VarbindsDecodeDTO());
+        Object itemId = container.addBean(new MaskElementDTO());
         table.addItem(itemId);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }
@@ -185,7 +185,7 @@ public class VarbindDecodeTable extends CustomField implements Button.ClickListe
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a Varbind Decode from the table.");
+            getApplication().getMainWindow().showNotification("Please select a Mask Element from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",

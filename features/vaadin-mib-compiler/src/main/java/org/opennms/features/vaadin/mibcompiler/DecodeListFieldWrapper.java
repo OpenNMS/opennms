@@ -29,27 +29,28 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import java.util.ArrayList;
 
-import org.opennms.features.vaadin.mibcompiler.model.StringList;
+import org.opennms.features.vaadin.mibcompiler.model.DecodeDTO;
+import org.opennms.features.vaadin.mibcompiler.model.DecodeDTOList;
 import org.vaadin.addon.customfield.FieldWrapper;
 
 import com.vaadin.ui.TextField;
 
 /**
- * The Class CustomListField.
+ * The Varbind's Decode List Field Wrapper.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class CustomListField extends FieldWrapper<ArrayList<String>> {
-    
+public class DecodeListFieldWrapper extends FieldWrapper<ArrayList<DecodeDTO>> {
+
     /**
-     * Instantiates a new custom list field.
+     * Instantiates a new decode list field wrapper.
      *
      */
-    public CustomListField() {
-        super(new TextField(),  new CustomListConverter(), StringList.class);
+    public DecodeListFieldWrapper() {
+        super(new TextField(),  new DecodeListConverter(), DecodeDTOList.class);
         TextField f = (TextField) getWrappedField();
         setCompositionRoot(f);
     }
-    
+
 }

@@ -35,17 +35,17 @@ import org.opennms.features.vaadin.mibcompiler.model.DecodeDTOList;
 import org.vaadin.addon.customfield.PropertyConverter;
 
 /**
- * The Class VarbindDecodeListConverter.
+ * The Varbind's Decode List Converter.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class VarbindDecodeListConverter extends PropertyConverter<ArrayList<DecodeDTO>, String> {
+public class DecodeListConverter extends PropertyConverter<ArrayList<DecodeDTO>, String> {
 
     /**
-     * Instantiates a new VarbindDecode list converter.
+     * Instantiates a new decode list converter.
      */
-    public VarbindDecodeListConverter() {
+    public DecodeListConverter() {
         super(DecodeDTOList.class);
     }
 

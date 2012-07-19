@@ -42,7 +42,7 @@ import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.TextField;
 
 /**
- * The Class AlarmDataField.
+ * The Event's AlarmData Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
