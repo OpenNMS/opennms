@@ -17,23 +17,26 @@ abstract public class LinkdVertex {
 	boolean m_selected;
 	boolean m_locked = false;
 	String m_icon;
+	String m_label;
 	LinkdGroup m_parent = null;
 	List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
 	private int m_semanticZoomLevel = -1;
 	
 	public LinkdVertex() {}
 
-	public LinkdVertex(String id, String icon) {
+	public LinkdVertex(String id, String icon, String label) {
 	    m_id=id;
 	    m_icon=icon;
+	    m_label = label;
 	}
 	
-	public LinkdVertex(String id, int x, int y, String icon) {
-	            m_id=id;
-	            m_x=x;
-	            m_y=y;
-	            m_icon=icon;
-	    }
+	public LinkdVertex(String id, int x, int y, String icon, String label) {
+		m_id=id;
+		m_x=x;
+		m_y=y;
+		m_icon=icon;
+		m_label=label;
+	}
 	
 	@XmlIDREF
 	public LinkdGroup getParent() {
@@ -103,6 +106,14 @@ abstract public class LinkdVertex {
 
 	public void setIcon(String icon) {
 		m_icon = icon;
+	}
+
+	public String getLabel() {
+		return m_label;
+	}
+
+	public void setLabel(String label) {
+		m_label = label;
 	}
 
 	@XmlTransient

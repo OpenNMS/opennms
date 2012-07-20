@@ -825,6 +825,10 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				group.setSelected(booleanAttribute);
 				group.setIcon(child.getStringAttribute("iconUrl"));
 				group.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
+				
+				if (child.hasAttribute("label")) {
+					group.setLabel(child.getStringAttribute("label"));
+				}
 				graphConverted.addGroup(group);
 				
 				if(m_client != null) {
@@ -849,6 +853,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         		
 				vertex.setSelected(booleanAttribute);
 				vertex.setIcon(child.getStringAttribute("iconUrl"));
+
+				if (child.hasAttribute("label")) {
+					vertex.setLabel(child.getStringAttribute("label"));
+				}
+
 				graphConverted.addVertex(vertex);
 				
 				if(m_client != null) {

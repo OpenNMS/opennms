@@ -18,6 +18,7 @@ abstract public class SimpleVertex {
 	boolean m_selected;
 	boolean m_locked = false;
 	String m_icon;
+	String m_label = "none provided";
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
 //	private int m_semanticZoomLevel = -1;
@@ -102,6 +103,14 @@ abstract public class SimpleVertex {
 
 	public void setIcon(String icon) {
 		m_icon = icon;
+	}
+
+	public String getLabel() {
+		return m_label;
+	}
+
+	public void setLabel(String label) {
+		m_label = label;
 	}
 
 	@XmlTransient
