@@ -21,7 +21,7 @@
     <gwt.plugin.version>2.2.0</gwt.plugin.version>
     <jung.version>2.0.1</jung.version>
     <junit.version>4.8.2</junit.version>
-    <vaadin.version>6.7.3</vaadin.version>
+    <vaadin.version>6.8.1</vaadin.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <pax.vaadin.version>0.1.0-ONMS-20120621</pax.vaadin.version>
   </properties>
