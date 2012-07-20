@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Test;
 import org.opennms.features.topology.api.Operation;
@@ -38,9 +39,9 @@ public class TestMenuBarBuilder {
     }
     
     @Test
-    public void createTopLevelMenuWithAdditionalTest() {
+    public void createTopLevelMenuWithAdditionsTest() {
         MenuBarBuilder builder = new MenuBarBuilder();
-        builder.setTopLevelMenuOrder(Arrays.asList("File", "Edit", "View", "Additional", "Help"));
+        builder.setTopLevelMenuOrder(Arrays.asList("File", "Edit", "View", "Additions", "Help"));
         builder.addMenuCommand(null, "Edit");
         builder.addMenuCommand(null, "Test2");
         builder.addMenuCommand(null, "File");
@@ -131,7 +132,7 @@ public class TestMenuBarBuilder {
     @Test
     public void submenuGroupOrderAlphabeticallyTest() {
         CommandManager cmdManager = new CommandManager();
-        cmdManager.addGroupOrder("File", Arrays.asList("new", "help", "additional"));
+        cmdManager.addOrUpdateGroupOrder("File", Arrays.asList("new", "help", "additions"));
         
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation1", ""));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation3", ""));
@@ -152,6 +153,37 @@ public class TestMenuBarBuilder {
         assertEquals("Operation2", subMenuItems.get(2).getText());
         assertEquals("Operation3", subMenuItems.get(3).getText());
         assertEquals("Operation4", subMenuItems.get(4).getText());
+    }
+    
+    @Test
+    public void commandManagerParseConfigTest() {
+        Map props = new Properties();
+        props.put("toplevelMenuOrder", "File,Edit,View,Additions,Help");
+        props.put("submenu.File.groups", "start,new,close,save,print,open,import,additions,end");
+        props.put("submenu.Edit.groups", "start,undo,cut,find,add,end,additions");
+        props.put("submenu.View.groups", "start,additions,end");
+        props.put("submenu.Help.groups", "start,main,tools,updates,end,additions");
+        props.put("submenu.Default.groups", "start,main,end,additions");
+        
+        
+        Map<String, List<String>> expected = new HashMap<String, List<String>>();
+        expected.put("File", Arrays.asList("start", "new", "close", "save", "print", "open", "import", "additions", "end"));
+        expected.put("Edit", Arrays.asList("start", "undo", "cut", "find", "add", "end","additions"));
+        expected.put("View", Arrays.asList("start", "additions", "end"));
+        expected.put("Help", Arrays.asList("start", "main", "tools", "updates", "end", "additions"));
+        expected.put("Default", Arrays.asList("start", "main", "end", "additions"));
+        
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.updateMenuConfig(props);
+        Map<String, List<String>> actual = cmdManager.getMenuOrderConfig();
+        
+        assertEquals(expected.get("File"), actual.get("File"));
+        assertEquals(expected.get("Edit"), actual.get("Edit"));
+        assertEquals(expected.get("View"), actual.get("View"));
+        assertEquals(expected.get("Help"), actual.get("Help"));
+        assertEquals(expected.get("Default"), actual.get("Default"));
+        
+        
     }
    
 
