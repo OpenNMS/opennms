@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,8 +37,6 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -52,7 +50,7 @@ import org.opennms.netmgt.config.users.User;
  * @version $Id: $
  * @since 1.8.1
  */
-public class Manager implements WebRoleManager, WebUserManager, WebGroupManager {
+public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGroupManager {
     
     private GroupManager m_groupManager;
     private UserManager m_userManager;
@@ -210,7 +208,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
     /**
      * <p>createRole</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebRole} object.
+     * @return a {@link org.opennms.netmgt.config.WebRole} object.
      */
     public WebRole createRole() {
         return new ManagedRole();
@@ -350,7 +348,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
      * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
      * @param userManager a {@link org.opennms.netmgt.config.UserManager} object.
      */
-    public Manager(GroupManager groupManager, UserManager userManager) {
+    public WebRoleManagerImpl(GroupManager groupManager, UserManager userManager) {
         m_groupManager = groupManager;
         m_userManager = userManager;
     }

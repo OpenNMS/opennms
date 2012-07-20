@@ -26,84 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
-
-import java.util.Collection;
+package org.opennms.netmgt.config;
 
 /**
- * <p>WebGroup class.</p>
+ * <p>WebRolesException class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class WebGroup {
+public class WebRolesException extends RuntimeException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7520091278102237241L;
 
-    private final String m_name;
-    private Collection<WebUser> m_users;
-    
     /**
-     * <p>Constructor for WebGroup.</p>
-     *
-     * @param name a {@link java.lang.String} object.
+     * <p>Constructor for WebRolesException.</p>
      */
-    public WebGroup(String name) {
-        m_name = name;
-    }
-    
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getName() {
-        return m_name;
-    }
-    
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String toString() {
-        return ""+getName();
-    }
-    
-    /**
-     * <p>getUsers</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public Collection<WebUser> getUsers() {
-        return m_users;
-    }
-    
-    /**
-     * <p>setUsers</p>
-     *
-     * @param users a {@link java.util.Collection} object.
-     */
-    protected void setUsers(Collection<WebUser> users) {
-        m_users = users;
-    }
-    
-    /** {@inheritDoc} */
-    public boolean equals(Object obj) {
-        if (obj instanceof WebGroup) {
-            WebGroup u = (WebGroup)obj;
-            return m_name.equals(u.m_name);
-        }
-        return false;
+    public WebRolesException() {
+        super();
     }
 
     /**
-     * <p>hashCode</p>
+     * <p>Constructor for WebRolesException.</p>
      *
-     * @return a int.
+     * @param message a {@link java.lang.String} object.
      */
-    public int hashCode() {
-        return m_name.hashCode();
+    public WebRolesException(String message) {
+        super(message);
     }
 
+    /**
+     * <p>Constructor for WebRolesException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
+    public WebRolesException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * <p>Constructor for WebRolesException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
+    public WebRolesException(Throwable cause) {
+        super(cause);
+    }
 
 }

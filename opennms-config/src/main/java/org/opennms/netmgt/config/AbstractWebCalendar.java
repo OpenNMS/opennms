@@ -26,67 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
 import java.util.Date;
-import java.util.List;
-
-import org.opennms.core.utils.Owner;
 
 /**
- * <p>CalendarEntry class.</p>
+ * <p>Abstract AbstractWebCalendar class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class CalendarEntry {
-    
-    Date m_start;
-    Date m_end;
-    String m_descr;
-    List<Owner> m_labels;
+public abstract class AbstractWebCalendar implements WebCalendar {
     
     /**
-     * <p>Constructor for CalendarEntry.</p>
-     *
-     * @param start a {@link java.util.Date} object.
-     * @param end a {@link java.util.Date} object.
-     * @param descr a {@link java.lang.String} object.
-     * @param labels a {@link java.util.List} object.
-     */
-    public CalendarEntry(Date start, Date end, String descr, List<Owner> labels) {
-        m_start = start;
-        m_end = end;
-        m_descr = descr;
-        m_labels = labels;
-    }
-
-    /**
-     * <p>getStartTime</p>
-     *
-     * @return a {@link java.util.Date} object.
-     */
-    public Date getStartTime() { return m_start; }
-    
-    /**
-     * <p>getEndTime</p>
-     *
-     * @return a {@link java.util.Date} object.
-     */
-    public Date getEndTime() { return m_end; }
-    
-    /**
-     * <p>getDescription</p>
+     * <p>getMonthAndYear</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getDescription() { return m_descr; }
+    abstract public String getMonthAndYear(); 
     
     /**
-     * <p>getLabels</p>
+     * <p>getPreviousMonth</p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a {@link java.util.Date} object.
      */
-    public List<Owner> getLabels() { return m_labels; }
+    abstract public Date getPreviousMonth();
+    
+    /**
+     * <p>getNextMonth</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
+    abstract public Date getNextMonth();
+    
+    /**
+     * <p>getWeeks</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
+     */
+    abstract public Week[] getWeeks();
+
 }

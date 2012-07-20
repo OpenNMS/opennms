@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.groups.Role;
 
 /**
@@ -81,7 +80,7 @@ public class Week {
     /**
      * <p>getDays</p>
      *
-     * @return an array of {@link org.opennms.web.admin.roles.Day} objects.
+     * @return an array of {@link org.opennms.netmgt.config.Day} objects.
      */
     public Day[] getDays() {
         Calendar day = (Calendar)m_calendar.clone();

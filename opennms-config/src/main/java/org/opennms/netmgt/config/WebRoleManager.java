@@ -26,54 +26,53 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
+
+import java.util.Collection;
 
 /**
- * <p>WebRolesException class.</p>
+ * <p>WebRoleManager interface.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class WebRolesException extends RuntimeException {
+public interface WebRoleManager {
+    
     /**
-     * 
-     */
-    private static final long serialVersionUID = 7520091278102237241L;
-
-    /**
-     * <p>Constructor for WebRolesException.</p>
-     */
-    public WebRolesException() {
-        super();
-    }
-
-    /**
-     * <p>Constructor for WebRolesException.</p>
+     * <p>getRoles</p>
      *
-     * @param message a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
      */
-    public WebRolesException(String message) {
-        super(message);
-    }
+    public Collection<WebRole> getRoles();
 
     /**
-     * <p>Constructor for WebRolesException.</p>
+     * <p>deleteRole</p>
      *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
+     * @param roleName a {@link java.lang.String} object.
      */
-    public WebRolesException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    public void deleteRole(String roleName);
 
     /**
-     * <p>Constructor for WebRolesException.</p>
+     * <p>getRole</p>
      *
-     * @param cause a {@link java.lang.Throwable} object.
+     * @param roleName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.admin.roles.WebRole} object.
      */
-    public WebRolesException(Throwable cause) {
-        super(cause);
-    }
+    public WebRole getRole(String roleName);
+
+    /**
+     * <p>saveRole</p>
+     *
+     * @param role a {@link org.opennms.web.admin.roles.WebRole} object.
+     */
+    public void saveRole(WebRole role);
+
+    /**
+     * <p>createRole</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebRole} object.
+     */
+    public WebRole createRole();
 
 }

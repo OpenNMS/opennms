@@ -26,45 +26,62 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
-import java.util.Date;
 
 /**
- * <p>Abstract AbstractWebCalendar class.</p>
+ * <p>AppContext class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public abstract class AbstractWebCalendar implements WebCalendar {
+public class WebRoleContext {
+    private static WebRoleManagerImpl s_manager = null;
     
     /**
-     * <p>getMonthAndYear</p>
+     * <p>init</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
-    abstract public String getMonthAndYear(); 
+    public static void init() throws Exception {
+        GroupFactory.init();
+        UserFactory.init();
+    }
+    
+    private static WebRoleManagerImpl getManager() {
+        if (s_manager == null) {
+            s_manager = new WebRoleManagerImpl(GroupFactory.getInstance(), UserFactory.getInstance());
+        }
+        
+        return s_manager;
+    }
     
     /**
-     * <p>getPreviousMonth</p>
+     * <p>getWebRoleManager</p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.config.WebRoleManager} object.
      */
-    abstract public Date getPreviousMonth();
+    public static WebRoleManager getWebRoleManager() {
+        return getManager();
+    }
+
+    /**
+     * <p>getWebUserManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.WebUserManager} object.
+     */
+    public static WebUserManager getWebUserManager() {
+        return getManager();
+    }
     
     /**
-     * <p>getNextMonth</p>
+     * <p>getWebGroupManager</p>
      *
-     * @return a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.config.WebGroupManager} object.
      */
-    abstract public Date getNextMonth();
-    
-    /**
-     * <p>getWeeks</p>
-     *
-     * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
-     */
-    abstract public Week[] getWeeks();
+    public static WebGroupManager getWebGroupManager() {
+        return getManager();
+    }
 
 }

@@ -26,32 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
-import java.util.Collection;
+import java.util.Date;
 
 /**
- * <p>WebUserManager interface.</p>
+ * <p>WebCalendar interface.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public interface WebUserManager {
+public interface WebCalendar {
     
     /**
-     * <p>getUsers</p>
+     * <p>getMonthAndYear</p>
      *
-     * @return a {@link java.util.Collection} object.
+     * @return a {@link java.lang.String} object.
      */
-    public Collection<WebUser> getUsers();
-
+    public String getMonthAndYear(); 
+    
     /**
-     * <p>getUser</p>
+     * <p>getPreviousMonth</p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.admin.roles.WebUser} object.
+     * @return a java$util$Date object.
      */
-    public WebUser getUser(String name);
+    public Date getPreviousMonth();
+    
+    /**
+     * <p>getNextMonth</p>
+     *
+     * @return a java$util$Date object.
+     */
+    public Date getNextMonth();
+    
+    /**
+     * <p>getWeeks</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
+     */
+    public Week[] getWeeks();
 
 }

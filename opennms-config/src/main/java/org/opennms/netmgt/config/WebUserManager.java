@@ -26,64 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
+
+import java.util.Collection;
 
 /**
- * <p>WebUser class.</p>
+ * <p>WebUserManager interface.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class WebUser {
-    
-    private String m_name;
+public interface WebUserManager {
     
     /**
-     * <p>Constructor for WebUser.</p>
+     * <p>getUsers</p>
      *
-     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
      */
-    public WebUser(String name) {
-        m_name = name;
-    }
-    
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getName() {
-        return m_name;
-    }
-    
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String toString() {
-        return m_name;
-    }
-    
-    /** {@inheritDoc} */
-    public boolean equals(Object obj) {
-        if (obj instanceof WebUser) {
-            WebUser u = (WebUser)obj;
-            return m_name.equals(u.m_name);
-        }
-        return false;
-    }
+    public Collection<WebUser> getUsers();
 
     /**
-     * <p>hashCode</p>
+     * <p>getUser</p>
      *
-     * @return a int.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.WebUser} object.
      */
-    public int hashCode() {
-        return m_name.hashCode();
-    }
-    
-    
+    public WebUser getUser(String name);
 
 }

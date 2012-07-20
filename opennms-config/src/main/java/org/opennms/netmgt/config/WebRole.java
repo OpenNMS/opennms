@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public abstract class WebRole {
     /**
      * <p>getDefaultUser</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebUser} object.
+     * @return a {@link org.opennms.netmgt.config.WebUser} object.
      */
     public WebUser getDefaultUser() {
         return m_defaultUser;
@@ -78,7 +78,7 @@ public abstract class WebRole {
     /**
      * <p>setDefaultUser</p>
      *
-     * @param defaultUser a {@link org.opennms.web.admin.roles.WebUser} object.
+     * @param defaultUser a {@link org.opennms.netmgt.config.WebUser} object.
      */
     public void setDefaultUser(WebUser defaultUser) {
         m_defaultUser = defaultUser;
@@ -102,7 +102,7 @@ public abstract class WebRole {
     /**
      * <p>getMembershipGroup</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebGroup} object.
+     * @return a {@link org.opennms.netmgt.config.WebGroup} object.
      */
     public WebGroup getMembershipGroup() {
         return m_membershipGroup;
@@ -110,7 +110,7 @@ public abstract class WebRole {
     /**
      * <p>setMembershipGroup</p>
      *
-     * @param memberShipGroup a {@link org.opennms.web.admin.roles.WebGroup} object.
+     * @param memberShipGroup a {@link org.opennms.netmgt.config.WebGroup} object.
      */
     public void setMembershipGroup(WebGroup memberShipGroup) {
         m_membershipGroup = memberShipGroup;
@@ -160,7 +160,7 @@ public abstract class WebRole {
     /**
      * <p>getWeeklyCalendar</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebCalendar} object.
+     * @return a {@link org.opennms.netmgt.config.WebCalendar} object.
      */
     public WebCalendar getWeeklyCalendar() {
         return null;
@@ -169,7 +169,7 @@ public abstract class WebRole {
     /**
      * <p>getCalendar</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebCalendar} object.
+     * @return a {@link org.opennms.netmgt.config.WebCalendar} object.
      */
     public WebCalendar getCalendar() {
         return getCalendar(new Date());
@@ -179,14 +179,14 @@ public abstract class WebRole {
      * <p>getCalendar</p>
      *
      * @param month a {@link java.util.Date} object.
-     * @return a {@link org.opennms.web.admin.roles.WebCalendar} object.
+     * @return a {@link org.opennms.netmgt.config.WebCalendar} object.
      */
     abstract public WebCalendar getCalendar(Date month);
 
     /**
      * <p>addEntry</p>
      *
-     * @param entry a {@link org.opennms.web.admin.roles.WebSchedEntry} object.
+     * @param entry a {@link org.opennms.netmgt.config.WebSchedEntry} object.
      */
     public void addEntry(WebSchedEntry entry) {
         

@@ -38,6 +38,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.WebRoleContext;
+import org.opennms.netmgt.config.WebCalendar;
+import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleManager;
+
  /**
   * Servlet implementation class for Servlet: RoleServlet
   *
@@ -142,17 +147,17 @@ import javax.servlet.http.HttpServletResponse;
         super.init();
 
         try {
-            AppContext.init();
+            WebRoleContext.init();
             
-            getServletContext().setAttribute("roleManager", AppContext.getWebRoleManager());
-            getServletContext().setAttribute("userManager", AppContext.getWebUserManager());
-            getServletContext().setAttribute("groupManager", AppContext.getWebGroupManager());
+            getServletContext().setAttribute("roleManager", WebRoleContext.getWebRoleManager());
+            getServletContext().setAttribute("userManager", WebRoleContext.getWebUserManager());
+            getServletContext().setAttribute("groupManager", WebRoleContext.getWebGroupManager());
         } catch (Throwable e) {
             throw new ServletException("Error initializing RolesServlet", e);
         }
     }
 
     private WebRoleManager getRoleManager() {
-        return AppContext.getWebRoleManager();
+        return WebRoleContext.getWebRoleManager();
     }
 }

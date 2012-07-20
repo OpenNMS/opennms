@@ -26,64 +26,64 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
-
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.UserFactory;
+package org.opennms.netmgt.config;
 
 /**
- * <p>AppContext class.</p>
+ * <p>WebUser class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class AppContext {
-    private static Manager s_manager = null;
+public class WebUser {
+    
+    private String m_name;
     
     /**
-     * <p>init</p>
+     * <p>Constructor for WebUser.</p>
      *
-     * @throws java.lang.Exception if any.
+     * @param name a {@link java.lang.String} object.
      */
-    public static void init() throws Exception {
-        GroupFactory.init();
-        UserFactory.init();
+    public WebUser(String name) {
+        m_name = name;
     }
     
-    private static Manager getManager() {
-        if (s_manager == null) {
-            s_manager = new Manager(GroupFactory.getInstance(), UserFactory.getInstance());
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String toString() {
+        return m_name;
+    }
+    
+    /** {@inheritDoc} */
+    public boolean equals(Object obj) {
+        if (obj instanceof WebUser) {
+            WebUser u = (WebUser)obj;
+            return m_name.equals(u.m_name);
         }
-        
-        return s_manager;
-    }
-    
-    /**
-     * <p>getWebRoleManager</p>
-     *
-     * @return a {@link org.opennms.web.admin.roles.WebRoleManager} object.
-     */
-    public static WebRoleManager getWebRoleManager() {
-        return getManager();
+        return false;
     }
 
     /**
-     * <p>getWebUserManager</p>
+     * <p>hashCode</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebUserManager} object.
+     * @return a int.
      */
-    public static WebUserManager getWebUserManager() {
-        return getManager();
+    public int hashCode() {
+        return m_name.hashCode();
     }
     
-    /**
-     * <p>getWebGroupManager</p>
-     *
-     * @return a {@link org.opennms.web.admin.roles.WebGroupManager} object.
-     */
-    public static WebGroupManager getWebGroupManager() {
-        return getManager();
-    }
+    
 
 }

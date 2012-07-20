@@ -26,32 +26,84 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
 import java.util.Collection;
 
 /**
- * <p>WebGroupManager interface.</p>
+ * <p>WebGroup class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public interface WebGroupManager {
+public class WebGroup {
 
+    private final String m_name;
+    private Collection<WebUser> m_users;
+    
     /**
-     * <p>getGroups</p>
+     * <p>Constructor for WebGroup.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
+    public WebGroup(String name) {
+        m_name = name;
+    }
+    
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String toString() {
+        return ""+getName();
+    }
+    
+    /**
+     * <p>getUsers</p>
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<WebGroup> getGroups();
+    public Collection<WebUser> getUsers() {
+        return m_users;
+    }
+    
+    /**
+     * <p>setUsers</p>
+     *
+     * @param users a {@link java.util.Collection} object.
+     */
+    protected void setUsers(Collection<WebUser> users) {
+        m_users = users;
+    }
+    
+    /** {@inheritDoc} */
+    public boolean equals(Object obj) {
+        if (obj instanceof WebGroup) {
+            WebGroup u = (WebGroup)obj;
+            return m_name.equals(u.m_name);
+        }
+        return false;
+    }
 
     /**
-     * <p>getGroup</p>
+     * <p>hashCode</p>
      *
-     * @param groupName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.admin.roles.WebGroup} object.
+     * @return a int.
      */
-    public WebGroup getGroup(String groupName);
+    public int hashCode() {
+        return m_name.hashCode();
+    }
+
 
 }

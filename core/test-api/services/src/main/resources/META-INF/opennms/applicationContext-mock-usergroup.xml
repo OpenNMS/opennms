@@ -9,7 +9,7 @@
 
 	<context:annotation-config />
 
-	<bean id="groupManager" class="org.opennms.netmgt.notifd.mock.MockGroupManager">
+	<bean id="groupManager" class="org.opennms.netmgt.config.mock.MockGroupManager">
 		<constructor-arg value="&lt;groupinfo&gt;&lt;groups&gt;&lt;group&gt;&lt;name&gt;Admin&lt;/name&gt;&lt;user&gt;admin&lt;/user&gt;&lt;/group&gt;&lt;/groups&gt;&lt;/groupinfo&gt;" />
 	</bean>
 
@@ -18,7 +18,7 @@
 		<property name="arguments"><array><ref bean="groupManager" /></array></property>
 	</bean>
 
-	<bean id="userManager" class="org.opennms.netmgt.notifd.mock.MockUserManager">
+	<bean id="userManager" class="org.opennms.netmgt.config.mock.MockUserManager">
 		<constructor-arg ref="groupManager" />
 		<constructor-arg value="&lt;userinfo&gt;&lt;users&gt;&lt;user&gt;&lt;user-id&gt;admin&lt;/user-id&gt;&lt;full-name&gt;Administrator&lt;/full-name&gt;&lt;password&gt;21232F297A57A5A743894A0E4A801FC3&lt;/password&gt;&lt;/user&gt;&lt;/users&gt;&lt;/userinfo&gt;" />
 	</bean>

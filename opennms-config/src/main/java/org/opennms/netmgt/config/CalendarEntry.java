@@ -26,53 +26,67 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config;
 
-import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import org.opennms.core.utils.Owner;
 
 /**
- * <p>WebRoleManager interface.</p>
+ * <p>CalendarEntry class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public interface WebRoleManager {
+public class CalendarEntry {
+    
+    Date m_start;
+    Date m_end;
+    String m_descr;
+    List<Owner> m_labels;
     
     /**
-     * <p>getRoles</p>
+     * <p>Constructor for CalendarEntry.</p>
      *
-     * @return a {@link java.util.Collection} object.
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     * @param descr a {@link java.lang.String} object.
+     * @param labels a {@link java.util.List} object.
      */
-    public Collection<WebRole> getRoles();
+    public CalendarEntry(Date start, Date end, String descr, List<Owner> labels) {
+        m_start = start;
+        m_end = end;
+        m_descr = descr;
+        m_labels = labels;
+    }
 
     /**
-     * <p>deleteRole</p>
+     * <p>getStartTime</p>
      *
-     * @param roleName a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
      */
-    public void deleteRole(String roleName);
-
+    public Date getStartTime() { return m_start; }
+    
     /**
-     * <p>getRole</p>
+     * <p>getEndTime</p>
      *
-     * @param roleName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.admin.roles.WebRole} object.
+     * @return a {@link java.util.Date} object.
      */
-    public WebRole getRole(String roleName);
-
+    public Date getEndTime() { return m_end; }
+    
     /**
-     * <p>saveRole</p>
+     * <p>getDescription</p>
      *
-     * @param role a {@link org.opennms.web.admin.roles.WebRole} object.
+     * @return a {@link java.lang.String} object.
      */
-    public void saveRole(WebRole role);
-
+    public String getDescription() { return m_descr; }
+    
     /**
-     * <p>createRole</p>
+     * <p>getLabels</p>
      *
-     * @return a {@link org.opennms.web.admin.roles.WebRole} object.
+     * @return a {@link java.util.List} object.
      */
-    public WebRole createRole();
-
+    public List<Owner> getLabels() { return m_labels; }
 }

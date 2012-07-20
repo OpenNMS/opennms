@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.admin.roles;
+package org.opennms.netmgt.config.mock;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,14 +40,20 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
+import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.MonthlyCalendar;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.WebGroup;
+import org.opennms.netmgt.config.WebGroupManager;
+import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleManager;
+import org.opennms.netmgt.config.WebUser;
+import org.opennms.netmgt.config.WebUserManager;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
-import org.opennms.netmgt.config.mock.MockGroupManager;
-import org.opennms.netmgt.config.mock.MockUserManager;
 import org.opennms.netmgt.config.users.User;
 
 public class RolesTest extends IntervalTestCase {
@@ -62,15 +68,15 @@ public class RolesTest extends IntervalTestCase {
         super.setUp();
         
         MockLogAppender.setupLogging();
-        m_groupManager = new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/config/groups.xml", new String[][] {}));
-        m_userManager = new MockUserManager(m_groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/config/users.xml", new String[][] {}));
+        m_groupManager = new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/config/mock/groups.xml", new String[][] {}));
+        m_userManager = new MockUserManager(m_groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/config/mock/users.xml", new String[][] {}));
         
         GroupFactory.setInstance(m_groupManager);
         UserFactory.setInstance(m_userManager);
         
-        m_roleMgr = AppContext.getWebRoleManager();
-        m_groupMgr = AppContext.getWebGroupManager();
-        m_userMgr = AppContext.getWebUserManager();
+        m_roleMgr = WebRoleContext.getWebRoleManager();
+        m_groupMgr = WebRoleContext.getWebGroupManager();
+        m_userMgr = WebRoleContext.getWebUserManager();
 
     }
 
