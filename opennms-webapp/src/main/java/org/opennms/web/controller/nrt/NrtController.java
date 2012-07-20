@@ -144,7 +144,8 @@ public class NrtController {
 
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("collectionTask", collectionTask);
-        modelAndView.addObject("rrdGraphString", prefabGraph.getCommand());
+        modelAndView.addObject("rrdGraphString", prefabGraph.getCommand().replaceAll("\"", "'"));
+        logger.debug("rrdGraphString with \" replaced '{}'", prefabGraph.getCommand().replaceAll("\"", "'"));
         return modelAndView;
     }
 

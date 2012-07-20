@@ -722,7 +722,8 @@ public abstract class JMXCollector implements ServiceCollector {
 
         @Override
         public String getAttributeId() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            //throw new UnsupportedOperationException("Not supported yet.");
+            return "JmxNotSupportedYet";
         }
     }
     

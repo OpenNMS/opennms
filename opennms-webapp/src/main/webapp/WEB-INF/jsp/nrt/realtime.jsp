@@ -73,7 +73,7 @@ Array.prototype.remove = function(from, to) {
 
 // Receive inbound JavaScript variables from the controller.
 var collectionTaskId = "${collectionTask}";
-var rrdGraphString = "${rrdGraphDefn}";
+var rrdGraphString = "${rrdGraphString}";
 
 // Create all of the necessary graphing variables.
 //var series = null;

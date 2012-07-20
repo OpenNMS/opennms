@@ -413,7 +413,7 @@ public class JMXDataSource implements Cloneable {
 
         // Build the buffer
         buffer.append("\n   oid:       ").append(m_oid);
-        buffer.append("\n   name: 	 ").append(m_name);
+        buffer.append("\n   name:      ").append(m_name);
         buffer.append("\n   type:      ").append(m_type);
         buffer.append("\n   heartbeat: ").append(m_heartbeat);
         buffer.append("\n   min:       ").append(m_min);
