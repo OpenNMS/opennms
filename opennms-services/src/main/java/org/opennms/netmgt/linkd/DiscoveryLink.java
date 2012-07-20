@@ -253,7 +253,10 @@ public final class DiscoveryLink implements ReadyRunnable {
 	
     protected void populateMacToAtInterface() {
         LogUtils.debugf(this, "populateMacToAtInterface: using atNodes to populate macToAtinterface");
-        for (final String macAddress : getLinkd().getAtInterfaces(getPackageName()).keySet()) {
+        final Map<String,List<AtInterface>> macs=getLinkd().getAtInterfaces(getPackageName());
+        if (macs== null || macs.keySet() == null ) 
+        	return;
+        for (final String macAddress : macs.keySet()) {
             LogUtils.debugf(this, "populateMacToAtInterface: MAC %s now has atinterface reference: %d", macAddress, getLinkd().getAtInterfaces(getPackageName()).get(macAddress).size());
             for (final AtInterface at : getLinkd().getAtInterfaces(getPackageName()).get(macAddress)) {
         		int nodeid = at.getNodeid();
