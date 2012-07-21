@@ -274,7 +274,8 @@
   
   <servlet>
       <servlet-name>AjaxServlet</servlet-name>
-      <servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class>
+      <servlet-class>org.opennms.web.controller.nrt.NrtAmqAjaxServlet</servlet-class>
+      <!-- servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class -->
       <load-on-startup>1</load-on-startup>
   </servlet>
   
