@@ -251,7 +251,8 @@ function tick(incomingData) {
 	var dt = graphManager.seriesMaxTime();
   
 	// Retrieve the minimum value.
-	var curMin = graphManager.seriesMinValue();
+	//var curMin = graphManager.seriesMinValue();
+	var curMin = 0;
   
 	// update the domain for the graph axis
 	x.domain([new Date(dt-duration), dt]);
