@@ -6,6 +6,30 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.1">
+		<title>Changes in OpenNMS 1.11.1</title>
+
+		<section id="opennms-1.11.1-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Passwords Cannot Contain non-ASCII Characters (Issue <ulink url='http://issues.opennms.org/browse/NMS-5312'>NMS-5312</ulink>)</para></listitem>
+				<listitem><para>IpAddressTableEntry: Unable to determine IP address type (4)  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5414'>NMS-5414</ulink>)</para></listitem>
+				<listitem><para>MockSnmpAgent does not parse properly STRING with quotes &quot;&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5415'>NMS-5415</ulink>)</para></listitem>
+				<listitem><para>Provision service does not persist ifPhysAddress for snmp interfaces without a corresponding ip interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-5418'>NMS-5418</ulink>)</para></listitem>
+				<listitem><para>The Poll Snmp Interface Policy is overwritten if the interface has a valid ip address (Issue <ulink url='http://issues.opennms.org/browse/NMS-5425'>NMS-5425</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.1-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Snmp Monitor reports Down when the Agent is not responding (Issue <ulink url='http://issues.opennms.org/browse/NMS-4632'>NMS-4632</ulink>)</para></listitem>
+				<listitem><para>Modify the remote poller to make it friendlier to run multiple instances on the same machine (Issue <ulink url='http://issues.opennms.org/browse/NMS-5072'>NMS-5072</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.0">
 		<title>Changes in OpenNMS 1.11.0</title>
 
@@ -86,6 +110,35 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.4">
+		<title>Changes in OpenNMS 1.10.4</title>
+
+		<section id="opennms-1.10.4-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Collectd collects for deleted node (Issue <ulink url='http://issues.opennms.org/browse/NMS-1996'>NMS-1996</ulink>)</para></listitem>
+				<listitem><para>No working breadcrumb on System Report List Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-4943'>NMS-4943</ulink>)</para></listitem>
+				<listitem><para>Services not deleted when removed from provisioning requisition (Issue <ulink url='http://issues.opennms.org/browse/NMS-5198'>NMS-5198</ulink>)</para></listitem>
+				<listitem><para>An exception is thrown if a notification is configured to have a subject with more than 256 characters (Issue <ulink url='http://issues.opennms.org/browse/NMS-5375'>NMS-5375</ulink>)</para></listitem>
+				<listitem><para>There are some NPE when trying to collect data from nodes managed by Capsd (Issue <ulink url='http://issues.opennms.org/browse/NMS-5400'>NMS-5400</ulink>)</para></listitem>
+				<listitem><para>IpAddressTableEntry: Unable to determine IP address type (4)  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5414'>NMS-5414</ulink>)</para></listitem>
+				<listitem><para>MockSnmpAgent does not parse properly STRING with quotes &quot;&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5415'>NMS-5415</ulink>)</para></listitem>
+				<listitem><para>HttpCollector fails to parse numeric values in locales that use different decimal notation (Issue <ulink url='http://issues.opennms.org/browse/NMS-5426'>NMS-5426</ulink>)</para></listitem>
+				<listitem><para>NullPointerException when printing errors in the JNI6 code (Issue <ulink url='http://issues.opennms.org/browse/NMS-5428'>NMS-5428</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.4-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Add logmsg support to send-event.pl (Issue <ulink url='http://issues.opennms.org/browse/NMS-5373'>NMS-5373</ulink>)</para></listitem>
+				<listitem><para>Add notification ID to NotificationTask.toString() (Issue <ulink url='http://issues.opennms.org/browse/NMS-5377'>NMS-5377</ulink>)</para></listitem>
+				<listitem><para>Add SNMP data collection and resource graph definitions for pfSense firewall / router (Issue <ulink url='http://issues.opennms.org/browse/NMS-5378'>NMS-5378</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.3">
 		<title>Changes in OpenNMS 1.10.3</title>

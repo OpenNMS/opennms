@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.2-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>widgetset</artifactId>
+
+  <name>${bundle.symbolicName}</name>
+
+  <packaging>bundle</packaging>
+  
+  <properties>
+    <bundle.symbolicName>org.opennms.features.topology.widgetset</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.widgetset</bundle.namespace>
+  </properties>
+
+  <build>
+    <plugins>
+      <!-- Compiles your custom GWT components with the GWT compiler -->
+      <!-- A hosted mode browser for client-side widget debugging can be run with the goal gwt:run after uncommenting the
+	   correct line below. A remote debugger can then be connected to port 8998. Note that e.g. a Jetty server should be running
+	   with the server side parts - use the goal jetty:run . -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>${gwt.plugin.version}</version>
+        <configuration>
+          <!-- <modules> <module>org.opennms.features.topology.app.internal.gwt.MyWidgetSet</module> </modules> -->
+          <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
+          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>resources</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwt.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      
+      <plugin>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <configuration></configuration>
+            <goals>
+              <goal>update-widgetset</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+    </plugins>
+
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+                     <pluginExecution>
+                        <pluginExecutionFilter>
+                           <groupId>
+                              org.opennms.maven.plugins
+                           </groupId>
+                           <artifactId>
+                              features-maven-plugin
+                           </artifactId>
+                           <versionRange>
+                              [1.0-SNAPSHOT,)
+                           </versionRange>
+                           <goals>
+                              <goal>
+                                 generate-features-xml
+                              </goal>
+                           </goals>
+                        </pluginExecutionFilter>
+                        <action>
+                           <ignore></ignore>
+                        </action>
+                     </pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.codehaus.mojo</groupId>
+    								<artifactId>
+    									gwt-maven-plugin
+    								</artifactId>
+    								<versionRange>
+    									[2.2.0,)
+    								</versionRange>
+    								<goals>
+    									<goal>resources</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
+  </build>
+
+  <dependencies>
+    <!--
+	| uncomment to add all imported (non-local) bundles to your compilation classpath
+	<dependency>
+	<type>pom</type>
+	<groupId>${parent.groupId}</groupId>
+	<artifactId>provision</artifactId>
+	<optional>true</optional>
+	</dependency>
+    -->
+
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>app</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features.topology</groupId>
+        <artifactId>ssh</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+</project>

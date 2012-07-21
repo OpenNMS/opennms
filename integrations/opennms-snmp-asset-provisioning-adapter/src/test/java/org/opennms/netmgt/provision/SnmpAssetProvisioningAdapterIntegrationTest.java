@@ -64,6 +64,7 @@ import org.springframework.util.Assert;
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
@@ -75,7 +76,6 @@ import org.springframework.util.Assert;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @JUnitSnmpAgents(value={
-		@JUnitSnmpAgent(resource = "classpath:snmpAssetTestData.properties"),
 		@JUnitSnmpAgent(host="192.168.1.1", resource = "classpath:snmpAssetTestData.properties"),
 		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties"),
 		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties")
@@ -94,7 +94,7 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 	@Autowired
 	private SnmpAssetProvisioningAdapter m_adapter;
 
-	private static final String EXPECTED_COMMENT_FIELD = "OS Type: \"Linux\"\nOS Version: \"2.6.20-1.2316.fc5smp\"\nSystem Type: \"IBM ThinkCentre M52\"\nProcessor Type: \"Intel(R) Pentium(R) 4 CPU 3.00GHz Intel(R) Pentium(R) 4 CPU 3.00GHz\"\nProcessor Speed: \"2992.863 2992.863\"\nPhysical Memory: \"2109865984\"\nHard Drive Type: \"ATA WDC WD1600AAJS-2\"\nTape Drive Type: \"None\"\nOptical Drive Type: \"HL-DT-ST DVDRAM_GSA-H10N\"\nEquinox Type: \"Equinox Systems ESP\"\nModem 1 Type: \"ttyS0 - 2949C - Yes\"\nModem 2 Type: \"N/A\"\nModem Error Count: \"ttyS0 - 0 ttyQ01e0 - 0\"\nDatabase Dump Log: \"1\"\nMonetra Version: \"Monetra 7.3.0 BUILD 20254\"\nMonetra Store ID: \"0000001751\"\nOven Status: \"Oven not installed\"\nRAID Status: \"Cannot find raid file.\"\nMonetra Unsettled Batch Timestamp: \"None\"\nMonetra Key Timestamp: \"05/25/2010\"\nUnsettled Batch: 00:50:56:E7:A7:2F\nSecondary Password Algorithm Version: \"2.00\"\nProfit Database Version: \"V6.29R3\"\nJava Version: \"1.6.0_06\"\nProfit API Version: \"ProfitApi-2-0-57\"";
+	private static final String EXPECTED_COMMENT_FIELD = "OS Type: Linux\nOS Version: 2.6.20-1.2316.fc5smp\nSystem Type: IBM ThinkCentre M52\nProcessor Type: Intel(R) Pentium(R) 4 CPU 3.00GHz Intel(R) Pentium(R) 4 CPU 3.00GHz\nProcessor Speed: 2992.863 2992.863\nPhysical Memory: 2109865984\nHard Drive Type: ATA WDC WD1600AAJS-2\nTape Drive Type: None\nOptical Drive Type: HL-DT-ST DVDRAM_GSA-H10N\nEquinox Type: Equinox Systems ESP\nModem 1 Type: ttyS0 - 2949C - Yes\nModem 2 Type: N/A\nModem Error Count: ttyS0 - 0 ttyQ01e0 - 0\nDatabase Dump Log: 1\nMonetra Version: Monetra 7.3.0 BUILD 20254\nMonetra Store ID: 0000001751\nOven Status: Oven not installed\nRAID Status: Cannot find raid file.\nMonetra Unsettled Batch Timestamp: None\nMonetra Key Timestamp: 05/25/2010\nUnsettled Batch: 00:50:56:E7:A7:2F\nSecondary Password Algorithm Version: 2.00\nProfit Database Version: V6.29R3\nJava Version: 1.6.0_06\nProfit API Version: ProfitApi-2-0-57";
 	private static final int NODE_ID = 1;
 
 	@Override

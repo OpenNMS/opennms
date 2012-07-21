@@ -42,13 +42,19 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+@XmlRootElement(name = "link")
 @Entity
 @Table(name = "datalinkinterface")
 public class DataLinkInterface  implements Serializable, Comparable<DataLinkInterface> {
@@ -68,7 +74,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     @Column(name="linktypeid", nullable=true)
     private Integer m_linkTypeId;
     @Temporal(TemporalType.TIMESTAMP)
-	@Column(name="lastpolltime", nullable=false)
+    @Column(name="lastpolltime", nullable=false)
     private Date m_lastPollTime;
 
     public DataLinkInterface() {
@@ -95,10 +101,11 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     }
 
     /**
-     * Method getNodeId returns the nodeId of this DataLinkInterface object.
+     * Method id returns the id of this DataLinkInterface object.
      *
-     * @return the nodeId (type Integer) of this DataLinkInterface object.
+     * @return the Id (type Integer) of this DataLinkInterface object.
      */
+    @XmlTransient
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
@@ -106,6 +113,12 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return m_id;
     }
 
+    @XmlID
+    @XmlAttribute(name="id")
+    @Transient
+    public String getDataLinkInterfaceId() {
+        return getId().toString();
+    }
     /**
      * <p>Setter for the field <code>id</code>.</p>
      *
@@ -132,6 +145,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      *
      * @return the ifIndex (type Integer) of this DataLinkInterface object.
      */
+    
+    @XmlElement( name = "ifIndex" )
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -150,6 +165,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      *
      * @return the nodeParentId (type Integer) of this DataLinkInterface object.
      */
+    @XmlElement(name = "nodeParentId")
     public Integer getNodeParentId() {
         return m_nodeParentId;
     }
@@ -168,6 +184,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      *
      * @return the parentIfIndex (type Integer) of this DataLinkInterface object.
      */
+    @XmlElement(name = "parentIfIndex")
     public Integer getParentIfIndex() {
         return m_parentIfIndex;
     }

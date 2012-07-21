@@ -200,7 +200,7 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         public String getParent() {
-            return Integer.toString(m_agent.getNodeId());
+            return m_agent.getStorageDir().toString();
         }
     }
     

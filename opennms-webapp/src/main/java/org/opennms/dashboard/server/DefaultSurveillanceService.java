@@ -337,7 +337,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         if (obj instanceof UserDetails) { 
             return ((UserDetails)obj).getUsername(); 
         } else { 
-            return obj.toString(); 
+            throw new IllegalStateException("principal should always be instanceof UserDetails");
         }
     }
 

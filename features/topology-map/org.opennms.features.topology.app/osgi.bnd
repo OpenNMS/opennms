@@ -1,0 +1,12 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+#Bundle-Activator: ${bundle.namespace}.internal.Activator
+
+# Package format version - do not change
+Vaadin-Package-Version: 1
+Vaadin-Widgetsets: org.opennms.features.topology.app.internal.gwt.TopologyWidget
+#Export-Package: org.opennms.*
+Embed-Dependency: jung*|colt|concurrent|collections-generic
+Embed-Transitive: true

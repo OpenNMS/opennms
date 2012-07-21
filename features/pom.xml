@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -23,6 +23,9 @@
     <module>springframework-security</module>
     <module>system-report</module>
     <module>ticketing</module>
+
+    <!-- Topoology Map -->
+    <module>topology-map</module>
 
     <!-- SMS monitoring -->
     <module>phonebook</module>

@@ -63,8 +63,8 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /** {@inheritDoc} */
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
-        OnmsResource node = getResourceService().getResourceById(resourceId);
-        return buildResourceReport(getResourceService(), node, "Domain Report for Domain " + domain);
+        OnmsResource res = getResourceService().getResourceById(resourceId);
+        return buildResourceReport(getResourceService(), res, "Domain Report for Domain " + domain);
     }
 
     /** {@inheritDoc} */
@@ -72,6 +72,13 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
         OnmsResource node = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), node, "Node Report for Node Number " + node_id);
+    }
+    
+    /** {@inheritDoc} */
+    public Report buildNodeSourceReport(String nodeSource) {
+        String resourceId = OnmsResource.createResourceId("nodeSource", nodeSource);
+        OnmsResource res = getResourceService().getResourceById(resourceId);
+        return buildResourceReport(getResourceService(), res, "Node Report for Foreign Source:Id " + nodeSource);
     }
     
     private static Report buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
@@ -113,6 +120,9 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
                 parentResourceTypeName = "node";
                 parentResourceName = graph.getNodeId();
+            } else if (graph.getNodeSource() != null && !graph.getNodeSource().equals("null")) {
+                parentResourceTypeName = "nodeSource";
+                parentResourceName = graph.getNodeSource();
             } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
                 parentResourceTypeName = "domain";
                 parentResourceName = graph.getDomain();

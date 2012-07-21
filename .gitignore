@@ -5,7 +5,6 @@
 target
 .classpath
 .externalToolBuilders
-.gitignore
 .project
 .settings
 .springBeans

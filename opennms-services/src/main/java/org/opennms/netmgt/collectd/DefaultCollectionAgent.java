@@ -29,6 +29,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,6 +37,7 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -77,6 +79,8 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     private int m_ifIndex = -1;
     private PrimaryType m_isSnmpPrimary = null;
     private String m_sysObjId = null;
+    private String m_foreignSource = null;
+    private String m_foreignId = null;
     
     private CollectionAgentService m_agentService;
     private Set<SnmpIfData> m_snmpIfData;
@@ -105,6 +109,18 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
         return m_inetAddress;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#isStoreByForeignSource()
+     */
+    /**
+     * <p>isStoreByForeignSource</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
+    public Boolean isStoreByForeignSource() {
+        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+    }
+    
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getHostAddress()
      */
@@ -152,6 +168,59 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
         return m_nodeId; 
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getForeignSource()
+     */
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getForeignSource() {
+        if (m_foreignSource == null) {
+            m_foreignSource = m_agentService.getForeignSource();
+        }
+        return m_foreignSource;
+    }
+ 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getForeignId()
+     */
+    /**
+     * <p>getForeignId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getForeignId() {
+        if (m_foreignId == null) {
+            m_foreignId = m_agentService.getForeignId();
+        }
+        return m_foreignId;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getStorageDir()
+     */
+    /**
+     * <p>getStorageDir</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
+    public File getStorageDir() {
+       File dir = new File(String.valueOf(getNodeId()));
+       if(isStoreByForeignSource() && !(getForeignSource() == null) && !(getForeignId() == null)) {
+               File fsDir = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
+               dir = new File(fsDir, m_foreignId);
+       }
+       LogUtils.debugf(this, " getStorageDir: isStoreByForeignSource = %s, foreignSource = %s, foreignId = %s, dir = %s",
+                       isStoreByForeignSource(),
+                       m_foreignSource,
+                       m_foreignId,
+                       dir
+       );
+       return dir;
+    }
+    
     private int getIfIndex() {
         if (m_ifIndex == -1) {
             m_ifIndex = m_agentService.getIfIndex();
