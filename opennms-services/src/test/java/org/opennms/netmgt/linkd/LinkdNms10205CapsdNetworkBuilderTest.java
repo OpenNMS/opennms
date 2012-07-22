@@ -66,6 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-capsd.xml",
@@ -80,7 +81,7 @@ import org.springframework.transaction.annotation.Transactional;
 // either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205CapsdNetworkBuilder implements InitializingBean {
+public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
 
 
     private static final String MUMBAI_IP = "10.205.56.5";
