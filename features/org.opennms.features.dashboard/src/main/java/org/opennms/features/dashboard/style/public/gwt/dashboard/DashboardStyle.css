@@ -1,3 +1,9 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    vertical-align: top !important;
+    border: none;
+    background: none;
+}
+
 /*-Popup window styles-*/
 .borderPanel {
 	border-radius: 5px 5px 5px 5px;
@@ -17,7 +23,19 @@
 }
 
 .popup-WindowPanel-title {
-	padding: 2px;
+	float: left;
+	font-size: 15px;
+	cursor: default;
+	font-weight: bold;
+	background: none repeat scroll 0 0 #8CC63F;
+}
+
+.popup-WindowPanel-headerPanel{
+	width: 100%;
+	margin: 0px !important;
+}
+	
+.popup-WindowPanel-title-lbl {
 	float: left;
 	font-size: 15px;
 	cursor: default;

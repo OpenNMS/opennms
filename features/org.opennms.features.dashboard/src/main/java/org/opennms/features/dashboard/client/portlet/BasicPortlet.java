@@ -29,9 +29,9 @@
 package org.opennms.features.dashboard.client.portlet;
 
 import org.opennms.features.dashboard.client.dnd.ResizeDragController;
-import org.opennms.features.dashboard.client.resource.WidgetResource;
 
 import com.allen_sauer.gwt.dnd.client.DragController;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
@@ -49,7 +49,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  */
 public abstract class BasicPortlet extends FocusPanel implements
         IBasicPortlet {
-    protected WidgetResource imageResource = WidgetResource.WIDGETRESOURCE;
+//    protected WidgetResource imageResource = WidgetResource.WIDGETRESOURCE;
 
     // protected WidgetCssResource cssResource =
     // imageResource.widgetsCssResource();
@@ -98,7 +98,7 @@ public abstract class BasicPortlet extends FocusPanel implements
                                                                        DIRECTION_WEST,
                                                                        "w");
 
-    private static final int BORDER_THICKNESS = 5;
+    private static final int BORDER_THICKNESS = 2;
 
     protected static final int TITLE_HEIGHT = 22;
 
@@ -170,7 +170,8 @@ public abstract class BasicPortlet extends FocusPanel implements
         CellFormatter cellFormatter = containerPanel.getCellFormatter();
         cellFormatter.setHeight(0, 0, TITLE_HEIGHT + "px");
         titlePanel.setStyleName("popup-WindowPanel-title");
-        titlePanel.setSize("100%", TITLE_HEIGHT + "px");
+//        titlePanel.setSize("100%", TITLE_HEIGHT + "px");
+        titlePanel.setWidth("100%");
 
         contentpanel = new SimplePanel();
         contentpanel.setSize("100%", "100%");
@@ -191,7 +192,7 @@ public abstract class BasicPortlet extends FocusPanel implements
         cornerWidget = setupCell(2, 2, SOUTH_EAST);
         DOM.setStyleAttribute(cornerWidget.getElement(), "position", "absolute");
 
-        Image corner = new Image(imageResource.resizeCorner());
+        Image corner = new Image(GWT.getHostPageBaseURL()+"images/resize_corner.png");
         cornerWidget.add(corner);
         DOM.setStyleAttribute(corner.getElement(), "position", "absolute");
         DOM.setStyleAttribute(corner.getElement(), "right", "2px");

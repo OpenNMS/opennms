@@ -93,6 +93,7 @@ public class VerticalDBLayout extends BasicDBLayout {
         // initialize our widget drag controller
         moveDragController = new PickupDragController(this, false);
         moveDragController.setBehaviorMultipleSelection(false);
+        moveDragController.setBehaviorDragStartSensitivity(5);
         moveDragController.addDragHandler(dragHandler);
 
         // initialize our column drag controller

@@ -28,6 +28,7 @@
 
 package org.opennms.features.dashboard.client.portlet;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
@@ -53,14 +54,14 @@ public class Portlet extends BasicPortlet {
         titlePanel.add(headerPanel);
         headerPanel.setCellSpacing(0);
         headerPanel.setCellPadding(0);
-        headerPanel.setWidth("100%");
+        headerPanel.setStyleName("popup-WindowPanel-headerPanel");
 
         titleLbl = new Label();
-        titleLbl.setStyleName("popup-WindowPanel-title");
+        titleLbl.setStyleName("popup-WindowPanel-title-lbl");
         titleLbl.setSize("100%", TITLE_HEIGHT + "px");
         headerPanel.setWidget(0, 0, titleLbl);
 
-        closeBtn = new PushButton(new Image(imageResource.dropSmall()));
+        closeBtn = new PushButton(new Image(GWT.getHostPageBaseURL()+"images/drop_small.png"));
         closeBtn.setSize("auto", "auto");
         closeBtn.setStyleName("popup-WindowPanel-close");
         closeBtn.addClickHandler(closeHandler);

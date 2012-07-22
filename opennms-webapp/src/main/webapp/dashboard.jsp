@@ -47,7 +47,8 @@
 </jsp:include>
 
 <script type="text/javascript" language='javascript' src='dashboard/dashboard.nocache.js'></script>
-<table class="dashboard" cellspacing="5" width="100%">
+<div id="dashboardDiv" class="dashboard" width="100%"></div>
+<!--table class="dashboard" cellspacing="5" width="100%">
   <tbody>
     <tr>
       <td class="dashletCell"id="surveillanceView"></td>
@@ -68,7 +69,7 @@
       <td class="dashletCell" id="outages"></td>
     </tr>
   </tbody>
-</table>
-
+</table-->
+<div id="log"></div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

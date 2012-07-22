@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,31 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.dashboard.client.resource;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ClientBundleWithLookup;
-import com.google.gwt.resources.client.CssResource.NotStrict;
-import com.google.gwt.resources.client.ImageResource;
+package org.opennms.dashboard.client.portlet;
 
 /**
- * author: Tharindu Munasinghe (tharindumunasinghe@gmail.com)
- * org.opennms.features.dashboard
+ * <p>ErrorHandler interface.</p>
+ *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
-public interface WidgetResource extends ClientBundle, ClientBundleWithLookup
-{
-	WidgetResource WIDGETRESOURCE = GWT.create( WidgetResource.class);
-	
-	@Source("style.css")
-	@NotStrict
-	WidgetCssResource widgetsCssResource();
-
-	@Source("resize_corner.png")
-	ImageResource resizeCorner();
-	
-	@Source("drop_small.png")
-	ImageResource dropSmall();
-
+public interface ErrorHandler {
+    
+    /**
+     * <p>error</p>
+     *
+     * @param e a {@link java.lang.Throwable} object.
+     */
+    public void error(Throwable e);
 
 }

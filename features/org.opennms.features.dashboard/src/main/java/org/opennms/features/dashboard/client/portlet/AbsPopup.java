@@ -30,11 +30,11 @@ package org.opennms.features.dashboard.client.portlet;
 
 import org.opennms.features.dashboard.client.dnd.ResizeDragController;
 import org.opennms.features.dashboard.client.dnd.MoveDragController;
-import org.opennms.features.dashboard.client.resource.WidgetResource;
 
 import com.allen_sauer.gwt.dnd.client.AbstractDragController;
 import com.allen_sauer.gwt.dnd.client.util.Location;
 import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
@@ -61,7 +61,7 @@ import com.google.gwt.user.client.ui.Widget;
 @Deprecated
 public abstract class AbsPopup extends FocusPanel
 {
-	protected WidgetResource imageResource = WidgetResource.WIDGETRESOURCE;
+//	protected WidgetResource imageResource = WidgetResource.WIDGETRESOURCE;
 //	protected WidgetCssResource cssResource = imageResource.widgetsCssResource();
 
 	public static final int DIRECTION_EAST = 0x0001;
@@ -145,10 +145,11 @@ public abstract class AbsPopup extends FocusPanel
 				
 		title=new Label( );
 		title.setStyleName( "popup-WindowPanel-title" );
-		title.setSize( "100%", TITLE_HEIGHT+"px" );
+//		title.setSize( "100%", TITLE_HEIGHT+"px" );
+		title.setWidth("100%" );
 		titlePanel.setWidget( 0, 0, title );		
 				
-		closeBtn=new PushButton(new Image( imageResource.dropSmall() ));
+		closeBtn=new PushButton(new Image(GWT.getHostPageBaseURL()+"images/drop_small.png"));
 		closeBtn.setSize( "auto", "auto" );
 		closeBtn.setStyleName( "popup-WindowPanel-close" );
 		closeBtn.addClickHandler( closeHandler );
@@ -191,7 +192,7 @@ public abstract class AbsPopup extends FocusPanel
 		southWidget.setSize( "100%", BORDER_THICKNESS + "px" );
 		
 		cornerWidget = setupCell( 2, 2, SOUTH_EAST, true );
-		Image corner=new Image( imageResource.resizeCorner() );
+		Image corner=new Image(GWT.getHostPageBaseURL()+"images/resize_corner.png");
 		cornerWidget.add( corner );
 		DOM.setStyleAttribute( corner.getElement(), "position", "absolute" );
 		DOM.setStyleAttribute( corner.getElement(), "right","3px");

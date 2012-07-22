@@ -29,8 +29,14 @@
 package org.opennms.dashboard.client;
 
 
+import org.opennms.features.dashboard.client.layout.BasicDBLayout;
+import org.opennms.features.dashboard.client.layout.VerticalDBLayout;
+import org.opennms.features.dashboard.client.portlet.IBasicPortlet;
+import org.opennms.features.dashboard.client.portlet.Portlet;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
@@ -67,8 +73,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
      * <p>onModuleLoad</p>
      */
     public void onModuleLoad() {
-        
-        
+                       
         add(createSurveillanceDashlet(), "surveillanceView");
         add(createAlarmDashlet(),        "alarms");
         add(createGraphDashlet(),        "graphs");
