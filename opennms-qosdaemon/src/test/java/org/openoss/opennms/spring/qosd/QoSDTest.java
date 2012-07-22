@@ -55,7 +55,6 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
-		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:org/openoss/opennms/spring/qosd/qosd-spring-context.xml",
 		"classpath:org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml"
 })
