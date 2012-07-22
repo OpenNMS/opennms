@@ -13,7 +13,7 @@
 
   <name>OpenNMS :: Topology :: Development</name>
 
-  <description>All OpenNMS topology runtime features, as well as development utilities.</description>
+  <description>Useful utilities for the OpenNMS OSGi container.</description>
 
   <packaging>pom</packaging>
 
@@ -24,7 +24,7 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <repositories>
-            <repository>mvn:${project.groupId}/opennms-topology-runtime/${project.version}/xml/features</repository>
+            <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
           <bundles>
             <bundle>wrap:mvn:junit/junit/${junit.version}</bundle>
@@ -37,7 +37,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime</artifactId>
+      <artifactId>opennms-topology-runtime-base</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>

@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -189,12 +190,33 @@ public class CommandManager  {
         m_topLevelMenuOrder  = menuOrderList;
         
     }
+    
+    public void updateMenuConfig(Map props) { 
+        System.out.println("Getting config with these parameters: " + props);
+        List<String> topLevelOrder = Arrays.asList(props.get("toplevelMenuOrder").toString().split(","));
+        setTopLevelMenuOrder(topLevelOrder);
+        
+        for(String topLevelItem : topLevelOrder) {
+            if(!topLevelItem.equals("Additions")) {
+                String key = "submenu." + topLevelItem + ".groups";
+                addOrUpdateGroupOrder(topLevelItem, Arrays.asList(props.get(key).toString().split(",")));
+            }
+        }
+        addOrUpdateGroupOrder("Default", Arrays.asList(props.get("submenu.Default.groups").toString().split(",")));
+    }
 
-    public void addGroupOrder(String key, List<String> orderSet) {
+    public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
         if(!m_subMenuGroupOrder.containsKey(key)) {
+            m_subMenuGroupOrder.put(key, orderSet);
+        }else {
+            m_subMenuGroupOrder.remove(key);
             m_subMenuGroupOrder.put(key, orderSet);
         }
         
+    }
+    
+    public Map<String, List<String>> getMenuOrderConfig(){
+        return m_subMenuGroupOrder;
     }
     
 }

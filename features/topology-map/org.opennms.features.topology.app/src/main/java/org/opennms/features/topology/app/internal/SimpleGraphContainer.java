@@ -118,6 +118,16 @@ public class SimpleGraphContainer implements GraphContainer {
             m_item.getItemProperty("icon").setValue(icon);
         }
 
+        public String getLabel() {
+            Property labelProperty = m_item.getItemProperty("label");
+			String label = labelProperty == null ? "labels unsupported " : (String) labelProperty.getValue();
+			return label;
+        }
+
+        public void setLabel(String label) {
+            m_item.getItemProperty("label").setValue(label);
+        }
+
         private GVertex getParent() {
             if (m_groupKey == null) return null;
             

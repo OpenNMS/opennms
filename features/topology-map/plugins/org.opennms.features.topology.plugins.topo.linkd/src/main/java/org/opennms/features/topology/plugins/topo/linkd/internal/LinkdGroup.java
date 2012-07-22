@@ -16,8 +16,8 @@ public class LinkdGroup extends LinkdVertex {
 	int m_mapid;
 	public LinkdGroup() {}
 	
-	public LinkdGroup(String groupId) {
-	    super(groupId, GROUP_ICON);
+	public LinkdGroup(String groupId, String label) {
+	    super(groupId, GROUP_ICON, label);
 	}
 
         @Override

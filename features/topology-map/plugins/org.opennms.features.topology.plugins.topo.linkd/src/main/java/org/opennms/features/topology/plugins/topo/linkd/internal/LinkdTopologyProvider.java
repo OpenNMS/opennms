@@ -16,6 +16,7 @@ import org.opennms.features.topology.api.TopologyProvider;
 
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsNode;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -57,7 +58,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         System.err.println("Adding a group: " + groupId);
-        LinkdVertex vertex = new LinkdGroup(groupId);
+        LinkdVertex vertex = new LinkdGroup(groupId, "Group " + groupId);
         vertex.setIcon(icon);
         return m_vertexContainer.addBean(vertex);        
     }
@@ -206,11 +207,12 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     private void loadtopology() {
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
-            String sourceId = link.getNode().getNodeId();
+            OnmsNode node = link.getNode();
+			String sourceId = node.getNodeId();
             LinkdVertex source;
             BeanItem<LinkdVertex> item = m_vertexContainer.getItem(sourceId);
             if (item == null) {
-                source = new LinkdNodeVertex(link.getNode().getNodeId(), 0, 0, SWITCH_ICON);
+                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, SWITCH_ICON, node.getLabel());
                 m_vertexContainer.addBean( source);
             }
             else {
@@ -221,7 +223,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             LinkdVertex target;
             item = m_vertexContainer.getItem(targetId);
             if (item == null) {
-                target = new LinkdNodeVertex(targetId, 0, 0, SWITCH_ICON);
+                target = new LinkdNodeVertex(targetId, 0, 0, SWITCH_ICON, "FIX ME: nodeParentId: " + targetId);
                 m_vertexContainer.addBean( target);                    
             }
             else {

@@ -2,6 +2,7 @@ package org.opennms.features.topology.app.internal;
 
 import com.google.gwt.user.client.Window;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -11,6 +12,7 @@ public class Vertex implements Paintable {
     public static final String LEAF_PROPERTY = "leaf";
     public static final String X_PROPERTY = "x";
     public static final String Y_PROPERTY = "y";
+    public static final String LABEL_PROPERTY = "label";
     public static final String SELECTED_PROPERTY = "selected";
     public static final String ICON_PROPERTY = "icon";
     public static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
@@ -19,6 +21,7 @@ public class Vertex implements Paintable {
 	private Item m_item;
 	private Object m_groupId;
 	private String m_groupKey;
+	private String m_label;
 	
 	public Vertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
 		m_key = key;
@@ -93,6 +96,12 @@ public class Vertex implements Paintable {
 	public int getSemanticZoomLevel() {
 		Integer zoomLevel = (Integer) m_item.getItemProperty(SEMANTIC_ZOOM_LEVEL).getValue();
         return zoomLevel;
+	}
+	
+	public String getLabel() {
+		Property labelProperty = m_item.getItemProperty(LABEL_PROPERTY);
+		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
+		return label;
 	}
 
 	public void setGroupId(Object groupId) {

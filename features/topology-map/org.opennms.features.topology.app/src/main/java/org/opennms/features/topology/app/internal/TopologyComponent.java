@@ -134,6 +134,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("selected", group.isSelected());
         		target.addAttribute("iconUrl", group.getIconUrl());
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
+        		target.addAttribute("label", group.getLabel());
 
         		List<String> groupActionList = new ArrayList<String>();
         		for(Action.Handler handler : m_actionHandlers) {
@@ -163,6 +164,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		if (vert.getGroupId() != null) {
         			target.addAttribute("groupKey", vert.getGroupKey());
         		}
+        		target.addAttribute("label", vert.getLabel());
+
 
         		List<String> vertActionList = new ArrayList<String>();
         		for(Action.Handler handler : m_actionHandlers) {

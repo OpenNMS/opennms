@@ -92,8 +92,8 @@ public class MenuBarBuilder {
                 if(m_menuOrder.contains(menuName1)) {
                     index1 = m_menuOrder.indexOf(menuName1);
                 }else {
-                    if(m_menuOrder.contains("Additional")) {
-                        index1 = m_menuOrder.indexOf("Additional");
+                    if(m_menuOrder.contains("Additions")) {
+                        index1 = m_menuOrder.indexOf("Additions");
                     }else {
                         index1 = m_menuOrder.size();
                     }
@@ -102,8 +102,8 @@ public class MenuBarBuilder {
                 if(m_menuOrder.contains(menuName2)) {
                     index2 = m_menuOrder.indexOf(menuName2);
                 }else {
-                    if(m_menuOrder.contains("Additional")) {
-                        index2 = m_menuOrder.indexOf("Additional");
+                    if(m_menuOrder.contains("Additions")) {
+                        index2 = m_menuOrder.indexOf("Additions");
                     }else {
                         index2 = m_menuOrder.size();
                     }

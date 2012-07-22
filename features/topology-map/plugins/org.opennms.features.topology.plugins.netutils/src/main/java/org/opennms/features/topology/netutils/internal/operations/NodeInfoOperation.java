@@ -12,6 +12,7 @@ public class NodeInfoOperation implements Operation {
 	/*Test Data*/
 	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
 	private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
+	private String nodeInfoURL;
 	
 	public boolean display(List<Object> targets, OperationContext operationContext) {
 		// TODO Auto-generated method stub
@@ -25,7 +26,7 @@ public class NodeInfoOperation implements Operation {
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
 		try {
-			operationContext.getMainWindow().addWindow(new NodeInfoWindow(testNode1));
+			operationContext.getMainWindow().addWindow(new NodeInfoWindow(testNode1, getNodeInfoURL()));
 		} catch (Exception e) { e.printStackTrace(); }
 		return null;
 	}
@@ -33,6 +34,14 @@ public class NodeInfoOperation implements Operation {
 	public String getId() {
 		// TODO Auto-generated method stub
 		return "nodeInfo";
+	}
+
+	public String getNodeInfoURL() {
+		return nodeInfoURL;
+	}
+
+	public void setNodeInfoURL(String nodeInfoURL) {
+		this.nodeInfoURL = nodeInfoURL;
 	}
 
 }

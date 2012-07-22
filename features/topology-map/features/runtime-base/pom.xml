@@ -34,9 +34,19 @@
             <config>
                 <name>org.opennms.features.topology.app</name>
                 <contents>
-                    toplevelMenuOrder=File,Edit,View,Additional,Help
                     servletAlias=/topology
                     widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
+                </contents>
+            </config>
+            <config>
+                <name>org.opennms.features.topology.app.menu</name>
+                <contents>
+                    toplevelMenuOrder=File,Edit,View,Additions,Help
+                    submenu.File.groups=start,new,close,save,print,open,import,additions,end
+                    submenu.Edit.groups=start,undo,cut,find,add,end,additions
+                    submenu.View.groups=start,additions,end
+		    submenu.Help.groups=start,main,tools,updates,end,additions
+                    submenu.Default.groups=start,main,end,additions
                 </contents>
             </config>
           </configs>
