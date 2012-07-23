@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.bsf.request.BSFRequest;
 import org.opennms.netmgt.provision.detector.bsf.response.BSFResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -79,10 +79,10 @@ public class BSFDetector extends BasicDetector<BSFRequest, BSFResponse> {
         expectBanner(responseMatches("OK"));
     }
 
-    private ResponseValidator<BSFResponse> responseMatches(final String banner) {
+    private static ResponseValidator<BSFResponse> responseMatches(final String banner) {
         return new ResponseValidator<BSFResponse>(){
 
-            public boolean validate(final BSFResponse response) throws Exception {
+            public boolean validate(final BSFResponse response) {
                 return response.validate(banner);
             }
 

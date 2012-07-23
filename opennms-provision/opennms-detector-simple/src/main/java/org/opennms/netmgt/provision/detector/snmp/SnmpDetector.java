@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.exchange.Exchange;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -56,7 +56,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 @Scope("prototype")
-public class SnmpDetector extends AbstractDetector implements InitializingBean {
+public class SnmpDetector extends SyncAbstractDetector implements InitializingBean {
     
     /** Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
@@ -113,10 +113,6 @@ public class SnmpDetector extends AbstractDetector implements InitializingBean {
     public SnmpDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void init() {}
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -287,16 +283,10 @@ public class SnmpDetector extends AbstractDetector implements InitializingBean {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        // TODO Auto-generated method stub
-        
     }
 
     /** {@inheritDoc} */
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-        
     }
-    
-
 }

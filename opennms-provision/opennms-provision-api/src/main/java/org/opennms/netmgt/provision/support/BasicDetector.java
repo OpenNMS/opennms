@@ -36,9 +36,6 @@ import java.net.NoRouteToHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
  * <p>Abstract BasicDetector class.</p>
@@ -46,7 +43,7 @@ import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator
  * @author <a href=mailto:desloge@opennms.com>Donald Desloge</a>
  * @version $Id: $
  */
-public abstract class BasicDetector<Request, Response> extends AbstractDetector implements SyncServiceDetector {
+public abstract class BasicDetector<Request, Response> extends SyncAbstractDetector {
     
     private ClientConversation<Request, Response> m_conversation = new ClientConversation<Request, Response>();
     
@@ -136,7 +133,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     /**
      * <p>expectBanner</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected final void expectBanner(ResponseValidator<Response> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
@@ -145,8 +142,8 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     /**
      * <p>send</p>
      *
-     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder} object.
-     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.RequestBuilder} object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected final void send(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(requestBuilder, responseValidator);
@@ -155,7 +152,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
      * <p>send</p>
      *
      * @param request a Request object.
-     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected void send(Request request, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(request, responseValidator);

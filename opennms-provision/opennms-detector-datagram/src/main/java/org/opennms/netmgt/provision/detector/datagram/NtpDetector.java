@@ -36,8 +36,8 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.NtpClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.RequestBuilder;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -73,10 +73,10 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
         send(createNtpMessage(), validateResponse(getAddress()));
     }
 
-    private ResponseValidator<DatagramPacket> validateResponse(final InetAddress nserver) {
+    private static ResponseValidator<DatagramPacket> validateResponse(final InetAddress nserver) {
         return new ResponseValidator<DatagramPacket>(){
 
-            public boolean validate(final DatagramPacket response) throws Exception {
+            public boolean validate(final DatagramPacket response) {
                 if (response.getAddress().equals(nserver)) {
                     // parse the incoming data
                     new NtpMessage(response.getData());
@@ -89,10 +89,10 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
         };
     }
 
-    private RequestBuilder<NtpMessage> createNtpMessage() {
+    private static RequestBuilder<NtpMessage> createNtpMessage() {
         return new RequestBuilder<NtpMessage>(){
 
-            public NtpMessage getRequest() throws Exception {
+            public NtpMessage getRequest() {
                 return new NtpMessage();
             }
             

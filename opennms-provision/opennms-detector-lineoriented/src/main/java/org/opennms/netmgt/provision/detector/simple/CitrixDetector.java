@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class CitrixDetector extends AsyncLineOrientedDetector {
+public class CitrixDetector extends AsyncLineOrientedDetectorMinaImpl {
     
     
     private static final String DEFAULT_SERVICE_NAME = "CITRIX";

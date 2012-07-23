@@ -84,6 +84,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     @Override
     public void sessionClosed(IoSession session) throws Exception {
         if(!getFuture().isDone()) {
+            LogUtils.infof(this, "Session closed and detection is not complete. Setting service detection to false.");
             getFuture().setServiceDetected(false);
         }
     }
@@ -92,6 +93,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         if(getConversation().hasBanner() && status == IdleStatus.READER_IDLE) {
+            LogUtils.infof(this, "Session went idle without receiving banner. Setting service detection to false.");
             getFuture().setServiceDetected(false);
             session.close(true);
         }
@@ -110,7 +112,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {
-            LogUtils.debugf(this, "Client Receiving: %s\n", message.toString().trim());
+            LogUtils.debugf(this, "Client Receiving: %s", message.toString().trim());
             
             if(getConversation().hasExchanges() && getConversation().validate((Response)message)) {
                
@@ -119,14 +121,16 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
                 if(request != null) {
                    session.write(request);
                }else if(request == null && getConversation().isComplete()){
+                   LogUtils.infof(this, "Conversation is complete and there are no more pending requests. Setting service detection to true.");
                    getFuture().setServiceDetected(true);
                    session.close(false);
                }else {
-                   
+                   LogUtils.infof(this, "Conversation is incomplete. Setting service detection to false.");
                    getFuture().setServiceDetected(false);
                    session.close(false);
                }
             }else {
+                LogUtils.infof(this, "Conversation response was invalid. Setting service detection to false.");
                 getFuture().setServiceDetected(false);
                 session.close(false);
             }

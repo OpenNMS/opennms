@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,47 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.simple;
+package org.opennms.netmgt.provision.support;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-/**
- * <p>MemcachedDetector class.</p>
- *
- * @author agalue
- * @version $Id: $
- */
-@Component
-@Scope("prototype")
-public class MemcachedDetector extends AsyncLineOrientedDetectorMinaImpl {
-
-    private static final String DEFAULT_SERVICE_NAME = "Memcached";
-    private static final int DEFAULT_PORT = 11211;
-
-    /**
-     * Default constructor
-     */
-    public MemcachedDetector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-    }
-    
-    /**
-     * Constructor for creating a non-default service based on this protocol
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     * @param port a int.
-     */
-    public MemcachedDetector(final String serviceName, final int port) {
-        super(serviceName, port);
-    }
-    
-    /**
-     * <p>onInit</p>
-     */
-    @Override
-    protected void onInit(){
-        send(request("version"), startsWith("VERSION"));
-    }
-    
+public interface RequestBuilder<Request> {
+    Request getRequest();
 }

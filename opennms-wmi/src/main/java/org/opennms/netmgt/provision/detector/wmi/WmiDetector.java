@@ -32,7 +32,7 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class WmiDetector extends AbstractDetector {
+public class WmiDetector extends SyncAbstractDetector {
     
     private final static String PROTOCOL_NAME = "WMI";
 

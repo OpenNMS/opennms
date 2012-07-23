@@ -44,6 +44,6 @@ public interface SyncServiceDetector extends ServiceDetector {
      * @param address a {@link java.net.InetAddress} object.
      * @return a boolean.
      */
-    public boolean isServiceDetected(InetAddress address);
+    boolean isServiceDetected(InetAddress address);
 
 }

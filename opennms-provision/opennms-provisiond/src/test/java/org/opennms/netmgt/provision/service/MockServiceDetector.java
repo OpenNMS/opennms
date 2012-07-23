@@ -63,6 +63,23 @@ public class MockServiceDetector implements SyncServiceDetector {
 
     @Override
     public void dispose() {
-        
+    }
+
+    @Override
+    public int getPort() {
+        return 12345;
+    }
+
+    @Override
+    public void setPort(int port) {
+    }
+
+    @Override
+    public int getTimeout() {
+        return 2000;
+    }
+
+    @Override
+    public void setTimeout(int timeout) {
     }
 }
