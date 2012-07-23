@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 public class HibernateEventWriter extends AbstractQueryManager implements InitializingBean {
@@ -186,6 +187,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
     
 	@Override
+	@Transactional
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
 		final Timestamp scanTime = new Timestamp(System.currentTimeMillis());
         if (snmpColl.hasIpNetToMediaTable()) {

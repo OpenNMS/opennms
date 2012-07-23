@@ -176,7 +176,7 @@ public class EventdConfigManager {
     public int getQueueLength() {
         getReadLock().lock();
         try {
-            return m_config.getQueueLength() < 1 ? Integer.MAX_VALUE : m_config.getQueueLength();
+            return m_config.hasQueueLength() ? m_config.getQueueLength() : Integer.MAX_VALUE;
         } finally {
             getReadLock().unlock();
         }

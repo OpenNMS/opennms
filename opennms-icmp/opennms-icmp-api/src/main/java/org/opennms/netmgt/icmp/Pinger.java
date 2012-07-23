@@ -119,13 +119,13 @@ public interface Pinger {
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
 	
 	/**
-	 * Initialize IPv4 in this Pinger implementation.
+	 * Initialize IPv4 in this Pinger implementation.  If unable to do so, implementations should throw an exception.
 	 * @throws Exception
 	 */
 	public void initialize4() throws Exception;
 
 	/**
-	 * Initialize IPv6 in this Pinger implementation.
+	 * Initialize IPv6 in this Pinger implementation.  If unable to do so, implementations should throw an exception.
 	 * @throws Exception
 	 */
 	public void initialize6() throws Exception;

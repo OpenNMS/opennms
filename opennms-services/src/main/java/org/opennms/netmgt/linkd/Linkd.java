@@ -36,8 +36,10 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -94,6 +96,8 @@ public class Linkd extends AbstractServiceDaemon {
 	 * List that contains Linkable Nodes.
 	 */
 	private List<LinkableNode> m_nodes;
+	
+	private Map<String,Map<String,List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String,List<AtInterface>>>();
 
 	/**
 	 * HashMap that contains SnmpCollections by package.
@@ -387,7 +391,11 @@ public class Linkd extends AbstractServiceDaemon {
 
 	public boolean scheduleNodeCollection(int nodeid) {
 
-		LinkableNode node = null;
+		LinkableNode node = getNode(nodeid);
+		if (node != null) {
+	                LogUtils.debugf(this, "scheduleNodeCollection: Found Scheduled Linkable node %d. Skipping ", nodeid);
+	                return false;
+		}
 		// database changed need reload packageiplist
 		m_linkdConfig.updatePackageIpListMap();
 		
@@ -432,7 +440,37 @@ public class Linkd extends AbstractServiceDaemon {
         }
         return false;
 	}
-	
+
+        public boolean runSingleSnmpCollection(final int nodeId) {
+            try {
+            final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
+
+            for (final SnmpCollection snmpColl : getSnmpCollections(nodeId, node.getSnmpPrimaryIpAddr(), node.getSysoid())) {
+                snmpColl.setScheduler(m_scheduler);
+                snmpColl.run();                
+            }
+
+            return true;
+        } catch (final SQLException e) {
+            LogUtils.debugf(this, "runSingleSnmpCollection: unable to get linkable node from database with ID %d", nodeId);
+        }
+        return false;
+        }
+
+        public boolean runSingleLinkDiscovery(final String packageName) {
+            try {
+                
+                final DiscoveryLink link = getDiscoveryLink(packageName);
+                link.setScheduler(m_scheduler);
+                link.run();
+
+                return true;
+            } catch (final Exception e) {
+                LogUtils.debugf(this, "runSingleLinkDiscovery: got exception %s: ", e.getLocalizedMessage());
+            }
+        return false;
+        }
+
 	void wakeUpNodeCollection(int nodeid) {
 
 		LinkableNode node = getNode(nodeid);
@@ -577,7 +615,9 @@ public class Linkd extends AbstractServiceDaemon {
 			m_scheduler.unschedule(snmpcoll);
 			return;
 		}
-		
+
+	        node = new LinkableNode(node.getNodeId(), node.getSnmpPrimaryIpAddr(), node.getSysoid());
+
 		try {
 			node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
 		} catch (SQLException e) {
@@ -749,5 +789,42 @@ public class Linkd extends AbstractServiceDaemon {
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         this.m_eventForwarder = eventForwarder;
+    }
+
+    // Here all the information related to the
+    // mapping between ipaddress and mac address is stored
+    // also the correlated ifindex is found 
+    public void addAtInterface(AtInterface atinterface) {
+        for (String packageName: m_activepackages) {
+            if (isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
+                List<AtInterface> atis = new ArrayList<AtInterface>();
+                if (!m_macToAtinterface.containsKey(packageName)) {
+                    m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
+                }
+                if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
+                    atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
+                }
+                boolean add = true;
+                for (AtInterface at: atis) {
+                    if (at.getNodeid() == atinterface.getNodeid() && at.getIpAddress().equals(atinterface.getIpAddress()))
+                        add= false;
+                }
+                if (add) {
+                    atis.add(atinterface);
+                    m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(), atis);
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    public void clearAtInterfaces(String packageName) {
+        m_macToAtinterface.get(packageName).clear();
+    }
+    
+    public Map<String, List<AtInterface>> getAtInterfaces(String packageName) {
+        return m_macToAtinterface.get(packageName);
     }
 }

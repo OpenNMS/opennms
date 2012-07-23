@@ -303,6 +303,9 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	        try {
 	
 	            if (moTypeStr.equals("STRING")) {
+                   if (moValStr.startsWith("\"") && moValStr.endsWith("\"")) {
+                       moValStr = moValStr.substring(1, moValStr.length() - 1);
+                   }
 	                newVar = new OctetString(moValStr);
 	            } else if (moTypeStr.equals("Hex-STRING")) {
 	                newVar = OctetString.fromHexString(moValStr.trim().replace(' ', ':'));

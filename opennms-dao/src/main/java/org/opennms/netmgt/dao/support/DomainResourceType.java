@@ -77,12 +77,17 @@ public class DomainResourceType implements OnmsResourceType {
 
     /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForDomain(String domain) {
-        throw new UnsupportedOperationException("method not implemented");
+        return null;
     }
 
     /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
-        throw new UnsupportedOperationException("method not implemented");
+        return null;
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -92,6 +97,11 @@ public class DomainResourceType implements OnmsResourceType {
 
     /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         return false;
     }
 

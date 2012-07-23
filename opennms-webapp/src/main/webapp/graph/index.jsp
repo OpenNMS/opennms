@@ -34,7 +34,7 @@
 	session="true"
 	import="
         org.opennms.web.svclayer.ResourceService,
-        org.opennms.web.XssRequestWrapper,
+        org.opennms.web.servlet.XssRequestWrapper,
         org.springframework.web.context.WebApplicationContext,
       	org.springframework.web.context.support.WebApplicationContextUtils
 	"

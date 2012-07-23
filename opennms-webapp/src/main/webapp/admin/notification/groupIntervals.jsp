@@ -34,7 +34,7 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.api.Util,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"

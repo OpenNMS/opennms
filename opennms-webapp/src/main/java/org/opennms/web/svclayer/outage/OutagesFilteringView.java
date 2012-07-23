@@ -39,10 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * <p>OutagesFilteringView class.</p>

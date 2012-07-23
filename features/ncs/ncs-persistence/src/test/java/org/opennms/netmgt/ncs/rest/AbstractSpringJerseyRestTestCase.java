@@ -70,6 +70,9 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 /**
+ * @deprecated This class is mostly copied from {@link org.opennms.web.rest.AbstractSpringJerseyRestTestCase}
+ * 
+ * TODO: Deduplicate the class AbstractSpringJerseyRestTestCase classes
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *

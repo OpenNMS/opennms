@@ -75,7 +75,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="queueLength" use="optional" default="-1">
+      <attribute name="queueLength" use="optional">
         <annotation>
           <documentation>The maximum number of incoming events that can be 
           queued inside eventd for processing.</documentation>

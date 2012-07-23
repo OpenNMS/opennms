@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,

@@ -9,10 +9,7 @@
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
   <description>
-    OpenNMS is the world's first enterprise grade network management
-    platform developed under the open source model. It consists of a
-    community supported open-source project as well as a commercial
-    services, training and support organization. 
+    OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.
   </description>
   <issueManagement>
     <system>Jira</system>
@@ -104,10 +101,8 @@
     <module>opennms-model</module>
     <module>opennms-ackd</module>
     <module>opennms-alarms</module>
-    <module>opennms-config-utils</module>
     <module>opennms-config-tester</module>
     <module>opennms-dao</module>
-    <module>opennms-daemon</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
@@ -274,7 +269,7 @@
         <version>1.4</version>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.3</version>
       </plugin>
@@ -761,20 +756,21 @@
 
    <updatePolicy>daily</updatePolicy>
 
-   <!-- dependency versions -->
-	<commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
-	<commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-	<gwtVersion>2.3.0</gwtVersion>
-   <jasperreportsVersion>3.7.6</jasperreportsVersion>
-	<jettyVersion>7.5.4.v20111024</jettyVersion>
-	<slf4jVersion>1.6.1</slf4jVersion>
-	<liquibaseVersion>2.0.1</liquibaseVersion>
-   <log4jVersion>1.2.16</log4jVersion>
-   <minaVersion>2.0.4</minaVersion>
-   <oroVersion>2.0.8</oroVersion>
+    <!-- dependency versions -->
+    <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
+    <gwtVersion>2.3.0</gwtVersion>
+    <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jettyVersion>7.5.4.v20111024</jettyVersion>
+    <liquibaseVersion>2.0.1</liquibaseVersion>
+    <log4jVersion>1.2.16</log4jVersion>
+    <minaVersion>2.0.4</minaVersion>
+    <oroVersion>2.0.8</oroVersion>
+    <osgiVersion>4.2.0</osgiVersion>
+    <slf4jVersion>1.6.4</slf4jVersion>
     <xalanVersion>2.7.1</xalanVersion>
-   <xercesVersion>2.9.1</xercesVersion>
-   <xmlApisVersion>1.4.01</xmlApisVersion>
+    <xercesVersion>2.9.1</xercesVersion>
+    <xmlApisVersion>1.4.01</xmlApisVersion>
   </properties>
 
   <profiles>
@@ -949,6 +945,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.osgid</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.runtime</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -989,6 +990,7 @@
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.lib</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
@@ -1157,6 +1159,21 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-map-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rancid-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.sms-reflector</groupId>
         <artifactId>sms-gateway</artifactId>
         <version>${project.version}</version>
@@ -1198,14 +1215,26 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>mock-snmp-agent</artifactId>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>karaf-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>liquibase-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>felix-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1224,6 +1253,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>gwt-maps-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jasypt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1331,6 +1366,7 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-tester</artifactId>
         <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1343,20 +1379,14 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-daemon</artifactId>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.daemon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao</artifactId>
         <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1364,12 +1394,6 @@
         <type>test-jar</type>
         <version>${project.version}</version>
         <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1889,7 +1913,7 @@
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>2.1_3</version>
+        <version>2.2.2</version>
       </dependency>
       <dependency>
         <groupId>c3p0</groupId>
@@ -2150,6 +2174,16 @@
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${osgiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>${osgiVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>jivesoftware</groupId>
         <artifactId>smack</artifactId>
         <version>3.0.4</version>
@@ -2168,11 +2202,13 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.2</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jwebunit</groupId>
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <version>2.5</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>

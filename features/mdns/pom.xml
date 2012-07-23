@@ -9,6 +9,26 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.mdns</artifactId>
   <name>OpenNMS Multicast DNS Support</name>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.opennms.serviceregistration.strategies.*;version="${project.version}",
+              org.opennms.serviceregistration.*;version="${project.version}"
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>com.apple</groupId>

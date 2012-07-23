@@ -38,10 +38,10 @@ import junit.framework.TestCase;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 
@@ -84,7 +84,7 @@ public class CastorUtilsTest extends TestCase {
         try {
             CastorUtils.unmarshal(Userinfo.class, new FileSystemResource(file));
         } catch (MarshalException e) {
-            String matchString = file.getAbsolutePath();
+            String matchString = file.getAbsolutePath().replace('\\', '/');
             if (e.toString().contains(matchString)) {
                 gotException = true;
             } else {

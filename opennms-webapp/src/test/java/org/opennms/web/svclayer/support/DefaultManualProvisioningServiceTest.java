@@ -41,7 +41,6 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.web.BeanUtils;
 
 public class DefaultManualProvisioningServiceTest extends TestCase {
     
@@ -95,14 +94,14 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         String pathToNode = "node[0]";
         String categoryName = "categoryName";
 
-        int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".categoryCount", int.class); 
+        int initialCount = PropertyUtils.getPathValue(m_testData, pathToNode+".categoryCount", int.class); 
         
         Requisition result = m_provisioningService.addCategoryToNode(groupName, pathToNode, categoryName);
         
-        int newCount = BeanUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
+        int newCount = PropertyUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
         
         assertEquals(initialCount+1, newCount);
-        RequisitionCategory newCategory = BeanUtils.getPathValue(result, pathToNode+".category[0]", RequisitionCategory.class);
+        RequisitionCategory newCategory = PropertyUtils.getPathValue(result, pathToNode+".category[0]", RequisitionCategory.class);
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
     }
@@ -112,14 +111,14 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         String pathToNode = "node[0]";
         String ipAddr = "10.1.1.1";
         
-        int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".interfaceCount", int.class); 
+        int initialCount = PropertyUtils.getPathValue(m_testData, pathToNode+".interfaceCount", int.class); 
 
         Requisition result = m_provisioningService.addInterfaceToNode(groupName, pathToNode, ipAddr);
         
-        int newCount = BeanUtils.getPathValue(result, pathToNode+".interfaceCount", int.class); 
+        int newCount = PropertyUtils.getPathValue(result, pathToNode+".interfaceCount", int.class); 
         
         assertEquals(initialCount+1, newCount);
-        RequisitionInterface newIface = BeanUtils.getPathValue(result, pathToNode+".interface[0]", RequisitionInterface.class);
+        RequisitionInterface newIface = PropertyUtils.getPathValue(result, pathToNode+".interface[0]", RequisitionInterface.class);
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());
     }
@@ -129,13 +128,13 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         String pathToInterface = "node[0].interface[0]";
         String serviceName = "SVC";
         
-        int initialCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
+        int initialCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
 
         Requisition result = m_provisioningService.addServiceToInterface(groupName, pathToInterface, serviceName);
 
-        int newCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
+        int newCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
         assertEquals(initialCount+1, newCount);
-        RequisitionMonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
+        RequisitionMonitoredService svc = PropertyUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
         assertNotNull(svc);
         assertEquals(serviceName, svc.getServiceName());
     }
@@ -145,14 +144,14 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         String pathToInterface = "node[0].interface[0]";
         String pathToDelete = pathToInterface+".monitoredService[0]";
         
-        int initialCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
-        String svcName = BeanUtils.getPathValue(m_testData, pathToDelete+".serviceName", String.class);
+        int initialCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
+        String svcName = PropertyUtils.getPathValue(m_testData, pathToDelete+".serviceName", String.class);
 
         Requisition result = m_provisioningService.deletePath(groupName, pathToDelete);
-        int newCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
+        int newCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
         assertEquals(initialCount-1, newCount);
 
-        RequisitionMonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
+        RequisitionMonitoredService svc = PropertyUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
         assertNotNull(svc);
         assertFalse(svc.getServiceName().equals(svcName));
     }

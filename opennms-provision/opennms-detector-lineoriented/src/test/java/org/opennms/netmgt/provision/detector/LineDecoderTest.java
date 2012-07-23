@@ -37,11 +37,11 @@ import java.io.OutputStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetectorMinaImpl;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author Donald Desloge

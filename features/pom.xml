@@ -24,6 +24,9 @@
     <module>system-report</module>
     <module>ticketing</module>
 
+    <!-- Topoology Map -->
+    <module>topology-map</module>
+
     <!-- SMS monitoring -->
     <module>phonebook</module>
     <module>sms-reflector</module>

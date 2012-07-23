@@ -40,12 +40,10 @@ import org.opennms.netmgt.model.TroubleTicketState;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  * @since 1.8.1
  */
-public class Alarm extends Object {
+public class Alarm {
     /** Constant <code>PROBLEM_TYPE=1</code> */
     public static final int PROBLEM_TYPE = 1;
     
@@ -159,7 +157,13 @@ public class Alarm extends Object {
 
     /** The human-readable name of the node of this alarm. Can be null. */
     protected String nodeLabel;
-
+    
+    /** sticky memo to this alarm, can't be null */
+    protected Memo stickyMemo = new Memo();
+    
+    /** journal memo to the reductionkey of this alarm, can be null */
+    protected Memo reductionKeyMemo = new ReductionKeyMemo();
+    
     /**
      * Empty constructor to create an empty <code>Alarm</code> instance. All
      * fields will hold the default values.
@@ -538,6 +542,14 @@ public class Alarm extends Object {
         return (this.serviceName);
     }
 
+    public Memo getReductionKeyMemo() {
+        return reductionKeyMemo;
+    }
+
+    public Memo getStickyMemo() {
+        return stickyMemo;
+    }
+    
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -566,6 +578,8 @@ public class Alarm extends Object {
             .append("acknowledgedUser", acknowledgeUser)
             .append("acknowledgedTime", acknowledgeTime)
             .append("parms", parms)
+            .append("stickyMemo", stickyMemo)
+            .append("reductionKeyMemo", reductionKeyMemo)    
             .toString();
     }
 }

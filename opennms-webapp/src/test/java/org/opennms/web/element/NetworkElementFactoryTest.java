@@ -38,7 +38,6 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -90,7 +89,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     @Before
     public void setUp() {
-        Vault.setDataSource(m_dataSource);
         m_dbPopulator.populateDatabase();
     }
     

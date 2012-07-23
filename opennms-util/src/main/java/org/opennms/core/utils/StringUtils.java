@@ -28,8 +28,11 @@
 
 package org.opennms.core.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import javax.swing.filechooser.FileSystemView;
 
 /**
  * <p>StringUtils class.</p>
@@ -37,7 +40,7 @@ import java.util.StringTokenizer;
  * @author ranger
  * @version $Id: $
  */
-public class StringUtils {
+public abstract class StringUtils {
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -126,4 +129,20 @@ public class StringUtils {
         return name.substring(0, length);
     }
 
+    public static boolean isLocalWindowsPath(final String path) {
+    	if (File.separatorChar != '\\') return false;
+    	if (path.length() < 3) return false;
+
+    	final char colon = path.charAt(1);
+    	final char slash = path.charAt(2);
+    	
+    	if (colon != ':') return false;
+    	if (slash != '\\' && slash != '/') return false;
+
+    	final File file = new File(path.substring(0, 3));
+    	System.err.println("file = " + file);
+		if (FileSystemView.getFileSystemView().isFileSystemRoot(file)) return true;
+
+    	return false;
+    }
 }

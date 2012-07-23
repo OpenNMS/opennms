@@ -231,14 +231,19 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         final String marshalledConfig = marshallConfig();
 
         SnmpPeerFactory.getWriteLock().lock();
+        FileOutputStream out = null;
+        Writer fileWriter = null;
         try {
             if (marshalledConfig != null) {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            	out = new FileOutputStream(file);
+                fileWriter = new OutputStreamWriter(out, "UTF-8");
                 fileWriter.write(marshalledConfig);
                 fileWriter.flush();
                 fileWriter.close();
             }
         } finally {
+        	IOUtils.closeQuietly(fileWriter);
+        	IOUtils.closeQuietly(out);
             SnmpPeerFactory.getWriteLock().unlock();
         }
     }

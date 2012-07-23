@@ -15,9 +15,11 @@
     <module>dbpool</module>
     <module>dnsjava</module>
     <module>drools</module>
+    <module>felix</module>
     <module>gwt</module>
     <module>hibernate</module>
     <module>jasper</module>
+    <module>jasypt</module>
     <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
@@ -31,6 +33,7 @@
     <module>jradius</module>
     <module>jrobin</module>
     <module>jrrd</module>
+    <module>karaf</module>
     <module>liquibase</module>
     <module>mina</module>
     <module>netty</module>

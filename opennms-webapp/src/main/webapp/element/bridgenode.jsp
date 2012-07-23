@@ -35,7 +35,7 @@
 		import="
 				org.opennms.web.element.*,
 				org.opennms.netmgt.model.OnmsNode,
-				org.opennms.web.WebSecurityUtils,
+				org.opennms.core.utils.WebSecurityUtils,
 				java.util.*,
 				java.net.*,
 				java.util.regex.Pattern,
@@ -77,7 +77,7 @@
     String nodeIdString = request.getParameter( "node" );
 
     if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
+        throw new org.opennms.web.servlet.MissingParameterException( "node" );
     }
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );

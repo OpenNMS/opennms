@@ -38,7 +38,7 @@ import java.util.StringTokenizer;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.InterfaceFilter;

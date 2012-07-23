@@ -34,10 +34,15 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.net.InetAddress;
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,6 +55,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -74,7 +80,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.FileSystemResource;
 
 public class LatencyStoringServiceMonitorAdaptorTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -103,6 +109,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
     @Test
     public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
+        Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.FRENCH);
         
         // Make sure we actually have a valid test
@@ -126,10 +133,50 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         m_mocks.replayAll();
         adaptor.updateRRD("foo", InetAddress.getLocalHost(), "baz", map);
         m_mocks.verifyAll();
+        Locale.setDefault(defaultLocale);
     }
     
     @Test
     public void testThresholds() throws Exception {
+        EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
+        bldr.setNodeid(1);
+        bldr.setInterface(addr("127.0.0.1"));
+        bldr.setService("ICMP");
+
+        EventAnticipator anticipator = new EventAnticipator();
+        anticipator.anticipateEvent(bldr.getEvent());
+        executeThresholdTest(anticipator);
+        anticipator.verifyAnticipated();
+    }
+
+    // TODO: This test will fail if you have a default locale with >3 characters for month, e.g. Locale.FRENCH
+    @Test
+    public void testThresholdsWithScheduledOutage() throws Exception {
+        DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<outages>");
+        sb.append("<outage name=\"junit outage\" type=\"specific\">");
+        sb.append("<time begins=\"");
+        sb.append(formatter.format(new Date(System.currentTimeMillis() - 3600000)));
+        sb.append("\" ends=\"");
+        sb.append(formatter.format(new Date(System.currentTimeMillis() + 3600000)));
+        sb.append("\"/>");
+        sb.append("<interface address=\"match-any\"/>");
+        sb.append("</outage>");
+        sb.append("</outages>");
+        File file = new File("target/poll-outages.xml");
+        FileWriter writer = new FileWriter(file);
+        writer.write(sb.toString());
+        writer.close();
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
+        PollOutagesConfigFactory.getInstance().afterPropertiesSet();
+        
+        EventAnticipator anticipator = new EventAnticipator();
+        executeThresholdTest(anticipator);
+        anticipator.verifyAnticipated();
+    }
+
+    private void executeThresholdTest(EventAnticipator anticipator) throws Exception {
         System.setProperty("opennms.home", "src/test/resources");
         
         Map<String,Object> parameters = new HashMap<String,Object>();
@@ -137,7 +184,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         parameters.put("ds-name", "icmp");
         parameters.put("rrd-base-name", "icmp");
         parameters.put("thresholding-enabled", "true");
-        
+
         FilterDao filterDao = m_mocks.createMock(FilterDao.class);
         expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
         FilterDaoFactory.setInstance(filterDao);
@@ -170,7 +217,6 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":100"));
         m_rrdStrategy.closeFile(isA(Object.class));
 
-        EventAnticipator anticipator = new EventAnticipator();
         MockEventIpcManager eventMgr = new MockEventIpcManager();
         eventMgr.setEventAnticipator(anticipator);
         eventMgr.setSynchronous(true);
@@ -189,17 +235,11 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
-
-        EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
-        bldr.setNodeid(1);
-        bldr.setInterface(addr("127.0.0.1"));
-        bldr.setService("ICMP");
-        anticipator.anticipateEvent(bldr.getEvent());
+        
         m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg);
         adaptor.poll(svc, parameters);
         m_mocks.verifyAll();
-        anticipator.verifyAnticipated();
     }
 
     @SuppressWarnings("unchecked")

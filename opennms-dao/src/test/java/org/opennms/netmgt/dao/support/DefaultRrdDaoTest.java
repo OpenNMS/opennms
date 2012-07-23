@@ -149,20 +149,25 @@ public class DefaultRrdDaoTest extends TestCase {
     }
 
     private OnmsResource preparePrintValueTest(long start, long end, String printLine) throws IOException, RrdException {
-        String rrdDir = "snmp/1/eth0";
+        String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
         
+        String escapedFile = rrdDir + File.separator + rrdFile;
+        if  (File.separatorChar == '\\') {
+        	escapedFile = escapedFile.replace("\\", "\\\\");
+        }
+
         String[] command = new String[] {
                 m_dao.getRrdBinaryPath(),
                 "graph",
                 "-",
                 "--start=" + (start / 1000),
                 "--end=" + (end / 1000),
-                "DEF:ds=" + rrdDir + File.separator + rrdFile + ":ifInOctets:AVERAGE",
+                "DEF:ds=" + escapedFile + ":ifInOctets:AVERAGE",
                 "PRINT:ds:AVERAGE:\"%le\""
         };
         String commandString = StringUtils.arrayToDelimitedString(command, " ");
-        
+
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
@@ -181,7 +186,7 @@ public class DefaultRrdDaoTest extends TestCase {
     }
     
     public void testFetchLastValue() throws Exception {
-        String rrdDir = "snmp/1/eth0";
+        String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
 
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
@@ -209,7 +214,7 @@ public class DefaultRrdDaoTest extends TestCase {
     }
     
     public void testFetchLastValueInRange() throws Exception {
-        String rrdDir = "snmp/1/eth0";
+        String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
 
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));

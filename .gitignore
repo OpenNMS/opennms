@@ -5,7 +5,6 @@
 target
 .classpath
 .externalToolBuilders
-.gitignore
 .project
 .settings
 .springBeans
@@ -17,4 +16,4 @@ build.properties
 .launch
 .*launch
 bin/
-
+nb-configuration.xml

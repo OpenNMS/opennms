@@ -130,9 +130,6 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                     session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
                     session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
                     session.getConfig().setIdleTime(IdleStatus.READER_IDLE, getIdleTime());
-                    // Give the session an IoHandler that will get everything delegated to it
-                    // by the SessionDelegateIoHandler
-                    session.setAttribute( IoHandler.class, createDetectorHandler(detectFuture) );
                 }
             };
 
@@ -140,13 +137,13 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
             final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
             // Get an ephemeral port on the localhost interface
             final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, localAddress, init);
-            cf.addListener(retryAttemptListener(m_connectionFactory, detectFuture, socketAddress, init, getRetries() ));
+            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, localAddress, init, createDetectorHandler(detectFuture));
+            cf.addListener(retryAttemptListener(detectFuture, socketAddress, init, getRetries()));
         } catch (KeyManagementException e) {
             detectFuture.setException(e);
         } catch (NoSuchAlgorithmException e) {
             detectFuture.setException(e);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             detectFuture.setException(e);
         }
 
@@ -158,7 +155,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @throws NoSuchAlgorithmException 
      * @throws KeyManagementException 
      */
-    private static SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
+    private static final SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
         final TrustManager[] tm = { new RelaxedX509TrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
@@ -175,43 +172,39 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @param retryAttempt
      * @return IoFutureListener<ConnectFuture>
      */
-    private IoFutureListener<ConnectFuture> retryAttemptListener(final ConnectionFactory connector, final DetectFutureMinaImpl detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
+    private final IoFutureListener<ConnectFuture> retryAttemptListener(final DetectFutureMinaImpl detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
         return new IoFutureListener<ConnectFuture>() {
 
+            @Override
             public void operationComplete(ConnectFuture future) {
                 final Throwable cause = future.getException();
                
-                if(cause instanceof IOException) {
+                if (cause instanceof IOException) {
                     if(retryAttempt == 0) {
                         LogUtils.infof(this, "Service %s detected false",getServiceName());
                         detectFuture.setServiceDetected(false);
                     }else {
                         LogUtils.infof(this, "Connection exception occurred %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
-                        // Connect without using a semaphore
-                        /*
-                        final ConnectFuture cf = m_connectionFactory.connect(address, init);
-                        cf.addListener(retryAttemptListener( m_connectionFactory, detectFuture, address, init, retryAttempt - 1));
-                        */
                         // Get an ephemeral port on the localhost interface
                         final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-                        future = connector.reConnect(address, localAddress, init);
-                        future.addListener(retryAttemptListener(connector, detectFuture, address, init, retryAttempt - 1));
+                        future = m_connectionFactory.reConnect(address, localAddress, init, createDetectorHandler(detectFuture));
+                        future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
                 }else if(cause instanceof Throwable) {
                     LogUtils.infof(this, cause, "Threw a Throwable and detection is false for service %s", getServiceName());
                     detectFuture.setServiceDetected(false);
-                } 
+                }
             }
             
         };
     }
-    
+
     /**
      * <p>setDetectorHandler</p>
      *
      * @param detectorHandler a {@link org.opennms.netmgt.provision.support.BaseDetectorHandler} object.
      */
-    protected void setDetectorHandler(final BaseDetectorHandler<Request, Response> detectorHandler) {
+    protected final void setDetectorHandler(final BaseDetectorHandler<Request, Response> detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
     
@@ -221,7 +214,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @param future a {@link org.opennms.netmgt.provision.DetectFuture} object.
      * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
-    protected IoHandler createDetectorHandler(final DetectFutureMinaImpl future) {
+    protected final IoHandler createDetectorHandler(final DetectFutureMinaImpl future) {
         m_detectorHandler.setConversation(getConversation());
         m_detectorHandler.setFuture(future);
         return m_detectorHandler;
@@ -232,7 +225,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      *
      * @param filterLogging a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
      */
-    protected void setLoggingFilter(final IoFilterAdapter filterLogging) {
+    protected final void setLoggingFilter(final IoFilterAdapter filterLogging) {
         m_filterLogging = filterLogging;
     }
 
@@ -241,7 +234,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      *
      * @return a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
      */
-    protected IoFilterAdapter getLoggingFilter() {
+    protected final IoFilterAdapter getLoggingFilter() {
         return m_filterLogging;
     }
 
@@ -250,7 +243,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      *
      * @param protocolCodecFilter a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
      */
-    protected void setProtocolCodecFilter(final ProtocolCodecFilter protocolCodecFilter) {
+    protected final void setProtocolCodecFilter(final ProtocolCodecFilter protocolCodecFilter) {
         m_protocolCodecFilter = protocolCodecFilter;
     }
 
@@ -259,7 +252,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      *
      * @return a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
      */
-    protected ProtocolCodecFilter getProtocolCodecFilter() {
+    protected final ProtocolCodecFilter getProtocolCodecFilter() {
         return m_protocolCodecFilter;
     }
 
@@ -268,7 +261,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      *
      * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
-    protected IoHandler getDetectorHandler() {
+    protected final IoHandler getDetectorHandler() {
         return m_detectorHandler;
     }
 }

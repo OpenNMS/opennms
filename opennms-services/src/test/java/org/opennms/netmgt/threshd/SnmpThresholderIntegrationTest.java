@@ -30,8 +30,8 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * FIXME: Should this test case go away now that we use ThresholdingVisitor?

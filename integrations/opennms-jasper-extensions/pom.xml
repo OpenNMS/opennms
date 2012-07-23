@@ -8,13 +8,24 @@
 </parent>
 <!-- the name must alphabetically come before jasperreports jar -->
   <artifactId>jasper-extensions</artifactId>
-  <packaging>jar</packaging>
 
   <name>opennms-jasper-extensions</name>
   <url>http://maven.apache.org</url>
 
+  <packaging>bundle</packaging>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>

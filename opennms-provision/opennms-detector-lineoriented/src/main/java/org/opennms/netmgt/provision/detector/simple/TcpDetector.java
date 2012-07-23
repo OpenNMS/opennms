@@ -58,9 +58,7 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
      * Default constructor
      */
     public TcpDetector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-        setDetectorHandler(new TcpDetectorHandler());
-        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
+        this(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
     
     /**
@@ -71,6 +69,8 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
      */
     public TcpDetector(final String serviceName, final int port) {
         super(serviceName, port);
+        setDetectorHandler(new TcpDetectorHandler());
+        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
     }
 
     /**

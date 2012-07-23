@@ -37,7 +37,7 @@
 		java.text.*,
 		org.opennms.netmgt.config.groups.*,
 		org.opennms.netmgt.config.users.DutySchedule,
-                org.opennms.web.MissingParameterException
+                org.opennms.web.servlet.MissingParameterException
 	"
 %>
 

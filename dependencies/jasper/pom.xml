@@ -61,5 +61,11 @@
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
     </dependency>
+    <!-- yes, we really depend on this at runtime, for the compiler stuff -->
+    <dependency>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>jasperreports-maven-plugin</artifactId>
+      <version>1.0-beta-3-OPENNMS-20120424-1</version>
+    </dependency>
   </dependencies>
 </project>

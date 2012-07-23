@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!--
+   | put company details here
+  <organization>
+    <name>...</name>
+    <url>http://...</url>
+  </organization>
+  -->
+
+  <!--
+   | put license details here
+  <licenses>
+    <license>
+      <name>...</name>
+      <url>http://...</url>
+      <comments>
+      </comments>
+    </license>
+  </licenses>
+  -->
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>org.opennms.features.topology</artifactId>
+  <version>1.11.1-SNAPSHOT</version>
+
+  <name>org.opennms.features.topology (OSGi project)</name>
+
+  <!--
+   | describe your project here
+  -->
+
+  <description>Generated using Pax-Construct</description>
+
+  <properties>
+    <!--
+     | some example OSGi runtime properties
+    -->
+    <org.osgi.service.http.port>8080</org.osgi.service.http.port>
+    <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+  </properties>
+
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>poms</module>
+    <module>provision</module>
+    <module>org.opennms.features.topology.api</module>
+    <module>org.opennms.features.topology.app</module>
+    <module>org.opennms.features.topology.shell</module>
+    <module>plugins</module>
+    <module>features</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>1.5</version>
+        <inherited>false</inherited>
+        <configuration>
+          <!--
+           | some example Pax-Runner settings
+          -->
+          <provision>
+            <param>--platform=equinox</param>
+            <param>scan-bundle:mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/2.2.7</param>
+            <param>scan-features:mvn:org.apache.karaf.assemblies.features/standard/2.2.7/xml/features!/karaf-framework,http-whiteboard</param>
+            <param>--noConsole</param>
+          </provision>
+        </configuration>
+        <executions>
+          <!--
+           | uncomment to auto-generate IDE files
+          <execution>
+            <id>ide-support</id>
+            <goals>
+              <goal>eclipse</goal>
+            </goals>
+          </execution>
+          -->
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>com.vaadin</groupId>
+    								<artifactId>
+    									vaadin-maven-plugin
+    								</artifactId>
+    								<versionRange>
+    									[1.0.2,)
+    								</versionRange>
+    								<goals>
+    									<goal>update-widgetset</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
+  </build>
+
+</project>

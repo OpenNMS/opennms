@@ -36,11 +36,11 @@ import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 

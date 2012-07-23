@@ -34,9 +34,9 @@
 	session="true"
 	import="org.opennms.web.element.*,
 		org.opennms.netmgt.model.OnmsNode,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.MissingParameterException
+		org.opennms.web.servlet.MissingParameterException
 	"
 %>
 

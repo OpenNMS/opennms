@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.admin.users.parsers.DutySchedule;
 import org.opennms.web.admin.users.parsers.NotificationInfo;
 import org.opennms.web.admin.users.parsers.User;

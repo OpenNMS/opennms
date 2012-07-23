@@ -301,6 +301,14 @@ public class MockSnmpAgentTest  {
 		doGet();
     }
 
+    public void testSnmpWalkWithStringQuotes() throws Exception {
+        // alternate property file
+        m_agent.shutDownAndWait();
+        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("walk-with-quotes.properties"), "127.0.0.1/1691");
+
+        request("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1").andExpect("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1", SMIConstants.SYNTAX_OCTET_STRING, new OctetString("FastEthernet2"));
+    }
+
     private void doGet() throws Exception {
     	requestAndVerifyResponse(PDU.GET, m_version);
     }

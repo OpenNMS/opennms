@@ -9,8 +9,7 @@
   <groupId>org.opennms.core.test-api</groupId>
   <artifactId>org.opennms.core.test-api.lib</artifactId>
   <name>OpenNMS Core Test API (Libraries)</name>
-  <packaging>jar</packaging>
-  <!--
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
@@ -27,7 +26,6 @@
       </plugin>
     </plugins>
   </build>
--->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

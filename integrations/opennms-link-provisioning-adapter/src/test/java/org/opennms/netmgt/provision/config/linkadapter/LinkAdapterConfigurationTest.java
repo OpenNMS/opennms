@@ -52,6 +52,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
@@ -61,7 +62,6 @@ import org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterC
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkAdapterConfiguration;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

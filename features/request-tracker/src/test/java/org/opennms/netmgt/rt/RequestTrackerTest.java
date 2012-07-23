@@ -33,8 +33,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 public class RequestTrackerTest extends TestCase {
 

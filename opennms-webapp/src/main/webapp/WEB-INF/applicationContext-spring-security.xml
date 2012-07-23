@@ -68,17 +68,16 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-  <authentication-manager>
-    <authentication-provider user-service-ref="openNMSUserDetailsService">
-      <password-encoder ref="upperCaseMd5PasswordEncoder" />
-    </authentication-provider>
-  </authentication-manager>
-  
   <!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
   <beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
     <beans:property name="filterManager" ref="filterManager" />
     <beans:property name="groupDao" ref="groupDao" />
   </beans:bean>
+
+  <!-- use our custom authentication provider; to use RADIUS instead, change this to "radiusAuthenticationProvider" and uncomment below -->
+  <authentication-manager>
+    <authentication-provider ref="hybridAuthenticationProvider" />
+  </authentication-manager>
 
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
@@ -94,7 +93,10 @@
     <beans:property name="userDao" ref="userDao" />
   </beans:bean>
 
-  <beans:bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder"/>
+  <beans:bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
+    <beans:property name="userDao" ref="userDao" />
+    <beans:property name="userManager" ref="userManager" />
+  </beans:bean>
 
   <!-- ====================== RADIUS AUTHENTICATION ===================== -->
   <!--
@@ -121,7 +123,6 @@
    -->
   <!-- 
   <beans:bean id="radiusAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
-    <custom-authentication-provider />
     <beans:constructor-arg value="%%% Radius Server %%%"/>
     <beans:constructor-arg value="%%% Shared Secret %%%"/>
   -->

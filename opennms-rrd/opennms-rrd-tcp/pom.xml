@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-tcp</artifactId>
   <name>OpenNMS TCP Export RRD Implementation</name>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
@@ -16,6 +17,18 @@
           <systemPropertyVariables>
             <opennms.home>${project.build.testOutputDirectory}</opennms.home>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.netmgt.rrd.tcp.*;version="${project.version}"</Export-Package>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>

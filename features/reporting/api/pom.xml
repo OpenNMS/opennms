@@ -10,4 +10,24 @@
   <artifactId>org.opennms.features.reporting.api</artifactId>
   <name>OpenNMS Reporting API</name>
   <url>http://www.opennms.org/</url>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.opennms.api.reporting.parameter.*;version="${project.version}",
+              org.opennms.api.reporting.*;version="${project.version}"
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-install</artifactId>
   <name>OpenNMS Installation Utilities</name>
+  <packaging>bundle</packaging>
   <build>
     <resources>
       <resource>
@@ -48,6 +49,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -64,7 +76,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -83,7 +94,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-bootstrap</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -112,7 +122,6 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

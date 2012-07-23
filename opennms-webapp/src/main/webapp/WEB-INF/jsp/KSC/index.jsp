@@ -34,7 +34,7 @@
   session="true"
   import="
   org.opennms.web.api.Util,
-  org.opennms.web.XssRequestWrapper,
+  org.opennms.web.servlet.XssRequestWrapper,
   org.opennms.web.controller.ksc.CustomViewController,
   org.opennms.web.svclayer.ResourceService,
   org.springframework.web.context.WebApplicationContext,
@@ -50,6 +50,7 @@
     final String match = req.getParameter("match");
     pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     pageContext.setAttribute("match", match);
+    pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     final String baseHref = Util.calculateUrlBase(request);
 %>
     

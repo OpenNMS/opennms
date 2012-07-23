@@ -30,13 +30,13 @@ package org.opennms.netmgt.importer;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -68,9 +68,6 @@ public class ImporterServiceJmxTest {
         ImporterServiceMBean mbean = new ImporterService();
         mbean.init();
         mbean.start();
-        
-        Thread.sleep(30000);
-        
         mbean.stop();
     }
 }
