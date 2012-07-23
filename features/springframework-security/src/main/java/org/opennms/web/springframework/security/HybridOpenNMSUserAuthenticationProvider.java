@@ -100,9 +100,13 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
         final AbstractAuthenticationToken token = new AbstractAuthenticationToken(user.getAuthorities()) {
             private static final long serialVersionUID = 3659409846867741010L;
 
+            /**
+             * This should always be a UserDetails. Java-Spec allows this,
+             * spring can handle it nad it's easier for us this way.
+             */
             @Override
             public Object getPrincipal() {
-                return user.getUsername();
+                return user;
             }
 
             @Override

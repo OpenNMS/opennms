@@ -1,5 +1,7 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import static org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.GROUP_ICON;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +16,8 @@ public class LinkdGroup extends LinkdVertex {
 	int m_mapid;
 	public LinkdGroup() {}
 	
-	public LinkdGroup(String groupId) {
-	    super(groupId);
+	public LinkdGroup(String groupId, String label) {
+	    super(groupId, GROUP_ICON, label, null);
 	}
 
         @Override

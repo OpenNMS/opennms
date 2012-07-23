@@ -16,7 +16,7 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.standalone:tar.gz:${project.version}</include>
+                <include>org.opennms.container:standalone:tar.gz:${project.version}</include>
             </includes>
             <unpackOptions>
                 <excludes>
@@ -45,7 +45,7 @@
         <file>
             <source>src/main/filtered-resources/features/features.xml</source>
             <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
-            <destName>${project.artifactId}-${project.version}-features.xml</destName>
+            <destName>${project.groupId}.${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
         </file>

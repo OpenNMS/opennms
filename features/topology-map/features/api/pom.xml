@@ -43,7 +43,7 @@
     -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <artifactId>api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

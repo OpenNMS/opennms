@@ -73,7 +73,7 @@
         </file>
         <file>
             <source>${basedir}/target/classes/features.xml</source>
-            <outputDirectory>/system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
+            <outputDirectory>/system/org/opennms/container/${project.groupId}.${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>

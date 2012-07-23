@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.3.0/distro-source/core/src/gwt-module.dtd">
+<module >
+<!-- At build time the other topology widgets get injected here -->
+
+    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+
+    <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+
+    
+
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+
+    <inherits name="org.opennms.features.topology.ssh.internal.gwt.TerminalWidgetSet" />
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+</module>

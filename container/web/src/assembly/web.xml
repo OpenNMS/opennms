@@ -16,21 +16,8 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.karaf:tar.gz:${project.version}</include>
+                <include>org.opennms.container:karaf:tar.gz:${project.version}</include>
             </includes>
-            <unpackOptions>
-                <excludes>
-<!--
-                    <exclude>**/lib/*</exclude>
-                    <exclude>**/*.txt</exclude>
-                    <exclude>**/bin/*</exclude>
-                    <exclude>**/demos/**</exclude>
-                    <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
-                    <exclude>**/custom.properties</exclude>
-                    <exclude>**/org.apache.karaf.features.cfg</exclude>
--->
-                </excludes>
-            </unpackOptions>
         </dependencySet>
         <dependencySet>
             <unpack>true</unpack>
@@ -39,43 +26,9 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.servlet:war:${project.version}</include>
+                <include>org.opennms.container:servlet:war:${project.version}</include>
             </includes>
-            <unpackOptions>
-                <excludes>
-<!--
-                    <exclude>**/lib/*</exclude>
-                    <exclude>**/*.txt</exclude>
-                    <exclude>**/bin/*</exclude>
-                    <exclude>**/demos/**</exclude>
-                    <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
-                    <exclude>**/custom.properties</exclude>
-                    <exclude>**/org.apache.karaf.features.cfg</exclude>
--->
-                </excludes>
-            </unpackOptions>
         </dependencySet>
     </dependencySets>
-
-<!--
-    <fileSets>
-        <fileSet>
-            <directory>${project.build.directory}/classes/etc</directory>
-            <outputDirectory>WEB-INF/org.opennms.container.standalone-${project.version}/etc</outputDirectory>
-            <lineEnding>unix</lineEnding>
-            <fileMode>0644</fileMode>
-        </fileSet>
-    </fileSets>
-
-    <files>
-        <file>
-            <source>${project.build.directory}/classes/features/features.xml</source>
-            <outputDirectory>WEB-INF/org.opennms.container.standalone-${project.version}/system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
-            <destName>${project.artifactId}-${project.version}-features.xml</destName>
-            <fileMode>0644</fileMode>
-            <lineEnding>unix</lineEnding>
-        </file>
-    </files>
--->
 
 </assembly>

@@ -33,9 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -46,14 +43,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.xml.CastorUtils;
+
 import org.opennms.netmgt.config.linkd.ExcludeRange;
 import org.opennms.netmgt.config.linkd.Filter;
 import org.opennms.netmgt.config.linkd.IncludeRange;
@@ -114,8 +108,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public LinkdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        reloadXML(stream);
+    public LinkdConfigManager() {
     }
 
     public Lock getReadLock() {
@@ -408,44 +401,6 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
-     * <p>update</p>
-     *
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public abstract void update() throws IOException, MarshalException, ValidationException;
-
-    /**
-     * This method is used to establish package against IP list mapping, with
-     * which, the IP list is selected per package via the configured filter rules
-     * from the database.
-     */
-    public void updatePackageIpListMap() {
-        getWriteLock().lock();
-        try {
-            for (final org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
-                //
-                // Get a list of IP addresses per package against the filter rules from
-                // database and populate the package, IP list map.
-                //
-                try {
-                    final List<InetAddress> ipList = getIpList(pkg);
-                    LogUtils.tracef(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
-    
-                    if (ipList != null && ipList.size() > 0) {
-                        m_pkgIpMap.put(pkg, ipList);
-                    }
-                } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list", pkg.getName());
-                }
-            }
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    /**
      * <p>useIpRouteDiscovery</p>
      *
      * @return a boolean.
@@ -549,8 +504,46 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
         return false;
     }
+
+    /**
+     * <p>update</p>
+     *
+     */
+    public abstract void update(); 
+
+    /**
+     * This method is used to establish package against IP list mapping, with
+     * which, the IP list is selected per package via the configured filter rules
+     * from the database.
+     */
+    protected void updatePackageIpListMap() {
+        m_pkgIpMap.clear();
+        getWriteLock().lock();
+        try {
+            for (final org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
+                //
+                // Get a list of IP addresses per package against the filter rules from
+                // database and populate the package, IP list map.
+                //
+                try {
+                    final List<InetAddress> ipList = getIpList(pkg);
+                    LogUtils.tracef(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
     
-    private void updateUrlIpMap() {
+                    if (ipList != null && ipList.size() > 0) {
+                        m_pkgIpMap.put(pkg, ipList);
+                    }
+                } catch (final Throwable t) {
+                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list", pkg.getName());
+                }
+            }
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
+
+    
+   protected void updateUrlIpMap() {
+       m_urlIPMap.clear();
         for (final org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
             if (pkg == null) continue;
             for (final String urlname : pkg.getIncludeUrlCollection()) {
@@ -562,7 +555,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
     }
 
-    private void initializeIpRouteClassNames() throws IOException, MarshalException, ValidationException {
+    protected void updateIpRouteClassNames() {
+        m_oidMask2IpRouteclassName.clear();
         getWriteLock().lock();
         try {
             final Iproutes iproutes = m_config.getIproutes();
@@ -587,7 +581,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
     }
 
-	private void initializeVlanClassNames() throws IOException, MarshalException, ValidationException {
+	protected void updateVlanClassNames() {
+	    m_oidMask2VlanclassName.clear();
 	    getWriteLock().lock();
 	    try {
     		final Vlans vlans = m_config.getVlans();
@@ -708,71 +703,6 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             getReadLock().unlock();
         }
         return false;
-    }
-    
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    protected void reloadXML(final Reader reader) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
-        try {
-            m_config = CastorUtils.unmarshal(LinkdConfiguration.class, reader);
-            updateUrlIpMap();
-            updatePackageIpListMap();
-            initializeVlanClassNames();
-            initializeIpRouteClassNames();
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    protected void reloadXML(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
-        try {
-            m_config = CastorUtils.unmarshal(LinkdConfiguration.class, stream);
-            updateUrlIpMap();
-            updatePackageIpListMap();
-            initializeVlanClassNames();
-            initializeIpRouteClassNames();
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-    /**
-     * Saves the current in-memory configuration to disk and reloads
-     *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public void save() throws MarshalException, IOException, ValidationException {
-        getWriteLock().lock();
-        
-        try {
-            // marshall to a string first, then write the string to the file. This
-            // way the original config isn't lost if the xml from the marshall is hosed.
-            final StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(m_config, stringWriter);
-            saveXml(stringWriter.toString());
-        
-            update();
-        } finally {
-            getWriteLock().unlock();
-        }
     }
 
     /**

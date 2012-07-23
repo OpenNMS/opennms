@@ -10,9 +10,6 @@
   <artifactId>karaf-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Apache Karaf Dependencies</name>
-  <properties>
-    <version>2.2.7</version>
-  </properties>
   <!--
   Other JARs that come with the installer for Karaf... do we need them?
 
@@ -31,178 +28,178 @@
     <dependency>
       <groupId>org.apache.karaf.diagnostic</groupId>
       <artifactId>org.apache.karaf.diagnostic.core</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.diagnostic</groupId>
       <artifactId>org.apache.karaf.diagnostic.common</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.diagnostic</groupId>
       <artifactId>org.apache.karaf.diagnostic.command</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.diagnostic</groupId>
       <artifactId>org.apache.karaf.diagnostic.management</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.management.mbeans</groupId>
       <artifactId>org.apache.karaf.management.mbeans.config</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.management.mbeans</groupId>
       <artifactId>org.apache.karaf.management.mbeans.dev</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.management.mbeans</groupId>
       <artifactId>org.apache.karaf.management.mbeans.packages</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.management.mbeans</groupId>
       <artifactId>org.apache.karaf.management.mbeans.log</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.management.mbeans</groupId>
       <artifactId>org.apache.karaf.management.mbeans.services</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.management.mbeans</groupId>
       <artifactId>org.apache.karaf.management.mbeans.bundles</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- org.apache.karaf.management -->
     <dependency>
       <groupId>org.apache.karaf.management</groupId>
       <artifactId>org.apache.karaf.management.server</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- org.apache.karaf.features -->
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>org.apache.karaf.features.core</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>org.apache.karaf.features.command</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>org.apache.karaf.features.management</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- org.apache.karaf.admin -->
     <dependency>
       <groupId>org.apache.karaf.admin</groupId>
       <artifactId>org.apache.karaf.admin.core</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.admin</groupId>
       <artifactId>org.apache.karaf.admin.command</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.admin</groupId>
       <artifactId>org.apache.karaf.admin.management</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- org.apache.karaf.jaas -->
     <dependency>
       <groupId>org.apache.karaf.jaas</groupId>
       <artifactId>org.apache.karaf.jaas.config</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.jaas</groupId>
       <artifactId>org.apache.karaf.jaas.command</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.jaas</groupId>
       <artifactId>org.apache.karaf.jaas.modules</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- org.apache.karaf.deployer -->
     <dependency>
       <groupId>org.apache.karaf.deployer</groupId>
       <artifactId>org.apache.karaf.deployer.features</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.deployer</groupId>
       <artifactId>org.apache.karaf.deployer.kar</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.deployer</groupId>
       <artifactId>org.apache.karaf.deployer.spring</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.deployer</groupId>
       <artifactId>org.apache.karaf.deployer.blueprint</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.deployer</groupId>
       <artifactId>org.apache.karaf.deployer.wrap</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- org.apache.karaf.shell -->
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.packages</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.dev</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.console</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.commands</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.osgi</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.log</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.ssh</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.config</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.wrapper</artifactId>
-      <version>${version}</version>
+      <version>${karafVersion}</version>
     </dependency>
     <!-- Bump the version of pax-logging up a bit -->
     <dependency>

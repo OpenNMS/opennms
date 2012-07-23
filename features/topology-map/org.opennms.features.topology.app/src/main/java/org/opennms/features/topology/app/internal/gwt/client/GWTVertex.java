@@ -32,6 +32,22 @@ public class GWTVertex extends JavaScriptObject {
         return this.selected;
     }-*/;
     
+    public final native void setLabel(String label) /*-{
+    	this.label = label;
+    }-*/;
+    
+    public final native String getLabel() /*-{
+    	return this.label;
+    }-*/;
+
+    public final native void setIpAddr(String ipAddr) /*-{
+        this.ipAddr = ipAddr;
+    }-*/;
+    
+    public final native void getIpAddr() /*-{
+        return this.ipAddr;
+    }-*/;
+    
     public static native GWTVertex create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
     }-*/;
@@ -133,6 +149,17 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    static Func<String, GWTVertex> label() {
+    	return new Func<String, GWTVertex>() {
+
+			@Override
+			public String call(GWTVertex datum, int index) {
+				return datum.getLabel() == null ? "no label provided" : datum.getLabel();
+			}
+    		
+    	};
+    }
+    
     public static D3Behavior draw() {
         return new D3Behavior() {
 
@@ -159,6 +186,14 @@ public class GWTVertex extends JavaScriptObject {
                       .attr("y", "-24px")
                       .attr("width", "48px")
                       .attr("height", "48px");
+                
+                vertex.append("text")
+                      .attr("class", "vertex-label")
+                      .attr("x", "0px")
+                      .attr("y",  "28px")
+                      .attr("text-anchor", "middle")
+                      .attr("alignment-baseline", "text-before-edge")
+                      .text(label());
                 
                 vertex.call(draw());
                 
@@ -188,5 +223,4 @@ public class GWTVertex extends JavaScriptObject {
 		}
 		
 	}
-
 }

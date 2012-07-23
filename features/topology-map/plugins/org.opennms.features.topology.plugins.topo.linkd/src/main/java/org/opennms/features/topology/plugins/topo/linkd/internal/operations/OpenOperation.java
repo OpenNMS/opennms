@@ -14,16 +14,23 @@ public class OpenOperation implements Operation {
     }
 
     @Override
-    public Undoer execute(List<Object> targets,
-            OperationContext operationContext) {
-        if (targets == null || targets.isEmpty() )
+    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+        if (targets == null || targets.isEmpty() ) {
+        	log("no target, loading null provider");
             m_linkdTopologyProvider.load(null);
-        else 
+        } else {
+        	log("loading " + targets.get(0));
             m_linkdTopologyProvider.load((String) targets.get(0));
+        }
+        log("finished loading");
         return null;
     }
 
-    @Override
+    private void log(final String string) {
+		System.err.println(string);
+	}
+
+	@Override
     public boolean display(List<Object> targets,
             OperationContext operationContext) {
         // TODO Auto-generated method stub

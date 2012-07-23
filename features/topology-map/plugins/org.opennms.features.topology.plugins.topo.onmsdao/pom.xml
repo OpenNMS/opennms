@@ -5,7 +5,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.1-SNAPSHOT</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -14,9 +14,8 @@
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.topology.plugins</groupId>
-  <artifactId>org.opennms.features.topology.plugins.topo.onmsdao</artifactId>
-  <version>1.11.1-SNAPSHOT</version>
+  <groupId>org.opennms.features.topology.plugins.topo</groupId>
+  <artifactId>onmsdao</artifactId>
 
   <name>${bundle.symbolicName}</name>
 
@@ -40,7 +39,7 @@
      </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.api</artifactId>
+      <artifactId>api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
