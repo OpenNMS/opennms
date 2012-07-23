@@ -89,7 +89,7 @@ public class SimpleTopologyProvider implements TopologyProvider{
 
     }
     
-    private Item addVertex(String id, int x, int y, String icon, String label) {
+    private Item addVertex(String id, int x, int y, String icon, String label, String ipAddr) {
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
@@ -97,6 +97,7 @@ public class SimpleTopologyProvider implements TopologyProvider{
         SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
         vertex.setIcon(icon);
         vertex.setLabel(label);
+        vertex.setIpAddr(ipAddr);
         return m_vertexContainer.addBean(vertex);
     }
     
@@ -247,7 +248,8 @@ public class SimpleTopologyProvider implements TopologyProvider{
     public Object addVertex(int x, int y, String icon) {
         System.err.println("Adding vertex in SimpleTopologyProvider with icon: " + icon);
         String nextVertexId = getNextVertexId();
-        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId);
+//        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1");
+          addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "64.146.64.214");
         return nextVertexId;
     }
 

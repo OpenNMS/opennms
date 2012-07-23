@@ -165,7 +165,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         			target.addAttribute("groupKey", vert.getGroupKey());
         		}
         		target.addAttribute("label", vert.getLabel());
-
+        		target.addAttribute("ipAddr", vert.getIpAddr());
 
         		List<String> vertActionList = new ArrayList<String>();
         		for(Action.Handler handler : m_actionHandlers) {

@@ -857,6 +857,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				if (child.hasAttribute("label")) {
 					vertex.setLabel(child.getStringAttribute("label"));
 				}
+				
+//				if (child.hasAttribute("ipAddr")) {
+//				        vertex.setLabel(child.getStringAttribute("ipAddr"));
+				          vertex.setIpAddr("64.146.64.214");
+//				}
 
 				graphConverted.addVertex(vertex);
 				

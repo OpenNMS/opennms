@@ -212,7 +212,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             LinkdVertex source;
             BeanItem<LinkdVertex> item = m_vertexContainer.getItem(sourceId);
             if (item == null) {
-                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, SWITCH_ICON, node.getLabel());
+                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, SWITCH_ICON, node.getLabel(), node.getPrimaryInterface().getIpAddress().toString());
                 m_vertexContainer.addBean( source);
             }
             else {
@@ -223,7 +223,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             LinkdVertex target;
             item = m_vertexContainer.getItem(targetId);
             if (item == null) {
-                target = new LinkdNodeVertex(targetId, 0, 0, SWITCH_ICON, "FIX ME: nodeParentId: " + targetId);
+                target = new LinkdNodeVertex(targetId, 0, 0, SWITCH_ICON, "FIX ME: nodeParentId: " + targetId, node.getPrimaryInterface().getIpAddress().toString());
                 m_vertexContainer.addBean( target);                    
             }
             else {
