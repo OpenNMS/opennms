@@ -36,8 +36,11 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Test;
 
-import org.opennms.features.vaadin.mibcompiler.model.EventDTO;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
+import org.opennms.features.vaadin.events.model.EventDTO;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.core.io.FileSystemResource;
 
@@ -49,10 +52,10 @@ import org.springframework.core.io.FileSystemResource;
 public class TestMappingDTO {
 
     /**
-     * Test mapping.
+     * Test event mapping.
      */
     @Test
-    public void testMapping() {
+    public void testEventMapping() {
         MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
 
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
@@ -71,6 +74,20 @@ public class TestMappingDTO {
             Assert.assertEquals(dto.getLogmsg().getContent(), e.getLogmsg().getContent());
             Assert.assertEquals(dto.getMask().getMaskelementCollection().get(0).getMevalueCollection().get(0), e.getMask().getMaskelementCollection().get(0).getMevalueCollection().get(0));
         }
+    }
+
+    /**
+     * Test data collection mapping.
+     */
+    @Test
+    public void testDataCollectionMapping() {
+        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
+        DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource("src/test/resources/cisco.xml"));
+        DataCollectionGroupDTO dto = mapper.map(group, DataCollectionGroupDTO.class);
+        Assert.assertEquals(group.getName(), dto.getName());
+        Assert.assertEquals(group.getResourceTypeCount(), dto.getResourceTypeCollection().size());
+        Assert.assertEquals(group.getGroupCount(), dto.getGroupCollection().size());
+        Assert.assertEquals(group.getSystemDefCount(), dto.getSystemDefCollection().size());
     }
 
 }
