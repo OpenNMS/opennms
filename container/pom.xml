@@ -15,6 +15,18 @@
   <modules>
     <module>branding</module>
     <module>standalone</module>
-    <module>web</module>
+    <module>karaf</module>
+    <module>servlet</module>
   </modules>
+
+  <repositories>
+    <repository>
+      <id>servicemix</id>
+      <name>Apache ServiceMix Repository</name>
+      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
 </project>

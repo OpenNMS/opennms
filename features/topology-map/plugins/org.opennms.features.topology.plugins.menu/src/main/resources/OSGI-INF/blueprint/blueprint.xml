@@ -14,6 +14,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
         	<entry key="operation.menuLocation" value="Edit" />
         	<entry key="operation.contextMenuLocation" value="" />
+        	<entry key="operation.label" value="Hello There" />
         </service-properties>
     </service>
     

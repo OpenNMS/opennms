@@ -20,7 +20,7 @@
 
   <listener>
     <!-- This listener will start up the Osgid (Karaf) OSGi container -->
-    <listener-class>org.opennms.web.osgi.FrameworkStartupContextListener</listener-class>
+    <!-- <listener-class>org.opennms.web.osgi.FrameworkStartupContextListener</listener-class> -->
   </listener>
 
   <listener>

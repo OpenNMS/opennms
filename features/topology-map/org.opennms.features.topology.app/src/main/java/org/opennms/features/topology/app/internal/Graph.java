@@ -43,7 +43,7 @@ public class Graph{
 		
 		m_dataSource = dataSource;
 		
-		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer()) {
+		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer(), "tcV") {
 
             @Override
             List<Vertex> getElements() {
@@ -64,13 +64,13 @@ public class Graph{
 			protected Vertex make(String key, Object itemId, Item item) {
 				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
-				System.out.println("Parent of itemId: " + itemId + " groupId: " + groupId);
+				System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
 				return new Vertex(key, itemId, item, groupKey, groupId);
 			}
 
 		};
 		
-		m_edgeHolder = new ElementHolder<Edge>(m_dataSource.getEdgeContainer()) {
+		m_edgeHolder = new ElementHolder<Edge>(m_dataSource.getEdgeContainer(), "tcE") {
 
 			@Override
 			protected Edge make(String key, Object itemId, Item item) {

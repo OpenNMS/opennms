@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.ThreadCategory;

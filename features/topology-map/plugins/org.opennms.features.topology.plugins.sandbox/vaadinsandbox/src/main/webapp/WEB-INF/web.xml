@@ -15,12 +15,12 @@
 		<init-param>
 			<description>Vaadin application class to start</description>
 			<param-name>application</param-name>
-			<param-value>org.opennms.sandbox.DefaultMenu</param-value>
+			<param-value>org.opennms.features.topology.netutils.internal.DefaultMenu</param-value>
 		</init-param>
 		<init-param>
 			<description>Application widgetset</description>
 			<param-name>widgetset</param-name>
-			<param-value>org.opennms.sandbox.widgetset.TopologyWidget</param-value>
+			<param-value>org.opennms.features.topology.netutils.internal.widgetset.TopologyWidget</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>

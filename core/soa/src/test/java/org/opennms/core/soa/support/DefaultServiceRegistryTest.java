@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.core.soa.Registration;
+import org.opennms.core.soa.RegistrationHook;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
 
@@ -76,6 +77,26 @@ public class DefaultServiceRegistryTest {
         
     }
     
+    public static class Hook implements RegistrationHook {
+    	
+    	private int m_registrationCount = 0;
+
+		@Override
+		public void registrationAdded(Registration registration) {
+			m_registrationCount++;
+		}
+
+		@Override
+		public void registrationRemoved(Registration registration) {
+			m_registrationCount--;
+		}
+
+		public int getCount() {
+			return m_registrationCount;
+		}
+    	
+    }
+    
     
     
     @Test
@@ -86,9 +107,15 @@ public class DefaultServiceRegistryTest {
         
         Registration registration = m_registry.register(provider, Hello.class, Goodbye.class);
         
+        Hook hook = new Hook();
+        
+        m_registry.addRegistrationHook(hook, true);
+        
+        assertEquals(1, hook.getCount());
         
         Collection<Hello> hellos = m_registry.findProviders(Hello.class);
         Collection<Goodbye> goodbyes = m_registry.findProviders(Goodbye.class);
+        
         
         assertEquals(1, hellos.size());
         assertEquals(1, goodbyes.size());
@@ -97,6 +124,8 @@ public class DefaultServiceRegistryTest {
         assertSame(provider, goodbyes.iterator().next());
         
         registration.unregister();
+        
+        assertEquals(0, hook.getCount());
         
         hellos = m_registry.findProviders(Hello.class);
         goodbyes = m_registry.findProviders(Goodbye.class);
@@ -121,6 +150,12 @@ public class DefaultServiceRegistryTest {
         Registration bigRegistration = m_registry.register(bigProvider, bigProps, Hello.class, Goodbye.class);
         Registration smallRegistration = m_registry.register(smallProvider, smallProps, Hello.class, Goodbye.class);
         
+        Hook hook = new Hook();
+        
+        m_registry.addRegistrationHook(hook, true);
+        
+        assertEquals(2, hook.getCount());
+
         Collection<Hello> hellos = m_registry.findProviders(Hello.class);
         Collection<Goodbye> goodbyes = m_registry.findProviders(Goodbye.class);
         
@@ -147,11 +182,15 @@ public class DefaultServiceRegistryTest {
         
         bigRegistration.unregister();
         
+        assertEquals(1, hook.getCount());
+
         assertTrue(m_registry.findProviders(Hello.class, "(size=big)").isEmpty());
         assertEquals(1, m_registry.findProviders(Hello.class, "(size=small)").size());
         
         smallRegistration.unregister();
         
+        assertEquals(0, hook.getCount());
+
         assertTrue(m_registry.findProviders(Hello.class, "(size=big)").isEmpty());
         assertTrue(m_registry.findProviders(Hello.class, "(size=small)").isEmpty());
         

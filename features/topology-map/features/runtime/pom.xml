@@ -26,6 +26,15 @@
           <features>
             <feature>opennms-topology-api</feature>
           </features>
+          <configs>
+            <config>
+                <name>org.opennms.features.topology.app</name>
+                <contents>
+                    toplevelMenuOrder=File,Edit,View,Additional,Help
+                    servletAlias=/topology
+                </contents>
+            </config>
+          </configs>
         </configuration>
       </plugin>
     </plugins>
@@ -78,6 +87,11 @@
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>org.opennms.features.topology.plugins.ui.tree</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.netutils</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -319,6 +319,7 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.osgid</artifactId>
+      <scope>provided</scope> <!-- provided because we don't want all the transient deps for now -->
     </dependency>
 
     <!-- FIXME: Does this even need to be here? I had to switch it from provided

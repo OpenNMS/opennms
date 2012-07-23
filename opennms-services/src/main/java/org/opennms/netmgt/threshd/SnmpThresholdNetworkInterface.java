@@ -175,7 +175,8 @@ public class SnmpThresholdNetworkInterface {
      * @param ifLabel a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, Set<ThresholdEntity>> getInterfaceThresholdMap(String ifLabel) {
+    @SuppressWarnings("deprecation")
+	public Map<String, Set<ThresholdEntity>> getInterfaceThresholdMap(String ifLabel) {
         ThresholdResourceType resourceType = getThresholdConfiguration().getIfResourceType();
 
         // Attempt to retrieve the threshold map for this interface using the ifLabel for the interface
