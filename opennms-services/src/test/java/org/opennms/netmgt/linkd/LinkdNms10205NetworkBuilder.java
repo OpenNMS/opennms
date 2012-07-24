@@ -34,9 +34,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -44,9 +42,7 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public abstract class LinkdNms10205NetworkBuilder {
-
-    NetworkBuilder m_networkBuilder;
+public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
 
     static final String MUMBAI_IP = "10.205.56.5";
     static final String MUMBAI_NAME = "Mumbai";
@@ -933,50 +929,7 @@ public abstract class LinkdNms10205NetworkBuilder {
         BANGALORE_IF_IFDESCR_MAP.put(14, "fxp1.0");
         BANGALORE_IF_MAC_MAP.put(14, "020000000004");        
     }
-    private NetworkBuilder getNetworkBuilder() {
-        if ( m_networkBuilder == null )
-            m_networkBuilder = new NetworkBuilder();
-        return m_networkBuilder;
-    }
-    
-    OnmsNode getNode(String name, String sysoid, String primaryip,
-            Map<InetAddress, Integer> ipinterfacemap,
-            Map<Integer,String> ifindextoifnamemap,
-            Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap) {
-        NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setType("A");
-        final Map<Integer, SnmpInterfaceBuilder> ifindexsnmpbuildermap = new HashMap<Integer, SnmpInterfaceBuilder>();
-        for (Integer ifIndex: ifindextoifnamemap.keySet()) {
-            ifindexsnmpbuildermap.put(ifIndex, nb.addSnmpInterface(ifIndex).
-                                      setIfType(6).
-                                      setIfName(ifindextoifnamemap.get(ifIndex)).
-                                      setIfSpeed(100000000).
-                                      setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
-        }
         
-        for (InetAddress ipaddr: ipinterfacemap.keySet()) { 
-            String isSnmpPrimary="N";
-            Integer ifIndex = ipinterfacemap.get(ipaddr);
-            if (ipaddr.getHostAddress().equals(primaryip))
-                isSnmpPrimary="P";
-            if (ifIndex == null)
-                nb.addInterface(ipaddr.getHostAddress()).setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");
-            else {
-                nb.addInterface(ipaddr.getHostAddress(), ifindexsnmpbuildermap.get(ifIndex).getSnmpInterface()).
-                setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");            }
-        }
-            
-        return nb.getCurrentNode();
-    }
-    
-    private String getSuitableString(Map<Integer,String> ifindextomacmap, Integer ifIndex) {
-        String value = "";
-        if (ifindextomacmap.containsKey(ifIndex))
-            value = ifindextomacmap.get(ifIndex);
-        return value;
-    }
-    
     String getMockSnmpFile(String ipaddress) {
         return "classpath:linkd/nms10205/"+ipaddress+"-walk.txt"; 
     }
@@ -1000,12 +953,5 @@ public abstract class LinkdNms10205NetworkBuilder {
     OnmsNode getBangalore() {
         return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP);        
     }
-    
-    OnmsNode getNodeWithoutSnmp(String name, String ipaddr) {
-        NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setType("A");
-        nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
-        return nb.getCurrentNode();
-    }
-    
+        
 }
