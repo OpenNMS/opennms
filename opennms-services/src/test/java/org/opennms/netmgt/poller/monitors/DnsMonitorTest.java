@@ -75,7 +75,7 @@ public class DnsMonitorTest {
     
     @Before
     public void setup() throws Exception {
-        MockLogAppender.setupLogging();
+        MockLogAppender.setupLogging(true);
     }
     
     @Test
