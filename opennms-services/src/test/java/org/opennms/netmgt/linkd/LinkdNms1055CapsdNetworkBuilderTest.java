@@ -81,7 +81,7 @@ import org.springframework.transaction.annotation.Transactional;
 // either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBuilder implements InitializingBean {
+public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuilder implements InitializingBean {
 
     
     @Autowired
@@ -109,32 +109,32 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
     })
     @Transactional
-    public final void testMumbay() throws MarshalException, ValidationException, IOException {
+    public final void testPenrose() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(MUMBAI_IP);
+        m_capsd.scanSuspectInterface(PENROSE_IP);
         
 
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(MUMBAI_IP);
+        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(PENROSE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
         OnmsIpInterface ip = ips.get(0);
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("MUMBAI_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                System.out.println("PENROSE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
             if ( snmpinterface.getIfName() != null)
-            System.out.println("MUMBAI_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            System.out.println("PENROSE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)
-            System.out.println("MUMBAI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            System.out.println("PENROSE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
-            System.out.println("MUMBAI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            System.out.println("PENROSE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
         }
         
         m_capsd.stop();
@@ -144,32 +144,32 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt")
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
     })
     @Transactional
-    public final void testChennai() throws MarshalException, ValidationException, IOException {
+    public final void testDelaware() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(CHENNAI_IP);
+        m_capsd.scanSuspectInterface(DELAWARE_IP);
         
 
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CHENNAI_IP);
+        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(DELAWARE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
         OnmsIpInterface ip = ips.get(0);
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("CHENNAI_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                System.out.println("DELAWARE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
             if ( snmpinterface.getIfName() != null)
-            System.out.println("CHENNAI_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            System.out.println("DELAWARE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)
-            System.out.println("CHENNAI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            System.out.println("DELAWARE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
-            System.out.println("CHENNAI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            System.out.println("DELAWARE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
         }
         
         m_capsd.stop();
@@ -177,32 +177,32 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt")
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt")
     })
     @Transactional
-    public final void testDelhi() throws MarshalException, ValidationException, IOException {
+    public final void testPhoenix() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(DELHI_IP);
+        m_capsd.scanSuspectInterface(PHOENIX_IP);
         
 
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(DELHI_IP);
+        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(PHOENIX_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
         OnmsIpInterface ip = ips.get(0);
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("DELHI_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                System.out.println("PHOENIX_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
             if ( snmpinterface.getIfName() != null)
-            System.out.println("DELHI_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            System.out.println("PHOENIX_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)
-            System.out.println("DELHI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            System.out.println("PHOENIX_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
-            System.out.println("DELHI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            System.out.println("PHOENIX_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
         }
         
         m_capsd.stop();
@@ -210,32 +210,32 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt")
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt")
     })
     @Transactional
-    public final void testSpaceExSw1() throws MarshalException, ValidationException, IOException {
+    public final void testAustin() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(SPACE_EX_SW1_IP);
+        m_capsd.scanSuspectInterface(AUSTIN_IP);
         
 
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SPACE_EX_SW1_IP);
+        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(AUSTIN_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
         OnmsIpInterface ip = ips.get(0);
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("SPACE_EX_SW1_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                System.out.println("AUSTIN_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
             if ( snmpinterface.getIfName() != null)
-            System.out.println("SPACE_EX_SW1_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            System.out.println("AUSTIN_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)
-            System.out.println("SPACE_EX_SW1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            System.out.println("AUSTIN_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SPACE_EX_SW1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            System.out.println("AUSTIN_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
         }
         
         m_capsd.stop();
@@ -243,32 +243,32 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt")
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
     @Transactional
-    public final void testBangalore() throws MarshalException, ValidationException, IOException {
+    public final void testRiovista() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(BANGALORE_IP);
+        m_capsd.scanSuspectInterface(RIOVISTA_IP);
         
 
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(BANGALORE_IP);
+        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(RIOVISTA_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
         OnmsIpInterface ip = ips.get(0);
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("BANGALORE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                System.out.println("RIOVISTA_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
             if ( snmpinterface.getIfName() != null)
-            System.out.println("BANGALORE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            System.out.println("RIOVISTA_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)
-            System.out.println("BANGALORE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            System.out.println("RIOVISTA_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
-            System.out.println("BANGALORE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            System.out.println("RIOVISTA_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
         }
         
         m_capsd.stop();
