@@ -9,8 +9,8 @@ public class LinkdNodeVertex extends LinkdVertex {
 	
 	int m_nodeid;
 	
-        public LinkdNodeVertex(String id, int x, int y, String icon) {
-            super(id, x, y, icon);
+        public LinkdNodeVertex(String id, int x, int y, String icon, String label, String ipAddr) {
+            super(id, x, y, icon, label, ipAddr);
             m_nodeid=Integer.parseInt(id);
         }
 

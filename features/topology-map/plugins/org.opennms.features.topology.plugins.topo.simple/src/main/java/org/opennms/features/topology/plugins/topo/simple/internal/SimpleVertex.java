@@ -18,8 +18,10 @@ abstract public class SimpleVertex {
 	boolean m_selected;
 	boolean m_locked = false;
 	String m_icon;
+	String m_label = "none provided";
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
+        private String m_ipAddr ="127.0.0.1";
 //	private int m_semanticZoomLevel = -1;
 	
 	public SimpleVertex() {}
@@ -102,6 +104,22 @@ abstract public class SimpleVertex {
 
 	public void setIcon(String icon) {
 		m_icon = icon;
+	}
+
+	public String getLabel() {
+		return m_label;
+	}
+
+	public void setLabel(String label) {
+		m_label = label;
+	}
+	
+	public String getIpAddr() {
+	    return m_ipAddr;
+	}
+	
+	public void setIpAddr(String ipAddr){
+	    m_ipAddr = ipAddr;
 	}
 
 	@XmlTransient

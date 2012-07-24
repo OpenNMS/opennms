@@ -32,10 +32,10 @@ public class ResourceGraphsWindow extends Window {
 	 * @param height Height of the main window
 	 * @throws MalformedURLException
 	 */
-	public ResourceGraphsWindow(Node node) throws MalformedURLException{
+	public ResourceGraphsWindow(Node node, String baseURL) throws MalformedURLException{
 		
 		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		rgURL = new URL("http://demo.opennms.org/opennms/graph/chooseresource.htm?reports=all&parentResourceId=node" + "[" + node.getNodeID() + "]");
+		rgURL = new URL(baseURL + "[" + node.getNodeID() + "]");
 		rgBrowser = new Embedded("", new ExternalResource(rgURL));
 		
 		/*Sets the properties of the sub-window*/

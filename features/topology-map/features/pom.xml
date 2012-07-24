@@ -19,7 +19,9 @@
   <modules>
     <module>vaadin</module>
     <module>api</module>
-    <module>runtime</module>
+    <module>runtime-base</module>
+    <module>runtime-simple</module>
+    <module>runtime-linkd</module>
     <module>dev</module>
   </modules>
 

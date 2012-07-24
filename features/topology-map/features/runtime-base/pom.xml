@@ -9,11 +9,11 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
-  <artifactId>opennms-topology-runtime</artifactId>
+  <artifactId>opennms-topology-runtime-base</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime</name>
+  <name>OpenNMS :: Topology :: Runtime (Base)</name>
 
-  <description>Runtime and plugins for the OpenNMS topology web app.</description>
+  <description>Base runtime and plugins for the OpenNMS topology web app.</description>
 
   <packaging>pom</packaging>
 
@@ -34,9 +34,19 @@
             <config>
                 <name>org.opennms.features.topology.app</name>
                 <contents>
-                    toplevelMenuOrder=File,Edit,View,Additional,Help
                     servletAlias=/topology
                     widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
+                </contents>
+            </config>
+            <config>
+                <name>org.opennms.features.topology.app.menu</name>
+                <contents>
+                    toplevelMenuOrder=File,Edit,View,Additions,Help
+                    submenu.File.groups=start,new,close,save,print,open,import,additions,end
+                    submenu.Edit.groups=start,undo,cut,find,add,end,additions
+                    submenu.View.groups=start,additions,end
+		    submenu.Help.groups=start,main,tools,updates,end,additions
+                    submenu.Default.groups=start,main,end,additions
                 </contents>
             </config>
           </configs>
@@ -79,11 +89,6 @@
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>menu</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>simple</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

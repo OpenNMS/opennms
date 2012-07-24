@@ -89,23 +89,26 @@ public class SimpleTopologyProvider implements TopologyProvider{
 
     }
     
-    private Item addVertex(String id, int x, int y, String icon) {
+    private Item addVertex(String id, int x, int y, String icon, String label, String ipAddr) {
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         System.err.println("Adding a vertex: " + id);
         SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
         vertex.setIcon(icon);
+        vertex.setLabel(label);
+        vertex.setIpAddr(ipAddr);
         return m_vertexContainer.addBean(vertex);
     }
     
-    private Item addGroup(String groupId, String icon) {
+    private Item addGroup(String groupId, String icon, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         System.err.println("Adding a group: " + groupId);
         SimpleVertex vertex = new SimpleGroup(groupId);
         vertex.setIcon(icon);
+        vertex.setLabel(label);
         return m_vertexContainer.addBean(vertex);
         
     }
@@ -245,7 +248,8 @@ public class SimpleTopologyProvider implements TopologyProvider{
     public Object addVertex(int x, int y, String icon) {
         System.err.println("Adding vertex in SimpleTopologyProvider with icon: " + icon);
         String nextVertexId = getNextVertexId();
-        addVertex(nextVertexId, x, y, icon);
+//        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1");
+          addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "64.146.64.214");
         return nextVertexId;
     }
 
@@ -263,7 +267,7 @@ public class SimpleTopologyProvider implements TopologyProvider{
     @Override
     public Object addGroup(String groupIcon) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIcon);
+        addGroup(nextGroupId, groupIcon, "Group " + nextGroupId);
         return nextGroupId;
     }
 

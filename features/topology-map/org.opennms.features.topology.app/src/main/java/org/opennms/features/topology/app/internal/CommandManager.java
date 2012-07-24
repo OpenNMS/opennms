@@ -1,6 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ public class CommandManager  {
     private List<Command> m_commandHistoryList = new ArrayList<Command>();
     private List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
     private List<String> m_topLevelMenuOrder = new ArrayList<String>();
+    private Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
     
     public CommandManager() {}
     
@@ -74,6 +77,7 @@ public class CommandManager  {
         OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
         MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
         menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
+        menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
         
         for(Command command : getCommandList()) {
             String menuPosition = command.getMenuPosition();
@@ -185,6 +189,34 @@ public class CommandManager  {
     public void setTopLevelMenuOrder(List<String> menuOrderList) {
         m_topLevelMenuOrder  = menuOrderList;
         
+    }
+    
+    public void updateMenuConfig(Map props) { 
+        System.out.println("Getting config with these parameters: " + props);
+        List<String> topLevelOrder = Arrays.asList(props.get("toplevelMenuOrder").toString().split(","));
+        setTopLevelMenuOrder(topLevelOrder);
+        
+        for(String topLevelItem : topLevelOrder) {
+            if(!topLevelItem.equals("Additions")) {
+                String key = "submenu." + topLevelItem + ".groups";
+                addOrUpdateGroupOrder(topLevelItem, Arrays.asList(props.get(key).toString().split(",")));
+            }
+        }
+        addOrUpdateGroupOrder("Default", Arrays.asList(props.get("submenu.Default.groups").toString().split(",")));
+    }
+
+    public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
+        if(!m_subMenuGroupOrder.containsKey(key)) {
+            m_subMenuGroupOrder.put(key, orderSet);
+        }else {
+            m_subMenuGroupOrder.remove(key);
+            m_subMenuGroupOrder.put(key, orderSet);
+        }
+        
+    }
+    
+    public Map<String, List<String>> getMenuOrderConfig(){
+        return m_subMenuGroupOrder;
     }
     
 }

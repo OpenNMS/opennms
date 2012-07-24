@@ -56,11 +56,11 @@ public class SpringSecurityContextService implements SecurityContextService {
 	
 	private UserDetails getUserDetails() {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	    UserDetails userDetails = null;
 	    if (principal instanceof UserDetails) {
-	      userDetails = (UserDetails) principal;
+	      return (UserDetails) principal;
+	    } else {
+	        throw new IllegalStateException("principal should always be instanceof UserDetails");
 	    }
-	    return userDetails;
 	}
 	
 	@Override

@@ -1,7 +1,7 @@
 @CHARSET "UTF-8";
 div#console {
-	font-size: 12px;
-	margin: 12px;
+	font-size: 15px;
+	margin: 15px;
 }
 
 div.term {
@@ -9,8 +9,8 @@ div.term {
 }
 
 .focusPanel {
-	font-size: 12px;
-	margin: 12px;
+	font-size: 15px;
+	margin: 15px;
 }
 
 pre.stat {

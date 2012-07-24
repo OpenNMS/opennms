@@ -36,13 +36,13 @@ public class EventsAlarmsWindow extends Window {
 	 * @param height Height of main window
 	 * @throws MalformedURLException
 	 */
-	public EventsAlarmsWindow(Node node) throws MalformedURLException {
+	public EventsAlarmsWindow(Node node, String eventsURL, String alarmsURL) throws MalformedURLException {
 		
 		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		eventsURL = new URL("http://demo.opennms.org/opennms/event/list?filter=node%3D" + node.getNodeID());
-		alarmsURL = new URL("http://demo.opennms.org/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D" + node.getNodeID());
-		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
-		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
+		this.eventsURL = new URL(eventsURL + node.getNodeID());
+		this.alarmsURL = new URL(alarmsURL + node.getNodeID());
+		eventsBrowser = new Embedded("", new ExternalResource(this.eventsURL));
+		alarmsBrowser = new Embedded("", new ExternalResource(this.alarmsURL));
 		
 		/*Setting up the properties of the sub-window*/
 		setCaption("Events & Alarms - " + node.getName());
