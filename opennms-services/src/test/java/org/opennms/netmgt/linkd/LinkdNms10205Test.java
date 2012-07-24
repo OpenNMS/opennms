@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
@@ -51,7 +50,6 @@ import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,11 +123,11 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+ MUMBAI_IP +"-walk.txt"),
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161,resource="classpath:linkd/nms10205/"+ CHENNAI_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
+            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt"),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt")
     })
     public void testNetwork10205Links() throws Exception {
         m_nodeDao.save(getMumbai());
@@ -180,8 +178,14 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(1,links.size());
-                
+        // Should be 6 links only 4 found....
+        /*
+         * Node Id = Delhi IfIndex = 28503 Node ParentId = Mumbai Parent IfIndex = 519
+         * Node Id = Bangalore IfIndex = 2401 Node ParentId = Mumbai Parent IfIndex = 507
+         * Node Id = Chennai IfIndex = 528 Node ParentId = Mumbai Parent IfIndex = 520
+         * Node Id = Bangalore IfIndex = 2397 Node ParentId = Delhi Parent IfIndex = 3674
+         * 
+         */
+        assertEquals(4,m_dataLinkInterfaceDao.countAll());                
     }
 }

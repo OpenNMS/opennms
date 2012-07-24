@@ -81,14 +81,8 @@ import org.springframework.transaction.annotation.Transactional;
 // either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
+public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBuilder implements InitializingBean {
 
-
-    private static final String MUMBAI_IP = "10.205.56.5";
-    private static final String CHENNAI_IP = "10.205.56.6";
-    private static final String DELHI_IP =  "10.205.56.7";
-    private static final String SPACE_EX_SW1_IP = "10.205.56.1";
-    private static final String BANGALORE_IP = "10.205.56.9";
     
     @Autowired
     private IpInterfaceDao m_interfaceDao;
@@ -115,7 +109,7 @@ public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt")
     })
     @Transactional
     public final void testMumbay() throws MarshalException, ValidationException, IOException {
@@ -150,7 +144,7 @@ public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt")
     })
     @Transactional
     public final void testChennai() throws MarshalException, ValidationException, IOException {
@@ -183,7 +177,7 @@ public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt")
     })
     @Transactional
     public final void testDelhi() throws MarshalException, ValidationException, IOException {
@@ -216,7 +210,7 @@ public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt")
     })
     @Transactional
     public final void testSpaceExSw1() throws MarshalException, ValidationException, IOException {
@@ -249,7 +243,7 @@ public class LinkdNms10205CapsdNetworkBuilderTest implements InitializingBean {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt")
     })
     @Transactional
     public final void testBangalore() throws MarshalException, ValidationException, IOException {
