@@ -14,6 +14,7 @@ public class TestNoClosePipedOuputStream {
     NoClosePipedInputStream in; 
     int testValue = 25;
     byte[] testByte = {1,2,3,4};
+    byte[] emptyByte = new byte[0];
 
 
     @Before
@@ -169,5 +170,20 @@ public class TestNoClosePipedOuputStream {
          } catch (NullPointerException NPE) {
              fail("The source being connected to is null");
          }
+    }
+    
+    @Test
+    public void testZeroLengthByteWrite() {
+        try {
+            out.connect(in);
+            out.write(testByte, 1, 0); // write from offset, and continue writing for zero length
+        } catch (IOException IOE) {
+            fail("The pipes are not connected"); // This should not be thrown in this test
+        } catch (NullPointerException NPE) {
+            fail("The byte array is most likely null"); // This should not be thrown in this test
+        } catch (IndexOutOfBoundsException IOB) {
+            fail("The offset or write length is invalid"); // This should not be thrown in this test
+        }
+              assertEquals("0", java.lang.Byte.valueOf(in.buffer[0]).toString());
     }
 }
