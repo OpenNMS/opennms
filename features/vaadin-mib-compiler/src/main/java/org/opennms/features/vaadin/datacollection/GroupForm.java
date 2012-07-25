@@ -101,6 +101,11 @@ public abstract class GroupForm extends Form implements ClickListener {
         setFooter(toolbar);
     }
 
+    /**
+     * Gets the group.
+     *
+     * @return the group
+     */
     @SuppressWarnings("unchecked")
     private GroupDTO getGroup() {
         if (getItemDataSource() instanceof BeanItem) {
@@ -140,6 +145,7 @@ public abstract class GroupForm extends Form implements ClickListener {
             setReadOnly(false);
         }
         if (source == delete) {
+            // FIXME You cannot delete a group if it is being used on any systemDef
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
@@ -158,8 +164,18 @@ public abstract class GroupForm extends Form implements ClickListener {
         }
     }
 
+    /**
+     * Save group.
+     *
+     * @param group the group
+     */
     public abstract void saveGroup(GroupDTO group);
 
+    /**
+     * Delete group.
+     *
+     * @param group the group
+     */
     public abstract void deleteGroup(GroupDTO group);
 
 }

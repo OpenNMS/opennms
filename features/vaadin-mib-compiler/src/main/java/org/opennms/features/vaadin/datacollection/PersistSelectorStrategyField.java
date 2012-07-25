@@ -29,6 +29,8 @@ package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.features.vaadin.datacollection.model.ParameterDTO;
 import org.opennms.features.vaadin.datacollection.model.PersistenceSelectorStrategyDTO;
+import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collectd.PersistRegexSelectorStrategy;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
@@ -77,8 +79,8 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      */
     public PersistSelectorStrategyField() {
         combo.setCaption("Class Name");
-        combo.addItem("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
-        combo.addItem("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
+        combo.addItem(PersistAllSelectorStrategy.class.getName());
+        combo.addItem(PersistRegexSelectorStrategy.class.getName());
         combo.setNullSelectionAllowed(false);
         combo.setRequired(true);
         combo.setImmediate(true);

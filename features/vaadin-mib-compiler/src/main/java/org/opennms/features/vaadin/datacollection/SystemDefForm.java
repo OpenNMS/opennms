@@ -71,6 +71,8 @@ public abstract class SystemDefForm extends Form implements ClickListener {
 
     /**
      * Instantiates a new event form.
+     *
+     * @param source the source
      */
     public SystemDefForm(final DataCollectionGroupDTO source) {
         setCaption("System Definition Detail");
@@ -99,6 +101,11 @@ public abstract class SystemDefForm extends Form implements ClickListener {
         setFooter(toolbar);
     }
 
+    /**
+     * Gets the system def.
+     *
+     * @return the system def
+     */
     @SuppressWarnings("unchecked")
     private SystemDefDTO getSystemDef() {
         if (getItemDataSource() instanceof BeanItem) {
@@ -156,8 +163,18 @@ public abstract class SystemDefForm extends Form implements ClickListener {
         }
     }
 
+    /**
+     * Save system def.
+     *
+     * @param group the group
+     */
     public abstract void saveSystemDef(SystemDefDTO group);
 
+    /**
+     * Delete system def.
+     *
+     * @param group the group
+     */
     public abstract void deleteSystemDef(SystemDefDTO group);
 
 }

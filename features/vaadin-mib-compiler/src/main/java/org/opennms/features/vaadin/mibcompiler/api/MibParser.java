@@ -80,9 +80,8 @@ public interface MibParser {
     /**
      * Gets the data collection.
      *
-     * @param groupname the group name
      * @return the data collection group
      */
-    DatacollectionGroup getDataCollection(String groupname);
+    DatacollectionGroup getDataCollection();
 
 }

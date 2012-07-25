@@ -29,6 +29,8 @@ package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.features.vaadin.datacollection.model.ParameterDTO;
 import org.opennms.features.vaadin.datacollection.model.StorageStrategyDTO;
+import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
@@ -77,8 +79,8 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
      */
     public StorageStrategyField() {
         combo.setCaption("Class Name");
-        combo.addItem("org.opennms.netmgt.dao.support.IndexStorageStrategy");
-        combo.addItem("org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy");
+        combo.addItem(IndexStorageStrategy.class.getName());
+        combo.addItem(SiblingColumnStorageStrategy.class.getName());
         combo.setNullSelectionAllowed(false);
         combo.setRequired(true);
         combo.setNewItemsAllowed(true);

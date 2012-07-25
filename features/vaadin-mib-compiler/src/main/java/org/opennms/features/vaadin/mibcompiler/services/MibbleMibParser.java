@@ -48,9 +48,14 @@ import net.percederberg.mibble.snmp.SnmpObjectType;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.mib2events.Mib2Events;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -145,30 +150,35 @@ public class MibbleMibParser implements MibParser, Serializable {
         if (mib == null) {
             return null;
         }
-        LogUtils.infof(this, "Converting MIB %s using the following UEI Base: %s", mib.getName(), ueibase);
+        LogUtils.infof(this, "Generating events for %s using the following UEI Base: %s", mib.getName(), ueibase);
         Mib2Events converter = new Mib2Events();
         return converter.convertMibToEvents(mib, ueibase);
     }
 
+    // TODO This is an experimental implementation using Mibble
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection(java.lang.String)
+     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection()
      */
-    // TODO This is a sample implementation using Mibble
-    public DatacollectionGroup getDataCollection(String groupname) {
+    public DatacollectionGroup getDataCollection() {
+        if (mib == null) {
+            return null;
+        }
+        LogUtils.infof(this, "Generating data collection configuration for %s", mib.getName());
         DatacollectionGroup dcGroup = new DatacollectionGroup();
-        dcGroup.setName(groupname == null ? mib.getName() : groupname);
+        dcGroup.setName(mib.getName());
         for (Object o : mib.getAllSymbols()) {
             if (o instanceof MibValueSymbol) {
                 MibValueSymbol node = (MibValueSymbol) o;
                 if (node.getType() instanceof SnmpObjectType && !node.isTable() && !node.isTableRow()) {
                     SnmpObjectType type = (SnmpObjectType) node.getType();
-                    String groupName = node.isTableColumn() ? node.getParent().getParent().getName() : "scalarGroup";
-                    Group group = getGroup(dcGroup, groupName);
+                    String groupName = node.isTableColumn() ? node.getParent().getParent().getName() : node.getParent().getName();
+                    String resourceType = node.isTableColumn() ? node.getParent().getName() : null;
+                    Group group = getGroup(dcGroup, groupName, resourceType);
                     String typeName = getType(type.getSyntax());
                     if (typeName != null) {
                         MibObj mibObj = new MibObj();
                         mibObj.setOid(node.getValue().toString());
-                        mibObj.setInstance(node.isTableColumn() ? groupName : "0");
+                        mibObj.setInstance(node.isTableColumn() ? resourceType : "0");
                         mibObj.setAlias(node.getName());
                         mibObj.setType(typeName);
                         group.addMibObj(mibObj);
@@ -184,16 +194,27 @@ public class MibbleMibParser implements MibParser, Serializable {
      *
      * @param data the data
      * @param groupName the group name
+     * @param resourceType the resource type
+     * @param isTable the is table
      * @return the group
      */
-    private Group getGroup(DatacollectionGroup data, String groupName) {
+    public Group getGroup(DatacollectionGroup data, String groupName, String resourceType) {
         for (Group group : data.getGroupCollection()) {
             if (group.getName().equals(groupName))
                 return group;
         }
         Group group = new Group();
         group.setName(groupName);
-        group.setIfType(groupName.equals("scalarGroup") ? "ignore" : "all");
+        group.setIfType(resourceType == null ? "ignore" : "all");
+        if (resourceType != null) {
+            ResourceType type = new ResourceType();
+            type.setName(resourceType);
+            type.setLabel(resourceType);
+            type.setResourceLabel("${index}");
+            type.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy(PersistAllSelectorStrategy.class.getName()));
+            type.setStorageStrategy(new StorageStrategy(IndexStorageStrategy.class.getName()));
+            data.addResourceType(type);
+        }
         data.addGroup(group);
         return group;
     }
@@ -205,29 +226,23 @@ public class MibbleMibParser implements MibParser, Serializable {
      * @return the type
      */
     private String getType(MibType type) {
-        if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 2)) {
-            // INTEGER / INTEGER32
+        if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 2)) { // INTEGER / INTEGER32
             return "Integer32";
-        } else if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 4)) {
-            // OCTET STRING
+        } else if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 4)) { // OCTET STRING
             return "OctetString";
-        } else if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 6)) {
-            // OBJECT IDENTIFIER
+        } else if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 6)) { // OBJECT IDENTIFIER
             return "String"; // TODO Is this Correct?
-        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 0)) {
-            // IpAddress
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 0)) { // IPADDRESS
             return "String"; // TODO Is this Correct?
-        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 1)) {
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 1)) { // COUNTER
             return "Counter";
-        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 2)) {
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 2)) { // GAUGE
             return "Gauge";
-        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 3)) {
-            // TIMETICKS
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 3)) { // TIMETICKS
             return "String"; // TODO Is this Correct?
-        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 4)) {
-            // OPAQUE
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 4)) { // OPAQUE
             return "String"; // TODO Is this Correct?
-        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 6)) {
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 6)) { // COUNTER64
             return "Counter64";
         }
         return null;

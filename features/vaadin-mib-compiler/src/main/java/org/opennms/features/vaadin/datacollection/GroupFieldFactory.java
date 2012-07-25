@@ -48,8 +48,14 @@ import com.vaadin.ui.AbstractSelect.NewItemHandler;
 @SuppressWarnings("serial")
 public final class GroupFieldFactory implements FormFieldFactory {
     
+    /** The resource types. */
     private final List<ResourceTypeDTO> resourceTypes;
     
+    /**
+     * Instantiates a new group field factory.
+     *
+     * @param source the source
+     */
     public GroupFieldFactory(final DataCollectionGroupDTO source) {
         resourceTypes = source.getResourceTypeCollection();
     }

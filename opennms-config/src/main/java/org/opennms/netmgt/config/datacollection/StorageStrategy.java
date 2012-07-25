@@ -80,7 +80,8 @@ public class StorageStrategy implements Serializable {
     }
 
     public StorageStrategy(final String clazz) {
-        m_clazz = clazz;
+        if (clazz != null)
+            m_clazz = clazz.intern();
     }
 
     /**

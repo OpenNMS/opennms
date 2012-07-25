@@ -48,7 +48,7 @@ public class DataCollectionWindow extends Window {
      * Instantiates a new events window.
      *
      * @param caption the caption
-     * @param events the OpenNMS Events
+     * @param dcGroup the data collection group
      * @param logger the logger
      */
     public DataCollectionWindow(final String caption, final DatacollectionGroup dcGroup, final Logger logger) {
@@ -76,7 +76,7 @@ public class DataCollectionWindow extends Window {
     /**
      * Process data collection.
      *
-     * @param events the OpenNMS Events
+     * @param dcGroup the OpenNMS Data Collection Group
      * @param logger the logger
      */
     /*

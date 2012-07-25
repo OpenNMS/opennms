@@ -56,8 +56,10 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 @SuppressWarnings("serial")
 public class CollectField extends CustomField implements Button.ClickListener {
 
+    /** The group field. */
     private ComboBox groupField = new ComboBox();
 
+    /** The list field. */
     private ListSelect listField = new ListSelect();
 
     /** The Toolbar. */
@@ -71,6 +73,8 @@ public class CollectField extends CustomField implements Button.ClickListener {
 
     /**
      * Instantiates a new mask element table.
+     *
+     * @param groups the groups
      */
     public CollectField(List<GroupDTO> groups) {
         listField.setRows(10);

@@ -46,8 +46,14 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public final class SystemDefFieldFactory implements FormFieldFactory {
 
+    /** The groups. */
     private final List<GroupDTO> groups;
     
+    /**
+     * Instantiates a new system def field factory.
+     *
+     * @param source the source
+     */
     public SystemDefFieldFactory(final DataCollectionGroupDTO source) {
         groups = source.getGroupCollection();
     }

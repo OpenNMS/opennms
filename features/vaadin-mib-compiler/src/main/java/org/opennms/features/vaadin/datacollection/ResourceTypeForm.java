@@ -100,6 +100,11 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
         setFooter(toolbar);
     }
 
+    /**
+     * Gets the resource type.
+     *
+     * @return the resource type
+     */
     @SuppressWarnings("unchecked")
     private ResourceTypeDTO getResourceType() {
         if (getItemDataSource() instanceof BeanItem) {
@@ -139,6 +144,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
             setReadOnly(false);
         }
         if (source == delete) {
+            // FIXME You cannot delete a resource type if it is being used on any group
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
@@ -157,8 +163,18 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
         }
     }
 
+    /**
+     * Save resource type.
+     *
+     * @param resourceType the resource type
+     */
     public abstract void saveResourceType(ResourceTypeDTO resourceType);
 
+    /**
+     * Delete resource type.
+     *
+     * @param resourceType the resource type
+     */
     public abstract void deleteResourceType(ResourceTypeDTO resourceType);
 
 }

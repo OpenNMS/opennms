@@ -32,7 +32,10 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.xml.eventconf.Events;
 
 /**
  * The Test Class for MibbleMibParser.
@@ -40,7 +43,7 @@ import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class MibbleMibParserTest {
-    
+
     private static final File MIB_DIR = new File("src/test/resources");
 
     /** The parser. */
@@ -82,6 +85,41 @@ public class MibbleMibParserTest {
         } else {
             Assert.assertEquals(2, parser.getMissingDependencies().size());
             Assert.assertNotNull(parser.getFormattedErrors());
+        }
+    }
+
+    /**
+     * Test generate events.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testGenerateEvents() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "IF-MIB.txt"))) {
+            Events events = parser.getEvents("uei.opennms.org/traps/ifmib");
+            Assert.assertNotNull(events);
+            System.out.println(JaxbUtils.marshal(events));
+            Assert.assertEquals(2, events.getEventCount());
+        } else {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test generate data collection.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testGenerateDataCollection() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "IF-MIB.txt"))) {
+            DatacollectionGroup group = parser.getDataCollection();
+            Assert.assertNotNull(group);
+            System.out.println(JaxbUtils.marshal(group));
+            Assert.assertEquals(5, group.getResourceTypeCount());
+            Assert.assertEquals(7, group.getGroupCount());
+        } else {
+            Assert.fail();
         }
     }
 

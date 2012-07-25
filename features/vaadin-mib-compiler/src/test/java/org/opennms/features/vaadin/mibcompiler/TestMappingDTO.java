@@ -82,12 +82,20 @@ public class TestMappingDTO {
     @Test
     public void testDataCollectionMapping() {
         MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
+
         DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource("src/test/resources/cisco.xml"));
+
         DataCollectionGroupDTO dto = mapper.map(group, DataCollectionGroupDTO.class);
         Assert.assertEquals(group.getName(), dto.getName());
         Assert.assertEquals(group.getResourceTypeCount(), dto.getResourceTypeCollection().size());
         Assert.assertEquals(group.getGroupCount(), dto.getGroupCollection().size());
         Assert.assertEquals(group.getSystemDefCount(), dto.getSystemDefCollection().size());
+
+        DatacollectionGroup g = mapper.map(dto, DatacollectionGroup.class);
+        Assert.assertEquals(dto.getName(), g.getName());
+        Assert.assertEquals(dto.getResourceTypeCollection().size(), g.getResourceTypeCount());
+        Assert.assertEquals(dto.getGroupCollection().size(), g.getGroupCount());
+        Assert.assertEquals(dto.getSystemDefCollection().size(), g.getSystemDefCount());
     }
 
 }

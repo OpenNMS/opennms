@@ -46,15 +46,24 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class SystemDefChoiceField extends CustomField {
 
+    /** The Constant SINGLE. */
     private static final String SINGLE = "Single";
+    
+    /** The Constant MASK. */
     private static final String MASK = "Mask";
     
+    /** The Constant OPTIONS. */
     private static final List<String> OPTIONS = Arrays.asList(new String[] { SINGLE, MASK });
 
+    /** The oid type. */
     private OptionGroup oidType;
 
+    /** The oid value. */
     private TextField oidValue;
 
+    /**
+     * Instantiates a new system def choice field.
+     */
     public SystemDefChoiceField() {
         oidType = new OptionGroup("OID Type", OPTIONS);
         oidType.setNullSelectionAllowed(false);
