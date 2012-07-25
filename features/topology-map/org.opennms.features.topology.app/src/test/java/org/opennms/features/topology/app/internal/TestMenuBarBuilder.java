@@ -3,6 +3,7 @@ package org.opennms.features.topology.app.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ public class TestMenuBarBuilder {
     
     @Test
     public void commandManagerParseConfigTest() {
-        Map props = new Properties();
+        Dictionary props = new Properties();
         props.put("toplevelMenuOrder", "File,Edit,View,Additions,Help");
         props.put("submenu.File.groups", "start,new,close,save,print,open,import,additions,end");
         props.put("submenu.Edit.groups", "start,undo,cut,find,add,end,additions");

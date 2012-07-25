@@ -18,8 +18,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
     
+    <service interface="org.osgi.service.cm.ManagedService" >
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.MenuConfigManagedService">
+            <property name="commandManager" ref="commandManager"/>
+        </bean>
+    </service>
+    
     <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager">
-        <cm:managed-properties persistent-id="org.opennms.features.topology.app.menu" update-method="updateMenuConfig" update-strategy="component-managed"/>
     </bean>
     
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
