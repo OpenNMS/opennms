@@ -71,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements InitializingBean {
+public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -109,32 +109,20 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         m_nodeDao.flush();
     }
 
-    /*
-     * 
-     *  MUMBAI:port ge 0/1/3:ip 192.168.5.5   ------> CHENNAI:port ge 4/0/2: ip 192.168.5.6
-     *  MUMBAI:port ge 0/1/2:ip 192.168.5.9   ------> DELHI:port ge 1/0/2: ip 192.168.5.10
-     *  MUMBAI:port ge 0/0/1:ip 192.168.5.13   ------> BANGALORE:port ge 0/0/0: ip 192.168.5.14
-     *  DELHI:port ge 1/0/1:ip 192.168.1.5     ------> BANGALORE:port ge 0/0/1: ip 192.168.1.6
-     *  DELHI:port ge 1/1/6:ip 172.16.7.1     ------> Space-EX-SW1: port 0/0/6: ip 172.16.7.1 ???? same ip address
-     *  CHENNAI:port ge 4/0/3:ip 192.168.1.1  ------> DELHI: port ge 1/1/0: ip 192.168.1.2
-     *  
-     *  a lot of duplicated ip this is a clear proof that linkd is not able to 
-     *  gather topology.
-     */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
     public void testNetwork10205Links() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getChennai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getBangalore());
+        m_nodeDao.save(getPenrose());
+        m_nodeDao.save(getDelaware());
+        m_nodeDao.save(getPhoenix());
+        m_nodeDao.save(getAustin());
+        m_nodeDao.save(getRiovista());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -146,46 +134,36 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
         juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
         juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.30");
-        juniper.addSpecific("2.9");
+        juniper.addSpecific("2.57");
         juniper.addSpecific("2.10");
         iproutes.addVendor(juniper);
         m_linkdConfig.getConfiguration().setIproutes(iproutes);
         m_linkdConfig.update();
 
         
-        final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
-        final OnmsNode chennai = m_nodeDao.findByForeignId("linkd", CHENNAI_NAME);
-        final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);
-        final OnmsNode spaceexsw1 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW1_NAME);
-        final OnmsNode bangalore = m_nodeDao.findByForeignId("linkd", BANGALORE_NAME);
+        final OnmsNode penrose = m_nodeDao.findByForeignId("linkd", PENROSE_NAME);
+        final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
+        final OnmsNode phoenix = m_nodeDao.findByForeignId("linkd", PHOENIX_NAME);
+        final OnmsNode austin = m_nodeDao.findByForeignId("linkd", AUSTIN_NAME);
+        final OnmsNode riovista = m_nodeDao.findByForeignId("linkd", RIOVISTA_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(chennai.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(bangalore.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(penrose.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(phoenix.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(austin.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(riovista.getId()));
 
-        assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(chennai.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(penrose.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(delaware.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(phoenix.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(austin.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(riovista.getId()));
                
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        // Should be 6 links only 4 found....
-        /*
-         * Node Id = Delhi IfIndex = 28503 Node ParentId = Mumbai Parent IfIndex = 519
-         * Node Id = Bangalore IfIndex = 2401 Node ParentId = Mumbai Parent IfIndex = 507
-         * Node Id = Chennai IfIndex = 528 Node ParentId = Mumbai Parent IfIndex = 520
-         * Node Id = Bangalore IfIndex = 2397 Node ParentId = Delhi Parent IfIndex = 3674
-         * 
-         */
-        assertEquals(4,m_dataLinkInterfaceDao.countAll());                
+        assertEquals(0,m_dataLinkInterfaceDao.countAll());                
     }
 }

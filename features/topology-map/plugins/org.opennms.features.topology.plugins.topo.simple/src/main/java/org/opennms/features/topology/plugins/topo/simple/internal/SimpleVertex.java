@@ -21,6 +21,7 @@ abstract public class SimpleVertex {
 	String m_label = "none provided";
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
+        private String m_ipAddr ="127.0.0.1";
 //	private int m_semanticZoomLevel = -1;
 	
 	public SimpleVertex() {}
@@ -111,6 +112,14 @@ abstract public class SimpleVertex {
 
 	public void setLabel(String label) {
 		m_label = label;
+	}
+	
+	public String getIpAddr() {
+	    return m_ipAddr;
+	}
+	
+	public void setIpAddr(String ipAddr){
+	    m_ipAddr = ipAddr;
 	}
 
 	@XmlTransient

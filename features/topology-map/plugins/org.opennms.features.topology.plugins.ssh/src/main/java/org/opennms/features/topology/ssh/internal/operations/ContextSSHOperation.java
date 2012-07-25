@@ -13,15 +13,17 @@ public class ContextSSHOperation implements Operation {
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
 		//Default server info
 		String host = "debian.opennms.org";
+		String ipAddr = "64.146.64.214";
 		int port = 22;
 
 		if (targets != null) {
 			for(Object target : targets) {
-				host = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("host").getValue();
-				port = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port").getValue();
+			        ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
+//				host = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("host").getValue();
+				port = 22;//(Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port").getValue();
 			}
 		}
-		operationContext.getMainWindow().addWindow(new AuthWindow(host, port));
+		operationContext.getMainWindow().addWindow(new AuthWindow(ipAddr, port));
 		return null;
 	}
 

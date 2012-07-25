@@ -39,6 +39,14 @@ public class GWTVertex extends JavaScriptObject {
     public final native String getLabel() /*-{
     	return this.label;
     }-*/;
+
+    public final native void setIpAddr(String ipAddr) /*-{
+        this.ipAddr = ipAddr;
+    }-*/;
+    
+    public final native void getIpAddr() /*-{
+        return this.ipAddr;
+    }-*/;
     
     public static native GWTVertex create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
@@ -215,5 +223,4 @@ public class GWTVertex extends JavaScriptObject {
 		}
 		
 	}
-
 }

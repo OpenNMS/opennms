@@ -127,6 +127,16 @@ public class SimpleGraphContainer implements GraphContainer {
         public void setLabel(String label) {
             m_item.getItemProperty("label").setValue(label);
         }
+        
+        public String getIpAddr() {
+            Property ipAddrProperty = m_item.getItemProperty("ipAddr");
+                String ipAddr = ipAddrProperty == null ? null : (String) ipAddrProperty.getValue();
+                return ipAddr;
+        }
+        
+        public void setIpAddr(String ipAddr) {
+            m_item.getItemProperty("ipAddr").setValue(ipAddr);
+        }
 
         private GVertex getParent() {
             if (m_groupKey == null) return null;

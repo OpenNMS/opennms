@@ -174,7 +174,7 @@ public class SSHTerminal extends AbstractComponent {
 				throw e;
 			}
 			try {
-				return terminal.dump(10, forceDump);
+				return terminal.dump();
 			} catch (InterruptedException e) {
 				throw new InterruptedIOException(e.toString());
 			}

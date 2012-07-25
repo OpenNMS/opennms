@@ -857,7 +857,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				if (child.hasAttribute("label")) {
 					vertex.setLabel(child.getStringAttribute("label"));
 				}
-
+				
 				graphConverted.addVertex(vertex);
 				
 				if(m_client != null) {

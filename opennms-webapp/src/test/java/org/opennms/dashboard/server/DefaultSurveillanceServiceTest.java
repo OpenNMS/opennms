@@ -88,14 +88,13 @@ public class DefaultSurveillanceServiceTest {
         assertEquals("user name", details.getUsername(), user);
     }
     
-    @Test
+    // String Principal is not longer used in opennms
+    @Test(expected=IllegalStateException.class)
     public void testGetUsernameWithStringPrincipal() {
         org.springframework.security.core.Authentication auth = new UsernamePasswordAuthenticationToken("user", null, new ArrayList<GrantedAuthority>());
         SecurityContextHolder.getContext().setAuthentication(auth);
         
         String user = m_service.getUsername();
-        assertNotNull("user should not be null", user);
-        assertEquals("user name", "user", user);
     }
     
     @Test

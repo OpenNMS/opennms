@@ -21,4 +21,6 @@
     <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
 
     <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
 </module>

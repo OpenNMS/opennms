@@ -11,11 +11,11 @@ import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeEvent;
 import com.vaadin.data.Container.PropertySetChangeListener;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
@@ -165,7 +165,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         			target.addAttribute("groupKey", vert.getGroupKey());
         		}
         		target.addAttribute("label", vert.getLabel());
-
 
         		List<String> vertActionList = new ArrayList<String>();
         		for(Action.Handler handler : m_actionHandlers) {
