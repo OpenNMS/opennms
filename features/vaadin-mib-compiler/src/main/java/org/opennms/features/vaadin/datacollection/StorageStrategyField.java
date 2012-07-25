@@ -116,6 +116,8 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+
+        setWriteThrough(false);
         setCompositionRoot(layout);
     }
 

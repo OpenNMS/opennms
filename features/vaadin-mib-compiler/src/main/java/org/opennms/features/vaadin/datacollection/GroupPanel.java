@@ -28,12 +28,14 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
 import org.opennms.features.vaadin.datacollection.model.GroupDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -107,4 +109,13 @@ public class GroupPanel extends VerticalLayout {
         setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
     }
 
+    /**
+     * Gets the groups.
+     *
+     * @return the groups
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<GroupDTO> getGroups() {
+        return ((BeanItemContainer<GroupDTO>) table.getContainerDataSource()).getItemIds();
+    }
 }

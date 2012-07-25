@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.opennms.features.vaadin.datacollection.model.CollectDTO;
 import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
@@ -35,6 +36,7 @@ import org.opennms.features.vaadin.datacollection.model.SystemDefDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -110,4 +112,13 @@ public class SystemDefPanel extends VerticalLayout {
         setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
     }
 
+    /**
+     * Gets the system definitions.
+     *
+     * @return the system definitions
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<SystemDefDTO> getSystemDefinitions() {
+        return ((BeanItemContainer<SystemDefDTO>) table.getContainerDataSource()).getItemIds();
+    }
 }

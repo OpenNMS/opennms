@@ -47,6 +47,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DataCollectionGroupPanel.
  * 
@@ -54,6 +55,18 @@ import com.vaadin.ui.themes.Runo;
  */
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
+
+    /** The group name. */
+    private final TextField groupName;
+
+    /** The resource types. */
+    private final ResourceTypePanel resourceTypes;
+
+    /** The groups. */
+    private final GroupPanel groups;
+
+    /** The system definitions. */
+    private final SystemDefPanel systemDefs;
 
     /**
      * Instantiates a new data collection group panel.
@@ -66,15 +79,18 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         addStyleName(Runo.PANEL_LIGHT);
 
         // Creating DTO Object
-        
+
         final DataCollectionGroupDTO dto = getDataCollectionGroupDTO(group);
 
         // Data Collection Group - Main Fields
 
-        final TextField groupName = new TextField("Data Collection Group Name");
+        groupName = new TextField("Data Collection Group Name");
         groupName.setPropertyDataSource(new ObjectProperty<String>(dto.getName()));
         groupName.setNullSettingAllowed(false);
         groupName.setImmediate(true);
+        resourceTypes = new ResourceTypePanel(dto, logger);
+        groups = new GroupPanel(dto, logger);
+        systemDefs = new SystemDefPanel(dto, logger);
 
         // Button Toolbar
 
@@ -87,7 +103,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         }));
         toolbar.addComponent(new Button("Generate Data Collection File", new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-                generateDataCollectionFile(getOnmsDataCollection(dto));
+                generateDataCollectionFile(getOnmsDataCollection());
                 logger.info("The data collection have been saved.");
             }
         }));
@@ -97,9 +113,9 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final TabSheet tabs = new TabSheet();
         tabs.setStyleName(Runo.TABSHEET_SMALL);
         tabs.setSizeFull();
-        tabs.addTab(new ResourceTypePanel(dto, logger), "Resource Types");
-        tabs.addTab(new GroupPanel(dto, logger), "MIB Groups");
-        tabs.addTab(new SystemDefPanel(dto, logger), "System Definitions");
+        tabs.addTab(resourceTypes, "Resource Types");
+        tabs.addTab(groups, "MIB Groups");
+        tabs.addTab(systemDefs, "System Definitions");
 
         // Main Layout
 
@@ -127,10 +143,15 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     /**
      * Gets the OpenNMS data collection group.
      *
-     * @param dto the data collection group DTO
      * @return the OpenNMS data collection group
      */
-    public DatacollectionGroup getOnmsDataCollection(DataCollectionGroupDTO dto) {
+    public DatacollectionGroup getOnmsDataCollection() {
+        final DataCollectionGroupDTO dto = new DataCollectionGroupDTO();
+        dto.setName((String) groupName.getValue());
+        dto.getGroupCollection().addAll(groups.getGroups());
+        dto.getResourceTypeCollection().addAll(resourceTypes.getResourceTypes());
+        dto.getSystemDefCollection().addAll(systemDefs.getSystemDefinitions());
+
         MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
         return mapper.map(dto, DatacollectionGroup.class);
     }

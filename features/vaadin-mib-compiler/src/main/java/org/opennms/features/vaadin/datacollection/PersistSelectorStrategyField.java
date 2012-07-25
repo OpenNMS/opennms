@@ -117,6 +117,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+
         setCompositionRoot(layout);
     }
 

@@ -135,6 +135,8 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+
+        setWriteThrough(false);
         setCompositionRoot(layout);
     }
 

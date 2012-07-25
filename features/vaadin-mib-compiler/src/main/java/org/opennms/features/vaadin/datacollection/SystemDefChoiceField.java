@@ -39,7 +39,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 /**
- * The Persist Selector Strategy Field.
+ * The System Definition Choice Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -48,10 +48,10 @@ public class SystemDefChoiceField extends CustomField {
 
     /** The Constant SINGLE. */
     private static final String SINGLE = "Single";
-    
+
     /** The Constant MASK. */
     private static final String MASK = "Mask";
-    
+
     /** The Constant OPTIONS. */
     private static final List<String> OPTIONS = Arrays.asList(new String[] { SINGLE, MASK });
 
@@ -62,7 +62,7 @@ public class SystemDefChoiceField extends CustomField {
     private TextField oidValue;
 
     /**
-     * Instantiates a new system def choice field.
+     * Instantiates a new system definition choice field.
      */
     public SystemDefChoiceField() {
         oidType = new OptionGroup("OID Type", OPTIONS);
@@ -81,6 +81,7 @@ public class SystemDefChoiceField extends CustomField {
         layout.addComponent(oidValue);
         layout.setExpandRatio(oidValue, 1);
 
+        setWriteThrough(false);
         setCompositionRoot(layout);
     }
 

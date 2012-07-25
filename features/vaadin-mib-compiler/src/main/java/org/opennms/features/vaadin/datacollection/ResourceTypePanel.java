@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
 import org.opennms.features.vaadin.datacollection.model.PersistenceSelectorStrategyDTO;
@@ -38,6 +39,7 @@ import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -116,6 +118,16 @@ public class ResourceTypePanel extends VerticalLayout {
         addComponent(form);
 
         setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
+    }
+
+    /**
+     * Gets the resource types.
+     *
+     * @return the resource types
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<ResourceTypeDTO> getResourceTypes() {
+        return ((BeanItemContainer<ResourceTypeDTO>) table.getContainerDataSource()).getItemIds();
     }
 
 }

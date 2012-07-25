@@ -73,27 +73,27 @@ public class DataCollectionGroupDTO implements Serializable {
     }
 
     /**
-     * Gets the group collection.
+     * Gets the groups collection.
      *
-     * @return the group collection
+     * @return the groups collection
      */
     public List<GroupDTO> getGroupCollection() {
         return m_groups;
     }
 
     /**
-     * Gets the resource type collection.
+     * Gets the resource types collection.
      *
-     * @return the resource type collection
+     * @return the resource types collection
      */
     public List<ResourceTypeDTO> getResourceTypeCollection() {
         return m_resourceTypes;
     }
 
     /**
-     * Gets the system def collection.
+     * Gets the system definitions collection.
      *
-     * @return the system def collection
+     * @return the system definitions collection
      */
     public List<SystemDefDTO> getSystemDefCollection() {
         return m_systemDefs;
@@ -109,16 +109,16 @@ public class DataCollectionGroupDTO implements Serializable {
     }
 
     /**
-     * Sets the group collection.
+     * Sets the groups collection.
      *
-     * @param groups the new group collection
+     * @param groups the new groups collection
      */
     public void setGroupCollection(final List<GroupDTO> groups) {
         this.m_groups = groups;
     }
 
     /**
-     * Sets the resource type collection.
+     * Sets the resource types collection.
      *
      * @param resourceTypes the new resource type collection
      */
@@ -127,9 +127,9 @@ public class DataCollectionGroupDTO implements Serializable {
     }
 
     /**
-     * Sets the system definition collection.
+     * Sets the system definitions collection.
      *
-     * @param systemDefs the new system definition collection
+     * @param systemDefs the new system definitions collection
      */
     public void setSystemDefCollection(final List<SystemDefDTO> systemDefs) {
         this.m_systemDefs = systemDefs;

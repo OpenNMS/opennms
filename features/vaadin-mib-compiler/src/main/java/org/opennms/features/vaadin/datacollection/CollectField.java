@@ -34,24 +34,18 @@ import org.opennms.features.vaadin.datacollection.model.GroupDTO;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
+import com.vaadin.ui.Select;
 
 /**
- * The Persist Selector Strategy Field.
+ * The Collect Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
- */
-/*
- * TODO When adding a group, the field representation must be a ComboBox initialized with current groups
  */
 @SuppressWarnings("serial")
 public class CollectField extends CustomField implements Button.ClickListener {
@@ -79,9 +73,9 @@ public class CollectField extends CustomField implements Button.ClickListener {
     public CollectField(List<GroupDTO> groups) {
         listField.setRows(10);
 
-        for (GroupDTO group : groups) {
-            groupField.addItem(group.getName());
-        }
+        groupField.setContainerDataSource(new BeanItemContainer<GroupDTO>(GroupDTO.class, groups));
+        groupField.setItemCaptionMode(Select.ITEM_CAPTION_MODE_PROPERTY);
+        groupField.setItemCaptionPropertyId("name");
 
         add = new Button("Add Group", (Button.ClickListener) this);
         delete = new Button("Delete Selected", (Button.ClickListener) this);
@@ -94,6 +88,8 @@ public class CollectField extends CustomField implements Button.ClickListener {
         layout.addComponent(listField);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+
+        setWriteThrough(false);
         setCompositionRoot(layout);
     }
 
@@ -162,7 +158,8 @@ public class CollectField extends CustomField implements Button.ClickListener {
      * Adds the handler.
      */
     private void addHandler() {
-        listField.addItem(groupField.getValue());
+        GroupDTO dto = (GroupDTO) groupField.getValue();
+        listField.addItem(dto.getName());
     }
 
     /**
@@ -173,20 +170,7 @@ public class CollectField extends CustomField implements Button.ClickListener {
         if (itemId == null) {
             getApplication().getMainWindow().showNotification("Please select a MIB Group from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
-                        listField.removeItem(itemId);
-                    }
-                }
-            });
+            listField.removeItem(itemId);
         }
     }
 
