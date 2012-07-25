@@ -27,14 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
-import org.springframework.core.io.FileSystemResource;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
@@ -67,36 +60,6 @@ public class MibCompilerApplication extends Application {
         mainPanel.addComponent(mibConsole);
 
         final Window mainWindow = new Window("MIB Compiler Application", mainPanel);
-
-        /*
-        DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource("/opt/syncnms/etc/datacollection/cisco.xml"));
-        Logger logger = new Logger() {
-            public void error(String message) {
-                // TODO Auto-generated method stub
-            }
-            public void warn(String message) {
-                // TODO Auto-generated method stub
-            }
-            public void info(String message) {
-                // TODO Auto-generated method stub
-            }
-            public void debug(String message) {
-                // TODO Auto-generated method stub
-            }
-        };
-        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(group, logger) {
-            @Override
-            public void cancelProcessing() {
-                // TODO Auto-generated method stub
-            }
-            @Override
-            public void generateDataCollectionFile(DatacollectionGroup group) {
-                // TODO Auto-generated method stub
-            }
-        };
-        final Window mainWindow = new Window("Data Collection Config", panel);
-         */
-
         setMainWindow(mainWindow);
     }
 

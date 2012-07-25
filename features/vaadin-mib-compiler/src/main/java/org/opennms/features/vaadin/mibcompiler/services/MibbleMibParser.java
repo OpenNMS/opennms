@@ -41,10 +41,16 @@ import net.percederberg.mibble.Mib;
 import net.percederberg.mibble.MibLoader;
 import net.percederberg.mibble.MibLoaderException;
 import net.percederberg.mibble.MibLoaderLog;
+import net.percederberg.mibble.MibType;
+import net.percederberg.mibble.MibTypeTag;
+import net.percederberg.mibble.MibValueSymbol;
+import net.percederberg.mibble.snmp.SnmpObjectType;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.mib2events.Mib2Events;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -147,8 +153,83 @@ public class MibbleMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection(java.lang.String)
      */
+    // TODO This is a sample implementation using Mibble
     public DatacollectionGroup getDataCollection(String groupname) {
-        // TODO Auto-generated method stub
+        DatacollectionGroup dcGroup = new DatacollectionGroup();
+        dcGroup.setName(groupname == null ? mib.getName() : groupname);
+        for (Object o : mib.getAllSymbols()) {
+            if (o instanceof MibValueSymbol) {
+                MibValueSymbol node = (MibValueSymbol) o;
+                if (node.getType() instanceof SnmpObjectType && !node.isTable() && !node.isTableRow()) {
+                    SnmpObjectType type = (SnmpObjectType) node.getType();
+                    String groupName = node.isTableColumn() ? node.getParent().getParent().getName() : "scalarGroup";
+                    Group group = getGroup(dcGroup, groupName);
+                    String typeName = getType(type.getSyntax());
+                    if (typeName != null) {
+                        MibObj mibObj = new MibObj();
+                        mibObj.setOid(node.getValue().toString());
+                        mibObj.setInstance(node.isTableColumn() ? groupName : "0");
+                        mibObj.setAlias(node.getName());
+                        mibObj.setType(typeName);
+                        group.addMibObj(mibObj);
+                    }
+                }
+            }
+        }
+        return dcGroup;
+    }
+
+    /**
+     * Gets the group.
+     *
+     * @param data the data
+     * @param groupName the group name
+     * @return the group
+     */
+    private Group getGroup(DatacollectionGroup data, String groupName) {
+        for (Group group : data.getGroupCollection()) {
+            if (group.getName().equals(groupName))
+                return group;
+        }
+        Group group = new Group();
+        group.setName(groupName);
+        group.setIfType(groupName.equals("scalarGroup") ? "ignore" : "all");
+        data.addGroup(group);
+        return group;
+    }
+
+    /**
+     * Gets the type.
+     *
+     * @param type the type
+     * @return the type
+     */
+    private String getType(MibType type) {
+        if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 2)) {
+            // INTEGER / INTEGER32
+            return "Integer32";
+        } else if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 4)) {
+            // OCTET STRING
+            return "OctetString";
+        } else if (type.hasTag(MibTypeTag.UNIVERSAL_CATEGORY, 6)) {
+            // OBJECT IDENTIFIER
+            return "String"; // TODO Is this Correct?
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 0)) {
+            // IpAddress
+            return "String"; // TODO Is this Correct?
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 1)) {
+            return "Counter";
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 2)) {
+            return "Gauge";
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 3)) {
+            // TIMETICKS
+            return "String"; // TODO Is this Correct?
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 4)) {
+            // OPAQUE
+            return "String"; // TODO Is this Correct?
+        } else if (type.hasTag(MibTypeTag.APPLICATION_CATEGORY, 6)) {
+            return "Counter64";
+        }
         return null;
     }
 

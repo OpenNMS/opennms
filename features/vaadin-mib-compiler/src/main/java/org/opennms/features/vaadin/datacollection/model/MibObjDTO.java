@@ -55,17 +55,6 @@ public class MibObjDTO implements java.io.Serializable {
     private String m_type;
 
     /**
-     * Maximum Value.
-     */
-    private String m_maxval;
-
-    /**
-     * Minimum Value.
-     */
-    private String m_minval;
-
-
-    /**
      * Instantiates a new MIB Object DTO.
      */
     public MibObjDTO() {
@@ -88,24 +77,6 @@ public class MibObjDTO implements java.io.Serializable {
      */
     public String getInstance() {
         return m_instance;
-    }
-
-    /**
-     * Gets the maximum value.
-     *
-     * @return the maximum value
-     */
-    public String getMaxval() {
-        return m_maxval;
-    }
-
-    /**
-     * Gets the minimum value.
-     *
-     * @return the minimum value
-     */
-    public String getMinval() {
-        return m_minval;
     }
 
     /**
@@ -142,24 +113,6 @@ public class MibObjDTO implements java.io.Serializable {
      */
     public void setInstance(final String instance) {
         m_instance = instance == null ? null : instance.intern();
-    }
-
-    /**
-     * Sets the maximum value.
-     *
-     * @param maxval the new maximum value
-     */
-    public void setMaxval(final String maxval) {
-        m_maxval = maxval == null ? null : maxval.intern();
-    }
-
-    /**
-     * Sets the minimum value.
-     *
-     * @param minval the new minimum value
-     */
-    public void setMinval(final String minval) {
-        m_minval = minval == null ? null : minval.intern();
     }
 
     /**

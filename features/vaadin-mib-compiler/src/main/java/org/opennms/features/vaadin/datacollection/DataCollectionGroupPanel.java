@@ -7,6 +7,7 @@ import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -33,10 +34,12 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         // Data Collection Group - Main Fields
 
         final TextField groupName = new TextField("Data Collection Group Name");
+        groupName.setPropertyDataSource(new ObjectProperty<String>(group.getName()));
         groupName.setNullSettingAllowed(false);
 
         final TextField fileName = new TextField("XML File Name");
         fileName.setNullSettingAllowed(false);
+        fileName.setValue(group.getName() + ".xml");
 
         // Button Toolbar
 

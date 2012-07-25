@@ -32,9 +32,11 @@ import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.vaadin.datacollection.DataCollectionWindow;
 import org.opennms.features.vaadin.events.EventWindow;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.util.HierarchicalContainer;
@@ -285,7 +287,11 @@ public class MibTreePanel extends Panel {
      * @param fileName the file name
      */
     private void generateDataCollection(final Logger logger, final String fileName) {
-        getApplication().getMainWindow().showNotification("Not yet but comming soon!", Notification.TYPE_WARNING_MESSAGE);
+        if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
+            final DatacollectionGroup dcGroup = mibParser.getDataCollection(null); // TODO
+            final DataCollectionWindow w = new DataCollectionWindow(fileName, dcGroup, logger);
+            getApplication().getMainWindow().addWindow(w);
+        }
     }
 
 }
