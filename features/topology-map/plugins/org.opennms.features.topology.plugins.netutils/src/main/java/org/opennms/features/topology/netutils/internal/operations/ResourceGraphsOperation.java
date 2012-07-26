@@ -9,25 +9,54 @@ import org.opennms.features.topology.netutils.internal.ResourceGraphsWindow;
 
 public class ResourceGraphsOperation implements Operation {
 
-	/*Test Data*/
-	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
-	private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
 	private String resourceGraphsURL;
-	
+	private String resourceGraphsFilter;
+
 	public boolean display(List<Object> targets, OperationContext operationContext) {
-		// TODO Auto-generated method stub
+		int nodeID = 0;
+
+		if (targets != null) {
+			for(Object target : targets) {
+				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+			}
+		}
+		if (nodeID < 0) return false;
 		return true;
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		// TODO Auto-generated method stub
+		int nodeID = 0;
+
+		if (targets != null) {
+			for(Object target : targets) {
+				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+			}
+		}
+		if (nodeID < 0) return false;
 		return true;
 	}
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
+		//Default server info
+		String ipAddr = "";
+		String label = "";
+		int nodeID = -1;
+
 		try {
-			operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(testNode1, getResourceGraphsURL()));
-		} catch (Exception e) { e.printStackTrace(); }
+			if (targets != null) {
+				for(Object target : targets) {
+					ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
+					label = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label").getValue();
+					nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+				}
+			} 
+			if (nodeID < 0) {
+				operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(null, getResourceGraphsURL()));
+			} else {
+				Node node = new Node(nodeID, ipAddr, label);
+				operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(node, getResourceGraphsFilter()));
+			}
+		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
 
@@ -42,6 +71,14 @@ public class ResourceGraphsOperation implements Operation {
 
 	public void setResourceGraphsURL(String resourceGraphsURL) {
 		this.resourceGraphsURL = resourceGraphsURL;
+	}
+
+	public String getResourceGraphsFilter() {
+		return resourceGraphsFilter;
+	}
+
+	public void setResourceGraphsFilter(String resourceGraphsFilter) {
+		this.resourceGraphsFilter = resourceGraphsFilter;
 	}
 
 }

@@ -5,12 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-
-import com.vaadin.ui.TextField;
-
-public class TestAuthWindow {
+public class AuthWindowTest {
     
 
     

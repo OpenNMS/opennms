@@ -9,25 +9,54 @@ import org.opennms.features.topology.api.OperationContext;
 
 public class NodeInfoOperation implements Operation {
 
-	/*Test Data*/
-	private Node testNode1 = new Node(9,"172.20.1.10","Cartman");
-	private Node testNode2 = new Node(43, "172.20.1.14", "Butters");
 	private String nodeInfoURL;
-	
+	private String nodeInfoFilter;
+
 	public boolean display(List<Object> targets, OperationContext operationContext) {
-		// TODO Auto-generated method stub
+		int nodeID = 0;
+
+		if (targets != null) {
+			for(Object target : targets) {
+				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+			}
+		}
+		if (nodeID < 0) return false;
 		return true;
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		// TODO Auto-generated method stub
+		int nodeID = 0;
+
+		if (targets != null) {
+			for(Object target : targets) {
+				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+			}
+		}
+		if (nodeID < 0) return false;
 		return true;
 	}
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
+		//Default server info
+		String ipAddr = "";
+		String label = "";
+		int nodeID = -1;
+
 		try {
-			operationContext.getMainWindow().addWindow(new NodeInfoWindow(testNode1, getNodeInfoURL()));
-		} catch (Exception e) { e.printStackTrace(); }
+			if (targets != null) {
+				for(Object target : targets) {
+					ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
+					label = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label").getValue();
+					nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+				}
+			} 
+			if (nodeID < 0) {
+				operationContext.getMainWindow().addWindow(new NodeInfoWindow(null, getNodeInfoURL()));
+			} else {
+				Node node = new Node(nodeID, ipAddr, label);
+				operationContext.getMainWindow().addWindow(new NodeInfoWindow(node, getNodeInfoFilter()));
+			}
+		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
 
@@ -42,6 +71,14 @@ public class NodeInfoOperation implements Operation {
 
 	public void setNodeInfoURL(String nodeInfoURL) {
 		this.nodeInfoURL = nodeInfoURL;
+	}
+
+	public String getNodeInfoFilter() {
+		return nodeInfoFilter;
+	}
+
+	public void setNodeInfoFilter(String nodeInfoFilter) {
+		this.nodeInfoFilter = nodeInfoFilter;
 	}
 
 }

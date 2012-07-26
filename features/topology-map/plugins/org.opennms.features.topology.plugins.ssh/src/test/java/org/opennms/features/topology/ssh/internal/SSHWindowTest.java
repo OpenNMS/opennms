@@ -2,14 +2,13 @@ package org.opennms.features.topology.ssh.internal;
 
 import static org.junit.Assert.*;
 
-import org.apache.sshd.ClientSession;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Window;
 
-public class TestSSHWindow {
+public class SSHWindowTest {
     Application a;
     Window w;
     SSHWindow window;
@@ -25,20 +24,16 @@ public class TestSSHWindow {
             
         };
         window = new SSHWindow(null, 200, 200);
-        w = new Window();
+        w = new Window("Main Window");
     }
     
     @Test
     public void testAttach() {
+    	//Causes compilation error
         a.setMainWindow(w);
-        w.addWindow(window);
+        a.getMainWindow().addWindow(window);
         
         assertEquals(window, a.getMainWindow().getChildWindows().toArray()[0]);
     }
     
-    @Test
-    public void testClose() {
-        window.close();
-        assertEquals(0, a.getWindows().toArray().length);
-    }
 }

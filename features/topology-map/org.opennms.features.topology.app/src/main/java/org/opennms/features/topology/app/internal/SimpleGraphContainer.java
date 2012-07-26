@@ -130,12 +130,22 @@ public class SimpleGraphContainer implements GraphContainer {
         
         public String getIpAddr() {
             Property ipAddrProperty = m_item.getItemProperty("ipAddr");
-                String ipAddr = ipAddrProperty == null ? null : (String) ipAddrProperty.getValue();
-                return ipAddr;
+            String ipAddr = ipAddrProperty == null ? null : (String) ipAddrProperty.getValue();
+            return ipAddr;
         }
         
         public void setIpAddr(String ipAddr) {
             m_item.getItemProperty("ipAddr").setValue(ipAddr);
+        }
+        
+        public int getNodeID() {
+            Property nodeIDProperty = m_item.getItemProperty("nodeID");
+            int nodeID = (nodeIDProperty == null) ? 0 : (Integer) nodeIDProperty.getValue();
+            return nodeID;
+        }
+        
+        public void setNodeID(int nodeID) {
+            m_item.getItemProperty("nodeID").setValue(new Integer(nodeID));
         }
 
         private GVertex getParent() {

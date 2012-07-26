@@ -200,6 +200,7 @@ public class Terminal {
 
 	private String utf8_decode(String d) {
 		StringBuilder o = new StringBuilder();
+		byte[] bytes = d.getBytes();
 		for (char c : d.toCharArray()) {
 			if (utf8_units_count != utf8_units_received) {
 				utf8_units_received++;
@@ -704,10 +705,6 @@ public class Terminal {
 
 	private void esc_SOS() {
 		vt100_parse_reset(State.Str);
-	}
-
-	private void esc_DECID() {
-		csi_DA("0");
 	}
 
 	private void esc_ST() {
@@ -1262,12 +1259,7 @@ public class Terminal {
 			} else if (c == 15) {
 				ctrl_SI();
 			}
-		} else if ((c & 0xffe0) == 0x0080) {
-			vt100_parse_reset(State.Esc);
-			vt100_parse_func = (char)(c - 0x0040);
-			vt100_parse_process();
-			return true;
-		}
+		} 
 		if (vt100_parse_state != State.None) {
 			if (vt100_parse_state == State.Str) {
 				if (c >= 32) {

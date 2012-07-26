@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestNoClosePipedOuputStream {
+public class NoClosePipedOutputStreamTest {
 
     NoClosePipedOutputStream nullSource;
     NoClosePipedOutputStream out;

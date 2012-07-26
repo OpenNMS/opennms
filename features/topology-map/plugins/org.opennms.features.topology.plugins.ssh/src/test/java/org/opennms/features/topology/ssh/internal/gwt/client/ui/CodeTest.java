@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.opennms.features.topology.ssh.internal.testframework.SudoKeyDownEvent;
 import org.opennms.features.topology.ssh.internal.testframework.SudoKeyPressEvent;
 
-public class TestCode {
+public class CodeTest {
     int testCharCodeFalse = 10; // The char code for the test code where all of the options are false
     int testKeyCodeFalse = 20; // The key code for the test code where all of the options are false
     int testCharCodeTrue = 30; // The key code for the test code where all of the options are true
