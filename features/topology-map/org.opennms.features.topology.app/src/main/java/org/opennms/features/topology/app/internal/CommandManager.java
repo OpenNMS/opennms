@@ -24,6 +24,7 @@ public class CommandManager  {
         
         private Window m_mainWindow;
         private SimpleGraphContainer m_graphContainer;
+        private boolean m_checked = false;
 
         public DefaultOperationContext(Window mainWindow, SimpleGraphContainer graphContainer) {
             m_mainWindow = mainWindow;
@@ -38,6 +39,15 @@ public class CommandManager  {
         @Override
         public SimpleGraphContainer getGraphContainer() {
             return m_graphContainer;
+        }
+        
+        public void setChecked(boolean checked) {
+            m_checked = checked;
+        }
+        
+        @Override
+        public boolean isChecked() {
+            return m_checked;
         }
 
     }
@@ -103,6 +113,8 @@ public class CommandManager  {
                     }
                 }
                 
+                DefaultOperationContext context = (DefaultOperationContext) operationContext;
+                context.setChecked(selectedItem.isChecked());
                 
                 command.doCommand(targets, operationContext);
                 m_commandHistoryList.add(command);
