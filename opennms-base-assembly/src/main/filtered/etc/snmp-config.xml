@@ -1,2 +1,2 @@
 <?xml version="1.0"?>
-<snmp-config read-community="public" retry="1" timeout="1800" version="v2c" />
+<snmp-config read-community="public" retry="3" timeout="2000" version="v2c" />

@@ -4,7 +4,7 @@
         UDPAddress="127.0.0.1"
         UDPPort="5817"
 	receivers="5"
-	queueLength="75000"
+	queueLength="50000"
 	getNextEventID="SELECT nextval('eventsNxtId')"
 	socketSoTimeoutRequired="yes"
 	socketSoTimeoutPeriod="3000">
