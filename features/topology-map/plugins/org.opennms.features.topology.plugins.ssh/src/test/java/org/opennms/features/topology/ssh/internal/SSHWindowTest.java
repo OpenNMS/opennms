@@ -13,7 +13,8 @@ public class SSHWindowTest {
     Window w;
     SSHWindow window;
     
-    @Before
+    @SuppressWarnings("serial")
+	@Before
     public void setup () {
         a = new Application(){
 
