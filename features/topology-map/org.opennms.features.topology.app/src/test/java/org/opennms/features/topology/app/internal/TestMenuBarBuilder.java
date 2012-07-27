@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -154,6 +155,25 @@ public class TestMenuBarBuilder {
         assertEquals("Operation2", subMenuItems.get(2).getText());
         assertEquals("Operation3", subMenuItems.get(3).getText());
         assertEquals("Operation4", subMenuItems.get(4).getText());
+    }
+    
+    @Test
+    public void submenuCheckedMenuItemTest() {
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("File", Arrays.asList("new", "help", "additions"));
+        
+        cmdManager.onBind(getTestOperation(), getProps("File", "Operation1?checked=true", ""));
+        
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(1, menuItems.size());
+        
+        List<MenuItem> subMenuItems = menuItems.get(0).getChildren();
+        assertEquals(1, subMenuItems.size());
+        MenuItem menuItem = subMenuItems.get(0);
+        assertEquals("Operation1", menuItem.getText());
+        assertTrue(menuItem.isCheckable());
     }
     
     @Test
