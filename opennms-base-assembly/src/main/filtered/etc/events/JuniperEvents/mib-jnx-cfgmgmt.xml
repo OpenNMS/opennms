@@ -60,7 +60,7 @@ recorded in jnxCmCfgChgEventTable.</p><table>
 			jnxCmCfgChgEventLog=%parm[#5]%</p>
 		]]></logmsg>
     <severity>Normal</severity>
-    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
   </event>
   <event>
     <mask>

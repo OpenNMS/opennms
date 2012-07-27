@@ -123,7 +123,7 @@
 			jnxSonetLastAlarmDate=%parm[#4]%</p>
 		]]></logmsg>
     <severity>Warning</severity>
-    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
   </event>
   <event>
     <mask>
