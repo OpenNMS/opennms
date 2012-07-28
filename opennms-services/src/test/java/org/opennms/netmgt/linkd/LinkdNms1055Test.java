@@ -109,19 +109,55 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         m_nodeDao.flush();
     }
 
+    /*
+     * Penrose: baseBridgeAddress = 80711f8fafd0
+     * Penrose: stpDesignatedRoot = 001f12373dc0
+     * Penrose: stpport/designatedbridge/designatedport 62/8000 001f12373dc0/8201 
+     *          -----To Riovista - Root Spanning tree: ifindex 515 ---ge-1/2/1
+     * Penrose: stpport/designatedbridge/designatedport 483/8000 0022830957d0/81e3
+     *          -----this is a backbone port to a higher bridge: ifindex 2693 -- ae0
+     *          ---- aggregated port almost sure the link to Delaware
+     *          
+     * Delaware: baseBridgeAddress = 0022830957d0
+     * Delaware: stpDesignatedRoot = 001f12373dc0
+     * Delaware: stpport/designatedbridge/designatedport 21/8000 001f12373dc0/822f 
+     *          -----To Riovista - Root Spanning tree: ifindex 540 -- ge-0/2/0
+     * Delaware: stpport/designatedbridge/designatedport 483/8000 0022830957d0/81e3
+     *          -----this is a backbone port to a lower bridge: ifindex 658 ---ae0
+     *          -----aggregated port almost sure the link to Penrose
+     *
+     * Riovista: baseBridgeAddress = 001f12373dc0
+     * Riovista: stpDesignatedRoot = 001f12373dc0
+     * Riovista: stpport/designatedbridge/designatedport 513/8000 001f12373dc0/8201 
+     *          -----To Penrose ifindex 584 ---ge-0/0/0.0
+     * Riovista: stpport/designatedbridge/designatedport 559/8000001f12373dc0/822f
+     *          -----To Delaware ifindex 503 ---ge-0/0/46.0
+     *
+     *          
+     * Phoenix: baseBridgeAddress = 80711fc414d0
+     * Phoenix: Spanning Tree is disabled
+     * 
+     * Austin: baseBridgeAddress = 80711fc413d0
+     * Austin: Spanning Tree is disabled
+     * 
+     * Sanjose: baseBridgeAddress = 002283d857d0
+     * Sanjose: Spanning Tree is disabled
+     */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
             @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
             @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
             @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
             @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
-    public void testNetwork10205Links() throws Exception {
+    public void testNetwork1055Links() throws Exception {
         m_nodeDao.save(getPenrose());
         m_nodeDao.save(getDelaware());
         m_nodeDao.save(getPhoenix());
         m_nodeDao.save(getAustin());
+        m_nodeDao.save(getSanjose());
         m_nodeDao.save(getRiovista());
         m_nodeDao.flush();
 
@@ -134,6 +170,7 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
         juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
         juniper.addSpecific("2.25");
+        juniper.addSpecific("2.29");
         juniper.addSpecific("2.57");
         juniper.addSpecific("2.10");
         iproutes.addVendor(juniper);
@@ -145,18 +182,21 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
         final OnmsNode phoenix = m_nodeDao.findByForeignId("linkd", PHOENIX_NAME);
         final OnmsNode austin = m_nodeDao.findByForeignId("linkd", AUSTIN_NAME);
+        final OnmsNode sanjose = m_nodeDao.findByForeignId("linkd", SANJOSE_NAME);
         final OnmsNode riovista = m_nodeDao.findByForeignId("linkd", RIOVISTA_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(penrose.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(phoenix.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(austin.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(sanjose.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(riovista.getId()));
 
         assertTrue(m_linkd.runSingleSnmpCollection(penrose.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(delaware.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(phoenix.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(austin.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(sanjose.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(riovista.getId()));
                
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
@@ -164,6 +204,6 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(0,m_dataLinkInterfaceDao.countAll());                
+        assertEquals(8,m_dataLinkInterfaceDao.countAll());                
     }
 }
