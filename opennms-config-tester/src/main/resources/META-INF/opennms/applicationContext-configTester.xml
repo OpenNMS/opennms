@@ -351,7 +351,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   -->
     
   <bean id="dataSourceTester" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ConnectionFactoryUtil.marshalDataSourceFromConfig</value></property>
+    <property name="staticMethod"><value>org.opennms.core.db.ConnectionFactoryUtil.marshalDataSourceFromConfig</value></property>
     <property name="arguments">
       <list>
         <bean class="java.io.FileInputStream">
