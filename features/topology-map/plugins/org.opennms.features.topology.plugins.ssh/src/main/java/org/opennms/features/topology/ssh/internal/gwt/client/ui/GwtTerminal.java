@@ -27,6 +27,7 @@ public class GwtTerminal extends Composite implements HasAllKeyHandlers {
 	public GwtTerminal() {
 		fPanel = new FocusPanel();
 		fPanel.getElement().setClassName("focusPanel");
+		fPanel.getElement().setId("termFocusPanel");
 		div = DOM.createDiv();
 		div.setClassName("term");
 		DOM.appendChild(fPanel.getElement(), div);
