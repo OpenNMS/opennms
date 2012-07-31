@@ -12,7 +12,10 @@ public class TestNoClosePipedInputStream {
 
     NoClosePipedInputStream in;
     NoClosePipedOutputStream out;
-    NoClosePipedInputStream definedIn;
+    NoClosePipedInputStream definedPipeSize;
+    NoClosePipedInputStream definedPipeAndSource;
+    NoClosePipedInputStream definedSource;
+    
     byte[] testByte = {1,2,3,4};
     
     
@@ -31,22 +34,37 @@ public class TestNoClosePipedInputStream {
     @Test
     public void testCreatePipeWithDefinedPipeSize() {
         try {
-             definedIn = new NoClosePipedInputStream(64);
+             definedPipeSize = new NoClosePipedInputStream(64);
         } catch(Exception e) {
             fail();
         }
-        assertEquals(64, definedIn.buffer.length);
+        assertEquals(false, definedPipeSize.connected);
+        assertEquals(64, definedPipeSize.buffer.length);
     }
     
     @Test
     public void testCreatePipeWithNegativePipeSize() {
         try {
-            definedIn = new NoClosePipedInputStream(-1);
+            definedPipeSize = new NoClosePipedInputStream(-1);
         } catch (IllegalArgumentException e) {
             assertEquals("Pipe Size <= 0", e.getMessage());
             return; // This test should throw this exception
         }
         fail("This test should throw an IllegalArgument Exception. Error checking is not working correctly");
+    }
+    
+    @Test
+    public void testCreatePipeWithDefinedSource() throws IOException {
+        definedSource = new NoClosePipedInputStream(out);
+        assertEquals(true, definedSource.connected);
+        assertEquals(definedSource.PIPE_SIZE, definedSource.buffer.length);
+    }
+    
+    @Test 
+    public void testCreatePipeWithDefinedPipeSizeAndSource() throws IOException {
+        definedPipeAndSource = new NoClosePipedInputStream(out, 64);
+        assertEquals(64, definedPipeAndSource.buffer.length);
+        assertEquals(true, definedPipeAndSource.connected);
     }
     @Test
     public void testNormalConnect() {
@@ -158,16 +176,12 @@ public class TestNoClosePipedInputStream {
     
     @Test
     public void testInEqualToBufferLengthIntReceive() throws IOException{
-
-        in.in = 2000;
-        in.out = 1;
         in.connect(out);
+        in.in = 1023;
+        in.out = 1;
         in.receive(1);
         
-        
-        in.in = 1022;
-        in.receive(1);
-        
+        assertEquals(0, in.in);
     }
     
     @Test
@@ -317,25 +331,12 @@ public class TestNoClosePipedInputStream {
     
     @Test
     public void testInGreaterThanBufferLengthByteReceive() throws IOException {
-
-        System.out.println("In Before: " + in.in);
-        System.out.println("Out Before: " + in.out);
-        System.out.println("Buffer Before: " + in.buffer.length);
         
         in.connect(out);
-        
         in.in = 1023;
         in.out = 5;
         
-        System.out.println("In Connect: " + in.in);
-        System.out.println("Out Connect: " + in.out);
-        System.out.println("Buffer Connect: " + in.buffer.length);
-        
         in.receive(testByte, 0, 1);
-        
-        System.out.println("In After: " + in.in);
-        System.out.println("Out After: " + in.out);
-        System.out.println("Buffer After: " + in.buffer.length);
         
         assertEquals(0, in.in);
     }
@@ -354,7 +355,7 @@ public class TestNoClosePipedInputStream {
     }
     
     @Test
-    public void testIntRead() throws IOException {
+    public void testNormalIntRead() throws IOException {
             in.connect(out);
             in.out = 3;
             in.in = 1;
@@ -368,8 +369,118 @@ public class TestNoClosePipedInputStream {
             in.out = 100;
             
             assertEquals(0, in.read());
-        
     }
+    
+    @Test
+    public void testWaitIntRead() throws IOException {
+        // This test creates a thread to test the waiting that the buffer
+        // performs when it is either full or empty. This test gets into the
+        // awaitSpace() method because the read position and write position are
+        // the same, and should time out due to the fact that neither the 
+        // read position nor the write position change. The timeout will cause
+        // this test to pass.
+        
+        in.connect(out);
+        in.in = -1;
+        in.out=1;
+        boolean waited = false;
+      
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    in.read();
+                } catch (IOException e) {
+                    fail("Pipe not Connected");
+                } 
+            }
+        });
+        
+        thread.start();
+        long endTimeMillis = System.currentTimeMillis() + 3000;
+        while (thread.isAlive()) {
+            if (System.currentTimeMillis() > endTimeMillis) {
+                waited = true;
+                break;
+            }
+            try {
+                Thread.sleep(500);
+                in.in++;
+            }
+            catch (InterruptedException t) {
+            }
+        }
+        assertEquals(false, waited);
+    }
+    
+    @Test
+    public void testInterruptedWaitIntRead() throws IOException {
+        // This test creates a thread to test the waiting that the buffer
+        // performs when it is either full or empty. This test gets into the
+        // awaitSpace() method because the read position and write position are
+        // the same, and should time out due to the fact that neither the 
+        // read position nor the write position change. The timeout will cause
+        // this test to pass.
+        
+        in.connect(out);
+        in.in = -1;
+        in.out = 1;
+        boolean waited = false;
+      
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    in.read();
+                } catch (IOException e) {
+                    fail("Pipe not Connected");
+                } 
+            }
+        });
+        
+        thread.start();
+        long endTimeMillis = System.currentTimeMillis() + 3000;
+        while (thread.isAlive()) {
+            if (System.currentTimeMillis() > endTimeMillis) {
+                waited = true;
+                thread.interrupt();
+                break;
+            }
+            try {
+                Thread.sleep(500);
+            }
+            catch (InterruptedException t) {
+                // The thread should be interrupted, but this should not cause problems.
+            }
+        }
+        assertEquals(true, waited);
+    }
+    
+    @Test
+    public void testOutEqualToBufferLengthIntRead() throws IOException {
+            in.connect(out);
+            in.out = 1023;
+            in.in = 1;
+            
+            assertEquals(0, in.read()); // because in reads buffer[out++]
+            assertEquals(0, in.out);  // because buffer[out++] increments in.out
+            assertEquals(1, in.in); // because in.in was equal to in.out
+            
+    }
+    
+    @Test
+    public void testInEqualOutIntRead() throws IOException {
+            in.connect(out);
+            in.out = 1;
+            in.in = 2;
+           
+            
+            assertEquals(11, in.read()); // because in reads buffer[out++]
+            assertEquals(2, in.out);  // because buffer[out++] increments in.out
+            assertEquals(-1, in.in); // because in.in was equal to in.out
+            
+    }
+    
     @Test
     public void testNullSourceByteRead() {
         try{
