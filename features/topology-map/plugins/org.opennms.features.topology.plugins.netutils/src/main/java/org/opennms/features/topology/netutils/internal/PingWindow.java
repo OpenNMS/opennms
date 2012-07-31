@@ -33,6 +33,7 @@ public class PingWindow extends Window{
 	protected TextField requestsField = null; //Textfield for "Number of Requests" variable
 	protected TextField timeoutField = null; //Textfield for "Time-Out (seconds)" variable
 	protected CheckBox numericalDataCheckBox = null; //Checkbox for toggling numeric output
+	protected Button pingButton; //Button to execute the ping operation
 	private Embedded resultsBrowser = null; //Browser which displays the ping results
 	private VerticalLayout topLayout = null; //Contains the form components
 	private VerticalLayout bottomLayout = null; //Contains the results browser
@@ -54,7 +55,12 @@ public class PingWindow extends Window{
 
 		this.baseAddress = baseAddress;
 
-		String label = node.getLabel();
+		String label = "";
+		String ipAddress = "";
+		if (node != null) {
+			label = node.getLabel();
+			ipAddress = node.getIPAddress();
+		}
 		String caption = "";
 		/*Sets up window settings*/
 		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
@@ -83,8 +89,8 @@ public class PingWindow extends Window{
 
 		/*Sets up IP Address dropdown with the Name as default*/
 		ipDropdown = new NativeSelect();
-		ipDropdown.addItem(node.getIPAddress());
-		ipDropdown.select(node.getIPAddress());
+		ipDropdown.addItem(ipAddress);
+		ipDropdown.select(ipAddress);
 
 		/*Sets up Packet Size dropdown with different values*/
 		packetSizeDropdown = new NativeSelect();
@@ -131,12 +137,10 @@ public class PingWindow extends Window{
 		grid.setComponentAlignment(packetSizeDropdown, Alignment.MIDDLE_LEFT);
 
 		/*Creates the Ping button and sets up the listener*/
-		final Button pingButton = new Button("Ping"); 
+		pingButton = new Button("Ping"); 
 		pingButton.addListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-				if(event.getButton() == pingButton){
-					changeBrowserURL(buildURL());
-				}
+				changeBrowserURL(buildURL());
 			}
 		}); 
 

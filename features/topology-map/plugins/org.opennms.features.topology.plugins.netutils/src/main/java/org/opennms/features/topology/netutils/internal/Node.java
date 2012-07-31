@@ -26,8 +26,8 @@ public class Node {
         return ipAddr;
     }
     
-    public void setName(String name) {
-        this.label = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
     
     public void setIPAddress(String ip) {

@@ -33,6 +33,7 @@ public class TracerouteWindow extends Window{
 	private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
 	protected TextField forcedHopField = null; //Textfield for the "Forced Hop" variable
 	protected CheckBox numericalDataCheckBox = null; //Checkbox which toggles numeric output
+	protected Button tracerouteButton; //Button to execute the traceroute operation
 	private Embedded resultsBrowser = null; //Browser component which displays the results of Traceroute
 	private VerticalLayout topLayout = null; //Contains the form for Traceroute
 	private VerticalLayout bottomLayout = null; //Contains the results Browser for a Traceroute
@@ -54,7 +55,12 @@ public class TracerouteWindow extends Window{
 
 		this.baseAddress = baseAddress;
 		
-		String label = node.getLabel();
+		String label = "";
+		String ipAddress = "";
+		if (node != null) {
+			label = node.getLabel();
+			ipAddress = node.getIPAddress();
+		}
 		String caption = "";
 		/*Sets up window settings*/
 		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
@@ -83,8 +89,8 @@ public class TracerouteWindow extends Window{
 
 		/*Sets up IP Address dropdown with the Name as default*/
 		ipDropdown = new NativeSelect();
-		ipDropdown.addItem(node.getIPAddress());
-		ipDropdown.select(node.getIPAddress());
+		ipDropdown.addItem(ipAddress);
+		ipDropdown.select(ipAddress);
 
 		/*Creates the Numerical Output Check box and sets up the listener*/
 		numericalDataCheckBox = new CheckBox("Use Numerical Node Names");
@@ -108,7 +114,7 @@ public class TracerouteWindow extends Window{
 		grid.setComponentAlignment(forcedHopField, Alignment.MIDDLE_LEFT);
 
 		/*Creates the Ping button and sets up the listener*/
-		final Button tracerouteButton = new Button("Traceroute"); 
+		tracerouteButton = new Button("Traceroute"); 
 		tracerouteButton.addListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
