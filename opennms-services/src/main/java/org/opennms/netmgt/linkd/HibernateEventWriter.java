@@ -190,6 +190,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	@Transactional
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
 		final Timestamp scanTime = new Timestamp(System.currentTimeMillis());
+	if (snmpColl.hasLldpLocalGroup()) {
+	    processLldpLocalGroup(node,snmpColl,null,scanTime);
+	}
+	if (snmpColl.hasLldpRemTable()) {
+	    processLldpRemTable(node,snmpColl,null,scanTime);
+	}
         if (snmpColl.hasIpNetToMediaTable()) {
             processIpNetToMediaTable(node, snmpColl, null, scanTime);
         } else {
