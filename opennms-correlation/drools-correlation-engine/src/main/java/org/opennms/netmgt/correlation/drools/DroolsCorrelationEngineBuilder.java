@@ -38,7 +38,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -133,7 +133,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 	/**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;

@@ -80,11 +80,6 @@
       <artifactId>opennms-mock-simpleserver</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
     </dependency>

@@ -41,11 +41,11 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -104,7 +104,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -113,7 +113,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;

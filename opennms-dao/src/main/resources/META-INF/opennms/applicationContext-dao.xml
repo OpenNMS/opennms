@@ -21,7 +21,7 @@
     DataSourceFactory has been changed to return TransactionAwareDataSources so
     legacy code can participate in transactions properly.
   -->
-  <bean id="dataSource" class="org.opennms.netmgt.config.DataSourceFactoryBean" />
+  <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
 
   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
     <property name="dataSource" ref="dataSource" />
@@ -300,10 +300,9 @@
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
     <property name="arguments">
-      <bean id="jdbcFilterDao" class="org.opennms.netmgt.dao.support.JdbcFilterDao">
+      <bean id="jdbcFilterDao" class="org.opennms.netmgt.filter.JdbcFilterDao">
         <property name="dataSource" ref="dataSource" />
         <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
-        <property name="nodeDao" ref="nodeDao" />
       </bean>
     </property>
   </bean>
@@ -329,7 +328,7 @@
     <constructor-arg value="0" />
   </bean>
 
-  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.DefaultDataCollectionConfigDao">
+  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
     <property name="configResource" ref="dataCollectionConfigResourceLocation" />
     <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
     <property name="reloadCheckInterval" ref="dataCollectionConfigReloadInterval" />

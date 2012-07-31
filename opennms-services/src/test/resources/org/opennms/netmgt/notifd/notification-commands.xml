@@ -39,7 +39,7 @@
     </command>
     <command binary="false">
         <name>mockNotifier</name>
-        <execute>org.opennms.netmgt.notifd.mock.MockNotificationStrategy</execute>
+        <execute>org.opennms.netmgt.config.mock.MockNotificationStrategy</execute>
         <comment>Mock Class for sending test notifications</comment>
         <argument streamed="false">
             <switch>-subject</switch>

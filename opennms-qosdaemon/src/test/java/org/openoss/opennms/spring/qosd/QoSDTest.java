@@ -33,8 +33,8 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -51,7 +51,6 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
-		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:org/openoss/opennms/spring/qosd/qosd-spring-context.xml",
 		"classpath:org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml"

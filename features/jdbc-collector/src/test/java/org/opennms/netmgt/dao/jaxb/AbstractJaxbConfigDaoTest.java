@@ -32,10 +32,10 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -90,7 +90,7 @@ public class AbstractJaxbConfigDaoTest extends TestCase {
         }
         
         @Override
-        public JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
+        protected JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
             return jaxbConfig;
         }
         

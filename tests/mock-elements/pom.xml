@@ -32,11 +32,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <artifactId>opennms-config-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -46,6 +46,12 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

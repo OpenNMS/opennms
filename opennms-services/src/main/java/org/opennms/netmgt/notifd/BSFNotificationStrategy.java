@@ -48,6 +48,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 /**
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>

@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
+<collectd-configuration 
+	threads="50">
+
+	<package name="example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>	 
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+<!--		<include-url>file:${install.etc.dir}/include</include-url> -->
+		
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+			<parameter key="port" value="161"/>
+			<parameter key="retry" value="3"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
+		
+		<service name="JBoss4" interval="300000" user-defined="false" status="on">
+			<parameter key="port" value="1099"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="factory" value="RMI"/>
+                        <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+                             need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+                             <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+                             The default port is 8080
+                        -->
+		</service>
+		
+		<service name="JBoss32" interval="300000" user-defined="false" status="on">
+			<parameter key="version" value="32"/>
+			<parameter key="port" value="1099"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="factory" value="RMI"/>
+                        <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+                             need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+                             <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+                             The default port is 8080
+                        -->
+		</service>
+
+		<service name="JVM" interval="300000" user-defined="false" status="on">
+			<parameter key="port" value="9003"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="ds-name" value="jmx"/>
+			<parameter key="friendly-name" value="jvm"/>
+		</service>
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+	
+
+	<package name="example2">
+		<filter>IPADDR IPLIKE 1.1.1.1</filter>	 
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="1.1.1.1"/>
+<!--		<include-url>file:${install.etc.dir}/include2</include-url> -->
+		<storeByIfAlias>true</storeByIfAlias>
+		<storeByNodeID>normal</storeByNodeID>
+        <ifAliasDomain>my_domain</ifAliasDomain>
+		<storFlagOverride>true</storFlagOverride>
+        <ifAliasComment>#</ifAliasComment>
+		
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+			<parameter key="port" value="161"/>
+			<parameter key="retry" value="3"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
+		
+		<service name="JBoss4" interval="300000" user-defined="false" status="on">
+			<parameter key="port" value="1099"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="factory" value="RMI"/>
+                        <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+                             need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+                             <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+                             The default port is 8080
+                        -->
+		</service>
+		
+		<service name="JBoss32" interval="300000" user-defined="false" status="on">
+			<parameter key="version" value="32"/>
+			<parameter key="port" value="1099"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="factory" value="RMI"/>
+                        <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+                             need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+                             <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+                             The default port is 8080
+                        -->
+		</service>
+
+		<service name="JVM" interval="300000" user-defined="false" status="on">
+			<parameter key="port" value="9003"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="ds-name" value="jmx"/>
+			<parameter key="friendly-name" value="jvm"/>
+		</service>
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+
+	<collector service="JBoss4"     class-name="org.opennms.netmgt.collectd.JBossCollector"/>
+	<collector service="JBoss32"    class-name="org.opennms.netmgt.collectd.JBossCollector"/>
+	<collector service="JVM"        class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+	<collector service="SNMP" 	class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+
+</collectd-configuration>
+

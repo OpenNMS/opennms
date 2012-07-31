@@ -47,6 +47,8 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
+import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;

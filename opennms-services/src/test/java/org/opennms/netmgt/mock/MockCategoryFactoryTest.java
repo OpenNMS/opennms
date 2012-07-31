@@ -32,8 +32,8 @@ package org.opennms.netmgt.mock;
  * @author jsartin
  */
 
-import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.config.categories.Category;
 import junit.framework.TestCase;
 

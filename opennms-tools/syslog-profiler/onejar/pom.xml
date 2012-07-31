@@ -21,11 +21,5 @@
       <artifactId>org.opennms.tests.mock-elements</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <type>test-jar</type>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 </project>

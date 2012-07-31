@@ -11,10 +11,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
@@ -47,29 +43,21 @@
           </additionalProjectnatures>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/xsds.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.db</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -83,11 +71,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>dbpool-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jdbc-pool-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

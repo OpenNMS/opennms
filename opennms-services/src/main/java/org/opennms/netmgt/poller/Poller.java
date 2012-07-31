@@ -41,14 +41,16 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -60,8 +62,6 @@ import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.utils.Updater;
 
 /**
  * <p>Poller class.</p>
@@ -111,7 +111,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -120,7 +120,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;

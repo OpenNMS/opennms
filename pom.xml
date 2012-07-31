@@ -108,6 +108,7 @@
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
     <module>opennms-config</module>
+    <module>opennms-config-model</module>
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
@@ -960,6 +961,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.db</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.db.install</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.lib</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1014,6 +1025,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.db</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.dns</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
@@ -1021,6 +1038,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.services</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1378,7 +1401,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-config</artifactId>
+        <artifactId>opennms-config-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-model</artifactId>
         <version>${project.version}</version>
         <classifier>xsds</classifier>
       </dependency>
@@ -1413,7 +1441,6 @@
         <artifactId>opennms-dao</artifactId>
         <type>test-jar</type>
         <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1673,13 +1700,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <version>${project.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

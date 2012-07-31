@@ -34,13 +34,13 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
-import org.opennms.test.ConfigurationTestUtils;
 
 public class DefaultManualProvisioningServiceTest extends TestCase {
     

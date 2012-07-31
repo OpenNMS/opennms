@@ -34,7 +34,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.core.db.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to map trap IP

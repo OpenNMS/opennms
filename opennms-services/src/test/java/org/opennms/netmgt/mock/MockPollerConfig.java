@@ -94,6 +94,21 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         afterPropertiesSet();
     }
 
+    /**
+     * <p>parameters</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.config.poller.Service} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
+    public Iterable<Parameter> parameters(final Service svc) {
+        getReadLock().lock();
+        try {
+            return svc.getParameterCollection();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     public void addDowntime(long interval, long begin, long end, boolean delete) {
         Downtime downtime = new Downtime();
         downtime.setDelete(delete ? "true" : "false");

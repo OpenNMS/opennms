@@ -33,12 +33,12 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.surveillanceViews.Columns;
 import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.config.surveillanceViews.Views;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;

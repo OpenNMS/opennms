@@ -35,6 +35,7 @@ import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 /**
  * Implements NotificationStragey pattern used to send notifications via the
