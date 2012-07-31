@@ -34,11 +34,6 @@ public class TracerouteWindowTest {
 		app.getMainWindow().addWindow(traceWindow3);
 	}
 	
-	@After
-	public void tearDown() throws Exception {
-		app.getMainWindow().removeWindow(traceWindow);
-	}
-	
 	@Test
 	public void testBuildURL_correctInput() {
 		traceWindow.numericalDataCheckBox.setValue(true);

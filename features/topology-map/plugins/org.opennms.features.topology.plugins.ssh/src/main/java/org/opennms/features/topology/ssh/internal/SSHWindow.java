@@ -51,10 +51,6 @@ public class SSHWindow extends Window {
 		addComponent(vPanel);
 	}
 	
-	    public SSHTerminal getSSHTerminal() {
-	        return this.terminal;
-	    }
-	
 	@Override
 	public void attach() {
 		super.attach();
