@@ -137,6 +137,7 @@ public class MenuBarBuilder {
                     
                     Map<String, String> props = getLabelProperties(commandKey);
                     MenuBar.MenuItem menuItem = subMenu.addItem(removeLabelProperties(commandKey), (Command) entry.getValue());
+                    
                     if(props.containsKey("checked") ) {
                         menuItem.setCheckable(true);
                         if(props.get("checked").toLowerCase().equals("true")) {

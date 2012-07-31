@@ -66,8 +66,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
     private Graph m_graph;
-	private List<Action.Handler> m_actionHandlers = new ArrayList<Action.Handler>(); //new CopyOnWriteArrayList<Action.Handler>();
+	private List<Action.Handler> m_actionHandlers = new ArrayList<Action.Handler>();
 	private MapManager m_mapManager = new MapManager();
+    private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -324,6 +325,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             m_mapManager.setClientY(clientY);
         }
         
+        updateMenuItems();
     }
     
     private void singleSelectVertex(String vertexId) {
@@ -356,10 +358,24 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	public void addActionHandler(Handler actionHandler) {
 		m_actionHandlers.add(actionHandler);
 	}
-
+	
 	public void removeActionHandler(Handler actionHandler) {
 		m_actionHandlers.remove(actionHandler);
 		
+	}
+	
+	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
+        m_menuItemStateListener .add(listener);
+    }
+	
+	public void removeMenuItemStateListener(MenuItemUpdateListener listener) {
+	    m_menuItemStateListener.remove(listener);
+	}
+	
+	private void updateMenuItems() {
+	    for(MenuItemUpdateListener listener : m_menuItemStateListener) {
+	        listener.updateMenuItems();
+	    }
 	}
 
 	private void setGraph(Graph graph) {
