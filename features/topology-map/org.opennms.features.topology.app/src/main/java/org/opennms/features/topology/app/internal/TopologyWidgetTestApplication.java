@@ -16,6 +16,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -101,6 +102,17 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				m_graphContainer.redoLayout();
 			}
 		});
+        
+        getMainWindow().addListener(new Window.CloseListener() {
+            
+            @Override
+            public void windowClose(CloseEvent e) {
+               if(e.getWindow().getName().equals("Auth Window")){
+                   getMainWindow().executeJavaScript("document.getElementById(\"termFocusPanel\").focus();");
+               }
+                
+            }
+        });
         
         
         VerticalLayout vLayout = new VerticalLayout();

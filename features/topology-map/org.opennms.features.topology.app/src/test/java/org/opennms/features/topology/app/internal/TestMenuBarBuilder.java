@@ -1,8 +1,10 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,8 +158,27 @@ public class TestMenuBarBuilder {
     }
     
     @Test
+    public void submenuCheckedMenuItemTest() {
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("File", Arrays.asList("new", "help", "additions"));
+        
+        cmdManager.onBind(getTestOperation(), getProps("File", "Operation1?checked=true", ""));
+        
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(1, menuItems.size());
+        
+        List<MenuItem> subMenuItems = menuItems.get(0).getChildren();
+        assertEquals(1, subMenuItems.size());
+        MenuItem menuItem = subMenuItems.get(0);
+        assertEquals("Operation1", menuItem.getText());
+        assertTrue(menuItem.isCheckable());
+    }
+    
+    @Test
     public void commandManagerParseConfigTest() {
-        Map props = new Properties();
+        Dictionary props = new Properties();
         props.put("toplevelMenuOrder", "File,Edit,View,Additions,Help");
         props.put("submenu.File.groups", "start,new,close,save,print,open,import,additions,end");
         props.put("submenu.Edit.groups", "start,undo,cut,find,add,end,additions");

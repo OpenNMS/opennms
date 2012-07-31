@@ -126,18 +126,58 @@ public class MenuBarBuilder {
         
         Set<Entry<String, Object>> sortedEntrySet = getSortedSubmenuGroup(subMenu.getText(), value);
         for(Entry<String, Object> entry : sortedEntrySet) {
+            String commandKey = entry.getKey();
             if(entry.getValue() instanceof Map) {
-                MenuBar.MenuItem subMenuItem = subMenu.addItem(entry.getKey(), null);
+                MenuBar.MenuItem subMenuItem = subMenu.addItem(commandKey, null);
                 addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
             }else {
-                if(entry.getKey().equals("separator")) {
+                if(commandKey.equals("separator")) {
                     subMenu.addSeparator();
                 }else {
-                    subMenu.addItem(entry.getKey(), (Command) entry.getValue());
+                    
+                    Map<String, String> props = getLabelProperties(commandKey);
+                    MenuBar.MenuItem menuItem = subMenu.addItem(removeLabelProperties(commandKey), (Command) entry.getValue());
+                    if(props.containsKey("checked") ) {
+                        menuItem.setCheckable(true);
+                        if(props.get("checked").toLowerCase().equals("true")) {
+                            menuItem.setChecked(true);
+                        }else {
+                            menuItem.setChecked(false);
+                        }
+                    }
+                    
                 }
             }
             
         }
+    }
+
+    private String removeLabelProperties(String commandKey) {
+        if(commandKey.contains("?")) {
+            return commandKey.substring(0, commandKey.indexOf('?'));
+        }else {
+            return commandKey;
+        }
+        
+        
+    }
+
+    private Map<String, String> getLabelProperties(String commandLabel) {
+        Map<String, String> propMap = new HashMap<String, String>();
+        
+        if(commandLabel.contains("?")) {
+            String propStr = commandLabel.substring(commandLabel.indexOf('?') + 1, commandLabel.length());
+            String[] properties = propStr.split(";");
+            
+            for(String property : properties) {
+                String[] propKeyVal = property.split("=");
+                if(propKeyVal.length > 1) {
+                    propMap.put(propKeyVal[0],propKeyVal[1]);
+                }
+            }
+        }
+        
+        return propMap;
     }
 
     private Set<Entry<String, Object>> getSortedSubmenuGroup(final String parentMenuName, Map<String, Object> value) {
@@ -195,11 +235,12 @@ public class MenuBarBuilder {
             }
            
             Object command = value.get(key);
-            if(key.contains("?")) {
-                sortedList.put(key.substring(0, key.indexOf("?")), command);
-            }else {
-                sortedList.put(key, command);
-            }
+//            if(key.contains("?")) {
+//                sortedList.put(key.substring(0, key.indexOf("?")), command);
+//            }else {
+//                
+//            }
+            sortedList.put(key, command);
             
             prevGroup = getGroupForLabel(key);
         }

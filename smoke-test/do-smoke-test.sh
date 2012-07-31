@@ -192,8 +192,8 @@ run_tests() {
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
-	do_log "opennms stop"
-	/etc/init.d/opennms stop
+	do_log "opennms kill"
+	/etc/init.d/opennms kill
 
 	#do_log "yum clean all"
 	#yum clean all || :

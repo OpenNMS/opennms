@@ -1,11 +1,12 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
@@ -65,7 +66,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
     private Graph m_graph;
-	private List<Action.Handler> m_actionHandlers = new CopyOnWriteArrayList<Action.Handler>();
+	private List<Action.Handler> m_actionHandlers = new ArrayList<Action.Handler>(); //new CopyOnWriteArrayList<Action.Handler>();
 	private MapManager m_mapManager = new MapManager();
 
 	public TopologyComponent(GraphContainer dataSource) {
@@ -113,14 +114,16 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_actionMapper = new KeyMapper();
 
 		List<String> bgActionList = new ArrayList<String>();
-		for(Action.Handler handler : m_actionHandlers) {
-			Action[] bgActions = handler.getActions(null, null);
-			for(Action action : bgActions) {
-				bgActionList.add(m_actionMapper.key(action));
-				actions.add(action);
-			}
+		Object t = null;
+		Object s = null;
+		List<Handler> actionHandlers = m_actionHandlers;
+		List<Action> bgSortingList = sortActionHandlers(m_actionHandlers, t, s);
+		for(Action action : bgSortingList) {
+		    bgActionList.add(m_actionMapper.key(action));
+		    actions.add(action);
 		}
-
+		
+		
 		target.addAttribute("backgroundActions", bgActionList.toArray());
 		
 		
@@ -137,14 +140,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("label", group.getLabel());
 
         		List<String> groupActionList = new ArrayList<String>();
-        		for(Action.Handler handler : m_actionHandlers) {
-        			Action[] groupActions = handler.getActions(group.getItemId(), null);
-        			for(Action action : groupActions) {
-        				groupActionList.add(m_actionMapper.key(action));
-        				actions.add(action);
-        			}
+        		List<Action> groupSortedList = sortActionHandlers(m_actionHandlers, group.getGroupId(), null); 
+        		for(Action action : groupSortedList) {
+        		    groupActionList.add(m_actionMapper.key(action));
+        		    actions.add(action);
         		}
-
+        		
+    		    
         		target.addAttribute("actionKeys", groupActionList.toArray());
         		target.endTag("group");
 
@@ -167,14 +169,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("label", vert.getLabel());
 
         		List<String> vertActionList = new ArrayList<String>();
-        		for(Action.Handler handler : m_actionHandlers) {
-        			Action[] vertActions = handler.getActions(vert.getItemId(), null);
-        			for(Action action : vertActions) {
-        				vertActionList.add(m_actionMapper.key(action));
-        				actions.add(action);
-        			}
+        		List<Action> vertActionSortedList = sortActionHandlers(m_actionHandlers, vert.getItemId(), null);
+        		
+        		for(Action action : vertActionSortedList) {
+        		    vertActionList.add(m_actionMapper.key(action));
+        		    actions.add(action);
         		}
-
+        		
         		target.addAttribute("actionKeys", vertActionList.toArray());
         		target.endTag("vertex");
         	}
@@ -187,15 +188,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("target", edge.getTarget().getKey());
 
     		List<String> edgeActionList = new ArrayList<String>();
-    		for(Action.Handler handler : m_actionHandlers) {
-    			Action[] vertActions = handler.getActions(edge.getItemId(), null);
-    			for(Action action : vertActions) {
-    				edgeActionList.add(m_actionMapper.key(action));
-    				actions.add(action);
-    			}
+    		List<Action> edgeSortedActionList = sortActionHandlers(m_actionHandlers, edge.getItemId(), null);
+    		for(Action action : edgeSortedActionList) {
+    		    edgeActionList.add(m_actionMapper.key(action));
+    		    actions.add(action);
     		}
-
-
+    		
         	target.addAttribute("actionKeys", edgeActionList.toArray());
         	target.endTag("edge");
         }
@@ -237,6 +235,28 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		target.endTag("actions");
 
         
+    }
+
+    private List<Action> sortActionHandlers(List<Handler> actionHandlers, Object target, Object sender) {
+        List<Action> sortingList = new ArrayList<Action>();
+        for(Action.Handler handler : actionHandlers) {
+			Action[] bgActions = handler.getActions(target, sender);
+			for(Action action : bgActions) {
+			    sortingList.add(action);
+			}
+		}
+		sortActions(sortingList);
+        return sortingList;
+    }
+
+    private void sortActions(List<Action> bgActions) {
+        Collections.sort(bgActions, new Comparator<Action>() {
+
+            @Override
+            public int compare(Action o1, Action o2) {
+                return o1.getCaption().compareTo(o2.getCaption());
+            }
+        });
     }
     
 	@Override
@@ -335,7 +355,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	public void addActionHandler(Handler actionHandler) {
 		m_actionHandlers.add(actionHandler);
-		
 	}
 
 	public void removeActionHandler(Handler actionHandler) {

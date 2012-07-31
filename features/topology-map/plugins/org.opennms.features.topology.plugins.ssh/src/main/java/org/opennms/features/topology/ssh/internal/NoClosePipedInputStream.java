@@ -261,10 +261,6 @@ public class NoClosePipedInputStream extends InputStream{
     private void checkStateForReceive() throws IOException {
         if (!connected) {
             throw new IOException("Pipe not connected");
-        } else if (closedByWriter || closedByReader) {
-            throw new IOException("Pipe closed");
-        } else if (readSide != null && !readSide.isAlive()) {
-            throw new IOException("Read end dead");
         }
     }
 
@@ -280,15 +276,6 @@ public class NoClosePipedInputStream extends InputStream{
                 throw new java.io.InterruptedIOException();
             }
         }
-    }
-
-    /**
-     * Notifies all waiting threads that the last byte of data has been
-     * received.
-     */
-    synchronized void receivedLast() {
-        closedByWriter = true;
-        notifyAll();
     }
 
     /**
@@ -308,19 +295,9 @@ public class NoClosePipedInputStream extends InputStream{
     public synchronized int read()  throws IOException {
         if (!connected) {
             throw new IOException("Pipe not connected");
-        } else if (closedByReader) {
-            throw new IOException("Pipe closed");
-        } else if (writeSide != null && !writeSide.isAlive()
-                   && !closedByWriter && (in < 0)) {
-            throw new IOException("Write end dead");
         }
 
-        readSide = Thread.currentThread();
         while (in < 0) {
-            if (closedByWriter) {
-                /* closed by writer, return EOF */
-                return -1;
-            }
             /* might be a writer waiting */
             notifyAll();
             try {
@@ -334,7 +311,6 @@ public class NoClosePipedInputStream extends InputStream{
             out = 0;
         }
         if (in == out) {
-            /* now empty */
             in = -1;
         }
 
@@ -433,20 +409,5 @@ public class NoClosePipedInputStream extends InputStream{
             return in - out;
         else
             return in + buffer.length - out;
-    }
-
-    /**
-     * Closes this piped input stream and releases any system resources
-     * associated with the stream.
-     *
-     * @exception  IOException  if an I/O error occurs.
-     */
-    public void close()  throws IOException {
-        /* NO CLOSING
-    	closedByReader = true;
-        synchronized (this) {
-            in = -1;
-        }
-        */
     }
 }

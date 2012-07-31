@@ -1,10 +1,7 @@
 package org.opennms.features.topology.netutils.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -13,19 +10,12 @@ import org.opennms.features.topology.netutils.internal.operations.NodeInfoOperat
 import org.opennms.features.topology.netutils.internal.operations.PingOperation;
 import org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation;
 import org.opennms.features.topology.netutils.internal.operations.TracerouteOperation;
-//import org.vaadin.peter.contextmenu.ContextMenu;
-//import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
-//import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.Application;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.terminal.ClassResource;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -98,6 +88,12 @@ public class DefaultMenu extends Application{
 			public GraphContainer getGraphContainer() {
 				return null;
 			}
+
+            @Override
+            public boolean isChecked() {
+                // TODO Auto-generated method stub
+                return false;
+            }
 		};
 		
 		mainLayout = new VerticalLayout();

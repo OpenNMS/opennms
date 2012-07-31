@@ -40,6 +40,7 @@ public class PingWindow extends Window{
 	private int margin = 40; //Padding around the results browser
 	private int splitHeight = 240; //Height from top of the window to the split location in pixels
 	private int topHeight = 280; //Set height size for everything above the split
+	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 	private String baseAddress;
 	
 	/**
@@ -53,13 +54,19 @@ public class PingWindow extends Window{
 
 		this.baseAddress = baseAddress;
 
+		String label = node.getLabel();
+		String caption = "";
 		/*Sets up window settings*/
-		setCaption("Ping - " + node.getName());
+		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
+			label = "";
+		} 
+		if (!label.equals("")) caption = " - " + label;
+		setCaption("Ping" + caption);
 		setImmediate(true);
 		setResizable(false);
 
 		/*Initialize the header of the Sub-window with the name of the selected Node*/
-		String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + node.getName() + "</div>";
+		String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + label + "</div>";
 		nodeLabel = new Label(nodeName);
 		nodeLabel.setContentMode(Label.CONTENT_XHTML);
 

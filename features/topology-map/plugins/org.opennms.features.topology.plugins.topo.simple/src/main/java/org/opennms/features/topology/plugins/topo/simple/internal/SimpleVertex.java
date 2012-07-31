@@ -22,6 +22,7 @@ abstract public class SimpleVertex {
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
         private String m_ipAddr ="127.0.0.1";
+        private int m_nodeID = -1;
 //	private int m_semanticZoomLevel = -1;
 	
 	public SimpleVertex() {}
@@ -120,6 +121,14 @@ abstract public class SimpleVertex {
 	
 	public void setIpAddr(String ipAddr){
 	    m_ipAddr = ipAddr;
+	}
+	
+	public int getNodeID() {
+		return m_nodeID;
+	}
+	
+	public void setNodeID(int nodeID) {
+		m_nodeID = nodeID;
 	}
 
 	@XmlTransient

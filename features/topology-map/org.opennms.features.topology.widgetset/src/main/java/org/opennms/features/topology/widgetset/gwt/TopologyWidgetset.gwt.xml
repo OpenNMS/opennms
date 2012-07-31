@@ -7,20 +7,8 @@
 
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
 
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
 
-    
-
-
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet" />
 
     <inherits name="org.opennms.features.topology.ssh.internal.gwt.TerminalWidgetSet" />
-
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
-
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
-
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
-
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyWidget" />
 </module>

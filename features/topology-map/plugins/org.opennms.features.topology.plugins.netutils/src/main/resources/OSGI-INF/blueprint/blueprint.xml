@@ -8,10 +8,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <cm:default-properties>
             <cm:property name="pingURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=ping"/>
             <cm:property name="tracerouteURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute"/>
-            <cm:property name="eventsURL" value="http://demo.opennms.org/opennms/event/list?filter=node%3D"/>
-            <cm:property name="alarmsURL" value="http://demo.opennms.org/opennms/alarm/list.htm?sortby=id&amp;acktype=unacklimit=20&amp;filter=node%3D"/>
-        	<cm:property name="nodeInfoURL" value="http://demo.opennms.org/opennms/element/node.jsp?node="/>
-        	<cm:property name="resourceGraphsURL" value="http://demo.opennms.org/opennms/graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
+            <cm:property name="eventsURL" value="http://demo.opennms.org/opennms/event/list"/>
+            <cm:property name="eventsFilter" value="http://demo.opennms.org/opennms/event/list?filter=node%3D"/>
+            <cm:property name="alarmsURL" value="http://demo.opennms.org/opennms/alarm/list.htm"/>
+            <cm:property name="alarmsFilter" value="http://demo.opennms.org/opennms/alarm/list.htm?sortby=id&amp;acktype=unacklimit=20&amp;filter=node%3D"/>
+        	<cm:property name="nodeInfoURL" value="http://demo.opennms.org/opennms/element/nodeList.htm"/>
+        	<cm:property name="nodeInfoFilter" value="http://demo.opennms.org/opennms/element/node.jsp?node="/>
+        	<cm:property name="resourceGraphsURL" value="http://demo.opennms.org/opennms/graph/index.jsp"/>
+        	<cm:property name="resourceGraphsFilter" value="http://demo.opennms.org/opennms/graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
         </cm:default-properties>
     </cm:property-placeholder>
     
@@ -23,18 +27,21 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </bean>
     <bean id="eventsAlarmsOperation" class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation" >
         <property name="eventsURL" value="${eventsURL}"/>
+        <property name="eventsFilter" value="${eventsFilter}"/>
         <property name="alarmsURL" value="${alarmsURL}"/>
+        <property name="alarmsFilter" value="${alarmsFilter}"/>
     </bean>
     <bean id="nodeInfoOperation" class="org.opennms.features.topology.netutils.internal.operations.NodeInfoOperation" >
         <property name="nodeInfoURL" value="${nodeInfoURL}"/>
+        <property name="nodeInfoFilter" value="${nodeInfoFilter}"/>
     </bean>
     <bean id="resourceGraphsOperation" class="org.opennms.features.topology.netutils.internal.operations.ResourceGraphsOperation" >
         <property name="resourceGraphsURL" value="${resourceGraphsURL}"/>
+        <property name="resourceGraphsFilter" value="${resourceGraphsFilter}"/>
     </bean>
     
     <service interface="org.opennms.features.topology.api.Operation" ref="pingOperation">
         <service-properties>
-            <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Ping"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
@@ -42,7 +49,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation">
         <service-properties>
-            <entry key="operation.menuLocation" value="Device|Utils"/>
             <entry key="operation.label" value="Traceroute"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>

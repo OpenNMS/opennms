@@ -2,6 +2,7 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ public class CommandManager  {
         
         private Window m_mainWindow;
         private SimpleGraphContainer m_graphContainer;
+        private boolean m_checked = false;
 
         public DefaultOperationContext(Window mainWindow, SimpleGraphContainer graphContainer) {
             m_mainWindow = mainWindow;
@@ -37,6 +39,15 @@ public class CommandManager  {
         @Override
         public SimpleGraphContainer getGraphContainer() {
             return m_graphContainer;
+        }
+        
+        public void setChecked(boolean checked) {
+            m_checked = checked;
+        }
+        
+        @Override
+        public boolean isChecked() {
+            return m_checked;
         }
 
     }
@@ -102,6 +113,8 @@ public class CommandManager  {
                     }
                 }
                 
+                DefaultOperationContext context = (DefaultOperationContext) operationContext;
+                context.setChecked(selectedItem.isChecked());
                 
                 command.doCommand(targets, operationContext);
                 m_commandHistoryList.add(command);
@@ -191,8 +204,7 @@ public class CommandManager  {
         
     }
     
-    public void updateMenuConfig(Map props) { 
-        System.out.println("Getting config with these parameters: " + props);
+    public void updateMenuConfig(Dictionary props) { 
         List<String> topLevelOrder = Arrays.asList(props.get("toplevelMenuOrder").toString().split(","));
         setTopLevelMenuOrder(topLevelOrder);
         
@@ -203,6 +215,9 @@ public class CommandManager  {
             }
         }
         addOrUpdateGroupOrder("Default", Arrays.asList(props.get("submenu.Default.groups").toString().split(",")));
+        
+        updateCommandListeners();
+        
     }
 
     public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
