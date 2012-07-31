@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
@@ -98,6 +100,22 @@ public abstract class LinkdNetworkBuilder {
         nb.addNode(name).setForeignSource("linkd").setForeignId(name).setType("A");
         nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
         return nb.getCurrentNode();
+    }
+    
+    void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
+        System.out.println("----------------checkLink------------------");
+        System.out.println("linkid: " + datalinkinterface.getId());
+        System.out.println("nodeid: " + datalinkinterface.getNode().getId());
+        System.out.println("nodelabel: " + node.getLabel());
+        System.out.println("ifindex: " + datalinkinterface.getIfIndex());
+        System.out.println("nodeparent: " + datalinkinterface.getNodeParentId());
+        System.out.println("parentnodelabel: " + nodeparent.getLabel());
+        System.out.println("parentifindex: " + datalinkinterface.getParentIfIndex());
+
+        assertEquals(node.getId(),datalinkinterface.getNode().getId());
+        assertEquals(ifindex,datalinkinterface.getIfIndex().intValue());
+        assertEquals(nodeparent.getId(), datalinkinterface.getNodeParentId());
+        assertEquals(parentifindex,datalinkinterface.getParentIfIndex().intValue());
     }
     
 }
