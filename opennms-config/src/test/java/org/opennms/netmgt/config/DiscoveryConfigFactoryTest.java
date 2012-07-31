@@ -140,4 +140,32 @@ public class DiscoveryConfigFactoryTest {
         assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.4.1")));
 
     }
+    @Test
+    public void testSingleIPExclude() throws Exception {
+        final DiscoveryConfigFactory factory = new DiscoveryConfigFactory() {
+            public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {}
+            public synchronized DiscoveryConfiguration getConfiguration() {
+                final DiscoveryConfiguration conf = new DiscoveryConfiguration();
+
+                IncludeRange ir = new IncludeRange();
+                ir.setBegin("192.168.0.1");
+                ir.setEnd("192.168.0.254");
+                conf.addIncludeRange(ir);
+
+                ExcludeRange er = new ExcludeRange();
+                er.setBegin("192.168.0.100");
+                er.setEnd("192.168.0.100");
+                conf.addExcludeRange(er);
+
+                return conf;
+            }
+        };
+
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.99")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.100")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.101")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.151")));
+    }
 }

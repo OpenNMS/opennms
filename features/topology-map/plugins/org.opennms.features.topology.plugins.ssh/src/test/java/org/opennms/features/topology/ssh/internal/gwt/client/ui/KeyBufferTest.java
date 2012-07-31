@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestKeyBuffer {
+public class KeyBufferTest {
 
     String testString = "test"; // The string value used to create Keys in the KeyBuffer
     String doubleTestString = testString + testString; // Double the string used in testing drain

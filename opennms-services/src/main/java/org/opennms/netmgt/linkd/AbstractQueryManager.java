@@ -524,7 +524,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected void processDot1DBase(final LinkableNode node, final SnmpCollection snmpcoll, final DBUtils d, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
 
-        LogUtils.debugf(this, "processDot1DBase: Starting dot1dBase processing.");
+        LogUtils.debugf(this, "processDot1DBase: Starting Bridge MIB processing for Vlan: %s.", vlan.getVlanName());
 
         final OnmsNode onmsNode = getNode(node.getNodeId());
         if (onmsNode == null) {
@@ -562,8 +562,9 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
 
         for (final String physaddr : getPhysAddrs(node.getNodeId(), d, dbConn)) {
-            LogUtils.debugf(this, "Adding Bridge Identifier %s", physaddr);                       
+            LogUtils.debugf(this, "Try to add Bridge Identifier \"%s\" for node %d", physaddr, node.getNodeId());                       
             if (physaddr == null || physaddr.equals("") || physaddr.equals("000000000000")) continue;
+            LogUtils.infof(this, "Adding Bridge Identifier %s for node %d", physaddr, node.getNodeId());                       
             node.addBridgeIdentifier(physaddr);
         }
 
@@ -666,9 +667,9 @@ public abstract class AbstractQueryManager implements QueryManager {
     protected Map<Integer, OnmsStpInterface> processDot1StpPortTable(final LinkableNode node, final SnmpCollection snmpcoll, final Timestamp scanTime, final OnmsVlan vlan,SnmpVlanCollection snmpVlanColl, Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dStpPortTable().size() > 0) {
-                LogUtils.debugf(this, "processDot1StpPortTable: Starting dot1StpPort table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1StpPortTable: Processing dot1StpPortTable for nodeid/ip for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
-                LogUtils.debugf(this, "processDot1StpPortTable: Zero dot1StpPort table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1StpPortTable: Zero dot1StpPort table entries for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
@@ -700,6 +701,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             stpInterface.setStpPortDesignatedRoot(dot1dstpptentry.getDot1dStpPortDesignatedRoot());
             stpInterface.setStpPortDesignatedCost(dot1dstpptentry.getDot1dStpPortDesignatedCost());
             stpInterface.setStpPortDesignatedPort(stpPortDesignatedPort);
+            LogUtils.debugf(this, "processDot1StpPortTable: found stpport/designatedbridge/designatedport %d/%s/%s", stpport,stpPortDesignatedBridge,stpPortDesignatedPort);
+
         }
         return stpinterfaces;
     }
@@ -708,6 +711,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         for (OnmsStpInterface stpInterface: stpinterfaces.values()) {
             node.addStpInterface(stpInterface);
             if (snmpcoll.getSaveStpInterfaceTable()) {
+                LogUtils.debugf(this, "processStpInterfaces: saving %s in stpinterface table", stpInterface.toString());
                 saveStpInterface(dbConn, stpInterface);
             }
             
@@ -716,15 +720,16 @@ public abstract class AbstractQueryManager implements QueryManager {
     protected Map<Integer, OnmsStpInterface> processDot1DBasePortTable(final OnmsNode onmsNode, final LinkableNode node, final SnmpCollection snmpcoll, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl,Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dBasePortTable().size() > 0) {
-                LogUtils.debugf(this, "processDot1DBasePortTable: Starting dot1BasePort table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1DBasePortTable: Processing dot1BasePortTable for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
-                LogUtils.debugf(this, "processDot1DBasePortTable: Zero dot1BasePort table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1DBasePortTable: Zero dot1BasePort table entries for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
         for (final Dot1dBasePortTableEntry dot1dbaseptentry : snmpVlanColl.getDot1dBasePortTable()) {
             int baseport = dot1dbaseptentry.getBaseBridgePort();
             int ifindex = dot1dbaseptentry.getBaseBridgePortIfindex();
+            LogUtils.debugf(this, "processDot1DBasePortTable: processing bridge port (%d) with ifIndex (%d).", baseport, ifindex);
 
             if (baseport == -1 || ifindex == -1) {
                 LogUtils.infof(this, "processDot1DBasePortTable: Invalid base port (%d) or ifIndex (%d). Skipping.", baseport, ifindex);
@@ -746,30 +751,23 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processStpNode(final OnmsNode onmsNode,final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
-        LogUtils.debugf(this, "processStpNode: Starting STP node processing for Vlan: %s", vlan.getVlanName());
+        LogUtils.debugf(this, "processStpNode: Starting stpnode processing for Vlan: %s", vlan.getVlanName());
 
         final Dot1dBaseGroup dod1db = snmpVlanColl.getDot1dBase();
         final String baseBridgeAddress = dod1db.getBridgeAddress();
 
-        if (vlan.getVlanId() != null) {
-            LogUtils.debugf(this, "processStpNode: Adding Bridge Identifier %s for Vlan %d.", baseBridgeAddress, vlan.getVlanId());
-            node.addBridgeIdentifier(baseBridgeAddress, Integer.toString(vlan.getVlanId()));
-        }
-
+        LogUtils.debugf(this, "processStpNode: processing Dot1dBaseGroup in stpnode");
         final OnmsStpNode stpNode = new OnmsStpNode(onmsNode, vlan.getVlanId());
         stpNode.setLastPollTime(scanTime);
         stpNode.setStatus(DbStpNodeEntry.STATUS_ACTIVE);
-
-        if (snmpcoll.getSaveStpNodeTable()) {
-            LogUtils.debugf(this, "baseBridgeAddress = %s", baseBridgeAddress);
-            stpNode.setBaseBridgeAddress(baseBridgeAddress);
-            stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());
-            stpNode.setBaseType(dod1db.getBridgeType());
-            stpNode.setBaseVlanName(vlan.getVlanName());
-        }
+        stpNode.setBaseBridgeAddress(baseBridgeAddress);
+        LogUtils.debugf(this, "processStpNode: baseBridgeAddress = %s", baseBridgeAddress);
+        stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());
+        stpNode.setBaseType(dod1db.getBridgeType());
+        stpNode.setBaseVlanName(vlan.getVlanName());
 
         if (snmpVlanColl.hasDot1dStp()) {
-            LogUtils.debugf(this, "store: adding Dot1dStpGroup in stpnode table");
+            LogUtils.debugf(this, "processStpNode: processing Dot1dStpGroup in stpnode");
 
             final Dot1dStpGroup dod1stp = snmpVlanColl.getDot1dStp();
 
@@ -789,11 +787,20 @@ public abstract class AbstractQueryManager implements QueryManager {
                 }
             }
             stpNode.setStpDesignatedRoot(stpDesignatedRoot);
+            LogUtils.debugf(this, "processStpNode: stpDesignatedRoot = %s", stpDesignatedRoot);
+
         }
         // store object in database
         if (snmpcoll.getSaveStpNodeTable()) {
+            LogUtils.debugf(this, "processStpNode: saving %s in stpnode table", stpNode.toString());
             saveStpNode(dbConn, stpNode);
         }
+        if (vlan.getVlanId() != null) {
+            LogUtils.debugf(this, "processStpNode: Found Bridge Identifier %s for Vlan %d.", baseBridgeAddress, vlan.getVlanId());
+            node.addBridgeIdentifier(baseBridgeAddress, Integer.toString(vlan.getVlanId()));
+        }
+
+
     }
 
 }

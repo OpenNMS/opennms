@@ -100,9 +100,7 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
         MockLogAppender.setupLogging(p);
-        assertTrue("Capsd must not be null", m_capsd != null);
-//        assertTrue("Linkd must not be null", m_linkd != null);
-        
+        assertTrue("Capsd must not be null", m_capsd != null);        
     }
 
 
@@ -235,6 +233,39 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("AUSTIN_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("AUSTIN_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+        }
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt")
+    })
+    @Transactional
+    public final void testSanjose() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(SANJOSE_IP);
+        
+
+        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SANJOSE_IP);
+        assertTrue("Has only one ip interface", ips.size() == 1);
+
+        OnmsIpInterface ip = ips.get(0);
+
+        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
+            if (ipinterface.getIfIndex() != null )
+                System.out.println("SANJOSE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+        }
+
+        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
+            if ( snmpinterface.getIfName() != null)
+            System.out.println("SANJOSE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            if (snmpinterface.getIfDescr() != null)
+            System.out.println("SANJOSE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            if (snmpinterface.getPhysAddr() != null)
+            System.out.println("SANJOSE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
         }
         
         m_capsd.stop();

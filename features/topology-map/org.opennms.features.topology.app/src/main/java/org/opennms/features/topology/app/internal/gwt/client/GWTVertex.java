@@ -48,6 +48,14 @@ public class GWTVertex extends JavaScriptObject {
         return this.ipAddr;
     }-*/;
     
+    public final native void setNodeID(int nodeID) /*-{
+    	this.nodeID = nodeID;
+	}-*/;
+
+    public final native void getNodeID() /*-{
+    	return this.nodeID;
+	}-*/;
+    
     public static native GWTVertex create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
     }-*/;

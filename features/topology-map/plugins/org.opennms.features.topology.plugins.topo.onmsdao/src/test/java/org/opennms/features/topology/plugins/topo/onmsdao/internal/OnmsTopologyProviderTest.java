@@ -154,6 +154,12 @@ public class OnmsTopologyProviderTest {
         public GraphContainer getGraphContainer() {
             return m_graphContainer;
         }
+
+        @Override
+        public boolean isChecked() {
+            // TODO Auto-generated method stub
+            return false;
+        }
         
     }
 

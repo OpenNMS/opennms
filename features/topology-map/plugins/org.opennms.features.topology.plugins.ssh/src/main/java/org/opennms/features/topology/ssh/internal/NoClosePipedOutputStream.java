@@ -97,7 +97,7 @@ public class NoClosePipedOutputStream extends OutputStream{
     public synchronized void connect(NoClosePipedInputStream snk) throws IOException {
         if (snk == null) {
             throw new NullPointerException();
-        } else if (sink != null || snk.connected) {
+        } else if (sink != null) {
             throw new IOException("Already connected");
         }
         sink = snk;
@@ -141,42 +141,11 @@ public class NoClosePipedOutputStream extends OutputStream{
             throw new IOException("Pipe not connected");
         } else if (b == null) {
             throw new NullPointerException();
-        } else if ((off < 0) || (off > b.length) || (len < 0) ||
-                   ((off + len) > b.length) || ((off + len) < 0)) {
+        } else if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length)) {
             throw new IndexOutOfBoundsException();
         } else if (len == 0) {
             return;
         }
         sink.receive(b, off, len);
-    }
-
-    /**
-     * Flushes this output stream and forces any buffered output bytes
-     * to be written out.
-     * This will notify any readers that bytes are waiting in the pipe.
-     *
-     * @exception IOException if an I/O error occurs.
-     */
-    public synchronized void flush() throws IOException {
-        if (sink != null) {
-            synchronized (sink) {
-                sink.notifyAll();
-            }
-        }
-    }
-
-    /**
-     * Closes this piped output stream and releases any system resources
-     * associated with this stream. This stream may no longer be used for
-     * writing bytes.
-     *
-     * @exception  IOException  if an I/O error occurs.
-     */
-    public void close()  throws IOException {
-       /* NO CLOSING
-    	if (sink != null) {
-            sink.receivedLast();
-        }
-        */
     }
 }
