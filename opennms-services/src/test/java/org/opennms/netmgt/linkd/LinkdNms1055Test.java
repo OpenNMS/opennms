@@ -242,5 +242,5 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
             }
         }
         
-    }
+    }    
 }

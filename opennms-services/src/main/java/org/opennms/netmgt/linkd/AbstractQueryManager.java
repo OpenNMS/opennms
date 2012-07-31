@@ -225,7 +225,12 @@ public abstract class AbstractQueryManager implements QueryManager {
         return -1;
     }
 
-    
+    protected void processLldpLocalGroup(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+    }
+
+    protected void processLldpRemTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+    }
+
     protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpcoll.getCdpCacheTable().size() > 0) {

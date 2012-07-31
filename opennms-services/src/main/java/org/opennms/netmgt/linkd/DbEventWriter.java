@@ -282,6 +282,13 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(dbConn);
             Timestamp scanTime = new Timestamp(System.currentTimeMillis());
     
+            if (snmpcoll.hasLldpLocalGroup()) {
+                processLldpLocalGroup(node,snmpcoll,dbConn,scanTime);
+            }
+            if (snmpcoll.hasLldpRemTable()) {
+                processLldpRemTable(node,snmpcoll,dbConn,scanTime);
+            }
+            
             if (snmpcoll.hasIpNetToMediaTable()) {
                 processIpNetToMediaTable(node, snmpcoll, dbConn, scanTime);
             }
