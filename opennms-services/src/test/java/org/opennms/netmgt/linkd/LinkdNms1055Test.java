@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +144,15 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
      * 
      * Sanjose: baseBridgeAddress = 002283d857d0
      * Sanjose: Spanning Tree is disabled
+     * 
+     * There are two links found between Penrose and Delaware,
+     * one on ae0 using stp and another over xe-1/0/0.0 using the ip route next hop strategy
+     * 
+     * Also the link between Austin and Delaware is not found because
+     * no route entry is found so no way to find it.
+     * This prove how weak is the way in which is set up linkd.
+     * This test passes because i've verified that this is what the linkd can discover using it's values
+     * 
      */
     @Test
     @JUnitSnmpAgents(value={
@@ -204,6 +215,30 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(8,m_dataLinkInterfaceDao.countAll());                
+        assertEquals(8,m_dataLinkInterfaceDao.countAll());
+
+        final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+        
+        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
+            Integer linkid = datalinkinterface.getId();
+            if ( linkid == 799) {
+                checkLink(penrose,riovista, 515,584,datalinkinterface);
+            } else if (linkid == 800 ) {
+                checkLink(penrose,delaware,2693,658,datalinkinterface);
+            } else if (linkid == 801) {
+                checkLink(delaware, riovista, 540, 503, datalinkinterface);
+            } else if (linkid == 802 ) {
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+            } else if (linkid == 803) {
+                checkLink(delaware, penrose, 598, 535, datalinkinterface);
+            } else if (linkid == 804) {
+                checkLink(austin,phoenix,554,565,datalinkinterface);
+            } else if (linkid == 805) {
+                checkLink(phoenix,sanjose,566,564,datalinkinterface);
+            } else if (linkid == 806) {
+                checkLink(austin, sanjose, 586, 8562, datalinkinterface);
+            }
+        }
+        
     }
 }
