@@ -7,6 +7,8 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.netutils.internal.EventsAlarmsWindow;
 import org.opennms.features.topology.netutils.internal.Node;
 
+import com.vaadin.data.Item;
+
 public class EventsAlarmsOperation implements Operation {
 
 	private String eventsURL;
@@ -31,7 +33,8 @@ public class EventsAlarmsOperation implements Operation {
 
 		if (targets != null) {
 			for(Object target : targets) {
-				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+			    Item item = operationContext.getGraphContainer().getVertexItem(target);
+				nodeID = item.getItemProperty("nodeID").getValue() != null ? (Integer)item.getItemProperty("nodeID").getValue() : -1;
 			}
 		}
 		if (nodeID < 0) return false;

@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
@@ -16,17 +17,18 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener{
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener{
 	
 	private Window m_window;
     private TopologyComponent m_topologyComponent;
@@ -60,6 +62,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         
         m_topologyComponent = new TopologyComponent(m_graphContainer);
         m_topologyComponent.setSizeFull();
+        m_topologyComponent.addMenuItemStateListener(this);
         
         final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
         final Slider slider = new Slider(1, 4);
@@ -168,6 +171,26 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         }
         return tree;
     }
+    
+    public void updateMenuBarEnabled() {
+        
+    }
+    
+    public void updateMenuItems() {
+        updateMenuItems(m_menuBar.getItems());
+        m_menuBar.requestRepaint();
+    }
+
+    private void updateMenuItems(List<MenuItem> menuItems) {
+        for(MenuItem menuItem : menuItems) {
+            if(menuItem.hasChildren()) {
+                updateMenuItems(menuItem.getChildren());
+            }else {
+                m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow());
+            }
+        }
+    }
+
 
     @Override
     public void menuBarUpdated(CommandManager commandManager) {
