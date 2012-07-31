@@ -44,9 +44,9 @@ import org.opennms.test.ConfigurationTestUtils;
 public class EventdConfigManagerTest {
 
 	@Test
-	public void defaultQueueLength() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+	public void udpPort() throws MarshalException, ValidationException, FileNotFoundException, IOException {
 		EventdConfigManager manager = new EventdConfigManager(ConfigurationTestUtils.getInputStreamForConfigFile("eventd-configuration.xml"));
-		assertEquals("Queue length should be Integer.MAX_VALUE", Integer.MAX_VALUE, manager.getQueueLength());
+		assertEquals("UDP Port should be 5817", 5817, manager.getUDPPort());
 	}
 	
 }
