@@ -32,8 +32,8 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
-import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="events">
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.2.1.17</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/IETF/Bridge/traps/newRoot</uei>
+        <event-label xmlns="">BRIDGE-MIB defined trap event: newRoot</event-label>
+        <descr xmlns="">&lt;p&gt;The newRoot trap indicates that the sending agent
+ has become the new root of the Spanning Tree; the
+ trap is sent by a bridge soon after its election
+ as the new root, e.g., upon expiration of the
+ Topology Change Timer immediately subsequent to
+ its election.  Implementation of this trap is
+ optional.&lt;/p&gt;&lt;table&gt;
+ &lt;/table&gt;
+ </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Bridge MIB: New Spanning Tree Root.&lt;/p&gt;</logmsg>
+        <severity xmlns="">Warning</severity>
+    </event>
+</events>

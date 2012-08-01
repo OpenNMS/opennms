@@ -41,7 +41,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.DaemonStatusDao;
 import org.opennms.netmgt.dao.ServiceInfo;
-import org.opennms.netmgt.dao.jmx.ServiceDaemonStub;
+import org.opennms.netmgt.model.MockServiceDaemon;
 
 public class DefaultDaemonStatusServiceTest extends TestCase {
 
@@ -71,7 +71,7 @@ public class DefaultDaemonStatusServiceTest extends TestCase {
 		ServiceInfo sinfo2 = new ServiceInfo("notifd", "Started");
 		info2Return.put("notifd", sinfo2);
 
-		ServiceDaemonStub dstub = new ServiceDaemonStub("notifd");
+		MockServiceDaemon dstub = new MockServiceDaemon("notifd");
 		expect(daemonStatusDao.getServiceHandle("notifd")).andReturn(dstub);
 		expect(daemonStatusDao.getCurrentDaemonStatus()).andReturn(info2Return); // expecting
 												                                 // this

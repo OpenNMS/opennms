@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<snmp-config port="161" retry="3" timeout="800"
+             read-community="public" 
+	         version="v1">
+
+</snmp-config>
+

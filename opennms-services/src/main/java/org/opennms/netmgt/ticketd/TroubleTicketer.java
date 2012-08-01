@@ -35,7 +35,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
@@ -61,7 +61,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	/**
 	 * <p>setEventIpcManager</p>
 	 *
-	 * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;

@@ -136,11 +136,12 @@ public class AuthWindow extends Window implements Button.ClickListener{
     /**
      * This methods adds (shows) the SSH Window to the main application
      */
-    private void showSSHWindow() {
-         sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
+    protected void showSSHWindow() {
+        sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
         getApplication().getMainWindow().addWindow(sshWindow);
         this.close();
     }
+    
     @Override
     public void buttonClick(ClickEvent event) {
         String login = (String)usernameField.getValue();

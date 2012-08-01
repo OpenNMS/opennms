@@ -38,11 +38,6 @@ public class PingWindowTest {
 		app.getMainWindow().addWindow(pingWindow3);
 	}
 	
-	@After
-	public void tearDown() throws Exception {
-		app.getMainWindow().removeWindow(pingWindow);
-	}
-	
 	@Test
 	public void testBuildURL_correctInput() {
 		pingWindow.numericalDataCheckBox.setValue(true);

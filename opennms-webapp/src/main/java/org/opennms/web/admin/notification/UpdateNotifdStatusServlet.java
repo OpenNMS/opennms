@@ -38,16 +38,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 /**
  * A servlet that handles updating the status of the notifications
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class UpdateNotifdStatusServlet extends HttpServlet {
     /**
@@ -56,13 +54,16 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
     private static final long serialVersionUID = -841122529212545321L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             log().info("Setting notifd status to " + request.getParameter("status") + " for user " + request.getRemoteUser());
             if (request.getParameter("status").equals("on")) {
                 NotifdConfigFactory.getInstance().turnNotifdOn();
+                sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
             } else {
                 NotifdConfigFactory.getInstance().turnNotifdOff();
+                sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
             }
         } catch (Throwable e) {
             new ServletException("Could not update notification status: " + e.getMessage(), e);
@@ -71,6 +72,15 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
         // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/index.jsp");
         dispatcher.forward(request, response);
+    }
+
+    protected void sendEvent(String uei) {
+        EventBuilder bldr = new EventBuilder(uei, "NotifdConfigFactory");
+    
+        try {
+            EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
+        } catch (Throwable t) {
+        }
     }
 
     private ThreadCategory log() {

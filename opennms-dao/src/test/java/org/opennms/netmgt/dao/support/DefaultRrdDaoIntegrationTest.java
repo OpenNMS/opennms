@@ -36,6 +36,7 @@ import java.util.HashSet;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 /**
@@ -59,7 +61,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
         m_rrdStrategy = RrdUtils.getStrategy();
         
         m_fileAnticipator = new FileAnticipator();

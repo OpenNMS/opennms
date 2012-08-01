@@ -46,13 +46,13 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.regexp.RE;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 import org.opennms.netmgt.model.OnmsSeverity;
 
