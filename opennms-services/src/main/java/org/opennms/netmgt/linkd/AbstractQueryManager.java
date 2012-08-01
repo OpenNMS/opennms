@@ -55,6 +55,7 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
+import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsAtInterface;
@@ -226,9 +227,21 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processLldpLocalGroup(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+        node.setLldpChassisId(snmpcoll.getLldpLocalGroup().getLldpLocChassisid());
+        node.setLldpChassisIdSubtype(snmpcoll.getLldpLocalGroup().getLldpLocChassisidSubType());
+        node.setLldpSysname(snmpcoll.getLldpLocalGroup().getLldpLocSysname());
     }
 
     protected void processLldpRemTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+        List<LldpRemInterface> lldpRemInterfaces = new ArrayList<LldpRemInterface>();
+        
+        for (final LldpRemTableEntry lldpRemTableEntry: snmpcoll.getLldpRemTable()) {
+            Integer lldpRemIfIndex = Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
+            LldpRemInterface lldpremint = 
+                new LldpRemInterface(lldpRemTableEntry.getLldpRemChassisidSubtype(), lldpRemTableEntry.getLldpRemChassiid(), lldpRemIfIndex, lldpRemTableEntry.getLldpRemSysname());
+            lldpRemInterfaces.add(lldpremint);
+        }
+        node.setLldpreminterfaces(lldpRemInterfaces);
     }
 
     protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
