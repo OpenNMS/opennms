@@ -238,10 +238,10 @@ public abstract class AbstractQueryManager implements QueryManager {
         for (final LldpRemTableEntry lldpRemTableEntry: snmpcoll.getLldpRemTable()) {
             Integer lldpRemIfIndex = Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
             LldpRemInterface lldpremint = 
-                new LldpRemInterface(lldpRemTableEntry.getLldpRemChassisidSubtype(), lldpRemTableEntry.getLldpRemChassiid(), lldpRemIfIndex, lldpRemTableEntry.getLldpRemSysname());
+                new LldpRemInterface(lldpRemTableEntry.getLldpRemChassisidSubtype(), lldpRemTableEntry.getLldpRemChassiid(), lldpRemIfIndex, lldpRemTableEntry.getLldpRemLocalPortNum());
             lldpRemInterfaces.add(lldpremint);
         }
-        node.setLldpreminterfaces(lldpRemInterfaces);
+        node.setLldpRemInterfaces(lldpRemInterfaces);
     }
 
     protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {

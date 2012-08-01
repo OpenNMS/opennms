@@ -35,18 +35,17 @@ public class LldpRemInterface {
     private final Integer m_lldpRemChassidSubtype;
     private final String m_lldpRemChassisid;
     private final Integer m_lldpRemIfIndex;
-    private final String m_lldpRemSysname;
-    
+    private final Integer m_lldpLocIfIndex;
 
 
     public LldpRemInterface(Integer lldpRemChassidSubtype,
             String lldpRemChassisid, Integer lldpRemIfIndex,
-            String lldpRemSysname) {
+            Integer lldpLocIfIndex) {
         super();
         m_lldpRemChassidSubtype = lldpRemChassidSubtype;
         m_lldpRemChassisid = lldpRemChassisid;
         m_lldpRemIfIndex = lldpRemIfIndex;
-        m_lldpRemSysname = lldpRemSysname;
+        m_lldpLocIfIndex = lldpLocIfIndex;
     }
 	
     
@@ -64,9 +63,8 @@ public class LldpRemInterface {
         return m_lldpRemIfIndex;
     }
 
-
-    public String getLldpRemSysname() {
-        return m_lldpRemSysname;
+    public Integer getLldpLocIfIndex() {
+        return m_lldpLocIfIndex;
     }
 
 
@@ -80,7 +78,7 @@ public class LldpRemInterface {
 	    .append("lldpRemChassidSubtype", m_lldpRemChassidSubtype)
 	    .append("lldpRemChassisid", m_lldpRemChassisid)
 	    .append("lldpRemIfIndex", m_lldpRemIfIndex)
-	    .append("lldpRemSysname", m_lldpRemSysname)
+	    .append("lldpLocIfIndex", m_lldpLocIfIndex)
 	    .toString();
 	}
 }
