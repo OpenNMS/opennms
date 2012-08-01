@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.dns;
+package org.opennms.core.utils.url;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 
 /**
- * <p>Handler class.</p>
+ * <p>ProtectedStubGenericURLConnection class.</p>
+ * <p/>
+ * Protected stub implementation for GenericURLConnection. It is used to provocate no such method exceptions for the
+ * GenericURLFactory feature.
  *
- * @author ranger
+ * @author Ronny Trommer <ronny@opennms.org>
  * @version $Id: $
+ * @since 1.8.1
  */
-public class Handler extends URLStreamHandler {
+public class ProtectedStubGenericURLConnection extends GenericURLConnection {
 
-    /** {@inheritDoc} */
-    @Override
-    protected int getDefaultPort() {
-        return 53;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    protected URLConnection openConnection(URL u) throws IOException {
-        return new DnsRequisitionUrlConnection(u);
+    protected ProtectedStubGenericURLConnection(URL url) {
+        super(url);
     }
 
-    /** {@inheritDoc} */
     @Override
-    protected void parseURL(URL u, String spec, int start, int limit) {
-        super.parseURL(u, spec, start, limit);
+    public void connect() throws IOException {
+        // No operation for JUnit test
     }
-    
-    
 }
