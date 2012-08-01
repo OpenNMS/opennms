@@ -22,7 +22,7 @@ public class SaveOperation implements Operation {
 
     @Override
     public boolean display(List<Object> targets, OperationContext operationContext) {
-        return false;
+        return true;
     }
 
     @Override

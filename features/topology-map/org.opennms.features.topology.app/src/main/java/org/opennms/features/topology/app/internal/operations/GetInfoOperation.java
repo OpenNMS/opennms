@@ -19,9 +19,8 @@ public class GetInfoOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        return false;
+    public boolean display(List<Object> targets, OperationContext operationContext) {
+        return true;
     }
 
     @Override

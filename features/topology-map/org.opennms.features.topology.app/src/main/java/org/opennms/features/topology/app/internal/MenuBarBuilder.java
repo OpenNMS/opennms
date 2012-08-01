@@ -134,19 +134,7 @@ public class MenuBarBuilder {
                 if(commandKey.equals("separator")) {
                     subMenu.addSeparator();
                 }else {
-                    
-                    Map<String, String> props = getLabelProperties(commandKey);
-                    MenuBar.MenuItem menuItem = subMenu.addItem(removeLabelProperties(commandKey), (Command) entry.getValue());
-                    
-                    if(props.containsKey("checked") ) {
-                        menuItem.setCheckable(true);
-                        if(props.get("checked").toLowerCase().equals("true")) {
-                            menuItem.setChecked(true);
-                        }else {
-                            menuItem.setChecked(false);
-                        }
-                    }
-                    
+                    subMenu.addItem(removeLabelProperties(commandKey), (Command) entry.getValue());
                 }
             }
             

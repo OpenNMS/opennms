@@ -38,9 +38,8 @@ public class CreateGroupOperation implements Constants, Operation{
     }
 
     @Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        return false;
+    public boolean display(List<Object> targets, OperationContext operationContext) {
+        return true;
     }
 
     @Override
