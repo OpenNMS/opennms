@@ -88,10 +88,10 @@ public class LinkableNode {
 
     private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
 
-    public List<LldpRemInterface> getLldpreminterfaces() {
+    public List<LldpRemInterface> getLldpRemInterfaces() {
         return m_lldpreminterfaces;
     }
-    public void setLldpreminterfaces(List<LldpRemInterface> lldpreminterfaces) {
+    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
         m_lldpreminterfaces = lldpreminterfaces;
     }
 
