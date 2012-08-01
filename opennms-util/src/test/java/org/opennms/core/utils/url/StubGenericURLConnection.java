@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.dns;
+package org.opennms.core.utils.url;
 
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
+import java.io.IOException;
+import java.net.URL;
 
 /**
- * <p>DnsUrlFactory class.</p>
+ * <p>StubGenericURLConnection class.</p>
  *
- * @author ranger
+ * Stub implementation for GenericURLConnection
+ *
+ * @author Ronny Trommer <ronny@opennms.org>
  * @version $Id: $
+ * @since 1.8.1
  */
-public class DnsUrlFactory implements URLStreamHandlerFactory {
+public class StubGenericURLConnection extends GenericURLConnection{
 
-    /** {@inheritDoc} */
-    public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (DnsRequisitionUrlConnection.PROTOCOL.equals(protocol)) {
-            return new Handler();
-        } else {
-            return null;
-        }
+    public StubGenericURLConnection(URL url) {
+        super (url);
     }
 
+    @Override
+    public void connect() throws IOException {
+        // No operation for JUnit test
+    }
 }
