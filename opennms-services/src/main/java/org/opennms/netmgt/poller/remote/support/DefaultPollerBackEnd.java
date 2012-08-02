@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +53,6 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -59,12 +61,16 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.OnmsPollModel;
 import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -163,6 +169,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>checkForDisconnectedMonitors</p>
      */
+    @Override
     public void checkForDisconnectedMonitors() {
 
         LogUtils.debugf(this, "Checking for disconnected monitors: disconnectedTimeout = %d", m_disconnectedTimeout);
@@ -216,6 +223,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>configurationUpdated</p>
      */
+    @Override
     public void configurationUpdated() {
         m_configurationTimestamp.set(m_timeKeeper.getCurrentDate());
         m_configCache.set(new ConcurrentHashMap<String, SimplePollerConfiguration>());
@@ -242,12 +250,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      * @return a {@link java.util.Collection} object.
      */
     @Transactional(readOnly=true)
+    @Override
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         return m_locMonDao.findAllMonitoringLocationDefinitions();
     }
 
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
+    @Override
     public String getMonitorName(final int locationMonitorId) {
         final OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
         return locationMonitor.getName();
@@ -271,6 +281,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
+    @Override
     public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
@@ -345,6 +356,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
+    @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
     	try {
 	        final Collection<ServiceMonitorLocator> locators = m_pollerConfig.getServiceMonitorLocators(context);
@@ -362,6 +374,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
 
     /** {@inheritDoc} */
+    @Override
     public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
@@ -378,6 +391,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
@@ -394,6 +408,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void pollerStopping(final int locationMonitorId) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
@@ -425,6 +440,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /** {@inheritDoc} */
+    @Override
     public int registerLocationMonitor(final String monitoringLocationId) {
         final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
         if (def == null) {
@@ -441,6 +457,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportResult(final int locationMonitorId, final int serviceId, final PollStatus pollResult) {
         final OnmsLocationMonitor locationMonitor;
         try {
@@ -475,7 +492,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
 			if (newStatus.getPollResult().getResponseTime() != null) {
 			    final Package pkg = getPollingPackageForMonitor(locationMonitor);
-			    m_pollerConfig.saveResponseTimeData(Integer.toString(locationMonitorId), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
+			    saveResponseTimeData(Integer.toString(locationMonitorId), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
 			}
 		} catch (final Exception e) {
 			LogUtils.errorf(this, e, "Unable to save response time data for location monitor ID %d, monitored service ID %d.", locationMonitorId, serviceId);
@@ -487,6 +504,56 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 		} catch (final Exception e) {
 			LogUtils.errorf(this, e, "Unable to save result for location monitor ID %d, monitored service ID %d.", locationMonitorId, serviceId);
 		}
+    }
+
+    /**
+     * <p>saveResponseTimeData</p>
+     *
+     * @param locationMonitor a {@link java.lang.String} object.
+     * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @param responseTime a double.
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     */
+    @Override
+    public void saveResponseTimeData(final String locationMonitor, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
+        final String svcName = monSvc.getServiceName();
+        final Service svc = m_pollerConfig.getServiceInPackage(svcName, pkg);
+        
+        final String dsName = getServiceParameter(svc, "ds-name");
+        if (dsName == null) {
+            return;
+        }
+        
+        final String rrdRepository = getServiceParameter(svc, "rrd-repository");
+        if (rrdRepository == null) {
+            return;
+        }
+        
+        final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+str(monSvc.getIpAddress());
+
+        try {
+            final File rrdFile = new File(rrdDir, dsName);
+            if (!rrdFile.exists()) {
+                RrdUtils.createRRD(locationMonitor, rrdDir, dsName, m_pollerConfig.getStep(pkg), "GAUGE", 600, "U", "U", m_pollerConfig.getRRAList(pkg));
+            }
+            RrdUtils.updateRRD(locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
+        } catch (final RrdException e) {
+            throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
+        }
+    }
+    
+
+    private String getServiceParameter(final Service svc, final String key) {
+        for(final Parameter parm : m_pollerConfig.parameters(svc)) {
+            if (key.equals(parm.getKey())) {
+                if (parm.getValue() != null) {
+                    return parm.getValue();
+                } else if (parm.getAnyObject() != null) {
+                    return parm.getAnyObject().toString();
+                }
+            }
+        }
+        return null;
     }
 
     private void sendMonitorRegisteredEvent(final OnmsLocationMonitor mon) {
@@ -539,7 +606,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;

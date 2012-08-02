@@ -54,9 +54,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;

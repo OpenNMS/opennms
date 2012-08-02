@@ -34,10 +34,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
@@ -46,6 +46,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,6 +81,26 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
     public void setUp() {
         MockLogAppender.setupLogging();
 
+        /* 
+         * since we share the filesystem with other tests, best
+         * to make sure it's totally clean here.
+         */
+        for (ForeignSource fs : m_pending.getForeignSources()) {
+            m_pending.delete(fs);
+        }
+        for (ForeignSource fs : m_active.getForeignSources()) {
+            m_active.delete(fs);
+        }
+        for (Requisition r : m_pending.getRequisitions()) {
+            m_pending.delete(r);
+        }
+        for (Requisition r : m_active.getRequisitions()) {
+            m_active.delete(r);
+        }
+    }
+
+    @After
+    public final void tearDown() {
         /* 
          * since we share the filesystem with other tests, best
          * to make sure it's totally clean here.

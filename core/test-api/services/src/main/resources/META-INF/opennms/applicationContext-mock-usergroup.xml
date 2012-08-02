@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	">
+
+	<context:annotation-config />
+
+	<bean id="groupManager" class="org.opennms.netmgt.config.mock.MockGroupManager">
+		<constructor-arg value="&lt;groupinfo&gt;&lt;groups&gt;&lt;group&gt;&lt;name&gt;Admin&lt;/name&gt;&lt;user&gt;admin&lt;/user&gt;&lt;/group&gt;&lt;/groups&gt;&lt;/groupinfo&gt;" />
+	</bean>
+
+	<bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="groupManager">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.setInstance</value></property>
+		<property name="arguments"><array><ref bean="groupManager" /></array></property>
+	</bean>
+
+	<bean id="userManager" class="org.opennms.netmgt.config.mock.MockUserManager">
+		<constructor-arg ref="groupManager" />
+		<constructor-arg value="&lt;userinfo&gt;&lt;users&gt;&lt;user&gt;&lt;user-id&gt;admin&lt;/user-id&gt;&lt;full-name&gt;Administrator&lt;/full-name&gt;&lt;password&gt;21232F297A57A5A743894A0E4A801FC3&lt;/password&gt;&lt;/user&gt;&lt;/users&gt;&lt;/userinfo&gt;" />
+	</bean>
+
+	<bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="userManager">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.setInstance</value></property>
+		<property name="arguments"><array><ref bean="userManager" /></array></property>
+	</bean>
+
+</beans>

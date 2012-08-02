@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 /**
  * Implementation of Executor strategy that instantiates a Java class.

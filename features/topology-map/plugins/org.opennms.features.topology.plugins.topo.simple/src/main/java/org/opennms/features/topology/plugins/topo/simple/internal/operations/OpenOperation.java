@@ -25,14 +25,12 @@ public class OpenOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        return false;
+    public boolean display(List<Object> targets, OperationContext operationContext) {
+        return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets,
-            OperationContext operationContext) {
+    public boolean enabled(List<Object> targets, OperationContext operationContext) {
         return true;
     }
 

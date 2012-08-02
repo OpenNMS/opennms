@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -44,7 +43,8 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.datablock.EventUtil;
+import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.importer.operations.DefaultImportStatistics;
 import org.opennms.netmgt.importer.operations.DeleteOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationFactory;

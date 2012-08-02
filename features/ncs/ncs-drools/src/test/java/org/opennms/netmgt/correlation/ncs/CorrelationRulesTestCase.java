@@ -35,17 +35,17 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runner.RunWith;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.EventConstants;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.mock.EventAnticipator;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;

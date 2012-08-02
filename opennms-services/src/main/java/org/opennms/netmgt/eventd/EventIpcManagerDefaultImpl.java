@@ -46,6 +46,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.events.EventIpcBroadcaster;
+import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManagerProxy;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -580,7 +583,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>getEventIpcManagerProxy</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManagerProxy} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManagerProxy} object.
      */
     public EventIpcManagerProxy getEventIpcManagerProxy() {
         return m_eventIpcManagerProxy;
@@ -589,7 +592,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>setEventIpcManagerProxy</p>
      *
-     * @param eventIpcManagerProxy a {@link org.opennms.netmgt.eventd.EventIpcManagerProxy} object.
+     * @param eventIpcManagerProxy a {@link org.opennms.netmgt.model.events.EventIpcManagerProxy} object.
      */
     public void setEventIpcManagerProxy(EventIpcManagerProxy eventIpcManagerProxy) {
         m_eventIpcManagerProxy = eventIpcManagerProxy;

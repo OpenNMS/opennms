@@ -40,10 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
@@ -63,16 +62,14 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.springframework.util.Assert;
 
 /**
  * <p>BroadcastEventProcessor class.</p>
@@ -94,15 +91,6 @@ public final class BroadcastEventProcessor implements EventListener {
     private volatile NotificationCommandManager m_notificationCommandManager;
 
     /**
-     * A regular expression for matching an expansion parameter delimited by
-     * percent signs.
-     */
-    private static final String NOTIFD_EXPANSION_PARM = "%(noticeid)%";
-
-    private static RE m_expandRE;
-    
-    
-    /**
      * <p>Constructor for BroadcastEventProcessor.</p>
      */
     public BroadcastEventProcessor() {
@@ -115,8 +103,6 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     protected void init() {
         assertPropertiesSet();
-        
-        initExpandRe();
         
         // start to listen for events
         getEventManager().addEventListener(this);
@@ -151,26 +137,6 @@ public final class BroadcastEventProcessor implements EventListener {
             throw new IllegalStateException("property notificationCommandManager not set");
         }
 
-    }
-
-    /**
-     * Initializes the expansion regular expression. The exception is going to
-     * be thrown away if the RE can't be compiled, thus the compilation should
-     * be tested prior to runtime.
-     */
-    protected void initExpandRe() {
-        try {
-            m_expandRE = new RE(NOTIFD_EXPANSION_PARM);
-        } catch (RESyntaxException e) {
-            // this shouldn't throw an exception, should be tested prior to
-            // runtime
-            log().error("failed to compile RE " + NOTIFD_EXPANSION_PARM, e);
-            // FIXME: wrap this in runtime exception since SOMETIMES we are using
-            // an incorrect version of regexp pulled from xalan that is doesn't
-            // extend RuntimeException only Exception.  We really need to fix that.
-            // See Bug# 1736 in Bugzilla.
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -727,9 +693,9 @@ public final class BroadcastEventProcessor implements EventListener {
 
         paramMap.put("noticeid", Integer.toString(noticeId));
         // Replace the %noticeid% param
-        String textMessage = expandNotifParms((nullSafeTextMsg(notification)), paramMap);
-        String numericMessage = expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
-        String subjectLine = expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
+        String textMessage = NotificationManager.expandNotifParms((nullSafeTextMsg(notification)), paramMap);
+        String numericMessage = NotificationManager.expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
+        String subjectLine = NotificationManager.expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
         
         nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap);
         nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
@@ -761,33 +727,6 @@ public final class BroadcastEventProcessor implements EventListener {
 
     private static String nullSafeTextMsg(Notification notification) {
         return notification.getTextMessage() != null ? notification.getTextMessage() : "No text message supplied.";
-    }
-
-    /**
-     * A parameter expansion algorithm, designed to replace strings delimited by
-     * percent signs '%' with a value supplied by a Map object.
-     *
-     * <p>NOTE: This function only replaces one particular parameter, the
-     * <code>%noticeid%</code> parameter.</p>
-     *
-     * @param input
-     *            the input string
-     * @param paramMap
-     *            a map that will supply the substitution values
-     * @return a {@link java.lang.String} object.
-     */
-    public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
-        String expanded = input;
-
-        if (m_expandRE.match(expanded)) {
-            String key = m_expandRE.getParen(1);
-            Assert.isTrue("noticeid".equals(key));
-            String replace = paramMap.get(key);
-            if (replace != null) {
-                expanded = m_expandRE.subst(expanded, replace);
-            }
-        }
-        return expanded;
     }
 
     /**
@@ -1104,7 +1043,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -1113,7 +1052,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;

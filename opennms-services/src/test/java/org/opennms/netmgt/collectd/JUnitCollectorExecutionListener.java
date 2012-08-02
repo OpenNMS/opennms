@@ -33,13 +33,13 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
-import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestContext;
@@ -75,7 +75,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             ((TestContextAware) testContext.getTestInstance()).setTestContext(testContext);
         }
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         // make a fake database schema with hibernate
         InputStream is = ConfigurationTestUtils.getInputStreamForResource(testContext.getTestInstance(), config.schemaConfig());

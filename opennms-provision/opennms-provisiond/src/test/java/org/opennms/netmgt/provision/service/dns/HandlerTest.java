@@ -28,22 +28,21 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.UrlResource;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import static org.junit.Assert.*;
 
 public class HandlerTest {
     
@@ -56,13 +55,9 @@ public class HandlerTest {
 
     @Before
     public void registerFactory() {
-        
-        try {
-            new URL(DNS_URL);
-        } catch (MalformedURLException e) {
-            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
-        }
-        
+
+        GenericURLFactory.initialize();
+
     }
     
     @Test

@@ -37,9 +37,9 @@ import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.*;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 import java.io.OutputStream;
 import java.sql.Connection;

@@ -124,8 +124,7 @@ public class NoClosePipedInputStream extends InputStream{
      * @exception  IllegalArgumentException if <code>pipeSize <= 0</code>.
      * @since      1.6
      */
-    public NoClosePipedInputStream(NoClosePipedOutputStream src, int pipeSize)
-            throws IOException {
+    public NoClosePipedInputStream(NoClosePipedOutputStream src, int pipeSize) throws IOException {
          initPipe(pipeSize);
          connect(src);
     }

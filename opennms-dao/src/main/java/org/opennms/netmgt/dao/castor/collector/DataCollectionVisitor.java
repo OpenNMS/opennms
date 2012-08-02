@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.dao.castor.collector;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Collect;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.IpList;
 import org.opennms.netmgt.config.datacollection.MibObj;

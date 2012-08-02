@@ -29,6 +29,23 @@
       </plugin>
     </plugins>
   </build>
+  <!-- 
+    Only run the tests on this project if we're on Mac OS 
+    since com.apple:dnssd relies on platform libraries 
+  -->
+  <profiles>
+    <profile>
+      <id>org.opennms.features.mdns-run-tests</id>
+      <activation>
+        <os>
+          <family>!mac</family>
+        </os>
+      </activation>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
+    </profile>
+  </profiles>
   <dependencies>
     <dependency>
       <groupId>com.apple</groupId>

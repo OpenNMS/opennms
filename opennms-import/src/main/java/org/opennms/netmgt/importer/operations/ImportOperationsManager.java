@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -373,7 +373,7 @@ public class ImportOperationsManager {
 	/**
 	 * <p>getEventMgr</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public EventIpcManager getEventMgr() {
 		return m_eventMgr;
@@ -384,7 +384,7 @@ public class ImportOperationsManager {
 	/**
 	 * <p>setEventMgr</p>
 	 *
-	 * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public void setEventMgr(EventIpcManager eventMgr) {
 		m_eventMgr = eventMgr;
