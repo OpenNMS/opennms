@@ -59,7 +59,7 @@ public class NoClosePipedInputStreamTest {
     public void testCreatePipeWithDefinedSource() throws IOException {
         definedSource = new NoClosePipedInputStream(out);
         assertEquals(true, definedSource.connected);
-        assertEquals(definedSource.PIPE_SIZE, definedSource.buffer.length);
+        assertEquals(NoClosePipedInputStream.PIPE_SIZE, definedSource.buffer.length);
     }
 
     @Test 

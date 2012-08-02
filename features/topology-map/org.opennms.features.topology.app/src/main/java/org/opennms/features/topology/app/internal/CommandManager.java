@@ -228,7 +228,7 @@ public class CommandManager {
 
     }
 
-    public void updateMenuConfig(Dictionary props) {
+    public void updateMenuConfig(Dictionary<Object,Object> props) {
         List<String> topLevelOrder = Arrays.asList(props
                 .get("toplevelMenuOrder").toString().split(","));
         setTopLevelMenuOrder(topLevelOrder);

@@ -125,12 +125,12 @@ public class TestTopologyProvider implements TopologyProvider{
     }
 
     @Override
-    public Item getVertexItem(Object vertexId) {
+    public BeanItem<TestVertex> getVertexItem(Object vertexId) {
         return m_vertexContainer.getItem(vertexId);
     }
 
     @Override
-    public Item getEdgeItem(Object edgeId) {
+    public BeanItem<TestEdge> getEdgeItem(Object edgeId) {
         assertEdge(edgeId);
         return m_edgeContainer.getItem(edgeId);
     }

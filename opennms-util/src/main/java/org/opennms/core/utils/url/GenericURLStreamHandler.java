@@ -46,7 +46,7 @@ import java.net.URLStreamHandler;
  * @since 1.8.1
  */
 public class GenericURLStreamHandler extends URLStreamHandler {
-    private Class<URLConnection> urlConnectionClass;
+    private Class<? extends URLConnection> urlConnectionClass;
     private int defaultPort = -1;
 
     /**
@@ -57,7 +57,7 @@ public class GenericURLStreamHandler extends URLStreamHandler {
      * @param urlConnectionClass full qualified classname as {@java.lang.String} object.
      * @param defaultPort        default port as {@java.lang.int} object.
      */
-    public GenericURLStreamHandler(Class<URLConnection> urlConnectionClass, int defaultPort) {
+    public GenericURLStreamHandler(Class<? extends URLConnection> urlConnectionClass, int defaultPort) {
         this.urlConnectionClass = urlConnectionClass;
         this.defaultPort = defaultPort;
     }
@@ -69,7 +69,7 @@ public class GenericURLStreamHandler extends URLStreamHandler {
      *
      * @param urlConnectionClass full qualified classname as {@java.lang.String} object.
      */
-    public GenericURLStreamHandler(Class<URLConnection> urlConnectionClass) {
+    public GenericURLStreamHandler(Class<? extends URLConnection> urlConnectionClass) {
         this(urlConnectionClass, -1);
     }
 
@@ -88,7 +88,7 @@ public class GenericURLStreamHandler extends URLStreamHandler {
     protected URLConnection openConnection(URL u) throws IOException {
         URLConnection urlConnection = null;
         try {
-            Constructor constructor = urlConnectionClass
+            Constructor<? extends URLConnection> constructor = urlConnectionClass
                     .getConstructor(new Class[]{URL.class});
             urlConnection = (URLConnection) constructor
                     .newInstance(new Object[]{u});

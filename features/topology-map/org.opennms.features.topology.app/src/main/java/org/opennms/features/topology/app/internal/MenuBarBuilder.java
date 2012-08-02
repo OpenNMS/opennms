@@ -47,9 +47,9 @@ public class MenuBarBuilder {
                 Map<String, Object> subMenu = new LinkedHashMap<String, Object>();
                 menu.put(first, subMenu);
                 add(menuPath.subList(1, menuPath.size()), command, subMenu);
-            }else if(item instanceof Map) {
+            }else if(item instanceof Map<?,?>) {
                 @SuppressWarnings("unchecked")
-				Map<String, Object> subMenu = (Map<String, Object>) item;
+                Map<String, Object> subMenu = (Map<String, Object>) item;
                 add(menuPath.subList(1, menuPath.size()), command, subMenu);
             }else {
                 List<String> newMenuPath = new LinkedList<String>();

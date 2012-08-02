@@ -100,9 +100,8 @@ public class SSHTerminal extends AbstractComponent {
 	}
 
 	/** Deserialize changes received from client. */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public synchronized void changeVariables(Object source, Map variables) {
+	public synchronized void changeVariables(Object source, Map<String,Object> variables) {
 		if (variables.containsKey("isClosed")) {
 			isClosed = ((Boolean)variables.get("isClosed"));
 			if (isClosed){

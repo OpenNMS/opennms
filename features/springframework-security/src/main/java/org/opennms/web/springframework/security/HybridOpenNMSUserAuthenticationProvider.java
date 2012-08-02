@@ -120,8 +120,7 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public boolean supports(final Class authentication) {
+    public boolean supports(final Class<?> authentication) {
         return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 

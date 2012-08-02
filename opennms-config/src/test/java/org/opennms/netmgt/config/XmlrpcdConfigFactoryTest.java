@@ -31,13 +31,12 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.util.Iterator;
 
+import junit.framework.TestCase;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
-
-import junit.framework.TestCase;
 
 public class XmlrpcdConfigFactoryTest extends TestCase {
     
