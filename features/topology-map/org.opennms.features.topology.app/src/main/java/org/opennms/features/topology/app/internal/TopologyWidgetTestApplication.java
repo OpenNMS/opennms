@@ -6,6 +6,7 @@ import java.util.List;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
@@ -36,6 +37,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private SimpleGraphContainer m_graphContainer;
     private CommandManager m_commandManager;
     private MenuBar m_menuBar;
+    private ContextMenu m_contextMenu;
     private AbsoluteLayout m_layout;
     
     public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider) {
@@ -199,6 +201,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
         m_menuBar.setWidth("100%");
         m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+        //TODO: Finish implementing the context menu
+        m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
         updateMenuItems();
     }
 
