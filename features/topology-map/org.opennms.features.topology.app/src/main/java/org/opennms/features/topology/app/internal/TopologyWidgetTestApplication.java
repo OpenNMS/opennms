@@ -40,6 +40,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     
     public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider) {
         m_commandManager = commandManager;
+        m_commandManager.addMenuItemUpdateListener(this);
         m_graphContainer = new SimpleGraphContainer(topologyProvider);
     }
     
@@ -172,9 +173,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         return tree;
     }
     
-    public void updateMenuBarEnabled() {
-        
-    }
     
     public void updateMenuItems() {
         updateMenuItems(m_menuBar.getItems());
@@ -201,6 +199,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
         m_menuBar.setWidth("100%");
         m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+        updateMenuItems();
     }
 
 }
