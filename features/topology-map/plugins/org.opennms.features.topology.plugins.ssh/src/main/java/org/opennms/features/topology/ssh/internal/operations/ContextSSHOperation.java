@@ -6,20 +6,16 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.ssh.internal.AuthWindow;
 
-import com.vaadin.data.Item;
-
 public class ContextSSHOperation implements Operation {
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
 		//Default server info
-		String host = "debian.opennms.org";
 		String ipAddr = "64.146.64.214";
 		int port = 22;
 
 		if (targets != null) {
 			for(Object target : targets) {
-			        ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
-//				host = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("host").getValue();
+			    ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
 				port = 22;//(Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port").getValue();
 			}
 		}
@@ -32,23 +28,20 @@ public class ContextSSHOperation implements Operation {
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
+		String ipAddr = "";
+		int port = -1;
 		if (targets != null) {
-			if(targets.size() == 1) {
-				return true;
-			}
 			for(Object target : targets) {
-				Object itemId = target;
-				Item vertexItem = operationContext.getGraphContainer().getVertexItem(itemId);
-				if(vertexItem.getItemProperty("host").getValue() != null) {
-
-				}
+			    ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
+				port = 22;//(Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port").getValue();
 			}
 		}
+		if ("".equals(ipAddr) || port < 0) return false;
 		return true;
 	}
 
 	public String getId() {
-		return "ssh";
+		return "contextSSH";
 	}
 
 }
