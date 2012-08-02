@@ -31,6 +31,7 @@ public class AuthWindowTest {
 	Window mainWindow;
 	Application app;
 
+	@SuppressWarnings("serial")
 	@Before
 	public void setup (){     
 		normalWindow = new AuthWindow(testHost, testPort);

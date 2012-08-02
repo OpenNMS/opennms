@@ -2,7 +2,6 @@ package org.opennms.features.topology.ssh.internal;
 
 import org.apache.sshd.ClientSession;
 
-import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -47,7 +46,6 @@ public class SSHWindow extends Window {
 			vPanel.addComponent(errorLabel);
 			vPanel.setComponentAlignment(errorLabel, Alignment.MIDDLE_CENTER);
 		}
-        
 		addComponent(vPanel);
 	}
 	

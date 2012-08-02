@@ -68,4 +68,8 @@ public class GwtTerminal extends Composite implements HasAllKeyHandlers {
     	div.setInnerHTML(receivedBytes);
     }
     
+    public void focus() {
+    	fPanel.getElement().focus();
+    }
+    
 }
