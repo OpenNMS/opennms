@@ -14,8 +14,8 @@ public class ContextMenuBuilder extends MenuBuilder<Command, ContextMenuItem> {
 
 	private List<ContextMenuItem> m_itemList = new ArrayList<ContextMenuItem>();
 	
-	public ContextMenu get() {
-		ContextMenu cMenu = new ContextMenu();
+	public TopoContextMenu get() {
+		TopoContextMenu cMenu = new TopoContextMenu();
         
         Set<Entry<String, Object>> sortedEntrySet = getSortedMenuItems();
         for(Entry<String, Object> entry : sortedEntrySet) {
