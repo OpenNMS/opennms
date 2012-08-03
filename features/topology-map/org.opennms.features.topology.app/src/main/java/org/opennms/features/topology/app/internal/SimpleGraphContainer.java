@@ -259,7 +259,7 @@ public class SimpleGraphContainer implements GraphContainer {
         }
 
         @Override
-        public Collection<?> getChildren(Object gItemId) {
+        public Collection<String> getChildren(Object gItemId) {
             GVertex v = m_vertexHolder.getElementByKey(gItemId.toString());
             Collection<?> children = m_topologyProvider.getVertexContainer().getChildren(v.getItemId());
             
@@ -273,7 +273,7 @@ public class SimpleGraphContainer implements GraphContainer {
         }
 
         @Override
-        public Collection<?> rootItemIds() {
+        public Collection<String> rootItemIds() {
             return m_vertexHolder.getKeysByItemId(m_topologyProvider.getVertexContainer().rootItemIds());
         }
 
@@ -393,7 +393,7 @@ public class SimpleGraphContainer implements GraphContainer {
     private ElementHolder<GVertex> m_vertexHolder;
     private ElementHolder<GEdge> m_edgeHolder;
     private TopologyProvider m_topologyProvider;
-    private BeanContainer<?, ?> m_edgeContainer;
+    private BeanContainer<String,GEdge> m_edgeContainer;
 
 	
 	public SimpleGraphContainer(TopologyProvider topologyProvider) {
@@ -462,41 +462,41 @@ public class SimpleGraphContainer implements GraphContainer {
 	    
 	}
 
-	public VertexContainer<?,?> getVertexContainer() {
+	public VertexContainer<Object, GVertex> getVertexContainer() {
 		return m_vertexContainer;
 	}
 
-	public BeanContainer<?, ?> getEdgeContainer() {
+	public BeanContainer<String,GEdge> getEdgeContainer() {
 		return m_edgeContainer;
 	}
 
-	public Collection<?> getVertexIds() {
+	public Collection<Object> getVertexIds() {
 		return m_vertexContainer.getItemIds();
 	}
 
-	public Collection<?> getEdgeIds() {
+	public Collection<String> getEdgeIds() {
 		return m_edgeContainer.getItemIds();
 	}
 
-	public Item getVertexItem(Object vertexId) {
+	public BeanItem<GVertex> getVertexItem(Object vertexId) {
 		return m_vertexContainer.getItem(vertexId);
 	}
 
-	public Item getEdgeItem(Object edgeId) {
+	public BeanItem<GEdge> getEdgeItem(Object edgeId) {
 		return m_edgeContainer.getItem(edgeId); 
 	}
 	
-	public Collection<?> getEndPointIdsForEdge(Object key) {
+	public Collection<String> getEndPointIdsForEdge(Object key) {
 		GEdge edge = m_edgeHolder.getElementByKey(key.toString());
 		return Arrays.asList(edge.getSource().getKey(), edge.getTarget().getKey());
 	}
 
-	public Collection<?> getEdgeIdsForVertex(Object vertexKey) {
+	public Collection<String> getEdgeIdsForVertex(Object vertexKey) {
 	    GVertex vertex = m_vertexHolder.getElementByKey(vertexKey.toString());
 	    return m_edgeHolder.getKeysByItemId(m_topologyProvider.getEdgeIdsForVertex(vertex.getItemId()));
 	}
 	
-	public Collection<?> getPropertyIds() {
+	public Collection<String> getPropertyIds() {
 	    return Arrays.asList(new String[] {"semanticZoomLevel", "scale"});
 	}
 

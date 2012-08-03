@@ -219,9 +219,18 @@ public abstract class NotifdConfigManager {
                     parmContent = parmValue.getContent();
                 }
 
-                if (parmName.equals(notfName) && parmContent.startsWith(notfValue)) {
-                    parmmatch = true;
-                }
+                if (parmName.equals(notfName)) {
+                    // regular expression should start with a '~'
+                    if (notfValue.charAt(0) == '~') {
+                       if (parmContent.matches(notfValue.substring(1))) {
+                           parmmatch = true;
+                       }
+                    } else {
+                        if (parmContent.startsWith(notfValue)) {
+                           parmmatch = true;
+                        }
+                    }
+		}
             }
         } else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null) {
             parmmatch = true;

@@ -117,6 +117,7 @@ public class DetectorHandlerNettyImpl<Request, Response> extends SimpleChannelHa
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent message) {
         try {

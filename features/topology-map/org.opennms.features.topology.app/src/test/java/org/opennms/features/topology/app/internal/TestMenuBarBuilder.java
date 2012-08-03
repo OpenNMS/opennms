@@ -216,7 +216,7 @@ public class TestMenuBarBuilder {
 
 	@Test
     public void commandManagerParseConfigTest() {
-        Dictionary props = new Properties();
+        Dictionary<Object,Object> props = new Properties();
         props.put("toplevelMenuOrder", "File,Edit,View,Additions,Help");
         props.put("submenu.File.groups", "start,new,close,save,print,open,import,additions,end");
         props.put("submenu.Edit.groups", "start,undo,cut,find,add,end,additions");

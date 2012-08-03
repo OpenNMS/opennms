@@ -29,7 +29,7 @@ public class Code {
 	 * is extracted and stored in class variables
 	 * @param event generic KeyEvent
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	public Code(KeyEvent event){
 		if (event != null){
 			if (event instanceof KeyPressEvent){

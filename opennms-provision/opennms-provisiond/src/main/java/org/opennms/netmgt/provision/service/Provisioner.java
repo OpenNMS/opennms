@@ -29,8 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

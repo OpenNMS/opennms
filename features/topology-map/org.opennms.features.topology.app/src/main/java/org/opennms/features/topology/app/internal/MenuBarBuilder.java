@@ -15,6 +15,43 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
         
     }
     
+<<<<<<< HEAD
+=======
+    private void add(List<String> menuPath, Command command, Map<String, Object> menu) {
+        if(menuPath.isEmpty()) {
+            return;
+        }
+        
+        String first = menuPath.get(0).contains(".") ? menuPath.get(0).substring(0, menuPath.get(0).indexOf('.')) : menuPath.get(0);
+        
+        if(menuPath.size() == 1) {
+            if(menu.containsKey(first)) {
+                add(Collections.singletonList(first + "_dup"), command, menu );
+            }else {
+                menu.put(first, command);
+            }
+            
+        }else {
+            Object item = menu.get(first);
+            if(item == null) {
+                Map<String, Object> subMenu = new LinkedHashMap<String, Object>();
+                menu.put(first, subMenu);
+                add(menuPath.subList(1, menuPath.size()), command, subMenu);
+            }else if(item instanceof Map<?,?>) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> subMenu = (Map<String, Object>) item;
+                add(menuPath.subList(1, menuPath.size()), command, subMenu);
+            }else {
+                List<String> newMenuPath = new LinkedList<String>();
+                newMenuPath.add(first + "_dup");
+                newMenuPath.addAll(menuPath.subList(1, menuPath.size()));
+                add(newMenuPath, command, menu);
+            }
+            
+        }
+    }
+
+>>>>>>> 3c68e6c807b8fc97c5ff97bf704658477f100058
     @SuppressWarnings("unchecked")
 	public MenuBar get() {
         MenuBar menuBar = new MenuBar();

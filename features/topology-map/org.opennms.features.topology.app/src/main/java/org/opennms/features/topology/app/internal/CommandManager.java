@@ -270,10 +270,10 @@ public class CommandManager {
 
 	}
 
-	public void updateMenuConfig(Dictionary props) {
-		List<String> topLevelOrder = Arrays.asList(props
-				.get("toplevelMenuOrder").toString().split(","));
-		setTopLevelMenuOrder(topLevelOrder);
+    public void updateMenuConfig(Dictionary<Object,Object> props) {
+        List<String> topLevelOrder = Arrays.asList(props
+                .get("toplevelMenuOrder").toString().split(","));
+        setTopLevelMenuOrder(topLevelOrder);
 
 		for (String topLevelItem : topLevelOrder) {
 			if (!topLevelItem.equals("Additions")) {
@@ -342,7 +342,5 @@ public class CommandManager {
 					getSelectedVertices(operationContext), operationContext));
 		}
 	}
-
-
 
 }
