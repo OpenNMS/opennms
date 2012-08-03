@@ -1,5 +1,9 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,8 +19,6 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
         
     }
     
-<<<<<<< HEAD
-=======
     private void add(List<String> menuPath, Command command, Map<String, Object> menu) {
         if(menuPath.isEmpty()) {
             return;
@@ -51,7 +53,6 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
         }
     }
 
->>>>>>> 3c68e6c807b8fc97c5ff97bf704658477f100058
     @SuppressWarnings("unchecked")
 	public MenuBar get() {
         MenuBar menuBar = new MenuBar();
