@@ -11,4 +11,6 @@
     <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet" />
 
     <inherits name="org.opennms.features.topology.ssh.internal.gwt.TerminalWidgetSet" />
+
+    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 </module>

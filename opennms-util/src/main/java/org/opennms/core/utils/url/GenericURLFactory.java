@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.HashMap;
@@ -156,8 +157,9 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
      * @param protocol name as {@link java.lang.String} object.
      * @return a {@java.net.URLStreamHandler} object.
      */
+    @SuppressWarnings("unchecked")
     public URLStreamHandler createURLStreamHandler(String protocol) {
-        Class c = null;
+        Class<? extends URLConnection> c = null;
 
         if (!urlConnections.containsKey(protocol)) {
             logger.warn("No protocol mapping with '{}' found. Return null", protocol);
@@ -165,7 +167,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
         }
 
         try {
-            c = Class.forName(urlConnections.get(protocol));
+            c = (Class<? extends URLConnection>)Class.forName(urlConnections.get(protocol));
         } catch (ClassNotFoundException e) {
             logger.error("Class not found for protocol '{}' and return null. Error message: '{}'", protocol, e.getMessage());
             return null; // We couldn't load a class for the protocol

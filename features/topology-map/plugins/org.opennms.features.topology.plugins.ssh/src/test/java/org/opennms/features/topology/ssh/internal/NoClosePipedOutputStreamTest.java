@@ -9,13 +9,13 @@ import org.junit.Test;
 
 public class NoClosePipedOutputStreamTest {
 
+    NoClosePipedOutputStream definedSource;
     NoClosePipedOutputStream nullSource;
     NoClosePipedOutputStream out;
     NoClosePipedInputStream in; 
     int testValue = 25;
     byte[] testByte = {1,2,3,4};
     byte[] emptyByte = new byte[0];
-
 
     @Before
     public void setup() {
@@ -24,6 +24,12 @@ public class NoClosePipedOutputStreamTest {
         in = new NoClosePipedInputStream(); 
     }
 
+    @Test
+    public void testCreateWithDefinedSource() throws IOException {
+            definedSource = new NoClosePipedOutputStream(in);
+            assertEquals(true, in.connected);
+    }
+    
     @Test
     public void testConnectToNullSource() {
 
@@ -56,23 +62,6 @@ public class NoClosePipedOutputStreamTest {
         }
         fail("This test should have caught an IOException"); // If the exception was not caught, the code is not error checking properly
     }
-
-    //    @Test
-    //    public void testConnectWhenSourceNotNull() {
-    //        try {
-    //            out.connect(in);
-    // 
-    //            fail("This test should have thrown an IOException already");
-    //        } catch (IOException e) {
-    //            assertEquals("Already connected", e.getMessage());
-    //            // If it gets to this point, then the exception must have been
-    //            // thrown, and it is doing the right thing.
-    //            return;
-    //        } catch (NullPointerException e) {
-    //            fail ("The source being connected to is null"); // This should not happen
-    //        }
-    //        fail("This test should have caught an IOException"); // If the exception was not caught, the code is not error checking properly
-    //    }
 
     @Test
     public void testNormalConnect() {
@@ -154,21 +143,15 @@ public class NoClosePipedOutputStreamTest {
         fail("This test should have caught an IndexOutOfBoundsException"); // It should not be possible for this test to reach the end 
     }
 
-    public void testNormalByteWrite () {
-        try {
-            out.connect(in);
-            out.write(testByte, 1, 1);
-        } catch (IOException e) {
-            fail("The pipes are not connected"); // This should not be thrown in this test
-        } catch (NullPointerException e) {
-            fail("The byte array is most likely null"); // This should not be thrown in this test
-        } catch (IndexOutOfBoundsException e) {
-            fail("The offset or write length is invalid"); // This should not be thrown in this test
-        }
-        assertEquals("2", java.lang.Byte.valueOf(in.buffer[0]).toString());
+    @Test
+    public void testNormalByteWrite () throws IOException {
+        out.connect(in);
+        
+        out.write(testByte, 1, 1);
+        assertEquals("2", java.lang.Byte.valueOf(in.buffer[0]).toString());     
     }
 
-    
+    @Test
     public void testNegativeLengthByteWrite() {
         try {
             out.connect(in);
@@ -183,7 +166,8 @@ public class NoClosePipedOutputStreamTest {
         }
         fail("This test should have caught an IndexOutOfBoundsException"); // It should not be possible for this test to reach the end 
     }
-    
+
+    @Test
     public void testSumOfOffsetAndLengthLargerThanArrayByteWrite() {  
         try {
             out.connect(in);
@@ -198,7 +182,8 @@ public class NoClosePipedOutputStreamTest {
         }
         fail("This test should have caught an IndexOutOfBoundsException"); // It should not be possible for this test to reach the end 
     }
-    
+
+    @Test
     public void testOffsetLargerThanArrayByteWrite() {
         try {
             out.connect(in);
@@ -209,8 +194,9 @@ public class NoClosePipedOutputStreamTest {
         } catch (NullPointerException e) {
             fail("The byte array is most likely null"); // This should not be thrown in this test
         } catch (IndexOutOfBoundsException e) {
-            fail("The offset or write length is invalid"); // This should not be thrown in this test
+            return; // The offset is larger than the size of the byte array, and therefore this is expected
         }
+        fail("This test should have thrown an IndexOutOfBoundsException"); // This should not be thrown in this test
     }
 
     @Test

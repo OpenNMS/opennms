@@ -43,7 +43,8 @@ public class SSHTerminal extends AbstractComponent {
 	private static final long serialVersionUID = -8914800725736485264L; // serialization ID
 	private int TERM_WIDTH;  // The width of the terminal
 	private int TERM_HEIGHT;  // The height of the terminal
-	private boolean forceUpdate = false;  // Tracks whether the client should be forced to update 
+	private boolean forceUpdate; // Tracks whether the client should be forced to update 
+	private boolean focus; // Tells the client to focus on itself
 	private boolean isClosed;  // Tracks whether the whether is closed
 	private boolean closeClient;  // Boolean sent from the server to close the client
 	private SessionTerminal st;  // The terminal specific to the current session
@@ -72,6 +73,7 @@ public class SSHTerminal extends AbstractComponent {
 		try {
 			st = new SessionTerminal();
 			forceUpdate = true;
+			focus = false;
 		} catch (IOException e) { e.printStackTrace(); }
 	}
 
@@ -92,14 +94,14 @@ public class SSHTerminal extends AbstractComponent {
 
 		target.addVariable(this, "fromSSH", dumpContents);
 		target.addVariable(this, "update", forceUpdate);
+		target.addVariable(this, "focus", focus);
 		target.addVariable(this, "closeClient", closeClient);
 		forceUpdate = false;
 	}
 
 	/** Deserialize changes received from client. */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public synchronized void changeVariables(Object source, Map variables) {
+	public synchronized void changeVariables(Object source, Map<String,Object> variables) {
 		if (variables.containsKey("isClosed")) {
 			isClosed = ((Boolean)variables.get("isClosed"));
 			if (isClosed){
@@ -114,6 +116,10 @@ public class SSHTerminal extends AbstractComponent {
 				dumpContents = st.handle(bytesToSSH, true);
 				requestRepaint();
 			} catch (IOException e) { e.printStackTrace(); }
+		}
+		if (variables.containsKey("isFocused")) {
+			boolean isFocused = ((Boolean)variables.get("isFocused"));
+			focus = !isFocused;
 		}
 	}
 	

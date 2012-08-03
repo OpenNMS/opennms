@@ -17,7 +17,8 @@ import com.vaadin.terminal.PaintTarget;
 
 public class TopologyComponentTest {
     private class TestTopologyComponent extends TopologyComponent{
-
+        private static final long serialVersionUID = -442669265971260461L;
+        
         public TestTopologyComponent(GraphContainer dataSource) {
             super(dataSource);
         }
@@ -114,7 +115,7 @@ public class TopologyComponentTest {
         Object groupId = topoProvider.addGroup("GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
-            BeanItem<TestVertex> beanItem = (BeanItem<TestVertex>) topoProvider.getVertexItem(vertId);
+            BeanItem<TestVertex> beanItem = topoProvider.getVertexItem(vertId);
             TestVertex v = beanItem.getBean();
             if(v.isLeaf()) {
                 topoProvider.setParent(vertId, groupId);

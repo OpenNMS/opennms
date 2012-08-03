@@ -2,7 +2,6 @@ package org.opennms.features.topology.ssh.internal;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,6 +25,7 @@ public class SSHTerminalTest {
 	Application app;
 	Window mainWindow;
 
+	@SuppressWarnings("serial")
 	@Before
 	public void setUp() throws Exception {
 
@@ -60,7 +60,7 @@ public class SSHTerminalTest {
 		} 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void testChangeVariables() {
 		Map map = new LinkedHashMap();

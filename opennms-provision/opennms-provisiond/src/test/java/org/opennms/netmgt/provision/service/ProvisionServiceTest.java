@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.net.MalformedURLException;
+
 import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,9 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 
 /**

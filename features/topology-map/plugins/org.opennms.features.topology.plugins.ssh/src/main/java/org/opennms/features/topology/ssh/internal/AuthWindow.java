@@ -4,7 +4,6 @@ import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
