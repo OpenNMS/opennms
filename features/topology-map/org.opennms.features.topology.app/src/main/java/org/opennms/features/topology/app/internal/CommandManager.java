@@ -11,9 +11,9 @@ import java.util.Map;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
-import org.vaadin.peter.contextmenu.ContextMenu.ClickListener;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
@@ -135,9 +135,14 @@ public class CommandManager {
 		return menuBar;
 	}
 
-	public ContextMenu getContextMenu(SimpleGraphContainer graphContainer, Window mainWindow) {
-		OperationContext opContext = new DefaultOperationContext(mainWindow,
-				graphContainer);
+	/**
+	 * Gets the ContextMenu addon for the app based on OSGi Operations
+	 * @param graphContainer
+	 * @param mainWindow
+	 * @return
+	 */
+	public TopoContextMenu getContextMenu(SimpleGraphContainer graphContainer, Window mainWindow) {
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
 		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
 		Map<String, Operation> operationMap = new HashMap<String, Operation>(); 
 		for (Command command : getCommandList()) {
@@ -147,17 +152,24 @@ public class CommandManager {
 				operationMap.put(command.toString(), command.getOperation());
 			}
 		}
-		ContextMenu contextMenu = contextMenuBuilder.get();
+		TopoContextMenu contextMenu = contextMenuBuilder.get();
 		contextMenu.addListener(new ContextMenuListener(opContext));
-		List<ContextMenuItem> menuItems = contextMenuBuilder.getContextMenuItems();
-		for (ContextMenuItem item : menuItems) {
-			m_contextMenuItemsToOperationMap.put(item, operationMap.get(item.getName()));
-		}
+		
+		updateContextCommandToOperationMap(contextMenu.getItems());
 		return contextMenu;
 	}
+	
+	private void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
+	    for(TopoContextMenuItem item : items) {
+	        if(item.hasChildren() && !item.hasOperation()) {
+	            updateContextCommandToOperationMap(item.getChildren());
+	        }else {
+	            m_contextMenuItemsToOperationMap.put(item.getItem(), item.getOperation());
+	        }
+	    }
+	}
 
-	private void updateCommandToOperationMap(Command command,
-			MenuBar.Command menuCommand) {
+	private void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
 		m_commandToOperationMap.put(menuCommand, command.getOperation());
 	}
 

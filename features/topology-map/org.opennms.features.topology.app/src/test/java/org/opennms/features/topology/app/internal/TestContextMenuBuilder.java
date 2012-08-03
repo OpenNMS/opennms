@@ -1,20 +1,18 @@
 package org.opennms.features.topology.app.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.vaadin.peter.contextmenu.ContextMenu;
-import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 
 import com.vaadin.event.Action;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 
 public class TestContextMenuBuilder {
 
@@ -32,13 +30,15 @@ public class TestContextMenuBuilder {
        
         
         m_cMenu = builder.get();
-        List<ContextMenuItem> contextMenuItems = m_cMenu.getItems();
+        List<TopoContextMenuItem> contextMenuItems = m_cMenu.getItems();
         assertEquals(1, contextMenuItems.size());
         assertEquals("Layout", contextMenuItems.get(0).getName());
-//        List<ContextMenuItem> subMenuItems = contextMenuItems.get(0).getChildren();
-//        assertEquals(1, subMenuItems.size());
-//        assertEquals("Test", subMenuItems.get(0).getName());
-        //assertEquals("", contextMenuItems.get(0).)
+        assertNull(contextMenuItems.get(0).getOperation());
+        List<TopoContextMenuItem> subMenuItems = contextMenuItems.get(0).getChildren();
+        assertEquals(1, subMenuItems.size());
+        TopoContextMenuItem submenuItem = subMenuItems.get(0);
+        assertEquals("Test", submenuItem.getName());
+        assertNotNull(submenuItem.getOperation());
     }
 
 	private Command createEmpyCommand() {
@@ -90,8 +90,34 @@ public class TestContextMenuBuilder {
 
 			@Override
 			public Operation getOperation() {
-				// TODO Auto-generated method stub
-				return null;
+				return new Operation() {
+
+                    @Override
+                    public Undoer execute(List<Object> targets,
+                            OperationContext operationContext) {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    @Override
+                    public boolean display(List<Object> targets,
+                            OperationContext operationContext) {
+                        // TODO Auto-generated method stub
+                        return false;
+                    }
+
+                    @Override
+                    public boolean enabled(List<Object> targets,
+                            OperationContext operationContext) {
+                        // TODO Auto-generated method stub
+                        return false;
+                    }
+
+                    @Override
+                    public String getId() {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }};
 			}
 			
 		};

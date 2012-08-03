@@ -3,18 +3,21 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.topology.api.Operation;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
 public class TopoContextMenu extends ContextMenu {
 
 
-	public class TopoContextMenuItem  {
+	public class TopoContextMenuItem {
 		
-		ContextMenuItem m_item;
-		List<TopoContextMenuItem> m_children;
+		ContextMenuItem m_item = null;
+		Operation m_operation = null;
+		List<TopoContextMenuItem> m_children = new ArrayList<TopoContextMenuItem>();
 		
-		public TopoContextMenuItem(ContextMenuItem item) {
+		public TopoContextMenuItem(ContextMenuItem item, Operation operation) {
 			m_item = item;
+			m_operation = operation;
 		}
 		
 		public ContextMenuItem getItem() {
@@ -25,12 +28,20 @@ public class TopoContextMenu extends ContextMenu {
 			return m_children == null || m_children.size() == 0 ? false : true;
 		}
 		
+		public boolean hasOperation() {
+		    return m_operation == null ? false : true;
+		}
+		
+		public Operation getOperation() {
+		    return m_operation;
+		}
+		
 		public List<TopoContextMenuItem> getChildren() {
 			return m_children;
 		}
 		
-		public TopoContextMenuItem addItem(ContextMenuItem item) {
-			TopoContextMenuItem topoContextMenuItem = new TopoContextMenuItem(item);
+		public TopoContextMenuItem addItem(String label, Operation operation) {
+			TopoContextMenuItem topoContextMenuItem = new TopoContextMenuItem(m_item.addItem(label), operation);
 			m_children.add(topoContextMenuItem);
 			return topoContextMenuItem;
 		}
@@ -38,19 +49,22 @@ public class TopoContextMenu extends ContextMenu {
 		public String getName() {
 			return m_item.getName();
 		}
+
+        public void setSeparatorVisible(boolean b) {
+            m_item.setSeparatorVisible(b);
+        }
 		
 	}
 
-	private List<ContextMenuItem> m_items = new ArrayList<ContextMenuItem>();
+	private List<TopoContextMenuItem> m_items = new ArrayList<TopoContextMenuItem>();
 	
-	@Override
-	public ContextMenuItem addItem(String label){
-		ContextMenuItem newItem = super.addItem(label);
-		m_items.add(newItem);
-		return newItem;
+	public TopoContextMenuItem addItem(String label, Operation operation) {
+	    TopoContextMenuItem item = new TopoContextMenuItem(addItem(label), operation);
+	    m_items.add(item);
+	    return item;
 	}
 	
-	public List<ContextMenuItem> getItems() {
+	public List<TopoContextMenuItem> getItems() {
 		return m_items;
 	}
 }

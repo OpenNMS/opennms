@@ -191,6 +191,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         }
     }
 
+    public void showContextMenu() {
+        m_contextMenu.show(0, 0);
+    }
 
     @Override
     public void menuBarUpdated(CommandManager commandManager) {
@@ -203,6 +206,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
         //TODO: Finish implementing the context menu
         m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
+        getMainWindow().addComponent(m_contextMenu);
         updateMenuItems();
     }
 
