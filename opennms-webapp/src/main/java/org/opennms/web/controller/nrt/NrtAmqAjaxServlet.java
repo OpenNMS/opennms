@@ -17,21 +17,23 @@
 
 package org.opennms.web.controller.nrt;
 
+import org.apache.activemq.web.MessageListenerServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.activemq.web.MessageListenerServlet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Small changes for status codes
+ *
  * @author Markus Neumann
  */
 public class NrtAmqAjaxServlet extends MessageListenerServlet {

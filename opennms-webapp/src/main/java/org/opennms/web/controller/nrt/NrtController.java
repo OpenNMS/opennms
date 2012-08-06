@@ -1,20 +1,8 @@
 package org.opennms.web.controller.nrt;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Date;
-
-import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-
-import org.opennms.netmgt.dao.*;
+import org.opennms.netmgt.dao.GraphDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -35,8 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
+
 /**
- *
  * @author Markus Neumann
  */
 @Controller
@@ -52,11 +45,8 @@ public class NrtController {
     private GraphDao m_graphDao;
 
     @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
     private ResourceDao m_resourceDao;
-    
+
     @Autowired
     @Qualifier("snmpPeerFactory")
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
@@ -90,7 +80,7 @@ public class NrtController {
 
     @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
-        
+
         logger.debug("JmsTemplate '{}'", m_jmsTemplate.toString());
 
         assert (resourceId != null);
@@ -108,7 +98,7 @@ public class NrtController {
 
         SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
         logger.debug("SnmpAgendConfig '{}' communityString '{}'", snmpAgentConfig, snmpAgentConfig.getReadCommunity());
-        
+
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         //TODO Tak graph service is able to check is a graph is propper for a given resource, check that later.
         lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
