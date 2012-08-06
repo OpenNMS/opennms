@@ -205,7 +205,9 @@ public class TracerouteWindow extends Window{
 		if (validInput) {
 			String options = baseAddress;
 			options += "&address=" + ipDropdown.getValue().toString();
-			options += "&hopAddress=" + forcedHopField.getValue().toString();
+			if (!("".equals(forcedHopField.getValue().toString()))) {
+				options += "&hopAddress=" + forcedHopField.getValue().toString();
+			}
 			if (numericalDataCheckBox.getValue().equals(true))
 				options += "&numericOutput=true";
 			try { return new URL(options); } catch (MalformedURLException e) {
@@ -226,8 +228,7 @@ public class TracerouteWindow extends Window{
 	 */
 	protected boolean validateInput() throws Exception {
 		String forcedHop = forcedHopField.getValue().toString();
-		if ("".equals(forcedHop)) throw new Exception("Forced hop address required"); //User left the field blank
-
+		if ("".equals(forcedHop)) return true;
 		Scanner line = new Scanner(forcedHop);
 		line.useDelimiter("[.]");
 		int count = 0;
