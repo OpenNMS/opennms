@@ -89,9 +89,6 @@ public class NrtController {
         assert (report != null);
         logger.debug("report: '{}'", report);
 
-        //Todo Tak there is you session to manage the CollectionSessions
-        logger.debug(httpSession.toString());
-
         OnmsResource reportResource = m_resourceDao.getResourceById(resourceId);
         OnmsResource topResource = reportResource.getParent();
         OnmsNode node = (OnmsNode) topResource.getEntity();
@@ -103,7 +100,7 @@ public class NrtController {
         //TODO Tak graph service is able to check is a graph is propper for a given resource, check that later.
         lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
 
-        String collectionTask = "CollectionTaksId_" + new Date();
+        String collectionTask = "Nrt_" + prefabGraph.getTitle() + "_" + System.currentTimeMillis();
 
         SnmpCollectionJob collectionJob = new SnmpCollectionJob();
         collectionJob.setSnmpAgentConfig(snmpAgentConfig);
@@ -131,11 +128,11 @@ public class NrtController {
         ((Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectoinTasks")).put(collectionTask, collectionJob);
 
         httpSession.setAttribute(collectionTask, collectionJob);
-
+        String rrdGraphString = this.rrdGraphPrep(prefabGraph);
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("collectionTask", collectionTask);
-        modelAndView.addObject("rrdGraphString", prefabGraph.getCommand().replaceAll("\"", "'"));
-        logger.debug("rrdGraphString with \" replaced '{}'", prefabGraph.getCommand().replaceAll("\"", "'"));
+        modelAndView.addObject("rrdGraphString", rrdGraphString);
+        logger.debug("rrdGraphString is '{}'", rrdGraphString);
         return modelAndView;
     }
 
@@ -204,6 +201,29 @@ public class NrtController {
     private void publishCollectionJobViaJms(CollectionJob collectionJob) {
         logger.debug("JmsTemplate '{}'", m_jmsTemplate.toString());
         m_jmsTemplate.convertAndSend("NrtCollectMe", collectionJob);
-//        logger.error("Jms publishing of CollectionJobs not implemented yet: '{}'", collectionJob);
+    }
+
+    /**
+     * Helper method to get a rrdGraphString / command that will work with the RRDGraphJs elements.
+     * @param prefabGraph the PrefabGraph provided by opennms 
+     * @return a rrdGraphString where {rrd1..} values are replaced with the metricIds and escaping for "" is done.
+     */
+    protected String rrdGraphPrep(PrefabGraph prefabGraph) {
+        String result;
+        String raw = prefabGraph.getCommand();
+        String[] columns = prefabGraph.getColumns();
+        String[] metrics = prefabGraph.getMetricIds();
+//ToDo Tak: build an rrdGraphString clean/prep...        
+//        for (int i = 0; i < columns.length; i++) {
+//            String searchElement = "}:" + columns[i] + ":";
+//            int start = raw.indexOf(searchElement);
+//            int end = raw.substring(start).indexOf(":") + start;
+//            String firstPart = raw.substring(0, start);
+//            String lastPart = raw.substring(end);
+//            String tempResult = firstPart + metrics[i] + lastPart;
+//            raw = tempResult;
+//        }
+        result = raw.replaceAll("\"", "'");
+        return result;
     }
 }
