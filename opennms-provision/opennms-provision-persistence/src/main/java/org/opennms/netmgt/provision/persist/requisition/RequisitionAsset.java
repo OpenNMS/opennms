@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.CompareToBuilder;
 
 /**
  * <p>RequisitionAsset class.</p>
@@ -113,22 +113,45 @@ public class RequisitionAsset implements Comparable<RequisitionAsset> {
     public void setValue(String value) {
         m_value = value;
     }
-    
+
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof RequisitionAsset) {
-            return this.compareTo((RequisitionAsset)o) == 0;
-        } else return false;
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+        result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
+        return result;
     }
 
-    public int compareTo(RequisitionAsset o) {
-        return m_name.compareTo(o.getName());
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof RequisitionAsset)) return false;
+        final RequisitionAsset other = (RequisitionAsset) obj;
+        if (m_name == null) {
+            if (other.m_name != null) return false;
+        } else if (!m_name.equals(other.m_name)) {
+            return false;
+        }
+        if (m_value == null) {
+            if (other.m_value != null) return false;
+        } else if (!m_value.equals(other.m_value)) {
+            return false;
+        }
+        return true;
     }
 
+    @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("name", m_name)
-    		.append("value", m_value)
-    		.toString();
+        return "RequisitionAsset [name=" + m_name + ", value=" + m_value + "]";
+    }
+
+    @Override
+    public int compareTo(final RequisitionAsset other) {
+        return new CompareToBuilder()
+            .append(m_name, other.m_name)
+            .append(m_value, other.m_value)
+            .toComparison();
     }
 }

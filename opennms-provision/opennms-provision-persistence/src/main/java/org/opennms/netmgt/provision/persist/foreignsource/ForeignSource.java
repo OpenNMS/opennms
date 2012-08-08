@@ -46,7 +46,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.ValidateUsing;
@@ -62,8 +61,6 @@ import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 @ValidateUsing("foreign-sources.xsd")
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     private static final long serialVersionUID = -1903289015976502808L;
-
-    private static final PluginConfig[] OF_PLUGIN_CONFIGS = new PluginConfig[0];
 
     @XmlAttribute(name="name", required=true)
     private String m_name;
@@ -305,26 +302,70 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         m_default = isDefault;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("name", getName())
-            .append("scan-interval", getScanInterval())
-            .append("detectors", getDetectors().toArray(OF_PLUGIN_CONFIGS))
-            .append("policies", getPolicies().toArray(OF_PLUGIN_CONFIGS))
-            .toString();
+    public int hashCode() {
+        final int prime = 109;
+        int result = 1;
+        result = prime * result + ((m_dateStamp == null) ? 0 : m_dateStamp.hashCode());
+        result = prime * result + (m_default ? 1231 : 1237);
+        result = prime * result + ((m_detectors == null) ? 0 : m_detectors.hashCode());
+        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+        result = prime * result + ((m_policies == null) ? 0 : m_policies.hashCode());
+        result = prime * result + ((m_scanInterval == null) ? 0 : m_scanInterval.hashCode());
+        return result;
     }
 
-    /**
-     * <p>compareTo</p>
-     *
-     * @param obj a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
-     * @return a int.
-     */
-    public int compareTo(final ForeignSource obj) {
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof ForeignSource)) return false;
+        final ForeignSource other = (ForeignSource) obj;
+        if (m_dateStamp == null) {
+            if (other.m_dateStamp != null) return false;
+        } else if (!m_dateStamp.equals(other.m_dateStamp)) {
+            return false;
+        }
+        if (m_default != other.m_default) return false;
+        if (m_detectors == null) {
+            if (other.m_detectors != null) return false;
+        } else if (!m_detectors.equals(other.m_detectors)) {
+            return false;
+        }
+        if (m_name == null) {
+            if (other.m_name != null) return false;
+        } else if (!m_name.equals(other.m_name)) {
+            return false;
+        }
+        if (m_policies == null) {
+            if (other.m_policies != null) return false;
+        } else if (!m_policies.equals(other.m_policies)) {
+            return false;
+        }
+        if (m_scanInterval == null) {
+            if (other.m_scanInterval != null) return false;
+        } else if (!m_scanInterval.equals(other.m_scanInterval)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ForeignSource [name=" + m_name + ", dateStamp="
+                + m_dateStamp + ", scanInterval=" + m_scanInterval
+                + ", detectors=" + m_detectors + ", policies="
+                + m_policies + ", default=" + m_default + "]";
+    }
+
+    @Override
+    public int compareTo(final ForeignSource other) {
         return new CompareToBuilder()
-            .append(getName(), obj.getName())
+            .append(m_name, other.m_name)
+            .append(m_default, other.m_default)
+            .append(m_scanInterval, other.m_scanInterval)
+            .append(m_detectors, other.m_detectors)
+            .append(m_policies, other.m_policies)
             .toComparison();
     }
 }

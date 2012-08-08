@@ -147,34 +147,53 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+    
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>app</artifactId>
       <version>${project.version}</version>
     </dependency>
+    
     <dependency>
         <groupId>org.opennms.features.topology</groupId>
         <artifactId>ssh</artifactId>
         <version>${project.version}</version>
     </dependency>
     
-
+    <dependency>
+   		<groupId>org.vaadin.addons</groupId>
+   		<artifactId>contextmenu</artifactId>
+   		<version>3.1.0</version>
+	</dependency>
+   
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <optional>true</optional>
     </dependency>
+    
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
+    
   </dependencies>
+  
+  <repositories>
+      
+    <repository>
+   	  <id>vaadin-addons</id>
+   	  <url>http://maven.vaadin.com/vaadin-addons</url>
+	</repository>
+	
+  </repositories>
   
 </project>

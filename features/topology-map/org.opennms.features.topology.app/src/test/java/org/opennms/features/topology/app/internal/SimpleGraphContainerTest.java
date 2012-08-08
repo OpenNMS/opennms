@@ -19,15 +19,14 @@ import com.vaadin.data.util.BeanItem;
 public class SimpleGraphContainerTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSimpleGraphContainer() {
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(new TestTopologyProvider());
-        Collection<?> vertexIds = graphContainer.getVertexIds();
-        Collection<?> edgeIds = graphContainer.getEdgeIds();
+        Collection<Object> vertexIds = graphContainer.getVertexIds();
+        Collection<String> edgeIds = graphContainer.getEdgeIds();
         
         Object edgeId = edgeIds.iterator().next();
         
-        BeanItem<GEdge> edgeItem = (BeanItem<GEdge>) graphContainer.getEdgeItem(edgeId);
+        BeanItem<GEdge> edgeItem = graphContainer.getEdgeItem(edgeId);
         GEdge edge= edgeItem.getBean();
         assertEquals("e0", edge.getItemId());
         
@@ -62,7 +61,7 @@ public class SimpleGraphContainerTest {
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
-        Collection<?> gcIds = graphContainer.getVertexIds();
+        Collection<Object> gcIds = graphContainer.getVertexIds();
         assertEquals(3, gcIds.size());
         
         for(Object gcId : gcIds) {
@@ -113,7 +112,7 @@ public class SimpleGraphContainerTest {
         //Add another vertex to the TopologyProvider
         Object vertId = topologyProvider.addVertex();
         
-        Collection<?> gcIds = graphContainer.getVertexIds();
+        Collection<Object> gcIds = graphContainer.getVertexIds();
         assertEquals(3, gcIds.size());
         
         Object vertId2 = topologyProvider.addVertex();
@@ -125,9 +124,9 @@ public class SimpleGraphContainerTest {
         topologyProvider.setParent(vertId, groupId);
         topologyProvider.setParent(vertId2, groupId);
         
-        Collection<?> vertexKeys = graphContainer.getVertexIds();
+        Collection<Object> vertexKeys = graphContainer.getVertexIds();
         for(Object vertexKey : vertexKeys) {
-            BeanItem<GVertex> vItem = (BeanItem<GVertex>) graphContainer.getVertexItem(vertexKey);
+            BeanItem<GVertex> vItem = graphContainer.getVertexItem(vertexKey);
             GVertex gVert = vItem.getBean();
             if(gVert.getItemId() == vertId || gVert.getItemId() == vertId2) {
                 assertEquals(groupId, gVert.getGroupId());
@@ -182,9 +181,9 @@ public class SimpleGraphContainerTest {
         assertEquals(1, eventsReceived.get());
         eventsReceived.set(0);
         
-        Collection<?> vertexKeys = graphContainer.getVertexIds();
+        Collection<Object> vertexKeys = graphContainer.getVertexIds();
         for(Object vertexKey : vertexKeys) {
-            BeanItem<GVertex> vItem = (BeanItem<GVertex>) graphContainer.getVertexItem(vertexKey);
+            BeanItem<GVertex> vItem = graphContainer.getVertexItem(vertexKey);
             GVertex gVert = vItem.getBean();
             if(gVert.getItemId() == vertId || gVert.getItemId() == vertId2) {
                 assertEquals(groupId, gVert.getGroupId());
@@ -242,9 +241,9 @@ public class SimpleGraphContainerTest {
         v2 = graph.getVertexByItemId(findByItemId(graphContainer, vertId2));
         assertEquals( g.getItemId(), v2.getGroupId());
         
-        Collection<?> vertexKeys = graphContainer.getVertexIds();
+        Collection<Object> vertexKeys = graphContainer.getVertexIds();
         for(Object vertexKey : vertexKeys) {
-            BeanItem<GVertex> vItem = (BeanItem<GVertex>) graphContainer.getVertexItem(vertexKey);
+            BeanItem<GVertex> vItem = graphContainer.getVertexItem(vertexKey);
             GVertex gVert = vItem.getBean();
             if(gVert.getItemId() == vertId || gVert.getItemId() == vertId2) {
                 assertEquals(groupId, gVert.getGroupId());
@@ -259,9 +258,9 @@ public class SimpleGraphContainerTest {
     
     public Object findByItemId(SimpleGraphContainer graphContainer, Object vertexId) {
         
-        Collection<?> vertexKeys = graphContainer.getVertexIds();
+        Collection<Object> vertexKeys = graphContainer.getVertexIds();
         for(Object vertexKey : vertexKeys) {
-            BeanItem<GVertex> vItem = (BeanItem<GVertex>) graphContainer.getVertexItem(vertexKey);
+            BeanItem<GVertex> vItem = graphContainer.getVertexItem(vertexKey);
             GVertex gVert = vItem.getBean();
             if(gVert.getItemId().equals(vertexId)) {
                 return gVert.getKey();
@@ -293,7 +292,7 @@ public class SimpleGraphContainerTest {
         assertEquals(3, graphContainer.getVertexIds().size());
         assertEquals(3, graph.getVertices().size());
         
-        Collection<?> gcIds = graphContainer.getVertexIds();
+        Collection<Object> gcIds = graphContainer.getVertexIds();
         assertEquals(3, gcIds.size());
         
         Object vertId2 = topologyProvider.addVertex();

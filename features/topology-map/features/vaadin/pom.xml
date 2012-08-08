@@ -28,6 +28,7 @@
           </features>
           <bundles>
             <bundle>wrap:mvn:org.vaadin.addons/refresher/1.1.1</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/3.1.0</bundle>
           </bundles>
         </configuration>
       </plugin>
@@ -53,6 +54,11 @@
       <groupId>org.vaadin.addons</groupId>
       <artifactId>refresher</artifactId>
       <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>contextmenu</artifactId>
+      <version>3.1.0</version>
     </dependency>
   </dependencies>
 

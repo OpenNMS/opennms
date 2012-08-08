@@ -114,4 +114,10 @@ public class OperationCommand extends Action implements Command  {
         return m_operation;
     }
 
+	@Override
+	public String getContextMenuPosition() {
+		String contextLocation = m_props.get(Operation.OPERATION_CONTEXT_LOCATION);
+		return contextLocation == null ? null : contextLocation.isEmpty() ? getCaption() : contextLocation + "|" + getCaption();
+	}
+
 }

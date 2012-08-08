@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
@@ -593,7 +594,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     		Element svg = this.getElement().getElementsByTagName("svg").getItem(0);
 
     		if (target.equals(svg)) {
-    			m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
+    		    
+    		    showContextMenu("svg", event.getClientX(), event.getClientY(), "map");
+    			//m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
     			event.preventDefault();
     			event.stopPropagation();
     		}
@@ -654,7 +657,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             		
             	};
             	
-            	m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
+            	showContextMenu(vertex.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "vertex");
+            	//m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
                 D3.eventPreventDefault();
             }
         };
@@ -681,7 +685,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                     
                 };
                 
-                m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
+                showContextMenu(edge.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "edge");
+                //m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
                 D3.eventPreventDefault();
                 
             }
@@ -1057,7 +1062,16 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         return null;
     }
-
+    
+    public void showContextMenu(Object target, int x, int y, String type) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("target", target);
+        map.put("x", x);
+        map.put("y", y);
+        map.put("type", type);
+        
+        m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
+    }
 
 
 }

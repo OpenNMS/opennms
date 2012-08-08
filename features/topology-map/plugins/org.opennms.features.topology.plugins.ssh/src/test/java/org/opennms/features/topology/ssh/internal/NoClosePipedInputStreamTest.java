@@ -1,7 +1,6 @@
 package org.opennms.features.topology.ssh.internal;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -59,7 +58,7 @@ public class NoClosePipedInputStreamTest {
     public void testCreatePipeWithDefinedSource() throws IOException {
         definedSource = new NoClosePipedInputStream(out);
         assertEquals(true, definedSource.connected);
-        assertEquals(definedSource.PIPE_SIZE, definedSource.buffer.length);
+        assertEquals(NoClosePipedInputStream.PIPE_SIZE, definedSource.buffer.length);
     }
 
     @Test 

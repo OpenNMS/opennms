@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;

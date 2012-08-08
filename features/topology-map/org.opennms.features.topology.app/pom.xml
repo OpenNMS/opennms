@@ -96,7 +96,23 @@
 	   <artifactId>org.osgi.compendium</artifactId>
 	   <scope>provided</scope>
 	</dependency>
+	
+    <dependency>
+   	   <groupId>org.vaadin.addons</groupId>
+   	   <artifactId>contextmenu</artifactId>
+   	   <version>3.1.0</version>
+	   <scope>provided</scope>
+	</dependency>
 
   </dependencies>
+  
+  <repositories>
+      
+    <repository>
+   	  <id>vaadin-addons</id>
+   	  <url>http://maven.vaadin.com/vaadin-addons</url>
+	</repository>
+	
+  </repositories>
   
 </project>

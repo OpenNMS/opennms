@@ -2,7 +2,6 @@ package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 

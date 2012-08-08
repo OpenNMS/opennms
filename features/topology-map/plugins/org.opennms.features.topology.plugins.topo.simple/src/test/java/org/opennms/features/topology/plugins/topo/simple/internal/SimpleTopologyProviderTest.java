@@ -213,7 +213,7 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void testAddVertexWithOperation() {
 	    
-	    List<Object> targets = Collections.EMPTY_LIST;
+	    List<Object> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
 	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON, m_topologyProvider);

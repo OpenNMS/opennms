@@ -58,17 +58,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	private KeyMapper m_actionMapper;
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
-
-    @Override
-    public void attach() {
-        super.attach();
-        setDescription("This is a description");
-    }
-
     private Graph m_graph;
 	private List<Action.Handler> m_actionHandlers = new ArrayList<Action.Handler>();
 	private MapManager m_mapManager = new MapManager();
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
+    private ContextMenuHandler m_contextMenuHandler;
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -325,6 +319,25 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             m_mapManager.setClientY(clientY);
         }
         
+        if(variables.containsKey("contextMenu")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
+            
+            String type = (String) props.get("type");
+            
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y");
+            String targetId = (String) props.get("target");
+            Object itemId = null;
+            
+            //Suspicious, need to figure out a better way to handle context types
+            if(type.toLowerCase().equals("vertex")) {
+                Vertex vertex = getGraph().getVertexByKey(targetId);
+                itemId = vertex.getItemId();
+            }
+            
+            getContextMenuHandler().show(itemId, x, y);
+        }
+        
         updateMenuItems();
     }
     
@@ -406,6 +419,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         //Request repaint when a value changes, currently we are only listening to the scale property
         requestRepaint();
+    }
+
+    public ContextMenuHandler getContextMenuHandler() {
+        return m_contextMenuHandler;
+    }
+
+    public void setContextMenuHandler(ContextMenuHandler contextMenuHandler) {
+        m_contextMenuHandler = contextMenuHandler;
     }
    
 
