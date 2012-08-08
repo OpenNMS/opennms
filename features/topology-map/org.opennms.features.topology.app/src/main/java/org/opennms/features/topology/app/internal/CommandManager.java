@@ -208,7 +208,7 @@ public class CommandManager {
 		return m_commandHistoryList;
 	}
 
-	public Operation getOperationByCommand(MenuBar.Command command) {
+	public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
 		return m_commandToOperationMap.get(command);
 	}
 
@@ -317,14 +317,11 @@ public class CommandManager {
 		return m_subMenuGroupOrder;
 	}
 
-	private List<Object> getSelectedVertices(
-			final OperationContext operationContext) {
+	private List<Object> getSelectedVertices(final OperationContext operationContext) {
 		List<Object> targets = new ArrayList<Object>();
 		for (Object vId : operationContext.getGraphContainer().getVertexIds()) {
-			Item vItem = operationContext.getGraphContainer()
-					.getVertexItem(vId);
-			boolean selected = (Boolean) vItem.getItemProperty("selected")
-					.getValue();
+			Item vItem = operationContext.getGraphContainer().getVertexItem(vId);
+			boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
 			if (selected) {
 				targets.add(vItem.getItemProperty("key").getValue());
 			}
@@ -332,17 +329,13 @@ public class CommandManager {
 		return targets;
 	}
 
-	public void updateMenuItem(MenuItem menuItem,
-			SimpleGraphContainer graphContainer, Window mainWindow) {
-		DefaultOperationContext operationContext = new DefaultOperationContext(
-				mainWindow, graphContainer);
-		Operation operation = getOperationByCommand(menuItem.getCommand());
+	public void updateMenuItem(MenuItem menuItem, SimpleGraphContainer graphContainer, Window mainWindow) {
+		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
+		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 
-		boolean visibility = operation.display(
-				getSelectedVertices(operationContext), operationContext);
+		boolean visibility = operation.display(getSelectedVertices(operationContext), operationContext);
 		menuItem.setVisible(visibility);
-		boolean enabled = operation.enabled(
-				getSelectedVertices(operationContext), operationContext);
+		boolean enabled = operation.enabled(getSelectedVertices(operationContext), operationContext);
 		menuItem.setEnabled(enabled);
 
 		if (operation instanceof CheckedOperation) {
@@ -350,9 +343,20 @@ public class CommandManager {
 				menuItem.setCheckable(true);
 			}
 
-			menuItem.setChecked(((CheckedOperation) operation).isChecked(
-					getSelectedVertices(operationContext), operationContext));
+			menuItem.setChecked(((CheckedOperation) operation).isChecked(getSelectedVertices(operationContext), operationContext));
 		}
 	}
+
+    public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, SimpleGraphContainer graphContainer, Window mainWindow) {
+        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
+        
+        ContextMenuItem ctxMenuItem = contextItem.getItem();
+        Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
+        
+        List<Object> targets = Arrays.asList(target);
+        ctxMenuItem.setVisible(operation.display(targets, operationContext));
+        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
+        
+    }
 
 }

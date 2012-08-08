@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
-import org.vaadin.peter.contextmenu.ContextMenu;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener{
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler{
 	
 	private Window m_window;
     private TopologyComponent m_topologyComponent;
@@ -37,7 +37,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private SimpleGraphContainer m_graphContainer;
     private CommandManager m_commandManager;
     private MenuBar m_menuBar;
-    private ContextMenu m_contextMenu;
+    private TopoContextMenu m_contextMenu;
     private AbsoluteLayout m_layout;
     
     public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider) {
@@ -66,6 +66,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_topologyComponent = new TopologyComponent(m_graphContainer);
         m_topologyComponent.setSizeFull();
         m_topologyComponent.addMenuItemStateListener(this);
+        m_topologyComponent.setContextMenuHandler(this);
         
         final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
         final Slider slider = new Slider(1, 4);
@@ -181,6 +182,17 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_menuBar.requestRepaint();
     }
 
+    private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
+        for(TopoContextMenuItem contextItem : items) {
+            if(contextItem.hasChildren()) {
+                updateContextMenuItems(target, contextItem.getChildren());
+            } else {
+                m_commandManager.updateContextMenuItem(target, contextItem, m_graphContainer, getMainWindow());
+            }
+        }
+    }
+
+
     private void updateMenuItems(List<MenuItem> menuItems) {
         for(MenuItem menuItem : menuItems) {
             if(menuItem.hasChildren()) {
@@ -191,14 +203,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         }
     }
 
-    public void showContextMenu() {
-        m_contextMenu.show(0, 0);
-    }
-
     @Override
     public void menuBarUpdated(CommandManager commandManager) {
         if(m_menuBar != null) {
             m_layout.removeComponent(m_menuBar);
+        }
+        
+        if(m_contextMenu != null) {
+            getMainWindow().removeComponent(m_contextMenu);
         }
         
         m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
@@ -208,6 +220,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
         getMainWindow().addComponent(m_contextMenu);
         updateMenuItems();
+    }
+
+
+    @Override
+    public void show(Object target, int left, int top) {
+        updateContextMenuItems(target, m_contextMenu.getItems());
+        m_contextMenu.show(left, top);
     }
 
 }
