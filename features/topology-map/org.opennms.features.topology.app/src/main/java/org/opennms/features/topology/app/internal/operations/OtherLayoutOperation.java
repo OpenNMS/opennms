@@ -11,8 +11,7 @@ import org.opennms.features.topology.app.internal.AlternativeLayoutAlgorithm;
 public class OtherLayoutOperation implements CheckedOperation {
 
     @Override
-    public Undoer execute(List<Object> targets,
-            OperationContext operationContext) {
+    public Undoer execute(List<Object> targets, OperationContext operationContext) {
         DisplayState graphContainer = operationContext.getGraphContainer();
         
         graphContainer.setLayoutAlgorithm(new AlternativeLayoutAlgorithm());
