@@ -46,11 +46,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 
-public class CachingForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
+public class QueueingForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
 
     @Autowired
-    @Qualifier("caching")
+    @Qualifier("queueing")
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before

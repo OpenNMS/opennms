@@ -198,4 +198,9 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
         m_deployedForeignSourceRepository.save(requisition);
     }
 
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in FusedForeignSourceRepository
+    }
+
 }
