@@ -171,7 +171,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        m_interfaces.remove(iface);
+        deleteInterface(iface.getIpAddr());
         m_interfaces.add(0, iface);
     }
 
@@ -266,7 +266,7 @@ public class RequisitionNode {
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void putCategory(RequisitionCategory category) {
-        m_categories.remove(category);
+        deleteCategory(category.getName());
         m_categories.add(0, category);
     }
 
@@ -359,7 +359,7 @@ public class RequisitionNode {
      * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
      */
     public void putAsset(RequisitionAsset asset) {
-        m_assets.remove(asset);
+        deleteAsset(asset.getName());
         m_assets.add(0, asset);
     }
 
