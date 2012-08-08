@@ -110,18 +110,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			}
 		});
         
-        getMainWindow().addListener(new Window.CloseListener() {
-            
-            @Override
-            public void windowClose(CloseEvent e) {
-               if(e.getWindow().getName().equals("Auth Window")){
-                   getMainWindow().executeJavaScript("document.getElementById(\"termFocusPanel\").focus();");
-               }
-                
-            }
-        });
-        
-        
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setWidth("100%");
         vLayout.setHeight("100%");

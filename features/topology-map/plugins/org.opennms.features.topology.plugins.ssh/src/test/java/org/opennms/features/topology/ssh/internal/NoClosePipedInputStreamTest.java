@@ -1,7 +1,6 @@
 package org.opennms.features.topology.ssh.internal;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
