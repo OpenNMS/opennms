@@ -175,4 +175,12 @@ public interface ForeignSourceRepository {
     public void validate(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
     
     public void validate(Requisition requisition) throws ForeignSourceRepositoryException;
+    
+    /**
+     * For performance reasons, a get after a save on a ForeignSourceRepository is not guaranteed to
+     * return the latest saved data unless you flush first.
+     * 
+     * @throws ForeignSourceRepositoryException
+     */
+    public void flush() throws ForeignSourceRepositoryException;
 }
