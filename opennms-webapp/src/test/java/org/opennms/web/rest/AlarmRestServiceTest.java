@@ -134,15 +134,15 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     	getAlarmDao().saveOrUpdate(alarm);
     	final Integer alarmId = alarm.getId();
 
-		sendPut("/alarms", "ack=true&alarmId=" + alarmId, 204);
+    	sendPut("/alarms", "ack=true&alarmId=" + alarmId, 303);
     	String xml = sendRequest(GET, "/alarms/" + alarmId, 200);
     	assertTrue(xml.contains("ackUser>admin<"));
 
-    	sendPut("/alarms/" + alarmId, "clear=true", 204);
+    	sendPut("/alarms/" + alarmId, "clear=true", 303);
     	xml = sendRequest(GET, "/alarms/" + alarmId, 200);
     	assertTrue(xml.contains("severity=\"CLEARED\""));
     	
-    	sendPut("/alarms/" + alarmId, "escalate=true", 204);
+    	sendPut("/alarms/" + alarmId, "escalate=true", 303);
     	xml = sendRequest(GET, "/alarms/" + alarmId, 200);
     	assertTrue(xml.contains("severity=\"NORMAL\""));
     	
@@ -155,7 +155,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     	MockUserPrincipal.setName("foo");
     	Exception failure = null;
     	try {
-    		sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 204);
+    		sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 303);
     	} catch (final IllegalArgumentException e) {
     		failure = e;
     	}

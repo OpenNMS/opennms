@@ -200,7 +200,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public void putNode(final RequisitionNode node) {
         updateNodeCacheIfNecessary();
         if (m_nodeReqs.containsKey(node.getForeignId())) {
-        	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+            final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
         }
         m_nodes.add(node);

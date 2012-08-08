@@ -53,7 +53,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * <p>DataLinkInterfaceRestService class.</p>
  *
  * @author antonio
- * @version $Id: $
  * @since 1.11.1
  */
 @PerRequest
