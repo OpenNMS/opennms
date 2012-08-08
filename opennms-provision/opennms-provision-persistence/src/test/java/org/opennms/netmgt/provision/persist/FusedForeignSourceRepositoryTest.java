@@ -156,7 +156,7 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         assertEquals(activeSource.getName(), pendingSource.getName());
         assertEquals(activeSource.getDetectorNames(), pendingSource.getDetectorNames());
         assertEquals(activeSource.getScanInterval(), pendingSource.getScanInterval());
-        assertEquals("the requisitions should match too", activeReq, pendingReq);
+        assertRequisitionsMatch(activeReq, pendingReq);
         
         /*
          * Since it's been officially deployed, the requisition and foreign
@@ -165,5 +165,10 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         System.err.println("requisition = " + m_pending.getRequisition("test"));
         assertNull("the requisition should be null in the pending repo", m_pending.getRequisition("test"));
         assertTrue("the foreign source should be default since there's no specific in the pending repo", m_pending.getForeignSource("test").isDefault());
+    }
+
+    private void assertRequisitionsMatch(final Requisition a, final Requisition b) {
+        assertEquals(a.getForeignSource(), b.getForeignSource());
+        assertEquals(a.getNodes(), b.getNodes());
     }
 }
