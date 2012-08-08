@@ -105,8 +105,7 @@ public class KscRestService extends OnmsRestService {
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("{reportId}")
     @Transactional
-    public KscReport getReport(@PathParam("reportId")
-    final Integer reportId) {
+    public KscReport getReport(@PathParam("reportId") final Integer reportId) {
         readLock();
 
         try {
@@ -137,12 +136,7 @@ public class KscRestService extends OnmsRestService {
     @PUT
     @Path("{kscReportId}")
     @Transactional
-    public Response addGraph(@PathParam("kscReportId")
-    final Integer kscReportId, @QueryParam("title")
-    final String title, @QueryParam("reportName")
-    final String reportName, @QueryParam("resourceId")
-    final String resourceId, @QueryParam("timespan")
-    String timespan) {
+    public Response addGraph(@PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
         writeLock();
 
         try {
@@ -178,7 +172,7 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.ok().build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getReport").build(kscReportId)).build();
         } finally {
             writeUnlock();
         }

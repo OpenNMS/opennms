@@ -39,6 +39,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -148,7 +149,7 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public void updateNotification(@PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
+    public Response updateNotification(@PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
         writeLock();
         
         try {
@@ -157,6 +158,7 @@ public class NotificationRestService extends OnmsRestService {
                 throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processNotifAck(notif,ack);
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNotification").build(notifId)).build();
         } finally {
             writeUnlock();
         }
@@ -170,7 +172,7 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public void updateNotifications(final MultivaluedMapImpl params) {
+    public Response updateNotifications(final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -186,6 +188,7 @@ public class NotificationRestService extends OnmsRestService {
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(notif, ack);
             }
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNotifications").build()).build();
         } finally {
             writeUnlock();
         }

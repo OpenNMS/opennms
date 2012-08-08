@@ -36,6 +36,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -123,6 +124,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
      */
     @GET
+    @Path("/")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public OnmsAlarmCollection getAlarms() {
@@ -156,7 +158,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public void updateAlarm(@PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarm(@PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -201,6 +203,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackService.processAck(acknowledgement);
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getAlarm").build(alarmId)).build();
         } finally {
             writeUnlock();
         }
@@ -217,7 +220,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @PUT
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void updateAlarms(final MultivaluedMapImpl formProperties) {
+    public Response updateAlarms(final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -259,6 +262,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 }
                 m_ackService.processAck(acknowledgement);
             }
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getAlarms").build()).build();
         } finally {
             writeUnlock();
         }

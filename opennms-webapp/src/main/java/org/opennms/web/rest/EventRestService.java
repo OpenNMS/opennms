@@ -42,6 +42,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -226,7 +227,7 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public void updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {
@@ -235,6 +236,7 @@ public class EventRestService extends OnmsRestService {
                 throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processEventAck(event, ack);
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getEvent").build(eventId)).build();
         } finally {
             writeUnlock();
         }
@@ -251,7 +253,7 @@ public class EventRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public void updateEvents(final MultivaluedMapImpl formProperties) {
+    public Response updateEvents(final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -268,6 +270,7 @@ public class EventRestService extends OnmsRestService {
             for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
                 processEventAck(event, ack);
             }
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getEvents").build()).build();
         } finally {
             writeUnlock();
         }
