@@ -213,6 +213,10 @@ public class NrtController {
         String raw = prefabGraph.getCommand();
         String[] columns = prefabGraph.getColumns();
         String[] metrics = prefabGraph.getMetricIds();
+        
+        
+        
+        
 //ToDo Tak: build an rrdGraphString clean/prep...        
 //        for (int i = 0; i < columns.length; i++) {
 //            String searchElement = "}:" + columns[i] + ":";

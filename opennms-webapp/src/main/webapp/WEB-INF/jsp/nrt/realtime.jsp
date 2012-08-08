@@ -300,7 +300,8 @@ var realTimeHandler = {
 		if (message != null) {
 			var dataSet = eval(message.textContent);
 			lastReceivedMessage = message.textContent;
-           		tick(dataSet); 
+           		tick(dataSet);
+                        tickRrdGraphJs(dataSet);
 		}
 	}
 };
@@ -361,5 +362,7 @@ $(function() {
 	<div>Refresh Interval (in ms)<input name="refreshInterval"></input></div>
 	<div>Graph Duration (in seconds)<input name="durationInterval"></input></div>
 	<div id="valuesDebug"></div>
-
+        <div id="rrdgraphjs"></div>
+        <div id="errorDiv"></div>
+        
 <jsp:include page="/includes/footer.jsp" flush="false" />
