@@ -87,8 +87,8 @@ public class NotificationRestService extends OnmsRestService {
     public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
         readLock();
         try {
-        	OnmsNotification result= m_notifDao.get(new Integer(notifId));
-        	return result;
+            OnmsNotification result= m_notifDao.get(new Integer(notifId));
+            return result;
         } finally {
             readUnlock();
         }
@@ -147,59 +147,60 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Transactional
+    @Transactional
     public void updateNotification(@PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
         writeLock();
         
         try {
-        	OnmsNotification notif=m_notifDao.get(new Integer(notifId));
-        	if(ack==null) {
-        		throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
-        	}
-           	processNotifAck(notif,ack);
+            OnmsNotification notif=m_notifDao.get(new Integer(notifId));
+            if(ack==null) {
+                throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+            }
+            processNotifAck(notif,ack);
         } finally {
             writeUnlock();
         }
     }
     
-	/**
-	 * <p>updateNotifications</p>
-	 *
-	 * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
-	 */
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Transactional
-	public void updateNotifications(final MultivaluedMapImpl params) {
-	    writeLock();
-	    
-	    try {
-    		Boolean ack=false;
-    		if(params.containsKey("ack")) {
-    			ack="true".equals(params.getFirst("ack"));
-    			params.remove("ack");
-    		}
-    
-    		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
-    		applyQueryFilters(params, builder);
-    		
-    		for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
-    			processNotifAck(notif, ack);
-    		}
-	    } finally {
-	        writeUnlock();
-	    }
-	}
+    /**
+     * <p>updateNotifications</p>
+     *
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Transactional
+    public void updateNotifications(final MultivaluedMapImpl params) {
+        writeLock();
+        
+        try {
+            Boolean ack=false;
+            if(params.containsKey("ack")) {
+                ack="true".equals(params.getFirst("ack"));
+                params.remove("ack");
+            }
+
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+            applyQueryFilters(params, builder);
+            
+            for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
+                processNotifAck(notif, ack);
+            }
+        } finally {
+            writeUnlock();
+        }
+    }
 
 
-	private void processNotifAck( OnmsNotification notif, Boolean ack) {
-		if(ack) {
-       		notif.setRespondTime(new Date());
-       		notif.setAnsweredBy(m_securityContext.getUserPrincipal().getName());
-    	} else {
-    		notif.setRespondTime(null);
-    		notif.setAnsweredBy(null);
-    	}
-       	m_notifDao.save(notif);
-	}
+    private void processNotifAck(final OnmsNotification notif, final Boolean ack) {
+        if(ack) {
+            notif.setRespondTime(new Date());
+            notif.setAnsweredBy(m_securityContext.getUserPrincipal().getName());
+        } else {
+            notif.setRespondTime(null);
+            notif.setAnsweredBy(null);
+        }
+        m_notifDao.save(notif);
+    }
+
 }
