@@ -61,10 +61,10 @@ public class RequisitionNode {
     @XmlElement(name="asset")
     protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
     
-    @XmlAttribute
+    @XmlAttribute(name = "building")
     protected String m_building;
 
-    @XmlAttribute
+    @XmlAttribute(name = "city")
     protected String m_city;
 
     @XmlAttribute(name = "foreign-id", required = true)
