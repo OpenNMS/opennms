@@ -10,17 +10,25 @@
 
   <context:annotation-config/>
 
-  <bean id="pendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
-    <qualifier value="pending" />
+  <bean id="rawPendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
     <property name="requisitionPath" value="${importer.requisition.dir}/pending" />
     <property name="foreignSourcePath" value="${importer.foreign-source.dir}/pending" />
   </bean>
   
-  <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
-    <qualifier value="deployed" />
+  <bean id="pendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.QueueingForeignSourceRepository">
+    <qualifier value="pending" />
+    <property name="foreignSourceRepository" ref="rawPendingForeignSourceRepository" />
+  </bean>
+
+  <bean id="rawDeployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
     <property name="requisitionPath" value="${importer.requisition.dir}" />
     <property name="foreignSourcePath" value="${importer.foreign-source.dir}" />
     <property name="updateDateStamps" value="false" />
+  </bean>
+
+  <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.QueueingForeignSourceRepository">
+    <qualifier value="deployed" />
+    <property name="foreignSourceRepository" ref="rawDeployedForeignSourceRepository" />
   </bean>
 
   <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
@@ -29,9 +37,11 @@
     <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
   </bean>
 
+  <!--
   <bean id="cachingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.CachingForeignSourceRepository">
-  	<qualifier value="caching" />
-  	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
+    <qualifier value="caching" />
+    <property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
   </bean>
+  -->
 
 </beans>
