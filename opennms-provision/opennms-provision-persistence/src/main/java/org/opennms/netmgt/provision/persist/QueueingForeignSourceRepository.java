@@ -22,8 +22,13 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     ForeignSourceRepository m_repository = null;
     private ExecutorService m_executor = Executors.newSingleThreadExecutor();
 
+    public QueueingForeignSourceRepository() {
+        super();
+    }
+
     @Override
     public void flush() throws ForeignSourceRepositoryException {
+        LogUtils.debugf(this, "flushing queue");
         // wait for everything currently in the queue to complete
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -39,6 +44,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
             LogUtils.debugf(this, e, "Interrupted while waiting for ForeignSourceRepository flush.  Returning.");
             return;
         }
+        LogUtils.debugf(this, "finished flushing queue");
     }
 
     @Override
@@ -156,9 +162,13 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     private final class QueuePersistRunnable implements Runnable {
         @Override
         public void run() {
+            LogUtils.debugf(this, "persisting repository changes");
             final Set<Entry<String,ForeignSource>> foreignSources = m_pendingForeignSources.entrySet();
             final Set<Entry<String,Requisition>>   requisitions   = m_pendingRequisitions.entrySet();
-            
+
+            LogUtils.debugf(this, "* %d pending foreign sources", m_pendingForeignSources.size());
+            LogUtils.debugf(this, "* %d pending requisitions",    m_pendingRequisitions.size());
+
             for (final Entry<String,ForeignSource> entry : foreignSources) {
                 final String foreignSourceName = entry.getKey();
                 final ForeignSource foreignSource = entry.getValue();
@@ -184,6 +194,8 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
                 }
                 m_pendingRequisitions.remove(foreignSourceName, requisition);
             }
+            
+            LogUtils.debugf(this, "finished persisting repository changes");
         }
     }
 
