@@ -58,6 +58,16 @@ public class TopoContextMenu extends ContextMenu {
 
 	private List<TopoContextMenuItem> m_items = new ArrayList<TopoContextMenuItem>();
 	
+	private Object m_target = null;
+	
+	public Object getTarget() {
+		return m_target;
+	}
+	
+	public void setTarget(Object target) {
+		this.m_target = target;
+	}
+	
 	public TopoContextMenuItem addItem(String label, Operation operation) {
 	    TopoContextMenuItem item = new TopoContextMenuItem(addItem(label), operation);
 	    m_items.add(item);

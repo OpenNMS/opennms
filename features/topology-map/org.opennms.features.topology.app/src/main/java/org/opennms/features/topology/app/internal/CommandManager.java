@@ -69,7 +69,10 @@ public class CommandManager {
 		public void contextItemClick(ClickEvent event) {
 			Operation operation = m_contextMenuItemsToOperationMap.get(event.getClickedItem());
 			//TODO: Do some implementation here for execute
-			operation.execute(getSelectedVertices(m_opContext), m_opContext);
+			if (operation != null) {
+				TopoContextMenu source = (TopoContextMenu)event.getSource();
+				operation.execute(Arrays.asList(source.getTarget()), m_opContext);
+			}
 		}
 		
 	}
@@ -352,11 +355,10 @@ public class CommandManager {
         
         ContextMenuItem ctxMenuItem = contextItem.getItem();
         Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
-        
+     
         List<Object> targets = Arrays.asList(target);
         ctxMenuItem.setVisible(operation.display(targets, operationContext));
-        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
-        
+        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));   
     }
 
 }

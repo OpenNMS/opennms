@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -254,6 +255,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         });
     }
     
+	@SuppressWarnings("unchecked")
 	@Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         if(variables.containsKey("graph")) {
@@ -326,15 +328,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             
             int x = (Integer) props.get("x");
             int y = (Integer) props.get("y");
-            String targetId = (String) props.get("target");
-            Object itemId = null;
-            
-            //Suspicious, need to figure out a better way to handle context types
-            if(type.toLowerCase().equals("vertex")) {
-                Vertex vertex = getGraph().getVertexByKey(targetId);
-                itemId = vertex.getItemId();
+            Object itemId = (Object)props.get("target");
+
+            if (type.toLowerCase().equals("vertex")) {
+	                Vertex vertex = getGraph().getVertexByKey((String)itemId);
+	                itemId = vertex.getItemId();
             }
-            
+
             getContextMenuHandler().show(itemId, x, y);
         }
         
