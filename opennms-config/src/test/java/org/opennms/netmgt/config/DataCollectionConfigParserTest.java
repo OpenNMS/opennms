@@ -35,6 +35,7 @@ import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -52,6 +53,7 @@ import org.springframework.core.io.Resource;
  * 
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
+@Ignore // ignore in the SPACE branch
 public class DataCollectionConfigParserTest {
 
     private static final int resourceTypesCount = 92;
