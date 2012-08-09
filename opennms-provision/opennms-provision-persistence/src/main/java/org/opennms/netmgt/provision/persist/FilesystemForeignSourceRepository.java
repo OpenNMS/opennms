@@ -423,4 +423,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         createPath(reqPath);
         return encodeFileName(m_requisitionPath, requisition.getForeignSource());
     }
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in FilesystemForeignSourceRepository
+    }
 }

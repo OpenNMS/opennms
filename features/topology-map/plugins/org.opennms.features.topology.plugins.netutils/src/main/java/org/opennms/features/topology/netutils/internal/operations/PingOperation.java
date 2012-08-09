@@ -7,6 +7,9 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.PingWindow;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+
 public class PingOperation implements Operation {
 
 	private String pingURL;
@@ -16,7 +19,11 @@ public class PingOperation implements Operation {
 
 		if (targets != null) {
 			for(Object target : targets) {
-				ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
+				Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
+				if (vertexItem != null) {
+					Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
+					ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
+				}
 			}
 		}
 		if ("".equals(ipAddr)) return false;
@@ -24,29 +31,22 @@ public class PingOperation implements Operation {
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		//Default server info
-		String ipAddr = "";
-
-		if (targets != null) {
-			for(Object target : targets) {
-				ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
-			}
-		}
-		if ("".equals(ipAddr)) return false;
 		return true;
 	}
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
-		//Default server info
 		String ipAddr = "";
 		String label = "";
 		int nodeID = -1;
 
 		if (targets != null) {
 			for(Object target : targets) {
-				ipAddr = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr").getValue();
-				label = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label").getValue();
-				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+				Property ipAddrProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr");
+				ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
+				Property labelProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label");
+				label = labelProperty == null ? "" : (String) labelProperty.getValue();
+				Property nodeIDProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID");
+				nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
 			}
 		}
 		Node node = new Node(nodeID, ipAddr, label);

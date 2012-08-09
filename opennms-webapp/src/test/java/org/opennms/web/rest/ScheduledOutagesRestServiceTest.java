@@ -185,25 +185,25 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
 
     @Test
     public void testUpdateCollectdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/collectd/example1", 200);
     }
 
     @Test
     public void testUpdatePollerdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/pollerd/example1", 200);
     }
 
     @Test
     public void testUpdateThreshdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/threshd/example1", 200);
     }
 
     @Test
     public void testUpdateNotifdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 200);
     }
 

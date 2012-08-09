@@ -30,4 +30,9 @@
   	<qualifier value="caching" />
   	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
   </bean>
+
+  <bean id="queueingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.QueueingForeignSourceRepository">
+  	<qualifier value="queueing" />
+  	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
+  </bean>
 </beans>

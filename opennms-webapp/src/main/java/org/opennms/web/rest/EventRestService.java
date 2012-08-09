@@ -42,6 +42,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -59,224 +60,230 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
-/**
- * <p>EventRestService class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 @PerRequest
 @Scope("prototype")
 @Path("events")
 public class EventRestService extends OnmsRestService {
+    private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();
+    private static final DateTimeFormatter ISO8601_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
 
-	private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();
-	private static final DateTimeFormatter ISO8601_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
+    @Autowired
+    private EventDao m_eventDao;
 
-	@Autowired
-	private EventDao m_eventDao;
+    @Context
+    UriInfo m_uriInfo;
 
-	@Context
-	UriInfo m_uriInfo;
+    @Context
+    HttpHeaders m_headers;
 
-	@Context
-	HttpHeaders m_headers;
+    @Context
+    SecurityContext m_securityContext;
 
-	@Context
-	SecurityContext m_securityContext;
+    /**
+     * <p>
+     * getEvent
+     * </p>
+     * 
+     * @param eventId
+     *            a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("{eventId}")
+    @Transactional
+    public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
+        readLock();
+        try {
+            return m_eventDao.get(new Integer(eventId));
+        } finally {
+            readUnlock();
+        }
+    }
 
-	/**
-	 * <p>getEvent</p>
-	 *
-	 * @param eventId a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
-	 */
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("{eventId}")
-	@Transactional
-	public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
-	    readLock();
-	    try {
-	        return m_eventDao.get(new Integer(eventId));
-	    } finally {
-	        readUnlock();
-	    }
-	}
+    /**
+     * returns a plaintext string being the number of events
+     * 
+     * @return a {@link java.lang.String} object.
+     */
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("count")
+    @Transactional
+    public String getCount() {
+        readLock();
+        try {
+            return Integer.toString(m_eventDao.countAll());
+        } finally {
+            readUnlock();
+        }
+    }
 
-	/**
-	 * returns a plaintext string being the number of events
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("count")
-	@Transactional
-	public String getCount() {
-	    readLock();
-	    try {
-	        return Integer.toString(m_eventDao.countAll());
-	    } finally {
-	        readUnlock();
-	    }
-	}
+    /**
+     * Returns all the events which match the filter/query in the query
+     * parameters
+     * 
+     * @return Collection of OnmsEvents (ready to be XML-ified)
+     * @throws java.text.ParseException
+     *             if any.
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Transactional
+    public OnmsEventCollection getEvents() throws ParseException {
+        readLock();
 
-	/**
-	 * Returns all the events which match the filter/query in the query parameters
-	 *
-	 * @return Collection of OnmsEvents (ready to be XML-ified)
-	 * @throws java.text.ParseException if any.
-	 */
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Transactional
-	public OnmsEventCollection getEvents() throws ParseException {
-		readLock();
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            builder.orderBy("eventTime").asc();
 
-		try {
-		    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-		    applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-		    builder.orderBy("eventTime").asc();
-	
-		    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-			coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
-			
-			return coll;
-		} finally {
-			readUnlock();
-		}
-	}
+            final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+            coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
 
-	/**
-	 * Returns all the events which match the filter/query in the query parameters
-	 *
-	 * @return Collection of OnmsEvents (ready to be XML-ified)
-	 * @throws java.text.ParseException if any.
-	 */
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("between")
-	@Transactional
-	public OnmsEventCollection getEventsBetween() throws ParseException {
-		readLock();
-		
-		try {
-		    final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-		    final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
-		    
-		    final String column;
-		    if (params.containsKey("column")) {
-		    	column = params.getFirst("column");
-		    	params.remove("column");
-		    } else {
-		    	column = "eventTime";
-		    }
-		    Date begin;
-		    if (params.containsKey("begin")) {
-		    	try {
-			    	begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
-		    	} catch (final Throwable t) {
-		    		begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
-		    	}
-		    	params.remove("begin");
-		    } else {
-		    	begin = new Date(0);
-		    }
-		    Date end;
-		    if (params.containsKey("end")) {
-		    	try {
-			    	end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
-		    	} catch (final Throwable t) {
-			    	end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
-		    	}
-		    	params.remove("end");
-		    } else {
-		    	end = new Date();
-		    }
-	
-			applyQueryFilters(params, builder);
-		    builder.match("all");
-			try {
-				builder.between(column, begin, end);
-			} catch (final Throwable t) {
-				throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
-			}
-	
-		    final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-			coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
-			
-			return coll;
-		} finally {
-			readUnlock();
-		}
-	}
+            return coll;
+        } finally {
+            readUnlock();
+        }
+    }
 
-	/**
-	 * Updates the event with id "eventid"
-	 * If the "ack" parameter is "true", then acks the events as the current logged in user, otherwise unacks the events
-	 *
-	 * @param eventId a {@link java.lang.String} object.
-	 * @param ack a {@link java.lang.Boolean} object.
-	 */
-	@PUT
-	@Path("{eventId}")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Transactional
-	public void updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
-	    writeLock();
-	    
-	    try {
-    	    final OnmsEvent event = m_eventDao.get(new Integer(eventId));
-    		if (ack == null) {
-    			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
-    		}
-    		processEventAck(event, ack);
-	    } finally {
-	        writeUnlock();
-	    }
-	}
+    /**
+     * Returns all the events which match the filter/query in the query
+     * parameters
+     * 
+     * @return Collection of OnmsEvents (ready to be XML-ified)
+     * @throws java.text.ParseException
+     *             if any.
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("between")
+    @Transactional
+    public OnmsEventCollection getEventsBetween() throws ParseException {
+        readLock();
 
-	/**
-	 * Updates all the events that match any filter/query supplied in the form.
-	 * If the "ack" parameter is "true", then acks the events as the current logged in user, otherwise unacks the events
-	 *
-	 * @param formProperties Map of the parameters passed in by form encoding
-	 */
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Transactional
-	public void updateEvents(final MultivaluedMapImpl formProperties) {
-	    writeLock();
-	    
-	    try {
-    		Boolean ack=false;
-    		if(formProperties.containsKey("ack")) {
-    			ack="true".equals(formProperties.getFirst("ack"));
-    			formProperties.remove("ack");
-    		}
-    
-    		final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-    		applyQueryFilters(formProperties, builder);
-    		builder.orderBy("eventTime").desc();
-    
-    		for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
-    			processEventAck(event, ack);
-    		}
-	    } finally {
-	        writeUnlock();
-	    }
-	}
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+            final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
 
-	private void processEventAck(final OnmsEvent event, final Boolean ack) {
-		if (ack) {
-			event.setEventAckTime(new Date());
-			event.setEventAckUser(m_securityContext.getUserPrincipal().getName());
-		} else {
-			event.setEventAckTime(null);
-			event.setEventAckUser(null);
-		}
-		m_eventDao.save(event);
-	}
+            final String column;
+            if (params.containsKey("column")) {
+                column = params.getFirst("column");
+                params.remove("column");
+            } else {
+                column = "eventTime";
+            }
+            Date begin;
+            if (params.containsKey("begin")) {
+                try {
+                    begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
+                } catch (final Throwable t) {
+                    begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
+                }
+                params.remove("begin");
+            } else {
+                begin = new Date(0);
+            }
+            Date end;
+            if (params.containsKey("end")) {
+                try {
+                    end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
+                } catch (final Throwable t) {
+                    end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
+                }
+                params.remove("end");
+            } else {
+                end = new Date();
+            }
+
+            applyQueryFilters(params, builder);
+            builder.match("all");
+            try {
+                builder.between(column, begin, end);
+            } catch (final Throwable t) {
+                throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
+            }
+
+            final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+            coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
+
+            return coll;
+        } finally {
+            readUnlock();
+        }
+    }
+
+    /**
+     * Updates the event with id "eventid" If the "ack" parameter is "true",
+     * then acks the events as the current logged in user, otherwise unacks
+     * the events
+     * 
+     * @param eventId
+     *            a {@link java.lang.String} object.
+     * @param ack
+     *            a {@link java.lang.Boolean} object.
+     */
+    @PUT
+    @Path("{eventId}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Transactional
+    public Response updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+        writeLock();
+
+        try {
+            final OnmsEvent event = m_eventDao.get(new Integer(eventId));
+            if (ack == null) {
+                throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+            }
+            processEventAck(event, ack);
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getEvent").build(eventId)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Updates all the events that match any filter/query supplied in the
+     * form. If the "ack" parameter is "true", then acks the events as the
+     * current logged in user, otherwise unacks the events
+     * 
+     * @param formProperties
+     *            Map of the parameters passed in by form encoding
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Transactional
+    public Response updateEvents(final MultivaluedMapImpl formProperties) {
+        writeLock();
+
+        try {
+            Boolean ack = false;
+            if (formProperties.containsKey("ack")) {
+                ack = "true".equals(formProperties.getFirst("ack"));
+                formProperties.remove("ack");
+            }
+
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
+            applyQueryFilters(formProperties, builder);
+            builder.orderBy("eventTime").desc();
+
+            for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
+                processEventAck(event, ack);
+            }
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getEvents").build()).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    private void processEventAck(final OnmsEvent event, final Boolean ack) {
+        if (ack) {
+            event.setEventAckTime(new Date());
+            event.setEventAckUser(m_securityContext.getUserPrincipal().getName());
+        } else {
+            event.setEventAckTime(null);
+            event.setEventAckUser(null);
+        }
+        m_eventDao.save(event);
+    }
 }

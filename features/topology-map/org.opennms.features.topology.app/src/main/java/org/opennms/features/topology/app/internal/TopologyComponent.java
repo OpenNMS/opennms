@@ -322,9 +322,20 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         if(variables.containsKey("contextMenu")) {
             Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
             
+            String type = (String) props.get("type");
+            
             int x = (Integer) props.get("x");
             int y = (Integer) props.get("y");
-            getContextMenuHandler().show(props.get("target"), x, y);
+            String targetId = (String) props.get("target");
+            Object itemId = null;
+            
+            //Suspicious, need to figure out a better way to handle context types
+            if(type.toLowerCase().equals("vertex")) {
+                Vertex vertex = getGraph().getVertexByKey(targetId);
+                itemId = vertex.getItemId();
+            }
+            
+            getContextMenuHandler().show(itemId, x, y);
         }
         
         updateMenuItems();
