@@ -40,7 +40,7 @@ public class ContextSSHOperation implements Operation {
 					Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
 					ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
 					//Property portProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port");
-					port = 22; //portProperty == null ? -1 : (Integer) portProperty.getValue();
+					//portProperty == null ? -1 : (Integer) portProperty.getValue();
 				}
 			}
 		}
