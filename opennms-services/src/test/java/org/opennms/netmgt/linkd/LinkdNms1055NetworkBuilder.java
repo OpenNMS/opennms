@@ -47,7 +47,8 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String PENROSE_IP = "10.155.69.16";
     static final String PENROSE_NAME = "penrose-mx480";
     static final String PENROSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
-   
+    static final String PENROSE_LLDP_CHASSISID = "80711f8fafc0";
+    
     static final Map<InetAddress,Integer> PENROSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> PENROSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> PENROSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
@@ -75,7 +76,8 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String AUSTIN_IP = "10.155.69.43";
     static final String AUSTIN_NAME = "Austin";
     static final String AUSTIN_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
-   
+    static final String AUSTIN_LLDP_CHASSISID = "80711fc413c0";
+
     static final Map<InetAddress,Integer> AUSTIN_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> AUSTIN_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> AUSTIN_IF_IFDESCR_MAP = new HashMap<Integer, String>();
@@ -93,7 +95,8 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String RIOVISTA_IP = "10.155.69.107";
     static final String RIOVISTA_NAME = "Riovista-ce";
     static final String RIOVISTA_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
-   
+    static final String RIOVISTA_LLDP_CHASSISID = "001f12373dc0";
+
     static final Map<InetAddress,Integer> RIOVISTA_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> RIOVISTA_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> RIOVISTA_IF_IFDESCR_MAP = new HashMap<Integer, String>();

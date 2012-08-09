@@ -31,6 +31,8 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
+import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
+import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -55,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/applicationContext-linkd-test.xml"
 })
 @JUnitConfigurationEnvironment
-public class LinkdNms1055LldpTest extends LinkdNms1055NetworkBuilder implements InitializingBean {
+public class LinkdNms1055LldpSnmpWalkTest extends LinkdNms1055NetworkBuilder implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -83,8 +86,8 @@ public class LinkdNms1055LldpTest extends LinkdNms1055NetworkBuilder implements 
         }
         
         assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals("80711f8fafc0",m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals("penrose-mx480", m_lLldpLocalGroup.getLldpLocSysname());
+        assertEquals(PENROSE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(PENROSE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
     }
     
     @Test
@@ -130,7 +133,51 @@ public class LinkdNms1055LldpTest extends LinkdNms1055NetworkBuilder implements 
             assertEquals(false, true);
         }
         
-        assertEquals(4, m_lldpRemTable.getEntries().size());
+        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
+        assertEquals(4, lldpTableEntryCollection.size());
+        
+        for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
+            checkRow(lldpRemTableEntry);
+        }
+    }
+    
+    private void checkRow(LldpRemTableEntry lldpRemTableEntry) {
+        System.err.println("-----------------------------------------------------------");    
+        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
+        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
+        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
+        System.err.println("getLldpRemSysname: "+lldpRemSysname);
+        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
+        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
+        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
+        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
+        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
+        System.err.println("getLldpRemPortid: "+lldpRemPortid);
+        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
+        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");
+        assertEquals(4,lldpRemChassisidSubtype.intValue());
+        assertEquals(7,lldpRemPortidSubtype.intValue());
+        if (lldpRemLocalPortNum.intValue() == 574) {
+            assertEquals(PENROSE_NAME,lldpRemSysname);
+            assertEquals(PENROSE_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("510", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 522) {
+            assertEquals(PENROSE_NAME,lldpRemSysname);
+            assertEquals(PENROSE_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("525", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 575) {
+            assertEquals(AUSTIN_NAME,lldpRemSysname);
+            assertEquals(AUSTIN_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("509", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 540) {
+            assertEquals(RIOVISTA_NAME,lldpRemSysname);
+            assertEquals(RIOVISTA_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("503", lldpRemPortid);
+        } else {
+            assertEquals(false, true);
+        }
     }
 
 }
