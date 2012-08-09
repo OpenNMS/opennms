@@ -12,13 +12,13 @@ import java.util.Vector;
  * Time: 15:20
  * To change this template use File | Settings | File Templates.
  */
-public class NrtUIObjectHelper {
+public class NrtUIMetricMappingHelper {
 
     private String m_oid;
 
     private HashMap<String, HashSet<String>> m_consolidationFunction = new HashMap<String, HashSet<String>>();
 
-    public NrtUIObjectHelper(String oid) {
+    public NrtUIMetricMappingHelper(String oid) {
         this.m_oid = oid;
     }
 
@@ -33,12 +33,16 @@ public class NrtUIObjectHelper {
         return m_consolidationFunction.get(consolidationFunction);
     }
 
-    public String[] getConsolidationFunctions() {
-        return (String[]) m_consolidationFunction.keySet().toArray();
+    public Set<String> getConsolidationFunctions() {
+        return m_consolidationFunction.keySet();
     }
 
-    public String[] getTargetsForConsolidationFunction(String consolidationFunction) {
-        return (String[]) m_consolidationFunction.get(consolidationFunction).toArray();
+    public Set<String> getTargetsForConsolidationFunction(String consolidationFunction) {
+        HashSet<String> targets = new HashSet<String>();
+        for (String target : m_consolidationFunction.get(consolidationFunction)) {
+            targets.add(target);
+        }
+        return targets;
 
     }
 }

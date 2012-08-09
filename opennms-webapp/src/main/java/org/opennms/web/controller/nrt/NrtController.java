@@ -38,7 +38,6 @@ public class NrtController {
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
 
-    private HashMap<String, NrtUIObjectHelper> m_nrtUIObjectHelpers = new HashMap<String, NrtUIObjectHelper>();
 
     @Autowired
     private JmsTemplate m_jmsTemplate;
@@ -130,7 +129,7 @@ public class NrtController {
         ((Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectoinTasks")).put(collectionTask, collectionJob);
 
         httpSession.setAttribute(collectionTask, collectionJob);
-        String rrdGraphString = this.rrdGraphPrep(prefabGraph);
+        String rrdGraphString = this.rrdGraphPrep(prefabGraph).getModifiedString();
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("collectionTask", collectionTask);
         modelAndView.addObject("rrdGraphString", rrdGraphString);
@@ -205,73 +204,13 @@ public class NrtController {
         m_jmsTemplate.convertAndSend("NrtCollectMe", collectionJob);
     }
 
-    private String getMetricForDatasource(PrefabGraph prefabGraph, String datasource) {
-        String[] columns = prefabGraph.getColumns();
-        String[] metrics = prefabGraph.getMetricIds();
-
-        for(int i=0;i<columns.length;i++) {
-            if (datasource.equals(columns[i]))
-                return metrics[i];
-        }
-
-        return null;
-    }
-
     /**
      * Helper method to get a rrdGraphString / command that will work with the RRDGraphJs elements.
-     * @param prefabGraph the PrefabGraph provided by opennms 
+     *
+     * @param prefabGraph the PrefabGraph provided by opennms
      * @return a rrdGraphString where {rrd1..} values are replaced with the metricIds and escaping for "" is done.
      */
-    protected String rrdGraphPrep(PrefabGraph prefabGraph) {
-        String result;
-        String raw = prefabGraph.getCommand();
-        String[] columns = prefabGraph.getColumns();
-        String[] metrics = prefabGraph.getMetricIds();
-
-        String arrByWhiteSpace[] = raw.split(" ");
-
-        for(String defString : arrByWhiteSpace) {
-            if (defString.startsWith("DEF:")) {
-                String arrByColon[] = defString.split(":");
-
-                String vname = arrByColon[1].split("=")[1];
-                String datasource = arrByColon[2];
-                String consolidationFunction = arrByColon[3];
-                String metric = getMetricForDatasource(prefabGraph, datasource);
-
-                if (!m_nrtUIObjectHelpers.containsKey(metric))
-                    m_nrtUIObjectHelpers.put(metric, new NrtUIObjectHelper(metric));
-
-                m_nrtUIObjectHelpers.get(metric).addTarget(consolidationFunction, vname);
-            }
-        }
-
-        StringBuffer stringBuffer = new StringBuffer();
-        for(String metric : m_nrtUIObjectHelpers.keySet()) {
-            stringBuffer.append("helper[\""+metric+"\"] = new MetricMapping(\""+metric+"\");\n");
-
-            String consolidationFunctions[] = m_nrtUIObjectHelpers.get(metric).getConsolidationFunctions();
-            for(String consolidationFunction : consolidationFunctions) {
-                String targets[] = m_nrtUIObjectHelpers.get(metric).getTargetsForConsolidationFunction(consolidationFunction);
-                for(String target : targets) {
-                    stringBuffer.append("helper[\""+metric+"\"][\""+consolidationFunction+"\"][helper[\"\"+metric+\"\\\"][\\\"\"+consolidationFunction+\"\"].length] = \""+target+"\";\n");
-                }
-            }
-        }
-
-        System.out.println( stringBuffer );
-
-//ToDo Tak: build an rrdGraphString clean/prep...        
-//        for (int i = 0; i < columns.length; i++) {
-//            String searchElement = "}:" + columns[i] + ":";
-//            int start = raw.indexOf(searchElement);
-//            int end = raw.substring(start).indexOf(":") + start;
-//            String firstPart = raw.substring(0, start);
-//            String lastPart = raw.substring(end);
-//            String tempResult = firstPart + metrics[i] + lastPart;
-//            raw = tempResult;
-//        }
-        result = raw.replaceAll("\"", "'");
-        return result;
+    protected NrtUIMetricMappings rrdGraphPrep(PrefabGraph prefabGraph) {
+        return new NrtUIMetricMappings(prefabGraph);
     }
 }
