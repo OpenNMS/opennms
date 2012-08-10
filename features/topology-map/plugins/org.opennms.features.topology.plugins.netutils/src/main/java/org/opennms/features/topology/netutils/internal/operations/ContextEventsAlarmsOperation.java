@@ -18,6 +18,8 @@ public class ContextEventsAlarmsOperation implements Operation {
 	public boolean display(List<Object> targets, OperationContext operationContext) {
 		int nodeID = -1;
 		if (targets != null) {
+			List<Object> selectedVertices = operationContext.getGraphContainer().getSelectedVertices();
+			if (selectedVertices.size > 0) return false;
 			for(Object target : targets) {
 				Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
 				if (vertexItem != null) {
