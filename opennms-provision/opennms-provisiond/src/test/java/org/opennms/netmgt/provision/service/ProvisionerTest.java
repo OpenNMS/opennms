@@ -232,6 +232,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         
         m_foreignSourceRepository = new MockForeignSourceRepository();
         m_foreignSourceRepository.save(m_foreignSource);
+        m_foreignSourceRepository.flush();
         
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
         

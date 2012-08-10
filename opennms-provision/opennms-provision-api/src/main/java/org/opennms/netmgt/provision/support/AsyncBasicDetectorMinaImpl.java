@@ -135,9 +135,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
 
             // Start communication
             final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-            // Get an ephemeral port on the localhost interface
-            final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, localAddress, init, createDetectorHandler(detectFuture));
+            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init, createDetectorHandler(detectFuture));
             cf.addListener(retryAttemptListener(detectFuture, socketAddress, init, getRetries()));
         } catch (KeyManagementException e) {
             detectFuture.setException(e);
@@ -185,9 +183,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                         detectFuture.setServiceDetected(false);
                     }else {
                         LogUtils.infof(this, "Connection exception occurred %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
-                        // Get an ephemeral port on the localhost interface
-                        final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-                        future = m_connectionFactory.reConnect(address, localAddress, init, createDetectorHandler(detectFuture));
+                        future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
                         future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
                 }else if(cause instanceof Throwable) {

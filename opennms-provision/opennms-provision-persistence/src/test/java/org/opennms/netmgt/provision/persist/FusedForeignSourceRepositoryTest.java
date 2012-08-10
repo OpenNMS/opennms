@@ -77,6 +77,8 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
         for (Requisition r : m_active.getRequisitions()) {
             m_active.delete(r);
         }
+        m_pending.flush();
+        m_active.flush();
     }
 
     @After
@@ -97,6 +99,8 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
         for (Requisition r : m_active.getRequisitions()) {
             m_active.delete(r);
         }
+        m_pending.flush();
+        m_active.flush();
     }
 
     @Test
