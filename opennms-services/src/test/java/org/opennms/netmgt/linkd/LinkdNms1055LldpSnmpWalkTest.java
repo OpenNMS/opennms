@@ -69,7 +69,7 @@ public class LinkdNms1055LldpSnmpWalkTest extends LinkdNms1055NetworkBuilder imp
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
     })
-    public void testNetwork1055LLDPLocalBaseCollection() throws Exception {
+    public void testNetwork1055PenroseLLDPLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
         LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(PENROSE_IP));
@@ -89,6 +89,133 @@ public class LinkdNms1055LldpSnmpWalkTest extends LinkdNms1055NetworkBuilder imp
         assertEquals(PENROSE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
         assertEquals(PENROSE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+    })
+    public void testNetwork1055DelawareLLDPLocalBaseCollection() throws Exception {
+
+        String name = "lldpLocGroup";
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(DELAWARE_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DELAWARE_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
+        assertEquals(DELAWARE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(DELAWARE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt")
+    })
+    public void testNetwork1055PhoenixLLDPLocalBaseCollection() throws Exception {
+
+        String name = "lldpLocGroup";
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(PHOENIX_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(PHOENIX_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
+        assertEquals(PHOENIX_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(PHOENIX_NAME, m_lLldpLocalGroup.getLldpLocSysname());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt")
+    })
+    public void testNetwork1055AustinLLDPLocalBaseCollection() throws Exception {
+
+        String name = "lldpLocGroup";
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(AUSTIN_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(AUSTIN_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
+        assertEquals(AUSTIN_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(AUSTIN_NAME, m_lLldpLocalGroup.getLldpLocSysname());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt")
+    })
+    public void testNetwork1055SanjoseLLDPLocalBaseCollection() throws Exception {
+
+        String name = "lldpLocGroup";
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(SANJOSE_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SANJOSE_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
+        assertEquals(SANJOSE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(SANJOSE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+    })
+    public void testNetwork1055RiovistaLLDPLocalBaseCollection() throws Exception {
+
+        String name = "lldpLocGroup";
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(RIOVISTA_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RIOVISTA_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
+        assertEquals(RIOVISTA_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(RIOVISTA_NAME, m_lLldpLocalGroup.getLldpLocSysname());
+    }
+
+
     
     @Test
     @JUnitSnmpAgents(value={

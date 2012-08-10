@@ -57,7 +57,8 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String DELAWARE_IP = "10.155.69.17";
     static final String DELAWARE_NAME = "delaware";
     static final String DELAWARE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
-   
+    static final String DELAWARE_LLDP_CHASSISID = "0022830957c0";
+    
     static final Map<InetAddress,Integer> DELAWARE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> DELAWARE_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> DELAWARE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
@@ -66,7 +67,8 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String PHOENIX_IP = "10.155.69.42";
     static final String PHOENIX_NAME = "phoenix-mx80";
     static final String PHOENIX_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
-   
+    static final String PHOENIX_LLDP_CHASSISID = "80711fc414c0";
+    
     static final Map<InetAddress,Integer> PHOENIX_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> PHOENIX_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> PHOENIX_IF_IFDESCR_MAP = new HashMap<Integer, String>();
@@ -86,6 +88,7 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String SANJOSE_IP = "10.155.69.12";
     static final String SANJOSE_NAME = "sanjose-mx240";
     static final String SANJOSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+    static final String SANJOSE_LLDP_CHASSISID = "002283d857c0";
    
     static final Map<InetAddress,Integer> SANJOSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> SANJOSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
