@@ -68,6 +68,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-linkd.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/applicationContext-linkd-test.xml"
 })
 @JUnitConfigurationEnvironment
