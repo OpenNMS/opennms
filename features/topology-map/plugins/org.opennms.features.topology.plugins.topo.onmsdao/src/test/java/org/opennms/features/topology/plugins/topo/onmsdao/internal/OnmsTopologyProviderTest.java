@@ -134,7 +134,13 @@ public class OnmsTopologyProviderTest {
             // TODO Auto-generated method stub
             return null;
         }
-        
+
+	@Override
+	public List<Object> getSelectedVertices() {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{
