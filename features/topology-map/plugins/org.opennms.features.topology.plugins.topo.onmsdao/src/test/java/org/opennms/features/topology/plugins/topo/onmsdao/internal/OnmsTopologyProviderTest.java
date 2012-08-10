@@ -2,7 +2,7 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 
 import java.util.Collection;
-
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
