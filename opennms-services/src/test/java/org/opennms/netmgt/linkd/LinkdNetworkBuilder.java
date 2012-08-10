@@ -101,16 +101,19 @@ public abstract class LinkdNetworkBuilder {
         nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
         return nb.getCurrentNode();
     }
-    
-    void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
+    void printLink(DataLinkInterface datalinkinterface) {
         System.out.println("----------------checkLink------------------");
         System.out.println("linkid: " + datalinkinterface.getId());
         System.out.println("nodeid: " + datalinkinterface.getNode().getId());
-        System.out.println("nodelabel: " + node.getLabel());
         System.out.println("ifindex: " + datalinkinterface.getIfIndex());
         System.out.println("nodeparent: " + datalinkinterface.getNodeParentId());
+        System.out.println("parentifindex: " + datalinkinterface.getParentIfIndex());        
+    }
+    
+    void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
+        printLink(datalinkinterface);
+        System.out.println("nodelabel: " + node.getLabel());
         System.out.println("parentnodelabel: " + nodeparent.getLabel());
-        System.out.println("parentifindex: " + datalinkinterface.getParentIfIndex());
 
         assertEquals(node.getId(),datalinkinterface.getNode().getId());
         assertEquals(ifindex,datalinkinterface.getIfIndex().intValue());
