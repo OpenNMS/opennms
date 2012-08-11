@@ -213,7 +213,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         assertEquals(4, lldpTableEntryCollection.size());
         
         for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
-            checkRow(lldpRemTableEntry);
+            checkSwitch1Row(lldpRemTableEntry);
         }
     }
 
@@ -238,52 +238,151 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         }
         
         final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(4, lldpTableEntryCollection.size());
+        assertEquals(6, lldpTableEntryCollection.size());
         
         for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
-            checkRow(lldpRemTableEntry);
+            checkSwitch2Row(lldpRemTableEntry);
         }
     }
 
-    private void checkRow(LldpRemTableEntry lldpRemTableEntry) {
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH3_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Switch3LldpRemTableCollection() throws Exception {
+
+        String name = "lldpRemTable";
+        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddress.getByName(SWITCH3_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lldpRemTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH3_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+        
+        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
+        assertEquals(2, lldpTableEntryCollection.size());
+        
+        for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
+            checkSwitch3Row(lldpRemTableEntry);
+        }
+    }
+
+    private void printRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
+            String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
         System.err.println("-----------------------------------------------------------");    
-        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
         System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
-        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
         System.err.println("getLldpRemSysname: "+lldpRemSysname);
-        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
         System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
-        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
         System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
-        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
         System.err.println("getLldpRemPortid: "+lldpRemPortid);
-        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
         System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
         System.err.println("-----------------------------------------------------------");
         System.err.println("");
+        
+    }
+    
+    private void checkSwitch1Row(LldpRemTableEntry lldpRemTableEntry) {
+        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
+        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
+        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
+        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
+        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
+        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
+        printRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
         assertEquals(4,lldpRemChassisidSubtype.intValue());
         assertEquals(5,lldpRemPortidSubtype.intValue());
-        /*
-        if (lldpRemLocalPortNum.intValue() == 574) {
-            assertEquals(SWITCH1_NAME,lldpRemSysname);
-            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("510", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 522) {
-            assertEquals(SWITCH1_NAME,lldpRemSysname);
-            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("525", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 575) {
-            assertEquals(SWITCH4_NAME,lldpRemSysname);
-            assertEquals(SWITCH4_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("509", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 540) {
-            assertEquals(RIOVISTA_NAME,lldpRemSysname);
-            assertEquals(RIOVISTA_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("503", lldpRemPortid);
+        
+        if (lldpRemLocalPortNum.intValue() == 9 ) {
+            assertEquals(SWITCH2_NAME,lldpRemSysname);
+            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/1", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 10) {
+            assertEquals(SWITCH2_NAME,lldpRemSysname);
+            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/2", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 11) {
+            assertEquals(SWITCH2_NAME,lldpRemSysname);
+            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/3", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 12) {
+            assertEquals(SWITCH2_NAME,lldpRemSysname);
+            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/4", lldpRemPortid);
         } else {
             assertEquals(false, true);
         }
-        */
+    }
+
+    private void checkSwitch2Row(LldpRemTableEntry lldpRemTableEntry) {
+        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
+        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
+        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
+        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
+        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
+        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
+        printRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
+        assertEquals(4,lldpRemChassisidSubtype.intValue());
+        assertEquals(5,lldpRemPortidSubtype.intValue());
+        
+        if (lldpRemLocalPortNum.intValue() == 1 ) {
+            assertEquals(SWITCH1_NAME,lldpRemSysname);
+            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/9", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 2) {
+            assertEquals(SWITCH1_NAME,lldpRemSysname);
+            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/10", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 3) {
+            assertEquals(SWITCH1_NAME,lldpRemSysname);
+            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/11", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 4) {
+            assertEquals(SWITCH1_NAME,lldpRemSysname);
+            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/12", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 19) {
+            assertEquals(SWITCH3_NAME,lldpRemSysname);
+            assertEquals(SWITCH3_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Fa0/19", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 20) {
+            assertEquals(SWITCH3_NAME,lldpRemSysname);
+            assertEquals(SWITCH3_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Fa0/20", lldpRemPortid);
+        } else {
+            assertEquals(false, true);
+        }
+
+    }
+
+    private void checkSwitch3Row(LldpRemTableEntry lldpRemTableEntry) {
+        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
+        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
+        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
+        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
+        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
+        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
+        printRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
+        assertEquals(4,lldpRemChassisidSubtype.intValue());
+        assertEquals(5,lldpRemPortidSubtype.intValue());
+        
+        if (lldpRemLocalPortNum.intValue() == 19) {
+            assertEquals(SWITCH2_NAME,lldpRemSysname);
+            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/19", lldpRemPortid);
+        } else if (lldpRemLocalPortNum.intValue() == 20) {
+            assertEquals(SWITCH2_NAME,lldpRemSysname);
+            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
+            assertEquals("Gi0/20", lldpRemPortid);
+        } else {
+            assertEquals(false, true);
+        }
+
     }
 
 }
