@@ -18,7 +18,8 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
                 TopoContextMenuItem menuItem = cMenu.addItem(entry.getKey(), null);
                 addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
             }else {
-                cMenu.addItem(entry.getKey());
+                OperationCommand command = (OperationCommand) entry.getValue();
+                cMenu.addItem(entry.getKey(), command.getOperation());
             }
             
         }

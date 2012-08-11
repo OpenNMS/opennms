@@ -176,7 +176,8 @@ public class NodeRestService extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.ok(node).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(node.getId())).build();
+            // return Response.ok(node).build();
         } finally {
             writeUnlock();
         }
@@ -212,7 +213,8 @@ public class NodeRestService extends OnmsRestService {
     
             LogUtils.debugf(this, "updateNode: node %s updated", node);
             m_nodeDao.saveOrUpdate(node);
-            return Response.ok(node).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(node.getId())).build();
+            // return Response.ok(node).build();
         } finally {
             writeUnlock();
         }

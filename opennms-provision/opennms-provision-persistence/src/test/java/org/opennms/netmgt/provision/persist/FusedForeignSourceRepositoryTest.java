@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,29 +37,16 @@ import java.util.ArrayList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.UrlResource;
-import org.springframework.test.context.ContextConfiguration;
 
-
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/testForeignSourceContext.xml"
-})
-@JUnitConfigurationEnvironment
-public class FusedForeignSourceRepositoryTest implements InitializingBean {
+public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     @Autowired
     @Qualifier("pending")
     private ForeignSourceRepository m_pending;
@@ -72,15 +59,8 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
     @Qualifier("fused")
     private ForeignSourceRepository m_repository;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging();
-
         /* 
          * since we share the filesystem with other tests, best
          * to make sure it's totally clean here.
@@ -97,6 +77,8 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         for (Requisition r : m_active.getRequisitions()) {
             m_active.delete(r);
         }
+        m_pending.flush();
+        m_active.flush();
     }
 
     @After
@@ -117,6 +99,8 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         for (Requisition r : m_active.getRequisitions()) {
             m_active.delete(r);
         }
+        m_pending.flush();
+        m_active.flush();
     }
 
     @Test
@@ -134,6 +118,7 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         node.putInterface(iface);
         pendingReq.putNode(node);
         m_pending.save(pendingReq);
+        m_pending.flush();
 
         /* 
          * Then, the user makes a foreign source configuration to go along
@@ -143,6 +128,7 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         assertTrue(pendingSource.isDefault());
         pendingSource.setDetectors(new ArrayList<PluginConfig>());
         m_pending.save(pendingSource);
+        m_pending.flush();
 
         /*
          * Now we got an import event, so we import that requisition file,
@@ -156,7 +142,7 @@ public class FusedForeignSourceRepositoryTest implements InitializingBean {
         assertEquals(activeSource.getName(), pendingSource.getName());
         assertEquals(activeSource.getDetectorNames(), pendingSource.getDetectorNames());
         assertEquals(activeSource.getScanInterval(), pendingSource.getScanInterval());
-        assertEquals("the requisitions should match too", activeReq, pendingReq);
+        assertRequisitionsMatch("active and pending requisitions should match", activeReq, pendingReq);
         
         /*
          * Since it's been officially deployed, the requisition and foreign

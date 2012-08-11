@@ -7,22 +7,31 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.ResourceGraphsWindow;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+
 public class ContextResourceGraphsOperation implements Operation {
 
 	private String resourceGraphsFilter;
 
 	public boolean display(List<Object> targets, OperationContext operationContext) {
+		int nodeID = -1;
+		if (targets != null) {
+			List<Object> selectedVertices = operationContext.getGraphContainer().getSelectedVertices();
+			if (selectedVertices.size() > 0) return false;
+			for(Object target : targets) {
+				Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
+				if (vertexItem != null) {
+					Property nodeIDProperty = vertexItem.getItemProperty("nodeID");
+					nodeID = nodeIDProperty == null ? -1 : (Integer)nodeIDProperty.getValue();
+				}
+			}
+		}
+		if (nodeID < 0) return false;
 		return true;
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		int nodeID = -1;
-		if (targets != null) {
-			for(Object target : targets) {
-				nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
-			}
-		}
-		if (nodeID < 0) return false;
 		return true;
 	}
 
@@ -33,10 +42,12 @@ public class ContextResourceGraphsOperation implements Operation {
 		try {
 			if (targets != null) {
 				for(Object target : targets) {
-					label = (String) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label").getValue();
-					nodeID = (Integer) operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID").getValue();
+					Property labelProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label");
+					label = labelProperty == null ? "" : (String) labelProperty.getValue();
+					Property nodeIDProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID");
+					nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
 				}
-			} 
+			}
 			Node node = new Node(nodeID, null, label);
 			operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(node, getResourceGraphsFilter()));
 		} catch (Exception e) {e.printStackTrace();}
