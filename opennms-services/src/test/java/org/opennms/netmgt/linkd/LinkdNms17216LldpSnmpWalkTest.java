@@ -40,6 +40,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.linkd.snmp.LldpLocTable;
+import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
@@ -93,7 +95,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH2_NAME+"-walk.txt")
     })
-    public void testNetwork17216SWITCH2LLDPLocalBaseCollection() throws Exception {
+    public void testNetwork17216Switch2LLDPLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
         LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(SWITCH2_IP));
@@ -118,7 +120,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH3_NAME+"-walk.txt")
     })
-    public void testNetwork17216SWITCH3LLDPLocalBaseCollection() throws Exception {
+    public void testNetwork17216Switch3LLDPLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
         LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(SWITCH3_IP));
@@ -143,7 +145,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH4_NAME+"-walk.txt")
     })
-    public void testNetwork17216SWITCH4LLDPLocalBaseCollection() throws Exception {
+    public void testNetwork17216Switch4LLDPLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
         LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(SWITCH4_IP));
@@ -168,7 +170,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH5_NAME+"-walk.txt")
     })
-    public void testNetwork17216SWITCH5LLDPLocalBaseCollection() throws Exception {
+    public void testNetwork17216Switch5LLDPLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
         LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(SWITCH5_IP));
@@ -188,7 +190,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         assertEquals(SWITCH5_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
         assertEquals(SWITCH5_NAME, m_lLldpLocalGroup.getLldpLocSysname());
     }
-    
+
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH1_NAME+"-walk.txt")
@@ -273,20 +275,6 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         }
     }
 
-    private void printRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
-            String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
-        System.err.println("getLldpRemSysname: "+lldpRemSysname);
-        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
-        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
-        System.err.println("getLldpRemPortid: "+lldpRemPortid);
-        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");
-        
-    }
-    
     private void checkSwitch1Row(LldpRemTableEntry lldpRemTableEntry) {
         final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
         final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
@@ -294,7 +282,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
         String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
         Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
+        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
         assertEquals(4,lldpRemChassisidSubtype.intValue());
         assertEquals(5,lldpRemPortidSubtype.intValue());
         
@@ -326,7 +314,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
         String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
         Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
+        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
         assertEquals(4,lldpRemChassisidSubtype.intValue());
         assertEquals(5,lldpRemPortidSubtype.intValue());
         
@@ -367,7 +355,7 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
         String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
         Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
+        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
         assertEquals(4,lldpRemChassisidSubtype.intValue());
         assertEquals(5,lldpRemPortidSubtype.intValue());
         
@@ -384,5 +372,53 @@ public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder i
         }
 
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH1_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Switch1LldpLocTableCollection() throws Exception {
+
+        String name = "lldpLocTable";
+        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddress.getByName(SWITCH1_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lldpLocTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+        
+        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
+        assertEquals(30, lldpTableEntryCollection.size());
+        
+        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
+            checkSwitch1Row(lldpLocTableEntry);
+        }
+    }
+
+
+    private void checkSwitch1Row(LldpLocTableEntry lldpLocTableEntry) {
+        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
+        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
+        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
+        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
+        assertEquals(5,lldpLocPortidSubtype.intValue());
+        
+        if (lldpLocPortNum.intValue() >= 1 && lldpLocPortNum.intValue() <= 28) {
+            assertEquals("Gi0/"+lldpLocPortNum,lldpLocPortid);
+        } else if (lldpLocPortNum.intValue() == 64) {
+            assertEquals("Po1",lldpLocPortid);
+        } else if (lldpLocPortNum.intValue() == 448) {
+            assertEquals("St1",lldpLocPortid);
+        } else {
+            assertEquals(true,false);
+        }
+    }
+
 
 }

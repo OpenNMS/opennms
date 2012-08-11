@@ -47,6 +47,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTableEntry;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
+import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
@@ -89,6 +91,8 @@ public abstract class AbstractQueryManager implements QueryManager {
     public abstract IpInterfaceDao getIpInterfaceDao();
 
     public abstract AtInterfaceDao getAtInterfaceDao();
+    
+    public abstract SnmpInterfaceDao getSnmpInterfaceDao();
 
     protected abstract int getIfIndexByName(Connection dbConn, int targetCdpNodeId, String cdpTargetDevicePort) throws SQLException;
 
@@ -236,12 +240,73 @@ public abstract class AbstractQueryManager implements QueryManager {
         List<LldpRemInterface> lldpRemInterfaces = new ArrayList<LldpRemInterface>();
         
         for (final LldpRemTableEntry lldpRemTableEntry: snmpcoll.getLldpRemTable()) {
-            Integer lldpRemIfIndex = Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
+            Integer lldpRemIfIndex = getLldpRemIfIndex(lldpRemTableEntry);
+            if (lldpRemIfIndex == null || lldpRemIfIndex.intValue() == -1) {
+                LogUtils.warnf(this, "processLldpRemTable: lldp remote ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
+            }
             LldpRemInterface lldpremint = 
                 new LldpRemInterface(lldpRemTableEntry.getLldpRemChassisidSubtype(), lldpRemTableEntry.getLldpRemChassiid(), lldpRemIfIndex, lldpRemTableEntry.getLldpRemLocalPortNum());
             lldpRemInterfaces.add(lldpremint);
         }
         node.setLldpRemInterfaces(lldpRemInterfaces);
+    }
+
+    private Integer getLldpRemIfIndex(LldpRemTableEntry lldpRemTableEntry) {
+        Integer ifindex=-1;
+        switch (lldpRemTableEntry.getLldpRemPortidSubtype().intValue()) {
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
+            break;
+        }
+        return ifindex;        
+    }
+    
+    
+    private Integer getFromSysnameAgentCircuitId(String lldpRemSysname,
+            String lldpRemPortid) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Integer getFromSysnameIfName(String lldpRemSysname,
+            String lldpRemPortid) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Integer getFromSysnameIpAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Integer getFromSysnameMacAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Integer getFromSysnamePortComponent(String lldpRemSysname,
+            String lldpRemPortid) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Integer getFromSysnameIfAlias(String lldpRemSysname,
+            String lldpRemPortid) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {

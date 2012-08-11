@@ -45,6 +45,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
@@ -71,6 +72,8 @@ public class DbEventWriter extends AbstractQueryManager {
     private NodeDao m_nodeDao;
 
     private IpInterfaceDao m_ipInterfaceDao;
+    
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
     private AtInterfaceDao m_atInterfaceDao;
 
@@ -891,6 +894,16 @@ public class DbEventWriter extends AbstractQueryManager {
     public void setIpInterfaceDao(final IpInterfaceDao dao) {
         m_ipInterfaceDao = dao;
     }
+
+    @Override
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+
 
     @Override
     public AtInterfaceDao getAtInterfaceDao() {
