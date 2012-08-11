@@ -101,6 +101,31 @@ public abstract class LinkdNetworkBuilder {
         nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
         return nb.getCurrentNode();
     }
+    
+    void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
+            String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
+        System.err.println("-----------------------------------------------------------");    
+        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
+        System.err.println("getLldpRemSysname: "+lldpRemSysname);
+        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
+        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
+        System.err.println("getLldpRemPortid: "+lldpRemPortid);
+        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");        
+    }
+    
+    void printLldpLocRow(Integer lldpLocPortNum,
+            Integer lldpLocPortidSubtype, String lldpLocPortid) {
+        System.err.println("-----------------------------------------------------------");    
+        System.err.println("getLldpLocPortNum: "+lldpLocPortNum);
+        System.err.println("getLldpLocPortid: "+lldpLocPortid);
+        System.err.println("getLldpRemPortidSubtype: "+lldpLocPortidSubtype);
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");
+      
+    }
+    
     void printLink(DataLinkInterface datalinkinterface) {
         System.out.println("----------------checkLink------------------");
         System.out.println("linkid: " + datalinkinterface.getId());

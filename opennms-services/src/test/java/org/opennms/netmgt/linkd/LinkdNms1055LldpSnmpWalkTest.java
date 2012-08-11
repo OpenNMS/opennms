@@ -41,6 +41,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
+import org.opennms.netmgt.linkd.snmp.LldpLocTable;
+import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
@@ -244,6 +246,35 @@ public class LinkdNms1055LldpSnmpWalkTest extends LinkdNms1055NetworkBuilder imp
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
     })
+    public void testNetwork1055LldpLocTableCollection() throws Exception {
+
+        String name = "lldpLocTable";
+        LldpLocTable m_lldpRemTable = new LldpLocTable(InetAddress.getByName(DELAWARE_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_lldpRemTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DELAWARE_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+        
+        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
+        assertEquals(5, lldpTableEntryCollection.size());
+        
+        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
+            checkRow(lldpLocTableEntry);
+        }
+    }
+
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+    })
     public void testNetwork1055LldpRemTableCollection() throws Exception {
 
         String name = "lldpRemTable";
@@ -269,21 +300,13 @@ public class LinkdNms1055LldpSnmpWalkTest extends LinkdNms1055NetworkBuilder imp
     }
     
     private void checkRow(LldpRemTableEntry lldpRemTableEntry) {
-        System.err.println("-----------------------------------------------------------");    
         final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
-        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
         final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
-        System.err.println("getLldpRemSysname: "+lldpRemSysname);
         final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
-        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
         final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
-        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
         String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
-        System.err.println("getLldpRemPortid: "+lldpRemPortid);
         Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");
+        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
         assertEquals(4,lldpRemChassisidSubtype.intValue());
         assertEquals(7,lldpRemPortidSubtype.intValue());
         if (lldpRemLocalPortNum.intValue() == 574) {
@@ -306,5 +329,26 @@ public class LinkdNms1055LldpSnmpWalkTest extends LinkdNms1055NetworkBuilder imp
             assertEquals(false, true);
         }
     }
+    
+    private void checkRow(LldpLocTableEntry lldpLocTableEntry) {
+        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
+        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
+        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
+        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
+        assertEquals(7,lldpLocPortidSubtype.intValue());
 
+        if (lldpLocPortNum.intValue() == 521) {
+            assertEquals("521",lldpLocPortid);
+        } else if (lldpLocPortNum.intValue() == 522) {
+            assertEquals("522",lldpLocPortid);
+        } else if (lldpLocPortNum.intValue() == 574) {
+            assertEquals("574",lldpLocPortid);
+        } else if (lldpLocPortNum.intValue() == 575) {
+            assertEquals("575",lldpLocPortid);
+        } else if (lldpLocPortNum.intValue() == 540) {
+            assertEquals("540",lldpLocPortid);
+        } else {
+            assertEquals(true,false);
+        }
+    }
 }
