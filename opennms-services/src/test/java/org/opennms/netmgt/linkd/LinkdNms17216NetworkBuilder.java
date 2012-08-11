@@ -53,6 +53,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> ROUTER1_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER1_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> ROUTER1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String ROUTER2_IP = "192.168.100.241";
     static final String ROUTER2_NAME = "Router2";
@@ -63,6 +64,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> ROUTER2_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER2_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> ROUTER2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String ROUTER3_IP = "172.16.50.1";
     static final String ROUTER3_NAME = "Router3";
@@ -73,6 +75,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> ROUTER3_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER3_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> ROUTER3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String ROUTER4_IP = "10.10.10.1";
     static final String ROUTER4_NAME = "Router4";
@@ -83,6 +86,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> ROUTER4_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER4_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> ROUTER4_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> ROUTER4_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String SWITCH1_IP = "172.16.10.1";
     static final String SWITCH1_NAME = "Switch1";
@@ -93,6 +97,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String SWITCH2_IP = "172.16.10.2";
     static final String SWITCH2_NAME = "Switch2";
@@ -103,6 +108,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String SWITCH3_IP = "172.16.10.3";
     static final String SWITCH3_NAME = "Switch3";
@@ -113,6 +119,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String SWITCH4_IP = "172.16.50.2";
     static final String SWITCH4_NAME = "Switch4";
@@ -123,6 +130,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SWITCH4_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH4_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH4_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SWITCH4_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String SWITCH5_IP = "172.16.10.4";
     static final String SWITCH5_NAME = "Switch5";
@@ -133,6 +141,7 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SWITCH5_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH5_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SWITCH5_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SWITCH5_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static {
         try {
@@ -792,39 +801,39 @@ public abstract class LinkdNms17216NetworkBuilder extends LinkdNetworkBuilder {
     }
 
     OnmsNode getRouter1() {
-        return getNode(ROUTER1_NAME,ROUTER1_SYSOID,ROUTER1_IP,ROUTER1_IP_IF_MAP,ROUTER1_IF_IFNAME_MAP,ROUTER1_IF_MAC_MAP,ROUTER1_IF_IFDESCR_MAP);
+        return getNode(ROUTER1_NAME,ROUTER1_SYSOID,ROUTER1_IP,ROUTER1_IP_IF_MAP,ROUTER1_IF_IFNAME_MAP,ROUTER1_IF_MAC_MAP,ROUTER1_IF_IFDESCR_MAP,ROUTER1_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getRouter2() {
-        return getNode(ROUTER2_NAME,ROUTER2_SYSOID,ROUTER2_IP,ROUTER2_IP_IF_MAP,ROUTER2_IF_IFNAME_MAP,ROUTER2_IF_MAC_MAP,ROUTER2_IF_IFDESCR_MAP);
+        return getNode(ROUTER2_NAME,ROUTER2_SYSOID,ROUTER2_IP,ROUTER2_IP_IF_MAP,ROUTER2_IF_IFNAME_MAP,ROUTER2_IF_MAC_MAP,ROUTER2_IF_IFDESCR_MAP,ROUTER2_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getRouter3() {
-        return getNode(ROUTER3_NAME,ROUTER3_SYSOID,ROUTER3_IP,ROUTER3_IP_IF_MAP,ROUTER3_IF_IFNAME_MAP,ROUTER3_IF_MAC_MAP,ROUTER3_IF_IFDESCR_MAP);
+        return getNode(ROUTER3_NAME,ROUTER3_SYSOID,ROUTER3_IP,ROUTER3_IP_IF_MAP,ROUTER3_IF_IFNAME_MAP,ROUTER3_IF_MAC_MAP,ROUTER3_IF_IFDESCR_MAP,ROUTER3_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getRouter4() {
-        return getNode(ROUTER4_NAME,ROUTER4_SYSOID,ROUTER4_IP,ROUTER4_IP_IF_MAP,ROUTER4_IF_IFNAME_MAP,ROUTER4_IF_MAC_MAP,ROUTER4_IF_IFDESCR_MAP);
+        return getNode(ROUTER4_NAME,ROUTER4_SYSOID,ROUTER4_IP,ROUTER4_IP_IF_MAP,ROUTER4_IF_IFNAME_MAP,ROUTER4_IF_MAC_MAP,ROUTER4_IF_IFDESCR_MAP,ROUTER4_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getSwitch1() {
-        return getNode(SWITCH1_NAME,SWITCH1_SYSOID,SWITCH1_IP,SWITCH1_IP_IF_MAP,SWITCH1_IF_IFNAME_MAP,SWITCH1_IF_MAC_MAP,SWITCH1_IF_IFDESCR_MAP);
+        return getNode(SWITCH1_NAME,SWITCH1_SYSOID,SWITCH1_IP,SWITCH1_IP_IF_MAP,SWITCH1_IF_IFNAME_MAP,SWITCH1_IF_MAC_MAP,SWITCH1_IF_IFDESCR_MAP,SWITCH1_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getSwitch2() {
-        return getNode(SWITCH2_NAME,SWITCH2_SYSOID,SWITCH2_IP,SWITCH2_IP_IF_MAP,SWITCH2_IF_IFNAME_MAP,SWITCH2_IF_MAC_MAP,SWITCH2_IF_IFDESCR_MAP);
+        return getNode(SWITCH2_NAME,SWITCH2_SYSOID,SWITCH2_IP,SWITCH2_IP_IF_MAP,SWITCH2_IF_IFNAME_MAP,SWITCH2_IF_MAC_MAP,SWITCH2_IF_IFDESCR_MAP,SWITCH2_IF_IFALIAS_MAP);
     }    
 
    OnmsNode getSwitch3() {
-       return getNode(SWITCH3_NAME,SWITCH3_SYSOID,SWITCH3_IP,SWITCH3_IP_IF_MAP,SWITCH3_IF_IFNAME_MAP,SWITCH3_IF_MAC_MAP,SWITCH3_IF_IFDESCR_MAP);
+       return getNode(SWITCH3_NAME,SWITCH3_SYSOID,SWITCH3_IP,SWITCH3_IP_IF_MAP,SWITCH3_IF_IFNAME_MAP,SWITCH3_IF_MAC_MAP,SWITCH3_IF_IFDESCR_MAP,SWITCH3_IF_IFALIAS_MAP);
    }
    
    OnmsNode getSwitch4() {
-       return getNode(SWITCH4_NAME,SWITCH4_SYSOID,SWITCH4_IP,SWITCH4_IP_IF_MAP,SWITCH4_IF_IFNAME_MAP,SWITCH4_IF_MAC_MAP,SWITCH4_IF_IFDESCR_MAP);
+       return getNode(SWITCH4_NAME,SWITCH4_SYSOID,SWITCH4_IP,SWITCH4_IP_IF_MAP,SWITCH4_IF_IFNAME_MAP,SWITCH4_IF_MAC_MAP,SWITCH4_IF_IFDESCR_MAP,SWITCH4_IF_IFALIAS_MAP);
    }
    
    OnmsNode getSwitch5() {
-       return getNode(SWITCH5_NAME,SWITCH5_SYSOID,SWITCH5_IP,SWITCH5_IP_IF_MAP,SWITCH5_IF_IFNAME_MAP,SWITCH5_IF_MAC_MAP,SWITCH5_IF_IFDESCR_MAP);
+       return getNode(SWITCH5_NAME,SWITCH5_SYSOID,SWITCH5_IP,SWITCH5_IP_IF_MAP,SWITCH5_IF_IFNAME_MAP,SWITCH5_IF_MAC_MAP,SWITCH5_IF_IFDESCR_MAP,SWITCH5_IF_IFALIAS_MAP);
    }
 
 

@@ -75,11 +75,9 @@ import org.springframework.transaction.annotation.Transactional;
         // override snmp-config configuration
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-// TODO: this class should be the starting point for Integration tests
-// either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implements InitializingBean {
+public class LinkdNms7467CapsdIntegrationTest extends LinkdNms7467NetworkBuilder implements InitializingBean {
 
 
     @Autowired
@@ -88,11 +86,6 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
     @Autowired
     private Capsd m_capsd;
 
-    //FIXME now linkd is commented out but there should be to found the right
-    // context in which it is properly instantiated 
-//    @Autowired
-//    private Linkd m_linkd;
-    
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -100,9 +93,7 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
 
     @Before
     public void setUp() throws Exception {
-        assertTrue("Capsd must not be null", m_capsd != null);
-//        assertTrue("Linkd must not be null", m_linkd != null);
-        
+        assertTrue("Capsd must not be null", m_capsd != null);        
     }
 
 
@@ -135,9 +126,6 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
                        snmpinterface.getPhysAddr().equals(CISCO_WS_C2948_IF_MAC_MAP.get(snmpinterface.getIfIndex())));
         }
         
- //       assertTrue(!m_linkd.scheduleNodeCollection(ip.getNode().getId()));
-//        assertTrue(m_linkd.runSingleSnmpCollection(ip.getNode().getId()));
-
         m_capsd.stop();
 
         
@@ -171,9 +159,6 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
                        snmpinterface.getPhysAddr().equals(NETGEAR_SW_108_IF_MAC_MAP.get(snmpinterface.getIfIndex())));
         }
         
-//        assertTrue(!m_linkd.scheduleNodeCollection(ip.getNode().getId()));
-//        assertTrue(m_linkd.runSingleSnmpCollection(ip.getNode().getId()));
-
         m_capsd.stop();
 
         
@@ -209,9 +194,6 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
 
         assertTrue("Has 16 snmp interface", ipmain.getNode().getSnmpInterfaces().size() == 16);
         
-//        assertTrue(!m_linkd.scheduleNodeCollection(ipmain.getNode().getId()));
-//        assertTrue(m_linkd.runSingleSnmpCollection(ipmain.getNode().getId()));
-
         m_capsd.stop();
 
         
@@ -254,8 +236,6 @@ public class LinkdCapsdIntegrationTest extends LinkdNms7467NetworkBuilder implem
                        snmpinterface.getPhysAddr().equals(LINUX_UBUNTU_IF_MAC_MAP.get(snmpinterface.getIfIndex())));
             }
         }
-//        assertTrue(!m_linkd.scheduleNodeCollection(ipmain.getNode().getId()));
-//        assertTrue(m_linkd.runSingleSnmpCollection(ipmain.getNode().getId()));
         m_capsd.stop();
     }
     
