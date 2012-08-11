@@ -135,6 +135,12 @@ public class SimpleTopologyProviderTest {
             Item vertexItem = getVertexItem(key);
             return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
         }
+
+	@Override
+	public List<Object> getSelectedVertices() {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
         
     }
     

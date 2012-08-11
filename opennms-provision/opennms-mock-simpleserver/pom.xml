@@ -19,6 +19,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.netmgt.provision.server.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
