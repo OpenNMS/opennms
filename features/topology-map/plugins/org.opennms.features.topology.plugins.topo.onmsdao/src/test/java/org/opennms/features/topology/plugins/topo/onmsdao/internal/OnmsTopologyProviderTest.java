@@ -2,7 +2,7 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 
 import java.util.Collection;
-
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,7 +134,13 @@ public class OnmsTopologyProviderTest {
             // TODO Auto-generated method stub
             return null;
         }
-        
+
+	@Override
+	public List<Object> getSelectedVertices() {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{

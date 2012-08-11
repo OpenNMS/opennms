@@ -1,7 +1,7 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
-
+import java.util.List;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 
@@ -11,6 +11,8 @@ public interface GraphContainer extends DisplayState {
 	
 	public BeanContainer<?, ?> getEdgeContainer();
 	
+	public List<Object> getSelectedVertices();
+
 	public Collection<?> getVertexIds();
 	
 	public Collection<?> getEdgeIds();

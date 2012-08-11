@@ -555,5 +555,18 @@ public class SimpleGraphContainer implements GraphContainer {
         Item vertexItem = getVertexItem(key);
         return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
     }
+    
+    @Override
+    public List<Object> getSelectedVertices() {
+    	List<Object> targets = new ArrayList<Object>();
+	for (Object vId : getVertexIds()) {
+		Item vItem = getVertexItem(vId);
+		boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
+		if (selected) {
+			targets.add(vItem.getItemProperty("key").getValue());
+		}
+	}
+	return targets;
+    }
 
 }
