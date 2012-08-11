@@ -56,7 +56,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -98,8 +97,8 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-//        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-//        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
         MockLogAppender.setupLogging(p);
 
     }
@@ -113,15 +112,10 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
     }
     
     @Test
-    @Transactional
     public void testAbstractQueryManagerforLldp() {
         m_nodeDao.save(getDelaware());
         m_nodeDao.flush();
         
-        //final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
-        
-        //assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
-
         HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
         /*
          *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");

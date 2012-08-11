@@ -295,22 +295,8 @@ public abstract class AbstractQueryManager implements QueryManager {
         return null;
     }
     
-    protected Integer getFromSysnameIpAddress(String lldpRemSysname,
-            String lldpRemPortid) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
-        try {
-            criteria.add(Restrictions.eq("ipAddress", InetAddress.getByName(lldpRemPortid)));
-            final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(criteria);
-            if (interfaces != null && !interfaces.isEmpty()) {
-                return interfaces.get(0).getIfIndex();
-            }
-        } catch (UnknownHostException e) {
-            LogUtils.warnf(this,"getFromSysnameIpAddress: not valid ip address: %s" , e.toString());
-        }
-        return null;
-    }
+    protected abstract Integer getFromSysnameIpAddress(String lldpRemSysname,
+            String lldpRemPortid);
 
     protected Integer getFromSysnameMacAddress(String lldpRemSysname,
             String lldpRemPortid) {

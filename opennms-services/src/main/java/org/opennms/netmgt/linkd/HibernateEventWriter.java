@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -710,6 +711,24 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
+    }
+    
+    @Transactional
+    public Integer getFromSysnameIpAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        try {
+            criteria.add(Restrictions.eq("ipAddress", InetAddress.getByName(lldpRemPortid)));
+            final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(criteria);
+            if (interfaces != null && !interfaces.isEmpty()) {
+                return interfaces.get(0).getIfIndex();
+            }
+        } catch (UnknownHostException e) {
+            LogUtils.warnf(this,"getFromSysnameIpAddress: not valid ip address: %s" , e.toString());
+        }
+        return null;
     }
 
 }
