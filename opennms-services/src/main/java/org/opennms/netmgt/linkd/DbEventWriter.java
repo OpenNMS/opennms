@@ -138,6 +138,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     private static final String SQL_UPDATE_DATALINKINTERFACE_D = "UPDATE datalinkinterface set status = 'D' WHERE (nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) OR nodeparentid IN (SELECT nodeid from node WHERE nodetype = 'D' )) AND status <> 'D'";
 
+    private static final String SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS = "SELECT ifindex FROM ipinterface ip LEFT JOIN node n ON n.nodeid=ip.nodeid WHERE n.nodesysname = ? AND ip.ipaddr = ?";
     /**
      * <p>Constructor for DbEventWriter.</p>
      */
@@ -1032,6 +1033,53 @@ public class DbEventWriter extends AbstractQueryManager {
             LogUtils.debugf(this, "setBridgeIdentifierFromSnmpInterface: found bridge identifier " + macaddr + " from snmpinterface db table");
         }
         return physaddrs;
+    }
+
+    @Override
+    protected Integer getFromSysnameIpAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        final DBUtils d = new DBUtils(getClass());
+        int ifindex = -1;
+        try {
+            Connection dbConn = getConnection();
+            PreparedStatement stmt = null;
+            stmt = dbConn.prepareStatement(SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS);
+            d.watch(stmt);
+            stmt.setString(1, lldpRemSysname);
+            stmt.setString(2, lldpRemPortid);
+    
+            LogUtils.debugf(this, "getFromSysnameIpAddress: executing query" + SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS + " nodeSysname=" + lldpRemSysname + "and ipAddr=" + lldpRemPortid);
+    
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+    
+            if (!rs.next()) {
+                LogUtils.debugf(this, "getFromSysnameIpAddress: no entries found in ipinterface");
+                return -1;
+            }
+    
+            // extract the values.
+            //
+            int ndx = 1;
+    
+            if (rs.wasNull()) {
+    
+                LogUtils.debugf(this, "getFromSysnameIpAddress: no entries found in snmpinterface");
+                return -1;
+    
+            }
+    
+            ifindex = rs.getInt(ndx++);
+    
+            LogUtils.debugf(this, "getFromSysnameIpAddress: found ifindex=" + ifindex);
+    
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            d.cleanUp();
+        }
+        return Integer.valueOf(ifindex);
     }
 
 }
