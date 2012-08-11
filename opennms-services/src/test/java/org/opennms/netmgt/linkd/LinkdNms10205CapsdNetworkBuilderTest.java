@@ -134,6 +134,8 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
             System.out.println("MUMBAI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("MUMBAI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("MUMBAI_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -169,6 +171,8 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
             System.out.println("CHENNAI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("CHENNAI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("CHENNAI_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -202,6 +206,9 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
             System.out.println("DELHI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("DELHI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("DELHI_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+
         }
         
         m_capsd.stop();
@@ -235,6 +242,8 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
             System.out.println("SPACE_EX_SW1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SPACE_EX_SW1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("SPACE_EX_SW1_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -268,6 +277,9 @@ public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBu
             System.out.println("BANGALORE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("BANGALORE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("BANGALORE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+
         }
         
         m_capsd.stop();

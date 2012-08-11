@@ -138,7 +138,12 @@ public class NetworkBuilder {
             m_node.setSysObjectId(sysObjectId);
             return this;
         }
-        
+
+        public NodeBuilder setSysName(final String nodesysname) {
+            m_node.setSysName(nodesysname);
+            return this;
+        }
+
         
     }
     

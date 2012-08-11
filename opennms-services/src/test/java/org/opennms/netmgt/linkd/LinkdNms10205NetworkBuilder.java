@@ -52,6 +52,7 @@ public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> MUMBAI_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> MUMBAI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> MUMBAI_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MUMBAI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static {
         try {
@@ -189,6 +190,7 @@ public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> CHENNAI_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> CHENNAI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> CHENNAI_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> CHENNAI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static {
         try {
@@ -441,6 +443,7 @@ public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> DELHI_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> DELHI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> DELHI_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> DELHI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     
     static {
         try {
@@ -671,6 +674,7 @@ public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SPACE_EX_SW1_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SPACE_EX_SW1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SPACE_EX_SW1_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     
     static {
         try {
@@ -813,6 +817,7 @@ public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> BANGALORE_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> BANGALORE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> BANGALORE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BANGALORE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static {
         try {
@@ -935,23 +940,23 @@ public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
     }
     
     OnmsNode getMumbai() {
-        return getNode(MUMBAI_NAME,MUMBAI_SYSOID,MUMBAI_IP,MUMBAI_IP_IF_MAP,MUMBAI_IF_IFNAME_MAP,MUMBAI_IF_MAC_MAP,MUMBAI_IF_IFDESCR_MAP);
+        return getNode(MUMBAI_NAME,MUMBAI_SYSOID,MUMBAI_IP,MUMBAI_IP_IF_MAP,MUMBAI_IF_IFNAME_MAP,MUMBAI_IF_MAC_MAP,MUMBAI_IF_IFDESCR_MAP,MUMBAI_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getChennai() {
-        return getNode(CHENNAI_NAME,CHENNAI_SYSOID,CHENNAI_IP,CHENNAI_IP_IF_MAP,CHENNAI_IF_IFNAME_MAP,CHENNAI_IF_MAC_MAP,CHENNAI_IF_IFDESCR_MAP);
+        return getNode(CHENNAI_NAME,CHENNAI_SYSOID,CHENNAI_IP,CHENNAI_IP_IF_MAP,CHENNAI_IF_IFNAME_MAP,CHENNAI_IF_MAC_MAP,CHENNAI_IF_IFDESCR_MAP,CHENNAI_IF_IFALIAS_MAP);
     }    
     
     OnmsNode getDelhi() {
-        return getNode(DELHI_NAME,DELHI_SYSOID,DELHI_IP,DELHI_IP_IF_MAP,DELHI_IF_IFNAME_MAP,DELHI_IF_MAC_MAP,DELHI_IF_IFDESCR_MAP);
+        return getNode(DELHI_NAME,DELHI_SYSOID,DELHI_IP,DELHI_IP_IF_MAP,DELHI_IF_IFNAME_MAP,DELHI_IF_MAC_MAP,DELHI_IF_IFDESCR_MAP,DELHI_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getSpaceExSw1() {
-        return getNode(SPACE_EX_SW1_NAME,SPACE_EX_SW1_SYSOID,SPACE_EX_SW1_IP,SPACE_EX_SW1_IP_IF_MAP,SPACE_EX_SW1_IF_IFNAME_MAP,SPACE_EX_SW1_IF_MAC_MAP,SPACE_EX_SW1_IF_IFDESCR_MAP);
+        return getNode(SPACE_EX_SW1_NAME,SPACE_EX_SW1_SYSOID,SPACE_EX_SW1_IP,SPACE_EX_SW1_IP_IF_MAP,SPACE_EX_SW1_IF_IFNAME_MAP,SPACE_EX_SW1_IF_MAC_MAP,SPACE_EX_SW1_IF_IFDESCR_MAP,SPACE_EX_SW1_IF_IFALIAS_MAP);
     }
 
     OnmsNode getBangalore() {
-        return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP);        
+        return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP,BANGALORE_IF_IFALIAS_MAP);        
     }
         
 }

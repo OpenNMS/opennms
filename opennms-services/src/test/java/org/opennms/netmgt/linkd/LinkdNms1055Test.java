@@ -56,6 +56,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -109,6 +110,39 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
             m_nodeDao.delete(node);
         }
         m_nodeDao.flush();
+    }
+    
+    @Test
+    @Transactional
+    public void testAbstractQueryManagerforLldp() {
+        m_nodeDao.save(getDelaware());
+        m_nodeDao.flush();
+        
+        //final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
+        
+        //assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
+
+        HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
+        /*
+         *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
+         *         DELAWARE_IF_IFALIAS_MAP.put(517, "test");
+         */
+        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").intValue());
+        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").intValue());
+
+        /*
+         * DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
+         */
+        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").intValue());
+        /*
+         * DELAWARE_IP_IF_MAP.put(InetAddress.getByName("10.155.69.17"), 13);
+         */
+        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, "10.155.69.17").intValue());
+   
+        /*
+         * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
+         */
+        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").intValue());
     }
 
     /*

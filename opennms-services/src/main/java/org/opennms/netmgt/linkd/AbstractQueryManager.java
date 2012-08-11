@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -61,6 +63,7 @@ import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsAtInterface;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -220,7 +223,7 @@ public abstract class AbstractQueryManager implements QueryManager {
     // This ifindex is saved in AtInterface object
     // that is used to find the right information for a linked node.
     // AR Dixit
-    private Integer getIfIndex(Integer nodeid, String ipaddress) {
+    protected Integer getIfIndex(Integer nodeid, String ipaddress) {
         OnmsIpInterface ipinterface = getIpInterfaceDao().findByNodeIdAndIpAddress(nodeid, ipaddress);
         if (ipinterface != null && ipinterface.getIfIndex() != null) {
             LogUtils.infof(this, "getIfindex: found ip interface for address '%s' on ifindex %d", ipinterface.getIpAddress().getHostAddress(), ipinterface.getIfIndex());
@@ -273,39 +276,71 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
     
     
-    private Integer getFromSysnameAgentCircuitId(String lldpRemSysname,
+    protected Integer getFromSysnameAgentCircuitId(String lldpRemSysname,
             String lldpRemPortid) {
-        // TODO Auto-generated method stub
+        LogUtils.warnf(this,"getFromSysnameAgentCircuitId: AgentCircuitId LLDP PortSubTypeId not supported");
         return null;
     }
 
-    private Integer getFromSysnameIfName(String lldpRemSysname,
+    protected Integer getFromSysnameIfName(String lldpRemSysname,
             String lldpRemPortid) {
-        // TODO Auto-generated method stub
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifName", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
+        return null;
+    }
+    
+    protected Integer getFromSysnameIpAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        try {
+            criteria.add(Restrictions.eq("ipAddress", InetAddress.getByName(lldpRemPortid)));
+            final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(criteria);
+            if (interfaces != null && !interfaces.isEmpty()) {
+                return interfaces.get(0).getIfIndex();
+            }
+        } catch (UnknownHostException e) {
+            LogUtils.warnf(this,"getFromSysnameIpAddress: not valid ip address: %s" , e.toString());
+        }
         return null;
     }
 
-    private Integer getFromSysnameIpAddress(String lldpRemSysname,
+    protected Integer getFromSysnameMacAddress(String lldpRemSysname,
             String lldpRemPortid) {
-        // TODO Auto-generated method stub
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("physAddr", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
         return null;
     }
 
-    private Integer getFromSysnameMacAddress(String lldpRemSysname,
+    protected Integer getFromSysnamePortComponent(String lldpRemSysname,
             String lldpRemPortid) {
-        // TODO Auto-generated method stub
+        LogUtils.warnf(this,"getFromSysnamePortComponent:PortComponent LLDP PortSubTypeId not supported");
         return null;
     }
 
-    private Integer getFromSysnamePortComponent(String lldpRemSysname,
+    protected Integer getFromSysnameIfAlias(String lldpRemSysname,
             String lldpRemPortid) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private Integer getFromSysnameIfAlias(String lldpRemSysname,
-            String lldpRemPortid) {
-        // TODO Auto-generated method stub
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifAlias", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
         return null;
     }
 

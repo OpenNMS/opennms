@@ -60,14 +60,17 @@ public abstract class LinkdNetworkBuilder {
             Map<InetAddress, Integer> ipinterfacemap,
             Map<Integer,String> ifindextoifnamemap,
             Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap) {
+            Map<Integer,String> ifindextoifdescrmap,
+            Map<Integer,String> ifindextoifalias)
+    {
         NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setType("A");
+        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setSysName(name).setType("A");
         final Map<Integer, SnmpInterfaceBuilder> ifindexsnmpbuildermap = new HashMap<Integer, SnmpInterfaceBuilder>();
         for (Integer ifIndex: ifindextoifnamemap.keySet()) {
             ifindexsnmpbuildermap.put(ifIndex, nb.addSnmpInterface(ifIndex).
                                       setIfType(6).
                                       setIfName(ifindextoifnamemap.get(ifIndex)).
+                                      setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
                                       setIfSpeed(100000000).
                                       setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
         }

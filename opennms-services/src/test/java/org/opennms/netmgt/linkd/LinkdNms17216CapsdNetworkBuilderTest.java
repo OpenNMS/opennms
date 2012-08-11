@@ -132,6 +132,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("ROUTER1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("ROUTER1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("ROUTER1_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -167,6 +169,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("ROUTER2_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("ROUTER2_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("ROUTER2_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -200,6 +204,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("ROUTER3_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("ROUTER3_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("ROUTER3_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -233,6 +239,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("ROUTER4_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("ROUTER4_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("ROUTER4_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -266,6 +274,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("SWITCH1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SWITCH1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("SWITCH1_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -299,6 +309,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("SWITCH2_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SWITCH2_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("SWITCH2_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -332,6 +344,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("SWITCH3_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SWITCH3_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("SWITCH3_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -365,6 +379,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("SWITCH4_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SWITCH4_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("SWITCH4_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -398,6 +414,8 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
             System.out.println("SWITCH5_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SWITCH5_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+                System.out.println("SWITCH5_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
