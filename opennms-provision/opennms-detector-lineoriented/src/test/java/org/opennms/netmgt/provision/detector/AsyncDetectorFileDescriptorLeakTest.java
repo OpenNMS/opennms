@@ -59,8 +59,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
     @Before
     public void setUp() {
-        // Set the logging to INFO so that it doesn't OutOfMemory Eclipse with logs :)
-        MockLogAppender.setupLogging(true, "INFO");
+        MockLogAppender.setupLogging();
     }
 
     private static AsyncServiceDetector getNewDetector(int port, String bannerRegex) {
@@ -107,8 +106,8 @@ public class AsyncDetectorFileDescriptorLeakTest {
         final InetAddress address = m_server.getInetAddress();
 
         int i = 0;
-        while (i < 30000) {
-            LogUtils.infof(this, "current loop: %d", i);
+        while (i < 10000) {
+            LogUtils.debugf(this, "current loop: %d", i);
 
             AsyncServiceDetector detector = getNewDetector(port, ".*");
 
@@ -137,8 +136,8 @@ public class AsyncDetectorFileDescriptorLeakTest {
         final InetAddress address = m_server.getInetAddress();
 
         int i = 0;
-        while (i < 30000) {
-            LogUtils.infof(this, "current loop: %d", i);
+        while (i < 10000) {
+            LogUtils.debugf(this, "current loop: %d", i);
 
             AsyncServiceDetector detector = getNewDetector(port, null);
 
