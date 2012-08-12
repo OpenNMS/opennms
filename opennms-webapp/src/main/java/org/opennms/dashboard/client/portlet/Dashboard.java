@@ -121,8 +121,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
             mz.append("###Start###");
             dbLayout = new VerticalDBLayout();
-            DOM.setStyleAttribute(dbLayout.getElement(), "backgroundColor",
-                                  "pink");
+//            DOM.setStyleAttribute(dbLayout.getElement(), "backgroundColor","pink");
             dbLayout.setPixelSize(1286, 600);
             mz.append("###Layout panel adding to DOM###");
             RootPanel panel = RootPanel.get("dashboardDiv");

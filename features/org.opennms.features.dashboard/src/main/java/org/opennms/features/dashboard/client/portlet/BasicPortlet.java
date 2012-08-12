@@ -201,8 +201,12 @@ public abstract class BasicPortlet extends FocusPanel implements
         closeHandler = new ClickHandler() {
 
             public void onClick(ClickEvent arg0) {
-                BasicPortlet.this.setVisible(false);
-                BasicPortlet.this.removeFromParent();
+                try {
+                    BasicPortlet.this.setVisible(false);
+                    BasicPortlet.this.removeFromParent();
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
             }
         };
         
