@@ -56,7 +56,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
 /**
- * This class is the main respository for JMX data collection configuration
+ * This class is the main repository for JMX data collection configuration
  * information used by the an instance of the JMX service monitor. When this class is loaded it
  * reads the jmx data collection configuration into memory.
  *
@@ -101,8 +101,6 @@ public final class JMXDataCollectionConfigFactory {
      * <p>Constructor for JMXDataCollectionConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public JMXDataCollectionConfigFactory(InputStream stream) {
         initialize(new InputStreamResource(stream));
@@ -179,13 +177,6 @@ public final class JMXDataCollectionConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException {
         if (m_loaded) {
@@ -213,13 +204,6 @@ public final class JMXDataCollectionConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException {
         m_singleton = null;
