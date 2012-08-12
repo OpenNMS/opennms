@@ -1,0 +1,12 @@
+target/
+satellit/logs/
+nb-configuration.xml
+/lib/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings
+/.idea
+*~

@@ -72,7 +72,7 @@ Array.prototype.remove = function(from, to) {
 };
 
 // Receive inbound JavaScript variables from the controller.
-var collectionTaskId = "${collectionTask}";
+var collectionTaskId = "${nrtCollectionTaskId}";
 var rrdGraphString = "${rrdGraphString}";
 
 // Create all of the necessary graphing variables.
@@ -239,6 +239,8 @@ function init() {
 	axisY = svg.append("g")
 		.attr("class", "y axis")
 		.call(d3.svg.axis().scale(y).orient("left"));
+
+	$("#rrdGraphString").text("RRD Command: " + rrdGraphString);
 }
 
 function tick(incomingData) {
@@ -311,7 +313,7 @@ amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMess
 var refreshTimerJob = {
 	/// Submits the AJAX collection job request and requeues the timer.
 	submitJob: function() {
-		$.get("/opennms/nrt/starter.htm","collectionTask="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+		$.get("/opennms/nrt/starter.htm","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
 		var self = this;
 		this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
 	},
@@ -360,6 +362,8 @@ $(function() {
 	<div id="main"></div>
 	<div>Refresh Interval (in ms)<input name="refreshInterval"></input></div>
 	<div>Graph Duration (in seconds)<input name="durationInterval"></input></div>
+	<div id="errorDiv"></div>
 	<div id="valuesDebug"></div>
+	<div id="rrdGraphString"></div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

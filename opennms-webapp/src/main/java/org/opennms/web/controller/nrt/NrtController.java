@@ -9,7 +9,7 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.model.CollectionJob;
-import org.opennms.nrtg.protocolcollector.snmp.model.SnmpCollectionJob;
+import org.opennms.nrtg.api.model.DefaultCollectionJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,32 +51,40 @@ public class NrtController {
     @Qualifier("snmpPeerFactory")
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
 
-    //ToDo Tak, böser draft!
-    @RequestMapping(method = RequestMethod.GET, params = {"collectionTask"})
+    @RequestMapping(method = RequestMethod.GET, params = {"nrtCollectionTaskId"})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void nrtCollectionJobTrigger(String collectionTask, HttpSession httpSession) {
-        logger.debug("Republish CollectionJobTrigger for '{}'", collectionTask);
-        logger.debug("CollectionJob is '{}'", httpSession.getAttribute(collectionTask));
+    public void nrtCollectionJobTrigger(String nrtCollectionTaskId, HttpSession httpSession) {
+        logger.debug("Republish CollectionJobTrigger for '{}'", nrtCollectionTaskId);
 
-        Map<String, CollectionJob> nrtCollectoinTasks = null;
-        try {
-            nrtCollectoinTasks = (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectoinTasks");
-        } catch (Exception e) {
-            logger.error("Session contains incompatibl datastructure for NrtCollectoinTasks attribute '{}'", e.getMessage());
-        }
-        if (nrtCollectoinTasks != null) {
-            CollectionJob collectionJob = nrtCollectoinTasks.get(collectionTask);
+        Map<String, CollectionJob> nrtCollectionTasks = getCollectionJobMap(httpSession, false);
+
+        if (nrtCollectionTasks != null) {
+            CollectionJob collectionJob = nrtCollectionTasks.get(nrtCollectionTaskId);
+            logger.debug("CollectionJob is '{}'", collectionJob);
             if (collectionJob != null) {
-                m_jmsTemplate.convertAndSend("NrtCollectMe", httpSession.getAttribute(collectionTask));
-                logger.debug("collectionJob was send!");
+            	publishCollectionJobViaJms(collectionJob);
+                logger.debug("collectionJob was sent!");
             } else {
-                logger.debug("collectionJob for collectionTask not found in session '{}'", collectionTask);
+                logger.debug("collectionJob for collectionTask not found in session '{}'", nrtCollectionTaskId);
             }
         } else {
             logger.debug("No CollectionTasks map in session found.");
         }
     }
+
+	@SuppressWarnings("unchecked")
+	private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
+        if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
+            httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
+        }
+        try {
+        	return (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectionTasks");
+        } catch (Exception e) {
+            logger.error("Session contains incompatible datastructure for NrtCollectionTasks attribute '{}'", e.getMessage());
+            return null;
+        }
+	}
 
     @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
@@ -97,17 +105,17 @@ public class NrtController {
         OnmsNode node = (OnmsNode) topResource.getEntity();
 
         SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
-        logger.debug("SnmpAgendConfig '{}' communityString '{}'", snmpAgentConfig, snmpAgentConfig.getReadCommunity());
+        logger.debug("SnmpAgentConfig '{}' communityString '{}'", snmpAgentConfig, snmpAgentConfig.getReadCommunity());
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         //TODO Tak graph service is able to check is a graph is propper for a given resource, check that later.
         lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
 
-        String collectionTask = "CollectionTaksId_" + new Date();
-
-        SnmpCollectionJob collectionJob = new SnmpCollectionJob();
-        collectionJob.setSnmpAgentConfig(snmpAgentConfig);
+        String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
+        
+        CollectionJob collectionJob = new DefaultCollectionJob();
         collectionJob.setService("SNMP");
+        collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
 
         collectionJob.setNodeId(node.getId());
         String netInterface = node.getPrimaryInterface().getIpAddress().getHostAddress();
@@ -115,7 +123,7 @@ public class NrtController {
         collectionJob.setNetInterface(netInterface);
 
         Set<String> resultDestinations = new HashSet<String>();
-        resultDestinations.add(collectionTask);
+        resultDestinations.add(nrtCollectionTaskId);
 
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
@@ -125,15 +133,10 @@ public class NrtController {
         this.publishCollectionJobViaJms(collectionJob);
 
         //Check if there is a NrtCollectionTasks map in the session already 
-        if (httpSession.getAttribute("NrtCollectoinTasks") == null) {
-            httpSession.setAttribute("NrtCollectoinTasks", new HashMap<String, CollectionJob>());
-        }
-        ((Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectoinTasks")).put(collectionTask, collectionJob);
-
-        httpSession.setAttribute(collectionTask, collectionJob);
+        getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
 
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
-        modelAndView.addObject("collectionTask", collectionTask);
+        modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
         modelAndView.addObject("rrdGraphString", prefabGraph.getCommand().replaceAll("\"", "'"));
         logger.debug("rrdGraphString with \" replaced '{}'", prefabGraph.getCommand().replaceAll("\"", "'"));
         return modelAndView;
