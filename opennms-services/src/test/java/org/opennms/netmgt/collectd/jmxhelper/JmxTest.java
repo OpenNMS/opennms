@@ -25,6 +25,11 @@
  */
 package org.opennms.netmgt.collectd.jmxhelper;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import javax.management.openmbean.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,42 +43,43 @@ public class JmxTest implements JmxTestMBean {
 
     String name = "Jmx Test";
 
-    int x = 42;
-
-    int writable = 0;
-
     @Override
     public String getName() {
         return name;
     }
 
     @Override
-    public int getX() {
-        return x;
+    public String getStringNull() {
+        return null;
     }
 
     @Override
-    public Integer getInteger() {
-        return new Integer(42);
+    public int getA() {
+        return 1;
     }
 
     @Override
-    public Long getLong() {
-        return new Long(42);
+    public int getB() {
+        return 2;
     }
 
     @Override
-    public void setWritableY(int writable) {
-        this.writable = writable;
+    public int getC() {
+        return 3;
     }
 
     @Override
-    public int getWritableY() {
-        return writable;
+    public int getD() {
+        return 4;
     }
 
     @Override
-    public String getNullString() {
+    public Integer getIntegerNull() {
+        return null;
+    }
+
+    @Override
+    public CompositeData getCompositeData() {
         return null;
     }
 }
