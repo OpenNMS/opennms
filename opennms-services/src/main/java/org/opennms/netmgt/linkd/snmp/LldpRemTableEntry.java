@@ -1,5 +1,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
+import java.net.InetAddress;
+
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -86,6 +88,14 @@ public class LldpRemTableEntry extends SnmpStore {
     
     public String getLldpRemSysname() {
         return getDisplayString(LLDP_REM_SYSNAME_ALIAS);
+    }
+    
+    public String getLldpRemMacAddress() {
+        return getHexString(LLDP_REM_PORTID_ALIAS);
+    }
+    
+    public InetAddress getLldpRemIpAddress() {
+        return getIPAddress(LLDP_REM_PORTID_ALIAS);
     }
     
     /** {@inheritDoc} */

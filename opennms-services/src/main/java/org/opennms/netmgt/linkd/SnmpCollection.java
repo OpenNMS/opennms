@@ -44,6 +44,7 @@ import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
 import org.opennms.netmgt.linkd.snmp.CiscoVlanTable;
 import org.opennms.netmgt.linkd.snmp.IntelVlanTable;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
+import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
@@ -155,6 +156,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	private boolean m_collectCdpTable = false;
 
 	public LldpLocalGroup m_lldpLocalGroup;
+        public LldpLocTable m_lldpLocTable;
 	public LldpRemTable m_lldpRemTable;
 	/**
 	 * The ipnettomedia table information
@@ -236,6 +238,15 @@ public final class SnmpCollection implements ReadyRunnable {
 	LldpRemTable getLldpRemTable() {
 	    return m_lldpRemTable;
 	}
+
+       boolean hasLldpLocTable() {
+            return (m_lldpLocTable != null && !m_lldpLocTable.failed());
+        }
+	        
+        LldpLocTable getLldpLocTable() {
+            return m_lldpLocTable;
+        }
+
 	/**
 	 * Returns true if the IP net to media table was collected.
 	 */
@@ -365,6 +376,8 @@ public final class SnmpCollection implements ReadyRunnable {
 			
 			m_lldpRemTable = new LldpRemTable(m_address);
 
+	                m_lldpLocTable = new LldpLocTable(m_address);
+
 			LogUtils.debugf(this, "run: collecting : %s", m_agentConfig);
 
 			SnmpWalker walker = null;
@@ -430,29 +443,29 @@ public final class SnmpCollection implements ReadyRunnable {
             CollectionTracker[] tracker = new CollectionTracker[0];
 
             if (collectVlanTable && collectIpRouteTable && m_collectCdpTable) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/ipRouteTable/cdpCacheTable/vlanTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable, m_ipNetToMedia, m_ipRoute, m_CdpCache, m_vlanTable };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable/cdpCacheTable/vlanTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia, m_ipRoute, m_CdpCache, m_vlanTable };
             } else if (m_collectCdpTable && collectIpRouteTable) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/ipRouteTable/cdpCacheTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable,m_ipNetToMedia, m_ipRoute, m_CdpCache };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable/cdpCacheTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable,m_ipNetToMedia, m_ipRoute, m_CdpCache };
             } else if (collectVlanTable && collectIpRouteTable) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/ipRouteTable/vlanTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable, m_ipNetToMedia, m_ipRoute, m_vlanTable };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable/vlanTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia, m_ipRoute, m_vlanTable };
             } else if (collectVlanTable && m_collectCdpTable) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/vlanTable/cdpCacheTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable,m_ipNetToMedia, m_vlanTable, m_CdpCache };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/vlanTable/cdpCacheTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable,m_ipNetToMedia, m_vlanTable, m_CdpCache };
             } else if (collectIpRouteTable) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/ipRouteTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable,m_ipNetToMedia, m_ipRoute };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable,m_ipNetToMedia, m_ipRoute };
             } else if (collectVlanTable) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/vlanTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable,m_ipNetToMedia, m_vlanTable };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/vlanTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable,m_ipNetToMedia, m_vlanTable };
             } else if (m_collectCdpTable && m_ipNetToMedia != null && m_CdpCache != null) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable/cdpCacheTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable,m_ipNetToMedia, m_CdpCache };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/cdpCacheTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable,m_ipNetToMedia, m_CdpCache };
             } else if (m_ipNetToMedia != null) {
-                name = "lldpLocalGroup/lldpRemTable/ipNetToMediaTable";
-                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpRemTable,m_ipNetToMedia };
+                name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable";
+                tracker = new CollectionTracker[] { m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable,m_ipNetToMedia };
             }
             if (name == null) {
                 LogUtils.infof(this, "run: Unable to determine data to collect from %s", str(m_agentConfig.getEffectiveAddress()));
@@ -475,6 +488,8 @@ public final class SnmpCollection implements ReadyRunnable {
 			//
                         if (!this.hasLldpLocalGroup())
                 LogUtils.infof(this, "run: failed to collect lldpLocalGroup for %s", hostAddress);
+                        if (!this.hasLldpLocTable())
+                            LogUtils.infof(this, "run: failed to collect lldpLocTable for %s", hostAddress);
                         if (!this.hasLldpRemTable())
                             LogUtils.infof(this, "run: failed to collect lldpRemTable for %s", hostAddress);
 			if (!this.hasIpNetToMediaTable())
@@ -543,6 +558,7 @@ public final class SnmpCollection implements ReadyRunnable {
 			m_CdpCache = null;
 			m_vlanTable = null;
 			m_lldpLocalGroup = null;
+			m_lldpLocTable = null;
 			m_lldpRemTable = null;
 			m_snmpVlanCollection.clear();
 		}
