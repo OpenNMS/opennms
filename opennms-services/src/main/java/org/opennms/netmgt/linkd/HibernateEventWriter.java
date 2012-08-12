@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -191,11 +190,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	@Transactional
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
 		final Timestamp scanTime = new Timestamp(System.currentTimeMillis());
-	if (snmpColl.hasLldpLocalGroup()) {
-	    processLldpLocalGroup(node,snmpColl,null,scanTime);
-	}
-	if (snmpColl.hasLldpRemTable()) {
-	    processLldpRemTable(node,snmpColl,null,scanTime);
+        if (snmpColl.hasLldpLocalGroup() && snmpColl.hasLldpLocTable() && snmpColl.hasLldpRemTable()) {
+	        processLldp(node,snmpColl,null,scanTime);
 	}
         if (snmpColl.hasIpNetToMediaTable()) {
             processIpNetToMediaTable(node, snmpColl, null, scanTime);
@@ -715,18 +711,14 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     
     @Transactional
     public Integer getFromSysnameIpAddress(String lldpRemSysname,
-            String lldpRemPortid) {
+            InetAddress lldpRemPortid) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
         criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
-        try {
-            criteria.add(Restrictions.eq("ipAddress", InetAddress.getByName(lldpRemPortid)));
-            final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(criteria);
-            if (interfaces != null && !interfaces.isEmpty()) {
-                return interfaces.get(0).getIfIndex();
-            }
-        } catch (UnknownHostException e) {
-            LogUtils.warnf(this,"getFromSysnameIpAddress: not valid ip address: %s" , e.toString());
+        criteria.add(Restrictions.eq("ipAddress",lldpRemPortid));
+        final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
         }
         return null;
     }

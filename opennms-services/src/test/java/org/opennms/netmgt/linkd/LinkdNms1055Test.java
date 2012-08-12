@@ -31,6 +31,8 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
 
@@ -131,7 +133,12 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         /*
          * DELAWARE_IP_IF_MAP.put(InetAddress.getByName("10.155.69.17"), 13);
          */
-        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, "10.155.69.17").intValue());
+        try {
+            assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddress.getByName("10.155.69.17")).intValue());
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
    
         /*
          * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
@@ -288,51 +295,51 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
 //            printLink(datalinkinterface);
             Integer linkid = datalinkinterface.getId();
-            if ( linkid == 799) {
+            if ( linkid == 968) {
                 // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
                 checkLink(delaware, penrose, 574, 510, datalinkinterface);
-            } else if (linkid == 800 ) {
+            } else if (linkid == 969 ) {
                 // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
                 checkLink(delaware, penrose, 522, 525, datalinkinterface);
-            } else if (linkid == 801) {
+            } else if (linkid == 970) {
                 // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
                 checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
-            } else if (linkid == 802) {
+            } else if (linkid == 971) {
                 // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, penrose, 584, 515, datalinkinterface);                   
-            } else if (linkid == 803) {
+            } else if (linkid == 972) {
                 // delaware xe-1/0/1 -> austin xe-0/0/1  --lldp
                 checkLink(austin, delaware, 509, 575, datalinkinterface);                   
-            } else if (linkid == 804) {
+            } else if (linkid == 973) {
                 // delaware ge-0/2/0 -> riovista ge-0/0/46.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, delaware, 503, 540, datalinkinterface);
-            } else if (linkid == 805) {
+            } else if (linkid == 974) {
                 // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
                 checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
-            } else if (linkid == 806) {
+            } else if (linkid == 975) {
                 // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
                 checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
-            } else if (linkid == 807) {
+            } else if (linkid == 976) {
                 // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
                 checkLink(sanjose, austin, 517, 515, datalinkinterface);                
-            } else if ( linkid == 808) {
+            } else if ( linkid == 977) {
                 // penrose ae0 -> delaware ae0 --rsvp
                 checkLink(penrose,delaware,2693,658,datalinkinterface);
-            } else if (linkid == 809 ) {
+            } else if (linkid == 978 ) {
                 // penrose   -> phoenix     --ip route next hop
                 checkLink(phoenix, penrose, 564, 644, datalinkinterface);
-            } else if (linkid == 810) {
+            } else if (linkid == 979) {
                 // penrose  -> delaware --ip route next hop
                 checkLink(delaware, penrose, 598, 535, datalinkinterface);
-            } else if (linkid == 811) {
+            } else if (linkid == 980) {
                 // phoenix  -> austin --ip route next hop
                 checkLink(austin,phoenix,554,565,datalinkinterface);
-            } else if (linkid == 812) {
+            } else if (linkid == 981) {
                 // phoenix  -> sanjose --ip route next hop
                 checkLink(phoenix,sanjose,566,564,datalinkinterface);
-            } else if (linkid == 813) {
+            } else if (linkid == 982) {
                 // austin  -> sanjose --ip route next hop
                 checkLink(austin, sanjose, 586, 8562, datalinkinterface);
             } else {

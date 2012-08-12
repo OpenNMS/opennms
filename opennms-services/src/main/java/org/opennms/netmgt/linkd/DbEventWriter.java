@@ -286,11 +286,8 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(dbConn);
             Timestamp scanTime = new Timestamp(System.currentTimeMillis());
     
-            if (snmpcoll.hasLldpLocalGroup()) {
-                processLldpLocalGroup(node,snmpcoll,dbConn,scanTime);
-            }
-            if (snmpcoll.hasLldpRemTable()) {
-                processLldpRemTable(node,snmpcoll,dbConn,scanTime);
+            if (snmpcoll.hasLldpLocalGroup() && snmpcoll.hasLldpLocTable() && snmpcoll.hasLldpRemTable()) {
+                processLldp(node,snmpcoll,dbConn,scanTime);
             }
             
             if (snmpcoll.hasIpNetToMediaTable()) {
@@ -1037,7 +1034,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     @Override
     protected Integer getFromSysnameIpAddress(String lldpRemSysname,
-            String lldpRemPortid) {
+            InetAddress lldpRemPortid) {
         final DBUtils d = new DBUtils(getClass());
         int ifindex = -1;
         try {
@@ -1046,7 +1043,7 @@ public class DbEventWriter extends AbstractQueryManager {
             stmt = dbConn.prepareStatement(SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS);
             d.watch(stmt);
             stmt.setString(1, lldpRemSysname);
-            stmt.setString(2, lldpRemPortid);
+            stmt.setString(2, lldpRemPortid.getHostAddress());
     
             LogUtils.debugf(this, "getFromSysnameIpAddress: executing query" + SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS + " nodeSysname=" + lldpRemSysname + "and ipAddr=" + lldpRemPortid);
     
