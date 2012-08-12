@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -299,6 +300,35 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
 
+        
+        final Collection<LinkableNode> nodes = m_linkd.getLinkableNodesOnPackage("example1");
+
+        assertEquals(9, nodes.size());
+        
+        for (LinkableNode node: nodes) {
+            switch(node.getNodeId()) {
+                case 1: assertEquals(5, node.getCdpInterfaces().size());
+                break;
+                case 2: assertEquals(6, node.getCdpInterfaces().size());
+                break;
+                case 3: assertEquals(4, node.getCdpInterfaces().size());
+                break;
+                case 4: assertEquals(1, node.getCdpInterfaces().size());
+                break;
+                case 5: assertEquals(2, node.getCdpInterfaces().size());
+                break;
+                case 6: assertEquals(2, node.getCdpInterfaces().size());
+                break;
+                case 7: assertEquals(2, node.getCdpInterfaces().size());
+                break;
+                case 8: assertEquals(3, node.getCdpInterfaces().size());
+                break;
+                case 9: assertEquals(1, node.getCdpInterfaces().size());
+                break;
+                default: assertEquals(-1, node.getNodeId());
+                break;
+            }
+        }
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         assertEquals(10,m_dataLinkInterfaceDao.countAll());
