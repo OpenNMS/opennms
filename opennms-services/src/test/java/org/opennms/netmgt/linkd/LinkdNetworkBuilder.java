@@ -34,6 +34,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -105,6 +106,20 @@ public abstract class LinkdNetworkBuilder {
         return nb.getCurrentNode();
     }
     
+    void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
+        System.err.println("-----------------------------------------------------------");    
+        System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
+        System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
+        System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
+        System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
+        System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
+        System.err.println("getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
+        System.err.println("getCdpPlatform: "+cdpCacheTableEntry.getCdpPlatform());
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");        
+        
+    }
+
     void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
             String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
         System.err.println("-----------------------------------------------------------");    
