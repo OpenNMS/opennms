@@ -217,8 +217,8 @@
     <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
     <!-- NrtCollection -->
     <dependency>
-      <groupId>org.opennms.features.</groupId>
-	<artifactId>nnrtgrtg-api</artifactId>
+      <groupId>org.opennms.features.nrtg</groupId>
+	<artifactId>nrtg-api</artifactId>
 	<version>${project.version}</version>
     </dependency>
     <dependency>
