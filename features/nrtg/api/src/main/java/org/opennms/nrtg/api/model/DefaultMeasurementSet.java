@@ -28,9 +28,6 @@
 
 package org.opennms.nrtg.api.model;
 
-import flexjson.JSONSerializer;
-import flexjson.transformer.DateTransformer;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +49,23 @@ public class DefaultMeasurementSet implements MeasurementSet {
 
     @Override
     public String getJson() {
-        return new JSONSerializer()
-                .exclude("class")
-                        //.transform(new DateTransformer("yyyy-MM-dd"), "timestamp")
-                .serialize(getMeasurements());
+    	StringBuilder buf = new StringBuilder("[");
+    	
+    	boolean first = true;
+    	for(Measurement m : getMeasurements()) {
+    		if (!first) { buf.append(","); } else { first = false; }
+    		buf.append("{");
+    		buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
+    		buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
+    		buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
+    		buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
+    		buf.append("'timestamp'").append(":").append(m.getTimestamp().getTime()).append(",");
+    		buf.append("'value'").append(":'").append(m.getValue()).append("'");
+    		buf.append("}");
+    	}
+    	
+    	buf.append("]");
+    	return buf.toString();
     }
 
     @Override
@@ -71,15 +81,6 @@ public class DefaultMeasurementSet implements MeasurementSet {
      */
     @Override
     public String toString() {
-//        StringBuilder sb = new StringBuilder("");
-//        for (Measurement measurement : m_measurements) {
-//            sb.append(measurement.getMetricId());
-//            sb.append(";");
-//            sb.append(measurement.getValue());
-//            sb.append(";");
-//            sb.append(measurement.getTimestamp());
-//            sb.append("\n");
-//        }
         return this.getJson();
     }
 }

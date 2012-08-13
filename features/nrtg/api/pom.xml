@@ -33,10 +33,5 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>net.sf.flexjson</groupId>
-      <artifactId>flexjson</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 </project>
