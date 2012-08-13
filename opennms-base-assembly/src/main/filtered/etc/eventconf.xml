@@ -1948,6 +1948,7 @@
   <event-file>events/AKCP.events.xml</event-file>
   <event-file>events/AlcatelLucent.OmniSwitch.events.xml</event-file>
   <event-file>events/AlcatelLucent.SMSBrick.events.xml</event-file>
+  <event-file>events/Allot.events.xml</event-file>
   <event-file>events/Allot.NetXplorer.events.xml</event-file>
   <event-file>events/Allot.SM.events.xml</event-file>
   <event-file>events/Alteon.events.xml</event-file>
