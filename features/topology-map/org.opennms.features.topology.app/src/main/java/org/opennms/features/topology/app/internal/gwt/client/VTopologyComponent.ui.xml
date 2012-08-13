@@ -27,6 +27,8 @@
 <!-- 	                   <use xlink:href="#mapreference" preserveAspectRatio="xMinYMin meet"/> -->
 	               </svg>
 	           </g>
+	           
+	           <rect ui:field="m_marquee" display="none" stroke="red" fill="none" stroke-dasharray="5 5" x="507" y="299" width="71" height="217"></rect>
 	       </svg>
 	   </div>
 	</g:HTMLPanel>

@@ -16,6 +16,7 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
+import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -24,6 +25,7 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -319,6 +321,111 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	    
 	}
 	
+	public class Interval{
+	    
+	    private int m_lo;
+        public int getLo() {
+            return m_lo;
+        }
+
+        private int m_hi;
+
+        public int getHi() {
+            return m_hi;
+        }
+
+        public Interval(int lo, int hi) {
+	        m_lo = Math.min(lo, hi);
+	        m_hi = Math.max(lo, hi);
+	    }
+        
+        public boolean contains(int value) {
+            return m_lo <= value && value <= m_hi;
+        }
+	}
+	
+	public class MarqueeSelectHandler implements DragBehaviorHandler{
+	    public static final String DRAG_BEHAVIOR_MARQUEE = "marquee";
+	    private boolean m_dragging = false;
+	    private int m_x1;
+	    private int m_y1;
+	    private int m_offsetX;
+	    private int m_offsetY;
+	    
+        @Override
+        public void onDragStart(Element elem) {
+            if(!m_dragging) {
+                m_dragging = true;
+                
+                SVGElement svg = m_svg.cast();
+                ClientRect rect = svg.getBoundingClientRect();
+                m_offsetX = rect.getLeft();
+                m_offsetY = rect.getTop();
+                
+                m_x1 = D3.getEvent().getClientX() - m_offsetX;
+                m_y1 = D3.getEvent().getClientY();
+                
+                setMarquee(m_x1, m_y1, 0, 0);
+                D3.d3().select(m_marquee).attr("display", "inline");
+            }
+        }
+
+        @Override
+        public void onDrag(Element elem) {
+            if(m_dragging) {
+                int clientX = D3.getEvent().getClientX() - m_offsetX;
+                int clientY = D3.getEvent().getClientY() - m_offsetY;
+                setMarquee(
+                    Math.min(m_x1, clientX), Math.min(m_y1, clientY), 
+                    Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
+                );
+                selectVertices();
+            }
+        }
+
+        @Override
+        public void onDragEnd(Element elem) {
+            m_dragging = false;
+            D3.d3().select(m_marquee).attr("display", "none");
+        }
+        
+        private void setMarquee(int x, int y, int width, int height) {
+            D3.d3().select(m_marquee).attr("x", x).attr("y", y).attr("width", width).attr("height", height);
+        }
+        
+        private void selectVertices() {
+            D3 vertices = D3.d3().selectAll(".little");
+            JsArray<JsArray<SVGGElement>> selection = vertices.cast();
+            
+            for(int i = 0; i < selection.length(); i++) {
+                SVGGElement elem = selection.get(i).get(0);
+                
+                if(inSelection(elem)) {
+                    D3.d3().select(elem).style("stroke", "blue");
+                }else {
+                    D3.d3().select(elem).style("stroke", "red");
+                }
+            }
+        }
+
+        private boolean inSelection(SVGGElement elem) {
+            SVGElement marquee = m_marquee.cast();
+            SVGRect mBBox = marquee.getBBox();
+            SVGRect eBBox = elem.getBBox();
+            
+            Interval marqueeX = new Interval(mBBox.getX(), mBBox.getX() + mBBox.getWidth());
+            Interval marqueeY = new Interval(mBBox.getY(), mBBox.getY() + mBBox.getHeight());
+            Interval vertexX = new Interval(eBBox.getX(), eBBox.getX() + eBBox.getWidth());
+            Interval vertexY = new Interval(eBBox.getY(), eBBox.getY() + eBBox.getHeight());
+            
+            return marqueeX.contains(vertexX.getLo()) &&
+                   marqueeX.contains(vertexX.getHi()) &&
+                   marqueeY.contains(vertexY.getLo()) &&
+                   marqueeY.contains(vertexY.getHi());
+        }
+	    
+	}
+	
 	public class PanObject extends DragObject{
 		private SVGMatrix m_stateTf;
 		private SVGPoint m_stateOrigin;
@@ -529,6 +636,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	@UiField
 	Element m_referenceMapBorder;
+	
+	@UiField
+	Element m_marquee;
 
 	/**
 	 * This map contains captions and icon urls for actions like: * "33_c" ->
@@ -563,7 +673,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
 		m_svgDragHandlerManager.addDragBehaviorHandler(DRAG_BEHAVIOR_PAN, new PanHandler());
-		m_svgDragHandlerManager.setCurrentDragHandler(DRAG_BEHAVIOR_PAN);
+		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_MARQUEE, new MarqueeSelectHandler());
+		m_svgDragHandlerManager.setCurrentDragHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_MARQUEE);
 		setupDragBehavior(m_svg, m_svgDragHandlerManager);
 
 		D3Behavior dragBehavior = new D3Behavior() {
@@ -593,7 +704,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 			public void call(Element elem, int index) {
 			    handlerManager.onDragStart(elem);
-				//
 			}
 		});
 
