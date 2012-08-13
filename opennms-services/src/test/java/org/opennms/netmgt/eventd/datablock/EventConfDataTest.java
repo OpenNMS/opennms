@@ -41,28 +41,27 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.mock.EventConfWrapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
-import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.FileSystemResource;
 
 public class EventConfDataTest {
+    
+    DefaultEventConfDao eventConfDao;
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(false);
 
-        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao = new DefaultEventConfDao();
         eventConfDao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
         eventConfDao.afterPropertiesSet();
-        
-        EventconfFactory.setInstance(eventConfDao);
     }
 
 
@@ -314,7 +313,7 @@ public class EventConfDataTest {
 		}
          */
 
-        org.opennms.netmgt.xml.eventconf.Event econf = EventconfFactory.getInstance().findByEvent(snmp);
+        org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(snmp);
 
         System.out.println("Eventconf: " + (econf == null ? null : new EventConfWrapper(econf) ));
 

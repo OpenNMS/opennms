@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <bean id="eventConfResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:src/test/resources/etc/eventconf.xml" />
+    <constructor-arg value="classpath:/etc/eventconf.xml" />
   </bean>
   
   <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">

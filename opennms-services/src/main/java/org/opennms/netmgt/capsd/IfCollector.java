@@ -44,7 +44,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.CapsdProtocolInfo;
 
 /**
  * This class is designed to collect all the relevant information from the

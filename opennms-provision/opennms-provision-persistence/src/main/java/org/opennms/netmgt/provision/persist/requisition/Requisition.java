@@ -58,7 +58,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -200,7 +200,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public void putNode(final RequisitionNode node) {
         updateNodeCacheIfNecessary();
         if (m_nodeReqs.containsKey(node.getForeignId())) {
-        	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+            final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
         }
         m_nodes.add(node);
@@ -385,15 +385,53 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         return (m_nodes == null) ? 0 : m_nodes.size();
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_dateStamp == null) ? 0 : m_dateStamp.hashCode());
+        result = prime * result + ((m_foreignSource == null) ? 0 : m_foreignSource.hashCode());
+        result = prime * result + ((m_lastImport == null) ? 0 : m_lastImport.hashCode());
+        result = prime * result + ((m_nodes == null) ? 0 : m_nodes.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof Requisition))  return false;
+
+        final Requisition other = (Requisition) obj;
+        if (m_dateStamp == null) {
+            if (other.m_dateStamp != null) return false;
+        } else if (!m_dateStamp.equals(other.m_dateStamp)) {
+            return false;
+        }
+        if (m_foreignSource == null) {
+            if (other.m_foreignSource != null) return false;
+        } else if (!m_foreignSource.equals(other.m_foreignSource)) {
+            return false;
+        }
+        if (m_lastImport == null) {
+            if (other.m_lastImport != null) return false;
+        } else if (!m_lastImport.equals(other.m_lastImport)) {
+            return false;
+        }
+        if (m_nodes == null) {
+            if (other.m_nodes != null) return false;
+        } else if (!m_nodes.equals(other.m_nodes)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("foreign-source", getForeignSource())
-            .append("date-stamp", getDateStamp())
-            .append("last-import", getLastImport())
-            .append("nodes", getNodes())
-            .toString();
+        return "Requisition [nodes="
+                + m_nodes + ", dateStamp=" + m_dateStamp
+                + ", foreignSource=" + m_foreignSource + ", lastImport="
+                + m_lastImport + "]";
     }
 
     /**
@@ -404,25 +442,13 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      */
     @Override
     public int compareTo(final Requisition obj) {
-    	return getForeignSource().compareTo(obj.getForeignSource());
+        return new CompareToBuilder()
+            .append(m_foreignSource, obj.m_foreignSource)
+            .append(m_dateStamp, obj.m_dateStamp)
+            .append(m_lastImport, obj.m_lastImport)
+            .toComparison();
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Requisition) {
-        	final Requisition other = (Requisition) obj;
-        	return getForeignSource().equals(other.getForeignSource());
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-    	return getForeignSource().hashCode();
-      }
-
     /**
      * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,
      * interfaces should be unique per node, etc.

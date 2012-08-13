@@ -341,7 +341,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (Integer)hibernateCriteria.uniqueResult();
             }
         };
-        return getHibernateTemplate().execute(callback).intValue();
+        Integer retval = getHibernateTemplate().execute(callback);
+        return retval == null ? 0 : retval.intValue();
     }
 
     /** {@inheritDoc} */
@@ -368,7 +369,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (Integer)attachedCrit.uniqueResult();
             }
         };
-        return getHibernateTemplate().execute(callback).intValue();
+        Integer retval = getHibernateTemplate().execute(callback);
+        return retval == null ? 0 : retval.intValue();
     }
     
     /**

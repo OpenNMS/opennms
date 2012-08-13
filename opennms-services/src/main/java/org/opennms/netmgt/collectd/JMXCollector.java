@@ -49,11 +49,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.BeanInfo;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -82,11 +82,11 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * <p>
  * Two types of MBeans may be specified in the jmx-datacollection-config.xml
  * file. Standard MBeans which consist of and ObjectName and their attributes,
- * and WildCard MBeans which performs a query to retieve MBeans based on a
+ * and WildCard MBeans which performs a query to retrieve MBeans based on a
  * criteria. The current implementation looks like: jboss:a=b,c=d,* Future
  * versions may permit enhanced queries. In either case multiple MBeans may be
  * returned and these MBeans would then be queried to obtain their attributes.
- * There are some important issues then using the wild card appraoch:
+ * There are some important issues then using the wild card approach:
  * </p>
  * <p>
  * <ol>
@@ -234,7 +234,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
-        InetAddress ipAddr = (InetAddress) agent.getAddress();
+        InetAddress ipAddr = agent.getAddress();
         int nodeID = agent.getNodeId();
 
         // Retrieve the name of the JMX data collector
@@ -292,7 +292,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
-        InetAddress ipaddr = (InetAddress) agent.getAddress();
+        InetAddress ipaddr = agent.getAddress();
         JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
@@ -342,7 +342,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         for (String compAttribName : compAttribNames) {
                             if (attribNames.contains(compAttribName) ) {
                                 attribNames.remove(compAttribName);
-                                String[] ac = (String[])compAttribName.split("\\|", -1);       
+                                String[] ac = compAttribName.split("\\|", -1);       
                                 String attrName = ac[0];
                                 if (!attribNames.contains(attrName)) {
                                     attribNames.add(attrName);
@@ -352,7 +352,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         //log.debug(" JMXCollector: processed the following attributes: " + attribNames.toString());
                         //log.debug(" JMXCollector: processed the following Composite Attributes: " + compAttribNames.toString());
                         
-                        String[] attrNames = (String[])attribNames.toArray(new String[attribNames.size()]);
+                        String[] attrNames = attribNames.toArray(new String[attribNames.size()]);
 
                         if (objectName.indexOf("*") == -1) {      
                             LogUtils.debugf(this, "%s Collector - getAttributes: %s, # attributes: %d, # composite attribute members: %d", serviceName, objectName, attrNames.length, compAttribNames.size());
@@ -452,10 +452,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                         }
                                         if (!found) {
                                             if (mbeanServer.isRegistered(oName)) {
-                                                AttributeList attrList =
-                                                    (AttributeList)
-                                                    mbeanServer.getAttributes(oName,
-                                                                              attrNames);
+                                                AttributeList attrList = mbeanServer.getAttributes(oName, attrNames);
                                                 Map<String, JMXDataSource> dsMap = nodeInfo.getDsMap();
 
                                                 for(Object attribute : attrList) {
@@ -543,7 +540,6 @@ public abstract class JMXCollector implements ServiceCollector {
      * <p>getRRDValue_isthis_used_</p>
      *
      * @param ds
-     * @param dsVal
      * @param collectorEntry a {@link org.opennms.netmgt.collectd.JMXCollectorEntry} object.
      * @throws java.lang.IllegalArgumentException if any.
      * @return a {@link java.lang.String} object.
@@ -558,7 +554,7 @@ public abstract class JMXCollector implements ServiceCollector {
             return null;
         }
 
-        return (String) collectorEntry.get(collectorEntry + "|" + ds.getOid());
+        return collectorEntry.get(collectorEntry + "|" + ds.getOid());
     }
     /**
      * This method is responsible for building a list of RRDDataSource objects
@@ -571,7 +567,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            collected via JMX.
      * @return list of RRDDataSource objects
      */
-    private Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
+    protected Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
         LogUtils.debugf(this, "buildDataSourceList - ***");
 
         /*

@@ -49,8 +49,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 
 /**
  * <p>OpenNMSProvisioner class.</p>
@@ -531,7 +531,7 @@ public class OpenNMSProvisioner implements Provisioner {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventManager(final EventIpcManager eventManager) {
         m_eventManager = eventManager;

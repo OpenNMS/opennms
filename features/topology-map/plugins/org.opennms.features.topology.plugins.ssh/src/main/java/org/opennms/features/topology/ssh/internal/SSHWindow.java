@@ -3,6 +3,7 @@ package org.opennms.features.topology.ssh.internal;
 import org.apache.sshd.ClientSession;
 
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -13,8 +14,8 @@ import com.vaadin.ui.Window;
  */
 @SuppressWarnings("serial")
 public class SSHWindow extends Window {
-
 	private SSHTerminal terminal; // The terminal emulator
+	private Label errorLabel = new Label("Could not create session");
 	private final int TERM_WIDTH = 80;
 	private final int TERM_HEIGHT = 24;
 	
@@ -33,13 +34,18 @@ public class SSHWindow extends Window {
 		setWidth("" + width + "px");
 		setHeight(""+ height + "px");
 		
-		terminal = new SSHTerminal(this, session, TERM_WIDTH, TERM_HEIGHT);
 		VerticalLayout vPanel = new VerticalLayout();
 		vPanel.setWidth("100%");
 		vPanel.setHeight("100%");
-		vPanel.addComponent(terminal);
-		vPanel.setComponentAlignment(terminal, Alignment.TOP_CENTER);
-        
+		
+		if (session != null) {
+			terminal = new SSHTerminal(this, session, TERM_WIDTH, TERM_HEIGHT);
+			vPanel.addComponent(terminal);
+			vPanel.setComponentAlignment(terminal, Alignment.TOP_CENTER);
+		} else {
+			vPanel.addComponent(errorLabel);
+			vPanel.setComponentAlignment(errorLabel, Alignment.MIDDLE_CENTER);
+		}
 		addComponent(vPanel);
 	}
 	
@@ -60,5 +66,4 @@ public class SSHWindow extends Window {
 	public void close(){
 		terminal.close();
 	}
-
 }

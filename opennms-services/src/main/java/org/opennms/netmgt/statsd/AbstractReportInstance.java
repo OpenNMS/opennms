@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public abstract class AbstractReportInstance implements InitializingBean {
+public abstract class AbstractReportInstance implements ReportInstance, InitializingBean {
 
     private ReportDefinition m_reportDefinition;
     private Date m_jobCompletedDate;
@@ -58,6 +58,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getJobCompletedDate() {
         return m_jobCompletedDate;
     }
@@ -67,6 +68,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getJobStartedDate() {
         return m_jobStartedDate;
     }
@@ -76,6 +78,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return getReportDefinition().getName();
     }
@@ -85,6 +88,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDescription() {
         return getReportDefinition().getDescription();
     }
@@ -94,6 +98,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @return a long.
      */
+    @Override
     public long getRetainInterval() {
         return getReportDefinition().getRetainInterval();
     }
@@ -103,6 +108,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
      */
+    @Override
     public ReportDefinition getReportDefinition() {
         return m_reportDefinition;
     }
@@ -112,6 +118,7 @@ public abstract class AbstractReportInstance implements InitializingBean {
      *
      * @param reportDefinition a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
      */
+    @Override
     public void setReportDefinition(ReportDefinition reportDefinition) {
         m_reportDefinition = reportDefinition;
     }

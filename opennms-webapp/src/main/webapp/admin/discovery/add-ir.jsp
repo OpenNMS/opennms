@@ -68,12 +68,12 @@ function checkIpRange(ip1, ip2){
     if (verifyIPv4Address(ip1) && verifyIPv4Address(ip2)) {
         var a = v4BigInteger(ip1);
         var b = v4BigInteger(ip2);
-        return b > a;
+        return b >= a;
     }
     if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
         var a = new v6.Address(ip1).bigInteger();
         var b = new v6.Address(ip2).bigInteger();
-        return b.compareTo(a) > 0;
+        return b.compareTo(a) >= 0;
     }
     return false;
 }

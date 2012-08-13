@@ -44,9 +44,9 @@ import java.util.UUID;
 import java.util.Vector;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
+import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.OnmsSeverity;

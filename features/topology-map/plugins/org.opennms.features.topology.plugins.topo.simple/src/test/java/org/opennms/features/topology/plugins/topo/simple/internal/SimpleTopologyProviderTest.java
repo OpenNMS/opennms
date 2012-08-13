@@ -135,6 +135,12 @@ public class SimpleTopologyProviderTest {
             Item vertexItem = getVertexItem(key);
             return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
         }
+
+	@Override
+	public List<Object> getSelectedVertices() {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
         
     }
     
@@ -154,6 +160,12 @@ public class SimpleTopologyProviderTest {
         @Override
         public GraphContainer getGraphContainer() {
             return m_graphContainer;
+        }
+
+        @Override
+        public boolean isChecked() {
+            // TODO Auto-generated method stub
+            return false;
         }
         
     }
@@ -207,7 +219,7 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void testAddVertexWithOperation() {
 	    
-	    List<Object> targets = Collections.EMPTY_LIST;
+	    List<Object> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
 	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON, m_topologyProvider);

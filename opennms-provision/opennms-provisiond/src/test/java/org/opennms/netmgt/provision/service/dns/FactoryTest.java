@@ -34,6 +34,8 @@ import java.net.URLStreamHandler;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.url.GenericURLFactory;
+import org.opennms.core.utils.url.GenericURLStreamHandler;
 import org.opennms.core.test.MockLogAppender;
 
 public class FactoryTest {
@@ -45,17 +47,20 @@ public class FactoryTest {
 
     @Test
     public void dwCreateURLStreamHandler() {
-        
-        DnsUrlFactory f = new DnsUrlFactory();
-        URLStreamHandler handler = f.createURLStreamHandler("abc");
+
+        GenericURLFactory.initialize();
+
+        GenericURLFactory genericURLFactory = GenericURLFactory.getInstance();
+
+        URLStreamHandler handler = genericURLFactory.createURLStreamHandler("abc");
         assertNull(handler);
         
-        handler = f.createURLStreamHandler("dns");
+        handler = genericURLFactory.createURLStreamHandler("dns");
         
         assertNotNull(handler);
         
         assertTrue(handler instanceof java.net.URLStreamHandler);
-        assertTrue(handler instanceof org.opennms.netmgt.provision.service.dns.Handler);
+        assertTrue(handler instanceof GenericURLStreamHandler);
         
     }
 

@@ -42,6 +42,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
@@ -50,13 +51,9 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
-    private BroadcastEventProcessor m_processor;
-
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        m_processor = new BroadcastEventProcessor();
-        m_processor.initExpandRe();
 
         m_anticipator.setExpectedDifference(3000);
     }
@@ -72,22 +69,22 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
      */
     @Test
     public void testExpandNotifParms() throws Exception {
-        String expandResult = BroadcastEventProcessor.expandNotifParms("%foo%", new TreeMap<String,String>());
+        String expandResult = NotificationManager.expandNotifParms("%foo%", new TreeMap<String,String>());
         assertEquals("%foo%", expandResult);
 
         // This is kinda non-intuitive... but expandNotifParms() only works on whitelisted expansion params
-        expandResult = BroadcastEventProcessor.expandNotifParms("%foo%", Collections.singletonMap("foo", "bar"));
+        expandResult = NotificationManager.expandNotifParms("%foo%", Collections.singletonMap("foo", "bar"));
         assertEquals("%foo%", expandResult);
 
         // The 'noticeid' param is in the whitelist
-        expandResult = BroadcastEventProcessor.expandNotifParms("Notice #%noticeid% RESOLVED: ", Collections.singletonMap("noticeid", "999"));
+        expandResult = NotificationManager.expandNotifParms("Notice #%noticeid% RESOLVED: ", Collections.singletonMap("noticeid", "999"));
         assertEquals("Notice #999 RESOLVED: ", expandResult);
 
-        expandResult = BroadcastEventProcessor.expandNotifParms("RESOLVED: ", Collections.singletonMap("noticeid", "999"));
+        expandResult = NotificationManager.expandNotifParms("RESOLVED: ", Collections.singletonMap("noticeid", "999"));
         assertEquals("RESOLVED: ", expandResult);
 
         // <notification name="Disk Threshold" status="on"> from bug 2888
-        expandResult = BroadcastEventProcessor.expandNotifParms("Notice %noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", new TreeMap<String,String>());
+        expandResult = NotificationManager.expandNotifParms("Notice %noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", new TreeMap<String,String>());
         assertEquals("Notice %noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", expandResult);
         /*
         <event>
@@ -135,7 +132,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         }
          */
         assertEquals("High disk Threshold exceeded on 0.0.0.0, dsk-usr-pcent with Crap! There's only 15% free on the SAN and we need 20%! RUN AWAY!", paramMap.get("-tm"));
-        expandResult = BroadcastEventProcessor.expandNotifParms("Notice #%noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", paramMap);
+        expandResult = NotificationManager.expandNotifParms("Notice #%noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", paramMap);
         assertEquals("Notice #9999: Disk threshold exceeded on %nodelabel%: %parm[all]%.", expandResult);
     }
 

@@ -54,19 +54,19 @@ import org.opennms.web.map.MapsException;
  * <p>MapPropertiesFactory class.</p>
  * @since 1.8.1
  */
-public class MapPropertiesFactory extends Object {
+public class MapPropertiesFactory {
 
 	private boolean m_loaded = false;
 
 	/**
 	 * Descriptive information about this factory.
 	 */
-	protected static final String info = "org.opennms.web.map.config.MapPropertiesFactory";
+	protected static final String info = MapPropertiesFactory.class.getName();
 
 	/**
 	 * Descriptive information about this factory.
 	 */
-	protected static final String name = "MapPropertiesFactory";
+	protected static final String name = MapPropertiesFactory.class.getSimpleName();
 
 	/**
 	 * The map.properties file that is read for the list of severities and
@@ -1022,31 +1022,37 @@ public class MapPropertiesFactory extends Object {
      * @return the id corresponding to the link defined in configuration file. If there is no match, the default link id is returned.
      */
     public int getLinkTypeId(int snmpiftype, long snmpifspeed) {
-    	Link link=null;
-    	Set<Link> linkSet = getLinkBySnmpType(snmpiftype);
-    	if(linkSet==null)
-    		link=getDefaultLink();
-    	else{
-    		if(linkSet.size()>1){
-	    		Iterator<Link> it = linkSet.iterator();
-	    		while(it.hasNext()){
-	    			Link next = it.next();
-	    			if(Long.parseLong(next.getSpeed())==snmpifspeed){
-	    				link=next;
-	    				break;
-	    			}
-	    		}
-    		}else{
-    			Iterator<Link> it=linkSet.iterator();
-    			if(it.hasNext()){
-	    			link = it.next();
-	    		}
-    		}
-    	}
-    	if(link==null)	
-    		link=getDefaultLink();
-    	return link.getId();
-    }    
+        Link link = null;
+        Set<Link> linkSet = getLinkBySnmpType(snmpiftype);
+        if (linkSet == null) {
+            link = getDefaultLink();
+        } else {
+            if (linkSet.size() > 1) {
+                Iterator<Link> it = linkSet.iterator();
+                while (it.hasNext()) {
+                    Link next = it.next();
+                    try {
+                        if (Long.parseLong(next.getSpeed()) == snmpifspeed) {
+                            link = next;
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignore NumberFormatException
+                        continue;
+                    }
+                }
+            } else {
+                Iterator<Link> it = linkSet.iterator();
+                if (it.hasNext()) {
+                    link = it.next();
+                }
+            }
+        }
+        if (link == null) {
+            link = getDefaultLink();
+        }
+        return link.getId();
+    }
 
     /**
      * <p>getLink</p>

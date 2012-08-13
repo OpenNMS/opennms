@@ -98,9 +98,8 @@
       <artifactId>opennms-correlator</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.db</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -108,12 +107,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.xml</artifactId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <type>test-jar</type>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

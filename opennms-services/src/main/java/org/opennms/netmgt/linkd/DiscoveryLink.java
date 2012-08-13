@@ -555,8 +555,6 @@ public final class DiscoveryLink implements ReadyRunnable {
                     if (!isNearestBridgeLink(curNode, stpbridgeport,
                                              designatedNode,
                                              designatedbridgeport)) {
-                        LogUtils.debugf(this,
-                                        "run: other bridge found between nodes. No links to save!");
                         continue; // no saving info if no nodeid
                     }
 
@@ -919,30 +917,38 @@ public final class DiscoveryLink implements ReadyRunnable {
 	private boolean isNearestBridgeLink(LinkableNode bridge1, int bp1,
 			LinkableNode bridge2, int bp2) {
 
+            LogUtils.debugf(this,
+                            "isNearestBridgeLink: bridge1/port1 %d/%d bridge2/port2 %d/%d", bridge1.getNodeId(),bp1,bridge2.getNodeId(),bp2);
+
 		Set<String> macsOnBridge2 = bridge2.getMacAddressesOnBridgePort(bp2);
 
 		Set<String> macsOnBridge1 = bridge1.getMacAddressesOnBridgePort(bp1);
 
-		if (macsOnBridge2 == null || macsOnBridge1 == null)
-			return false;
-
-		if (macsOnBridge2.isEmpty() || macsOnBridge1.isEmpty())
-			return false;
+		if (macsOnBridge2 == null || macsOnBridge1 == null || macsOnBridge2.isEmpty() || macsOnBridge1.isEmpty()) {
+		        LogUtils.debugf(this, "isNearestBridgeLink: no macs found on at least one bridge port, nearest bridges found. Return true.");
+			return true;
+		}
 
 		for (final String curMacOnBridge1 : macsOnBridge1) {
-			// if MAC address is bridge identifier of bridge 2 continue
-			
+                    LogUtils.debugf(this, "isNearestBridgeLink: parsing mac address %s on bridge1", curMacOnBridge1);
+
+                        // if MAC address is bridge identifier of bridge 2 continue			
 			if (bridge2.isBridgeIdentifier(curMacOnBridge1)) {
-				continue;
+	                    LogUtils.debugf(this, "isNearestBridgeLink: mac address %s is bridge identifier on bridge2. Continue", curMacOnBridge1);
+	                    continue;
 			}
 			// if MAC address is itself identifier of bridge1 continue
-			if (bridge1.isBridgeIdentifier(curMacOnBridge1))
-				continue;
+			if (bridge1.isBridgeIdentifier(curMacOnBridge1)) {
+                            LogUtils.debugf(this, "isNearestBridgeLink: mac address %s is bridge identifier on bridge1. Continue", curMacOnBridge1);
+                            continue;
+			}
 			// then no identifier of bridge one no identifier of bridge 2
 			// bridge 2 contains  
-			if (macsOnBridge2.contains(curMacOnBridge1)
-					&& isMacIdentifierOfBridgeNode(curMacOnBridge1))
+			if (macsOnBridge2.contains(curMacOnBridge1) 
+					&& isMacIdentifierOfBridgeNode(curMacOnBridge1)) {
+                                LogUtils.debugf(this, "isNearestBridgeLink: mac address %s is bridge identifier. Other bridge found. Return false", curMacOnBridge1);
 				return false;
+			}
 		}
 
 		return true;

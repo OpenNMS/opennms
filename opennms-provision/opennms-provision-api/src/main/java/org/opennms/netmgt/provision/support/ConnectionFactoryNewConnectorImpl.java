@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.net.BindException;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -44,6 +46,7 @@ import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -60,6 +63,8 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
 
     private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
+    private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
+    private final Object m_portMutex = new Object();
 
     /**
      * Create a new factory. Private because one should use {@link #getFactory(int)}
@@ -71,6 +76,30 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     private static final NioSocketConnector getSocketConnector(long timeout, IoHandler handler) {
         // Create a new NioSocketConnector
         NioSocketConnector connector = new NioSocketConnector(m_executor, m_processor);
+
+        // Enable SO_REUSEADDR on the socket so that TIMED_WAIT connections that are bound on the
+        // same port do not block new outgoing connections. If the connections are blocked, then
+        // the following exception will be thrown under heavy load:
+        //
+        // Caused by: java.net.SocketException: Invalid argument
+        //   at sun.nio.ch.Net.connect(Native Method)
+        //   at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:500)
+        //   at org.apache.mina.transport.socket.nio.NioSocketConnector.connect(NioSocketConnector.java:188)
+        //   ...
+        //
+        // @see http://issues.opennms.org/browse/NMS-5469
+        //
+        connector.getSessionConfig().setReuseAddress(true);
+
+        // Setting SO_LINGER will prevent TIME_WAIT sockets altogether because TCP connections will be
+        // forcefully terminated with RST packets. However, this doesn't seem to be necessary to maintain
+        // performance of the outgoing connections. As long as SO_REUSEADDR is set, the operating system
+        // and Java appear to recycle the ports effectively although some will remain in TIME_WAIT state.
+        //
+        // @see http://issues.opennms.org/browse/NMS-5469
+        //
+        //connector.getSessionConfig().setSoLinger(0);
+
         connector.setHandler(handler);
         connector.setConnectTimeoutMillis(timeout);
         return connector;
@@ -91,9 +120,20 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
      * 		ConnectFuture from a Mina connect call
      */
     @Override
-    public ConnectFuture connect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
+    public ConnectFuture connect(SocketAddress remoteAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
         SocketConnector connector = getSocketConnector(getTimeout(), handler);
+        InetSocketAddress localAddress = null;
+        synchronized (m_portMutex) {
+            if (m_port.get() == null) {
+                // Fetch a new ephemeral port
+                localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
+                m_port.set(localAddress.getPort());
+            } else {
+                localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), m_port.get());
+            }
+        }
         final ConnectFuture cf = connector.connect(remoteAddress, localAddress, init);
+        cf.addListener(portSwitcher(connector, remoteAddress, init, handler));
         cf.addListener(connectorDisposer(connector));
         return cf;
     }
@@ -121,6 +161,31 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
         };
     }
 
+    private IoFutureListener<ConnectFuture> portSwitcher(final SocketConnector connector, final SocketAddress remoteAddress, final IoSessionInitializer<? extends ConnectFuture> init, final IoHandler handler) {
+        return new IoFutureListener<ConnectFuture>() {
+
+            public void operationComplete(ConnectFuture future) {
+                try {
+                    Throwable e = future.getException();
+                    // If we failed to bind to the outgoing port...
+                    if (e != null && e instanceof BindException) {
+                        synchronized(m_portMutex) {
+                            // ... then reset the port
+                            LogUtils.warnf(this, "Resetting outgoing TCP port, value was %d", m_port.get());
+                            m_port.set(null);
+                        }
+                        // and reattempt the connection
+                        connect(remoteAddress, init, handler);
+                    }
+                } catch (RuntimeIoException e) {
+                    LogUtils.debugf(this, e, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
+                    // This will be thrown in the event of a ConnectException for example
+                    connector.dispose();
+                }
+            }
+        };
+    }
+
     /**
      * Delegates completely to {@link #connect(SocketAddress, SocketAddress, IoSessionInitializer, IoHandler)}
      * since we are recreating connectors during each invocation.
@@ -131,8 +196,8 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
      * @param handler
      */
     @Override
-    public ConnectFuture reConnect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
-        return connect(remoteAddress, localAddress, init, handler);
+    public ConnectFuture reConnect(SocketAddress remoteAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
+        return connect(remoteAddress, init, handler);
     }
 
     @Override

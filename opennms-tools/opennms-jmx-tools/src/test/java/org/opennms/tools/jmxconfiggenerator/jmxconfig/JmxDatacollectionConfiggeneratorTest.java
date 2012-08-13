@@ -25,7 +25,9 @@
  */
 package org.opennms.tools.jmxconfiggenerator.jmxconfig;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -91,7 +93,7 @@ public class JmxDatacollectionConfiggeneratorTest {
     }
 
     //@Test
-    public void testGenerateJmxConfigCassandraLocal() {
+    public void testGenerateJmxConfigCassandraLocal() throws MalformedURLException, IOException {
         MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection("localhost", "7199", null, null, false, false);
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mBeanServerConnection, "cassandra", false, false);
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
@@ -100,7 +102,7 @@ public class JmxDatacollectionConfiggeneratorTest {
     }
 
     //@Test
-    public void testGenerateJmxConfigJmxMp() {
+    public void testGenerateJmxConfigJmxMp() throws MalformedURLException, IOException {
         MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection("connect.opennms-edu.net", "9998", null, null, false, true);
         logger.debug("MBeanServerConnection: '{}'",mBeanServerConnection);
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mBeanServerConnection, "RemoteRepository", true, true);

@@ -32,13 +32,11 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -53,17 +51,29 @@ import org.springframework.core.io.Resource;
  * </p>
  */
 public class FusedForeignSourceRepository extends AbstractForeignSourceRepository implements ForeignSourceRepository, InitializingBean {
-    @Autowired
-    @Qualifier("pending")
-    private FilesystemForeignSourceRepository m_pendingForeignSourceRepository;
-    
-    @Autowired
-    @Qualifier("deployed")
-    private FilesystemForeignSourceRepository m_deployedForeignSourceRepository;
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+        Assert.notNull(m_pendingForeignSourceRepository, "Pending foreign source repository must not be null.");
+        Assert.notNull(m_deployedForeignSourceRepository, "Deployed foreign source repository must not be null.");
+    }
+
+    public ForeignSourceRepository getPendingForeignSourceRepository() {
+        return m_pendingForeignSourceRepository;
+    }
+    
+    public void setPendingForeignSourceRepository(final ForeignSourceRepository fsr) {
+        m_pendingForeignSourceRepository = fsr;
+    }
+
+    public ForeignSourceRepository getDeployedForeignSourceRepository() {
+        return m_deployedForeignSourceRepository;
+    }
+    
+    public void setDeployedForeignSourceRepository(final ForeignSourceRepository fsr) {
+        m_deployedForeignSourceRepository = fsr;
     }
 
     /**
@@ -196,6 +206,11 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     public synchronized void save(Requisition requisition) throws ForeignSourceRepositoryException {
         m_pendingForeignSourceRepository.delete(requisition);
         m_deployedForeignSourceRepository.save(requisition);
+    }
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in FusedForeignSourceRepository
     }
 
 }

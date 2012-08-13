@@ -4,7 +4,6 @@ import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
@@ -25,7 +24,7 @@ import com.vaadin.ui.Button.ClickEvent;
 @SuppressWarnings("serial")
 public class AuthWindow extends Window implements Button.ClickListener{
 
-
+    SSHWindow sshWindow; // The SSH window that will arise after the auth window connects
     private String m_host;  // The hostname to connect to
     private int m_port;  // The port to connect to
     private int TERM_WIDTH = 800;  // The width of the terminal
@@ -57,6 +56,7 @@ public class AuthWindow extends Window implements Button.ClickListener{
         if ("".equals(m_host) || m_port == 0) {
             showOptions = true;
         }
+        setName("Auth Window");
         setModal(true);
         setCaption("Login");
         setWidth("260px");
@@ -135,20 +135,12 @@ public class AuthWindow extends Window implements Button.ClickListener{
     /**
      * This methods adds (shows) the SSH Window to the main application
      */
-    private void showSSHWindow() {
-        getApplication().getMainWindow().addWindow(getSSHWindow());
+    protected void showSSHWindow() {
+        sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
+        getApplication().getMainWindow().addWindow(sshWindow);
         this.close();
     }
-
-    /**
-     * This method creates a new SSH window 
-     * @return The newly created SSH window
-     */
-    private Window getSSHWindow() {
-        SSHWindow sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
-        return sshWindow;
-    }
-
+    
     @Override
     public void buttonClick(ClickEvent event) {
         String login = (String)usernameField.getValue();

@@ -50,49 +50,17 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>liquibase-dependencies</artifactId>
       <type>pom</type>
-      <scope>compile</scope>
     </dependency>
     <!-- test dependencies -->
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
       <version>${liquibaseVersion}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api.schema</groupId>
-      <artifactId>org.opennms.core.test-api.schema.a</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api.schema</groupId>
-      <artifactId>org.opennms.core.test-api.schema.b</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

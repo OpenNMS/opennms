@@ -28,8 +28,6 @@
 
 package org.opennms.web.springframework.security;
 
-import org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder;
-
 import junit.framework.TestCase;
 
 public class UpperCaseMd5PasswordEncoderTest extends TestCase {

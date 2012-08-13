@@ -164,6 +164,8 @@ public class RequisitionRestService extends OnmsRestService {
     public int getDeployedCount() {
         readLock();
         try {
+            m_deployedForeignSourceRepository.flush();
+
             return m_deployedForeignSourceRepository.getRequisitions().size();
         } finally {
             readUnlock();
@@ -182,6 +184,8 @@ public class RequisitionRestService extends OnmsRestService {
     public RequisitionCollection getDeployedRequisitions() throws ParseException {
         readLock();
         try {
+            m_deployedForeignSourceRepository.flush();
+            
             return new RequisitionCollection(m_deployedForeignSourceRepository.getRequisitions());
         } finally {
             readUnlock();
@@ -199,6 +203,9 @@ public class RequisitionRestService extends OnmsRestService {
     public RequisitionCollection getRequisitions() throws ParseException {
         readLock();
         try {
+            m_pendingForeignSourceRepository.flush();
+            m_deployedForeignSourceRepository.flush();
+
             final Set<Requisition> reqs = new TreeSet<Requisition>();
             for (final String fsName : getActiveForeignSourceNames()) {
                 final Requisition r = getActiveRequisition(fsName);
@@ -223,6 +230,8 @@ public class RequisitionRestService extends OnmsRestService {
     public int getPendingCount() {
         readLock();
         try {
+            m_pendingForeignSourceRepository.flush();
+
             return m_pendingForeignSourceRepository.getRequisitions().size();
         } finally {
             readUnlock();
@@ -238,23 +247,13 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public Requisition getRequisition(@PathParam("foreignSource") String foreignSource) {
+    public Requisition getRequisition(@PathParam("foreignSource") final String foreignSource) {
         readLock();
         try {
-            return getActiveRequisition(foreignSource);
-        } finally {
-            readUnlock();
-        }
-    }
+            m_pendingForeignSourceRepository.flush();
+            m_deployedForeignSourceRepository.flush();
 
-    @GET
-    @Path("{foreignSource}/exists")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String requisitionExists(@PathParam("foreignSource") String foreignSource) {
-        readLock();
-        try {
-            Boolean exists = getActiveRequisition(foreignSource) != null;
-            return exists.toString();
+            return getActiveRequisition(foreignSource);
         } finally {
             readUnlock();
         }
@@ -270,10 +269,13 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionNodeCollection getNodes(@PathParam("foreignSource") String foreignSource) throws ParseException {
+    public RequisitionNodeCollection getNodes(@PathParam("foreignSource") final String foreignSource) throws ParseException {
         readLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            m_pendingForeignSourceRepository.flush();
+            m_deployedForeignSourceRepository.flush();
+
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req == null) {
                 return null;
             }
@@ -294,10 +296,13 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionNode getNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+    public RequisitionNode getNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         readLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            m_pendingForeignSourceRepository.flush();
+            m_deployedForeignSourceRepository.flush();
+
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req == null) {
                 return null;
             }
@@ -318,10 +323,10 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+    public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         readLock();
         try {
-            RequisitionNode node = getNode(foreignSource, foreignId);
+            final RequisitionNode node = getNode(foreignSource, foreignId);
             if (node != null) {
                 return new RequisitionInterfaceCollection(node.getInterfaces());
             }
@@ -343,10 +348,10 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) throws ParseException {
+    public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         readLock();
         try {
-            RequisitionNode node = getNode(foreignSource, foreignId);
+            final RequisitionNode node = getNode(foreignSource, foreignId);
             if (node != null) {
                 return node.getInterface(ipAddress);
             }
@@ -368,10 +373,10 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) throws ParseException {
+    public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         readLock();
         try {
-            RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
+            final RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
             if (iface != null) {
                 return new RequisitionMonitoredServiceCollection(iface.getMonitoredServices());
             }
@@ -394,10 +399,10 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) throws ParseException {
+    public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") String service) throws ParseException {
         readLock();
         try {
-            RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
+            final RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
             if (iface != null) {
                 return iface.getMonitoredService(service);
             }
@@ -418,12 +423,12 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+    public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         readLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     return new RequisitionCategoryCollection(node.getCategories());
                 }
@@ -446,12 +451,12 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionCategory getCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("category") String category) throws ParseException {
+    public RequisitionCategory getCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) throws ParseException {
         readLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     return node.getCategory(category);
                 }
@@ -473,12 +478,12 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+    public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         readLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     return new RequisitionAssetCollection(node.getAssets());
                 }
@@ -501,12 +506,12 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionAsset getAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) throws ParseException {
+    public RequisitionAsset getAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) throws ParseException {
         readLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     return node.getAsset(parameter);
                 }
@@ -529,15 +534,15 @@ public class RequisitionRestService extends OnmsRestService {
     public Response addOrReplaceRequisition(final Requisition requisition) {
         writeLock();
         try {
-        	try {
-    			requisition.validate();
-    		} catch (final ValidationException e) {
-    			LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
-    			throw getException(Status.BAD_REQUEST, e.getMessage());
-    		}
+            try {
+                requisition.validate();
+            } catch (final ValidationException e) {
+                LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
+                throw getException(Status.BAD_REQUEST, e.getMessage());
+            }
             debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
             m_pendingForeignSourceRepository.save(requisition);
-            return Response.ok(requisition).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(requisition.getForeignSource())).build();
         } finally {
             writeUnlock();
         }
@@ -562,7 +567,8 @@ public class RequisitionRestService extends OnmsRestService {
             if (req != null) {
                 req.putNode(node);
                 m_pendingForeignSourceRepository.save(req);
-                return Response.ok(req).build();
+                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(foreignSource, node.getForeignId())).build();
+                // return Response.ok(req).build();
             }
             return Response.notModified().build();
         } finally {
@@ -592,7 +598,8 @@ public class RequisitionRestService extends OnmsRestService {
                 if (node != null) {
                     node.putInterface(iface);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(req).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, iface.getIpAddr())).build();
+                    // return Response.ok(req).build();
                 }
             }
             return Response.notModified().build();
@@ -626,7 +633,8 @@ public class RequisitionRestService extends OnmsRestService {
                     if (iface != null) {
                         iface.putMonitoredService(service);
                         m_pendingForeignSourceRepository.save(req);
-                        return Response.ok(req).build();
+                        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getServiceForInterface").build(foreignSource, foreignId, ipAddress, service.getServiceName())).build();
+                        // return Response.ok(req).build();
                     }
                 }
             }
@@ -658,7 +666,8 @@ public class RequisitionRestService extends OnmsRestService {
                 if (node != null) {
                     node.putCategory(category);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(req).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getCategory").build(foreignSource, foreignId, category.getName())).build();
+                    // return Response.ok(req).build();
                 }
             }
             return Response.notModified().build();
@@ -689,7 +698,8 @@ public class RequisitionRestService extends OnmsRestService {
                 if (node != null) {
                     node.putAsset(asset);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(req).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getAssetParameter").build(foreignSource, foreignId, asset.getName())).build();
+                    // return Response.ok(req).build();
                 }
             }
             return Response.notModified().build();
@@ -707,12 +717,14 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("suppressOutput") Boolean suppressOutput, @QueryParam("rescanExisting") Boolean rescanExisting) {
+    public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("rescanExisting") Boolean rescanExisting) {
         writeLock();
         try {
             log().debug("importing requisition for foreign source " + foreignSource);
-    
-            final Requisition req = getActiveRequisition(foreignSource);
+
+            m_pendingForeignSourceRepository.flush();
+            m_deployedForeignSourceRepository.flush();
+
             final String url = getActiveUrl(foreignSource).toString();
             final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
             bldr.addParam(EventConstants.PARM_URL, url);
@@ -726,7 +738,8 @@ public class RequisitionRestService extends OnmsRestService {
                 throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
             }
             
-            return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(foreignSource)).build();
+            // return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -752,7 +765,8 @@ public class RequisitionRestService extends OnmsRestService {
                 setProperties(params, req);
                 debug("updateRequisition: requisition with foreign source %s updated", foreignSource);
                 m_pendingForeignSourceRepository.save(req);
-                return Response.ok(req).build();
+                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(foreignSource)).build();
+                // return Response.ok(req).build();
             }
             return Response.notModified(foreignSource).build();
         } finally {
@@ -783,7 +797,8 @@ public class RequisitionRestService extends OnmsRestService {
                     setProperties(params, node);
                     debug("updateNode: node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(node).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(foreignSource, foreignId)).build();
+                    // return Response.ok(node).build();
                 }
             }
             return Response.notModified(foreignSource + "/" + foreignId).build();
@@ -818,7 +833,8 @@ public class RequisitionRestService extends OnmsRestService {
                         setProperties(params, iface);
                         debug("updateInterface: interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
                         m_pendingForeignSourceRepository.save(req);
-                        return Response.ok(node).build();
+                        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, ipAddress)).build();
+                        // return Response.ok(node).build();
                     }
                 }
             }
@@ -843,7 +859,7 @@ public class RequisitionRestService extends OnmsRestService {
             Requisition req = getActiveRequisition(foreignSource);
             debug("deletePendingRequisition: deleting pending requisition with foreign source %s", foreignSource);
             m_pendingForeignSourceRepository.delete(req);
-            return Response.ok(req).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -864,7 +880,7 @@ public class RequisitionRestService extends OnmsRestService {
             Requisition req = getActiveRequisition(foreignSource);
             debug("deleteDeployedRequisition: deleting pending requisition with foreign source %s", foreignSource);
             m_deployedForeignSourceRepository.delete(req);
-            return Response.ok(req).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -887,7 +903,7 @@ public class RequisitionRestService extends OnmsRestService {
             if (req != null) {
                 req.deleteNode(foreignId);
                 m_pendingForeignSourceRepository.save(req);
-                return Response.ok(req).build();
+                return Response.ok().build();
             }
             return null;
         } finally {
@@ -911,11 +927,14 @@ public class RequisitionRestService extends OnmsRestService {
         try {
             Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    node.deleteInterface(ipAddress);
-                    m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(req).build();
+                    if (node.deleteInterface(ipAddress)) {
+                        m_pendingForeignSourceRepository.save(req);
+                        return Response.ok().build();
+                    } else {
+                        return Response.notModified().build();
+                    }
                 }
             }
             return null;
@@ -947,7 +966,7 @@ public class RequisitionRestService extends OnmsRestService {
                     if (iface != null) {
                         iface.deleteMonitoredService(service);
                         m_pendingForeignSourceRepository.save(req);
-                        return Response.ok(req).build();
+                        return Response.ok().build();
                     }
                 }
             }
@@ -975,9 +994,12 @@ public class RequisitionRestService extends OnmsRestService {
             if (req != null) {
                 RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    node.deleteCategory(category);
-                    m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(req).build();
+                    if (node.deleteCategory(category)) {
+                        m_pendingForeignSourceRepository.save(req);
+                        return Response.ok().build();
+                    } else {
+                        return Response.notModified().build();
+                    }
                 }
             }
             return null;
@@ -1000,13 +1022,16 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    node.deleteAsset(parameter);
-                    m_pendingForeignSourceRepository.save(req);
-                    return Response.ok(req).build();
+                    if (node.deleteAsset(parameter)) {
+                        m_pendingForeignSourceRepository.save(req);
+                        return Response.ok().build();
+                    } else {
+                        return Response.notModified().build();
+                    }
                 }
             }
             return null;

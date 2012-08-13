@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 /**
  * Implements NotificationStragey pattern used to send NULL notifications The

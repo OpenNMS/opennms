@@ -17,6 +17,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	ApplicationConnection client; //Reference to the server connection object.
 	private TermHandler termHandler; //Key handler for VT100 codes
 	private boolean isClosed; //Lets the server know the status of the Handler
+	private boolean isFocused; //Lets the server know whether the widget is focused
 
 	/**
 	 * The VTerminal() constructor creates a GwtTerminal Widget and assigns the TermHandler
@@ -29,6 +30,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 		addKeyPressHandler(termHandler);
 		addKeyUpHandler(termHandler);
 		isClosed = false;
+		isFocused = false;
 	}
 
 	/**
@@ -44,53 +46,54 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	 * the data along to the GwtTerminal widget which updates the client side view.
 	 */
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-		/************************************************ 
-		This call should be made first. Ensure correct implementation,
-		and let the containing layout manage caption, etc.
-		************************************************/
+
+		// This call should be made first. Ensure correct implementation,
+		// and let the containing layout manage caption, etc.
 		if (client.updateComponent(this, uidl, true)) {
 			return;
 		}
-		/************************************************
-		Save reference to server connection object to be able to send
-		user interaction later
-		************************************************/
+		
+		// Save reference to server connection object to be able to send
+		// user interaction later
 		this.client = client;
-		/************************************************
-		Save the UIDL identifier for the component
-		************************************************/
+		
+		// Save the UIDL identifier for the component
 		this.uidlId = uidl.getId();
-		/************************************************
-		Check if the server wants the TermHandler to close, if so, send a
-		response back to the server that it was closed successfully
-		************************************************/
+		
+		// Check if the server wants the TermHandler to close, if so, send a
+		// response back to the server that it was closed successfully
 		if (uidl.getBooleanVariable("closeClient")) {
 			termHandler.close();
 			isClosed = true;
 			sendBytes("");
 		}
-		/************************************************
-		Check if the server wants the TermHandler to update manually
-		************************************************/
+		
+		// Check if the server wants the TermHandler to update manually
 		if (uidl.getBooleanVariable("update")) update();
-		/************************************************
-		Take the current representation of the Terminal from the server
-		and set the Inner HTML of the widget
-		************************************************/
+		if (uidl.getBooleanVariable("focus")) {
+			super.focus();
+			isFocused = true;
+		}
+		
+		// Take the current representation of the Terminal from the server
+		// and set the Inner HTML of the widget
 		dump(uidl.getStringVariable("fromSSH"));
 	}
 
 	public void sendBytes(String inputKeys){
-		/************************************************
-		Send the server the current state of the TermHandler
-		************************************************/
+
+		// Send the server the current state of the TermHandler
 		client.updateVariable(uidlId, "isClosed", isClosed, true);
-		/************************************************
-		Send the server the current KeyBuffer from the client
-		************************************************/
+		
+
+		// Send the server the current KeyBuffer from the client
 		if (!isClosed) {
 			client.updateVariable(uidlId, "toSSH", inputKeys, true);
 		}
+		
+		// Tell the server if the widget is focused or not
+		client.updateVariable(uidlId, "isFocused", isFocused, true);
+		
 	}
 
 }

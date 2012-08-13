@@ -49,7 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
@@ -375,26 +375,83 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof RequisitionInterface) {
-            return this.compareTo((RequisitionInterface)o) == 0;
-        } else return false;
+    public int hashCode() {
+        final int prime = 67;
+        int result = 1;
+        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_description == null) ? 0 : m_description.hashCode());
+        result = prime * result + ((m_ipAddress == null) ? 0 : m_ipAddress.hashCode());
+        result = prime * result + ((m_isManaged == null) ? 0 : m_isManaged.hashCode());
+        result = prime * result + ((m_monitoredServices == null) ? 0 : m_monitoredServices.hashCode());
+        result = prime * result + ((m_snmpPrimary == null) ? 0 : m_snmpPrimary.hashCode());
+        result = prime * result + ((m_status == null) ? 0 : m_status.hashCode());
+        return result;
     }
 
-    public int compareTo(RequisitionInterface o) {
-        return this.m_ipAddress.compareTo(o.getIpAddr());
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof RequisitionInterface)) return false;
+        final RequisitionInterface other = (RequisitionInterface) obj;
+        if (m_categories == null) {
+            if (other.m_categories != null) return false;
+        } else if (!m_categories.equals(other.m_categories)) {
+            return false;
+        }
+        if (m_description == null) {
+            if (other.m_description != null) return false;
+        } else if (!m_description.equals(other.m_description)) {
+            return false;
+        }
+        if (m_ipAddress == null) {
+            if (other.m_ipAddress != null) return false;
+        } else if (!m_ipAddress.equals(other.m_ipAddress)) {
+            return false;
+        }
+        if (m_isManaged == null) {
+            if (other.m_isManaged != null) return false;
+        } else if (!m_isManaged.equals(other.m_isManaged)) {
+            return false;
+        }
+        if (m_monitoredServices == null) {
+            if (other.m_monitoredServices != null) return false;
+        } else if (!m_monitoredServices.equals(other.m_monitoredServices)) {
+            return false;
+        }
+        if (m_snmpPrimary == null) {
+            if (other.m_snmpPrimary != null) return false;
+        } else if (!m_snmpPrimary.equals(other.m_snmpPrimary)) {
+            return false;
+        }
+        if (m_status == null) {
+            if (other.m_status != null) return false;
+        } else if (!m_status.equals(other.m_status)) {
+            return false;
+        }
+        return true;
     }
-    
+
+    @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("monitored-services", m_monitoredServices)
-    		.append("categories", m_categories)
-    		.append("description", m_description)
-    		.append("ip-address", m_ipAddress)
-    		.append("is-managed", m_isManaged)
-    		.append("snmp-primary", m_snmpPrimary)
-    		.append("status", m_status)
-    		.toString();
+        return "RequisitionInterface [monitoredServices="
+                + m_monitoredServices + ", categories=" + m_categories
+                + ", description=" + m_description + ", ipAddress="
+                + m_ipAddress + ", isManaged=" + m_isManaged
+                + ", snmpPrimary=" + m_snmpPrimary + ", status="
+                + m_status + "]";
     }
 
+    @Override
+    public int compareTo(final RequisitionInterface other) {
+        return new CompareToBuilder()
+            .append(m_ipAddress, other.m_ipAddress)
+            .append(m_status, other.m_status)
+            .append(m_isManaged, other.m_isManaged)
+            .append(m_snmpPrimary, other.m_snmpPrimary)
+            .append(m_monitoredServices, other.m_monitoredServices)
+            .append(m_categories, other.m_categories)
+            .append(m_description, other.m_description)
+            .toComparison();
+    }
 }

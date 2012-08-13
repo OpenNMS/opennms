@@ -582,7 +582,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     public static class PageSequenceMonitorParameters {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings({ "unchecked" })
         static synchronized PageSequenceMonitorParameters get(Map paramterMap) {
             PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) paramterMap.get(KEY);
             if (parms == null) {

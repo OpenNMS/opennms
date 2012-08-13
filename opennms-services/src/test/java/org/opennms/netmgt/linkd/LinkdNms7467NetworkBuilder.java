@@ -34,9 +34,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -94,9 +92,7 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
  * 
  */
 
-public abstract class LinkdNms7467NetworkBuilder {
-
-    NetworkBuilder m_networkBuilder;
+public abstract class LinkdNms7467NetworkBuilder extends LinkdNetworkBuilder {
     
     /*
      * The following parameters
@@ -577,54 +573,7 @@ public abstract class LinkdNms7467NetworkBuilder {
         DARWIN_10_8_IF_MAC_MAP.put(6, "002608f86155");
     }
 
-    private NetworkBuilder getNetworkBuilder() {
-        if ( m_networkBuilder == null )
-            m_networkBuilder = new NetworkBuilder();
-        return m_networkBuilder;
-    }
-    
-    OnmsNode getNode(String name, String sysoid, String primaryip,
-            Map<InetAddress, Integer> ipinterfacemap,
-            Map<Integer,String> ifindextoifnamemap,
-            Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap) {
-        NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setType("A");
-        final Map<Integer, SnmpInterfaceBuilder> ifindexsnmpbuildermap = new HashMap<Integer, SnmpInterfaceBuilder>();
-        for (Integer ifIndex: ifindextoifnamemap.keySet()) {
-            ifindexsnmpbuildermap.put(ifIndex, nb.addSnmpInterface(ifIndex).
-                                      setIfType(6).
-                                      setIfName(ifindextoifnamemap.get(ifIndex)).
-                                      setIfSpeed(100000000).
-                                      setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
-        }
         
-        for (InetAddress ipaddr: ipinterfacemap.keySet()) { 
-            String isSnmpPrimary="N";
-            Integer ifIndex = ipinterfacemap.get(ipaddr);
-            if (ipaddr.getHostAddress().equals(primaryip))
-                isSnmpPrimary="P";
-            if (ifIndex == null)
-                nb.addInterface(ipaddr.getHostAddress()).setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");
-            else {
-                nb.addInterface(ipaddr.getHostAddress(), ifindexsnmpbuildermap.get(ifIndex).getSnmpInterface()).
-                setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");            }
-        }
-            
-        return nb.getCurrentNode();
-    }
-    
-    private String getSuitableString(Map<Integer,String> ifindextomacmap, Integer ifIndex) {
-        String value = "";
-        if (ifindextomacmap.containsKey(ifIndex))
-            value = ifindextomacmap.get(ifIndex);
-        return value;
-    }
-    
-    String getMockSnmpFile(String ipaddress) {
-        return "classpath:linkd/"+ipaddress+"-walk.txt"; 
-    }
-    
     OnmsNode getCiscoC870() {
         return getNode(CISCO_C870_NAME,CISCO_C870_SYSOID,CISCO_C870_IP,CISCO_C870_IP_IF_MAP,CISCO_C870_IF_IFNAME_MAP,CISCO_C870_IF_MAC_MAP,CISCO_C870_IF_IFDESCR_MAP);
     }
@@ -643,13 +592,6 @@ public abstract class LinkdNms7467NetworkBuilder {
     
     OnmsNode getDarwin108() {
         return getNode(DARWIN_10_8_NAME,DARWIN_10_8_SYSOID,DARWIN_10_8_IP,DARWIN_10_8_IP_IF_MAP,DARWIN_10_8_IF_IFNAME_MAP,DARWIN_10_8_IF_MAC_MAP, new HashMap<Integer, String>());
-    }
-    
-    OnmsNode getNodeWithoutSnmp(String name, String ipaddr) {
-        NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setType("A");
-        nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
-        return nb.getCurrentNode();
     }
     
 }

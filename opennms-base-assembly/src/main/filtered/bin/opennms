@@ -62,7 +62,7 @@ START_TIMEOUT=10
 STATUS_WAIT=5
 
 # Value of the -Xmx<size>m option passed to Java.
-JAVA_HEAP_SIZE=256
+JAVA_HEAP_SIZE=512
 
 # Additional options that should be passed to Java when starting OpenNMS.
 ADDITIONAL_MANAGER_OPTIONS=""

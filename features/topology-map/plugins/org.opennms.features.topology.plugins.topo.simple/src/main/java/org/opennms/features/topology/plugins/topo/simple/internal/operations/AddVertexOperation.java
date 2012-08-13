@@ -19,15 +19,14 @@ public class AddVertexOperation implements Operation{
     
     @Override
     public boolean display(List<Object> targets, OperationContext operationContext) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean enabled(List<Object> targets,OperationContext operationContext) {
-        if(targets.size() > 1) return false;
+    	if(targets.size() > 1) return false;
         
         Object itemId = targets.size() == 1 ? targets.get(0) : null;
-        
         return itemId == null || operationContext.getGraphContainer().getVertexContainer().containsId(itemId);
     }
 
@@ -57,7 +56,7 @@ public class AddVertexOperation implements Operation{
             	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON, operationContext.getGraphContainer());
             }
             else {
-                Object vertId = m_topologyProvider.addVertex(50, 50, Constants.SERVER_ICON);
+                Object vertId = m_topologyProvider.addVertex(250, 250, Constants.SERVER_ICON);
                 m_topologyProvider.setParent(vertId, Constants.ROOT_GROUP_ID);
                 
             }

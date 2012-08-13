@@ -6,8 +6,6 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.ssh.internal.AuthWindow;
 
-import com.vaadin.data.Item;
-
 public class GeneralSSHOperation implements Operation {
 
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
@@ -20,18 +18,6 @@ public class GeneralSSHOperation implements Operation {
 	}
 
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		if (targets != null) {
-			if(targets.size() == 1) {
-				return true;
-			}
-			for(Object target : targets) {
-				Object itemId = target;
-				Item vertexItem = operationContext.getGraphContainer().getVertexItem(itemId);
-				if(vertexItem.getItemProperty("host").getValue() != null) {
-
-				}
-			}
-		}
 		return true;
 	}
 

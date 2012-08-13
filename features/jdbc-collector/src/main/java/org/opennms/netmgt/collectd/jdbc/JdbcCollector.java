@@ -43,13 +43,13 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;

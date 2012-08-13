@@ -22,6 +22,7 @@ public class ResourceGraphsWindow extends Window {
 	private final int heightCushion = 110; //Border cushion for height of window
 	private URL rgURL = null; //Web address for the Resource Graphs page
 	private Embedded rgBrowser = null; //Browser component which is directed at the Resource Graphs page
+	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 	
 	/**
 	 * The ResourceGraphsWindow method constructs a sub-window instance which can be added to a
@@ -32,14 +33,27 @@ public class ResourceGraphsWindow extends Window {
 	 * @param height Height of the main window
 	 * @throws MalformedURLException
 	 */
-	public ResourceGraphsWindow(Node node, String baseURL) throws MalformedURLException{
+	public ResourceGraphsWindow(Node n, String baseURL) throws MalformedURLException{
+		
+		Node node = n;
+		if (node == null) {
+			node = new Node(-1, "", "");
+		}
+		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
+		if (node.getNodeID() >= 0) {
+			baseURL += ("[" + node.getNodeID() + "]");
+		}
 		
 		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		rgURL = new URL(baseURL + "[" + node.getNodeID() + "]");
+		rgURL = new URL(baseURL);
 		rgBrowser = new Embedded("", new ExternalResource(rgURL));
 		
-		/*Sets the properties of the sub-window*/
-		setCaption("Resource Graphs - " + node.getName());
+		String label = node.getLabel();
+		/*Sets up window settings*/
+		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
+			label = "";
+		} else label = " - " + label;
+		setCaption("Resource Graphs" + label);
 		setImmediate(true);
 		setResizable(false);
 		

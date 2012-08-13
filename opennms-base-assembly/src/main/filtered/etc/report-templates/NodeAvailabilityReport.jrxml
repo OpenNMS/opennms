@@ -42,7 +42,7 @@
 			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["EEE MMM d HH:mm:ss Z yyyy"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA["yyyy-MM-d HH:mm:ss Z"]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -231,7 +231,7 @@ ORDER BY
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT

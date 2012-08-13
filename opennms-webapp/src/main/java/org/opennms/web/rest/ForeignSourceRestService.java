@@ -160,6 +160,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     public ForeignSource getDefaultForeignSource() throws ParseException {
         readLock();
         try {
+            m_deployedForeignSourceRepository.flush();
             return m_deployedForeignSourceRepository.getDefaultForeignSource();
         } finally {
             readUnlock();
@@ -177,6 +178,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     public ForeignSourceCollection getDeployedForeignSources() throws ParseException {
         readLock();
         try {
+            m_deployedForeignSourceRepository.flush();
             return new ForeignSourceCollection(m_deployedForeignSourceRepository.getForeignSources());
         } finally {
             readUnlock();
@@ -194,6 +196,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     public int getDeployedCount() {
         readLock();
         try {
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getForeignSourceCount();
         } finally {
             readUnlock();
@@ -212,8 +215,8 @@ public class ForeignSourceRestService extends OnmsRestService {
         readLock();
         
         try {
-            Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
-            for (String fsName : getActiveForeignSourceNames()) {
+            final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+            for (final String fsName : getActiveForeignSourceNames()) {
                 foreignSources.add(getActiveForeignSource(fsName));
             }
             return new ForeignSourceCollection(foreignSources);
@@ -289,7 +292,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     public DetectorWrapper getDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
         readLock();
         try {
-            for (PluginConfig pc : getActiveForeignSource(foreignSource).getDetectors()) {
+            for (final PluginConfig pc : getActiveForeignSource(foreignSource).getDetectors()) {
                 if (pc.getName().equals(detector)) {
                     return new DetectorWrapper(pc);
                 }
@@ -331,7 +334,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     public PolicyWrapper getPolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
         readLock();
         try {
-            for (PluginConfig pc : getActiveForeignSource(foreignSource).getPolicies()) {
+            for (final PluginConfig pc : getActiveForeignSource(foreignSource).getPolicies()) {
                 if (pc.getName().equals(policy)) {
                     return new PolicyWrapper(pc);
                 }
@@ -356,7 +359,8 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             log().debug("addForeignSource: Adding foreignSource " + foreignSource.getName());
             m_pendingForeignSourceRepository.save(foreignSource);
-            return Response.ok(foreignSource).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getForeignSource").build(foreignSource.getName())).build();
+            // return Response.ok(foreignSource).build();
         } finally {
             writeUnlock();
         }
@@ -380,7 +384,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             fs.addDetector(detector);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.ok(detector).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getDetector").build(foreignSource, detector.getName())).build();
+            // return Response.ok(detector).build();
         } finally {
             writeUnlock();
         }
@@ -404,7 +409,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             fs.addPolicy(policy);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.ok(policy).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getPolicy").build(foreignSource, policy.getName())).build();
+            // return Response.ok(policy).build();
         } finally {
             writeUnlock();
         }
@@ -438,7 +444,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             log().debug("updateForeignSource: foreign source " + foreignSource + " updated");
             m_pendingForeignSourceRepository.save(fs);
-            return Response.ok(fs).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getForeignSource").build(foreignSource)).build();
+            // return Response.ok(fs).build();
         } finally {
             writeUnlock();
         }
@@ -459,7 +466,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getForeignSource(foreignSource);
             log().debug("deletePendingForeignSource: deleting foreign source " + foreignSource);
             m_pendingForeignSourceRepository.delete(fs);
-            return Response.ok(fs).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -480,7 +487,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getForeignSource(foreignSource);
             log().debug("deleteDeployedForeignSource: deleting foreign source " + foreignSource);
             m_deployedForeignSourceRepository.delete(fs);
-            return Response.ok(fs).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -505,7 +512,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             if (removed != null) {
                 fs.setDetectors(detectors);
                 m_pendingForeignSourceRepository.save(fs);
-                return Response.ok(removed).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } finally {
@@ -532,7 +539,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             if (removed != null) {
                 fs.setPolicies(policies);
                 m_pendingForeignSourceRepository.save(fs);
-                return Response.ok(removed).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } finally {

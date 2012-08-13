@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.Collection;
+
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
-
-import java.util.Collection;
 
 /**
  * <p>OnmsMapElementDao interface.</p>

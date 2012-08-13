@@ -498,13 +498,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                        new OctetString("testNotifyView"),
                        StorageType.nonVolatile);
 
-        vacm.addViewTreeFamily(new OctetString("fullReadView"), new OID("1.3"),
+        vacm.addViewTreeFamily(new OctetString("fullReadView"), new OID("1"),
                                new OctetString(), VacmMIB.vacmViewIncluded,
                                StorageType.nonVolatile);
-        vacm.addViewTreeFamily(new OctetString("fullWriteView"), new OID("1.3"),
+        vacm.addViewTreeFamily(new OctetString("fullWriteView"), new OID("1"),
                                new OctetString(), VacmMIB.vacmViewIncluded,
                                StorageType.nonVolatile);
-        vacm.addViewTreeFamily(new OctetString("fullNotifyView"), new OID("1.3"),
+        vacm.addViewTreeFamily(new OctetString("fullNotifyView"), new OID("1"),
                                new OctetString(), VacmMIB.vacmViewIncluded,
                                StorageType.nonVolatile);
 
