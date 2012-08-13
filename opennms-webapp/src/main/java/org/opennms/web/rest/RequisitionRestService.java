@@ -927,11 +927,14 @@ public class RequisitionRestService extends OnmsRestService {
         try {
             Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    node.deleteInterface(ipAddress);
-                    m_pendingForeignSourceRepository.save(req);
-                    return Response.ok().build();
+                    if (node.deleteInterface(ipAddress)) {
+                        m_pendingForeignSourceRepository.save(req);
+                        return Response.ok().build();
+                    } else {
+                        return Response.notModified().build();
+                    }
                 }
             }
             return null;
@@ -991,9 +994,12 @@ public class RequisitionRestService extends OnmsRestService {
             if (req != null) {
                 RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    node.deleteCategory(category);
-                    m_pendingForeignSourceRepository.save(req);
-                    return Response.ok().build();
+                    if (node.deleteCategory(category)) {
+                        m_pendingForeignSourceRepository.save(req);
+                        return Response.ok().build();
+                    } else {
+                        return Response.notModified().build();
+                    }
                 }
             }
             return null;
@@ -1016,13 +1022,16 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource);
             if (req != null) {
-                RequisitionNode node = req.getNode(foreignId);
+                final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    node.deleteAsset(parameter);
-                    m_pendingForeignSourceRepository.save(req);
-                    return Response.ok().build();
+                    if (node.deleteAsset(parameter)) {
+                        m_pendingForeignSourceRepository.save(req);
+                        return Response.ok().build();
+                    } else {
+                        return Response.notModified().build();
+                    }
                 }
             }
             return null;
