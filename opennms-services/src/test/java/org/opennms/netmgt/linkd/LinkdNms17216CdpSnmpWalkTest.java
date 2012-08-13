@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
-import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,11 +41,6 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocTable;
-import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
-import org.opennms.netmgt.linkd.snmp.LldpRemTable;
-import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -92,30 +86,214 @@ public class LinkdNms17216CdpSnmpWalkTest extends LinkdNms17216NetworkBuilder im
         for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
             printCdpRow(cdpCacheTableEntry);
         }
-    }
-    
+    }        
 
-    private void checkSwitch1Row(CdpCacheTableEntry cdpCacheTableEntry) {
-        /*
-        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
-        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
-        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
-        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
-        assertEquals(5,lldpLocPortidSubtype.intValue());
-        
-        if (lldpLocPortNum.intValue() >= 1 && lldpLocPortNum.intValue() <= 24) {
-            assertEquals("Fa0/"+lldpLocPortNum,lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 25) {
-            assertEquals("Gi0/1",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 26) {
-            assertEquals("Gi0/2",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 104) {
-            assertEquals("St1",lldpLocPortid);
-        } else {
-            assertEquals(true,false);
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH2_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Switch2CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(SWITCH2_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
         }
-        */
-    }
-    
+        
+        assertEquals(6, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH3_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Switch3CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(SWITCH3_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH3_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(4, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH4_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Switch4CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(SWITCH4_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH4_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(1, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH5_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Switch5CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(SWITCH5_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH5_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(2, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER1_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Router1CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(ROUTER1_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ROUTER1_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(2, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER2_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Router2CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(ROUTER2_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ROUTER2_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(2, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER3_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Router3CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(ROUTER3_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ROUTER3_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(3, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER4_NAME+"-walk.txt")
+    })
+    public void testNetwork17216Router4CdpCacheTableCollection() throws Exception {
+
+        String name = "cdpCacheTable";
+        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddress.getByName(ROUTER4_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpCacheTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ROUTER4_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(1, m_cdpCacheTable.size());
+        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
+            printCdpRow(cdpCacheTableEntry);
+        }
+    }        
 
 }

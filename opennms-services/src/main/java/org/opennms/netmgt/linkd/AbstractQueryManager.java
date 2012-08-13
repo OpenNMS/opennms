@@ -99,7 +99,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract int getIfIndexByName(Connection dbConn, int targetCdpNodeId, String cdpTargetDevicePort) throws SQLException;
 
-    protected abstract int getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
+    protected abstract List<Integer> getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
 
     protected abstract RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress nexthop) throws SQLException;
 
@@ -380,12 +380,6 @@ public abstract class AbstractQueryManager implements QueryManager {
         List<CdpInterface> cdpInterfaces = new ArrayList<CdpInterface>();
 
         for (final CdpCacheTableEntry cdpEntry : snmpcoll.getCdpCacheTable()) {
-            final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
-
-            if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
-                LogUtils.warnf(this, "processCdpCacheTable: CDP address type not valid: %d", cdpAddrType);
-                continue;
-            }
 
             final int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
 
@@ -393,26 +387,37 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.debugf(this, "processCdpCacheTable: ifIndex not valid: %d", cdpIfIndex);
                 continue;
             }
+
             LogUtils.debugf(this, "processCdpCacheTable: ifIndex found: %d", cdpIfIndex);
 
-            final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheAddress();
-            final String cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
+            List<Integer> targetCdpNodeIds = new ArrayList<Integer>();
+            final String targetSysName = cdpEntry.getCdpCacheDeviceId();
 
-            int targetCdpNodeId = -1;
-
-            if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
-                LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
-                continue;
+            final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
+            if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
+                LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
+                LogUtils.debugf(this, "processCdpCacheTable: using CDP deviceid: %d", targetSysName);
+                targetCdpNodeIds = getNodeIdsFromSysName(targetSysName);
             } else {
-                LogUtils.debugf(this, "processCdpCacheTable: IP address found: %s", cdpTargetIpAddrString);
-                targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
+                final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
+                final String cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
+                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
+                    LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
+                    LogUtils.debugf(this, "processCdpCacheTable: using CDP deviceid: %d", targetSysName);
+                    targetCdpNodeIds = getNodeIdsFromSysName(targetSysName);
+                } else {
+                    LogUtils.debugf(this, "processCdpCacheTable: IP address found: %s", cdpTargetIpAddrString);
+                    targetCdpNodeIds = getNodeidFromIp(dbConn, cdpTargetIpAddr);
 
-                if (targetCdpNodeId == -1) {
-                    LogUtils.infof(this, "processCdpCacheTable: No node ID found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
-                    sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
-                    continue;
+                    if (targetCdpNodeIds.isEmpty()) {
+                        LogUtils.infof(this, "processCdpCacheTable: No node ID found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
+                        sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
+                        continue;
+                    }
                 }
             }
+
+            for (final Integer targetCdpNodeId: targetCdpNodeIds) {
             LogUtils.infof(this, "processCdpCacheTable: node ID found: %d.", targetCdpNodeId);
 
             final String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
@@ -430,6 +435,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
             }
 
+            final InetAddress cdpTargetIpAddr = getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress();
             final CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
             cdpIface.setCdpTargetNodeId(targetCdpNodeId);
             cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
@@ -438,8 +444,20 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processCdpCacheTable: Adding interface to linkable SNMP node: %s", cdpIface);
 
             cdpInterfaces.add(cdpIface);
+            }
         }
         node.setCdpInterfaces(cdpInterfaces);
+    }
+
+    private List<Integer> getNodeIdsFromSysName(String targetSysName) {
+        List<Integer> nodeids = new ArrayList<Integer>();
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
+        criteria.add(Restrictions.eq("sysName", targetSysName));
+        final List<OnmsNode> nodes = getNodeDao().findMatching(criteria);
+        for (final OnmsNode node: nodes) {
+            nodeids.add(node.getId());
+        }
+        return nodeids;
     }
 
     protected void processRouteTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
