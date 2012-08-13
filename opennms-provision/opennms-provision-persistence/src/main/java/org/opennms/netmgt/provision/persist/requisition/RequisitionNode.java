@@ -145,8 +145,8 @@ public class RequisitionNode {
      *
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
-    public void deleteInterface(RequisitionInterface iface) {
-        m_interfaces.remove(iface);
+    public boolean deleteInterface(final RequisitionInterface iface) {
+        return m_interfaces.remove(iface);
     }
 
     /**
@@ -154,15 +154,16 @@ public class RequisitionNode {
      *
      * @param ipAddress a {@link java.lang.String} object.
      */
-    public void deleteInterface(String ipAddress) {
-        Iterator<RequisitionInterface> i = m_interfaces.iterator();
+    public boolean deleteInterface(final String ipAddress) {
+        final Iterator<RequisitionInterface> i = m_interfaces.iterator();
         while (i.hasNext()) {
-            RequisitionInterface iface = i.next();
+            final RequisitionInterface iface = i.next();
             if (iface.getIpAddr().equals(ipAddress)) {
                 i.remove();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -238,8 +239,8 @@ public class RequisitionNode {
      *
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
-    public void deleteCategory(RequisitionCategory category) {
-        m_categories.remove(category);
+    public boolean deleteCategory(final RequisitionCategory category) {
+        return m_categories.remove(category);
     }
 
     /**
@@ -247,17 +248,18 @@ public class RequisitionNode {
      *
      * @param category a {@link java.lang.String} object.
      */
-    public void deleteCategory(String category) {
+    public boolean deleteCategory(final String category) {
         if (m_categories != null) {
-            Iterator<RequisitionCategory> i = m_categories.iterator();
+            final Iterator<RequisitionCategory> i = m_categories.iterator();
             while (i.hasNext()) {
-                RequisitionCategory cat = i.next();
+                final RequisitionCategory cat = i.next();
                 if (cat.getName().equals(category)) {
                     i.remove();
-                    break;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /**
@@ -333,15 +335,16 @@ public class RequisitionNode {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public void deleteAsset(String name) {
-        Iterator<RequisitionAsset> i = m_assets.iterator();
+    public boolean deleteAsset(final String name) {
+        final Iterator<RequisitionAsset> i = m_assets.iterator();
         while (i.hasNext()) {
-            RequisitionAsset asset = i.next();
+            final RequisitionAsset asset = i.next();
             if (asset.getName().equals(name)) {
                 i.remove();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -349,8 +352,8 @@ public class RequisitionNode {
      *
      * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
      */
-    public void deleteAsset(RequisitionAsset asset) {
-        m_assets.remove(asset);
+    public boolean deleteAsset(final RequisitionAsset asset) {
+        return m_assets.remove(asset);
     }
 
     /**

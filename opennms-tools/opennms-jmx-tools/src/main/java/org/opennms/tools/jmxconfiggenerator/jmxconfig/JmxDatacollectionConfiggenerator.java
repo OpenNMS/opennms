@@ -192,42 +192,64 @@ public class JmxDatacollectionConfiggenerator {
         return xmlJmxDatacollectionConfig;
     }
 
-    public MBeanServerConnection createMBeanServerConnection(String hostName, String port, String username, String password, Boolean ssl, Boolean jmxmp) {
+    public MBeanServerConnection createMBeanServerConnection(String hostName, String port, String username, String password, Boolean ssl, Boolean jmxmp) throws MalformedURLException, IOException {
         JMXConnector jmxConnector;
         JMXServiceURL jmxServiceURL;
         MBeanServerConnection jmxServerConnection = null;
 
-        try {
-            if (jmxmp) {
-                jmxServiceURL = new JMXServiceURL("service:jmx:jmxmp://" + hostName + ":" + port);
-            } else {
-                jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
-            }
-            if (username != null && password != null) {
-                jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
-                HashMap<String, String[]> env = new HashMap<String, String[]>();
-                String[] credentials = new String[]{username, password};
-                env.put("jmx.remote.credentials", credentials);
-                jmxConnector.connect(env);
-            } else {
-                jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
-                jmxConnector.connect();
-            }
+//        try {
+			jmxServiceURL = getJmxServiceURL(jmxmp, hostName, port);
+			jmxConnector = getJmxConnector(username, password, jmxServiceURL);
             logger.debug("jmxServerConnection: '{}'", jmxServerConnection);
-
             jmxServerConnection = jmxConnector.getMBeanServerConnection();
-
             logger.debug("count: " + jmxServerConnection.getMBeanCount());
-        } catch (MalformedURLException e) {
-            logger.error("MalformedURLException '{}'", e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            logger.error("IOException '{}'", e.getMessage());
-            e.printStackTrace();
-        }
+//        } catch (MalformedURLException e) {
+//            logger.error("MalformedURLException '{}'", e.getMessage());
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            logger.error("IOException '{}'", e.getMessage());
+//            e.printStackTrace();
+//        }
 
         return jmxServerConnection;
     }
+
+	/**
+	 * This method gets the JmxConnector to connect with the given jmxServiceURL.
+	 * 
+	 * @param username may be null
+	 * @param password may be null
+	 * @param jmxServiceURL should not be null!
+	 * @return a jmxConnector
+	 * @throws IOException if the connection to the given jmxServiceURL fails (e.g. authentication failure or not reachable)
+	 */
+	private JMXConnector getJmxConnector(String username, String password, JMXServiceURL jmxServiceURL) throws IOException {
+		JMXConnector jmxConnector;
+		if (username != null && password != null) {
+			jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
+			HashMap<String, String[]> env = new HashMap<String, String[]>();
+			String[] credentials = new String[]{username, password};
+			env.put("jmx.remote.credentials", credentials);
+			jmxConnector.connect(env);
+		} else {
+			jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
+			jmxConnector.connect();
+		}
+		return jmxConnector;
+	}
+
+	/**
+	 * determines the jmxServiceUrl depending on jmxmp.
+	 * @param jmxmp
+	 * @param hostName
+	 * @param port
+	 * @return
+	 * @throws MalformedURLException 
+	 */
+	public JMXServiceURL getJmxServiceURL(Boolean jmxmp, String hostName, String port) throws MalformedURLException {
+		if (jmxmp) return new JMXServiceURL("service:jmx:jmxmp://" + hostName + ":" + port);
+		return new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName + ":" + port + "/jmxrmi");
+	}
 
     public void writeJmxConfigFile(JmxDatacollectionConfig jmxDatacollectionConfigModel, String outFile) {
         JAXB.marshal(jmxDatacollectionConfigModel, new File(outFile));

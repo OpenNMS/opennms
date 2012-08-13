@@ -4,7 +4,6 @@ import static org.opennms.features.topology.app.internal.gwt.client.d3.Transitio
 import static org.opennms.features.topology.app.internal.gwt.client.d3.TransitionBuilder.fadeOut;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -34,6 +32,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -300,7 +299,26 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		}
 
 	}
+	
+	public class PanHandler implements DragBehaviorHandler{
 
+        @Override
+        public void onDragStart(Element elem) {
+            m_panObject = new PanObject(m_svgViewPort, m_svg);
+        }
+
+        @Override
+        public void onDrag(Element elem) {
+            m_panObject.move();
+        }
+
+        @Override
+        public void onDragEnd(Element elem) {
+            m_panObject = null;
+        }
+	    
+	}
+	
 	public class PanObject extends DragObject{
 		private SVGMatrix m_stateTf;
 		private SVGPoint m_stateOrigin;
@@ -371,7 +389,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				return Math.max(0, Math.min(offsetWidth - mapWidth, x));
 			}
 		}
-
 	}
 
 	public class DragObject{
@@ -388,7 +405,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 			//User m_vertexgroup because this is what we scale instead of every vertex element
 			m_transform = D3.getTransform(D3.d3().select(m_vertexGroup).attr("transform"));
-
+			
+			if(containerElement == null) {
+			    Window.alert("element: " + containerElement + " is null");
+			}
+			
 			JsArrayInteger position = D3.getMouse(containerElement);
 			m_startX = (int) (position.get(0) / m_transform.getScale().get(0));
 			m_startY = (int) (position.get(1) / m_transform.getScale().get(1));
@@ -433,9 +454,46 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		}
 
 	}
-
+	
+	private interface DragBehaviorHandler{
+	    public void onDragStart(Element elem);
+        public void onDrag(Element elem);
+        public void onDragEnd(Element elem);
+	}
+	
+	private class DragHandlerManager {
+	    Map<String, DragBehaviorHandler> m_dragBehaviorHandlers = new HashMap<String, DragBehaviorHandler>();
+	    DragBehaviorHandler m_currentHandler;
+	    
+	    public void addDragBehaviorHandler(String key, DragBehaviorHandler handler) {
+	        m_dragBehaviorHandlers.put(key, handler);
+	    }
+	    
+	    public boolean setCurrentDragHandler(String key) {
+	        if(m_dragBehaviorHandlers.containsKey(key)) {
+	            m_currentHandler = m_dragBehaviorHandlers.get(key);
+	            return true;
+	        }
+	        return false;
+	    }
+	    
+	    public void onDragStart(Element elem) {
+	        m_currentHandler.onDragStart(elem);
+	    }
+	    
+	    public void onDrag(Element elem) {
+	        m_currentHandler.onDrag(elem);
+	    }
+	    
+	    public void onDragEnd(Element elem) {
+	        m_currentHandler.onDragEnd(elem);
+	    }
+	}
+	
 	private static VTopologyComponentUiBinder uiBinder = GWT
 			.create(VTopologyComponentUiBinder.class);
+	
+	private static String DRAG_BEHAVIOR_PAN = "pan";
 
 	interface VTopologyComponentUiBinder extends
 	UiBinder<Widget, VTopologyComponent> {
@@ -488,6 +546,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private List<Element> m_selectedElements = new ArrayList<Element>();
 	private int m_semanticZoomLevel;
 	private int m_oldSemanticZoomLevel;
+	private DragHandlerManager m_svgDragHandlerManager;
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -501,8 +560,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 
 		sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
-
-		setupPanningBehavior(m_svg);
+		
+		m_svgDragHandlerManager = new DragHandlerManager();
+		m_svgDragHandlerManager.addDragBehaviorHandler(DRAG_BEHAVIOR_PAN, new PanHandler());
+		m_svgDragHandlerManager.setCurrentDragHandler(DRAG_BEHAVIOR_PAN);
+		setupDragBehavior(m_svg, m_svgDragHandlerManager);
 
 		D3Behavior dragBehavior = new D3Behavior() {
 
@@ -524,26 +586,28 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	}
 
 
-	private void setupPanningBehavior(final Element panElem) {
+	private void setupDragBehavior(final Element panElem, final DragHandlerManager handlerManager) {
+	    
 		D3Drag d3Pan = D3.getDragBehavior();
-		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Object>() {
+		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Element>() {
 
-			public void call(Object t, int index) {
-				m_panObject = new PanObject(m_svgViewPort, m_svg);
+			public void call(Element elem, int index) {
+			    handlerManager.onDragStart(elem);
+				//
 			}
 		});
 
-		d3Pan.on(D3Events.DRAG.event(), new Handler<Object>() {
+		d3Pan.on(D3Events.DRAG.event(), new Handler<Element>() {
 
-			public void call(Object t, int index) {
-				m_panObject.move();
+			public void call(Element elem, int index) {
+			    handlerManager.onDrag(elem);
 			}
 		});
 
-		d3Pan.on(D3Events.DRAG_END.event(), new Handler<Object>() {
+		d3Pan.on(D3Events.DRAG_END.event(), new Handler<Element>() {
 
-			public void call(Object t, int index) {
-				m_panObject = null;
+			public void call(Element elem, int index) {
+			    handlerManager.onDragEnd(elem);
 			}
 		});
 
