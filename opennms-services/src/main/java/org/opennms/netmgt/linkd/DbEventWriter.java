@@ -452,9 +452,9 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     @Override
-    protected int getNodeidFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
+    protected List<Integer> getNodeidFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
 
-        int nodeid = -1;
+        List<Integer> nodeids = new ArrayList<Integer>();
 
         final String hostAddress = str(ipaddr);
         final DBUtils d = new DBUtils(getClass());
@@ -470,23 +470,23 @@ public class DbEventWriter extends AbstractQueryManager {
     
             if (!rs.next()) {
                 LogUtils.debugf(this, "getNodeidFromIp: no entries found in ipinterface");
-                return -1;
+                return nodeids;
             }
             // extract the values.
             //
-            int ndx = 1;
-    
+            while (rs.next()) {                    
             // get the node id
             //
-            nodeid = rs.getInt(ndx++);
-            if (rs.wasNull()) nodeid = -1;
+                int nodeid = rs.getInt("nodeid");
+                nodeids.add(nodeid);
     
-            LogUtils.debugf(this, "getNodeidFromIp: found nodeid " + nodeid);
+                LogUtils.debugf(this, "getNodeidFromIp: found nodeid " + nodeid);
+            }
         } finally {
             d.cleanUp();
         }
 
-        return nodeid;
+        return nodeids;
 
     }
 

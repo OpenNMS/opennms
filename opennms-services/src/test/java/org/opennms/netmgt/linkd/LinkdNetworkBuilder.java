@@ -108,13 +108,14 @@ public abstract class LinkdNetworkBuilder {
     
     void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
         System.err.println("-----------------------------------------------------------");    
-        System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
-        System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
-        System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
-        System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
         System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
+        System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
+        System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
+        System.err.println("getCdpCacheAddress: "+cdpCacheTableEntry.getCdpCacheAddress());
+        System.err.println("getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
         System.err.println("getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
-        System.err.println("getCdpPlatform: "+cdpCacheTableEntry.getCdpPlatform());
+        System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
+        System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
         System.err.println("-----------------------------------------------------------");
         System.err.println("");        
         

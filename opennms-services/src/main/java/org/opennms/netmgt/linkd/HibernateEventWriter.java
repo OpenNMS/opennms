@@ -338,23 +338,19 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
 	@Override
-	protected int getNodeidFromIp(final Connection dbConn, final InetAddress cdpTargetIpAddr) throws SQLException {
+	protected List<Integer> getNodeidFromIp(final Connection dbConn, final InetAddress cdpTargetIpAddr) throws SQLException {
+        List<Integer> nodeids = new ArrayList<Integer>();
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("ipAddress", cdpTargetIpAddr));
         criteria.add(Restrictions.eq("node.type", "A"));
         List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
         
-        if (interfaces.isEmpty()) {
-        	return -1;
-        } else {
-        	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "getNodeidFromIp: More than one node matches ipAddress %s", str(cdpTargetIpAddr));
-        	}
-        	final OnmsNode node = interfaces.get(0).getNode();
-        	if (node == null) return -1;
-			return node.getId();
+	LogUtils.debugf(this, "getNodeidFromIp: Found %d nodeids matching ipAddress %s", interfaces.size(),str(cdpTargetIpAddr));
+        for (final OnmsIpInterface ipinterface : interfaces) {
+            nodeids.add(ipinterface.getNode().getId());
         }
+        return nodeids;
 	}
 
 	// SELECT node.nodeid,snmpinterface.snmpifindex,snmpinterface.snmpipadentnetmask FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid LEFT JOIN snmpinterface ON ipinterface.snmpinterfaceid = snmpinterface.id WHERE node.nodetype = 'A' AND ipinterface.ipaddr = ?

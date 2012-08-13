@@ -107,8 +107,8 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	private boolean hasIfIndex = false;
 
 	private final static String CDP_IFINDEX_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1.1";
-
-
+        private final static String CDP_DEVICEINDEX_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1.2";
+                                                           
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -132,7 +132,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 		 * <P>A unique value for each device from which CDP messages
 		 * are being received.</P>
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_DEVICEINDEX, ".1.3.6.1.4.1.9.9.23.1.2.1.1.2", 2),
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CDP_DEVICEINDEX, CDP_DEVICEINDEX_OID, 2),
 
 		/**
 		 * <P>An indication of the type of address contained in the
@@ -172,7 +172,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 		 *  indicates no Port-ID field (TLV) was reported in the
 		 *  most recent CDP message.</P>
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 7)
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 6)
 
 		/**
 		 * <P>The Device's Hardware Platform as reported in the most
@@ -357,6 +357,9 @@ public final class CdpCacheTableEntry extends SnmpStore {
 			int ifindex = res.getInstance().getSubIdAt(res.getInstance().length()-2);
 			super.storeResult(new SnmpResult(SnmpObjId.get(CDP_IFINDEX_OID), res.getInstance(), 
 						SnmpUtils.getValueFactory().getInt32(ifindex)));
+			int deviceIndex = res.getInstance().getLastSubId();
+                        super.storeResult(new SnmpResult(SnmpObjId.get(CDP_DEVICEINDEX_OID), res.getInstance(), 
+                                                         SnmpUtils.getValueFactory().getInt32(deviceIndex)));
 			hasIfIndex = true;
 		}
 		super.storeResult(res);
@@ -368,11 +371,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 * @return a int.
 	 */
 	public int getCdpCacheIfIndex() {
-		Integer val = getInt32(CdpCacheTableEntry.CDP_IFINDEX);
-		if (val == null) {
-            return -1;
-        }
-		return val;
+	    return getInt32(CdpCacheTableEntry.CDP_IFINDEX);
 	}
 	
 	/**
@@ -381,11 +380,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 * @return a int.
 	 */
 	public int getCdpCacheDeviceIndex() {
-		Integer val = getInt32(CdpCacheTableEntry.CDP_DEVICEINDEX);
-		if (val == null) {
-            return -1;
-        }
-		return val;
+	    return getInt32(CdpCacheTableEntry.CDP_DEVICEINDEX);
 	}
 
 	/**
@@ -394,11 +389,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 * @return a int.
 	 */
 	public int getCdpCacheAddressType() {
-		Integer val = getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
-		if (val == null) {
-            return -1;
-        }
-		return val;
+	    return getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
 	}
 	
 	/**
@@ -406,17 +397,21 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 *
 	 * @return a {@link java.net.InetAddress} object.
 	 */
-	public InetAddress getCdpCacheAddress() {
-		return getIpAddressByHexString(getHexString(CdpCacheTableEntry.CDP_ADDRESS));
+	public String getCdpCacheAddress() {
+	    return getHexString(CdpCacheTableEntry.CDP_ADDRESS);
 	}
 
+	public InetAddress getCdpCacheIpv4Address() {
+            return getIpAddressByHexString(getCdpCacheAddress());	    
+	}
+	
 	/**
 	 * <p>getCdpCacheVersion</p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getCdpCacheVersion() {
-		return getHexString(CdpCacheTableEntry.CDP_VERSION);
+		return getDisplayString(CdpCacheTableEntry.CDP_VERSION);
 	}
 	
 	/**
@@ -425,7 +420,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getCdpCacheDeviceId() {
-		return getHexString(CdpCacheTableEntry.CDP_DEVICEID);
+		return getDisplayString(CdpCacheTableEntry.CDP_DEVICEID);
 	}
 	
 	/**
@@ -442,9 +437,9 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String getCdpPlatform() {
-		return 	getDisplayString(CdpCacheTableEntry.CDP_PLATFORM);
-	}
+	//public String getCdpPlatform() {
+	//	return 	getDisplayString(CdpCacheTableEntry.CDP_PLATFORM);
+	//}
 
 	/**
 	 * TODO: Move to {@link InetAddressUtils}?
