@@ -98,12 +98,12 @@ public class MSExchangeDetectorTest {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWired(){
         assertNotNull(m_detector);
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setImapPort(m_imapServer.getLocalPort());
         m_detector.setPop3Port(m_pop3Server.getLocalPort());
@@ -111,7 +111,7 @@ public class MSExchangeDetectorTest {
         assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessPop3FailImap() throws IOException{
         m_imapServer.stopServer();
         m_detector.setPop3Port(m_pop3Server.getLocalPort());
@@ -119,7 +119,7 @@ public class MSExchangeDetectorTest {
         assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessImapFailPop3() throws IOException{
         m_pop3Server.stopServer();
         m_detector.setImapPort(m_imapServer.getLocalPort());
@@ -127,7 +127,7 @@ public class MSExchangeDetectorTest {
         assertTrue(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort(){
         m_detector.setImapPort(9000);
         m_detector.setPop3Port(9001);

@@ -72,7 +72,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             
@@ -104,7 +104,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailUnexpectedBanner() throws Exception{
         m_server  = new SimpleServer() {
             
@@ -132,7 +132,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailUnexpectedLogoutResponse() throws Exception{
         m_server  = new SimpleServer() {
             

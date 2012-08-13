@@ -78,7 +78,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testSuccess() throws Exception {
         
         m_detector = createDetector(m_server.getLocalPort());
@@ -86,7 +86,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
         
@@ -96,7 +96,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
         m_detector = createDetector(m_server.getLocalPort());
@@ -105,7 +105,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception{
         
         m_detector = createDetector(9000);

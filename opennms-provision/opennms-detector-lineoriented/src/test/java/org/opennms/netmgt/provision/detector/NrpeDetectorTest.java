@@ -66,18 +66,18 @@ public class NrpeDetectorTest implements ApplicationContextAware {
     }
     
     //Tested against a local windows box with NSClient++
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException {
         //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
         //m_detector.setPort(12489);
         //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotUsingSSL() throws UnknownHostException {
         //m_detector.setUseSsl(false);
         //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));

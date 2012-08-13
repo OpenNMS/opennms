@@ -81,12 +81,12 @@ public class DhcpDetectorTest{
         // m_dhcpd.stop();
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorWired() {
 	   assertNotNull(m_detector);
 	}
 	
-	@Test
+	@Test(timeout=90000)
 	@Ignore
 	public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
 	    m_detector.setTimeout(5000);
@@ -95,7 +95,7 @@ public class DhcpDetectorTest{
 	    
 	}
 	
-	@Test
+	@Test(timeout=90000)
 	@Ignore
 	public void testJdhcp() throws IOException{
 	    DHCPSocket mySocket = new DHCPSocket(68);

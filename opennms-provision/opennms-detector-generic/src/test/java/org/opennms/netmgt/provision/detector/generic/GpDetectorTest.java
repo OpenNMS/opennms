@@ -56,12 +56,12 @@ public class GpDetectorTest {
         MockLogAppender.setupLogging();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWired(){
         assertNotNull(m_detector);
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("hello\n");
@@ -69,7 +69,7 @@ public class GpDetectorTest {
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
-    @Test 
+    @Test(timeout=90000) 
     public void testDetectorWrongBanner() throws UnknownHostException{
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("world");

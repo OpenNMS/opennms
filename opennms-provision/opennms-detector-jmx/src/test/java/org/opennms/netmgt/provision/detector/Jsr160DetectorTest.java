@@ -95,7 +95,7 @@ public class Jsr160DetectorTest {
         m_connectorServer.stop();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
         m_detector.setPort(9123);
@@ -106,7 +106,7 @@ public class Jsr160DetectorTest {
        
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongPort() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
         m_detector.setPort(9000);
@@ -117,7 +117,7 @@ public class Jsr160DetectorTest {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongUrlPath() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
         m_detector.setPort(9000);

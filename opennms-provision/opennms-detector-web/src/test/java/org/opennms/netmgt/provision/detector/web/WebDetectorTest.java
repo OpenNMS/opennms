@@ -115,7 +115,7 @@ public class WebDetectorTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testRegexMatch() {
         System.err.println(notFoundResponse);
         String expectedTest = "~404 Not Found";
@@ -127,7 +127,7 @@ public class WebDetectorTest {
         assertFalse(m2.find());
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_server = createServer(notAServerResponse);
         m_detector.setPort(m_server.getLocalPort());
@@ -136,7 +136,7 @@ public class WebDetectorTest {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotFoundResponseMaxRetCode399() throws Exception {        
         m_server = createServer(notFoundResponse);
         m_detector.setPath("/blog");
@@ -147,7 +147,7 @@ public class WebDetectorTest {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessMaxRetCode399() throws Exception {
         m_server = createServer(getServerOKResponse());
         m_detector.setPath("/blog");
@@ -158,7 +158,7 @@ public class WebDetectorTest {
         assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailMaxRetCodeBelow200() throws Exception {
         m_server = createServer(getServerOKResponse());
         m_detector.setPath("/blog");
@@ -169,7 +169,7 @@ public class WebDetectorTest {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorMaxRetCode600() throws Exception {
         m_server = createServer(getServerOKResponse());
         m_detector.setResponseRange("100-600");
@@ -179,7 +179,7 @@ public class WebDetectorTest {
         assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_server = createServer(getServerOKResponse());
         m_detector.setPath("http://localhost/");
@@ -189,7 +189,7 @@ public class WebDetectorTest {
         assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessCheckCodeFalse() throws Exception {
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());

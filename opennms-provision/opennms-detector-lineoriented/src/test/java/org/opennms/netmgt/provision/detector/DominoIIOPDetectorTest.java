@@ -72,27 +72,27 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
      * used a pre-existing http server on a local machine that would
      * allow the connection. 
      */
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessTokenPort() throws UnknownHostException {
         //m_detector.setPort(8080);
         //m_detector.init();
         //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(10000);
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNoHost() throws UnknownHostException {
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("1.1.1.1")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongIORPort() throws UnknownHostException {
 //        m_detector.setIorPort(1000);
 //        m_detector.setPort(80);

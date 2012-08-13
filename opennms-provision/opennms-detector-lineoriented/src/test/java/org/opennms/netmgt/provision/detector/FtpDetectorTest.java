@@ -80,7 +80,7 @@ public class FtpDetectorTest {
     }
     
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSingleLineResponseSuccess() throws Exception {
         
         m_server.setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
@@ -89,7 +89,7 @@ public class FtpDetectorTest {
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorMultilineSuccess() throws Exception {
        
         m_server.setBanner("220---------- Welcome to Pure-FTPd [TLS] ----------\r\n220-You are user number 1 of 50 allowed.\r\n220-Local time is now 07:47. Server port: 21.\r\n220 You will be disconnected after 15 minutes of inactivity.");
@@ -99,7 +99,7 @@ public class FtpDetectorTest {
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress()))); 
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureClosedPort() throws Exception {
         
         m_server.setBanner("WRONG BANNER");
@@ -111,7 +111,7 @@ public class FtpDetectorTest {
     
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureNoBannerSent() throws Exception {
        m_server = new SimpleServer();
         m_server.init();
