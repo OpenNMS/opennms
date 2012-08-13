@@ -102,8 +102,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-	@Autowired
-	private SnmpPeerFactory m_snmpPeerFactory;
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
 
     private TestContext m_context;
 
