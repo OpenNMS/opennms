@@ -30,7 +30,7 @@ package org.opennms.nrtg.protocolcollector.snmp.internal;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -47,14 +47,24 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 
     private static final String PROTOCOL = "SNMP";
 
-    @Override
+	private SnmpStrategy m_snmpStrategy;
+
+    public SnmpStrategy getSnmpStrategy() {
+		return m_snmpStrategy;
+	}
+
+	public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
+		m_snmpStrategy = snmpStrategy;
+	}
+
+	@Override
     public CollectionJob collect(CollectionJob collectionJob) {
         logger.info("SnmpProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
         
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
         for (String metric : collectionJob.getAllMetrics()) {
-            SnmpValue snmpValue = SnmpUtils.get(snmpAgentConfig, SnmpObjId.get(metric));
+            SnmpValue snmpValue = m_snmpStrategy.get(snmpAgentConfig, SnmpObjId.get(metric));
             logger.trace("Collected SnmpValue '{}'", snmpValue);
             if (snmpValue == null) {
                 collectionJob.setMetricValue(metric, null);

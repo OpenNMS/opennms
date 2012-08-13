@@ -31,7 +31,10 @@
               <Bundle-Description>${project.description}</Bundle-Description>
               <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
               <Fragment-Host>system.bundle; extension:=framework</Fragment-Host>
-              <Export-Package>org.opennms.nrtg.api;org.opennms.nrtg.api.model;version=${opennms.osgi.version}</Export-Package>
+              <Export-Package>
+              	org.opennms.nrtg.api;org.opennms.nrtg.api.model;version=${opennms.osgi.version},
+              	flexjson;flexjson.factories;flexjson.locators;flexjson.transformer;version=${flexjson.version}
+              </Export-Package>
             </manifestEntries>
           </archive>
         </configuration>

@@ -1,75 +1,29 @@
-#####
-# Build root project first
-#####
-mvn clean install
+# All of the nrtg bundles are now included in the opennms system
+  directory.  The features are not yet started by default.  There are
+  two steps to running the code
 
-######
-# Running as jar
-#####
-cd jar/satellit
-mvn assembly:assembly
-java -jar target/org.opennms.nrtg.jar.nrtcollector-1.0-SNAPSHOT-jar-with-dependencies.jar
+1. Start an activemq broker on localhost
 
-################
-# Install in karaf 
-################
-get latest karaf http://karaf.apache.org/
+There are two options for this:
 
-copy config.properties to etc (javax.xml.bind.* with version? from InetAddressXmlAdapter, opennms-utils)
+a. downlaod the apache activemq distribution and run it (bin/activemq
+console)
 
-# install activemq
-features:addurl mvn:org.apache.activemq/activemq-karaf/5.6.0/xml/features
-features:install activemq
+b. start one inside the opennms osgi container by running the
+following commands:
 
-# felxjson
-bundle:install wrap:mvn:net.sf.flexjson/flexjson
+features:install activemq-blueprint
+activemq:create-broker -t blueprint
 
-# install our api
-features:addurl mvn:org.opennms.nrtg.osgi/osgi-nrtg-api//xml/features
-features:install osgi-nrtg-api
+2. Install the nrtg feature in the opennms osgi container
 
-# and the implementation
-features:addurl mvn:org.opennms.nrtg.osgi/osgi-nrtg-nrtcollector//xml/features
-features:install osgi-nrtg-nrtcollector
+You may start this feature by running
 
-# from opennms-utils
-install mvn:commons-io/commons-io//
-install mvn:commons-lang/commons-lang//
+features:install nrtg
 
-# dnsjava
-bundle:install wrap:mvn:junit/junit
-bundle:install wrap:mvn:org.snmp4j/snmp4j
+alternatively you may install the individual features for nrtg
 
-# install the snmp collector
-features:addurl mvn:org.opennms.nrtg.osgi.protocolcollector/osgi-nrtg-protocolcollector-snmp//xml/features
-features:install osgi-nrtg-protocolcollector-snmp
-
-## Optinal
-# install the karaf web gui
-features:install war
-
-# install the activemq-webgui
-features:install activemq-web-console 
-
-##########
-# JSM Broker
-##########
-
-download activemq and start it (the broker)
-./bin/activemq start
-
-or start the broker inside karaf:
-
-# create a broker
-k# features:install activemq-spring
-k# activemq:create-broker
+features:install osgi-nrtg-api osgi-nrtg-nrtcollector osgi-nrtg-procolollector-snmp
 
 
 
-########
-# TODO:
-########
-
-- configurable broker url
-- build karaf archive/maven goal to start
-- Protocollcollector shouldn't be mandatory

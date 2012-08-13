@@ -38,6 +38,7 @@
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
       <version>${activemq.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Logging -->
     <dependency>
@@ -50,7 +51,7 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.0.4</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <!-- Spring -->
     <dependency>
@@ -63,7 +64,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-jms</artifactId>
       <version>${spring.version}</version>
-      <!-- <scope>provided</scope> -->
+      <scope>provided</scope>
     </dependency>
     <!-- Testing -->
     <dependency>

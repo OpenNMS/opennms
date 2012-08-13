@@ -30,9 +30,9 @@ package org.opennms.nrtg.protocolcollector.snmp.internal;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.slf4j.Logger;
@@ -53,8 +53,18 @@ import org.slf4j.LoggerFactory;
 public class SnmpChunkProtocolCollector implements ProtocolCollector {
 
     private static Logger logger = LoggerFactory.getLogger(SnmpChunkProtocolCollector.class);
+    
+    private SnmpStrategy m_snmpStrategy;
+    
+    public SnmpStrategy getSnmpStrategy() {
+		return m_snmpStrategy;
+	}
 
-    @Override
+	public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
+		m_snmpStrategy = snmpStrategy;
+	}
+
+	@Override
     public CollectionJob collect(CollectionJob collectionJob) {
         logger.trace("SnmpChunkProtocolCollector is collecting collectionJob '{}' from '{}'",
                 collectionJob.getId(), collectionJob.getNetInterface());
@@ -70,7 +80,7 @@ public class SnmpChunkProtocolCollector implements ProtocolCollector {
 
         // FIXME SnmpUtils can't be used until NMS-5461 is resolved
         // SnmpUtils.get(snmpAgentConfig, oids);
-        SnmpValue[] snmpValues = new Snmp4JStrategy().get(snmpAgentConfig, oids);
+        SnmpValue[] snmpValues = m_snmpStrategy.get(snmpAgentConfig, oids);
 
         int i = 0;
 

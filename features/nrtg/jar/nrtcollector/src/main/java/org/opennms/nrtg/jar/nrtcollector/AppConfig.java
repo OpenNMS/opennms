@@ -29,13 +29,16 @@
 package org.opennms.nrtg.jar.nrtcollector;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.opennms.nrtg.protocolcollector.snmp.internal.SnmpChunkProtocolCollector;
+//import org.opennms.nrtg.protocolcollector.snmp.internal.SnmpChunkProtocolCollector;
+import org.opennms.netmgt.snmp.SnmpStrategy;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.opennms.nrtg.nrtcollector.api.NrtCollector;
 import org.opennms.nrtg.nrtcollector.internal.ProtocolCollectorRegistry;
 import org.opennms.nrtg.nrtcollector.internal.ProtocolCollectorRegistryImpl;
 import org.opennms.nrtg.nrtcollector.internal.jms.CollectionJobListener;
 import org.opennms.nrtg.nrtcollector.internal.jms.NrtCollectorJMSDLMC;
 import org.opennms.nrtg.nrtcollector.internal.jms.JmsExceptionListener;
+import org.opennms.nrtg.protocolcollector.snmp.internal.SnmpChunkProtocolCollector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.CachingConnectionFactory;
@@ -107,11 +110,23 @@ public class AppConfig {
         collector.setListenerContainer(listenerContainer());
         return collector;
     }
+    
+    @Bean(name = "snmpStrategy")
+    public SnmpStrategy snmpStrategy() {
+    	return new Snmp4JStrategy();
+    }
+    
+    @Bean(name = "snmpChunkCollector")
+    public SnmpChunkProtocolCollector snmpChunkCollector() {
+    	SnmpChunkProtocolCollector snmpChunkCollector = new SnmpChunkProtocolCollector();
+    	snmpChunkCollector.setSnmpStrategy(snmpStrategy());
+    	return snmpChunkCollector;
+    }
 
     @Bean(name = "protocolCollectorRegistry")
     public ProtocolCollectorRegistry protocolCollectorRegistry() {
         ProtocolCollectorRegistryImpl registry = new ProtocolCollectorRegistryImpl();
-        registry.getProtocolCollectors().add(new SnmpChunkProtocolCollector());
+        registry.getProtocolCollectors().add(snmpChunkCollector());
         return registry;
     }
 }

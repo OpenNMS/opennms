@@ -20,9 +20,8 @@
         <configuration>
           <features>
             <feature>osgi-nrtg-api</feature>
+            <feature>activemq</feature>
             <feature>spring-jms</feature>
-            <feature>spring</feature>
-            <feature>spring-dm</feature>
           </features>
         </configuration>
         <executions>
@@ -52,11 +51,6 @@
       <groupId>org.opennms.features.nrtg</groupId>
       <artifactId>nrtg-collector</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-karaf</artifactId>
-      <version>${activemq.version}</version>
     </dependency>
   </dependencies>
 </project>

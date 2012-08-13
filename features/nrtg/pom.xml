@@ -29,6 +29,7 @@
     <spring.version>3.0.7.RELEASE</spring.version>
     <activemq.version>5.6.0</activemq.version>
     <cglib.version>2.2.2</cglib.version>
+    <flexjson.version>2.0</flexjson.version>
   </properties>
   <modules>
     <module>system-exports</module>
@@ -63,4 +64,13 @@
       </plugin>
     </plugins>
   </build>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>net.sf.flexjson</groupId>
+        <artifactId>flexjson</artifactId>
+        <version>${flexjson.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

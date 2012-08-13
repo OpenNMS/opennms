@@ -34,6 +34,7 @@
     </plugins>
   </build>
   <dependencies>
+    <!-- 
     <dependency>
       <groupId>org.opennms.osgi.features.nrtg</groupId>
       <artifactId>osgi-nrtg-api</artifactId>
@@ -41,6 +42,7 @@
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>
+    -->
     <!-- main app -->
     <dependency>
       <groupId>org.opennms.features.nrtg</groupId>

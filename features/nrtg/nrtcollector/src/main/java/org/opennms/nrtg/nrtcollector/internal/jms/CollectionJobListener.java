@@ -43,6 +43,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * JMS Listener for {@link CollectionJob}-messages. Will call the
@@ -62,7 +63,7 @@ public class CollectionJobListener implements MessageListener {
 
     private ProtocolCollectorRegistry protocolCollectorRegistry;
 
-    private static Integer counter = 0;
+    private static AtomicInteger counter = new AtomicInteger(0);
 
     public CollectionJobListener() {
     }
@@ -103,13 +104,14 @@ public class CollectionJobListener implements MessageListener {
 
             Map<String, MeasurementSet> measurementSets = collectionJob.getMeasurementSetsByDestination();
 
-            synchronized (counter) {
-                counter++;
-                if (counter % 1000 == 0)
-                    logger.debug("processed job #{}, {} measurement set(s)", counter, measurementSets.size());
-                else
-                    logger.trace("processed job #{}, {} measurement set(s)", counter, measurementSets.size());
-            }
+		    int val = counter.incrementAndGet();
+
+		    if (val % 1000 == 0) {
+		    	logger.debug("processed job #{}, {} measurement set(s)", val, measurementSets.size());
+		    }
+		    else {
+		    	logger.trace("processed job #{}, {} measurement set(s)", val, measurementSets.size());
+		    }
 
             for (String destinationString : measurementSets.keySet()) { 
                 jmsTemplate.convertAndSend(destinationString, measurementSets.get(destinationString));
