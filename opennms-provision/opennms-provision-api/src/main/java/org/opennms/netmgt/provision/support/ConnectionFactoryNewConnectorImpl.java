@@ -63,7 +63,7 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
 
     private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
-    private Integer m_port = null;
+    private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
     private final Object m_portMutex = new Object();
 
     /**
@@ -124,12 +124,12 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
         SocketConnector connector = getSocketConnector(getTimeout(), handler);
         InetSocketAddress localAddress = null;
         synchronized (m_portMutex) {
-            if (m_port == null) {
+            if (m_port.get() == null) {
                 // Fetch a new ephemeral port
                 localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-                m_port = localAddress.getPort();
+                m_port.set(localAddress.getPort());
             } else {
-                localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), m_port);
+                localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), m_port.get());
             }
         }
         final ConnectFuture cf = connector.connect(remoteAddress, localAddress, init);
@@ -171,8 +171,8 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
                     if (e != null && e instanceof BindException) {
                         synchronized(m_portMutex) {
                             // ... then reset the port
-                            LogUtils.warnf(this, "Resetting outgoing TCP port, value was %d", m_port);
-                            m_port = null;
+                            LogUtils.warnf(this, "Resetting outgoing TCP port, value was %d", m_port.get());
+                            m_port.set(null);
                         }
                         // and reattempt the connection
                         connect(remoteAddress, init, handler);

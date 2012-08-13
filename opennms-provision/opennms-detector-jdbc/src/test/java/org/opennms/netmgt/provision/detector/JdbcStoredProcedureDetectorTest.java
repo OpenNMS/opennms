@@ -120,20 +120,20 @@ public class JdbcStoredProcedureDetectorTest implements InitializingBean {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
         assertTrue("JDBCStoredProcedureDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testStoredProcedureFail() throws UnknownHostException{
         m_detector.setStoredProcedure("bogus");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testWrongUserName() throws UnknownHostException{
         m_detector.setUser("wrongUserName");
         m_detector.init();
@@ -142,7 +142,7 @@ public class JdbcStoredProcedureDetectorTest implements InitializingBean {
     }
     
 
-    @Test
+    @Test(timeout=90000)
     public void testWrongSchema() throws UnknownHostException{
         m_detector.setSchema("defaultSchema");
         m_detector.init();

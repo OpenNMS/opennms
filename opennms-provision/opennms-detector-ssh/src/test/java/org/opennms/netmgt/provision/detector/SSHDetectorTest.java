@@ -64,20 +64,20 @@ public class SSHDetectorTest implements ApplicationContextAware, InitializingBea
         m_detector.setTimeout(1);
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorSuccess() throws UnknownHostException{
 		//m_detector.init();
 		//assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
 	}
 	
-	@Test
+	@Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException{
 	    //m_detector.setPort(30);
         //m_detector.init();
         //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 	
-	@Test
+	@Test(timeout=90000)
     public void testDetectorFailBanner() throws UnknownHostException{
 	    //m_detector.setBanner("Hello there crazy");
         //m_detector.init();
