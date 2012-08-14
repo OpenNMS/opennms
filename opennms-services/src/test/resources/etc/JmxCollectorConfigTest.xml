@@ -90,6 +90,48 @@
         </mbeans>
     </jmx-collection>
     
+    <jmx-collection name="collectSingleMbeanWithOneCompAttribWithAllItsCompMembers">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="JVM Memory" objectname="java.lang:type=Memory">
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="HeapCommitted" type="gauge"/>
+                    <comp-member name="init" alias="HeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="HeapMemMax" type="gauge"/>
+                    <comp-member name="used" alias="HeapMemUsed" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
+        <jmx-collection name="collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="JVM Memory" objectname="java.lang:type=Memory">
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">>
+                    <comp-member name="committed" alias="HeapCommitted" type="gauge"/>
+                    <comp-member name="init" alias="HeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="HeapMemMax" type="gauge"/>
+                    <!-- ignored comp-member
+                    <comp-member name="used" alias="HeapMemUsed" type="gauge"/>
+                    -->
+                </comp-attrib>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
     <jmx-collection name="collectBasicJvmValues">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>

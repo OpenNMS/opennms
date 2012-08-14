@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 
 /**
  *
@@ -87,7 +88,7 @@ public class JMXCollectorTest {
         FileInputStream configFileStream = new FileInputStream("src/test/resources/etc/JmxCollectorConfigTest.xml");
         logger.debug("ConfigFileStream check '{}'", configFileStream.available());
         jmxConfigFactory = new JMXDataCollectionConfigFactory(configFileStream);
-        JMXDataCollectionConfigFactory.init();
+        JMXDataCollectionConfigFactory.setInstance(jmxConfigFactory);
     }
 
     @After
@@ -200,6 +201,39 @@ public class JMXCollectorTest {
         assertEquals("Collection: " + collectionName + " run successfully", 1, collectionSet.getStatus());
     }
     
+    @Test
+    public void collectSingleMbeanWithOneCompAttribWithAllItsCompMembers() {
+        String collectionName = "collectSingleMbeanWithOneCompAttribWithAllItsCompMembers";
+        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        
+        //start collection
+        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", "all"));
+        assertEquals(4, group.getAttributes().size());
+        printDebugAttributeGroup(group);
+        
+        assertEquals("Collection: " + collectionName + " run successfully", 1, collectionSet.getStatus());
+    }        
+    
+    @Test
+    public void collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers() {
+        String collectionName = "collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers";
+        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        
+        //start collection
+        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", "all"));
+        assertEquals(3, group.getAttributes().size());
+        printDebugAttributeGroup(group);
+        
+        assertEquals("Collection: " + collectionName + " run successfully", 1, collectionSet.getStatus());
+    }        
     /**
      * Check if CompositeAttributes will be collected
      */

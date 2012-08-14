@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.net.BindException;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IoSessionInitializer;
+import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -65,6 +71,9 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
      */
     private final Object m_connectorMutex = new Object();
 
+    private Integer m_port = null;
+    private final Object m_portMutex = new Object();
+
     /**
      * Create a new factory. Private because one should use {@link #getFactory(int)}
      */
@@ -94,7 +103,7 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
      * 		ConnectFuture from a Mina connect call
      */
     @Override
-    public ConnectFuture connect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
+    public ConnectFuture connect(SocketAddress remoteAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
         for (int retries = 0; retries < 3; retries++) { 
             synchronized (m_connectorMutex) {
                 if (m_connector == null) {
@@ -109,6 +118,18 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
                      * connect() call.
                      */
                     m_connector.setHandler(handler);
+
+                    InetSocketAddress localAddress = null;
+                    synchronized (m_portMutex) {
+                        if (m_port == null) {
+                            // Fetch a new ephemeral port
+                            localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
+                            m_port = localAddress.getPort();
+                        } else {
+                            localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), m_port);
+                        }
+                    }
+
                     /*
                      * Use the 3-argument call to connect(). If you use the 2-argument version without
                      * the localhost port, the call will end up doing a name lookup which seems to fail
@@ -116,7 +137,9 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
                      *
                      * @see http://issues.opennms.org/browse/NMS-5309
                      */
-                    return m_connector.connect(remoteAddress, localAddress, init);
+                    ConnectFuture cf = m_connector.connect(remoteAddress, localAddress, init);
+                    cf.addListener(portSwitcher(m_connector, remoteAddress, init, handler));
+                    return cf;
                 } catch (Throwable e) {
                     LogUtils.debugf(this, e, "Caught exception on factory %s, retrying: %s", this, e);
                     m_connector.dispose();
@@ -126,6 +149,30 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
             }
         }
         throw new IllegalStateException("Could not connect to socket because of excessive RejectedExecutionExceptions");
+    }
+
+    private IoFutureListener<ConnectFuture> portSwitcher(final SocketConnector connector, final SocketAddress remoteAddress, final IoSessionInitializer<? extends ConnectFuture> init, final IoHandler handler) {
+        return new IoFutureListener<ConnectFuture>() {
+
+            public void operationComplete(ConnectFuture future) {
+                try {
+                    Throwable e = future.getException();
+                    // If we failed to bind to the outgoing port...
+                    if (e != null && e instanceof BindException) {
+                        synchronized(m_portMutex) {
+                            // ... then reset the port
+                            m_port = null;
+                        }
+                        // and reattempt the connection
+                        connect(remoteAddress, init, handler);
+                    }
+                } catch (RuntimeIoException e) {
+                    LogUtils.debugf(this, e, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
+                    // This will be thrown in the event of a ConnectException for example
+                    connector.dispose();
+                }
+            }
+        };
     }
 
     /**
@@ -138,8 +185,8 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
      * @param handler
      */
     @Override
-    public ConnectFuture reConnect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
-        return connect(remoteAddress, localAddress, init, handler);
+    public ConnectFuture reConnect(SocketAddress remoteAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler) {
+        return connect(remoteAddress, init, handler);
     }
 
     @Override

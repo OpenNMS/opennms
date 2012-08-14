@@ -82,7 +82,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             public void onInit() {
@@ -109,7 +109,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testServerFail() throws Exception{
         m_server  = new SimpleServer() {
             public void onInit() {

@@ -92,7 +92,8 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     /** {@inheritDoc} */
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        if(getConversation().hasBanner() && status == IdleStatus.READER_IDLE) {
+        // @see http://issues.opennms.org/browse/NMS-5311
+        if (getConversation().hasBanner() && status == IdleStatus.READER_IDLE) {
             LogUtils.infof(this, "Session went idle without receiving banner. Setting service detection to false.");
             getFuture().setServiceDetected(false);
             session.close(true);

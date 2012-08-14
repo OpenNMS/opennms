@@ -99,7 +99,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
     
     
-    @Test
+    @Test(timeout=90000)
     public void testSuccessServer() throws Exception {
         initializeDefaultDetector();
         
@@ -132,7 +132,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
 
     
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureNoBannerSentWhenExpectingABanner() throws Exception {
         initializeDefaultDetector();
         
@@ -155,7 +155,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureConnectionTimesOutWhenExpectingABanner() throws Exception {
         initializeDefaultDetector();
         
@@ -178,7 +178,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testSuccessNotExpectingBannerNoBannerSent() throws Exception {
         intializeNullBannerDetector();
         
@@ -204,7 +204,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
 
     
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureClosedPort() throws Exception {
         initializeDefaultDetector();
         
@@ -232,7 +232,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
      * I think that this test is redundant with {@link #testFailureClosedPort()} since neither
      * server is actually started. The detector just times out on both connections.
      */
-    @Test
+    @Test(timeout=90000)
     public void testServerCloses() throws Exception{
         initializeDefaultDetector();
         
@@ -255,7 +255,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         assertFalse(future.isServiceDetected());
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testNoServerPresent() throws Exception {
         initializeDefaultDetector();
         

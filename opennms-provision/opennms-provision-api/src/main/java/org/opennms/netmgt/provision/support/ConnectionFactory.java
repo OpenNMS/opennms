@@ -136,7 +136,7 @@ public abstract class ConnectionFactory {
      * @return
      * 		ConnectFuture from a Mina connect call
      */
-    public abstract ConnectFuture connect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler);
+    public abstract ConnectFuture connect(SocketAddress remoteAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler);
 
     /**
      * Retry a connection. This does not consume a connection slot, so will not
@@ -147,7 +147,7 @@ public abstract class ConnectionFactory {
      * @param init
      * @return
      */
-    public abstract ConnectFuture reConnect(SocketAddress remoteAddress, SocketAddress localAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler);
+    public abstract ConnectFuture reConnect(SocketAddress remoteAddress, IoSessionInitializer<? extends ConnectFuture> init, IoHandler handler);
 
     /**
      * Dispose of any resources that are held by the connection.
