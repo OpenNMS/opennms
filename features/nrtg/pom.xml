@@ -37,6 +37,7 @@
     <module>api</module>
     <module>nrtcollector</module>
     <module>protocolcollector</module>
+    <module>web</module>
     <module>dependencies</module>
     <module>features</module>
     <module>jar</module>
