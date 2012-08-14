@@ -26,4 +26,14 @@ alternatively you may install the individual features for nrtg
 features:install osgi-nrtg-api osgi-nrtg-nrtcollector osgi-nrtg-procolollector-snmp
 
 
+NRTG Web
+
+1.  The nrtg servlet sample can be installed by doing the following:
+
+bundle:install mvn:org.apache.activemq/activemq-web/5.6.0
+bundle:install mvn:org.opennms.features.nrtg/nrtg-web/1.11.2-SNAPSHOT
+
+Then visit the page bellow substituing your resourdId and report  
+
+http://localhost:8980/opennms/osgi/nrt/starter?resourceId=node[26].nodeSnmp[]&report=mib2.tcperrs
 
