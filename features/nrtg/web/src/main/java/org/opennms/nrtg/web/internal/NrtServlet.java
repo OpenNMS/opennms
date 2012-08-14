@@ -36,7 +36,7 @@ public class NrtServlet extends HttpServlet {
 			String template = getTemplateAsString(modelAndView.getViewName()+".template");
 
 			for(Entry<String, Object> entry : modelAndView.getModel().entrySet()) {
-				template.replaceAll("${"+entry.getKey()+"}", entry.getValue().toString());
+				template = template.replaceAll("\\$\\{"+entry.getKey()+"\\}", entry.getValue().toString());
 			}
 				
 			

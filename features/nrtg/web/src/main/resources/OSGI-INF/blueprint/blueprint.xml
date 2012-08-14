@@ -5,7 +5,7 @@
   <reference id="resourceDao" interface="org.opennms.netmgt.dao.ResourceDao" />
   <reference id="snmpAgentConfigFactory" interface="org.opennms.netmgt.config.SnmpAgentConfigFactory" />
   
-  <bean id="nrtController" class="org.opennms.nrtg.web.internal.NrtConroller">
+  <bean id="nrtController" class="org.opennms.nrtg.web.internal.NrtController">
   	<property name="graphDao" ref="graphDao" />
   	<property name="resourceDao" ref="resourceDao" />
   	<property name="snmpAgentConfigFactory" ref="snmpAgentConfigFactory" />
