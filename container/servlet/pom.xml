@@ -31,16 +31,29 @@
             <version>${karaf.version}</version>
             <scope>provided</scope>
         </dependency>
+<!-- we have our own copy of this now, modified, dependencies are servlet-api and OSGi stuff
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.proxy</artifactId>
             <version>2.2.0</version>
         </dependency>
+-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!--  TEMPORARILY ADDED SO SOURCE IS ADDED TO ECLIPSE -->
         <dependency>
           <groupId>org.apache.felix</groupId>
