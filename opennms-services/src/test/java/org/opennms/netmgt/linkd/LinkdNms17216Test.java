@@ -306,8 +306,12 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
         List<Integer> nodeids = query.getNodeidFromIp(null, InetAddress.getByName("172.16.50.2"));
         
         assertEquals(1, nodeids.size());
-        assertEquals(4,nodeids.get(0).intValue());
-        
+        assertEquals(switch4.getId(),nodeids.get(0));
+
+        nodeids = query.getNodeidFromIp(null, InetAddress.getByName("172.16.50.1"));
+        assertEquals(1, nodeids.size());
+        assertEquals(router3.getId(),nodeids.get(0));
+
         final Collection<LinkableNode> nodes = m_linkd.getLinkableNodesOnPackage("example1");
 
         assertEquals(9, nodes.size());
@@ -373,6 +377,7 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
                 // switch3 gi0/1 -> switch5 Fa0/20 --cdp
                 checkLink(switch5, switch3, 10013, 10024, datalinkinterface);
             } else if (linkid == 300) {
+                //switch4 FastEthernet0/1    ----> router3   GigabitEthernet0/1
                 checkLink(router3, switch4, 9, 10001, datalinkinterface);
             } else if (linkid == 301) {
                 checkLink(router2, router1, 12, 13, datalinkinterface);
