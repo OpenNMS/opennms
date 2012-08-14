@@ -250,7 +250,7 @@
 	tr.Normal td.divider { border-top: 2px solid #336600 !important; }
 	tr.Normal td.bright { background-image: url(../images/bgNormal.png); }
 	
-	tr.Cleared td { background-color: #EEE; }
+	tr.Cleared td { background-color: #EEE; color:black; }
 	tr.Cleared td.divider { border-top: 2px solid #999 !important; }
 	tr.Cleared td.bright { background-image: url(../images/bgCleared.png); }
     
@@ -1020,7 +1020,7 @@ tr.CellStatus td.divider nobr a, tr.CellStatus td.Indeterminate a, tr.CellStatus
 tr.Indeterminate td, tr.Normal td , tr.Warning td , tr.Minor td , tr.Major td, tr.Critical td  {
         color: black;
 }
-tr.Indeterminate td a, tr.Normal td a, tr.Warning td a, tr.Minor td a, tr.Major td a , tr.Critical td a {
+tr.Indeterminate td a, tr.Normal td a, tr.Warning td a, tr.Minor td a, tr.Major td a , tr.Critical td a, tr.Cleared td a {
         color: black;
 }
 
