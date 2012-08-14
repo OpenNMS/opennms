@@ -390,35 +390,38 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             LogUtils.debugf(this, "processCdpCacheTable: ifIndex found: %d", cdpIfIndex);
 
-            List<Integer> targetCdpNodeIds = new ArrayList<Integer>();
+            Collection<Integer> targetCdpNodeIds = new ArrayList<Integer>();
             final String targetSysName = cdpEntry.getCdpCacheDeviceId();
 
+            final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
             final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
+            String cdpTargetIpAddrString = null;
+
             if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
                 LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
-                LogUtils.debugf(this, "processCdpCacheTable: using CDP deviceid: %d", targetSysName);
-                targetCdpNodeIds = getNodeIdsFromSysName(targetSysName);
             } else {
-                final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
-                final String cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
+                cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
                 if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
                     LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
-                    LogUtils.debugf(this, "processCdpCacheTable: using CDP deviceid: %d", targetSysName);
-                    targetCdpNodeIds = getNodeIdsFromSysName(targetSysName);
+                    cdpTargetIpAddrString = null;
                 } else {
-                    LogUtils.debugf(this, "processCdpCacheTable: IP address found: %s", cdpTargetIpAddrString);
+                    LogUtils.debugf(this, "processCdpCacheTable: Target IP address found: %s", cdpTargetIpAddrString);
                     targetCdpNodeIds = getNodeidFromIp(dbConn, cdpTargetIpAddr);
-
                     if (targetCdpNodeIds.isEmpty()) {
-                        LogUtils.infof(this, "processCdpCacheTable: No node ID found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
+                        LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
                         sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
                         continue;
                     }
                 }
             }
 
+            if (targetCdpNodeIds.isEmpty()) {
+                LogUtils.debugf(this, "processCdpCacheTable: finding nodeids using CDP deviceid(sysname): %d", targetSysName);
+                targetCdpNodeIds = getNodeIdsFromSysName(targetSysName);
+            }
+
             for (final Integer targetCdpNodeId: targetCdpNodeIds) {
-            LogUtils.infof(this, "processCdpCacheTable: node ID found: %d.", targetCdpNodeId);
+            LogUtils.infof(this, "processCdpCacheTable: Target node ID found: %d.", targetCdpNodeId);
 
             final String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
 
@@ -434,12 +437,14 @@ public abstract class AbstractQueryManager implements QueryManager {
             if (cdpTargetIfindex == -1) {
                 LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
             }
-
-            final InetAddress cdpTargetIpAddr = getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress();
             final CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
             cdpIface.setCdpTargetNodeId(targetCdpNodeId);
-            cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
             cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
+            if (cdpTargetIpAddrString == null) {
+                cdpIface.setCdpTargetIpAddr(getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress());
+            } else {
+                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               
+            }
 
             LogUtils.debugf(this, "processCdpCacheTable: Adding interface to linkable SNMP node: %s", cdpIface);
 
