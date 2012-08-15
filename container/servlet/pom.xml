@@ -54,6 +54,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+        </dependency>
+
         <!--  TEMPORARILY ADDED SO SOURCE IS ADDED TO ECLIPSE -->
         <dependency>
           <groupId>org.apache.felix</groupId>
