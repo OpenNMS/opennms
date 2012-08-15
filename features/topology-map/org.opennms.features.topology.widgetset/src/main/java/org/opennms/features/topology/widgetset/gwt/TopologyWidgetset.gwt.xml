@@ -13,4 +13,6 @@
     <inherits name="org.opennms.features.topology.ssh.internal.gwt.TerminalWidgetSet" />
 
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+    
+    <inherits name="com.google.gwt.user.theme.standard.Standard" />
 </module>

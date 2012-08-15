@@ -25,4 +25,8 @@ public class ClientRect extends JavaScriptObject {
     public final native int getTop() /*-{
         return this.top;
     }-*/;
+
+    public final native int getWidth() /*-{
+        return this.width;
+    }-*/;
 }
