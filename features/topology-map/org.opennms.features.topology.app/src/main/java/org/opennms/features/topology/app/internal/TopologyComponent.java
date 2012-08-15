@@ -1,7 +1,6 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -274,6 +273,15 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	
         }
         
+        if(variables.containsKey("marqueeSelection")) {
+            String[] vertexIds = (String[]) variables.get("marqueeSelection");
+            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == false) {
+                clearAllVertexSelections();
+            }
+            
+            bulkMultiSelectVertex(vertexIds);
+        }
+        
         if(variables.containsKey("action")) {
         	String value = (String) variables.get("action");
         	String[] data = value.split(",");
@@ -341,6 +349,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         updateMenuItems();
     }
     
+	private void clearAllVertexSelections() {
+	    for(Vertex vertex : getGraph().getVertices()) {
+	        vertex.setSelected(false);
+	    }
+	}
+	
     private void singleSelectVertex(String vertexId) {
         for(Vertex vertex : getGraph().getVertices()) {
             vertex.setSelected(false);
@@ -348,7 +362,15 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         toggleSelectedVertex(vertexId);
     }
-
+    
+    private void bulkMultiSelectVertex(String[] vertexIds) {
+        for(String vertexId : vertexIds) {
+            Vertex vertex = getGraph().getVertexByKey((String)vertexId);
+            vertex.setSelected(true);
+        }
+        
+        requestRepaint();
+    }
     private void multiSelectVertex(String vertexId) {
         toggleSelectedVertex(vertexId);
     }

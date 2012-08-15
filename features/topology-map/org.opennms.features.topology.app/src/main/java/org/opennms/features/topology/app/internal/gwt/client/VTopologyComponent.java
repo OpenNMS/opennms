@@ -400,6 +400,19 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             m_dragging = false;
             D3.d3().select(m_marquee).attr("display", "none");
             
+            final List<String> vertIds = new ArrayList<String>();
+            D3.d3().selectAll(".little").each(new Handler<GWTVertex>() {
+
+                @Override
+                public void call(GWTVertex vert, int index) {
+                    if(vert.isSelected()) {
+                        vertIds.add(vert.getId());
+                    }
+                }
+            });
+            
+            VTopologyComponent.this.setSelection(vertIds);
+            
         }
         
         private void setMarquee(int x, int y, int width, int height) {
@@ -410,15 +423,25 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             D3 vertices = D3.d3().selectAll(".little");
             JsArray<JsArray<SVGElement>> selection = vertices.cast();
             
-            for(int i = 0; i < selection.get(0).length(); i++) {
-                SVGElement elem = selection.get(i).cast();
-                
-                if(inSelection(elem)) {
-                    D3.d3().select(elem).style("stroke", "blue");
-                }else {
-                    D3.d3().select(elem).style("stroke", "red");
+            final JsArray<SVGElement> elemArray = selection.get(0);
+            
+            vertices.each(new Handler<GWTVertex>() {
+
+                @Override
+                public void call(GWTVertex vertex, int index) {
+                    SVGElement elem = elemArray.get(index).cast();
+                    
+                    if(inSelection(elem)) {
+                        vertex.setSelected(true);
+                        D3.d3().select(elem).style("stroke", "blue");
+                    }else {
+                        vertex.setSelected(false);
+                        D3.d3().select(elem).style("stroke", "none");
+                    }
+                    
                 }
-            }
+            });
+            
         }
 
         private boolean inSelection(SVGElement elem) {
@@ -607,6 +630,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	    public boolean setCurrentDragHandler(String key) {
 	        if(m_dragHandlers.containsKey(key)) {
 	            m_currentHandler = m_dragHandlers.get(key);
+	            m_currentHandler.getToggleBtn().setDown(true);
 	            return true;
 	        }
 	        return false;
@@ -715,7 +739,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_graph = GWTGraph.create();
 	}
 
-	@Override
+    @Override
 	protected void onLoad() {
 		super.onLoad();
 		
@@ -724,7 +748,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_svgDragHandlerManager = new DragHandlerManager();
 		m_svgDragHandlerManager.addDragBehaviorHandler(DRAG_BEHAVIOR_PAN, new PanHandler());
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_MARQUEE, new MarqueeSelectHandler());
-		m_svgDragHandlerManager.setCurrentDragHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_MARQUEE);
+		m_svgDragHandlerManager.setCurrentDragHandler(DRAG_BEHAVIOR_PAN);
 		setupDragBehavior(m_svg, m_svgDragHandlerManager);
 		
 		for(ToggleButton btn : m_svgDragHandlerManager.getDragControlsButtons()) {
@@ -1302,5 +1326,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 		m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
 	}
+	
+	public void setSelection(List<String> vertIds) {
+	    
+	    m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
+	    m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+
+        m_client.sendPendingVariableChanges();
+    }
 
 }
