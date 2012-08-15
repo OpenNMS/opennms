@@ -1,7 +1,7 @@
 <events>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -20,7 +20,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -39,7 +39,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -58,7 +58,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -77,7 +77,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -96,7 +96,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -115,7 +115,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -134,7 +134,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/kernel/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (kernel/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -153,7 +153,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -172,7 +172,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -191,7 +191,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -210,7 +210,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -229,7 +229,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -248,7 +248,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -267,7 +267,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -286,7 +286,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/user/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (user/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -305,7 +305,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -324,7 +324,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -343,7 +343,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -362,7 +362,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -381,7 +381,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -400,7 +400,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -419,7 +419,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -438,7 +438,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/mail/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (mail/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -457,7 +457,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -476,7 +476,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -495,7 +495,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -514,7 +514,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -533,7 +533,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -552,7 +552,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -571,7 +571,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -590,7 +590,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/daemon/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (daemon/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -609,7 +609,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -628,7 +628,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -647,7 +647,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -666,7 +666,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -685,7 +685,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -704,7 +704,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -723,7 +723,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -742,7 +742,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/auth/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (auth/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -761,7 +761,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -780,7 +780,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -799,7 +799,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -818,7 +818,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -837,7 +837,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -856,7 +856,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -875,7 +875,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -894,7 +894,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/syslog/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (syslog/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -913,7 +913,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -932,7 +932,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -951,7 +951,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -970,7 +970,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -989,7 +989,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1008,7 +1008,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1027,7 +1027,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1046,7 +1046,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/lpr/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (lpr/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1065,7 +1065,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1084,7 +1084,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1103,7 +1103,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1122,7 +1122,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1141,7 +1141,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1160,7 +1160,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1179,7 +1179,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1198,7 +1198,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/news/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (news/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1217,7 +1217,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1236,7 +1236,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1255,7 +1255,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1274,7 +1274,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1293,7 +1293,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1312,7 +1312,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1331,7 +1331,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1350,7 +1350,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/uucp/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (uucp/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1369,7 +1369,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1388,7 +1388,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1407,7 +1407,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1426,7 +1426,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1445,7 +1445,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1464,7 +1464,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1483,7 +1483,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1502,7 +1502,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/cron/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (cron/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1521,7 +1521,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1540,7 +1540,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1559,7 +1559,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1578,7 +1578,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1597,7 +1597,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1616,7 +1616,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1635,7 +1635,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/authpriv/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (authpriv/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1654,7 +1654,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1673,7 +1673,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1692,7 +1692,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1711,7 +1711,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1730,7 +1730,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1749,7 +1749,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1768,7 +1768,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ftp/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ftp/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1787,7 +1787,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1806,7 +1806,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1825,7 +1825,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1844,7 +1844,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1863,7 +1863,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1882,7 +1882,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1901,7 +1901,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/ntp/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (ntp/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1920,7 +1920,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1939,7 +1939,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1958,7 +1958,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1977,7 +1977,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -1996,7 +1996,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2015,7 +2015,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2034,7 +2034,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/audit/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (audit/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2053,7 +2053,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2072,7 +2072,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2091,7 +2091,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2110,7 +2110,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2129,7 +2129,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2148,7 +2148,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2167,7 +2167,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/alert/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (alert/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2186,7 +2186,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2205,7 +2205,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2224,7 +2224,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2243,7 +2243,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2262,7 +2262,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2281,7 +2281,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2300,7 +2300,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/clock/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (clock/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2319,7 +2319,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2338,7 +2338,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2357,7 +2357,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2376,7 +2376,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2395,7 +2395,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2414,7 +2414,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2433,7 +2433,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2452,7 +2452,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local0/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local0/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2471,7 +2471,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2490,7 +2490,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2509,7 +2509,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2528,7 +2528,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2547,7 +2547,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2566,7 +2566,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2585,7 +2585,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2604,7 +2604,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local1/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local1/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2623,7 +2623,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2642,7 +2642,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2661,7 +2661,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2680,7 +2680,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2699,7 +2699,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2718,7 +2718,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2737,7 +2737,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2756,7 +2756,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local2/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local2/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2775,7 +2775,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2794,7 +2794,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2813,7 +2813,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2832,7 +2832,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2851,7 +2851,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2870,7 +2870,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2889,7 +2889,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2908,7 +2908,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local3/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local3/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2927,7 +2927,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2946,7 +2946,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2965,7 +2965,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -2984,7 +2984,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3003,7 +3003,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3022,7 +3022,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3041,7 +3041,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3060,7 +3060,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local4/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local4/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3079,7 +3079,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3098,7 +3098,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3117,7 +3117,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3136,7 +3136,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3155,7 +3155,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3174,7 +3174,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3193,7 +3193,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3212,7 +3212,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local5/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local5/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3231,7 +3231,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3250,7 +3250,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3269,7 +3269,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3288,7 +3288,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3307,7 +3307,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3326,7 +3326,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3345,7 +3345,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3364,7 +3364,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local6/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local6/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3383,7 +3383,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Emergency</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Emergency)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3402,7 +3402,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Alert</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Alert)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3421,7 +3421,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Critical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Critical)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3440,7 +3440,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Error</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Error)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3459,7 +3459,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Warning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Warning)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3478,7 +3478,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Notice</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Notice)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3497,7 +3497,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Info</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Info)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
@@ -3516,7 +3516,7 @@
 	</event>
 		<event>
                 <uei>uei.opennms.org/syslogd/local7/Debug</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
+                <event-label>OpenNMS-defined node event: syslogdMessage (local7/Debug)</event-label>
                 <descr>
                         &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;br&gt;
                         Node ID: %nodeid%&lt;br&gt;
