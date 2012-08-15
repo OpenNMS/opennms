@@ -399,6 +399,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         public void onDragEnd(Element elem) {
             m_dragging = false;
             D3.d3().select(m_marquee).attr("display", "none");
+            
         }
         
         private void setMarquee(int x, int y, int width, int height) {
@@ -409,8 +410,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             D3 vertices = D3.d3().selectAll(".little");
             JsArray<JsArray<SVGElement>> selection = vertices.cast();
             
-            for(int i = 0; i < selection.length(); i++) {
-                SVGElement elem = selection.get(i).get(0).cast();
+            for(int i = 0; i < selection.get(0).length(); i++) {
+                SVGElement elem = selection.get(i).cast();
                 
                 if(inSelection(elem)) {
                     D3.d3().select(elem).style("stroke", "blue");
