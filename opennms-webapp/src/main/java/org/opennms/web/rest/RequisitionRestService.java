@@ -161,10 +161,10 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
-    public int getDeployedCount() {
+    public String getDeployedCount() {
         readLock();
         try {
-            return m_deployedForeignSourceRepository.getRequisitions().size();
+            return Integer.toString(m_deployedForeignSourceRepository.getRequisitions().size());
         } finally {
             readUnlock();
         }
@@ -220,10 +220,10 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public int getPendingCount() {
+    public String getPendingCount() {
         readLock();
         try {
-            return m_pendingForeignSourceRepository.getRequisitions().size();
+            return Integer.toString(m_pendingForeignSourceRepository.getRequisitions().size());
         } finally {
             readUnlock();
         }
