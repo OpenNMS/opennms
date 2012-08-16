@@ -16,6 +16,7 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
+import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -24,16 +25,21 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -301,7 +307,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	}
 	
 	public class PanHandler implements DragBehaviorHandler{
-
+	    private ToggleButton m_toggle;
         @Override
         public void onDragStart(Element elem) {
             m_panObject = new PanObject(m_svgViewPort, m_svg);
@@ -315,6 +321,154 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         @Override
         public void onDragEnd(Element elem) {
             m_panObject = null;
+        }
+
+        @Override
+        public ToggleButton getToggleBtn() {
+            if(m_toggle == null) {
+                m_toggle = new ToggleButton("Pan");
+            }
+            return m_toggle;
+        }
+	    
+	}
+	
+	public class Interval{
+	    
+	    private int m_lo;
+        public int getLo() {
+            return m_lo;
+        }
+
+        private int m_hi;
+
+        public int getHi() {
+            return m_hi;
+        }
+
+        public Interval(int lo, int hi) {
+	        m_lo = Math.min(lo, hi);
+	        m_hi = Math.max(lo, hi);
+	    }
+        
+        public boolean contains(int value) {
+            return m_lo <= value && value <= m_hi;
+        }
+	}
+	
+	public class MarqueeSelectHandler implements DragBehaviorHandler{
+	    public static final String DRAG_BEHAVIOR_MARQUEE = "marquee";
+	    private boolean m_dragging = false;
+	    private int m_x1;
+	    private int m_y1;
+	    private int m_offsetX;
+	    private int m_offsetY;
+	    private ToggleButton m_toggle;
+        @Override
+        public void onDragStart(Element elem) {
+            if(!m_dragging) {
+                m_dragging = true;
+                
+                SVGElement svg = m_svg.cast();
+                ClientRect rect = svg.getBoundingClientRect();
+                m_offsetX = rect.getLeft();
+                m_offsetY = rect.getTop();
+                
+                m_x1 = D3.getEvent().getClientX() - m_offsetX;
+                m_y1 = D3.getEvent().getClientY() - m_offsetY;
+                
+                setMarquee(m_x1, m_y1, 0, 0);
+                D3.d3().select(m_marquee).attr("display", "inline");
+            }
+        }
+
+        @Override
+        public void onDrag(Element elem) {
+            if(m_dragging) {
+                int clientX = D3.getEvent().getClientX() - m_offsetX;
+                int clientY = D3.getEvent().getClientY() - m_offsetY;
+                setMarquee(
+                    Math.min(m_x1, clientX), Math.min(m_y1, clientY), 
+                    Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
+                );
+                selectVertices();
+            }
+        }
+
+        @Override
+        public void onDragEnd(Element elem) {
+            m_dragging = false;
+            D3.d3().select(m_marquee).attr("display", "none");
+            
+            final List<String> vertIds = new ArrayList<String>();
+            D3.d3().selectAll(".little").each(new Handler<GWTVertex>() {
+
+                @Override
+                public void call(GWTVertex vert, int index) {
+                    if(vert.isSelected()) {
+                        vertIds.add(vert.getId());
+                    }
+                }
+            });
+            
+            VTopologyComponent.this.setSelection(vertIds);
+            
+        }
+        
+        private void setMarquee(int x, int y, int width, int height) {
+            D3.d3().select(m_marquee).attr("x", x).attr("y", y).attr("width", width).attr("height", height);
+        }
+        
+        private void selectVertices() {
+            D3 vertices = D3.d3().selectAll(".little");
+            JsArray<JsArray<SVGElement>> selection = vertices.cast();
+            
+            final JsArray<SVGElement> elemArray = selection.get(0);
+            
+            vertices.each(new Handler<GWTVertex>() {
+
+                @Override
+                public void call(GWTVertex vertex, int index) {
+                    SVGElement elem = elemArray.get(index).cast();
+                    
+                    if(inSelection(elem)) {
+                        vertex.setSelected(true);
+                        D3.d3().select(elem).style("stroke", "blue");
+                    }else {
+                        vertex.setSelected(false);
+                        D3.d3().select(elem).style("stroke", "none");
+                    }
+                    
+                }
+            });
+            
+        }
+
+        private boolean inSelection(SVGElement elem) {
+            SVGElement marquee = m_marquee.cast();
+            SVGRect mBBox = marquee.getBBox();
+            ClientRect elemClientRect = elem.getBoundingClientRect();
+            
+            Interval marqueeX = new Interval(mBBox.getX(), mBBox.getX() + mBBox.getWidth());
+            Interval marqueeY = new Interval(mBBox.getY(), mBBox.getY() + mBBox.getHeight());
+            
+            int left = elemClientRect.getLeft() - m_offsetX;
+            int top = elemClientRect.getTop() - m_offsetY;
+            Interval vertexX = new Interval(left, left + elemClientRect.getWidth());
+            Interval vertexY = new Interval(top, top + elemClientRect.getHeight());
+            
+            return marqueeX.contains(vertexX.getLo()) &&
+                   marqueeX.contains(vertexX.getHi()) &&
+                   marqueeY.contains(vertexY.getLo()) &&
+                   marqueeY.contains(vertexY.getHi());
+        }
+
+        @Override
+        public ToggleButton getToggleBtn() {
+            if(m_toggle == null) {
+                m_toggle = new ToggleButton("Select", "Select");
+            }
+            return m_toggle;
         }
 	    
 	}
@@ -459,19 +613,24 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	    public void onDragStart(Element elem);
         public void onDrag(Element elem);
         public void onDragEnd(Element elem);
+        public ToggleButton getToggleBtn();
 	}
 	
-	private class DragHandlerManager {
-	    Map<String, DragBehaviorHandler> m_dragBehaviorHandlers = new HashMap<String, DragBehaviorHandler>();
+	private class DragHandlerManager implements ClickHandler{
+	    Map<String, DragBehaviorHandler> m_dragHandlers = new HashMap<String, DragBehaviorHandler>();
 	    DragBehaviorHandler m_currentHandler;
 	    
 	    public void addDragBehaviorHandler(String key, DragBehaviorHandler handler) {
-	        m_dragBehaviorHandlers.put(key, handler);
+	        ToggleButton tg = handler.getToggleBtn();
+	        tg.addClickHandler(this);
+	        
+	        m_dragHandlers.put(key, handler);
 	    }
 	    
 	    public boolean setCurrentDragHandler(String key) {
-	        if(m_dragBehaviorHandlers.containsKey(key)) {
-	            m_currentHandler = m_dragBehaviorHandlers.get(key);
+	        if(m_dragHandlers.containsKey(key)) {
+	            m_currentHandler = m_dragHandlers.get(key);
+	            m_currentHandler.getToggleBtn().setDown(true);
 	            return true;
 	        }
 	        return false;
@@ -488,6 +647,26 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	    public void onDragEnd(Element elem) {
 	        m_currentHandler.onDragEnd(elem);
 	    }
+	    
+	    public List<ToggleButton> getDragControlsButtons(){
+	        List<ToggleButton> btns = new ArrayList<ToggleButton>();
+	        for(String key : m_dragHandlers.keySet()) {
+	            btns.add(m_dragHandlers.get(key).getToggleBtn());
+	        }
+	        return btns;
+	    }
+	    
+        @Override
+        public void onClick(ClickEvent event) {
+            for(String key : m_dragHandlers.keySet()) {
+                DragBehaviorHandler dragHandler = m_dragHandlers.get(key);
+                if(event.getSource() == dragHandler.getToggleBtn()) {
+                    setCurrentDragHandler(key);
+                }else {
+                    dragHandler.getToggleBtn().setDown(false);
+                }
+            }
+        }
 	}
 	
 	private static VTopologyComponentUiBinder uiBinder = GWT
@@ -529,7 +708,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	@UiField
 	Element m_referenceMapBorder;
-
+	
+	@UiField
+	Element m_marquee;
+	
+	@UiField
+	HorizontalPanel m_toolBarPanel;
+	
 	/**
 	 * This map contains captions and icon urls for actions like: * "33_c" ->
 	 * "Edit" * "33_i" -> "http://dom.com/edit.png"
@@ -554,18 +739,23 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_graph = GWTGraph.create();
 	}
 
-	@Override
+    @Override
 	protected void onLoad() {
 		super.onLoad();
-
-
+		
 		sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
 		m_svgDragHandlerManager.addDragBehaviorHandler(DRAG_BEHAVIOR_PAN, new PanHandler());
+		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_MARQUEE, new MarqueeSelectHandler());
 		m_svgDragHandlerManager.setCurrentDragHandler(DRAG_BEHAVIOR_PAN);
 		setupDragBehavior(m_svg, m_svgDragHandlerManager);
-
+		
+		for(ToggleButton btn : m_svgDragHandlerManager.getDragControlsButtons()) {
+		    m_toolBarPanel.add(btn);
+		}
+		
+		
 		D3Behavior dragBehavior = new D3Behavior() {
 
 			@Override
@@ -593,7 +783,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 			public void call(Element elem, int index) {
 			    handlerManager.onDragStart(elem);
-				//
 			}
 		});
 
@@ -1137,6 +1326,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 		m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
 	}
+	
+	public void setSelection(List<String> vertIds) {
+	    
+	    m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
+	    m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
 
+        m_client.sendPendingVariableChanges();
+    }
 
 }

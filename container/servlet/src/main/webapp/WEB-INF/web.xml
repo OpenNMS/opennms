@@ -35,6 +35,38 @@
   </listener>
   <!-- WARMERGE: end listener -->
 
+  <!-- WARMERGE: begin filter -->
+  <filter>
+    <filter-name>OsgiRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+    <init-param>
+      <param-name>statusEnabled</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>confPath</param-name>
+      <param-value>/WEB-INF/osgi-rewrite.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>logLevel</param-name>
+      <param-value>DEBUG</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowConfSwapViaHttp</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <!-- WARMERGE: end filter -->
+
+  <!-- WARMERGE: begin filter-mapping -->
+  <filter-mapping>
+    <filter-name>OsgiRewriteFilter</filter-name>
+    <url-pattern>*.osgi</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+  <!-- WARMERGE: end filter-mapping -->
+
   <!-- WARMERGE: begin servlet -->
   <servlet>
     <servlet-name>proxy</servlet-name>

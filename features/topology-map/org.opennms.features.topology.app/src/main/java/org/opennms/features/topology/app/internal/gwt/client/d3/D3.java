@@ -120,6 +120,13 @@ public class D3 extends JavaScriptObject {
 	   return this.text(f);
 	
     }-*/;
+	
+	public final native void each(Handler<?> handler) /*-{
+	    var f = function(d, i){
+	        return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler::call(Ljava/lang/Object;I)(d,i);
+	    }
+	    return this.each(f);
+	}-*/;
 
 	public final native D3 on(String event, Handler<?> handler) /*-{
 	   	var f = function(d, i) {
@@ -232,9 +239,6 @@ public class D3 extends JavaScriptObject {
         return this.svg.brush();
     }-*/;
 
-    
-	
-	
     
 
 }

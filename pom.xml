@@ -2310,8 +2310,8 @@
       </dependency>
       <dependency>
         <groupId>org.tuckey</groupId>
-        <artifactId>urlrewrite</artifactId>
-        <version>2.5.2</version>
+        <artifactId>urlrewritefilter</artifactId>
+        <version>4.0.3</version>
       </dependency>
       <dependency>
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
