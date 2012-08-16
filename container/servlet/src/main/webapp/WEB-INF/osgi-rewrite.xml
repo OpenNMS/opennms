@@ -2,7 +2,7 @@
 
 <urlrewrite>
 	<rule>
-		<from>^(.*).osgi$</from>
+		<from>^/?(.*).osgi$</from>
 		<to type="forward">/osgi/$1</to>
 	</rule>
 </urlrewrite>

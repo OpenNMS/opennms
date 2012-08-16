@@ -37,7 +37,7 @@
 
   <!-- WARMERGE: begin filter -->
   <filter>
-    <filter-name>OsgiRewrite</filter-name>
+    <filter-name>OsgiRewriteFilter</filter-name>
     <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
     <init-param>
       <param-name>statusEnabled</param-name>
@@ -60,8 +60,8 @@
 
   <!-- WARMERGE: begin filter-mapping -->
   <filter-mapping>
-    <filter-name>OsgiRewrite</filter-name>
-    <url-pattern>/*.osgi</url-pattern>
+    <filter-name>OsgiRewriteFilter</filter-name>
+    <url-pattern>*.osgi</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
