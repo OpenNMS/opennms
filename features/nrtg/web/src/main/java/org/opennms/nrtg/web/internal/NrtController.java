@@ -35,7 +35,6 @@ import java.util.*;
 public class NrtController {
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
-
     private JmsTemplate m_jmsTemplate;
     private GraphDao m_graphDao;
     private ResourceDao m_resourceDao;
@@ -53,7 +52,7 @@ public class NrtController {
             CollectionJob collectionJob = nrtCollectionTasks.get(nrtCollectionTaskId);
             logger.debug("CollectionJob is '{}'", collectionJob);
             if (collectionJob != null) {
-            	publishCollectionJobViaJms(collectionJob);
+                publishCollectionJobViaJms(collectionJob);
                 logger.debug("collectionJob was sent!");
             } else {
                 logger.debug("collectionJob for collectionTask not found in session '{}'", nrtCollectionTaskId);
@@ -63,18 +62,18 @@ public class NrtController {
         }
     }
 
-	@SuppressWarnings("unchecked")
-	private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
+    @SuppressWarnings("unchecked")
+    private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
         if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
             httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
         }
         try {
-        	return (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectionTasks");
+            return (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectionTasks");
         } catch (Exception e) {
             logger.error("Session contains incompatible datastructure for NrtCollectionTasks attribute '{}'", e.getMessage());
             return null;
         }
-	}
+    }
 
     @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
@@ -102,7 +101,7 @@ public class NrtController {
         lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
 
         String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
-        
+
         CollectionJob collectionJob = new DefaultCollectionJob();
         collectionJob.setService("SNMP");
         collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
@@ -127,8 +126,10 @@ public class NrtController {
 
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
-        modelAndView.addObject("rrdGraphString", prefabGraph.getCommand().replaceAll("\"", "'"));
-        logger.debug("rrdGraphString with \" replaced '{}'", prefabGraph.getCommand().replaceAll("\"", "'"));
+        
+        NrtRrdCommandFormatter rrdFormatter = new NrtRrdCommandFormatter(prefabGraph);
+        
+        modelAndView.addObject("rrdGraphString", rrdFormatter.getRrdGraphString()); // prefabGraph.getCommand().replaceAll("\"", "\\\\\\\\\""));
         return modelAndView;
     }
 
@@ -150,11 +151,9 @@ public class NrtController {
     }
 
     /**
-     * Adds the Metrics corresponding to the columns into the prefabGraph. Based
-     * on a meta file lookup. The files to check for metric to column name
-     * mappings are provided by the filesToPromote. At the moment this method
-     * will check for the filenames in the list and expects to file a file with
-     * this name and a .meta ending.
+     * Adds the Metrics corresponding to the columns into the prefabGraph. Based on a meta file lookup. The files to check for
+     * metric to column name mappings are provided by the filesToPromote. At the moment this method will check for the filenames
+     * in the list and expects to file a file with this name and a .meta ending.
      */
     public void lookUpMetricsForColumnsOfPrefabGraphs(PrefabGraph prefabGraph, OnmsResource onmsResource) {
         //Build a Hashmap with all columns to metrics from the files
@@ -184,8 +183,7 @@ public class NrtController {
             }
         }
         /**
-         * put the metrics from the columnsToMetrics map into the metrics array
-         * of the prefabGraph.
+         * put the metrics from the columnsToMetrics map into the metrics array of the prefabGraph.
          */
         String[] metrics = new String[prefabGraph.getColumns().length];
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
@@ -200,20 +198,20 @@ public class NrtController {
 //        logger.error("Jms publishing of CollectionJobs not implemented yet: '{}'", collectionJob);
     }
 
-	public void setGraphDao(GraphDao graphDao) {
-		m_graphDao = graphDao;
-	}
+    public void setGraphDao(GraphDao graphDao) {
+        m_graphDao = graphDao;
+    }
 
-	public void setResourceDao(ResourceDao resourceDao) {
-		m_resourceDao = resourceDao;
-	}
+    public void setResourceDao(ResourceDao resourceDao) {
+        m_resourceDao = resourceDao;
+    }
 
-	public void setSnmpAgentConfigFactory(
-			SnmpAgentConfigFactory snmpAgentConfigFactory) {
-		m_snmpAgentConfigFactory = snmpAgentConfigFactory;
-	}
+    public void setSnmpAgentConfigFactory(
+            SnmpAgentConfigFactory snmpAgentConfigFactory) {
+        m_snmpAgentConfigFactory = snmpAgentConfigFactory;
+    }
 
-	public void setJmsTemplate(JmsTemplate jmsTemplate) {
-		m_jmsTemplate = jmsTemplate;
-	}
+    public void setJmsTemplate(JmsTemplate jmsTemplate) {
+        m_jmsTemplate = jmsTemplate;
+    }
 }

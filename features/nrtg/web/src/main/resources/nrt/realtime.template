@@ -22,20 +22,38 @@ html, body, div {
     
     // Receive inbound JavaScript variables from the controller.
     var collectionTaskId = "${nrtCollectionTaskId}";
-    //var rrdGraphString = "${rrdGraphString}";
-    var rrdGraphString="--title=\"Current TCP Connections\" "+
-        "--rigid \\\n" +
-        "--height=400 \\\n" +
-        "--width=900 \\\n" +
-        "--vertical-label=\"Current Connections\" "+
-        "--watermark=\"NRTG Alpha 1.0\" \\\n" +
-        "DEF:currEstab=\"{rrd1}\":tcpCurrEstab:AVERAGE \\\n"+
-        "DEF:minCurrEstab=\"{rrd1}\":tcpCurrEstab:MIN \\\n"+
-        "DEF:maxCurrEstab=\"{rrd1}\":tcpCurrEstab:MAX \\\n"+ 
-        "LINE2:currEstab#00ff00:\"Current\" \\\n" +
-        "GPRINT:currEstab:AVERAGE:\"Avg\\:%8.2lf \" \\\n" + 
-        "GPRINT:minCurrEstab:MIN:\"Min\\:%8.2lf \" \\\n" +
-        "GPRINT:maxCurrEstab:MAX:\"Max\\:%8.2lf \"\\\n";
+    var rrdGraphString = "${rrdGraphString}";
+
+//    var rrdGraphString="--title=\"Current TCP Connections\" "+
+//        "--rigid " +
+//        "--height=400 " +
+//        "--width=900 " +
+//        "--vertical-label=\"Current Connections\" "+
+//        "--watermark=\"NRTG Alpha 1.0\" " +
+//        "DEF:currEstab={rrd1}:tcpCurrEstab:AVERAGE "+
+//        "VDEF:currEstabAvg=currEstab,AVERAGE "+
+//        "VDEF:currEstabMin=currEstab,MINIMUM "+
+//        "VDEF:currEstabMax=currEstab,MAXIMUM "+ 
+//        "LINE2:currEstab#00ff00:\"Current\" " +
+//        "LINE2:currEstabLast#ff0000:\"Last\" " +
+//        "GPRINT:currEstabAvg:\"Avg\\:%8.2lf %s\" " + 
+//        "GPRINT:CurrEstabMin:\"Min\\:%8.2lf %s\" " +
+//        "GPRINT:CurrEstabMax:\"Max\\:%8.2lf %s\" ";
+
+
+//var rrdGraphString="--title=\"Current TCP Connections\" "+
+//        "--rigid " +
+//        "--height=400 " +
+//        "--width=900 " +
+//        "--vertical-label=\"Current Connections\" "+
+//        "--watermark=\"NRTG Alpha 1.0\" " +
+//        "DEF:currEstab={rrd1}:tcpCurrEstab:AVERAGE "+
+//        "DEF:minCurrEstab={rrd1}:tcpCurrEstab:MIN "+
+//        "DEF:maxCurrEstab={rrd1}:tcpCurrEstab:MAX "+ 
+//        "LINE2:currEstab#00ff00:\"Current\" " +
+//        "GPRINT:currEstab:AVERAGE:\"Avg\\:%8.2lf %s\" " + 
+//        "GPRINT:currEstab:MIN:\"Min\\:%8.2lf %s\" " +
+//        "GPRINT:currEstab:MAX:\"Max\\:%8.2lf %s\" ";
     
     // Represents the frequency of data requests.
     var refreshInterval = 500;
@@ -98,42 +116,40 @@ html, body, div {
     };
 
 // Eingabe foo Zeug
-    $(function() {
-        // Set up the input box that allows us to adjust the interval in which data points are graphed.
-        $('input[name|="refreshInterval"]').val(refreshInterval);
-        $('input[name|="refreshInterval"]').bind('change', function() {
-            refreshInterval = $(this).val();
-            refreshTimerJob.setup(refreshInterval);
-        });
-	
-        // Set up the input box that allows us to adjust the duration the graph represents.
-        $('input[name|="durationInterval"]').val(graphWindowDuration);
-        $('input[name|="durationInterval"]').bind('change', function() {
-            graphWindowDuration = $(this).val();
-            duration =  graphWindowDuration * 1000;
-        });
-        
-        // Start the AJAX job timer.
+$(function() {
+    // Set up the input box that allows us to adjust the interval in which data points are graphed.
+    $('input[name|="refreshInterval"]').val(refreshInterval);
+    $('input[name|="refreshInterval"]').bind('change', function() {
+        refreshInterval = $(this).val();
         refreshTimerJob.setup(refreshInterval);
     });
-</script>
-
-<script>
+    
+    // Set up the input box that allows us to adjust the duration the graph represents.
+    $('input[name|="durationInterval"]').val(graphWindowDuration);
+    $('input[name|="durationInterval"]').bind('change', function() {
+        graphWindowDuration = $(this).val();
+        duration =  graphWindowDuration * 1000;
+    });
+    
+    // Start the AJAX job timer.
+    refreshTimerJob.setup(refreshInterval);
+    
     document.getElementById("rrdGraphString").innerHTML = rrdGraphString;
     RRDGraph.get.config = function (src) {
         return rrdGraphString;
     }
     
-  RRDGraph.get.data = function (src) {
-      document.getElementById("startTimestamp").innerHTML = Math.round((new Date()).getTime());
-    return {"{rrd1}":[{t:Math.round((new Date()).getTime()),v:0}]};
-  };
-
-  window.onload = function () {
+    RRDGraph.get.data = function (src) {
+        document.getElementById("startTimestamp").innerHTML = Math.round((new Date()).getTime());
+        return {"{rrd1}":[{t:Math.round((new Date()).getTime()),v:0}]};
+    };
+    
+    //  window.onload = function () {
     var graphs = RRDGraph.init('.rrdgraph');
     var nrtGraph = graphs[0];
     window.nrtGraph = nrtGraph;
-  };
+    //  };
+});
 </script>
 
 </head>
@@ -144,7 +160,6 @@ html, body, div {
 	<div id="main"></div>
         
         <div class="rrdgraph" data-src="resourceId=test&amp;report=daily&amp;start=1340398800000&amp;end=1340485200000"></div>
-        <div><button id="animate">Start/stop daily graph animation</div></div>
             
 	<div>Refresh Interval (in ms)<input name="refreshInterval"></input></div>
 	<div>Graph Duration (in seconds)<input name="durationInterval"></input></div>
@@ -153,5 +168,6 @@ html, body, div {
 	<div id="valuesDebug">0</div>
 	<div id="valuesDebugMessage">No Message jet</div>
 	<div id="rrdGraphString"></div>
+        <div id="rrdGraphStringRaw"><pre>${rrdGraphString}</pre></div>
         <div id="startTimestamp"></div>
 </body>
