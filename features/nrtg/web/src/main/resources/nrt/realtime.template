@@ -1,18 +1,13 @@
 <html>
 <head>
-        <!-- NRT JavaScript stuff -->
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+        <!-- NRT JavaScript stuff -->        
+        <script type="text/javascript" src="/opennms/js/jquery/jquery.js"></script>
+        
         <script type="text/javascript" src="/opennms/js/amq_jquery_adapter.js"></script>
         <script type="text/javascript" src="/opennms/js/amq.js"></script>
         
-        <!-- script type="text/javascript" src="/opennms/js/d3.v2.js"></script -->
-        
-        <script tyep="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+        <script tyep="text/javascript" src="/opennms/js/d3.v2.js"></script>
         <script type="text/javascript" src="/opennms/js/rrdgraph.js"></script>
-        <script type="text/javascript" src="/opennms/js/rrdgraphjs/data.day.js"></script>
-        <script type="text/javascript" src="/opennms/js/rrdgraphjs/data.week.js"></script>
-        <script type="text/javascript" src="/opennms/js/rrdgraphjs/data.month.js"></script>
         
 <style type="text/css">
 
@@ -20,374 +15,132 @@ html, body, div {
   padding: 0;
   margin: 0;
 }
-    
-
-/*svg {
-  border: 1px solid #ccc;
-  background-color: white;
-  font: 10px sans-serif;
-}
-
-path {
-  stroke: steelblue;
-  stroke-width: 1;
-  fill: none;
-}
-
-path#id-0 {
-  stroke: #fce94f;
-}
-
-path#id-1 {
-  stroke: #fcaf3e;
-}
-
-path#id-2 {
-  stroke: #e9b96e;
-}
-
-path#id-3 {
-  stroke: #8ae234;
-}
-
-path#id-4 {
-  stroke: #729fcf;
-}
-
-path#id-5 {
-  stroke: #ad7fa8;
-}
-
-path#id-6 {
-  stroke: #ef2929;
-}
-
-path#id-7 {
-  stroke: #eeeeec;
-}
-
-path#id-8 {
-  stroke: #888a85;
-}
-
-.axis path, .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-line {
-  stroke-width: 1;
-  stroke: #ececec;
-}
-*/
 </style>
 
     
-    <script type="text/javascript">
-// Array Remove - By John Resig (MIT Licensed)
-//Array.prototype.remove = function(from, to) {
-//	var rest = this.slice((to || from) + 1 || this.length);
-//	this.length = from < 0 ? this.length + from : from;
-//	return this.push.apply(this, rest);
-//};
+<script type="text/javascript">
+    
+    // Receive inbound JavaScript variables from the controller.
+    var collectionTaskId = "${nrtCollectionTaskId}";
+    //var rrdGraphString = "${rrdGraphString}";
+    var rrdGraphString="--title=\"Current TCP Connections\" "+
+        "--rigid \\\n" +
+        "--height=400 \\\n" +
+        "--width=900 \\\n" +
+        "--vertical-label=\"Current Connections\" "+
+        "--watermark=\"NRTG Alpha 1.0\" \\\n" +
+        "DEF:currEstab=\"{rrd1}\":tcpCurrEstab:AVERAGE \\\n"+
+        "DEF:minCurrEstab=\"{rrd1}\":tcpCurrEstab:MIN \\\n"+
+        "DEF:maxCurrEstab=\"{rrd1}\":tcpCurrEstab:MAX \\\n"+ 
+        "LINE2:currEstab#00ff00:\"Current\" \\\n" +
+        "GPRINT:currEstab:AVERAGE:\"Avg\\:%8.2lf \" \\\n" + 
+        "GPRINT:minCurrEstab:MIN:\"Min\\:%8.2lf \" \\\n" +
+        "GPRINT:maxCurrEstab:MAX:\"Max\\:%8.2lf \"\\\n";
+    
+    // Represents the frequency of data requests.
+    var refreshInterval = 500;
+    
+    // Represents the graph duration.
+    var graphWindowDuration = 60;
+    var duration =  graphWindowDuration * 1000;
+    
+    // Create AMQ object.
+    var amq = org.activemq.Amq;
+    
+    // Initialize the ActiveMQ listener.
+    amq.init({
+        uri: '/opennms/amq', 
+        logging: true, 
+        timeout: 45, 
+        clientId:(new Date()).getTime().toString() 
+    });
+    
+    // Define the AMQ message handler logic and create it.
+    var lastReceivedMessage = null;
+    var realTimeHandler = {
+        receiveMessage: function(message) {
+            if (message != null) {
+                var dataSet = eval(message.textContent);
+                for (i=0; i<dataSet.length;i++) {
+                    document.getElementById("valuesDebug").innerHTML++;
+                    var newPoint = {v:parseFloat(dataSet[i].value), t:parseInt(dataSet[i].timestamp)};
+                    document.getElementById("valuesDebugMessage").innerHTML = "Measurement: " + message.textContent+"<br>"+newPoint.v+"/"+newPoint.t;
+                    window.nrtGraph.data.push({"{rrd1}":[newPoint]});
+                } 
+            }
+        }
+    };
+    
+    amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMessage);
+    
+    // Timer for  AJAX nrtCollectionJobTrigger to republish the CollectionJobCollectionJob
+    var refreshTimerJob = {
+        /// Submits the AJAX collection job request and requeues the timer.
+        submitJob: function() {
+            $.get("/opennms/osgi/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
+        },
+        
+        /// Used for setting up and starting the refresh timer job.
+        setup: function(refreshTicks) {
+            this.stop();
+            this.refreshInterval = refreshTicks;
+            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
+        },
+        
+        /// Used for stopping the refresh timer.
+        stop: function() {
+            if(typeof this.timeoutID == "number") {
+                clearTimeout(this.timeoutID);
+                delete this.timeoutID;
+            }
+        }
+    };
 
-// Receive inbound JavaScript variables from the controller.
-var collectionTaskId = "${nrtCollectionTaskId}";
-var rrdGraphString = "${rrdGraphString}";
-
-// Create all of the necessary graphing variables.
-//var series = null;
-//var group = null;
-//var line = null;
-//var x = null;
-//var y = null;
-//var axis = null;
-//var axisY = null;
-
-// Represents the frequency of data requests.
-var refreshInterval = 500;
-
-// Define the graph dimensions.
-//var margin = {top: 10, right: 10, bottom: 20, left: 60},
-//    width = 860 - margin.left - margin.right,
-//    height = 300 - margin.top - margin.bottom;
-
-// Represents the graph duration.
-var graphWindowDuration = 60;
-var duration =  graphWindowDuration * 1000;
-
-// Create AMQ object.
-var amq = org.activemq.Amq;
-
-//graphManager = {
-//	// Contains the actual graph time series data.
-//	'series': [],
-//
-//	// Tracks the next line ID to be used for mapping.
-//	'nextLineId': 0,
-//
-//	// Maintains a map of metric ID to line ID.
-//	'metricIdToLineMap': [],
-//
-//	// Tracks whether we've received a data point yet.
-//	'isFirstDataSet': true,
-//
-//	'overallMinValue': 0,
-//
-//	'overallMaxValue': 100,
-//
-//	// Retrieves a mapped line ID based on metric ID. Creates a new line if no line ID exists.
-//	'retrieveLineId': function(metricId) {
-//		var lineId = this.metricIdToLineMap[metricId];
-//		if(lineId == null) {
-//			lineId = this.nextLineId;
-//			this.metricIdToLineMap[metricId] = lineId;
-//			this.series[lineId] = new Array();
-//			this.nextLineId++;
-//		}
-//		return lineId;
-//	},
-//
-//	// Cycles through all of the series data purging lines not on the visible graph.
-//	'cleanSeriesData': function(dt) {
-//		var minGraphTime = new Date(dt-duration);
-//		var minDataPointTime = d3.min(this.series, function(a) {return d3.min(a,function(b){return b.time;});});
-//  
-//		// go through each line.
-//		for(var ln = 0; ln < this.series.length; ln++) {
-//			var curLine = this.series[ln];
-//			for(var dp = 0; dp < curLine.length; dp++) {
-//				var dataPoint = curLine[dp];
-//				if(dataPoint.time < minGraphTime.getTime()) {
-//					curLine.remove(dp);
-//					//console.log("removing datapoint from series: " + ln);
-//				}
-//			}
-//		}
-//	},
-//
-//	// Adds a new JSON data point to the time series data in the correct manner.
-//	'addJsonDataPoint':function(incomingData) {
-//		var dataPointHtml = "";
-//		// Push some new data into the time series.
-//		for(var i = 0; i < incomingData.length; i++) {
-//			// Retrieve the relevant data from the incoming message.
-//			var incomingLine = incomingData[i];
-//			var dataSetLineId = this.retrieveLineId(incomingLine.metricId);
-//			var dataSetLine = this.series[dataSetLineId];
-//
-//			// Create the new data point and append it to the array.
-//			var dataSetPoint = {};
-//			dataSetPoint.time = incomingLine.timestamp;
-//                        if (isNaN(incomingLine.value))
-//                            dataPointHtml += "cannot parse " + incomingLine.value + " to float <br/>\n";
-//			dataSetPoint.value = parseFloat(incomingLine.value);
-//			dataSetLine.push(dataSetPoint);
-//
-//			// Build the HTML string for display purposes.
-//			dataPointHtml += "Metric (" + incomingLine.metricId + ") Value: " + incomingLine.value + "<br/>\n";
-//		}
-//
-//		// Create the paths if this is the first set of data retrieved.
-//		if(this.isFirstDataSet) {
-//			group.selectAll(".line")
-//				.data(graphManager.series)
-//				.enter().append("path")
-//					.attr("class", "line")
-//					.attr("id", function(d,i) { return 'id-'+i; })
-//					.attr("d", line);
-//			this.isFirstDataSet = false;
-//		}
-//
-//		// Set the debug value div with the last received data set information.
-//		$('#valuesDebug').html(dataPointHtml);
-// 	},
-//
-//	// Retrieve the maximum value.
-//	'seriesMaxValue': function() {
-//		return d3.max(this.series, function(a) {return d3.max(a,function(b){return b.value;});});
-//	},
-//
-//	// Retrieve the maximum date.
-//	'seriesMaxTime': function() {
-//		return new Date(d3.max(graphManager.series, function(a) {return d3.max(a,function(b){return b.time;});}));
-//	},
-//
-//	// Retrieve the minimum value.
-//	'seriesMinValue': function() {
-//		return d3.min(graphManager.series, function(a) {return d3.min(a,function(b){return b.value;});});
-//	}
-//};
-
-//function init() {
-//	var svg = d3.select("#main").append("svg")
-//		.attr("width", width + margin.left + margin.right)
-//		.attr("height", height + margin.top + margin.bottom)
-//		.append("g")
-//			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-//
-//	y = d3.scale.linear()
-//		.domain([0, 20])
-//		.range([height, 0]);
-//
-//	var myEndDate = new Date();
-//	var myStartDate = new Date(myEndDate - duration);
-//	var domain0 = [myStartDate, myEndDate];
-//	
-//	x = d3.time.scale()
-//		.domain(domain0)
-//		.range([0, width]);
-//	
-//	line = d3.svg.line()
-//		.interpolate("linear")
-//		.x(function(d) { return x(d.time); })
-//		.y(function(d) { return y(d.value); });
-//
-//	svg.append("defs").append("clipPath")
-//		.attr("id", "clip")
-//		.append("rect")
-//			.attr("width", width)
-//			.attr("height", height);
-//   
-//	group = svg.append("g").attr("clip-path", "url(#clip)");
-//
-//	axis = svg.append("g")
-//		.attr("class", "x axis")
-//		.attr("transform", "translate(0," + height + ")")
-//		.call(d3.svg.axis().scale(x).orient("bottom"));
-//
-//	axisY = svg.append("g")
-//		.attr("class", "y axis")
-//		.call(d3.svg.axis().scale(y).orient("left"));
-//
-//	$("#rrdGraphString").text("RRD Command: " + rrdGraphString);
-//}
-
-
-
-//function tick(incomingData) {
-//	graphManager.addJsonDataPoint(incomingData);
-//
-//	// Retrieve the maximum value.
-//	var curMax = graphManager.seriesMaxValue();
-//
-//	// Retrieve the maximum date.
-//	var dt = graphManager.seriesMaxTime();
-//  
-//	// Retrieve the minimum value.
-//	//var curMin = graphManager.seriesMinValue();
-//	var curMin = 0;
-//  
-//	// update the domain for the graph axis
-//	x.domain([new Date(dt-duration), dt]);
-//  
-//	// update the domain for the graph line
-//	y.domain([curMin, curMax]);
-//
-//	// slide the x-axis left
-//	axis.transition()
-//		.duration(0)
-//		.ease("linear")
-//		.call(d3.svg.axis().scale(x));
-//	  
-//	// slide the x-axis left
-//	axisY.transition()
-//		.duration(0)
-//		.ease("linear")
-//		.call(d3.svg.axis().scale(y).orient("left"));
-//
-//	// redraw the line
-//	group.selectAll(".line")
-//		.attr("d", line)
-//		.attr("transform", null);
-//
-//	// Clean up any old data from the time series.
-//	graphManager.cleanSeriesData(dt);
-//
-//	var valuesDebug = $('#valuesDebug').html();
-//	valuesDebug += "Cur Min: " + curMin + " Cur Max: " + curMax + "<br/>\n";
-//	$('#valuesDebug').html(valuesDebug);
-//}
-
-// Initialize the ActiveMQ listener.
-amq.init({
-	uri: '/opennms/amq', 
-	logging: true, 
-	timeout: 45, 
-	clientId:(new Date()).getTime().toString() 
-});
-
-// Define the AMQ message handler logic and create it.
-var lastReceivedMessage = null;
-var realTimeHandler = {
-	receiveMessage: function(message) {
-		if (message != null) {
-			var dataSet = eval(message.textContent);
-			lastReceivedMessage = message.textContent;
-           		document.getElementById("valuesDebug").innerHTML++;
-                        var newPoint = {v:parseFloat(dataSet[0].value%30), t:parseInt(dataSet[0].timestamp)};
-                        window.day.data.push({"example.rrd":[newPoint]});
-           		document.getElementById("valuesDebugMessage").innerHTML = message.textContent+"<br>"+newPoint.v+"/"+newPoint.t;
-                        //tick(dataSet); 
-		}
-	}
-};
-
-amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMessage);
-
-// AJAX Collection Request Timer
-var refreshTimerJob = {
-	/// Submits the AJAX collection job request and requeues the timer.
-	submitJob: function() {
-		$.get("/opennms/osgi/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
-		var self = this;
-		this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
-	},
-
-	/// Used for setting up and starting the refresh timer job.
-	setup: function(refreshTicks) {
-		this.stop();
-		var self = this;
-		this.refreshInterval = refreshTicks;
-		this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
-	},
-
-	/// Used for stopping the refresh timer.
-	stop: function() {
-		if(typeof this.timeoutID == "number") {
-			clearTimeout(this.timeoutID);
-			delete this.timeoutID;
-		}
-	}
-};
-
-$(function() {
-	// Set up the input box that allows us to adjust the interval in which data points are graphed.
-	$('input[name|="refreshInterval"]').val(refreshInterval);
-	$('input[name|="refreshInterval"]').bind('change', function() {
-		refreshInterval = $(this).val();
-		refreshTimerJob.setup(refreshInterval);
-	});
+// Eingabe foo Zeug
+    $(function() {
+        // Set up the input box that allows us to adjust the interval in which data points are graphed.
+        $('input[name|="refreshInterval"]').val(refreshInterval);
+        $('input[name|="refreshInterval"]').bind('change', function() {
+            refreshInterval = $(this).val();
+            refreshTimerJob.setup(refreshInterval);
+        });
 	
-	// Set up the input box that allows us to adjust the duration the graph represents.
-	$('input[name|="durationInterval"]').val(graphWindowDuration);
-	$('input[name|="durationInterval"]').bind('change', function() {
-		graphWindowDuration = $(this).val();
-		duration =  graphWindowDuration * 1000;
-	});
+        // Set up the input box that allows us to adjust the duration the graph represents.
+        $('input[name|="durationInterval"]').val(graphWindowDuration);
+        $('input[name|="durationInterval"]').bind('change', function() {
+            graphWindowDuration = $(this).val();
+            duration =  graphWindowDuration * 1000;
+        });
+        
+        // Start the AJAX job timer.
+        refreshTimerJob.setup(refreshInterval);
+    });
+</script>
 
-	// Initialize the graph
-//	init();
+<script>
+    document.getElementById("rrdGraphString").innerHTML = rrdGraphString;
+    RRDGraph.get.config = function (src) {
+        return rrdGraphString;
+    }
+    
+  RRDGraph.get.data = function (src) {
+      document.getElementById("startTimestamp").innerHTML = Math.round((new Date()).getTime());
+    return {"{rrd1}":[{t:Math.round((new Date()).getTime()),v:0}]};
+  };
 
-	// Start the AJAX job timer.
-	refreshTimerJob.setup(refreshInterval);
-});
-    </script>
+  window.onload = function () {
+    var graphs = RRDGraph.init('.rrdgraph');
+    var nrtGraph = graphs[0];
+    window.nrtGraph = nrtGraph;
+  };
+</script>
+
 </head>
+       
 <body>
 	<h1>NRT Graph</h1>
-        <h2>Put RrdGraph-Js running</h2>
+        <h2>Just a RocketJump</h2>
 	<div id="main"></div>
         
         <div class="rrdgraph" data-src="resourceId=test&amp;report=daily&amp;start=1340398800000&amp;end=1340485200000"></div>
@@ -398,94 +151,7 @@ $(function() {
 	
         <div id="errorDiv"></div>
 	<div id="valuesDebug">0</div>
-	<div id="valuesDebugMessage">0</div>
+	<div id="valuesDebugMessage">No Message jet</div>
 	<div id="rrdGraphString"></div>
-        
-</div>
-
-<script>
-  // Override the getters for the test
-  RRDGraph.get.config = function (src) {
-    return (
-      "/usr/bin/rrdtool graph example.png \\\n" +
-      "--slope-mode \\\n" +
-      "--imgformat=PNG \\\n" +
-      "--start=" + (src.start / 1000) + " \\\n" +
-      "--end=" + (src.end / 1000) + " \\\n" +
-      "--title=\"Test (" + src.report + ")\" \\\n" +
-      "--rigid \\\n" +
-      "--height=200 \\\n" +
-      "--width=500 \\\n" +
-      "--vertical-label=\"C\" \\\n" +
-      "--watermark=\"This is the watermark\" \\\n" +
-      "DEF:b=\"example.rrd\":temp:AVERAGE \\\n" +
-      "CDEF:c=b,FLOOR,b,SIN,- \\\n" +
-      "CDEF:b1=b,1,+ \\\n" +
-      "CDEF:d=c,12,GT \\\n" +
-      "VDEF:b_avg=b,AVERAGE \\\n" +
-      "AREA:c#000099:\"Magic\" \\\n" +
-      "LINE1:b#009900:\"Outdoors \"  \\\n" +
-      "GPRINT:b:LAST:\" Cur\\:%8.2lf \"  \\\n" +
-      "GPRINT:b:AVERAGE:\"Avg\\:%8.2lf \"  \\\n" +
-      "GPRINT:b:MIN:\"Min\\:%8.2lf \"  \\\n" +
-      "GPRINT:b:MAX:\"Max\\:%8.2lf \\n\" \\\n" +
-      "LINE1:b1#990000:\"Outdoors + 1\"  \\\n" +
-      "TICK:d#660099:0.1:\">12C\" \\\n" + 
-      "HRULE:b_avg#bb4499:\"Average\":dashes=10,2,5,5 \\\n" +
-      "VRULE:1340485200000#11bbaa:\"Realtime start\" \\\n"
-    );
-
-  };
-
-  RRDGraph.get.data = function (src) {
-    if (src.report === 'daily') return DayData();
-    //if (src.report === 'weekly') return WeekData();
-    //if (src.report === 'monthly') return MonthData();
-  };
-
-  window.onload = function () {
-    var graphs = RRDGraph.init('.rrdgraph');
-    var day = graphs[0];
-
-    window.day = day;
-    var data = day.data.data.arrays['b'];
-    var lastPoint = data.slice(-1)[0];
-    if (lastPoint === undefined) {
-      lastPoint = {
-        t: +new Date(),
-        v: 20
-      };
-    }
-    var lastValue = lastPoint.v;
-
-    d3.select('#animate').on('click', function () {
-      if (window.interval === undefined) {
-        window.interval = setInterval(function () {
-          lastPoint = data.slice(-1)[0];
-          if (lastPoint === undefined) {
-            lastPoint = {
-              t: +new Date(),
-              v: 20
-            };
-          }
-          var newDate = lastPoint.t + 300000;
-          var newValue = lastValue - 0.1 + Math.random() * 0.2;
-          lastValue = newValue;
-          var newPoint = {t: newDate, v: newValue};
-/*
-          if (Math.random() < 0.1) {
-            newPoint.v = null;
-          }
-          */
-          // day.data.push({"example.rrd" : [newPoint]});
-        }, 100);
-      } else {
-        clearInterval(window.interval);
-        window.interval = undefined;
-      }
-    });
-  };
-
-</script>
-
+        <div id="startTimestamp"></div>
 </body>

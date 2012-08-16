@@ -47,7 +47,9 @@ public class NrtAmqAjaxServlet extends MessageListenerServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getPathInfo() != null && request.getPathInfo().endsWith(".js")) {
+            logger.debug("A-Request: '{}'", request);
             doJavaScript(request, response);
+            logger.debug("B-Response: '{}'", response);
         } else {
             super.doGet(request, response);
         }
