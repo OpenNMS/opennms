@@ -13,6 +13,7 @@
     <include-collection dataCollectionGroup="3Com"/>
     <include-collection dataCollectionGroup="Acme Packet"/>
     <include-collection dataCollectionGroup="AKCP sensorProbe"/>
+    <include-collection dataCollectionGroup="Allot"/>
     <include-collection dataCollectionGroup="Alvarion"/>
     <include-collection dataCollectionGroup="APC"/>
     <include-collection dataCollectionGroup="Ascend"/>

@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<datacollection-group name="Allot">
+      <!-- Allot Communications Resource Types -->
+      <resourceType name="alIfXIndex" label="Allot Interface" resourceLabel="${alIfXLabel}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+          <!-- Only collect data for SFC interfaces as the others are useless -->
+          <parameter key="match-expression" value="#alIfXLabel matches '^SFC.*'" />
+        </persistenceSelectorStrategy>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="alIfXLabel" />
+        </storageStrategy>
+      </resourceType>
+
+      <resourceType name="alSensorIndex" label="Allot Sensor" resourceLabel="Board ID: ${subIndex(0, 1)} Sensor: ${subIndex(1, 1)}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      </resourceType>
+
+      <group name="allot" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.3.1.5" instance="alIfXIndex" alias="alIfXLabel" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.3.1.13" instance="alIfXIndex" alias="alIfXThroughputTX" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.3.1.14" instance="alIfXIndex" alias="alIfXThroughputRX" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.3.1.15" instance="alIfXIndex" alias="alIfXPacketPerSecTX" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.3.1.16" instance="alIfXIndex" alias="alIfXPacketPerSecRX" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.20.5" instance="0" alias="alIntActiveDevNum" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.4.8" instance="0" alias="alSGActiveSubs" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.18.1.2" instance="alSensorIndex" alias="AlSensorType" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.18.1.3" instance="alSensorIndex" alias="AlSensorValue" type="gauge" />
+      </group>
+
+      <group name="allot-nx" ifType="ignore">
+      </group>
+
+      <group name="allot-sg" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2603.4.14.1.4.4" instance="4" alias="alSGlmtVC" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.4.14.1.4.5" instance="4" alias="alSGlmtPipe" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.4.14.1.4.6" instance="4" alias="alSGlmtLine" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.4.14.1.4.10" instance="3" alias="alSGlmtSteer" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.4.3" instance="0" alias="alSGStatPipes" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.4.4" instance="0" alias="alSGStatVCs" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.4.5" instance="0" alias="alSGStatLines" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.4.6" instance="0" alias="alSGNumEstConn" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.4.7" instance="0" alias="alSGConnEstRate" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.4" instance="0" alias="alSGMemUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.5" instance="0" alias="alSGDiskUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.15" instance="0" alias="alSGCpuUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.18.1.3.0" instance="15001" alias="alSGRegSubs" type="gauge" />
+      </group>
+
+      <group name="allot-smp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.20.2" instance="0" alias="AllotRadiusTPS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.11.2.2" instance="0" alias="AllotSMPSubcribers" type="gauge" />
+      </group>
+
+      <systemDef name="Allot Communications">
+	<sysoidMask>.1.3.6.1.4.1.2603.</sysoidMask>
+        <collect>
+          <includeGroup>allot</includeGroup>
+          <includeGroup>allot-nx</includeGroup>
+          <includeGroup>allot-smp</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Allot Communications NX via netsnmp proxy">
+        <!-- Add "proxy -v 2c -c public 127.0.0.1 .1.3.6.1.4.1.2603" to snmpd.conf on NX to make this work. -->
+	<sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
+        <collect>
+          <includeGroup>allot</includeGroup>
+          <includeGroup>allot-nx</includeGroup>
+          <includeGroup>allot-sg</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Allot Communications SG Sigma">
+        <!-- Allot SG Sigma "alACSigma" device. -->
+	<sysoid>.1.3.6.1.4.1.2603.5.1.9</sysoid>
+        <collect>
+          <includeGroup>allot-sg</includeGroup>
+        </collect>
+      </systemDef>
+      <!-- TODO: Add other Allot SG devices... -->
+
+</datacollection-group>
