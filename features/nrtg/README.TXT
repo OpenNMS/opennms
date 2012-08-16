@@ -23,8 +23,7 @@ features:install nrtg
 
 alternatively you may install the individual features for nrtg
 
-features:install osgi-nrtg-api osgi-nrtg-nrtcollector osgi-nrtg-procolollector-snmp
-
+features:install osgi-nrtg-api osgi-nrtg-nrtcollector osgi-nrtg-protocolcollector-snmp
 
 NRTG Web
 
