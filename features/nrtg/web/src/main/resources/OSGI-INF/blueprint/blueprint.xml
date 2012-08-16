@@ -39,5 +39,11 @@
             <entry key="alias" value="/nrt/starter" />
         </service-properties>
     </service>
-
+    
+    <bean id="amqAjaxServlet" class="org.opennms.nrtg.web.internal.NrtAmqAjaxServlet" />
+    <service interface="javax.servlet.Servlet" ref="amqAjaxServlet">
+        <service-properties>
+            <entry key="alias" value="/amq" />
+        </service-properties>
+    </service>    
 </blueprint>

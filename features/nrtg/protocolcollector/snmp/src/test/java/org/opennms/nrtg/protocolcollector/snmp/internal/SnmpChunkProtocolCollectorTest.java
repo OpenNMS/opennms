@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.protocolcollector.snmp;
+package org.opennms.nrtg.protocolcollector.snmp.internal;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
-import org.opennms.nrtg.protocolcollector.snmp.internal.SnmpChunkProtocolCollector;
+import org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
