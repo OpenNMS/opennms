@@ -204,8 +204,8 @@
         <img id="zoomImage" src="${graphUrl}" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
 	    <opennms-addKscReport id="${resultSet.resource.id}.${resultSet.graphs[0].name}" reportName="${resultSet.graphs[0].name}" resourceId="${resultSet.resource.id}" graphTitle="${resultSet.graphs[0].title}" timespan="${results.relativeTime}"></opennms-addKscReport>
            
-            <!-- NRT DUMMY -->
-            <form action="nrt/starter.htm">
+            <!-- NRT Starter -->
+            <form action="osgi/nrt/starter">
                 <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
                 <input type="hidden" name="report" value="${resultSet.graphs[0].name}"/>
                 <input type="submit" name="nrt" value="NRT Graph"/>
