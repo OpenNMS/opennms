@@ -127,6 +127,10 @@ public class NrtController {
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
         
+        modelAndView.addObject("graphTitle", prefabGraph.getTitle());
+        modelAndView.addObject("graphName", prefabGraph.getName());
+        modelAndView.addObject("graphDescription", prefabGraph.getDescription());
+        
         NrtRrdCommandFormatter rrdFormatter = new NrtRrdCommandFormatter(prefabGraph);
         
         modelAndView.addObject("rrdGraphString", rrdFormatter.getRrdGraphString()); // prefabGraph.getCommand().replaceAll("\"", "\\\\\\\\\""));

@@ -141,14 +141,26 @@ $(function() {
     
     RRDGraph.get.data = function (src) {
         document.getElementById("startTimestamp").innerHTML = Math.round((new Date()).getTime());
-        return {"{rrd1}":[{t:Math.round((new Date()).getTime()),v:0}]};
+        return {"{rrd1}":[
+            //{t:Math.round((new Date()).getTime()),v:0}
+        ]};
     };
     
-    //  window.onload = function () {
+//    var now = new Date().getTime();
+//    
+//    $(".rrdgraph").attr("data-src",
+//        "resourceId=test&amp;" + 
+//        "report=daily&amp;" + 
+//        "start=" + (now - 60000) + "&amp;" + 
+//        "end=" + now + ""
+//    );
+    
     var graphs = RRDGraph.init('.rrdgraph');
     var nrtGraph = graphs[0];
+    nrtGraph.config.options.start = -6000;
+    
     window.nrtGraph = nrtGraph;
-    //  };
+    
 });
 </script>
 
@@ -157,9 +169,14 @@ $(function() {
 <body>
 	<h1>NRT Graph</h1>
         <h2>Just a RocketJump</h2>
-	<div id="main"></div>
+	
+        <h2>${graphTitle}</h2>
+        <h2>${graphName}</h2>
+        <p>${graphDescription}</p>
         
-        <div class="rrdgraph" data-src="resourceId=test&amp;report=daily&amp;start=1340398800000&amp;end=1340485200000"></div>
+        <div id="main"></div>
+        
+        <div class="rrdgraph" data-src="resourceId=test&amp;report=daily&amp;start=1340398800000&amp;end=1340399400000"></div>
             
 	<div>Refresh Interval (in ms)<input name="refreshInterval"></input></div>
 	<div>Graph Duration (in seconds)<input name="durationInterval"></input></div>
