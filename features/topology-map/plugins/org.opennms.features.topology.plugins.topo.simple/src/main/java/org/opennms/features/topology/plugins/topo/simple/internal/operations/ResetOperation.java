@@ -23,7 +23,7 @@ public class ResetOperation implements Constants, Operation{
         
         m_topologyProvider.resetContainer();
         Object groupId = m_topologyProvider.addGroup(GROUP_ICON);
-        Object vertexId = m_topologyProvider.addVertex(50, 50, SERVER_ICON);
+        Object vertexId = m_topologyProvider.addVertex(50, 50);
         m_topologyProvider.setParent(vertexId, groupId);
         return null;
     }

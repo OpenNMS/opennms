@@ -14,9 +14,12 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
-import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
+import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
+import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
+import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
+import org.opennms.features.topology.app.internal.gwt.client.handler.PanHandler;
+import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -25,18 +28,13 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
@@ -51,7 +49,7 @@ import com.vaadin.terminal.gwt.client.ui.ActionOwner;
 import com.vaadin.terminal.gwt.client.ui.dd.VDropHandler;
 import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
 
-public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler {
+public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler, SVGTopologyMap {
 
 	public class GraphDrawerNoTransition extends GraphDrawer{
 
@@ -266,7 +264,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		}
 
 		private D3 getVertexSelection(GWTGraph graph) {
-			return getVertexGroup().selectAll(".little")
+			return getVertexGroup().selectAll(GWTVertex.VERTEX_CLASS_NAME)
 					.data(graph.getVertices(m_semanticZoomLevel), new Func<String, GWTVertex>() {
 
 						public String call(GWTVertex param, int index) {
@@ -306,374 +304,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 	
-	public class PanHandler implements DragBehaviorHandler{
-	    private ToggleButton m_toggle;
-        @Override
-        public void onDragStart(Element elem) {
-            m_panObject = new PanObject(m_svgViewPort, m_svg);
-        }
-
-        @Override
-        public void onDrag(Element elem) {
-            m_panObject.move();
-        }
-
-        @Override
-        public void onDragEnd(Element elem) {
-            m_panObject = null;
-        }
-
-        @Override
-        public ToggleButton getToggleBtn() {
-            if(m_toggle == null) {
-                m_toggle = new ToggleButton("Pan");
-            }
-            return m_toggle;
-        }
-	    
-	}
-	
-	public class Interval{
-	    
-	    private int m_lo;
-        public int getLo() {
-            return m_lo;
-        }
-
-        private int m_hi;
-
-        public int getHi() {
-            return m_hi;
-        }
-
-        public Interval(int lo, int hi) {
-	        m_lo = Math.min(lo, hi);
-	        m_hi = Math.max(lo, hi);
-	    }
-        
-        public boolean contains(int value) {
-            return m_lo <= value && value <= m_hi;
-        }
-	}
-	
-	public class MarqueeSelectHandler implements DragBehaviorHandler{
-	    public static final String DRAG_BEHAVIOR_MARQUEE = "marquee";
-	    private boolean m_dragging = false;
-	    private int m_x1;
-	    private int m_y1;
-	    private int m_offsetX;
-	    private int m_offsetY;
-	    private ToggleButton m_toggle;
-        @Override
-        public void onDragStart(Element elem) {
-            if(!m_dragging) {
-                m_dragging = true;
-                
-                SVGElement svg = m_svg.cast();
-                ClientRect rect = svg.getBoundingClientRect();
-                m_offsetX = rect.getLeft();
-                m_offsetY = rect.getTop();
-                
-                m_x1 = D3.getEvent().getClientX() - m_offsetX;
-                m_y1 = D3.getEvent().getClientY() - m_offsetY;
-                
-                setMarquee(m_x1, m_y1, 0, 0);
-                D3.d3().select(m_marquee).attr("display", "inline");
-            }
-        }
-
-        @Override
-        public void onDrag(Element elem) {
-            if(m_dragging) {
-                int clientX = D3.getEvent().getClientX() - m_offsetX;
-                int clientY = D3.getEvent().getClientY() - m_offsetY;
-                setMarquee(
-                    Math.min(m_x1, clientX), Math.min(m_y1, clientY), 
-                    Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
-                );
-                selectVertices();
-            }
-        }
-
-        @Override
-        public void onDragEnd(Element elem) {
-            m_dragging = false;
-            D3.d3().select(m_marquee).attr("display", "none");
-            
-            final List<String> vertIds = new ArrayList<String>();
-            D3.d3().selectAll(".little").each(new Handler<GWTVertex>() {
-
-                @Override
-                public void call(GWTVertex vert, int index) {
-                    if(vert.isSelected()) {
-                        vertIds.add(vert.getId());
-                    }
-                }
-            });
-            
-            VTopologyComponent.this.setSelection(vertIds);
-            
-        }
-        
-        private void setMarquee(int x, int y, int width, int height) {
-            D3.d3().select(m_marquee).attr("x", x).attr("y", y).attr("width", width).attr("height", height);
-        }
-        
-        private void selectVertices() {
-            D3 vertices = D3.d3().selectAll(".little");
-            JsArray<JsArray<SVGElement>> selection = vertices.cast();
-            
-            final JsArray<SVGElement> elemArray = selection.get(0);
-            
-            vertices.each(new Handler<GWTVertex>() {
-
-                @Override
-                public void call(GWTVertex vertex, int index) {
-                    SVGElement elem = elemArray.get(index).cast();
-                    
-                    if(inSelection(elem)) {
-                        vertex.setSelected(true);
-                        D3.d3().select(elem).style("stroke", "blue");
-                    }else {
-                        vertex.setSelected(false);
-                        D3.d3().select(elem).style("stroke", "none");
-                    }
-                    
-                }
-            });
-            
-        }
-
-        private boolean inSelection(SVGElement elem) {
-            SVGElement marquee = m_marquee.cast();
-            SVGRect mBBox = marquee.getBBox();
-            ClientRect elemClientRect = elem.getBoundingClientRect();
-            
-            Interval marqueeX = new Interval(mBBox.getX(), mBBox.getX() + mBBox.getWidth());
-            Interval marqueeY = new Interval(mBBox.getY(), mBBox.getY() + mBBox.getHeight());
-            
-            int left = elemClientRect.getLeft() - m_offsetX;
-            int top = elemClientRect.getTop() - m_offsetY;
-            Interval vertexX = new Interval(left, left + elemClientRect.getWidth());
-            Interval vertexY = new Interval(top, top + elemClientRect.getHeight());
-            
-            return marqueeX.contains(vertexX.getLo()) &&
-                   marqueeX.contains(vertexX.getHi()) &&
-                   marqueeY.contains(vertexY.getLo()) &&
-                   marqueeY.contains(vertexY.getHi());
-        }
-
-        @Override
-        public ToggleButton getToggleBtn() {
-            if(m_toggle == null) {
-                m_toggle = new ToggleButton("Select", "Select");
-            }
-            return m_toggle;
-        }
-	    
-	}
-	
-	public class PanObject extends DragObject{
-		private SVGMatrix m_stateTf;
-		private SVGPoint m_stateOrigin;
-
-		public PanObject(Element draggableElement, Element containerElement) {
-			super(draggableElement, containerElement);
-
-			SVGGElement g = draggableElement.cast();
-			m_stateTf = g.getCTM().inverse();
-
-			m_stateOrigin = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf); 
-
-		}
-
-		@Override
-		public void move() {
-			Event event = D3.getEvent().cast();
-			SVGPoint p = getEventPoint(event).matrixTransform(m_stateTf);
-
-			SVGElement svg = getContainerElement().cast();
-			SVGGElement g = getDraggableElement().cast();
-			SVGRect gBox = g.getBBox();
-
-			SVGMatrix m = m_stateTf.inverse().translate(p.getX() - m_stateOrigin.getX(), p.getY() - m_stateOrigin.getY() );
-
-			double mapWidth = gBox.getWidth() * m.getA();
-			double mapHeight = gBox.getHeight() * m.getA();
-
-			double boundaryX = calculateBoundsX(mapWidth, svg.getOffsetWidth(), m.getE());
-
-			double boundaryY = calculateBoundsY(mapHeight, svg.getOffsetHeight(), m.getF());
-
-			String matrixTransform = "matrix(" + m.getA() +
-					", " + m.getB() +
-					", " + m.getC() + 
-					", " + m.getD() +
-					", " + boundaryX + 
-					", " + boundaryY + ")";
-
-			getDraggableElement().setAttribute("transform", matrixTransform);
-
-			//Updating the reference map
-			//TODO: this needs to be reworked a little its off
-			double viewPortWidth = (getContainerElement().getOffsetWidth() / m.getA()) * 0.4;
-			double viewPortHeight = (getContainerElement().getOffsetHeight() / m.getA()) * 0.4;
-			m_referenceMapViewport.setAttribute("width", "" + viewPortWidth);
-			m_referenceMapViewport.setAttribute("height", "" + viewPortHeight);
-			m_referenceMapViewport.setAttribute("x", "" + (-boundaryX * 0.4));
-			m_referenceMapViewport.setAttribute("y", "" + (-boundaryY * 0.4));
-		}
-
-		private double calculateBoundsY(double mapHeight, int offsetHeight,
-				double y) {
-			double boundaryY;
-			if(mapHeight > offsetHeight) {
-				boundaryY = Math.min(0, Math.max(offsetHeight - mapHeight, y));
-			}else {
-				boundaryY = Math.max(0, Math.min(offsetHeight - mapHeight, y));
-			}
-			return boundaryY;
-		}
-
-		private double calculateBoundsX(double mapWidth, int offsetWidth, double x) {
-			double boundaryX;
-			if(mapWidth > offsetWidth) {
-				return Math.min(0, Math.max(offsetWidth - mapWidth, x));
-			}else {
-				return Math.max(0, Math.min(offsetWidth - mapWidth, x));
-			}
-		}
-	}
-
-	public class DragObject{
-		private Element m_containerElement;
-		private Element m_draggableElement;
-		private int m_startX;
-		private int m_startY;
-		private D3Transform m_transform;
-
-		public DragObject(Element draggableElement, Element containerElement) {
-
-			m_draggableElement = draggableElement;
-			m_containerElement = containerElement;
-
-			//User m_vertexgroup because this is what we scale instead of every vertex element
-			m_transform = D3.getTransform(D3.d3().select(m_vertexGroup).attr("transform"));
-			
-			if(containerElement == null) {
-			    Window.alert("element: " + containerElement + " is null");
-			}
-			
-			JsArrayInteger position = D3.getMouse(containerElement);
-			m_startX = (int) (position.get(0) / m_transform.getScale().get(0));
-			m_startY = (int) (position.get(1) / m_transform.getScale().get(1));
-		}
-
-		public Element getContainerElement() {
-			return m_containerElement;
-		}
-
-		public Element getDraggableElement() {
-			return m_draggableElement;
-		}
-
-		public int getCurrentX() {
-			JsArrayInteger position = D3.getMouse(m_containerElement);
-			return (int) (position.get(0) / m_transform.getScale().get(0));
-		}
-
-		public int getCurrentY() {
-			JsArrayInteger position = D3.getMouse(m_containerElement);
-			return (int) (position.get(1) / m_transform.getScale().get(1));
-		}
-
-		public int getStartX() {
-			return m_startX;
-		}
-
-		public int getStartY() {
-			return m_startY;
-		}
-
-		public void move() {
-			VTopologyComponent.this.repaintGraphNow();
-		}
-
-		protected SVGPoint getEventPoint(NativeEvent event) {
-			SVGElement svg = m_svg.cast();
-			SVGPoint p = svg.createSVGPoint();
-			p.setX(event.getClientX());
-			p.setY(event.getClientY());
-			return p;
-		}
-
-	}
-	
-	private interface DragBehaviorHandler{
-	    public void onDragStart(Element elem);
-        public void onDrag(Element elem);
-        public void onDragEnd(Element elem);
-        public ToggleButton getToggleBtn();
-	}
-	
-	private class DragHandlerManager implements ClickHandler{
-	    Map<String, DragBehaviorHandler> m_dragHandlers = new HashMap<String, DragBehaviorHandler>();
-	    DragBehaviorHandler m_currentHandler;
-	    
-	    public void addDragBehaviorHandler(String key, DragBehaviorHandler handler) {
-	        ToggleButton tg = handler.getToggleBtn();
-	        tg.addClickHandler(this);
-	        
-	        m_dragHandlers.put(key, handler);
-	    }
-	    
-	    public boolean setCurrentDragHandler(String key) {
-	        if(m_dragHandlers.containsKey(key)) {
-	            m_currentHandler = m_dragHandlers.get(key);
-	            m_currentHandler.getToggleBtn().setDown(true);
-	            return true;
-	        }
-	        return false;
-	    }
-	    
-	    public void onDragStart(Element elem) {
-	        m_currentHandler.onDragStart(elem);
-	    }
-	    
-	    public void onDrag(Element elem) {
-	        m_currentHandler.onDrag(elem);
-	    }
-	    
-	    public void onDragEnd(Element elem) {
-	        m_currentHandler.onDragEnd(elem);
-	    }
-	    
-	    public List<ToggleButton> getDragControlsButtons(){
-	        List<ToggleButton> btns = new ArrayList<ToggleButton>();
-	        for(String key : m_dragHandlers.keySet()) {
-	            btns.add(m_dragHandlers.get(key).getToggleBtn());
-	        }
-	        return btns;
-	    }
-	    
-        @Override
-        public void onClick(ClickEvent event) {
-            for(String key : m_dragHandlers.keySet()) {
-                DragBehaviorHandler dragHandler = m_dragHandlers.get(key);
-                if(event.getSource() == dragHandler.getToggleBtn()) {
-                    setCurrentDragHandler(key);
-                }else {
-                    dragHandler.getToggleBtn().setDown(false);
-                }
-            }
-        }
-	}
-	
 	private static VTopologyComponentUiBinder uiBinder = GWT
 			.create(VTopologyComponentUiBinder.class);
 	
-	private static String DRAG_BEHAVIOR_PAN = "pan";
-
 	interface VTopologyComponentUiBinder extends
 	UiBinder<Widget, VTopologyComponent> {
 	}
@@ -727,7 +360,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private D3Drag m_d3PanDrag;
 	private GraphDrawer m_graphDrawer;
 	private GraphDrawerNoTransition m_graphDrawerNoTransition;
-	protected PanObject m_panObject;
 	private List<Element> m_selectedElements = new ArrayList<Element>();
 	private int m_semanticZoomLevel;
 	private int m_oldSemanticZoomLevel;
@@ -746,9 +378,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(DRAG_BEHAVIOR_PAN, new PanHandler());
-		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_MARQUEE, new MarqueeSelectHandler());
-		m_svgDragHandlerManager.setCurrentDragHandler(DRAG_BEHAVIOR_PAN);
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this));
+		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this));
+		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_svg, m_svgDragHandlerManager);
 		
 		for(ToggleButton btn : m_svgDragHandlerManager.getDragControlsButtons()) {
@@ -1014,7 +646,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 
 
-				m_dragObject = new DragObject(draggableElement, m_svgViewPort);
+				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, m_svgViewPort);
 
 
 				D3.getEvent().preventDefault();
@@ -1209,6 +841,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	public void repaintGraphNow() {
 		drawGraph(m_graph, true);
 	}
+	
+	@Override
+	public void repaintNow() {
+	    repaintGraphNow();
+	}
 
 	private void updateScale(double oldScale, double newScale) {
 		SVGElement svg = getSVGElement();
@@ -1255,7 +892,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		return p;
 	}
 
-	private SVGElement getSVGElement() {
+	@Override
+	public SVGElement getSVGElement() {
 		return m_svg.cast();
 	}
 
@@ -1327,12 +965,40 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
 	}
 	
-	public void setSelection(List<String> vertIds) {
-	    
-	    m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
-	    m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+    @Override
+    public Element getVertexGroup() {
+        return m_vertexGroup;
+    }
 
+    @Override
+    public Element getReferenceViewPort() {
+        return m_referenceMapViewport;
+    }
+
+    @Override
+    public Element getSVGViewPort() {
+        return m_svgViewPort;
+    }
+
+    @Override
+    public void setVertexSelection(List<String> vertIds) {
+        m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
+        m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+        
         m_client.sendPendingVariableChanges();
+    }
+
+    @Override
+    public Element getMarqueeElement() {
+        return m_marquee;
+    }
+
+    /**
+     * Returns the D3 selection for all Vertex svg elements
+     */
+    @Override
+    public D3 selectAllVertexElements() {
+        return D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME);
     }
 
 }

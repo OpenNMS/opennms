@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal.gwt.client.d3;
 
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.XMLHandler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -237,6 +238,13 @@ public class D3 extends JavaScriptObject {
 
     public final native D3Brush getBrush() /*-{
         return this.svg.brush();
+    }-*/;
+
+    public final native void xml(String iconUrl, String mimeType, XMLHandler<?> handler) /*-{
+        var f = function(d) {
+            return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.XMLHandler::call(Ljava/lang/Object;)(d);
+        }
+        this.xml(iconUrl, mimeType, f);
     }-*/;
 
     

@@ -14,9 +14,28 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
         <property name="commandManager" ref="commandManager"/>
         <property name="topologyProvider" ref="topologyProvider"/>
+        <property name="iconRepositoryManager" ref="iconRepoManager"/>
     </bean>
     
     <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
+    
+    <!-- Icon Repository Manager -->
+    <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
+    
+    <reference-list interface="org.opennms.features.topology.app.internal.support.IconRepository" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager">
+        </reference-listener>
+    </reference-list>
+    
+    <service interface="org.opennms.features.topology.app.internal.support.IconRepository">
+        <bean class="org.opennms.features.topology.app.internal.support.DefaultIconRepository">
+            <property name="iconMap">
+                <map>
+                    <entry key="server" value="VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png"/>
+                </map>
+            </property>
+        </bean>
+    </service>
     
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>

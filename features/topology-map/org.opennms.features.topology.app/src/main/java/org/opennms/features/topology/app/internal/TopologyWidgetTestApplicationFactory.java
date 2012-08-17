@@ -4,6 +4,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.ops4j.pax.vaadin.ApplicationFactory;
 
 import com.vaadin.Application;
@@ -11,6 +12,7 @@ import com.vaadin.Application;
 public class TopologyWidgetTestApplicationFactory implements ApplicationFactory {
     
 	private CommandManager m_commandManager = new CommandManager();
+	private IconRepositoryManager m_iconRepositoryManager = new IconRepositoryManager();
     private TopologyProvider m_topologyProvider;
 	
 	public CommandManager getCommandManager() {
@@ -23,7 +25,7 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
-		return new TopologyWidgetTestApplication(m_commandManager, getTopologyProvider());
+		return new TopologyWidgetTestApplication(m_commandManager, getTopologyProvider(), m_iconRepositoryManager);
 	}
 
 	@Override
@@ -37,6 +39,14 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 
     public void setTopologyProvider(TopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
+    }
+
+    public IconRepositoryManager getIconRepositoryManager() {
+        return m_iconRepositoryManager;
+    }
+
+    public void setIconRepositoryManager(IconRepositoryManager iconRepositoryManager) {
+        m_iconRepositoryManager = iconRepositoryManager;
     }
     
 }
