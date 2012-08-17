@@ -9,8 +9,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          opennms
-# Required-Start:    $network $time
-# Required-Stop:     $network
+# Required-Start:    $network $time $postgresql
+# Required-Stop:     $network $postgresql
 # Should-Start:      $local_fs
 # Should-Stop:       $local_fs
 # Default-Start:     2 3 4 5
