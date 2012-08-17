@@ -190,7 +190,7 @@ public class NrtController {
                     columnsToMetrics.put(column, metric);
                 }
             } catch (Exception ex) {
-                logger.error("Problem by looking up metrics for cloumns in context of prefabgraphs from meta file '{}' '{}'", fileName, ex.getMessage());
+                logger.error("Problem looking up metrics for columns in context of prefabgraphs from meta file '{}' '{}'", fileName, ex.getMessage());
             }
         }
         /**
