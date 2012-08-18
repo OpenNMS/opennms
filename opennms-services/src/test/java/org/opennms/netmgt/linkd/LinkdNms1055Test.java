@@ -244,10 +244,7 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
-        //example1.setUseBridgeDiscovery(false);
-        //example1.setUseCdpDiscovery(false);
-        //example1.setUseIpRouteDiscovery(false);
-
+        example1.setUseLldpDiscovery(true);
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         Iproutes iproutes = new Iproutes();
         Vendor juniper = new Vendor();

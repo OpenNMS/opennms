@@ -150,6 +150,7 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
+        example1.setUseLldpDiscovery(true);
         
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
