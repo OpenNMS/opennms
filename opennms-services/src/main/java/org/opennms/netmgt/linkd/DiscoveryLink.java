@@ -101,6 +101,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 	
 	private boolean discoveryUsingBridge = true;
 
+	private boolean discoveryUsingLldp = false;
+
 	private boolean suspendCollection = false;
 
 	private boolean isRunned = false;
@@ -182,28 +184,27 @@ public final class DiscoveryLink implements ReadyRunnable {
             LogUtils.debugf(this,
                             "run: Iterating on LinkableNode's found node with ID %d",
                             linkableNode.getNodeId());
-            if (linkableNode.getLldpChassisId() != null && linkableNode.getLldpChassisIdSubtype() != null && linkableNode.getLldpRemInterfaces() != null ) {
+            if (discoveryUsingLldp && linkableNode.getLldpChassisId() != null && linkableNode.getLldpChassisIdSubtype() != null && linkableNode.getLldpRemInterfaces() != null ) {
                 LogUtils.debugf(this,
                                 "run: adding to lldp node list: node with ID %d",
                                 linkableNode.getNodeId());
                 m_lldpNodes.add(linkableNode);
             }
-            
-            if (linkableNode.isBridgeNode() && discoveryUsingBridge) {
+            if (discoveryUsingBridge && linkableNode.isBridgeNode()) {
                 LogUtils.debugf(this,
                                 "run: adding to bridge node list: node with ID %d",
                                 linkableNode.getNodeId());
                 m_bridgeNodes.put(new Integer(linkableNode.getNodeId()),
                                   linkableNode);
             }
-            if (linkableNode.hasCdpInterfaces() && discoveryUsingCdp) {
+            if (discoveryUsingCdp && linkableNode.hasCdpInterfaces()) {
                 addCdpLinks(linkableNode);
                 LogUtils.debugf(this,
                                 "run: adding to CDP node list: node with ID %d",
                                 linkableNode.getNodeId());
 
             }
-            if (linkableNode.hasRouteInterfaces() && discoveryUsingRoutes) {
+            if (discoveryUsingRoutes && linkableNode.hasRouteInterfaces()) {
                 LogUtils.debugf(this,
                                 "run: adding to router node list: node with ID %d",
                                 linkableNode.getNodeId());
@@ -839,10 +840,11 @@ public final class DiscoveryLink implements ReadyRunnable {
     }
     
     private void getLinksFromCdp() {
-        if (m_cdpLinks.size() > 0) {
-            LogUtils.infof(this,
-                           "run: adding links using Cisco Discovery Protocol");
-        }
+        LogUtils.infof(this,
+                       "run: adding links using Cisco Discovery Protocol");
+
+        LogUtils.infof(this,
+        "run: found # %d links using Cisco Discovery Protocol", m_cdpLinks.size());
 
         for (NodeToNodeLink cdplink: m_cdpLinks) {
             int curCdpNodeId = cdplink.getNodeId();
@@ -872,13 +874,12 @@ public final class DiscoveryLink implements ReadyRunnable {
             }
             
             // now add the CDP link
-            LogUtils.infof(this, "run: CDP link added");
             addNodetoNodeLink(cdplink);
+            LogUtils.infof(this, "run: CDP link added");
         }
 
         LogUtils.infof(this,
-                       "run: done parsing CDP links # %d.",
-                       m_cdpLinks.size());
+                       "run: done addind Cisco Discovery Protocol links.");
     }
 
     // We use a simple algoritm
@@ -1361,6 +1362,24 @@ public final class DiscoveryLink implements ReadyRunnable {
 	public void setDiscoveryUsingBridge(boolean discoveryUsingBridge) {
 		this.discoveryUsingBridge = discoveryUsingBridge;
 	}
+
+	       /**
+         * <p>discoveryUsingLldp</p>
+         *
+         * @return a boolean.
+         */
+        public boolean discoveryUsingLldp() {
+                return discoveryUsingLldp;
+        }
+
+        /**
+         * <p>Setter for the field <code>discoveryUsingLldp</code>.</p>
+         *
+         * @param discoveryUsingLldp a boolean.
+         */
+        public void setDiscoveryUsingLldp(boolean discoveryUsingLldp) {
+                this.discoveryUsingLldp = discoveryUsingLldp;
+        }
 
 	/**
 	 * <p>discoveryUsingCdp</p>

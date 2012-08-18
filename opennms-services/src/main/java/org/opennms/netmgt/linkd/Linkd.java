@@ -210,7 +210,7 @@ public class Linkd extends AbstractServiceDaemon {
         discoveryLink.setDiscoveryUsingRoutes(pkg.hasUseIpRouteDiscovery()? pkg.getUseIpRouteDiscovery() : m_linkdConfig.useIpRouteDiscovery());
         discoveryLink.setEnableDownloadDiscovery(pkg.hasEnableDiscoveryDownload()? pkg.getEnableDiscoveryDownload() : m_linkdConfig.enableDiscoveryDownload());
         discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.hasForceIpRouteDiscoveryOnEthernet()? pkg.getForceIpRouteDiscoveryOnEthernet() : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
-
+        discoveryLink.setDiscoveryUsingLldp(pkg.hasUseLldpDiscovery()? pkg.getUseLldpDiscovery() : m_linkdConfig.useLldpDiscovery());
         return discoveryLink;
     }
 
@@ -284,16 +284,16 @@ public class Linkd extends AbstractServiceDaemon {
         coll.SaveIpRouteTable(saveRouteTable);
         coll.collectIpRouteTable(useIpRouteDiscovery || saveRouteTable);
 
+        final boolean useLldpDiscovery = (pkg.hasUseLldpDiscovery()? pkg.getUseLldpDiscovery(): m_linkdConfig.useLldpDiscovery());
+        coll.collectLldpTable(useLldpDiscovery);
+        
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery()? pkg.getUseBridgeDiscovery() : m_linkdConfig.useBridgeDiscovery());
-        coll.collectBridgeForwardingTable(useBridgeDiscovery);
-
         final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable()? pkg.getSaveStpNodeTable() : m_linkdConfig.saveStpNodeTable());
-
-        coll.saveStpNodeTable(saveStpNodeTable);
-        coll.collectStpNode(useBridgeDiscovery || saveStpNodeTable);
-
         final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable()? pkg.getSaveStpInterfaceTable() : m_linkdConfig.saveStpInterfaceTable());
         
+        coll.collectBridgeForwardingTable(useBridgeDiscovery);
+        coll.saveStpNodeTable(saveStpNodeTable);
+        coll.collectStpNode(useBridgeDiscovery || saveStpNodeTable);
         coll.saveStpInterfaceTable(saveStpInterfaceTable);
         coll.collectStpTable(useBridgeDiscovery || saveStpInterfaceTable);
     }
