@@ -480,12 +480,10 @@
 				</annotation>
 			</attribute>
 
-			<attribute name="use-lldp-discovery" type="boolean"
-				use="optional" default="false">
+			<attribute name="use-lldp-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether links discovery process should use
-						link layer discovery protocol mib data.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
