@@ -21,9 +21,10 @@ abstract public class SimpleVertex {
 	String m_label = "none provided";
 	SimpleGroup m_parent = null;
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
-        private String m_ipAddr ="127.0.0.1";
-        private int m_nodeID = -1;
+    private String m_ipAddr ="127.0.0.1";
+    private int m_nodeID = -1;
 //	private int m_semanticZoomLevel = -1;
+    private String m_iconKey;
 	
 	public SimpleVertex() {}
 	
@@ -168,6 +169,14 @@ abstract public class SimpleVertex {
 			return false;
 		return true;
 	}
+
+    public void setIconKey(String iconKey) {
+        m_iconKey = iconKey;
+    }
+    
+    public String getIconKey() {
+        return m_iconKey;
+    }
 	
 //	public int getSemanticZoomLevel() {
 //		return m_semanticZoomLevel >= 0

@@ -117,6 +117,14 @@ public class SimpleGraphContainer implements GraphContainer {
         public void setIcon(String icon) {
             m_item.getItemProperty("icon").setValue(icon);
         }
+        
+        public void setIconKey(String iconKey) {
+            m_item.getItemProperty("iconKey").setValue(iconKey);
+        }
+        
+        public String getIconKey() {
+            return (String) m_item.getItemProperty("iconKey").getValue();
+        }
 
         public String getLabel() {
             Property labelProperty = m_item.getItemProperty("label");

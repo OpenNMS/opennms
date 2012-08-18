@@ -7,6 +7,7 @@ import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
@@ -27,7 +28,6 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler{
 
@@ -39,11 +39,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private MenuBar m_menuBar;
 	private TopoContextMenu m_contextMenu;
 	private AbsoluteLayout m_layout;
+	private IconRepositoryManager m_iconRepositoryManager;
 
-	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider) {
+	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_graphContainer = new SimpleGraphContainer(topologyProvider);
+		m_iconRepositoryManager = iconRepoManager;
 	}
 
 
@@ -64,6 +66,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer);
+		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
