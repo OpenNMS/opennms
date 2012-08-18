@@ -447,7 +447,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      */
     public boolean useLldpDiscovery() {
         if (m_config.hasUseLldpDiscovery()) return m_config.getUseLldpDiscovery();
-        return true;
+        return false;
     }
 
     /**

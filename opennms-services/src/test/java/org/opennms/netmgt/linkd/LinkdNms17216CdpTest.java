@@ -128,10 +128,13 @@ public class LinkdNms17216CdpTest extends LinkdNms17216NetworkBuilder implements
         example1.setUseCdpDiscovery(true);
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
+        m_linkdConfig.update();
+
         
         final OnmsNode switch4 = m_nodeDao.findByForeignId("linkd", SWITCH4_NAME);
         final OnmsNode router3 = m_nodeDao.findByForeignId("linkd", ROUTER3_NAME);
         
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
         assertTrue(m_linkd.scheduleNodeCollection(switch4.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(router3.getId()));
 

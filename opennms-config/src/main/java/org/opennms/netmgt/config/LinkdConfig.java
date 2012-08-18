@@ -182,7 +182,7 @@ public interface LinkdConfig {
     boolean useBridgeDiscovery();
 
     /**
-     * <p>useBridgeDiscovery</p>
+     * <p>useLldpDiscovery</p>
      *
      * @return a boolean.
      */
