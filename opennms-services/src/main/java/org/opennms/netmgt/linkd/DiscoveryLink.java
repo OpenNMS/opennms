@@ -174,9 +174,9 @@ public final class DiscoveryLink implements ReadyRunnable {
         LogUtils.debugf(this, "run: LinkableNodes/package found: %d/%s",
                         linkableNodes.size(), getPackageName());
         LogUtils.debugf(this,
-                        "run: discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes: %b/%b/%b",
+                        "run: discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes/discoveryUsingLldp: %b/%b/%b/%b",
                         discoveryUsingBridge, discoveryUsingCdp,
-                        discoveryUsingRoutes);
+                        discoveryUsingRoutes,discoveryUsingLldp);
         LogUtils.debugf(this, "run: enableDownloadDiscovery: %b",
                         enableDownloadDiscovery);
 
