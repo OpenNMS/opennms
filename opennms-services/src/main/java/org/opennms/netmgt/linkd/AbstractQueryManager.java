@@ -467,8 +467,10 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected void processRouteTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
-            if (snmpcoll.getIpRouteTable().size() > 0) {
+            final int routes = snmpcoll.getIpRouteTable().size();
+            if (routes > 0) {
                 LogUtils.debugf(this, "processRouteTable: Starting route table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processRouteTable: processing # %d routing interfaces", routes);
             } else {
                 LogUtils.debugf(this, "processRouteTable: Zero route table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
@@ -503,6 +505,8 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.warnf(this, "processRouteTable: route mask 255.255.255.255 on node %d. Skipping.", node.getNodeId());
                 store=false;                
             }
+
+            LogUtils.debugf(this, "processRouteTable: processing routedest/routemask/routenexthop %s/%s/%s",str(routedest),str(routemask),str(nexthop));
 
             if (ifindex == null || ifindex < 0) {
                 LogUtils.warnf(this, "processRouteTable: Invalid ifIndex %d on node %d. Skipping.", ifindex, node.getNodeId());
