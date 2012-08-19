@@ -20,51 +20,30 @@ html, body, div {
     
 <script type="text/javascript">
     
+
+// Eingabe foo Zeug
+$(function() {
+    
     // Receive inbound JavaScript variables from the controller.
     var collectionTaskId = "${nrtCollectionTaskId}";
     var rrdGraphString = "${rrdGraphString}";
 
-//    var rrdGraphString="--title=\"Current TCP Connections\" "+
-//        "--rigid " +
-//        "--height=400 " +
-//        "--width=900 " +
-//        "--vertical-label=\"Current Connections\" "+
-//        "--watermark=\"NRTG Alpha 1.0\" " +
-//        "DEF:currEstab={rrd1}:tcpCurrEstab:AVERAGE "+
-//        "VDEF:currEstabAvg=currEstab,AVERAGE "+
-//        "VDEF:currEstabMin=currEstab,MINIMUM "+
-//        "VDEF:currEstabMax=currEstab,MAXIMUM "+ 
-//        "LINE2:currEstab#00ff00:\"Current\" " +
-//        "LINE2:currEstabLast#ff0000:\"Last\" " +
-//        "GPRINT:currEstabAvg:\"Avg\\:%8.2lf %s\" " + 
-//        "GPRINT:CurrEstabMin:\"Min\\:%8.2lf %s\" " +
-//        "GPRINT:CurrEstabMax:\"Max\\:%8.2lf %s\" ";
+    var metricsMapping = {
+        ${metricsMapping}
+    };
 
-
-//var rrdGraphString="--title=\"Current TCP Connections\" "+
-//        "--rigid " +
-//        "--height=400 " +
-//        "--width=900 " +
-//        "--vertical-label=\"Current Connections\" "+
-//        "--watermark=\"NRTG Alpha 1.0\" " +
-//        "DEF:currEstab={rrd1}:tcpCurrEstab:AVERAGE "+
-//        "DEF:minCurrEstab={rrd1}:tcpCurrEstab:MIN "+
-//        "DEF:maxCurrEstab={rrd1}:tcpCurrEstab:MAX "+ 
-//        "LINE2:currEstab#00ff00:\"Current\" " +
-//        "GPRINT:currEstab:AVERAGE:\"Avg\\:%8.2lf %s\" " + 
-//        "GPRINT:currEstab:MIN:\"Min\\:%8.2lf %s\" " +
-//        "GPRINT:currEstab:MAX:\"Max\\:%8.2lf %s\" ";
-    
     // Represents the frequency of data requests.
-    var refreshInterval = 500;
+    var jobPuplishingInterval = 500;
     
-    // Represents the graph duration.
-    var graphWindowDuration = 60;
-    var duration =  graphWindowDuration * 1000;
+    // Create and initialize graph and real time wrapper
+    var graphs = RRDGraph.init('.rrdgraph', rrdGraphString);
+    var graph = graphs[0];
+    
+    var dataCollector = new RRDGraph.DataCollector(graph.config, graph.data, metricsMapping);
     
     // Create AMQ object.
     var amq = org.activemq.Amq;
-    
+
     // Initialize the ActiveMQ listener.
     amq.init({
         uri: '/opennms/amq', 
@@ -72,40 +51,48 @@ html, body, div {
         timeout: 45, 
         clientId:(new Date()).getTime().toString() 
     });
-    
-    // Define the AMQ message handler logic and create it.
-    var lastReceivedMessage = null;
-    var realTimeHandler = {
-        receiveMessage: function(message) {
-            if (message != null) {
-                var dataSet = eval(message.textContent);
-                for (i=0; i<dataSet.length;i++) {
-                    document.getElementById("valuesDebug").innerHTML++;
-                    var newPoint = {v:parseFloat(dataSet[i].value), t:parseInt(dataSet[i].timestamp)};
-                    document.getElementById("valuesDebugMessage").innerHTML = "Measurement: " + message.textContent+"<br>"+newPoint.v+"/"+newPoint.t;
-                    window.nrtGraph.data.push({"{rrd1}":[newPoint]});
-                } 
-            }
+
+    amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
+        if (message != null) {
+//            var dataSet = $.parseJSON(message.textContent);
+            var dataSet = eval(message.textContent);
+
+            // Debug output
+            $("#debug_value_count").html(parseInt($("#debug_value_count").html()) + 1);
+            
+            $("#debug_message_count").html(parseInt($("#debug_message_count").html()) + dataSet.length);
+            $("#debug_messages").html(message.textContent);
+
+            dataSet = $.map(dataSet, function(e, i) {
+                return {
+                    'metricId': e['metricId'],
+                    'netInterface': e['netInterface'],
+                    'nodeId': e['nodeId'],
+                    'service': e['service'],
+                    'timeStamp': parseInt(e['timeStamp']),
+                    'value': parseInt(e['value'])
+                };
+            });
+            
+            dataCollector.push(dataSet);
         }
-    };
-    
-    amq.addListener('RealtimeHandler', collectionTaskId, realTimeHandler.receiveMessage);
-    
+    });
+
     // Timer for  AJAX nrtCollectionJobTrigger to republish the CollectionJobCollectionJob
     var refreshTimerJob = {
         /// Submits the AJAX collection job request and requeues the timer.
         submitJob: function() {
             $.get("/opennms/osgi/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
-            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
+            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPuplishingInterval);
         },
-        
+
         /// Used for setting up and starting the refresh timer job.
         setup: function(refreshTicks) {
             this.stop();
-            this.refreshInterval = refreshTicks;
-            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.refreshInterval);
+            this.jobPuplishingInterval = refreshTicks;
+            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPuplishingInterval);
         },
-        
+
         /// Used for stopping the refresh timer.
         stop: function() {
             if(typeof this.timeoutID == "number") {
@@ -114,53 +101,16 @@ html, body, div {
             }
         }
     };
-
-// Eingabe foo Zeug
-$(function() {
-    // Set up the input box that allows us to adjust the interval in which data points are graphed.
-    $('input[name|="refreshInterval"]').val(refreshInterval);
-    $('input[name|="refreshInterval"]').bind('change', function() {
-        refreshInterval = $(this).val();
-        refreshTimerJob.setup(refreshInterval);
-    });
     
-    // Set up the input box that allows us to adjust the duration the graph represents.
-    $('input[name|="durationInterval"]').val(graphWindowDuration);
-    $('input[name|="durationInterval"]').bind('change', function() {
-        graphWindowDuration = $(this).val();
-        duration =  graphWindowDuration * 1000;
+    // Set up the input box that allows us to adjust the interval in which data points are graphed.
+    $('#jobPuplishingInterval').val(jobPuplishingInterval);
+    $('#jobPuplishingInterval').bind('change', function() {
+        jobPuplishingInterval = $(this).val();
+        refreshTimerJob.setup(jobPuplishingInterval);
     });
     
     // Start the AJAX job timer.
-    refreshTimerJob.setup(refreshInterval);
-    
-    document.getElementById("rrdGraphString").innerHTML = rrdGraphString;
-    RRDGraph.get.config = function (src) {
-        return rrdGraphString;
-    }
-    
-    RRDGraph.get.data = function (src) {
-        document.getElementById("startTimestamp").innerHTML = Math.round((new Date()).getTime());
-        return {"{rrd1}":[
-            //{t:Math.round((new Date()).getTime()),v:0}
-        ]};
-    };
-    
-//    var now = new Date().getTime();
-//    
-//    $(".rrdgraph").attr("data-src",
-//        "resourceId=test&amp;" + 
-//        "report=daily&amp;" + 
-//        "start=" + (now - 60000) + "&amp;" + 
-//        "end=" + now + ""
-//    );
-    
-    var graphs = RRDGraph.init('.rrdgraph');
-    var nrtGraph = graphs[0];
-    nrtGraph.config.options.start = -6000;
-    
-    window.nrtGraph = nrtGraph;
-    
+    refreshTimerJob.setup(jobPuplishingInterval);
 });
 </script>
 
@@ -176,15 +126,17 @@ $(function() {
         
         <div id="main"></div>
         
-        <div class="rrdgraph" data-src="resourceId=test&amp;report=daily&amp;start=1340398800000&amp;end=1340399400000"></div>
+        <div class="rrdgraph" data-src="realtime=1"></div>
             
-	<div>Refresh Interval (in ms)<input name="refreshInterval"></input></div>
-	<div>Graph Duration (in seconds)<input name="durationInterval"></input></div>
+	<div>Refresh Interval (in ms)<input id="jobPuplishingInterval" name="jobPuplishingInterval"></input></div>
+	<div>Graph Duration (in seconds)<input id="durationInterval" name="durationInterval"></input></div>
 	
         <div id="errorDiv"></div>
-	<div id="valuesDebug">0</div>
-	<div id="valuesDebugMessage">No Message jet</div>
-	<div id="rrdGraphString"></div>
-        <div id="rrdGraphStringRaw"><pre>${rrdGraphString}</pre></div>
-        <div id="startTimestamp"></div>
+        
+	<div id="debug_rrd_string"><pre>${rrdGraphString}</pre></div>
+	<div id="debug_value_count">0</div>
+        
+        <div id="debug_message_count">0</div>
+	<div id="debug_messages">No Message jet</div>
+        
 </body>

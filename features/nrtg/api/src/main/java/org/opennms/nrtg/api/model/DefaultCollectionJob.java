@@ -51,7 +51,7 @@ public class DefaultCollectionJob implements CollectionJob {
     private int m_nodeId;
     private String m_protocolConfiguration;
 
-	private HashMap<Set<String>, Set<String>> m_metricSets = new HashMap<Set<String>, Set<String>>();
+    private HashMap<Set<String>, Set<String>> m_metricSets = new HashMap<Set<String>, Set<String>>();
     private HashMap<String, String> m_allMetrics = new HashMap<String, String>();
     private HashMap<String, Object> m_parameters = null;
     private Date m_creationTimestamp = new Date();

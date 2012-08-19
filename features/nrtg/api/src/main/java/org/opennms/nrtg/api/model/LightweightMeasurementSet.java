@@ -129,8 +129,8 @@ public class LightweightMeasurementSet implements MeasurementSet {
     		buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
     		buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
     		buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
-    		buf.append("'timestamp'").append(":").append(m.getTimestamp().getTime()).append(",");
-    		buf.append("'value'").append(":'").append(m.getValue()).append("'");
+    		buf.append("'timeStamp'").append(":").append(m.getTimestamp().getTime()).append(",");
+    		buf.append("'value'").append(":").append(m.getValue());
     		buf.append("}");
     	}
     	

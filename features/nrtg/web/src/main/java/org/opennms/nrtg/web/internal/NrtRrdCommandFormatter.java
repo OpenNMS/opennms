@@ -5,7 +5,11 @@
 package org.opennms.nrtg.web.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.opennms.netmgt.model.PrefabGraph;
 
 /**
@@ -22,22 +26,37 @@ public class NrtRrdCommandFormatter {
         add("GPRINT");
     }};
     
-    private final String rrdGraphString;
+    private String rrdGraphString;
+    
+    private String rrdMetricsMapping;
     
     public NrtRrdCommandFormatter(final PrefabGraph prefabGraph) {
-        String rrdGraphString = prefabGraph.getCommand();
+        this.generateGraphString(prefabGraph);
+        this.generateMetricsMapping(prefabGraph);
+    }
+    
+    private void generateGraphString(final PrefabGraph prefabGraph) {
+        String s = prefabGraph.getCommand();
      
-        rrdGraphString = rrdGraphString.replace("\n", " ");
+//        s = s.replace("\n", "\\\\\\\\n");
         
-        rrdGraphString = "--rigid " + rrdGraphString;
-        rrdGraphString = "--height=400 " + rrdGraphString;
-        rrdGraphString = "--width=900 " + rrdGraphString;
-        rrdGraphString = "--vertical-label=\"Current Connections\" " + rrdGraphString;
-        rrdGraphString = "--watermark=\"NRTG Alpha 1.0\" " + rrdGraphString;
+//        s = "--rigid " + s;
+        if (!s.contains("--height")) {
+            s = "--height=400 " + s;
+        }
+        if(!s.contains("--width")) {
+            s = "--width=900 " + s;
+        }
+        if(!s.contains("--slope-mode")) {
+            s = "--slope-mode " + s;
+        }
+        if(!s.contains("--watermark")) {
+            s = "--watermark=\"NRTG Alpha 1.0\" " + s;
+        }
 
         // Escaping colons in rrd-strings rrd in javascript in java...
-        rrdGraphString = rrdGraphString.replace("\\:", "\\\\\\\\:");
-        rrdGraphString = rrdGraphString.replace("\\n", "");
+        s = s.replace("\\:", "\\\\\\\\:");
+        s = s.replace("\\n", "\\\\\\\\n");
 
         // Braking before commands
 //        for (final String keyword : RRD_KEYWORDS) {
@@ -45,13 +64,48 @@ public class NrtRrdCommandFormatter {
 //        }
 
         // Escaping quotes in javascript in java
-        rrdGraphString = rrdGraphString.replace("\"", "\\\\\"");
+        s = s.replace("\"", "\\\\\"");
 
-        this.rrdGraphString = rrdGraphString;
+        this.rrdGraphString = s;
+    }
+    
+    private void generateMetricsMapping(final PrefabGraph prefabGraph) {
+        final StringBuilder s = new StringBuilder();
+        
+        final String command = prefabGraph.getCommand();
+        
+        final Pattern pattern = Pattern.compile("DEF:.*?=(\\{.*?\\}):(.*?):");
+        final Matcher matcher = pattern.matcher(command);
+
+        final Map<String, String> rrdFileMapping = new HashMap<String, String>();
+        while (matcher.find()) {
+            rrdFileMapping.put(matcher.group(2), matcher.group(1));
+        }
+        
+        final String[] metrics = prefabGraph.getMetricIds();
+        final String[] columns = prefabGraph.getColumns();
+        assert metrics.length == columns.length;
+        
+        for (int i = 0; i < metrics.length; i++) {
+            if (i != 0) {
+                s.append(", \n");
+            }
+            
+            final String metric = metrics[i];
+            final String column = columns[i];
+            
+            s.append(String.format("'%s': '%s:%s'", metric, rrdFileMapping.get(column), column));
+                        
+        }
+        
+        this.rrdMetricsMapping = s.toString();
     }
 
     public String getRrdGraphString() {
         return this.rrdGraphString;
     }
-    
+
+    public String getRrdMetricsMapping() {
+        return rrdMetricsMapping;
+    }
 }

@@ -113,6 +113,7 @@ public class NrtController {
 
         Set<String> resultDestinations = new HashSet<String>();
         resultDestinations.add(nrtCollectionTaskId);
+        //resultDestinations.add("NrtPersistMe");
 
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
@@ -132,8 +133,10 @@ public class NrtController {
         modelAndView.addObject("graphDescription", prefabGraph.getDescription());
         
         NrtRrdCommandFormatter rrdFormatter = new NrtRrdCommandFormatter(prefabGraph);
+        modelAndView.addObject("rrdGraphString", rrdFormatter.getRrdGraphString());
+        modelAndView.addObject("metricsMapping", rrdFormatter.getRrdMetricsMapping());
         
-        modelAndView.addObject("rrdGraphString", rrdFormatter.getRrdGraphString()); // prefabGraph.getCommand().replaceAll("\"", "\\\\\\\\\""));
+        
         return modelAndView;
     }
 
