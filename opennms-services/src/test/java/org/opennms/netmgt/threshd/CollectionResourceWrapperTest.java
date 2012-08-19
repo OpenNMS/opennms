@@ -112,7 +112,27 @@ public class CollectionResourceWrapperTest {
         EasyMock.verify(agent);
     }
     
-     @Test
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadConstructorCall() throws Throwable {
+        try {
+            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null);
+        } catch (Throwable e) {
+            //e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadderConstructorCall() throws Throwable {
+        try {
+            new CollectionResourceWrapper(null, -1, null, null, null, null, null);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test
     public void testGetCounterValue() throws Exception {
         // Create Resource
         CollectionAgent agent = createCollectionAgent();
