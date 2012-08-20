@@ -26,4 +26,8 @@ public enum D3Events {
 		public void call(T t, int index);
 	}
 	
+	public interface XMLHandler<T>{
+	    public void call(T t);
+	}
+	
 }

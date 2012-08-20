@@ -100,21 +100,21 @@ public class NsclientDetectorTest implements InitializingBean {
         m_detector.setRetries(3);
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_detector.setCommand("CLIENTVERSION");
         m_detector.init();
         Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testBadCommand() throws Exception{
         m_detector.setCommand("UNKNOWN");
         m_detector.init();
         Assert.assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testNoCommand() throws Exception{
         m_detector.init(); // Assumes CLIENTVERSION
         Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));

@@ -36,6 +36,7 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
@@ -61,23 +62,21 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
-	/*
+	/**
      * Holds thresholds configuration for a node/interface/service
      */
-    CollectorThresholdingSet m_thresholdingSet;
+    final CollectorThresholdingSet m_thresholdingSet;
     
-    /*
+    /**
      * Holds required attribute from CollectionResource to evaluate thresholds.
      */
-    Map<String, CollectionAttribute> m_attributesMap;
+    final Map<String, CollectionAttribute> m_attributesMap = new HashMap<String, CollectionAttribute>();
 
 	private Date m_collectionTimestamp;
     
-    /*
-     * Is static because successful creation depends on thresholding-enabled parameter.
-     */
     /**
-     * <p>create</p>
+     * Static method create must be used to create new ThresholdingVisitor instance.
+     * Is static because successful creation depends on thresholding-enabled parameter.
      *
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
@@ -103,9 +102,6 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return new ThresholdingVisitor(thresholdingSet);
     }
 
-    /*
-     * Static method create must be used to create's new ThresholdingVisitor instance
-     */
     /**
      * <p>Constructor for ThresholdingVisitor.</p>
      *
@@ -113,17 +109,15 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      */
     protected ThresholdingVisitor(CollectorThresholdingSet thresholdingSet) {
         m_thresholdingSet = thresholdingSet;
+        m_collectionTimestamp = new Date();
     }
     
     public boolean hasThresholds() {
         return m_thresholdingSet.hasThresholds();
     }
     
-    /*
-     * Get a list of thresholds groups (for junit only at this time)
-     */
     /**
-     * <p>getThresholdGroups</p>
+     * Get a list of thresholds groups (for junit only at this time)
      *
      * @return a {@link java.util.List} object.
      */
@@ -135,11 +129,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 	public void visitCollectionSet(CollectionSet set) {
     	m_collectionTimestamp = set.getCollectionTimestamp();
 	}
-    /*
-     * Force reload thresholds configuration, and merge threshold states
-     */
     /**
-     * <p>reload</p>
+     * Force reload thresholds configuration, and merge threshold states
      */
     public void reload() {
         m_thresholdingSet.reinitialize();
@@ -153,22 +144,20 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return m_thresholdingSet.isNodeInOutage();
     }
 
-    /*
-     *  Initialize required attributes map (m_attributesMap)
+    /**
+     *  Clear required attributes map
      */
-    /** {@inheritDoc} */
     @Override
     public void visitResource(CollectionResource resource) {
-        m_attributesMap = new HashMap<String, CollectionAttribute>();
-    }        
+        m_attributesMap.clear();
+    }
 
-    /*
+    /**
      * Add/Update required attributes for thresholds on m_attributeMap.
-     * This is used because CollectionResource does not have direct reference to their attributes
-     * (The way to get attribute is against AttributeGroup object contained on CollectioResource
+     * This is used because {@link CollectionResource} does not have direct reference to their attributes.
+     * (The way to get attribute is against {@link AttributeGroup} object contained on {@link CollectionResource}
      * implementations).
      */
-    /** {@inheritDoc} */
     @Override    
     public void visitAttribute(CollectionAttribute attribute) {
         if (m_thresholdingSet.hasThresholds(attribute)) {

@@ -38,10 +38,10 @@ public class TcpDetectorHandler extends BaseDetectorHandler<LineOrientedRequest,
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        if(!getConversation().hasBanner() && getConversation().getRequest() != null) {
-            Object request = getConversation().getRequest();
+        Object request = getConversation().getRequest();
+        if(!getConversation().hasBanner() &&  request != null) {
             session.write(request);
-       }else if(!getConversation().hasBanner() && getConversation().getRequest() == null) {
+       }else if(!getConversation().hasBanner() && request == null) {
            LogUtils.infof(this, "TCP session was opened, no banner was expected, and there are no more pending requests. Setting service detection to true.");
            getFuture().setServiceDetected(true);
            session.close(true);

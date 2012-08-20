@@ -102,7 +102,7 @@ public class JDBCDetectorTest implements InitializingBean {
         
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorSuccess() throws UnknownHostException{
 		
 		m_detector.init();
@@ -110,7 +110,7 @@ public class JDBCDetectorTest implements InitializingBean {
 		assertTrue("Service wasn't detected", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
 	}
 	
-	@Test
+	@Test(timeout=90000)
     public void testDetectorFailWrongUser() throws UnknownHostException{
 	    m_detector.setUser("wrongUser");
         m_detector.init();
@@ -118,7 +118,7 @@ public class JDBCDetectorTest implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 	
-	@Test
+	@Test(timeout=90000)
     public void testDetectorFailWrongUrl() throws UnknownHostException{
         m_detector.setUrl("jdbc:postgres://bogus:5432/blank");
         m_detector.init();

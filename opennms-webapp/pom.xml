@@ -394,7 +394,7 @@
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>
-      <artifactId>urlrewrite</artifactId>
+      <artifactId>urlrewritefilter</artifactId>
     </dependency>
     <dependency>
       <groupId>poi</groupId>

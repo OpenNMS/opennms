@@ -11,6 +11,7 @@
   <name>OpenNMS OSGi Container</name>
   <properties>
     <karaf.version>2.2.7</karaf.version>
+    <felix.version>2.2.0</felix.version>
   </properties>
   <modules>
     <module>branding</module>
@@ -18,6 +19,7 @@
     <module>standalone</module>
     <module>karaf</module>
     <module>servlet</module>
+    <module>bridge</module>
   </modules>
 
   <repositories>

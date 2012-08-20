@@ -56,15 +56,15 @@ import org.opennms.netmgt.poller.LatencyCollectionResource;
  */
 public class CollectionResourceWrapper {
     
-    private int m_nodeId;
-    private String m_hostAddress;
-    private String m_serviceName;
+    private final int m_nodeId;
+    private final String m_hostAddress;
+    private final String m_serviceName;
     private String m_label;
     private String m_iflabel;
     private String m_ifindex;
-    private RrdRepository m_repository;
-    private CollectionResource m_resource;
-    private Map<String, CollectionAttribute> m_attributes;
+    private final RrdRepository m_repository;
+    private final CollectionResource m_resource;
+    private final Map<String, CollectionAttribute> m_attributes;
     
     /**
      * Keeps track of both the Double value, and when it was collected, for the static cache of attributes
@@ -74,25 +74,31 @@ public class CollectionResourceWrapper {
      * 
      * Just a holder class for two associated values; no need for the formality of accessors
      */
-    class CacheEntry {
-    	Date timestamp;
-    	Double value;
-    	public CacheEntry(Date timestamp, Double value) {
-    		this.timestamp = timestamp;
-    		this.value = value;
-    	}
+    static class CacheEntry {
+        final Date timestamp;
+        final Double value;
+        public CacheEntry(final Date timestamp, final Double value) {
+            if (timestamp == null) {
+                throw new IllegalArgumentException("Illegal null timestamp in cache value");
+            } else if (value == null) {
+                throw new IllegalArgumentException("Illegal null value in cache value");
+            }
+            this.timestamp = timestamp;
+            this.value = value;
+        }
     }
+
     /*
      * Holds last values for counter attributes (in order to calculate delta)
      */
-    static Map<String, CacheEntry> s_cache = new ConcurrentHashMap<String,CacheEntry>();
+    static final ConcurrentHashMap<String, CacheEntry> s_cache = new ConcurrentHashMap<String,CacheEntry>();
     
     /*
      * To avoid update static cache on every call of getAttributeValue.
      * In some cases, the same DS could be needed in many thresholds definitions for same resource.
      * See Bug 3193
      */
-    private Map<String, Double> m_localCache = new HashMap<String,Double>();
+    private final Map<String, Double> m_localCache = new HashMap<String,Double>();
     
     /*
      * Holds interface ifInfo data for interface resource only. This avoid multiple calls to database for same resource.
@@ -102,7 +108,7 @@ public class CollectionResourceWrapper {
     /*
 	 * Holds the timestamp of the collection being thresholded, for the calculation of counter rates
      */
-    private Date m_collectionTimestamp;
+    private final Date m_collectionTimestamp;
         
     /**
      * <p>Constructor for CollectionResourceWrapper.</p>
@@ -116,6 +122,10 @@ public class CollectionResourceWrapper {
      * @param attributes a {@link java.util.Map} object.
      */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
+        if (collectionTimestamp == null) {
+            throw new IllegalArgumentException(String.format("%s: Null collection timestamp when thresholding service %s on node %d (%s)", this.getClass().getSimpleName(), serviceName, nodeId, hostAddress));
+        }
+
         m_collectionTimestamp = collectionTimestamp;
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
@@ -312,34 +322,29 @@ public class CollectionResourceWrapper {
                 log().debug("getAttributeValue: id=" + id + ", value= " + current);
             }
             return current;
+        } else {
+            return getCounterValue(id, current);
         }
-        return getCounterValue(id, current);
     }
 
     /*
      * This will return the rate based on configured collection step
      */
     private Double getCounterValue(String id, Double current) {
+        synchronized (m_localCache) {
+
         if (m_localCache.containsKey(id) == false) {
-            CacheEntry last = s_cache.get(id);
+            // Atomically replace the CacheEntry with the new value
+            CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             if (log().isDebugEnabled()) {
                 log().debug("getCounterValue: id=" + id + ", last=" + 
                 		(last==null ? last : last.value +"@"+last.timestamp) + 
                 		", current=" + current);
             }
-            s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             if (last == null) {
-                m_localCache.put(id, Double.NaN);
                 log().info("getCounterValue: unknown last value, ignoring current");
+                m_localCache.put(id, Double.NaN);
             } else {                
-            	if ( m_collectionTimestamp == null ) {
-            		//If you get this, you need to ensure you passed a non-null timestamp to the constructor.  
-            		// This usually comes from the CollectionSet that is being visited.
-                    log().error("getCounterValue: Haven't got a collection timestamp while calculating a counter for key "+ id + " on " + m_resource
-                    		+".  This is a programmer error and should be reported");
-            		return null;
-            	} 
-            	
                 Double delta = current.doubleValue() - last.value.doubleValue();
                 // wrapped counter handling(negative delta), rrd style
                 if (delta < 0) {
@@ -359,21 +364,32 @@ public class CollectionResourceWrapper {
                     		", newdelta=" + newDelta);
                     delta = newDelta;
                 }
-                //Get the interval between when this current collection was taken, and the last time this
-                // value was collected (and had a counter rate calculated for it)
-                // FIXME If interval == 0 then, the returned value will be infinite.
-                //       This is the problem experienced by some customers.
-                //       This has been always related with SNMP Interface resources.
-                //       Here is a temporal workaround to avoid the threshold messages.
+                // Get the interval between when this current collection was taken, and the last time this
+                // value was collected (and had a counter rate calculated for it).
+                // If the interval is zero, than the current rate must returned as 0.0 since there can be 
+                // no delta across a time interval of zero.
                 long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
                 if (interval > 0) {
                     m_localCache.put(id, delta / interval);
                 } else {
-                    log().error("getCounterValue: invalid interval rate for " + id + ". The last valid value for the metric was " + last.value + " at " + last.timestamp + ". This value will be used instead.");
+                    log().warn("getCounterValue: invalid zero-length rate interval for " + id + ", returning rate of zero");
+                    m_localCache.put(id, 0.0);
+                    // Restore the original value inside the static cache
+                    s_cache.put(id, last);
                 }
             }
         }
-        return m_localCache.get(id);
+        Double value = m_localCache.get(id);
+        // This is just a sanity check, we should never have a value of null for the value at this point
+        if (value == null) {
+            log().error("getCounterValue: value was not calculated correctly for " + id + ", using NaN");
+            m_localCache.put(id, Double.NaN);
+            return Double.NaN;
+        } else {
+            return value;
+        }
+
+        }
     }
 
     /**

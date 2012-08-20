@@ -87,7 +87,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         m_server = null;
     }
      
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws Exception{
         m_server.onInit();
         m_server.startServer();
@@ -98,7 +98,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         assertTrue("Testing for NTP service, got false when true is supposed to be returned", m_detector.isServiceDetected(m_server.getInetAddress()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception{
         m_server.onInit();
         m_server.startServer();
@@ -109,7 +109,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailIncorrectIp() throws Exception{
         m_server.onInit();
         m_server.startServer();
