@@ -97,8 +97,10 @@ public class LinkdNms10205bTest extends LinkdNms10205bNetworkBuilder implements 
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-//        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-//        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
+
         MockLogAppender.setupLogging(p);
 
     }
