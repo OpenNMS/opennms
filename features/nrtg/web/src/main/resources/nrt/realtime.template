@@ -34,7 +34,7 @@ $(function() {
     };
 
     // Represents the frequency of data requests.
-    var jobPuplishingInterval = 500;
+    var jobPuplishingInterval = 250;
     
     // Create and initialize graph and real time wrapper
     var graphs = RRDGraph.init('.rrdgraph', rrdGraphString);
@@ -112,9 +112,6 @@ $(function() {
     
     // Start the AJAX job timer.
     refreshTimerJob.setup(jobPuplishingInterval);
-    var graphTitle = ${graphTitle};
-    var graphName = ${graphName};
-    var graphDescription = ${graphDescription};
 });
 </script>
 
@@ -122,12 +119,16 @@ $(function() {
        
 <body>        
     <div id="main"></div>
-    <div class="rrdgraph" data-src="realtime=1"></div>
+    <center>
+        <div class="rrdgraph" data-src="realtime=1"></div>
+    </center>
+<!--
     <div>Refresh Interval (in ms)<input id="jobPuplishingInterval" name="jobPuplishingInterval"></input></div>
     <div>Graph Duration (in seconds)<input id="durationInterval" name="durationInterval"></input></div>
     <div id="errorDiv"></div>
-    <div id="debug_rrd_string"><pre>${rrdGraphString}</pre></div>
+    <div id="debug_rrd_string"><pre>$ {rrdGraphString}</pre></div>
     <div id="debug_value_count">0</div>
     <div id="debug_message_count">0</div>
     <div id="debug_messages">No Message jet</div>  
+-->
 </body>
