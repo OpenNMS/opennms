@@ -14,32 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.felix.http.proxy;
+package org.opennms.container.web;
 
-import org.osgi.util.tracker.ServiceTracker;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.Filter;
 import org.osgi.framework.Constants;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletConfig;
+import org.osgi.framework.Filter;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 public final class DispatcherTracker
     extends ServiceTracker
 {
     final static String DEFAULT_FILTER = "(http.felix.dispatcher=*)";
 
-    private final ServletConfig config;
-    private HttpServlet dispatcher;
+    private final FilterConfig config;
+    private javax.servlet.Filter dispatcher;
 
-    public DispatcherTracker(BundleContext context, String filter, ServletConfig config)
-        throws Exception
-    {
-        super(context, createFilter(context, filter), null);
+    public DispatcherTracker(final BundleContext context, final String filter, final FilterConfig config) throws Exception {
+        super(context, createFilter(context, filter, config.getServletContext()), null);
         this.config = config;
     }
 
-    public HttpServlet getDispatcher()
+    public javax.servlet.Filter getDispatcher()
     {
         return this.dispatcher;
     }
@@ -48,8 +47,8 @@ public final class DispatcherTracker
     public Object addingService(ServiceReference ref)
     {
         Object service = super.addingService(ref);
-        if (service instanceof HttpServlet) {
-            setDispatcher((HttpServlet)service);
+        if (service instanceof javax.servlet.Filter) {
+            setDispatcher((javax.servlet.Filter)service);
         }
 
         return service;
@@ -58,7 +57,7 @@ public final class DispatcherTracker
     @Override
     public void removedService(ServiceReference ref, Object service)
     {
-        if (service instanceof HttpServlet) {
+        if (service instanceof javax.servlet.Filter) {
             setDispatcher(null);
         }
 
@@ -70,7 +69,7 @@ public final class DispatcherTracker
         this.config.getServletContext().log(message, cause);
     }
 
-    private void setDispatcher(HttpServlet dispatcher)
+    private void setDispatcher(javax.servlet.Filter dispatcher)
     {
         destroyDispatcher();
         this.dispatcher = dispatcher;
@@ -100,13 +99,12 @@ public final class DispatcherTracker
         }
     }
 
-    private static Filter createFilter(BundleContext context, String filter)
-        throws Exception
-    {
+    private static Filter createFilter(BundleContext context, String filter, ServletContext servletContext) throws Exception {
         StringBuffer str = new StringBuffer();
         str.append("(&(").append(Constants.OBJECTCLASS).append("=");
-        str.append(HttpServlet.class.getName()).append(")");
+        str.append(javax.servlet.Filter.class.getName()).append(")");
         str.append(filter != null ? filter : DEFAULT_FILTER).append(")");
-        return context.createFilter(str.toString());
+        final String filterText = str.toString();
+        return context.createFilter(filterText);
     }
 }

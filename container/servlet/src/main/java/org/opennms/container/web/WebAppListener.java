@@ -54,7 +54,7 @@ public class WebAppListener implements ServletContextListener {
             }
             */
 
-            System.err.println("contextInitialized");
+            m_servletContext.log("contextInitialized");
 
             // log4j class instances will leak into the OSGi classloader so we
             // need to tell log4j to ignore the thread context loader and to use
@@ -66,7 +66,7 @@ public class WebAppListener implements ServletContextListener {
             System.setProperty("log4j.ignoreTCL", "true");
 
             final String root = karafRoot.getAbsolutePath();
-            System.err.println("Root: " + root);
+            m_servletContext.log("Root: " + root);
             System.setProperty("karaf.home", root);
             System.setProperty("karaf.base", root);
             System.setProperty("karaf.data", root + "/data");
@@ -99,7 +99,7 @@ public class WebAppListener implements ServletContextListener {
             m_bridge.stop(m_framework);
             // TODO unregister services form both registries with the osgi container stops
             
-            System.err.println("contextDestroyed");
+            m_servletContext.log("contextDestroyed");
             if (main != null) {
                 main.destroy();
             }
