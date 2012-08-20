@@ -34,11 +34,14 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -48,6 +51,12 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 public abstract class LinkdNetworkBuilder {
 
+    @Autowired
+    SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
+    NodeDao m_nodeDao;
+    
     NetworkBuilder m_networkBuilder;
 
 
@@ -146,23 +155,42 @@ public abstract class LinkdNetworkBuilder {
     }
     
     void printLink(DataLinkInterface datalinkinterface) {
-        System.out.println("----------------checkLink------------------");
+        System.out.println("----------------Link------------------");
+        Integer nodeid = datalinkinterface.getNode().getId();
         System.out.println("linkid: " + datalinkinterface.getId());
-        System.out.println("nodeid: " + datalinkinterface.getNode().getId());
-        System.out.println("ifindex: " + datalinkinterface.getIfIndex());
-        System.out.println("nodeparent: " + datalinkinterface.getNodeParentId());
-        System.out.println("parentifindex: " + datalinkinterface.getParentIfIndex());        
+        System.out.println("nodeid: " + nodeid);
+        System.out.println("nodelabel: " + m_nodeDao.get(nodeid).getLabel());       
+        Integer ifIndex = datalinkinterface.getIfIndex();
+        System.out.println("ifindex: " + ifIndex);
+        System.out.println("ifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,ifIndex).getIfName());
+        Integer nodeparent = datalinkinterface.getNodeParentId();
+        System.out.println("nodeparent: " + nodeparent);
+        System.out.println("parentnodelabel: " + m_nodeDao.get(nodeparent).getLabel());
+        Integer parentifindex = datalinkinterface.getParentIfIndex();
+        System.out.println("parentifindex: " + parentifindex);        
+        System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
+        System.out.println("--------------------------------------");
+        System.out.println("");
+
     }
     
     void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
         printLink(datalinkinterface);
-        System.out.println("nodelabel: " + node.getLabel());
-        System.out.println("parentnodelabel: " + nodeparent.getLabel());
-
+        printNode(node);
+        printNode(nodeparent);
         assertEquals(node.getId(),datalinkinterface.getNode().getId());
         assertEquals(ifindex,datalinkinterface.getIfIndex().intValue());
         assertEquals(nodeparent.getId(), datalinkinterface.getNodeParentId());
         assertEquals(parentifindex,datalinkinterface.getParentIfIndex().intValue());
+    }
+
+    private void printNode(OnmsNode node) {
+        System.out.println("----------------Node------------------");
+        System.out.println("nodeid: " + node.getId());
+        System.out.println("nodelabel: " + node.getLabel());
+        System.out.println("--------------------------------------");
+        System.out.println("");
+        
     }
     
 }

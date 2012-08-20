@@ -95,8 +95,10 @@ public class LinkdNms10205bLldpTest extends LinkdNms10205bNetworkBuilder impleme
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-//        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-//        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
+        
         MockLogAppender.setupLogging(p);
 
     }
@@ -247,7 +249,7 @@ it has a link to Mysore that does not support LLDP
             break;
             default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             break;                
-        }
+            }
         }
     }
 }
