@@ -102,6 +102,10 @@ public class MibTreePanel extends Panel {
     public MibTreePanel(final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
 
+        // Make sure MIB directories exist
+        MIBS_COMPILED_DIR.mkdirs();
+        MIBS_PENDING_DIR.mkdirs();
+
         // Parser Configuration
 
         this.mibParser = mibParser;
@@ -150,6 +154,7 @@ public class MibTreePanel extends Panel {
         }
         for (File folder : folders) {
             String[] files = folder.list();
+            if (files == null) continue;
             for (String file : files) {
                 addTreeItem(file, folder.getName());
             }
