@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
         <!-- NRT JavaScript stuff -->        
@@ -8,7 +9,7 @@
         
         <script tyep="text/javascript" src="/opennms/js/d3.v2.js"></script>
         <script type="text/javascript" src="/opennms/js/rrdgraph.js"></script>
-        
+
 <style type="text/css">
 
 html, body, div {
@@ -111,32 +112,22 @@ $(function() {
     
     // Start the AJAX job timer.
     refreshTimerJob.setup(jobPuplishingInterval);
+    var graphTitle = ${graphTitle};
+    var graphName = ${graphName};
+    var graphDescription = ${graphDescription};
 });
 </script>
 
 </head>
        
-<body>
-	<h1>NRT Graph</h1>
-        <h2>Just a RocketJump</h2>
-	
-        <h2>${graphTitle}</h2>
-        <h2>${graphName}</h2>
-        <p>${graphDescription}</p>
-        
-        <div id="main"></div>
-        
-        <div class="rrdgraph" data-src="realtime=1"></div>
-            
-	<div>Refresh Interval (in ms)<input id="jobPuplishingInterval" name="jobPuplishingInterval"></input></div>
-	<div>Graph Duration (in seconds)<input id="durationInterval" name="durationInterval"></input></div>
-	
-        <div id="errorDiv"></div>
-        
-	<div id="debug_rrd_string"><pre>${rrdGraphString}</pre></div>
-	<div id="debug_value_count">0</div>
-        
-        <div id="debug_message_count">0</div>
-	<div id="debug_messages">No Message jet</div>
-        
+<body>        
+    <div id="main"></div>
+    <div class="rrdgraph" data-src="realtime=1"></div>
+    <div>Refresh Interval (in ms)<input id="jobPuplishingInterval" name="jobPuplishingInterval"></input></div>
+    <div>Graph Duration (in seconds)<input id="durationInterval" name="durationInterval"></input></div>
+    <div id="errorDiv"></div>
+    <div id="debug_rrd_string"><pre>${rrdGraphString}</pre></div>
+    <div id="debug_value_count">0</div>
+    <div id="debug_message_count">0</div>
+    <div id="debug_messages">No Message jet</div>  
 </body>

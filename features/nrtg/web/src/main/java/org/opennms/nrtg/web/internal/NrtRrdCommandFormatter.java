@@ -14,7 +14,7 @@ import org.opennms.netmgt.model.PrefabGraph;
 
 /**
  *
- * @author tak
+ * @author Markus@OpenNMS.org
  */
 public class NrtRrdCommandFormatter {
     
@@ -37,16 +37,11 @@ public class NrtRrdCommandFormatter {
     
     private void generateGraphString(final PrefabGraph prefabGraph) {
         String s = prefabGraph.getCommand();
-     
-//        s = s.replace("\n", "\\\\\\\\n");
         
-//        s = "--rigid " + s;
-        if (!s.contains("--height")) {
-            s = "--height=400 " + s;
-        }
-        if(!s.contains("--width")) {
-            s = "--width=900 " + s;
-        }
+        //Overwrite height and width by cinematic ration 1x2.40
+        s = "--height=400 " + s;
+        s = "--width=960 " + s;
+
         if(!s.contains("--slope-mode")) {
             s = "--slope-mode " + s;
         }
@@ -57,11 +52,6 @@ public class NrtRrdCommandFormatter {
         // Escaping colons in rrd-strings rrd in javascript in java...
         s = s.replace("\\:", "\\\\\\\\:");
         s = s.replace("\\n", "\\\\\\\\n");
-
-        // Braking before commands
-//        for (final String keyword : RRD_KEYWORDS) {
-//            rrdGraphString = rrdGraphString.replace(" " + keyword, " \n" + keyword);
-//        }
 
         // Escaping quotes in javascript in java
         s = s.replace("\"", "\\\\\"");
