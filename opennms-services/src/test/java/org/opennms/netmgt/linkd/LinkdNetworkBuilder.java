@@ -41,7 +41,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -51,14 +50,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class LinkdNetworkBuilder {
 
-    @Autowired
-    SnmpInterfaceDao m_snmpInterfaceDao;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
-    @Autowired
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
     
     NetworkBuilder m_networkBuilder;
 
+    void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
 
     NetworkBuilder getNetworkBuilder() {
         if ( m_networkBuilder == null )
