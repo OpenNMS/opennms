@@ -788,7 +788,6 @@ var RRDGraph = window['RRDGraph'] = {};
       } else if (!a_is_number && !b_is_number) {
         if (a.length !== b.length) {
           throw 'DEFs have differing number of elements';
-          // TODO: this may not be an error, not sure yet
         }
 
         var result = [];
@@ -1392,7 +1391,7 @@ var RRDGraph = window['RRDGraph'] = {};
     'justify': 'start'
   };
 
-  Graph.prototype.createLegend = function () { // TODO: better alignment
+  Graph.prototype.createLegend = function () { // TODO: justify
     var y = this.canvas_padding.y + this.config.options.height + 
       this.config.options.font.axis.size + 5;
     var line_height = this.config.options.font.legend.size + 4;
@@ -1522,8 +1521,24 @@ var RRDGraph = window['RRDGraph'] = {};
   };
 
   Graph.prototype.update = function () {
+    var y_min = Math.floor(this.data.extremes.y.min);
+    var y_max = Math.floor(this.data.extremes.y.max);
+
+    var conf_y_max = this.config.options['upper-limit'];
+    var conf_y_min = this.config.options['lower-limit'];
+    var rigid = this.config.options['rigid'];
+    
+    if (!isNaN(conf_y_max) && (y_max < conf_y_max || rigid)) {
+      y_max = conf_y_max;
+    }
+    if (!isNaN(conf_y_min) && (y_min > conf_y_min || rigid)) {
+      y_min = conf_y_min;
+    }
+
+
     this.scales.y.
-      domain([Math.floor(this.data.extremes.y.min), Math.ceil(this.data.extremes.y.max)]);
+      domain([y_min, y_max]);
+
     this.scales.x.
         domain([this.data.extremes.x.min, this.data.extremes.x.max]);
 
