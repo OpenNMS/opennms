@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -83,7 +84,9 @@ public class LinkdNms17216CdpTest extends LinkdNms17216NetworkBuilder implements
     @Autowired
     private NodeDao m_nodeDao;
     
-    
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
         
@@ -98,8 +101,11 @@ public class LinkdNms17216CdpTest extends LinkdNms17216NetworkBuilder implements
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
         p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
         p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
 
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
     }
 
     @After
