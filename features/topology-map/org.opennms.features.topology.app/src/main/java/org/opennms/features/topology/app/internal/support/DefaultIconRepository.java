@@ -2,6 +2,8 @@ package org.opennms.features.topology.app.internal.support;
 
 import java.util.Map;
 
+import org.opennms.features.topology.api.IconRepository;
+
 public class DefaultIconRepository implements IconRepository {
 
     private Map<String, String> m_iconMap;

@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.api;
 
 public interface IconRepository {
 

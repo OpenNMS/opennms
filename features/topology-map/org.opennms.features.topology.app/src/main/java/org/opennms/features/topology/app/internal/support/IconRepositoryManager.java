@@ -3,6 +3,8 @@ package org.opennms.features.topology.app.internal.support;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.topology.api.IconRepository;
+
 public class IconRepositoryManager {
     
     private List<IconRepository> m_iconRepos = new ArrayList<IconRepository>();
