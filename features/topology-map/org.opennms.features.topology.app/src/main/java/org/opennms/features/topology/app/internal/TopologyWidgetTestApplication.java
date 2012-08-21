@@ -16,13 +16,13 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -51,7 +51,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 	@Override
 	public void init() {
-
+	    setTheme("topo_default");
+	    
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 
@@ -91,7 +92,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
 		semanticZoomLabel.setPropertyDataSource(zoomLevel);
 
-		Button zoomInBtn = new Button("Zoom In");
+		NativeButton zoomInBtn = new NativeButton("Zoom In");
 		zoomInBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
@@ -102,7 +103,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			}
 		});
 
-		Button zoomOutBtn = new Button("Zoom Out");
+		NativeButton zoomOutBtn = new NativeButton("Zoom Out");
 		zoomOutBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {

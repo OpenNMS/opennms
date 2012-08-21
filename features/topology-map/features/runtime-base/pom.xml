@@ -36,6 +36,7 @@
                 <contents>
                     servletAlias=/topology
                     widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
+		    theme=topo_default
                 </contents>
             </config>
             <config>
@@ -114,6 +115,11 @@
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>ssh</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.themes</groupId>
+      <artifactId>default-theme</artifactId>
       <version>${project.version}</version>
     </dependency>
 

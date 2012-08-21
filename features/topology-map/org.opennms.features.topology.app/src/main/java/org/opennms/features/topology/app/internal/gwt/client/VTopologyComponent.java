@@ -743,7 +743,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				}
 
 				vertex.setSelected(booleanAttribute);
-				vertex.setIcon(child.getStringAttribute("iconUrl"));
+				vertex.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
 
 				if (child.hasAttribute("label")) {
 					vertex.setLabel(child.getStringAttribute("label"));
