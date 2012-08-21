@@ -10,6 +10,7 @@ import java.util.Map;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.PaintException;
@@ -43,11 +44,17 @@ public class TopologyComponentTest {
         
         TestTopologyProvider topoProvider = new TestTopologyProvider();
         GraphContainer dataSource = new SimpleGraphContainer(topoProvider);
-        TopologyComponent topoComponent = new TopologyComponent(dataSource);
+        TopologyComponent topoComponent = getTopologyComponent(dataSource);
         
         topoComponent.paintContent(target);
         
         EasyMock.verify(target);
+    }
+
+    private TopologyComponent getTopologyComponent(GraphContainer dataSource) {
+        TopologyComponent topologyComponent = new TopologyComponent(dataSource);
+        topologyComponent.setIconRepoManager(new IconRepositoryManager());
+        return topologyComponent;
     }
     
     @Test
@@ -74,7 +81,7 @@ public class TopologyComponentTest {
         
         TestTopologyProvider topoProvider = new TestTopologyProvider();
         GraphContainer dataSource = new SimpleGraphContainer(topoProvider);
-        TopologyComponent topoComponent = new TopologyComponent(dataSource);
+        TopologyComponent topoComponent = getTopologyComponent(dataSource);
         
         topoProvider.addVertex();
         
@@ -108,7 +115,7 @@ public class TopologyComponentTest {
         
         TestTopologyProvider topoProvider = new TestTopologyProvider();
         GraphContainer dataSource = new SimpleGraphContainer(topoProvider);
-        TopologyComponent topoComponent = new TopologyComponent(dataSource);
+        TopologyComponent topoComponent = getTopologyComponent(dataSource);
         
         Collection<?> vertIds = topoProvider.getVertexIds();
         
@@ -134,6 +141,7 @@ public class TopologyComponentTest {
         TestTopologyProvider topoProvider = new TestTopologyProvider();
         GraphContainer dataSource = new SimpleGraphContainer(topoProvider);
         TestTopologyComponent topoComponent = new TestTopologyComponent(dataSource);
+        topoComponent.setIconRepoManager(new IconRepositoryManager());
         Graph graph = topoComponent.getGraph();
         
         List<Edge> edges = graph.getEdges();
