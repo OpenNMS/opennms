@@ -33,17 +33,17 @@
 
     <fileSets>
         <fileSet>
-            <directory>src/main/filtered-resources/etc</directory>
+            <directory>target/filtered-resources/etc</directory>
             <outputDirectory>etc</outputDirectory>
             <lineEnding>unix</lineEnding>
             <fileMode>0644</fileMode>
-            <filtered>true</filtered>
+            <filtered>false</filtered>
         </fileSet>
     </fileSets>
 
     <files>
         <file>
-            <source>src/main/filtered-resources/features/features.xml</source>
+            <source>target/filtered-resources/features/features.xml</source>
             <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.groupId}.${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
