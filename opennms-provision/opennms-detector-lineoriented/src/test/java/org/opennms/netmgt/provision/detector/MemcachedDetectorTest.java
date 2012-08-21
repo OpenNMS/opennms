@@ -90,7 +90,7 @@ public class MemcachedDetectorTest {
         Thread.sleep(100); // make sure the server is really started
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             future.awaitForUninterruptibly();
@@ -117,7 +117,7 @@ public class MemcachedDetectorTest {
         Thread.sleep(100); // make sure the server is really started
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             future.awaitForUninterruptibly();

@@ -89,7 +89,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             
             //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());

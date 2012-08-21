@@ -86,7 +86,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     @Test(timeout=90000)
     public void testMyDetector() throws Exception {
         m_detector.setPort(20000);
-        m_detector.setIdleTime(10);
+        m_detector.setIdleTime(10000);
         m_detector.init();
         
         //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
@@ -99,7 +99,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(20000);
-        m_detector.setIdleTime(10);
+        m_detector.setIdleTime(10000);
         m_detector.init();
         
         //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
@@ -112,7 +112,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     @Test(timeout=90000)
     public void testDetectorSuccess() throws Exception {
         m_detector.setPort(m_server.getLocalPort());
-        m_detector.setIdleTime(10);
+        m_detector.setIdleTime(10000);
         m_detector.init();
         
         //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
