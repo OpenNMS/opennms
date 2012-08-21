@@ -1132,7 +1132,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			throw new IllegalStateException(
 					"schedule: Cannot schedule a service whose scheduler is set to null");
 
-		m_scheduler.schedule(snmp_poll_interval + discovery_interval
+		m_scheduler.schedule(discovery_interval
 				+ initial_sleep_time, this);
 	}
 
