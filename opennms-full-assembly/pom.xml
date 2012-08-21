@@ -195,8 +195,8 @@
               <goal>add-features-to-repo</goal>
             </goals>
             <configuration>
+              <karafVersion>DONT_USE_STANDARD_FEATURES</karafVersion>
               <descriptors>
-                <descriptor>mvn:org.opennms.container/karaf/${project.version}/xml/features</descriptor>
                 <descriptor>mvn:org.opennms.osgi/all/${project.version}/xml/features</descriptor>
               </descriptors>
               <features>
