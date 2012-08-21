@@ -94,7 +94,7 @@ var RRDGraph = window['RRDGraph'] = {};
   var parse = function (config_string) {
     var result = {
       options: {
-        'start'             : +new Date() - 1200000,
+        'start'             : +new Date() - 120000,
         'end'               : +new Date(),
         'step'              : 1,
         'title'             : '',
