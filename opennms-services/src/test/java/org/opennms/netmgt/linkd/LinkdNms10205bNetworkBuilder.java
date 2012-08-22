@@ -1391,4 +1391,30 @@ SRX_100_IF_IFDESCR_MAP.put(8, "gre");
         e.printStackTrace();
     }
 }
+
+static InetAddress MUMBAI_OSPF_ID;
+static InetAddress DELHI_OSPF_ID;
+static InetAddress BANGALORE_OSPF_ID;
+static InetAddress MYSORE_OSPF_ID;
+static InetAddress BAGMANE_OSPF_ID;
+static InetAddress SPACE_EX_SW1_OSPF_ID;
+static InetAddress SPACE_EX_SW2_OSPF_ID;
+static InetAddress J6350_42_OSPF_ID;
+static InetAddress SRX_100_OSPF_ID;
+static {
+    try {
+        MUMBAI_OSPF_ID  = InetAddress.getByName("192.168.5.1");
+        DELHI_OSPF_ID  = InetAddress.getByName("192.168.7.1");
+        BANGALORE_OSPF_ID  = InetAddress.getByName("192.168.9.1");
+        MYSORE_OSPF_ID = InetAddress.getByName("192.168.22.1");
+        BAGMANE_OSPF_ID = InetAddress.getByName("192.168.20.1");
+        SPACE_EX_SW1_OSPF_ID = InetAddress.getByName("10.205.56.1");
+        SPACE_EX_SW2_OSPF_ID = InetAddress.getByName("10.205.56.2");
+        J6350_42_OSPF_ID = InetAddress.getByName("10.205.56.42");
+        SRX_100_OSPF_ID = InetAddress.getByName("0.0.0.0");
+    } catch (UnknownHostException e) {
+        e.printStackTrace();
+    }
+}
+
 }
