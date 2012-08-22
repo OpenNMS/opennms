@@ -284,15 +284,18 @@ Address          Interface              State     ID               Pri  Dead
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         assertEquals(12, links.size());
         
-        // Linkd is able to find partially the topology using the next hop router
+        // Linkd is able to find the topology using the next hop router
         // and lldp among the core nodes:
         // mumbai, delhi, mysore,bangalore and bagmane
         
+        // Also is able to find the topology among the core nodes and the peripherals:
+        // space_ex_sw1, space_ex_sw2, j6350_42
+
         // The bridge and RSTP topology information are
         // unusuful, the devices supporting RSTP
         // have themselves as designated bridge.
         
-        // The link between Mysore and SRX-100 is lost
+        // But The link between Mysore and SRX-100 is lost
         
         for (final DataLinkInterface datalinkinterface: links) {
             //printLink(datalinkinterface);
