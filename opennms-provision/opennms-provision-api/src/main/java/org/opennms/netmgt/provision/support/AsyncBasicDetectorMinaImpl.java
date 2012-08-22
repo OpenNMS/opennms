@@ -155,7 +155,8 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                     session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new SlightlyMoreVerboseLoggingFilter() );
                     session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
 
-                    int idleTimeInSeconds = Math.round(getIdleTime() / 1000.0f);
+                    // Make the minimum idle timeout 1 second
+                    int idleTimeInSeconds = Math.max(1, Math.round(getIdleTime() / 1000.0f));
                     // Set all of the idle time limits. Make sure to specify values in
                     // seconds!!!
                     session.getConfig().setReaderIdleTime(idleTimeInSeconds);
