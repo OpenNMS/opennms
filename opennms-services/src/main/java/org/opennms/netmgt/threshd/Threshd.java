@@ -40,17 +40,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.capsd.DbIfServiceEntry;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.utils.Querier;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**

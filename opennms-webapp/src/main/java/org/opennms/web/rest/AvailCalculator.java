@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.opennms.netmgt.config.TimeInterval;
-import org.opennms.netmgt.config.TimeIntervalSequence;
+import org.opennms.core.utils.TimeInterval;
+import org.opennms.core.utils.TimeIntervalSequence;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;

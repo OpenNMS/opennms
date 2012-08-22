@@ -8,59 +8,18 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
   <name>OpenNMS Configuration</name>
-  <packaging>bundle</packaging>
+  <!-- <packaging>bundle</packaging> -->
   <build>
     <plugins>
-      <!-- don't generate eventconf.xsd for now, we have some issues with validation...
       <plugin>
-        <groupId>com.sun.tools.jxc.maven2</groupId>
-        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-        <version>1.2</version>
+        <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <destdir>${project.build.directory}/xsds</destdir>
-          <srcdir>${basedir}/src/main/java</srcdir>
-          <verbose>false</verbose>
-          <includes>
-            <include>org/opennms/netmgt/xml/eventconf/*.java</include>
-          </includes>
-          <schemas>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/eventconf</namespace>
-              <file>eventconf.xsd</file>
-            </schema>
-          </schemas>
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+          </systemPropertyVariables>
         </configuration>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-      -->
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/xsds.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      <!--
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -70,89 +29,75 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.opennms.netmgt.config.ackd.*;version="${project.version}",
-              org.opennms.netmgt.config.actiond.*;version="${project.version}",
-              org.opennms.netmgt.config.ami.*;version="${project.version}",
-              org.opennms.netmgt.config.archiver.events.*;version="${project.version}",
-              org.opennms.netmgt.config.capsd.*;version="${project.version}",
-              org.opennms.netmgt.config.categories.*;version="${project.version}",
-              org.opennms.netmgt.config.charts.*;version="${project.version}",
-              org.opennms.netmgt.config.collectd.*;version="${project.version}",
-              org.opennms.netmgt.config.databaseReports.*;version="${project.version}",
-              org.opennms.netmgt.config.datacollection.*;version="${project.version}",
-              org.opennms.netmgt.config.destinationPaths.*;version="${project.version}",
-              org.opennms.netmgt.config.discovery.*;version="${project.version}",
-              org.opennms.netmgt.config.eventd.*;version="${project.version}",
-              org.opennms.netmgt.config.groups.*;version="${project.version}",
-              org.opennms.netmgt.config.httpdatacollection.*;version="${project.version}",
-              org.opennms.netmgt.config.javamail.*;version="${project.version}",
-              org.opennms.netmgt.config.kscReports.*;version="${project.version}",
-              org.opennms.netmgt.config.linkd.*;version="${project.version}",
-              org.opennms.netmgt.config.mailtransporttest.*;version="${project.version}",
-              org.opennms.netmgt.config.map.adapter.*;version="${project.version}",
-              org.opennms.netmgt.config.microblog.*;version="${project.version}",
-              org.opennms.netmgt.config.monitoringLocations.*;version="${project.version}",
-              org.opennms.netmgt.config.notifd.*;version="${project.version}",
-              org.opennms.netmgt.config.notificationCommands.*;version="${project.version}",
-              org.opennms.netmgt.config.notifications.*;version="${project.version}",
-              org.opennms.netmgt.config.opennmsDataSources.*;version="${project.version}",
-              org.opennms.netmgt.config.outage.*;version="${project.version}",
-              org.opennms.netmgt.config.pagesequence.*;version="${project.version}",
-              org.opennms.netmgt.config.poller.*;version="${project.version}",
-              org.opennms.netmgt.config.provisiond.*;version="${project.version}",
-              org.opennms.netmgt.config.rancid.adapter.*;version="${project.version}",
-              org.opennms.netmgt.config.reportd.*;version="${project.version}",
-              org.opennms.netmgt.config.reporting.*;version="${project.version}",
-              org.opennms.netmgt.config.rtc.*;version="${project.version}",
-              org.opennms.netmgt.config.rws.*;version="${project.version}",
-              org.opennms.netmgt.config.scriptd.*;version="${project.version}",
-              org.opennms.netmgt.config.server.*;version="${project.version}",
-              org.opennms.netmgt.config.service.*;version="${project.version}",
-              org.opennms.netmgt.config.siteStatusViews.*;version="${project.version}",
-              org.opennms.netmgt.config.snmp.*;version="${project.version}",
-              org.opennms.netmgt.config.snmpAsset.adapter.*;version="${project.version}",
-              org.opennms.netmgt.config.snmpinterfacepoller.*;version="${project.version}",
-              org.opennms.netmgt.config.statsd.*;version="${project.version}",
-              org.opennms.netmgt.config.surveillanceViews.*;version="${project.version}",
-              org.opennms.netmgt.config.syslogd.*;version="${project.version}",
-              org.opennms.netmgt.config.tags.*;version="${project.version}",
-              org.opennms.netmgt.config.threshd.*;version="${project.version}",
-              org.opennms.netmgt.config.tl1d.*;version="${project.version}",
-              org.opennms.netmgt.config.translator.*;version="${project.version}",
-              org.opennms.netmgt.config.trapd.*;version="${project.version}",
-              org.opennms.netmgt.config.users.*;version="${project.version}",
-              org.opennms.netmgt.config.vacuumd.*;version="${project.version}",
-              org.opennms.netmgt.config.views.*;version="${project.version}",
-              org.opennms.netmgt.config.viewsdisplay.*;version="${project.version}",
-              org.opennms.netmgt.config.vulnscand.*;version="${project.version}",
-              org.opennms.netmgt.config.webuiColors.*;version="${project.version}",
-              org.opennms.netmgt.config.wmi.*;version="${project.version}",
-              org.opennms.netmgt.config.xmlrpcd.*;version="${project.version}",
-              org.opennms.netmgt.xml.eventconf.*;version="${project.version}",
-              org.opennms.netmgt.xml.rtc.*;version="${project.version}"
+              org.opennms.netmgt.config.*;version="${project.version}"
             </Export-Package>
           </instructions>
         </configuration>
       </plugin>
+      -->
     </plugins>
   </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>castor-dependencies</artifactId>
+      <artifactId>dbpool-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jdbc-pool-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>hibernate-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jasypt-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.xml</artifactId>
+      <artifactId>org.opennms.core.db</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.xml</artifactId>
+      <artifactId>org.opennms.core.test-api.db</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta-regexp</groupId>
+      <artifactId>jakarta-regexp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

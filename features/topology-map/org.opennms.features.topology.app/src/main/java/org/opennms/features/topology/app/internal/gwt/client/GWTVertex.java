@@ -9,7 +9,12 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
 public class GWTVertex extends JavaScriptObject {
-
+    
+    /**
+     * CSS Class name for a vertex
+     */
+    public static final String VERTEX_CLASS_NAME = ".vertex";
+    
     protected GWTVertex() {};
     
     public final native String getId()/*-{
@@ -47,6 +52,14 @@ public class GWTVertex extends JavaScriptObject {
     public final native void getIpAddr() /*-{
         return this.ipAddr;
     }-*/;
+    
+    public final native void setNodeID(int nodeID) /*-{
+    	this.nodeID = nodeID;
+	}-*/;
+
+    public final native void getNodeID() /*-{
+    	return this.nodeID;
+	}-*/;
     
     public static native GWTVertex create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
@@ -140,8 +153,9 @@ public class GWTVertex extends JavaScriptObject {
 
             public String call(GWTVertex datum, int index) {
                 if(datum.getIconUrl().equals("")) {
-                    return GWT.getModuleBaseURL() + "topologywidget/images/server.png";
+                    return GWT.getModuleBaseURL() + "topologywidget/images/test.svg";
                 }else {
+                    
                     return datum.getIconUrl();
                 }
                 
@@ -175,7 +189,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                D3 vertex = selection.append("g").attr("class", "little");
+                D3 vertex = selection.append("g").attr("class", "vertex");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
                 
@@ -202,6 +216,10 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
+    public static final native void logDocument(Object doc)/*-{
+        $wnd.console.log(doc)
+    }-*/;
+    
 	public final native void setParent(GWTGroup group) /*-{
 		this.group = group;
 	}-*/;

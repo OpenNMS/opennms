@@ -8,30 +8,30 @@ package org.opennms.features.topology.netutils.internal;
  */
 public class Node {
     
-    private String name; //Name of the server or machine
-    private String ip; //IP Address of the server or machine
+    private String label; //Name of the server or machine
+    private String ipAddr; //IP Address of the server or machine
     private int nodeID; //Identification number
     
-    public Node(int nodeID, String ip, String name) {
+    public Node(int nodeID, String ip, String label) {
         this.nodeID = nodeID;
-        this.ip = ip;
-        this.name = name;
+        this.ipAddr = ip;
+        this.label = label;
     }
     
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
     
     public String getIPAddress() {
-        return ip;
+        return ipAddr;
     }
     
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
     
     public void setIPAddress(String ip) {
-        this.ip = ip;
+        this.ipAddr = ip;
     }
 
     public void setNodeID(int nodeID) {

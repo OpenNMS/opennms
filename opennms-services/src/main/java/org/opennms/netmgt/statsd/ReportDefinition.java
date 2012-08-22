@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.statsd;
 
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -246,11 +247,11 @@ public class ReportDefinition implements InitializingBean {
      *
      * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
      * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      * @return a {@link org.opennms.netmgt.statsd.ReportInstance} object.
      * @throws java.lang.Exception if any.
      */
-    public ReportInstance createReport(ResourceDao resourceDao, RrdDao rrdDao, FilterDao filterDao) throws Exception {
+    public ReportInstance createReport(NodeDao nodeDao, ResourceDao resourceDao, RrdDao rrdDao, FilterDao filterDao) throws Exception {
         Assert.notNull(resourceDao, "resourceDao argument must not be null");
         Assert.notNull(rrdDao, "rrdDao argument must not be null");
         Assert.notNull(filterDao, "filterDao argument must not be null");
@@ -265,6 +266,7 @@ public class ReportDefinition implements InitializingBean {
         ReportInstance report;
         if (getReport().getPackage().getFilter() != null) {
             FilteredReportInstance thisReport = new FilteredReportInstance(visitor);
+            thisReport.setNodeDao(nodeDao);
             thisReport.setResourceDao(resourceDao);
             thisReport.setRrdDao(rrdDao);
             thisReport.setFilterDao(filterDao);

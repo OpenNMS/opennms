@@ -38,9 +38,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -79,6 +81,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Transactional
 public class OnmsMonitoredServiceResource extends OnmsRestService {
     
+    @Context 
+    UriInfo m_uriInfo;
+
     @Autowired
     private NodeDao m_nodeDao;
     
@@ -173,7 +178,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.ok().build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getService").build(nodeCriteria, ipAddress, service.getServiceName())).build();
         } finally {
             writeUnlock();
         }
@@ -212,7 +217,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             }
             log().debug("updateSservice: service " + service + " updated");
             m_serviceDao.saveOrUpdate(service);
-            return Response.ok().build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getService").build(nodeCriteria, ipAddress, serviceName)).build();
         } finally {
             writeUnlock();
         }

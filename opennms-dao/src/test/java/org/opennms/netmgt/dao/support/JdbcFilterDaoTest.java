@@ -43,24 +43,25 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,7 +145,6 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_database);
-        dao.setNodeDao(m_nodeDao);
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
@@ -295,15 +295,18 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     @Test
     @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
     public void testWalkNodes() throws Exception {
-        m_dao.setNodeDao(m_nodeDao);
-
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         EntityVisitor visitor = new AbstractEntityVisitor() {
             public void visitNode(OnmsNode node) {
                 nodes.add(node);
             }
         };
-        m_dao.walkMatchingNodes("ipaddr == '10.1.1.1'", visitor);
+        FilterWalker walker = new FilterWalker();
+        walker.setFilterDao(m_dao);
+        walker.setNodeDao(m_nodeDao);
+        walker.setFilter("ipaddr == '10.1.1.1'");
+        walker.setVisitor(visitor);
+        walker.walk();
 
         assertEquals("node list size", 1, nodes.size());
     }

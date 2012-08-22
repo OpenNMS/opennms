@@ -1,15 +1,18 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
@@ -57,16 +60,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	private KeyMapper m_actionMapper;
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
-
-    @Override
-    public void attach() {
-        super.attach();
-        setDescription("This is a description");
-    }
-
     private Graph m_graph;
-	private List<Action.Handler> m_actionHandlers = new CopyOnWriteArrayList<Action.Handler>();
+	private List<Action.Handler> m_actionHandlers = new ArrayList<Action.Handler>();
 	private MapManager m_mapManager = new MapManager();
+    private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
+    private ContextMenuHandler m_contextMenuHandler;
+    private IconRepositoryManager m_iconRepoManager;
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -113,14 +112,16 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_actionMapper = new KeyMapper();
 
 		List<String> bgActionList = new ArrayList<String>();
-		for(Action.Handler handler : m_actionHandlers) {
-			Action[] bgActions = handler.getActions(null, null);
-			for(Action action : bgActions) {
-				bgActionList.add(m_actionMapper.key(action));
-				actions.add(action);
-			}
+		Object t = null;
+		Object s = null;
+		List<Handler> actionHandlers = m_actionHandlers;
+		List<Action> bgSortingList = sortActionHandlers(m_actionHandlers, t, s);
+		for(Action action : bgSortingList) {
+		    bgActionList.add(m_actionMapper.key(action));
+		    actions.add(action);
 		}
-
+		
+		
 		target.addAttribute("backgroundActions", bgActionList.toArray());
 		
 		
@@ -137,14 +138,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("label", group.getLabel());
 
         		List<String> groupActionList = new ArrayList<String>();
-        		for(Action.Handler handler : m_actionHandlers) {
-        			Action[] groupActions = handler.getActions(group.getItemId(), null);
-        			for(Action action : groupActions) {
-        				groupActionList.add(m_actionMapper.key(action));
-        				actions.add(action);
-        			}
+        		List<Action> groupSortedList = sortActionHandlers(m_actionHandlers, group.getGroupId(), null); 
+        		for(Action action : groupSortedList) {
+        		    groupActionList.add(m_actionMapper.key(action));
+        		    actions.add(action);
         		}
-
+        		
+    		    
         		target.addAttribute("actionKeys", groupActionList.toArray());
         		target.endTag("group");
 
@@ -159,7 +159,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", vert.getX());
         		target.addAttribute("y", vert.getY());
         		target.addAttribute("selected", vert.isSelected());
-        		target.addAttribute("iconUrl", vert.getIconUrl());
+        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(vert.getIconKey()));
         		target.addAttribute("semanticZoomLevel", vert.getSemanticZoomLevel());
         		if (vert.getGroupId() != null) {
         			target.addAttribute("groupKey", vert.getGroupKey());
@@ -167,14 +167,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("label", vert.getLabel());
 
         		List<String> vertActionList = new ArrayList<String>();
-        		for(Action.Handler handler : m_actionHandlers) {
-        			Action[] vertActions = handler.getActions(vert.getItemId(), null);
-        			for(Action action : vertActions) {
-        				vertActionList.add(m_actionMapper.key(action));
-        				actions.add(action);
-        			}
+        		List<Action> vertActionSortedList = sortActionHandlers(m_actionHandlers, vert.getItemId(), null);
+        		
+        		for(Action action : vertActionSortedList) {
+        		    vertActionList.add(m_actionMapper.key(action));
+        		    actions.add(action);
         		}
-
+        		
         		target.addAttribute("actionKeys", vertActionList.toArray());
         		target.endTag("vertex");
         	}
@@ -187,15 +186,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("target", edge.getTarget().getKey());
 
     		List<String> edgeActionList = new ArrayList<String>();
-    		for(Action.Handler handler : m_actionHandlers) {
-    			Action[] vertActions = handler.getActions(edge.getItemId(), null);
-    			for(Action action : vertActions) {
-    				edgeActionList.add(m_actionMapper.key(action));
-    				actions.add(action);
-    			}
+    		List<Action> edgeSortedActionList = sortActionHandlers(m_actionHandlers, edge.getItemId(), null);
+    		for(Action action : edgeSortedActionList) {
+    		    edgeActionList.add(m_actionMapper.key(action));
+    		    actions.add(action);
     		}
-
-
+    		
         	target.addAttribute("actionKeys", edgeActionList.toArray());
         	target.endTag("edge");
         }
@@ -238,7 +234,30 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
         
     }
+
+    private List<Action> sortActionHandlers(List<Handler> actionHandlers, Object target, Object sender) {
+        List<Action> sortingList = new ArrayList<Action>();
+        for(Action.Handler handler : actionHandlers) {
+			Action[] bgActions = handler.getActions(target, sender);
+			for(Action action : bgActions) {
+			    sortingList.add(action);
+			}
+		}
+		sortActions(sortingList);
+        return sortingList;
+    }
+
+    private void sortActions(List<Action> bgActions) {
+        Collections.sort(bgActions, new Comparator<Action>() {
+
+            @Override
+            public int compare(Action o1, Action o2) {
+                return o1.getCaption().compareTo(o2.getCaption());
+            }
+        });
+    }
     
+	@SuppressWarnings("unchecked")
 	@Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         if(variables.containsKey("graph")) {
@@ -255,6 +274,15 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	    singleSelectVertex(vertexId);
         	}
         	
+        }
+        
+        if(variables.containsKey("marqueeSelection")) {
+            String[] vertexIds = (String[]) variables.get("marqueeSelection");
+            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == false) {
+                clearAllVertexSelections();
+            }
+            
+            bulkMultiSelectVertex(vertexIds);
         }
         
         if(variables.containsKey("action")) {
@@ -304,8 +332,32 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             m_mapManager.setClientY(clientY);
         }
         
+        if(variables.containsKey("contextMenu")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
+            
+            String type = (String) props.get("type");
+            
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y");
+            Object itemId = (Object)props.get("target");
+
+            if (type.toLowerCase().equals("vertex")) {
+	                Vertex vertex = getGraph().getVertexByKey((String)itemId);
+	                itemId = vertex.getItemId();
+            }
+
+            getContextMenuHandler().show(itemId, x, y);
+        }
+        
+        updateMenuItems();
     }
     
+	private void clearAllVertexSelections() {
+	    for(Vertex vertex : getGraph().getVertices()) {
+	        vertex.setSelected(false);
+	    }
+	}
+	
     private void singleSelectVertex(String vertexId) {
         for(Vertex vertex : getGraph().getVertices()) {
             vertex.setSelected(false);
@@ -313,7 +365,29 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         toggleSelectedVertex(vertexId);
     }
-
+    
+    public void selectVerticesByItemId(Collection<Object> itemIds) {
+        for(Vertex vertex : getGraph().getVertices()) {
+            vertex.setSelected(false);
+        }
+        
+        for(Object itemId : itemIds) {
+            toggleSelectVertexByItemId(itemId);
+        }
+        
+        if(itemIds.size() == 0) {
+            requestRepaint();
+        }
+    }
+    
+    private void bulkMultiSelectVertex(String[] vertexIds) {
+        for(String vertexId : vertexIds) {
+            Vertex vertex = getGraph().getVertexByKey((String)vertexId);
+            vertex.setSelected(true);
+        }
+        
+        requestRepaint();
+    }
     private void multiSelectVertex(String vertexId) {
         toggleSelectedVertex(vertexId);
     }
@@ -324,6 +398,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		
 		requestRepaint();
 	}
+    
+    private void toggleSelectVertexByItemId(Object itemId) {
+        Vertex vertex = getGraph().getVertexByItemId(itemId);
+        vertex.setSelected(!vertex.isSelected());
+        
+        requestRepaint();
+    }
 
 	public void setScale(double scale){
 	    m_scale.setValue(scale);
@@ -335,12 +416,25 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	public void addActionHandler(Handler actionHandler) {
 		m_actionHandlers.add(actionHandler);
-		
 	}
-
+	
 	public void removeActionHandler(Handler actionHandler) {
 		m_actionHandlers.remove(actionHandler);
 		
+	}
+	
+	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
+        m_menuItemStateListener .add(listener);
+    }
+	
+	public void removeMenuItemStateListener(MenuItemUpdateListener listener) {
+	    m_menuItemStateListener.remove(listener);
+	}
+	
+	private void updateMenuItems() {
+	    for(MenuItemUpdateListener listener : m_menuItemStateListener) {
+	        listener.updateMenuItems();
+	    }
 	}
 
 	private void setGraph(Graph graph) {
@@ -371,6 +465,22 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         //Request repaint when a value changes, currently we are only listening to the scale property
         requestRepaint();
+    }
+
+    public ContextMenuHandler getContextMenuHandler() {
+        return m_contextMenuHandler;
+    }
+
+    public void setContextMenuHandler(ContextMenuHandler contextMenuHandler) {
+        m_contextMenuHandler = contextMenuHandler;
+    }
+
+    public IconRepositoryManager getIconRepoManager() {
+        return m_iconRepoManager;
+    }
+
+    public void setIconRepoManager(IconRepositoryManager iconRepoManager) {
+        m_iconRepoManager = iconRepoManager;
     }
    
 

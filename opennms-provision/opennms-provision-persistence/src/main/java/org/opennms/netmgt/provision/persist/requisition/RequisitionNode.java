@@ -42,8 +42,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 
 /**
  * <p>RequisitionNode class.</p>
@@ -63,26 +61,26 @@ public class RequisitionNode {
     @XmlElement(name="asset")
     protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
     
-    @XmlAttribute
-    protected String building;
+    @XmlAttribute(name = "building")
+    protected String m_building;
 
-    @XmlAttribute
-    protected String city;
+    @XmlAttribute(name = "city")
+    protected String m_city;
 
     @XmlAttribute(name = "foreign-id", required = true)
-    protected String foreignId;
+    protected String m_foreignId;
 
     @XmlAttribute(name = "node-label", required = true)
-    protected String nodeLabel;
+    protected String m_nodeLabel;
     
     @XmlAttribute(name = "parent-foreign-source")
-    protected String parentForeignSource;
+    protected String m_parentForeignSource;
 
     @XmlAttribute(name = "parent-foreign-id")
-    protected String parentForeignId;
+    protected String m_parentForeignId;
 
     @XmlAttribute(name = "parent-node-label")
-    protected String parentNodeLabel;
+    protected String m_parentNodeLabel;
 
     /**
      * <p>getInterfaceCount</p>
@@ -147,8 +145,8 @@ public class RequisitionNode {
      *
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
-    public void deleteInterface(RequisitionInterface iface) {
-        m_interfaces.remove(iface);
+    public boolean deleteInterface(final RequisitionInterface iface) {
+        return m_interfaces.remove(iface);
     }
 
     /**
@@ -156,15 +154,16 @@ public class RequisitionNode {
      *
      * @param ipAddress a {@link java.lang.String} object.
      */
-    public void deleteInterface(String ipAddress) {
-        Iterator<RequisitionInterface> i = m_interfaces.iterator();
+    public boolean deleteInterface(final String ipAddress) {
+        final Iterator<RequisitionInterface> i = m_interfaces.iterator();
         while (i.hasNext()) {
-            RequisitionInterface iface = i.next();
+            final RequisitionInterface iface = i.next();
             if (iface.getIpAddr().equals(ipAddress)) {
                 i.remove();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -173,7 +172,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        m_interfaces.remove(iface);
+        deleteInterface(iface.getIpAddr());
         m_interfaces.add(0, iface);
     }
 
@@ -240,8 +239,8 @@ public class RequisitionNode {
      *
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
-    public void deleteCategory(RequisitionCategory category) {
-        m_categories.remove(category);
+    public boolean deleteCategory(final RequisitionCategory category) {
+        return m_categories.remove(category);
     }
 
     /**
@@ -249,17 +248,18 @@ public class RequisitionNode {
      *
      * @param category a {@link java.lang.String} object.
      */
-    public void deleteCategory(String category) {
+    public boolean deleteCategory(final String category) {
         if (m_categories != null) {
-            Iterator<RequisitionCategory> i = m_categories.iterator();
+            final Iterator<RequisitionCategory> i = m_categories.iterator();
             while (i.hasNext()) {
-                RequisitionCategory cat = i.next();
+                final RequisitionCategory cat = i.next();
                 if (cat.getName().equals(category)) {
                     i.remove();
-                    break;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     /**
@@ -268,7 +268,7 @@ public class RequisitionNode {
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void putCategory(RequisitionCategory category) {
-        m_categories.remove(category);
+        deleteCategory(category.getName());
         m_categories.add(0, category);
     }
 
@@ -335,15 +335,16 @@ public class RequisitionNode {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public void deleteAsset(String name) {
-        Iterator<RequisitionAsset> i = m_assets.iterator();
+    public boolean deleteAsset(final String name) {
+        final Iterator<RequisitionAsset> i = m_assets.iterator();
         while (i.hasNext()) {
-            RequisitionAsset asset = i.next();
+            final RequisitionAsset asset = i.next();
             if (asset.getName().equals(name)) {
                 i.remove();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -351,8 +352,8 @@ public class RequisitionNode {
      *
      * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
      */
-    public void deleteAsset(RequisitionAsset asset) {
-        m_assets.remove(asset);
+    public boolean deleteAsset(final RequisitionAsset asset) {
+        return m_assets.remove(asset);
     }
 
     /**
@@ -361,7 +362,7 @@ public class RequisitionNode {
      * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
      */
     public void putAsset(RequisitionAsset asset) {
-        m_assets.remove(asset);
+        deleteAsset(asset.getName());
         m_assets.add(0, asset);
     }
 
@@ -371,7 +372,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getBuilding() {
-        return building;
+        return m_building;
     }
 
     /**
@@ -380,7 +381,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setBuilding(String value) {
-        building = value;
+        m_building = value;
     }
 
     /**
@@ -389,7 +390,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getCity() {
-        return city;
+        return m_city;
     }
 
     /**
@@ -398,7 +399,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setCity(String value) {
-        city = value;
+        m_city = value;
     }
 
     /**
@@ -407,7 +408,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getForeignId() {
-        return foreignId;
+        return m_foreignId;
     }
 
     /**
@@ -416,7 +417,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setForeignId(String value) {
-        foreignId = value;
+        m_foreignId = value;
     }
 
     /**
@@ -425,7 +426,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getNodeLabel() {
-        return nodeLabel;
+        return m_nodeLabel;
     }
 
     /**
@@ -434,7 +435,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setNodeLabel(String value) {
-        nodeLabel = value;
+        m_nodeLabel = value;
     }
 
     /**
@@ -443,7 +444,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getParentForeignSource() {
-        return parentForeignSource;
+        return m_parentForeignSource;
     }
 
     /**
@@ -452,7 +453,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignSource(String value) {
-        parentForeignSource = value;
+        m_parentForeignSource = value;
     }
 
     /**
@@ -461,7 +462,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getParentForeignId() {
-        return parentForeignId;
+        return m_parentForeignId;
     }
 
     /**
@@ -470,7 +471,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignId(String value) {
-        parentForeignId = value;
+        m_parentForeignId = value;
     }
 
     /**
@@ -479,7 +480,7 @@ public class RequisitionNode {
      * @return a {@link java.lang.String} object.
      */
     public String getParentNodeLabel() {
-        return parentNodeLabel;
+        return m_parentNodeLabel;
     }
 
     /**
@@ -488,21 +489,94 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentNodeLabel(String value) {
-        parentNodeLabel = value;
+        m_parentNodeLabel = value;
     }
 
-    public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("interfaces", m_interfaces)
-    		.append("categories", m_categories)
-    		.append("assets", m_assets)
-    		.append("building", building)
-    		.append("city", city)
-    		.append("foreign-id", foreignId)
-    		.append("node-label", nodeLabel)
-    		.append("parent-foreign-source", parentForeignSource)
-    		.append("parent-foreign-id", parentForeignId)
-    		.append("parent-node-label", parentNodeLabel)
-    		.toString();
+    @Override
+    public int hashCode() {
+        final int prime = 17;
+        int result = 1;
+        result = prime * result + ((m_building == null) ? 0 : m_building.hashCode());
+        result = prime * result + ((m_city == null) ? 0 : m_city.hashCode());
+        result = prime * result + ((m_foreignId == null) ? 0 : m_foreignId.hashCode());
+        result = prime * result + ((m_assets == null) ? 0 : m_assets.hashCode());
+        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_interfaces == null) ? 0 : m_interfaces.hashCode());
+        result = prime * result + ((m_nodeLabel == null) ? 0 : m_nodeLabel.hashCode());
+        result = prime * result + ((m_parentForeignId == null) ? 0 : m_parentForeignId.hashCode());
+        result = prime * result + ((m_parentForeignSource == null) ? 0 : m_parentForeignSource.hashCode());
+        result = prime * result + ((m_parentNodeLabel == null) ? 0 : m_parentNodeLabel.hashCode());
+        return result;
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof RequisitionNode)) return false;
+        final RequisitionNode other = (RequisitionNode) obj;
+        if (m_building == null) {
+            if (other.m_building != null) return false;
+        } else if (!m_building.equals(other.m_building)) {
+            return false;
+        }
+        if (m_city == null) {
+            if (other.m_city != null) return false;
+        } else if (!m_city.equals(other.m_city)) {
+            return false;
+        }
+        if (m_foreignId == null) {
+            if (other.m_foreignId != null) return false;
+        } else if (!m_foreignId.equals(other.m_foreignId)) {
+            return false;
+        }
+        if (m_assets == null) {
+            if (other.m_assets != null) return false;
+        } else if (!m_assets.equals(other.m_assets)) {
+            return false;
+        }
+        if (m_categories == null) {
+            if (other.m_categories != null) return false;
+        } else if (!m_categories.equals(other.m_categories)) {
+            return false;
+        }
+        if (m_interfaces == null) {
+            if (other.m_interfaces != null) return false;
+        } else if (!m_interfaces.equals(other.m_interfaces)) {
+            return false;
+        }
+        if (m_nodeLabel == null) {
+            if (other.m_nodeLabel != null) return false;
+        } else if (!m_nodeLabel.equals(other.m_nodeLabel)) {
+            return false;
+        }
+        if (m_parentForeignId == null) {
+            if (other.m_parentForeignId != null) return false;
+        } else if (!m_parentForeignId.equals(other.m_parentForeignId)) {
+            return false;
+        }
+        if (m_parentForeignSource == null) {
+            if (other.m_parentForeignSource != null) return false;
+        } else if (!m_parentForeignSource.equals(other.m_parentForeignSource)) {
+            return false;
+        }
+        if (m_parentNodeLabel == null) {
+            if (other.m_parentNodeLabel != null) return false;
+        } else if (!m_parentNodeLabel.equals(other.m_parentNodeLabel)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RequisitionNode [interfaces=" + m_interfaces
+                + ", categories=" + m_categories + ", assets=" + m_assets
+                + ", building=" + m_building + ", city=" + m_city
+                + ", foreignId=" + m_foreignId + ", nodeLabel=" + m_nodeLabel
+                + ", parentForeignSource=" + m_parentForeignSource
+                + ", parentForeignId=" + m_parentForeignId
+                + ", parentNodeLabel=" + m_parentNodeLabel + "]";
+    }
+
 }

@@ -21,4 +21,5 @@ public class SVGRect extends Element {
     public final native int getY() /*-{
         return this.y;
     }-*/;
+    
 }

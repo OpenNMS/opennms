@@ -33,8 +33,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.dao.castor.statsd.Report;
-import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.InputStreamResource;
 
 /**

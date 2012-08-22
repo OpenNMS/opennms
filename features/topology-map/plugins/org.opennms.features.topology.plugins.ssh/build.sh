@@ -1,2 +1,2 @@
 #!/bin/bash
-mvn clean && mvn install && mvn jetty:run
+mvn clean && mvn install

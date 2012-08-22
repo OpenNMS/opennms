@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<database-schema>
+
+	<table name="distPoller" visible="false">
+		<column name="dpNumber"/>
+		<column name="dpName"/>
+		<column name="dpIP"/>
+		<column name="dpComment"/>
+		<column name="dpDiscLimit"/>
+		<column name="dpAdminState"/>
+		<column name="dpRunState"/>
+	</table>
+
+	<table name="node">
+		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
+		<column name="nodeID"/>
+		<column name="dpName" visible="false"/>
+		<column name="nodeCreateTime"/>
+		<column name="nodeParentID"/>
+		<column name="nodeType"/>
+		<column name="nodeSysOID"/>
+		<column name="nodeSysName"/>
+		<column name="nodeSysDescription"/>
+		<column name="nodeSysLocation"/>
+		<column name="nodeSysContact"/>
+		<column name="nodeLabel"/>
+		<column name="foreignSource"/>
+		<column name="foreignID"/>
+	</table>
+
+	<table name="categories">
+		<join type="left" column="categoryID" table="category_node" table-column="categoryID"/>
+		<column name="categoryID" />
+		<column name="categoryName" />
+		<column name="categoryDescription" />
+	</table>
+
+	<table name="category_node">
+		<join type="left" column="nodeID" table="ipInterface" table-column="nodeID"/>
+		<column name="categoryID" visible="false" />
+		<column name="nodeID" visible="false" />
+	</table>
+
+	<table name="ipInterface" key="primary">
+		<join column="snmpInterfaceId" table="snmpInterface" table-column="id"/>
+		<column name="id" visible="false"/>
+		<column name="nodeID" visible="false"/>
+		<column name="ipAddr"/>
+		<column name="ipHostname"/>
+		<column name="IsManaged"/>
+		<column name="IsSnmpPrimary"/>
+		<column name="ipStatus"/>
+		<column name="ipLastCapsdPoll"/>
+	</table>
+
+	<table name="snmpInterface">
+		<join column="id" table="ipInterface" table-column="snmpinterfaceid"/>
+		<column name="id" visible="false"/>
+		<column name="nodeID" visible="false"/>
+		<column name="ipAddr" visible="false"/>
+		<column name="snmpIpAdEntNetMask"/>
+		<column name="snmpPhysAddr"/>
+		<column name="snmpIfIndex"/>
+		<column name="snmpIfDescr"/>
+		<column name="snmpIfType"/>
+		<column name="snmpIfSpeed"/>
+		<column name="snmpIfAlias"/>
+		<column name="snmpIfAdminStatus"/>
+		<column name="snmpIfOperStatus"/>
+		<column name="snmpcollect"/>
+	</table>
+
+	<table name="service">
+		<join column="serviceID" table="ifServices" table-column="serviceID" />
+		<column name="serviceID" visible="false" />
+		<column name="serviceName"/>
+	</table>
+
+	<table name="ifServices">
+		<join column="ipInterfaceId" table="ipInterface" table-column="id"/>
+		<join column="id" table="application_service_map" table-column="ifServiceId"/>
+		<column name="id" visible="false"/>
+		<column name="ipAddr" visible="false"/>
+		<column name="nodeID" visible="false"/>
+		<column name="serviceID"/>
+		<column name="lastGood"/>
+		<column name="lastFail"/>
+	</table>
+
+	<table name="serverMap">
+		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
+		<column name="ipAddr" visible="false"/>
+		<column name="serverName"/>
+	</table>
+
+	<table name="serviceMap">
+		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
+		<column name="ipAddr" visible="false"/>
+		<column name="serviceMapName"/>
+	</table>
+
+	<table name="assets">
+		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
+		<column name="nodeID" visible="false"/>
+		<column name="displayCategory"/>
+		<column name="notifyCategory"/>
+		<column name="pollerCategory"/>
+		<column name="thresholdCategory"/>
+		<column name="category"/>
+		<column name="manufacturer"/>
+		<column name="vendor"/>
+		<column name="modelnumber"/>
+		<column name="serialnumber"/>
+		<column name="description"/>
+		<column name="circuitid"/>
+		<column name="assetnumber"/>
+		<column name="operatingsystem"/>
+		<column name="rack"/>
+		<column name="slot"/>
+		<column name="port"/>
+		<column name="region"/>
+		<column name="division"/>
+		<column name="department"/>
+		<column name="address1"/>
+		<column name="address2"/>
+		<column name="city"/>
+		<column name="state"/>
+		<column name="zip"/>
+		<column name="building"/>
+		<column name="floor"/>
+		<column name="room"/>
+		<column name="vendorphone"/>
+		<column name="vendorfax"/>
+		<column name="vendorassetnumber"/>
+		<column name="lease"/>
+		<column name="leaseexpires"/>
+		<column name="supportphone"/>
+		<column name="maintcontract"/>
+		<column name="maintcontractexpires"/>
+		<column name="comment"/>
+		<column name="managedobjectinstance"/>
+		<column name="managedobjecttype"/>
+	</table>
+
+	<table name="applications">
+		<join column="id" table="application_service_map" table-column="appId"/>
+		<column name="id" visible="false"/>
+		<column name="name" />
+	</table>
+
+	<table name="application_service_map">
+		<join column="ifServiceId" table="ifServices" table-column="id"/>
+		<join column="appId" table="applications" table-column="id"/>
+		<column name="appId" visible="false" />
+		<column name="ifServiceId" visible="false" />
+	</table>
+
+</database-schema>
+

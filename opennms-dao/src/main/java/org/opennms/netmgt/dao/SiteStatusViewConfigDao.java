@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.dao;
 
-import org.opennms.netmgt.config.siteStatusViews.Views;
 import org.opennms.netmgt.config.siteStatusViews.View;
+import org.opennms.netmgt.config.siteStatusViews.Views;
 
 /**
  * <p>SiteStatusViewConfigDao interface.</p>

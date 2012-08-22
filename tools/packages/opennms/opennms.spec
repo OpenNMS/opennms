@@ -560,6 +560,9 @@ rm -rf $RPM_BUILD_ROOT
 			%{logdir}/controller
 			%{logdir}/daemon
 			%{logdir}/webapp
+			%{instprefix}/data
+			%{instprefix}/deploy
+			%{instprefix}/system
 
 %if %{with_docs}
 %files docs

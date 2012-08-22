@@ -36,8 +36,8 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -73,7 +73,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     /**
      * <p>Constructor for EventTranslator.</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventTranslator(EventIpcManager eventMgr) {
     	this();
@@ -227,7 +227,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -236,7 +236,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     /**
      * <p>setEventManager</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;

@@ -135,7 +135,7 @@
   modify it under the terms of the 
   <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
   as published by the
-  <a href="http://www.gnu.org/">Free Software Foundation</a>; either version 2
+  <a href="http://www.gnu.org/">Free Software Foundation</a>; either version 3
   of the License, or (at your option) any later version.
 </p>
 

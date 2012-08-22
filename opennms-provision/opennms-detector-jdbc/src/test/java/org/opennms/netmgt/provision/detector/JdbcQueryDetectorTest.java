@@ -43,13 +43,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetector;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -107,20 +107,20 @@ public class JdbcQueryDetectorTest implements InitializingBean {
         MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
         assertTrue("JDBCQueryDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testStoredProcedureFail() throws UnknownHostException{
         m_detector.setSqlQuery("bogus");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testWrongUserName() throws UnknownHostException{
         m_detector.setUser("wrongUserName");
         m_detector.init();

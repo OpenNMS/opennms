@@ -32,8 +32,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -122,7 +123,8 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
                     "<policy name=\"all-ipinterfaces\" class=\"org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy\" />" +
                 "</policies>" +
             "</foreign-source>";
-        sendPost("/foreignSources", fs);
+        MockHttpServletResponse response = sendPost("/foreignSources", fs);
+        System.err.println("response = " + stringifyResponse(response));
     }
     
 }

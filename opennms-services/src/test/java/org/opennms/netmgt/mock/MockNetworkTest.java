@@ -42,12 +42,15 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.eventd.mock.EventAnticipator;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

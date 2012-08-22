@@ -8,19 +8,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jira-troubleticketer</artifactId>
     <packaging>jar</packaging>
-    <name>OpenNMS Jira Trouble Ticketer</name>
+    <name>OpenNMS JIRA Trouble Ticketer</name>
 
     <repositories>
         <repository>
-            <id>su-mvn</id>
-            <name>SU Maven2</name>
-            <url>http://maven.opennms.org/content/groups/su.se-release2</url>
-        </repository>
-        <repository>
-            <id>su-maven</id>
-            <name>SU Maven</name>
-            <url>http://maven.opennms.org/content/groups/su.se-release1</url>
-            <layout>legacy</layout>
+            <id>atlassian</id>
+            <name>Atlassian Maven 2</name>
+            <url>http://repository.atlassian.com/maven2</url>
         </repository>
     </repositories>
 
@@ -72,35 +66,20 @@
         <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
             <artifactId>org.opennms.features.ticketing.api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-services</artifactId>
-            <scope>provided</scope>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.jira.plugins</groupId>
+            <artifactId>jira-soapclient</artifactId>
+            <version>5.0.5</version>
         </dependency>
     </dependencies>
-
-  <!-- we add the ws-client as a dependency in a profile only while we are not tagging
-       since we cannot release with a SNAPSHOT dependency.  When there is a released
-       wersion can make it a regular dependency -->
-  <profiles>
-    <profile>
-      <id>not-tagging</id>
-      <activation>
-        <property>
-          <name>!tagging</name>
-        </property>
-      </activation>
-      <dependencies>
-        <!-- Cutting edge ++ -->
-        <dependency>
-            <groupId>com.atlassian.jira.rpc.soap.client</groupId>
-            <artifactId>jira-ws-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 
 </project>

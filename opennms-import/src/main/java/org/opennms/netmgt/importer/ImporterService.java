@@ -36,12 +36,12 @@ import java.util.Map;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
 import org.opennms.netmgt.importer.operations.ImportOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.operations.ImportStatistics;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -142,7 +142,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	/**
 	 * <p>getEventManager</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public EventIpcManager getEventManager() {
 	    return m_eventManager;
@@ -151,7 +151,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	/**
 	 * <p>setEventManager</p>
 	 *
-	 * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public void setEventManager(EventIpcManager eventManager) {
 		m_eventManager = eventManager;

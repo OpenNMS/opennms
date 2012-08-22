@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.features.topology.api.TopologyProvider;
 
 
 public class OpenOperation implements Operation {
     
-    SimpleTopologyProvider m_topologyProvider;
+    TopologyProvider m_topologyProvider;
     
-    public OpenOperation(SimpleTopologyProvider topologyProvider) {
+    public OpenOperation(TopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
     
@@ -25,14 +25,12 @@ public class OpenOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        return false;
+    public boolean display(List<Object> targets, OperationContext operationContext) {
+        return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets,
-            OperationContext operationContext) {
+    public boolean enabled(List<Object> targets, OperationContext operationContext) {
         return true;
     }
 

@@ -17,6 +17,8 @@ public class Vertex implements Paintable {
     public static final String ICON_PROPERTY = "icon";
     public static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
     private static final Object IP_ADDRESS_PROPERTY = "ipAddr";
+    private static final Object NODE_ID = "nodeID";
+    private static final String ICON_KEY = "iconKey";
 	private String m_key;
 	private Object m_itemId;
 	private Item m_item;
@@ -111,6 +113,12 @@ public class Vertex implements Paintable {
 	    String ipAddr = ipAddrProperty == null ? "127.0.0.1" : (String)ipAddrProperty.getValue();
 	    return ipAddr;
 	}
+	
+	public int getNodeID() {
+		Property nodeIDProperty = m_item.getItemProperty(NODE_ID);
+		int nodeID = nodeIDProperty == null ? -1 : (Integer)nodeIDProperty.getValue();
+		return nodeID;
+	}
 
 	public void setGroupId(Object groupId) {
 		m_groupId = groupId;
@@ -119,5 +127,9 @@ public class Vertex implements Paintable {
 	public void setGroupKey(String groupKey) {
 		m_groupKey = groupKey;
 	}
+
+    public String getIconKey() {
+        return (String) m_item.getItemProperty(ICON_KEY).getValue();
+    }
 
 }

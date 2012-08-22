@@ -54,7 +54,7 @@ import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.notifications.Varbind;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.web.api.Util;

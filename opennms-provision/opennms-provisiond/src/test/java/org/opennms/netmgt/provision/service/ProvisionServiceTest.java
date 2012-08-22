@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import junit.framework.Assert;
 
@@ -37,15 +36,15 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -211,12 +210,7 @@ public class ProvisionServiceTest implements InitializingBean {
 
     @Before
     public void dwVerifyUrlHandler() {
-        try {
-            new URL("dns://localhost:53/localhos");
-        } catch (MalformedURLException e) {
-            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
-        }
-
+        GenericURLFactory.initialize();
     }
     
     

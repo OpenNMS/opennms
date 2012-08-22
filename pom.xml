@@ -108,6 +108,7 @@
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
     <module>opennms-config</module>
+    <module>opennms-config-model</module>
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
@@ -156,7 +157,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -346,6 +347,11 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.0</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -955,6 +961,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.db</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.db.install</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.lib</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1009,6 +1025,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.db</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.dns</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
@@ -1016,6 +1038,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.services</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1373,7 +1401,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-config</artifactId>
+        <artifactId>opennms-config-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-model</artifactId>
         <version>${project.version}</version>
         <classifier>xsds</classifier>
       </dependency>
@@ -1408,7 +1441,6 @@
         <artifactId>opennms-dao</artifactId>
         <type>test-jar</type>
         <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1668,13 +1700,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <version>${project.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -2285,8 +2310,8 @@
       </dependency>
       <dependency>
         <groupId>org.tuckey</groupId>
-        <artifactId>urlrewrite</artifactId>
-        <version>2.5.2</version>
+        <artifactId>urlrewritefilter</artifactId>
+        <version>4.0.3</version>
       </dependency>
       <dependency>
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->

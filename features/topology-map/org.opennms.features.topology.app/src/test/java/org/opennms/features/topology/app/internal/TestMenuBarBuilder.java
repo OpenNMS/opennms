@@ -1,14 +1,18 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 
@@ -156,8 +160,63 @@ public class TestMenuBarBuilder {
     }
     
     @Test
+    @Ignore
+    public void submenuCheckedMenuItemTest() {
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("File", Arrays.asList("new", "help", "additions"));
+        
+        cmdManager.onBind(getCheckedTestOperation(), getProps("File", "Operation1", ""));
+        
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(1, menuItems.size());
+        
+        List<MenuItem> subMenuItems = menuItems.get(0).getChildren();
+        assertEquals(1, subMenuItems.size());
+        MenuItem menuItem = subMenuItems.get(0);
+        assertEquals("Operation1", menuItem.getText());
+        assertTrue(menuItem.isCheckable());
+    }
+    
+    private CheckedOperation getCheckedTestOperation() {
+        return new CheckedOperation() {
+
+            @Override
+            public Undoer execute(List<Object> targets, OperationContext operationContext) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public boolean display(List<Object> targets, OperationContext operationContext) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public boolean enabled(List<Object> targets, OperationContext operationContext) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public String getId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+			@Override
+			public boolean isChecked(List<Object> targets,
+					OperationContext operationContext) {
+				// TODO Auto-generated method stub
+				return false;
+			}};
+	}
+
+	@Test
     public void commandManagerParseConfigTest() {
-        Map props = new Properties();
+        Dictionary<Object,Object> props = new Properties();
         props.put("toplevelMenuOrder", "File,Edit,View,Additions,Help");
         props.put("submenu.File.groups", "start,new,close,save,print,open,import,additions,end");
         props.put("submenu.Edit.groups", "start,undo,cut,find,add,end,additions");

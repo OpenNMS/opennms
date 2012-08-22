@@ -2,13 +2,19 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
@@ -16,207 +22,343 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 
+public class CommandManager {
 
-public class CommandManager  {
-    
-    public class DefaultOperationContext implements OperationContext{
-        
-        private Window m_mainWindow;
-        private SimpleGraphContainer m_graphContainer;
+	public class DefaultOperationContext implements OperationContext {
 
-        public DefaultOperationContext(Window mainWindow, SimpleGraphContainer graphContainer) {
-            m_mainWindow = mainWindow;
-            m_graphContainer = graphContainer;
-        }
-        
-        @Override
-        public Window getMainWindow() {
-            return m_mainWindow;
-        }
+		private Window m_mainWindow;
+		private SimpleGraphContainer m_graphContainer;
+		private boolean m_checked = false;
 
-        @Override
-        public SimpleGraphContainer getGraphContainer() {
-            return m_graphContainer;
-        }
+		public DefaultOperationContext(Window mainWindow,
+				SimpleGraphContainer graphContainer) {
+			m_mainWindow = mainWindow;
+			m_graphContainer = graphContainer;
+		}
 
-    }
-    
-    private List<Command> m_commandList = new ArrayList<Command>();
-    private List<Command> m_commandHistoryList = new ArrayList<Command>();
-    private List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
-    private List<String> m_topLevelMenuOrder = new ArrayList<String>();
-    private Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
-    
-    public CommandManager() {}
-    
-    public List<Command> getCommandList() {
-        return m_commandList;
-    }
+		@Override
+		public Window getMainWindow() {
+			return m_mainWindow;
+		}
 
-    public void setCommandList(List<Command> commandList) {
-        m_commandList = commandList;
-    }
-    
-    public void addCommand(Command command) {
-        m_commandList.add(command);
-        updateCommandListeners();
-    }
-    
-    private void updateCommandListeners() {
-        for(CommandUpdateListener listener : m_updateListeners) {
-            listener.menuBarUpdated(this);
-        }
-        
-    }
+		@Override
+		public SimpleGraphContainer getGraphContainer() {
+			return m_graphContainer;
+		}
 
-    public void addCommandUpdateListener(CommandUpdateListener listener) {
-        m_updateListeners.add(listener);
-    }
+		public void setChecked(boolean checked) {
+			m_checked = checked;
+		}
 
-    MenuBar getMenuBar(SimpleGraphContainer graphContainer, Window mainWindow) {
-        OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
-        MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
-        menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
-        menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
-        
-        for(Command command : getCommandList()) {
-            String menuPosition = command.getMenuPosition();
-            menuBarBuilder.addMenuCommand(menuCommand(command, graphContainer, mainWindow, opContext), menuPosition);
-        }
-        MenuBar menuBar = menuBarBuilder.get();
-        return menuBar;
-    }
-    
-    public MenuBar.Command menuCommand(final Command command, final SimpleGraphContainer graphContainer, final Window mainWindow, final OperationContext operationContext){
-        
-        return new MenuBar.Command() {
-            
-            public void menuSelected(MenuItem selectedItem) {
-                List<Object> targets = new ArrayList<Object>();
-                //Adding a check for selected vertices.
-                for(Object vId : operationContext.getGraphContainer().getVertexIds()) {
-                    Item vItem = operationContext.getGraphContainer().getVertexItem(vId);
-                    boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
-                    if(selected) {
-                        targets.add(vItem.getItemProperty("key").getValue());
-                    }
-                }
-                
-                
-                command.doCommand(targets, operationContext);
-                m_commandHistoryList.add(command);
-            }
-        };
-    }
+		@Override
+		public boolean isChecked() {
+			return m_checked;
+		}
 
-    void addActionHandlers(TopologyComponent topologyComponent, SimpleGraphContainer graphContainer, Window mainWindow) {
-        topologyComponent.addActionHandler(new ActionHandler(new DefaultOperationContext(mainWindow,graphContainer)));
-    }
+	}
+	
+	private class ContextMenuListener implements ContextMenu.ClickListener {
+		
+		OperationContext m_opContext;
+		
+		public ContextMenuListener(OperationContext opContext) {
+			m_opContext = opContext;
+		}
 
-    
-    
-    public List<Command> getHistoryList(){
-        return m_commandHistoryList;
-    }
+		@Override
+		public void contextItemClick(ClickEvent event) {
+			Operation operation = m_contextMenuItemsToOperationMap.get(event.getClickedItem());
+			//TODO: Do some implementation here for execute
+			if (operation != null) {
+				TopoContextMenu source = (TopoContextMenu)event.getSource();
+				operation.execute(Arrays.asList(source.getTarget()), m_opContext);
+			}
+		}
+		
+	}
 
-    public void updateMenuBar(SimpleGraphContainer graphContainer) {
-        
-    }
-    
-    private class ActionHandler implements Action.Handler{
-       SimpleGraphContainer m_graphContainer;
-       Window m_mainWindow;
-       private DefaultOperationContext m_operationContext;
-       
-        public ActionHandler(DefaultOperationContext operationContext) {
-            m_operationContext = operationContext;
-        }
+	private List<Command> m_commandList = new ArrayList<Command>();
+	private List<Command> m_commandHistoryList = new ArrayList<Command>();
+	private List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
+	private List<MenuItemUpdateListener> m_menuItemUpdateListeners = new ArrayList<MenuItemUpdateListener>();
+	private List<String> m_topLevelMenuOrder = new ArrayList<String>();
+	private Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
+	private Map<MenuBar.Command, Operation> m_commandToOperationMap = new HashMap<MenuBar.Command, Operation>();
+	private Map<ContextMenuItem, Operation> m_contextMenuItemsToOperationMap = new HashMap<ContextMenuItem, Operation>();
+	public CommandManager() {
+	}
 
-        public Action[] getActions(Object target, Object sender) {
-            List<Action> actionList = new ArrayList<Action>();
-            for(Command command : m_commandList) {
-                if(command.isAction() && command.appliesToTarget(target, m_operationContext)) {
-                    actionList.add(command.getAction());
-                }
-            }
-            return actionList.toArray(new Action[actionList.size()]);
-        }
+	public List<Command> getCommandList() {
+		return m_commandList;
+	}
 
-        public void handleAction(Action action, Object sender, Object target) {
-            if(action instanceof Command) {
-                Command command = (Command) action;
-                command.doCommand(target, m_operationContext);
-                
-                m_commandHistoryList.add(command);
-            }
-        }
-    }
-    
-    public void onBind(Command command) {
-        addCommand(command);
-    }
-    
-    public void onUnbind(Command command) {
-        removeCommand(command);
-    }
-    
-    public void onBind(Operation operation, Map<String, String> props) {
-        OperationCommand operCommand = new OperationCommand(null, operation, props);
-        addCommand(operCommand);
-    }
-    
-    public void onUnbind(Operation operation, Map<String, String> props) {
-        removeCommand(operation);
-    }
+	public void setCommandList(List<Command> commandList) {
+		m_commandList = commandList;
+	}
 
-    private void removeCommand(Operation operation) {
-        Iterator<Command> it = m_commandList.iterator();
-        while(it.hasNext()) {
-            Command command = it.next();
-            if(command.getOperation() == operation) {
-                it.remove();
-            }
-        }
-        
-        
-    }
+	public void addCommand(Command command) {
+		m_commandList.add(command);
+		updateCommandListeners();
+	}
 
-    private void removeCommand(Command command) {
-        m_commandList.remove(command);
-        updateCommandListeners();
-    }
+	private void updateCommandListeners() {
+		for (CommandUpdateListener listener : m_updateListeners) {
+			listener.menuBarUpdated(this);
+		}
 
-    public void setTopLevelMenuOrder(List<String> menuOrderList) {
-        m_topLevelMenuOrder  = menuOrderList;
-        
-    }
-    
-    public void updateMenuConfig(Map props) { 
-        System.out.println("Getting config with these parameters: " + props);
-        List<String> topLevelOrder = Arrays.asList(props.get("toplevelMenuOrder").toString().split(","));
+	}
+
+	public void addCommandUpdateListener(CommandUpdateListener listener) {
+		m_updateListeners.add(listener);
+	}
+
+	public void addMenuItemUpdateListener(MenuItemUpdateListener listener) {
+		m_menuItemUpdateListeners.add(listener);
+	}
+
+	public void removeMenuItemUpdateListener(MenuItemUpdateListener listener) {
+		m_menuItemUpdateListeners.remove(listener);
+	}
+
+	MenuBar getMenuBar(SimpleGraphContainer graphContainer, Window mainWindow) {
+		OperationContext opContext = new DefaultOperationContext(mainWindow,
+				graphContainer);
+		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
+		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
+		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
+
+		for (Command command : getCommandList()) {
+			String menuPosition = command.getMenuPosition();
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer,
+					mainWindow, opContext);
+			updateCommandToOperationMap(command, menuCommand);
+			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
+		}
+		MenuBar menuBar = menuBarBuilder.get();
+		return menuBar;
+	}
+
+	/**
+	 * Gets the ContextMenu addon for the app based on OSGi Operations
+	 * @param graphContainer
+	 * @param mainWindow
+	 * @return
+	 */
+	public TopoContextMenu getContextMenu(SimpleGraphContainer graphContainer, Window mainWindow) {
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
+		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
+		Map<String, Operation> operationMap = new HashMap<String, Operation>(); 
+		for (Command command : getCommandList()) {
+			if (command.isAction()) {
+				String contextPosition = command.getContextMenuPosition();
+				contextMenuBuilder.addMenuCommand(command, contextPosition);
+				operationMap.put(command.toString(), command.getOperation());
+			}
+		}
+		TopoContextMenu contextMenu = contextMenuBuilder.get();
+		contextMenu.addListener(new ContextMenuListener(opContext));
+		
+		updateContextCommandToOperationMap(contextMenu.getItems());
+		return contextMenu;
+	}
+	
+	private void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
+	    for(TopoContextMenuItem item : items) {
+	        if(item.hasChildren() && !item.hasOperation()) {
+	            updateContextCommandToOperationMap(item.getChildren());
+	        }else {
+	            m_contextMenuItemsToOperationMap.put(item.getItem(), item.getOperation());
+	        }
+	    }
+	}
+
+	private void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
+		m_commandToOperationMap.put(menuCommand, command.getOperation());
+	}
+
+	public MenuBar.Command menuCommand(final Command command,
+			final SimpleGraphContainer graphContainer, final Window mainWindow,
+			final OperationContext operationContext) {
+
+		return new MenuBar.Command() {
+
+			public void menuSelected(MenuItem selectedItem) {
+				List<Object> targets = graphContainer.getSelectedVertices();
+
+				DefaultOperationContext context = (DefaultOperationContext) operationContext;
+				context.setChecked(selectedItem.isChecked());
+
+				command.doCommand(targets, operationContext);
+				m_commandHistoryList.add(command);
+				updateMenuItemListeners();
+			}
+		};
+	}
+
+	protected void updateMenuItemListeners() {
+		for(MenuItemUpdateListener listener : m_menuItemUpdateListeners) {
+			listener.updateMenuItems();
+		}
+	}
+
+	void addActionHandlers(TopologyComponent topologyComponent,
+			SimpleGraphContainer graphContainer, Window mainWindow) {
+		topologyComponent.addActionHandler(new ActionHandler(
+				new DefaultOperationContext(mainWindow, graphContainer)));
+	}
+
+	public List<Command> getHistoryList() {
+		return m_commandHistoryList;
+	}
+
+	public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
+		return m_commandToOperationMap.get(command);
+	}
+
+	private class ActionHandler implements Action.Handler {
+		SimpleGraphContainer m_graphContainer;
+		Window m_mainWindow;
+		private DefaultOperationContext m_operationContext;
+
+		public ActionHandler(DefaultOperationContext operationContext) {
+			m_operationContext = operationContext;
+		}
+
+		public Action[] getActions(Object target, Object sender) {
+			List<Action> actionList = new ArrayList<Action>();
+			for (Command command : m_commandList) {
+				if (command.isAction()
+						&& command.appliesToTarget(target, m_operationContext)) {
+					actionList.add(command.getAction());
+				}
+			}
+			return actionList.toArray(new Action[actionList.size()]);
+		}
+
+		public void handleAction(Action action, Object sender, Object target) {
+			if (action instanceof Command) {
+				Command command = (Command) action;
+				command.doCommand(target, m_operationContext);
+
+				m_commandHistoryList.add(command);
+				updateMenuItemListeners();
+			}
+		}
+	}
+
+	public void onBind(Command command) {
+		addCommand(command);
+	}
+
+	public void onUnbind(Command command) {
+		removeCommand(command);
+	}
+
+	public void onBind(Operation operation, Map<String, String> props) {
+		OperationCommand operCommand = new OperationCommand(null, operation,
+				props);
+		addCommand(operCommand);
+	}
+
+	public void onUnbind(Operation operation, Map<String, String> props) {
+		removeCommand(operation);
+	}
+
+	private void removeCommand(Operation operation) {
+		Iterator<Command> it = m_commandList.iterator();
+		while (it.hasNext()) {
+			Command command = it.next();
+			if (command.getOperation() == operation) {
+				it.remove();
+			}
+		}
+
+	}
+
+	private void removeCommand(Command command) {
+		m_commandList.remove(command);
+		updateCommandListeners();
+	}
+
+	public void setTopLevelMenuOrder(List<String> menuOrderList) {
+		m_topLevelMenuOrder = menuOrderList;
+
+	}
+
+    public void updateMenuConfig(Dictionary<Object,Object> props) {
+        List<String> topLevelOrder = Arrays.asList(props
+                .get("toplevelMenuOrder").toString().split(","));
         setTopLevelMenuOrder(topLevelOrder);
+
+		for (String topLevelItem : topLevelOrder) {
+			if (!topLevelItem.equals("Additions")) {
+				String key = "submenu." + topLevelItem + ".groups";
+				addOrUpdateGroupOrder(topLevelItem,
+						Arrays.asList(props.get(key).toString().split(",")));
+			}
+		}
+		addOrUpdateGroupOrder(
+				"Default",
+				Arrays.asList(props.get("submenu.Default.groups").toString()
+						.split(",")));
+
+		updateCommandListeners();
+
+	}
+
+	public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
+		if (!m_subMenuGroupOrder.containsKey(key)) {
+			m_subMenuGroupOrder.put(key, orderSet);
+		} else {
+			m_subMenuGroupOrder.remove(key);
+			m_subMenuGroupOrder.put(key, orderSet);
+		}
+
+	}
+
+	public Map<String, List<String>> getMenuOrderConfig() {
+		return m_subMenuGroupOrder;
+	}
+
+	private List<Object> getSelectedVertices(final OperationContext operationContext) {
+		List<Object> targets = new ArrayList<Object>();
+		for (Object vId : operationContext.getGraphContainer().getVertexIds()) {
+			Item vItem = operationContext.getGraphContainer().getVertexItem(vId);
+			boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
+			if (selected) {
+				targets.add(vItem.getItemProperty("key").getValue());
+			}
+		}
+		return targets;
+	}
+
+	public void updateMenuItem(MenuItem menuItem, SimpleGraphContainer graphContainer, Window mainWindow) {
+		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
+		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
+
+		boolean visibility = operation.display(graphContainer.getSelectedVertices(), operationContext);
+		menuItem.setVisible(visibility);
+		boolean enabled = operation.enabled(graphContainer.getSelectedVertices(), operationContext);
+		menuItem.setEnabled(enabled);
+
+		if (operation instanceof CheckedOperation) {
+			if (!menuItem.isCheckable()) {
+				menuItem.setCheckable(true);
+			}
+
+			menuItem.setChecked(((CheckedOperation) operation).isChecked(graphContainer.getSelectedVertices(), operationContext));
+		}
+	}
+
+    public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, SimpleGraphContainer graphContainer, Window mainWindow) {
+        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
         
-        for(String topLevelItem : topLevelOrder) {
-            if(!topLevelItem.equals("Additions")) {
-                String key = "submenu." + topLevelItem + ".groups";
-                addOrUpdateGroupOrder(topLevelItem, Arrays.asList(props.get(key).toString().split(",")));
-            }
-        }
-        addOrUpdateGroupOrder("Default", Arrays.asList(props.get("submenu.Default.groups").toString().split(",")));
+        ContextMenuItem ctxMenuItem = contextItem.getItem();
+        Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
+     
+        List<Object> targets = Arrays.asList(target);
+        ctxMenuItem.setVisible(operation.display(targets, operationContext));
+        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));   
     }
 
-    public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
-        if(!m_subMenuGroupOrder.containsKey(key)) {
-            m_subMenuGroupOrder.put(key, orderSet);
-        }else {
-            m_subMenuGroupOrder.remove(key);
-            m_subMenuGroupOrder.put(key, orderSet);
-        }
-        
-    }
-    
-    public Map<String, List<String>> getMenuOrderConfig(){
-        return m_subMenuGroupOrder;
-    }
-    
 }

@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.tca.dao.jaxb;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 
 /**
  * The Class TcaDataCollectionConfigDaoJaxb.
@@ -58,7 +58,7 @@ public class TcaDataCollectionConfigDaoJaxb  extends AbstractJaxbConfigDao<TcaDa
 	 * @see org.opennms.netmgt.dao.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
 	 */
 	@Override
-	public TcaDataCollectionConfig translateConfig(TcaDataCollectionConfig castorConfig) {
+	protected TcaDataCollectionConfig translateConfig(TcaDataCollectionConfig castorConfig) {
 		return castorConfig;
 	}
 

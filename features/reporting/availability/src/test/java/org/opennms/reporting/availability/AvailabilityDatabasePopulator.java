@@ -64,17 +64,16 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 
 /**
- * Populates a test database with some entities (nodes, interfaces, services).
+ * <p>Populates a test database with some entities (nodes, interfaces, services). Example usage:</p>
  * 
- * Example usage:
  * <pre>
- * private DatabasePopulator m_populator;
+ * private AvailabilityDatabasePopulator m_populator;
  *
  * @Override
  * protected String[] getConfigLocations() {
  *     return new String[] {
  *         "classpath:/META-INF/opennms/applicationContext-dao.xml",
- *         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+ *         "classpath:/META-INF/opennms/applicationContext-availabilityDatabasePopulator.xml"
  *     };
  * }
  * 
@@ -83,10 +82,12 @@ import org.opennms.netmgt.model.OnmsServiceType;
  *     m_populator.populateDatabase();
  * }
  * 
- * public void setPopulator(DatabasePopulator populator) {
+ * public void setPopulator(AvailabilityDatabasePopulator populator) {
  *     m_populator = populator;
  * }
  * </pre>
+ * 
+ * <p>Copied from {@link org.opennms.netmgt.dao.DatabasePopulator}</p>.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */

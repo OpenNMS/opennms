@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
@@ -61,14 +62,13 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.StpInterfaceDao;
 import org.opennms.netmgt.dao.StpNodeDao;
 import org.opennms.netmgt.dao.VlanDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -855,7 +855,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP));
+        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP)).get(0);
         assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
     }
     

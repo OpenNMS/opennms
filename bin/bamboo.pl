@@ -18,6 +18,6 @@ clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
 my @command = ($MVN, @ARGS);
 info("running:", @command);
-handle_errors_and_exit_on_failure(run_command('bamboo.log', @command));
+handle_errors_and_exit_on_failure(system(@command));
 
 exit 0;

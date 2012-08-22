@@ -135,6 +135,12 @@ public class SimpleTopologyProviderTest {
             Item vertexItem = getVertexItem(key);
             return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
         }
+
+	@Override
+	public List<Object> getSelectedVertices() {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
         
     }
     
@@ -154,6 +160,12 @@ public class SimpleTopologyProviderTest {
         @Override
         public GraphContainer getGraphContainer() {
             return m_graphContainer;
+        }
+
+        @Override
+        public boolean isChecked() {
+            // TODO Auto-generated method stub
+            return false;
         }
         
     }
@@ -178,11 +190,11 @@ public class SimpleTopologyProviderTest {
 	public void test() {
 		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
 		
-		String vertexA = (String) topologyProvider.addVertex(50, 100, SERVER_ICON);
-		String vertexB = (String) topologyProvider.addVertex(100, 50, SERVER_ICON);
-		String vertexC = (String) topologyProvider.addVertex(100, 150, SERVER_ICON);
-		String vertexD = (String) topologyProvider.addVertex(150, 100, SERVER_ICON);
-		String vertexE = (String) topologyProvider.addVertex(200, 200, SERVER_ICON);
+		String vertexA = (String) topologyProvider.addVertex(50, 100);
+		String vertexB = (String) topologyProvider.addVertex(100, 50);
+		String vertexC = (String) topologyProvider.addVertex(100, 150);
+		String vertexD = (String) topologyProvider.addVertex(150, 100);
+		String vertexE = (String) topologyProvider.addVertex(200, 200);
 		String group1 = (String) topologyProvider.addGroup(GROUP_ICON);
 		String group2 = (String) topologyProvider.addGroup(GROUP_ICON);
 		topologyProvider.getVertexContainer().setParent(vertexA, group1);
@@ -205,9 +217,18 @@ public class SimpleTopologyProviderTest {
 	}
 	
 	@Test
+	public void loadSampleGraph() {
+		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		topologyProvider.load("saved-graph.xml");
+		
+		System.err.println("Vertex Count: " + topologyProvider.getVertexIds().size());
+		System.err.println("Edge Count: " + topologyProvider.getEdgeIds().size());
+	}
+	
+	@Test
 	public void testAddVertexWithOperation() {
 	    
-	    List<Object> targets = Collections.EMPTY_LIST;
+	    List<Object> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
 	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON, m_topologyProvider);
@@ -250,13 +271,13 @@ public class SimpleTopologyProviderTest {
 	
     @Test
 	public void testConnectVertices() {
-        Object vertexId = m_topologyProvider.addVertex(0, 0, SERVER_ICON);
+        Object vertexId = m_topologyProvider.addVertex(0, 0);
         
         assertEquals(1, m_topologyProvider.getVertexIds().size());
         Object vertId = m_topologyProvider.getVertexIds().iterator().next();
         assertEquals("v0", vertId);
         
-        m_topologyProvider.addVertex(0, 0, SERVER_ICON);
+        m_topologyProvider.addVertex(0, 0);
         assertEquals(2, m_topologyProvider.getVertexIds().size());
         
         Object edgeId = m_topologyProvider.connectVertices("v0", "v1");
@@ -377,7 +398,7 @@ public class SimpleTopologyProviderTest {
     }
 	
 	private Object addVertexToTopr() {
-	    return m_topologyProvider.addVertex(0, 0, SERVER_ICON);
+	    return m_topologyProvider.addVertex(0, 0);
     }
 
 }

@@ -33,6 +33,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;

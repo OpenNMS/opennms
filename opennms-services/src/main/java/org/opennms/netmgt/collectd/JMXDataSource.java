@@ -408,12 +408,13 @@ public class JMXDataSource implements Cloneable {
      *
      * @return String which represents the content of this RRDDataSource object
      */
+    @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         // Build the buffer
         buffer.append("\n   oid:       ").append(m_oid);
-        buffer.append("\n   name: 	 ").append(m_name);
+        buffer.append("\n   name:      ").append(m_name);
         buffer.append("\n   type:      ").append(m_type);
         buffer.append("\n   heartbeat: ").append(m_heartbeat);
         buffer.append("\n   min:       ").append(m_min);

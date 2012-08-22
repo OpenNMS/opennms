@@ -53,7 +53,7 @@ import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.support.MockResourceType;
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;

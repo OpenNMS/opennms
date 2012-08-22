@@ -45,6 +45,8 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * <p>FilesystemForeignSourceRepository class.</p>
@@ -52,7 +54,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
  * @author ranger
  * @version $Id: $
  */
-public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
+public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository implements InitializingBean {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
     private boolean m_updateDateStamps = true;
@@ -68,6 +70,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      */
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         super();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_requisitionPath, "Requisition path must not be empty.");
+        Assert.notNull(m_foreignSourcePath, "Foreign source path must not be empty.");
     }
 
     /**
@@ -422,5 +430,10 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         final File reqPath = new File(m_requisitionPath);
         createPath(reqPath);
         return encodeFileName(m_requisitionPath, requisition.getForeignSource());
+    }
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in FilesystemForeignSourceRepository
     }
 }

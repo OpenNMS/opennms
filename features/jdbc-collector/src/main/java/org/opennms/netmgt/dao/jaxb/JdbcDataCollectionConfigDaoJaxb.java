@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
 
 public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcDataCollectionConfig, JdbcDataCollectionConfig> implements JdbcDataCollectionConfigDao {
@@ -60,7 +60,7 @@ public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcD
     }
 
     @Override
-    public JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
+    protected JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
         return jaxbConfig;
     }
 

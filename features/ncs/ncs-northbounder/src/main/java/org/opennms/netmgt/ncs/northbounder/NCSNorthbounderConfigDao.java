@@ -1,6 +1,6 @@
 package org.opennms.netmgt.ncs.northbounder;
 
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 
 public class NCSNorthbounderConfigDao extends AbstractJaxbConfigDao<NCSNorthbounderConfig, NCSNorthbounderConfig> {
 
@@ -9,7 +9,7 @@ public class NCSNorthbounderConfigDao extends AbstractJaxbConfigDao<NCSNorthboun
 	}
 
 	@Override
-	public NCSNorthbounderConfig translateConfig(NCSNorthbounderConfig config) {
+	protected NCSNorthbounderConfig translateConfig(NCSNorthbounderConfig config) {
 		return config;
 	}
 	

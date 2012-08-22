@@ -33,5 +33,10 @@ public class SVGElement extends Element{
     public final native SVGRect getBBox() /*-{
         return this.getBBox();
     }-*/;
+    
+    public final native ClientRect getBoundingClientRect() /*-{
+        return this.getBoundingClientRect();
+    }-*/;
+
 
 }

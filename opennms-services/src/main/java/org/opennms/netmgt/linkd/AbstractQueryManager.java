@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTableEntry;
@@ -55,9 +57,13 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
+import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
+import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
+import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsAtInterface;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -88,10 +94,12 @@ public abstract class AbstractQueryManager implements QueryManager {
     public abstract IpInterfaceDao getIpInterfaceDao();
 
     public abstract AtInterfaceDao getAtInterfaceDao();
+    
+    public abstract SnmpInterfaceDao getSnmpInterfaceDao();
 
     protected abstract int getIfIndexByName(Connection dbConn, int targetCdpNodeId, String cdpTargetDevicePort) throws SQLException;
 
-    protected abstract int getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
+    protected abstract List<Integer> getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
 
     protected abstract RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress nexthop) throws SQLException;
 
@@ -208,14 +216,14 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
     }
 
-    // This method retrieve the right ifiundex from the OnmsIpInterface
+    // This method retrieve the right interface index from the OnmsIpInterface
     // This is required because the ifindex  walked in atInterface snmp table
     // is related to the node that holds the information and not to the 
     // effective node that hold the ip address.
     // This ifindex is saved in AtInterface object
     // that is used to find the right information for a linked node.
     // AR Dixit
-    private Integer getIfIndex(Integer nodeid, String ipaddress) {
+    protected Integer getIfIndex(Integer nodeid, String ipaddress) {
         OnmsIpInterface ipinterface = getIpInterfaceDao().findByNodeIdAndIpAddress(nodeid, ipaddress);
         if (ipinterface != null && ipinterface.getIfIndex() != null) {
             LogUtils.infof(this, "getIfindex: found ip interface for address '%s' on ifindex %d", ipinterface.getIpAddress().getHostAddress(), ipinterface.getIfIndex());
@@ -225,7 +233,141 @@ public abstract class AbstractQueryManager implements QueryManager {
         return -1;
     }
 
+    protected void processLldp(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+
+        node.setLldpChassisId(snmpcoll.getLldpLocalGroup().getLldpLocChassisid());
+        node.setLldpChassisIdSubtype(snmpcoll.getLldpLocalGroup().getLldpLocChassisidSubType());
+        node.setLldpSysname(snmpcoll.getLldpLocalGroup().getLldpLocSysname());
+
+        Map<Integer, LldpLocTableEntry> localPortNumberToLocTableEntryMap = getLocalPortNumberToLocalTableEntryMap(snmpcoll);
+        List<LldpRemInterface> lldpRemInterfaces = new ArrayList<LldpRemInterface>();
+        
+        for (final LldpRemTableEntry lldpRemTableEntry: snmpcoll.getLldpRemTable()) {
+
+            Integer lldpLocIfIndex = getLldpLocIfIndex(node.getLldpSysname(), localPortNumberToLocTableEntryMap.get(lldpRemTableEntry.getLldpRemLocalPortNum()));
+            if (lldpLocIfIndex == null || lldpLocIfIndex.intValue() == -1) {
+                LogUtils.warnf(this, "processLldpRemTable: lldp local ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
+                continue;
+            }
+
+            Integer lldpRemIfIndex = getLldpRemIfIndex(lldpRemTableEntry);
+            if (lldpRemIfIndex == null || lldpRemIfIndex.intValue() == -1) {
+                LogUtils.warnf(this, "processLldpRemTable: lldp remote ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
+                continue;
+            }
+            
+            LldpRemInterface lldpremint = 
+                new LldpRemInterface(lldpRemTableEntry.getLldpRemChassisidSubtype(), lldpRemTableEntry.getLldpRemChassiid(), lldpRemIfIndex, lldpLocIfIndex);
+            lldpRemInterfaces.add(lldpremint);
+        }
+        node.setLldpRemInterfaces(lldpRemInterfaces);
+    }
+
+    private Map<Integer, LldpLocTableEntry> getLocalPortNumberToLocalTableEntryMap(
+            SnmpCollection snmpcoll) {
+        Map<Integer, LldpLocTableEntry> localPortNumberToLocTableEntryMap = new HashMap<Integer, LldpLocTableEntry>();
+        for (final LldpLocTableEntry lldpLocTableEntry: snmpcoll.getLldpLocTable()) {
+            localPortNumberToLocTableEntryMap.put(lldpLocTableEntry.getLldpLocPortNum(), lldpLocTableEntry);
+        }
+        return localPortNumberToLocTableEntryMap;
+    }
+
+    private Integer getLldpRemIfIndex(LldpRemTableEntry lldpRemTableEntry) {
+        Integer ifindex=-1;
+        switch (lldpRemTableEntry.getLldpRemPortidSubtype().intValue()) {
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemMacAddress());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemIpAddress());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
+            break;
+        }
+        return ifindex;        
+    }
     
+    private Integer getLldpLocIfIndex(String sysname, LldpLocTableEntry lldpLocTableEntry) {
+        Integer ifindex=-1;
+        switch (lldpLocTableEntry.getLldpLocPortIdSubtype().intValue()) {
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(sysname, lldpLocTableEntry.getLldpLocPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(sysname, lldpLocTableEntry.getLldpLocPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(sysname, lldpLocTableEntry.getLldpLocMacAddress());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(sysname, lldpLocTableEntry.getLldpLocIpAddress());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(sysname, lldpLocTableEntry.getLldpLocPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(sysname, lldpLocTableEntry.getLldpLocPortid());
+            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpLocTableEntry.getLldpLocPortid());
+            break;
+        }
+        return ifindex;  
+    }
+        
+    protected Integer getFromSysnameAgentCircuitId(String lldpRemSysname,
+            String lldpRemPortid) {
+        LogUtils.warnf(this,"getFromSysnameAgentCircuitId: AgentCircuitId LLDP PortSubTypeId not supported");
+        return null;
+    }
+
+    protected Integer getFromSysnameIfName(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifName", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
+        return null;
+    }
+    
+    protected abstract Integer getFromSysnameIpAddress(String lldpRemSysname,
+            InetAddress lldpRemIpAddr);
+
+    protected Integer getFromSysnameMacAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("physAddr", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
+        return null;
+    }
+
+    protected Integer getFromSysnamePortComponent(String lldpRemSysname,
+            String lldpRemPortid) {
+        LogUtils.warnf(this,"getFromSysnamePortComponent:PortComponent LLDP PortSubTypeId not supported");
+        return null;
+    }
+
+    protected Integer getFromSysnameIfAlias(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifAlias", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
+        return null;
+    }
+
     protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpcoll.getCdpCacheTable().size() > 0) {
@@ -238,12 +380,6 @@ public abstract class AbstractQueryManager implements QueryManager {
         List<CdpInterface> cdpInterfaces = new ArrayList<CdpInterface>();
 
         for (final CdpCacheTableEntry cdpEntry : snmpcoll.getCdpCacheTable()) {
-            final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
-
-            if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
-                LogUtils.warnf(this, "processCdpCacheTable: CDP address type not valid: %d", cdpAddrType);
-                continue;
-            }
 
             final int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
 
@@ -251,27 +387,41 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.debugf(this, "processCdpCacheTable: ifIndex not valid: %d", cdpIfIndex);
                 continue;
             }
+
             LogUtils.debugf(this, "processCdpCacheTable: ifIndex found: %d", cdpIfIndex);
 
-            final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheAddress();
-            final String cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
+            Collection<Integer> targetCdpNodeIds = new ArrayList<Integer>();
+            final String targetSysName = cdpEntry.getCdpCacheDeviceId();
 
-            int targetCdpNodeId = -1;
+            final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
+            final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
+            String cdpTargetIpAddrString = null;
 
-            if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
-                LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
-                continue;
+            if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
+                LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
             } else {
-                LogUtils.debugf(this, "processCdpCacheTable: IP address found: %s", cdpTargetIpAddrString);
-                targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
-
-                if (targetCdpNodeId == -1) {
-                    LogUtils.infof(this, "processCdpCacheTable: No node ID found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
-                    sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
-                    continue;
+                cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
+                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
+                    LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
+                    cdpTargetIpAddrString = null;
+                } else {
+                    LogUtils.debugf(this, "processCdpCacheTable: Target IP address found: %s", cdpTargetIpAddrString);
+                    targetCdpNodeIds = getNodeidFromIp(dbConn, cdpTargetIpAddr);
+                    if (targetCdpNodeIds.isEmpty()) {
+                        LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
+                        sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
+                        continue;
+                    }
                 }
             }
-            LogUtils.infof(this, "processCdpCacheTable: node ID found: %d.", targetCdpNodeId);
+
+            if (targetCdpNodeIds.isEmpty()) {
+                LogUtils.debugf(this, "processCdpCacheTable: finding nodeids using CDP deviceid(sysname): %d", targetSysName);
+                targetCdpNodeIds = getNodeIdsFromSysName(targetSysName);
+            }
+
+            for (final Integer targetCdpNodeId: targetCdpNodeIds) {
+            LogUtils.infof(this, "processCdpCacheTable: Target node ID found: %d.", targetCdpNodeId);
 
             final String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
 
@@ -287,23 +437,40 @@ public abstract class AbstractQueryManager implements QueryManager {
             if (cdpTargetIfindex == -1) {
                 LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
             }
-
             final CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
             cdpIface.setCdpTargetNodeId(targetCdpNodeId);
-            cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
             cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
+            if (cdpTargetIpAddrString == null) {
+                cdpIface.setCdpTargetIpAddr(getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress());
+            } else {
+                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               
+            }
 
             LogUtils.debugf(this, "processCdpCacheTable: Adding interface to linkable SNMP node: %s", cdpIface);
 
             cdpInterfaces.add(cdpIface);
+            }
         }
         node.setCdpInterfaces(cdpInterfaces);
     }
 
+    private List<Integer> getNodeIdsFromSysName(String targetSysName) {
+        List<Integer> nodeids = new ArrayList<Integer>();
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
+        criteria.add(Restrictions.eq("sysName", targetSysName));
+        final List<OnmsNode> nodes = getNodeDao().findMatching(criteria);
+        for (final OnmsNode node: nodes) {
+            nodeids.add(node.getId());
+        }
+        return nodeids;
+    }
+
     protected void processRouteTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
-            if (snmpcoll.getIpRouteTable().size() > 0) {
+            final int routes = snmpcoll.getIpRouteTable().size();
+            if (routes > 0) {
                 LogUtils.debugf(this, "processRouteTable: Starting route table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processRouteTable: processing # %d routing interfaces", routes);
             } else {
                 LogUtils.debugf(this, "processRouteTable: Zero route table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
@@ -338,6 +505,8 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.warnf(this, "processRouteTable: route mask 255.255.255.255 on node %d. Skipping.", node.getNodeId());
                 store=false;                
             }
+
+            LogUtils.debugf(this, "processRouteTable: processing routedest/routemask/routenexthop %s/%s/%s",str(routedest),str(routemask),str(nexthop));
 
             if (ifindex == null || ifindex < 0) {
                 LogUtils.warnf(this, "processRouteTable: Invalid ifIndex %d on node %d. Skipping.", ifindex, node.getNodeId());
@@ -524,7 +693,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected void processDot1DBase(final LinkableNode node, final SnmpCollection snmpcoll, final DBUtils d, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
 
-        LogUtils.debugf(this, "processDot1DBase: Starting dot1dBase processing.");
+        LogUtils.debugf(this, "processDot1DBase: Starting Bridge MIB processing for Vlan: %s.", vlan.getVlanName());
 
         final OnmsNode onmsNode = getNode(node.getNodeId());
         if (onmsNode == null) {
@@ -562,8 +731,9 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
 
         for (final String physaddr : getPhysAddrs(node.getNodeId(), d, dbConn)) {
-            LogUtils.debugf(this, "Adding Bridge Identifier %s", physaddr);                       
+            LogUtils.debugf(this, "Try to add Bridge Identifier \"%s\" for node %d", physaddr, node.getNodeId());                       
             if (physaddr == null || physaddr.equals("") || physaddr.equals("000000000000")) continue;
+            LogUtils.infof(this, "Adding Bridge Identifier %s for node %d", physaddr, node.getNodeId());                       
             node.addBridgeIdentifier(physaddr);
         }
 
@@ -666,9 +836,9 @@ public abstract class AbstractQueryManager implements QueryManager {
     protected Map<Integer, OnmsStpInterface> processDot1StpPortTable(final LinkableNode node, final SnmpCollection snmpcoll, final Timestamp scanTime, final OnmsVlan vlan,SnmpVlanCollection snmpVlanColl, Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dStpPortTable().size() > 0) {
-                LogUtils.debugf(this, "processDot1StpPortTable: Starting dot1StpPort table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1StpPortTable: Processing dot1StpPortTable for nodeid/ip for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
-                LogUtils.debugf(this, "processDot1StpPortTable: Zero dot1StpPort table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1StpPortTable: Zero dot1StpPort table entries for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
@@ -700,6 +870,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             stpInterface.setStpPortDesignatedRoot(dot1dstpptentry.getDot1dStpPortDesignatedRoot());
             stpInterface.setStpPortDesignatedCost(dot1dstpptentry.getDot1dStpPortDesignatedCost());
             stpInterface.setStpPortDesignatedPort(stpPortDesignatedPort);
+            LogUtils.debugf(this, "processDot1StpPortTable: found stpport/designatedbridge/designatedport %d/%s/%s", stpport,stpPortDesignatedBridge,stpPortDesignatedPort);
+
         }
         return stpinterfaces;
     }
@@ -708,6 +880,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         for (OnmsStpInterface stpInterface: stpinterfaces.values()) {
             node.addStpInterface(stpInterface);
             if (snmpcoll.getSaveStpInterfaceTable()) {
+                LogUtils.debugf(this, "processStpInterfaces: saving %s in stpinterface table", stpInterface.toString());
                 saveStpInterface(dbConn, stpInterface);
             }
             
@@ -716,15 +889,16 @@ public abstract class AbstractQueryManager implements QueryManager {
     protected Map<Integer, OnmsStpInterface> processDot1DBasePortTable(final OnmsNode onmsNode, final LinkableNode node, final SnmpCollection snmpcoll, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl,Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dBasePortTable().size() > 0) {
-                LogUtils.debugf(this, "processDot1DBasePortTable: Starting dot1BasePort table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1DBasePortTable: Processing dot1BasePortTable for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             } else {
-                LogUtils.debugf(this, "processDot1DBasePortTable: Zero dot1BasePort table entries for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
+                LogUtils.debugf(this, "processDot1DBasePortTable: Zero dot1BasePort table entries for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
 
         for (final Dot1dBasePortTableEntry dot1dbaseptentry : snmpVlanColl.getDot1dBasePortTable()) {
             int baseport = dot1dbaseptentry.getBaseBridgePort();
             int ifindex = dot1dbaseptentry.getBaseBridgePortIfindex();
+            LogUtils.debugf(this, "processDot1DBasePortTable: processing bridge port (%d) with ifIndex (%d).", baseport, ifindex);
 
             if (baseport == -1 || ifindex == -1) {
                 LogUtils.infof(this, "processDot1DBasePortTable: Invalid base port (%d) or ifIndex (%d). Skipping.", baseport, ifindex);
@@ -746,30 +920,23 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processStpNode(final OnmsNode onmsNode,final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
-        LogUtils.debugf(this, "processStpNode: Starting STP node processing for Vlan: %s", vlan.getVlanName());
+        LogUtils.debugf(this, "processStpNode: Starting stpnode processing for Vlan: %s", vlan.getVlanName());
 
         final Dot1dBaseGroup dod1db = snmpVlanColl.getDot1dBase();
         final String baseBridgeAddress = dod1db.getBridgeAddress();
 
-        if (vlan.getVlanId() != null) {
-            LogUtils.debugf(this, "processStpNode: Adding Bridge Identifier %s for Vlan %d.", baseBridgeAddress, vlan.getVlanId());
-            node.addBridgeIdentifier(baseBridgeAddress, Integer.toString(vlan.getVlanId()));
-        }
-
+        LogUtils.debugf(this, "processStpNode: processing Dot1dBaseGroup in stpnode");
         final OnmsStpNode stpNode = new OnmsStpNode(onmsNode, vlan.getVlanId());
         stpNode.setLastPollTime(scanTime);
         stpNode.setStatus(DbStpNodeEntry.STATUS_ACTIVE);
-
-        if (snmpcoll.getSaveStpNodeTable()) {
-            LogUtils.debugf(this, "baseBridgeAddress = %s", baseBridgeAddress);
-            stpNode.setBaseBridgeAddress(baseBridgeAddress);
-            stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());
-            stpNode.setBaseType(dod1db.getBridgeType());
-            stpNode.setBaseVlanName(vlan.getVlanName());
-        }
+        stpNode.setBaseBridgeAddress(baseBridgeAddress);
+        LogUtils.debugf(this, "processStpNode: baseBridgeAddress = %s", baseBridgeAddress);
+        stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());
+        stpNode.setBaseType(dod1db.getBridgeType());
+        stpNode.setBaseVlanName(vlan.getVlanName());
 
         if (snmpVlanColl.hasDot1dStp()) {
-            LogUtils.debugf(this, "store: adding Dot1dStpGroup in stpnode table");
+            LogUtils.debugf(this, "processStpNode: processing Dot1dStpGroup in stpnode");
 
             final Dot1dStpGroup dod1stp = snmpVlanColl.getDot1dStp();
 
@@ -789,11 +956,20 @@ public abstract class AbstractQueryManager implements QueryManager {
                 }
             }
             stpNode.setStpDesignatedRoot(stpDesignatedRoot);
+            LogUtils.debugf(this, "processStpNode: stpDesignatedRoot = %s", stpDesignatedRoot);
+
         }
         // store object in database
         if (snmpcoll.getSaveStpNodeTable()) {
+            LogUtils.debugf(this, "processStpNode: saving %s in stpnode table", stpNode.toString());
             saveStpNode(dbConn, stpNode);
         }
+        if (vlan.getVlanId() != null) {
+            LogUtils.debugf(this, "processStpNode: Found Bridge Identifier %s for Vlan %d.", baseBridgeAddress, vlan.getVlanId());
+            node.addBridgeIdentifier(baseBridgeAddress, Integer.toString(vlan.getVlanId()));
+        }
+
+
     }
 
 }
