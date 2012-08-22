@@ -5,14 +5,14 @@ import java.util.List;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 public class AddVertexOperation implements Operation{
     
-    private EditableTopologyProvider m_topologyProvider;
+    private SimpleTopologyProvider m_topologyProvider;
     
     private String m_icon;
-    public AddVertexOperation(String icon, EditableTopologyProvider topologyProvider) {
+    public AddVertexOperation(String icon, SimpleTopologyProvider topologyProvider) {
         m_icon = icon;
         m_topologyProvider = topologyProvider;
     }

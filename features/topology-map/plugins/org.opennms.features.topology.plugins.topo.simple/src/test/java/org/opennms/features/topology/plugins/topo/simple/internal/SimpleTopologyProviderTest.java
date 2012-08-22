@@ -217,15 +217,6 @@ public class SimpleTopologyProviderTest {
 	}
 	
 	@Test
-	public void loadSampleGraph() {
-		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
-		topologyProvider.load("saved-graph.xml");
-		
-		System.err.println("Vertex Count: " + topologyProvider.getVertexIds().size());
-		System.err.println("Edge Count: " + topologyProvider.getEdgeIds().size());
-	}
-	
-	@Test
 	public void testAddVertexWithOperation() {
 	    
 	    List<Object> targets = Collections.emptyList();

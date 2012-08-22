@@ -2,21 +2,24 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 
 public class ResetOperation implements Constants, Operation{
     
-    EditableTopologyProvider m_topologyProvider;
+    SimpleTopologyProvider m_topologyProvider;
     
-    public ResetOperation(EditableTopologyProvider topologyProvider) {
+    public ResetOperation(SimpleTopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
 
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<Object> targets,
+            OperationContext operationContext) {
+        DisplayState graphContainer = operationContext.getGraphContainer();
         
         m_topologyProvider.resetContainer();
         Object groupId = m_topologyProvider.addGroup(GROUP_ICON);
