@@ -63,6 +63,7 @@ public abstract class MibUploadButton extends Upload {
                 try {
                     return new FileOutputStream(file);
                 } catch (FileNotFoundException e) {
+                    logger.warn("Unable to create file '" + file + "': " + e.getLocalizedMessage());
                     return null;
                 }
             }
@@ -86,7 +87,7 @@ public abstract class MibUploadButton extends Upload {
 
         addListener(new Upload.FailedListener() {
             public void uploadFailed(FailedEvent event) {
-                logger.warn("An error has been found");
+                logger.warn("An error has been found: " + event.getReason() == null? "unknown error" : event.getReason().getLocalizedMessage());
             }
         });
 
