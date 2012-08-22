@@ -2113,6 +2113,8 @@
 <event-file>events/JuniperEvents/mfc/TallMaple.events.xml</event-file>
 <!-- Syslog events -->
 <event-file>events/JuniperEvents/syslog/cfmd_ccm_defects.xml</event-file>
+<!-- Space Platform events -->
+<event-file>events/JuniperEvents/space-platform/mib-jnx-space-platform.xml</event-file>
 <!-- End of Juniper Event Files -->
   <event-file>events/K5Systems.events.xml</event-file>
   <event-file>events/LLDP.events.xml</event-file>
