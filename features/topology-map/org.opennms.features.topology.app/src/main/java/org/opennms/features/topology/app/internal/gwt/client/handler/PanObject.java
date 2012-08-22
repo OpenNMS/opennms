@@ -50,8 +50,8 @@ public class PanObject extends DragObject{
 				", " + m.getB() +
 				", " + m.getC() + 
 				", " + m.getD() +
-				", " + boundaryX + 
-				", " + boundaryY + ")";
+				", " + m.getE() + 
+				", " + m.getF() + ")";
 		
 		getDraggableElement().setAttribute("transform", matrixTransform);
 //

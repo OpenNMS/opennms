@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -365,6 +366,20 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         toggleSelectedVertex(vertexId);
     }
     
+    public void selectVerticesByItemId(Collection<Object> itemIds) {
+        for(Vertex vertex : getGraph().getVertices()) {
+            vertex.setSelected(false);
+        }
+        
+        for(Object itemId : itemIds) {
+            toggleSelectVertexByItemId(itemId);
+        }
+        
+        if(itemIds.size() == 0) {
+            requestRepaint();
+        }
+    }
+    
     private void bulkMultiSelectVertex(String[] vertexIds) {
         for(String vertexId : vertexIds) {
             Vertex vertex = getGraph().getVertexByKey((String)vertexId);
@@ -383,6 +398,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		
 		requestRepaint();
 	}
+    
+    private void toggleSelectVertexByItemId(Object itemId) {
+        Vertex vertex = getGraph().getVertexByItemId(itemId);
+        vertex.setSelected(!vertex.isSelected());
+        
+        requestRepaint();
+    }
 
 	public void setScale(double scale){
 	    m_scale.setValue(scale);

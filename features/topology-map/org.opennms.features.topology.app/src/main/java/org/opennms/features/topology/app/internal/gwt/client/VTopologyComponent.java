@@ -50,7 +50,27 @@ import com.vaadin.terminal.gwt.client.ui.dd.VDropHandler;
 import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
 
 public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler, SVGTopologyMap {
-
+    
+    private class SelectionBin{
+        List<GWTVertex> m_selection = new ArrayList<GWTVertex>();
+        
+        public SelectionBin() {
+            
+        }
+        
+        public List<GWTVertex> getSelectedVertices() {
+            return m_selection;
+        }
+        
+        public void addVertex(GWTVertex vert) {
+            m_selection.add(vert);
+        }
+        
+        public void removeVertex(GWTVertex vert) {
+            m_selection.remove(vert);
+        }
+    }
+    
 	public class GraphDrawerNoTransition extends GraphDrawer{
 
 		public GraphDrawerNoTransition(GWTGraph graph, Element vertexGroup,Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler, Handler<GWTVertex> tooltipHandler, Handler<GWTEdge> edgeContextHandler, Handler<GWTEdge> edgeToolTipHandler) {
@@ -330,8 +350,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	@UiField
 	Element m_vertexGroup;
 
-	@UiField
-	Element m_scaledMap;
+//	@UiField
+//	Element m_scaledMap;
 
 	@UiField
 	Element m_referenceMap;
@@ -457,15 +477,15 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		int viewPortWidth = (int) (m_svg.getOffsetWidth() * referenceScale);
 		int viewPortHeight = (int) (m_svg.getOffsetHeight() * referenceScale);
 
-		m_referenceMapViewport.setAttribute("width", "" + viewPortWidth);
-		m_referenceMapViewport.setAttribute("height", "" + viewPortHeight);
+		//m_referenceMapViewport.setAttribute("width", "" + viewPortWidth);
+		//m_referenceMapViewport.setAttribute("height", "" + viewPortHeight);
 
-		m_referenceMap.setAttribute("transform", "translate(" + (m_svg.getOffsetWidth() - width) + " " + (m_svg.getOffsetHeight() - height) + ")");
+		//m_referenceMap.setAttribute("transform", "translate(" + (m_svg.getOffsetWidth() - width) + " " + (m_svg.getOffsetHeight() - height) + ")");
 
 
 		//TODO: Fix this calc
 
-		m_scaledMap.setAttribute("viewBox", x + " " + y + " " + mapBbox.getWidth() + " " + mapBbox.getHeight());
+		//m_scaledMap.setAttribute("viewBox", x + " " + y + " " + mapBbox.getWidth() + " " + mapBbox.getHeight());
 
 
 	}
@@ -894,7 +914,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				.translate(-p.getX(), -p.getY());
 		SVGMatrix ctm = g.getCTM().multiply(m);
 
-		consoleLog("zoomFactor: " + zoomFactor + " oldScale: " + oldScale + " newScale:" + newScale);
 		D3.d3().select(m_svgViewPort).transition().duration(1000).attr("transform", matrixTransform(ctm));
 
 	}
