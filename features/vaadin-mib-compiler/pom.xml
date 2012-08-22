@@ -14,9 +14,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>6.8.0</vaadin.version>
-    <gwt.version>2.3.0</gwt.version>
-    <gwt.plugin.version>2.2.0</gwt.plugin.version>
+    <vaadin.version>6.8.2</vaadin.version>
   </properties>
 
   <build>
@@ -25,62 +23,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
-
-      <!-- Compile custom GWT components or widget dependencies with the GWT compiler -->
-      <!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt.plugin.version}</version>
-        <configuration>
-          <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-          <runTarget>vaadin-mib-compiler</runTarget>
-          <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
-          <noServer>true</noServer>
-          <port>8080</port>
-          <compileReport>false</compileReport>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>resources</goal>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-maven-plugin</artifactId>
-        <version>1.0.2</version>
-        <executions>
-          <execution>
-            <configuration>
-            </configuration>
-            <goals>
-              <goal>update-widgetset</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
 
       <!-- A simple Jetty test server at http://localhost:8080/vaadin-mib-compiler can be launched with the Maven goal jetty:run 
         and stopped with jetty:stop -->
@@ -92,7 +38,7 @@
           <stopPort>9966</stopPort>
           <stopKey>vaadin-mib-compiler</stopKey>
           <!-- Redeploy every x seconds if changes are detected, 0 for no automatic redeployment -->
-          <scanIntervalSeconds>0</scanIntervalSeconds>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
           <!-- make sure Jetty also finds the widgetset -->
           <webAppConfig>
             <contextPath>/vaadin-mib-compiler</contextPath>
@@ -160,27 +106,6 @@
       <artifactId>messagebox</artifactId>
       <version>1.1.1</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
-      <classifier>sources</classifier>
-      <scope>provided</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
