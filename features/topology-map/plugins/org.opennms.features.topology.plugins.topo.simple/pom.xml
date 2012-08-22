@@ -16,7 +16,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
   <artifactId>simple</artifactId>
-  <version>1.11.2-SNAPSHOT</version>
 
   <name>${bundle.symbolicName}</name>
 
@@ -45,6 +44,19 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+	   <groupId>org.osgi</groupId>
+	   <artifactId>org.osgi.compendium</artifactId>
+	   <scope>provided</scope>
+	</dependency>
+	
+    <dependency>
+	   <groupId>org.osgi</groupId>
+	   <artifactId>org.osgi.core</artifactId>
+	   <scope>provided</scope>
+	</dependency>
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
