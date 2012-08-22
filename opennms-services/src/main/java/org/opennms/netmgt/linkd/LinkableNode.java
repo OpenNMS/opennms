@@ -57,9 +57,44 @@ public class LinkableNode {
     private final InetAddress m_snmpprimaryaddr;
 	
     private final String m_sysoid;
+    
+    private String m_lldpSysname;
+    
+    private String m_lldpChassisId;
+    
+    private Integer m_lldpChassisIdSubtype;
+    
+
+    public void setLldpSysname(String lldpSysname) {
+        m_lldpSysname = lldpSysname;
+    }
+    public void setLldpChassisId(String lldpChassisId) {
+        m_lldpChassisId = lldpChassisId;
+    }
+    public void setLldpChassisIdSubtype(Integer lldpChassisIdSubtype) {
+        m_lldpChassisIdSubtype = lldpChassisIdSubtype;
+    }
+    public String getLldpSysname() {
+        return m_lldpSysname;
+    }
+    public String getLldpChassisId() {
+        return m_lldpChassisId;
+    }
+    public Integer getLldpChassisIdSubtype() {
+        return m_lldpChassisIdSubtype;
+    }
 
     private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
-	
+
+    private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
+
+    public List<LldpRemInterface> getLldpRemInterfaces() {
+        return m_lldpreminterfaces;
+    }
+    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
+        m_lldpreminterfaces = lldpreminterfaces;
+    }
+
     private boolean m_hascdpinterfaces = false;
 
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();

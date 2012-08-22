@@ -21,6 +21,9 @@
     <bean id="queryManager" class="org.opennms.netmgt.linkd.DbEventWriter">
       <property name="jdbcTemplate" ref="jdbcTemplate" />
       <property name="nodeDao" ref="nodeDao" />
+      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+      <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+      <property name="atInterfaceDao" ref="atInterfaceDao" />
     </bean>
     -->
 

@@ -855,7 +855,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP));
+        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP)).get(0);
         assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
     }
     

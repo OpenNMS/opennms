@@ -156,6 +156,16 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="use-lldp-discovery" type="boolean"
+				use="optional" default="false">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						link layer discovery protocol mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+
 			<attribute name="save-route-table" type="boolean"
 				use="optional" default="true">
 				<annotation>
@@ -463,6 +473,14 @@
 			</attribute>
 
 			<attribute name="use-bridge-discovery" type="boolean">
+				<annotation>
+					<documentation>
+						OverWrite default value of link-configuration corresponding attribute	
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-lldp-discovery" type="boolean">
 				<annotation>
 					<documentation>
 						OverWrite default value of link-configuration corresponding attribute	

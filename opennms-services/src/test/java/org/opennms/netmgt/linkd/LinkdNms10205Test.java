@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
@@ -49,6 +50,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -82,6 +85,8 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
     @Autowired
     private NodeDao m_nodeDao;
     
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -95,10 +100,13 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-//        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-//        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
 
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
     }
 
     @After
@@ -110,7 +118,7 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
     }
 
     /*
-     * 
+     *  The 
      *  MUMBAI:port ge 0/1/3:ip 192.168.5.5   ------> CHENNAI:port ge 4/0/2: ip 192.168.5.6
      *  MUMBAI:port ge 0/1/2:ip 192.168.5.9   ------> DELHI:port ge 1/0/2: ip 192.168.5.10
      *  MUMBAI:port ge 0/0/1:ip 192.168.5.13   ------> BANGALORE:port ge 0/0/0: ip 192.168.5.14
@@ -119,73 +127,151 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
      *  CHENNAI:port ge 4/0/3:ip 192.168.1.1  ------> DELHI: port ge 1/1/0: ip 192.168.1.2
      *  
      *  a lot of duplicated ip this is a clear proof that linkd is not able to 
-     *  gather topology.
+     *  gather topology of this lab using the useBridgeTopology and ip routes.
      */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
             @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt"),
             @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
             @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt")
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
+            @JUnitSnmpAgent(host=J6350_41_IP, port=161, resource="classpath:linkd/nms10205/"+J6350_41_NAME+"_"+J6350_41_IP+".txt"),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205/"+"J6350-42_"+J6350_42_IP+".txt"),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205/"+"SRX-100_"+SRX_100_IP+".txt"),
+            @JUnitSnmpAgent(host=SSG550_IP, port=161, resource="classpath:linkd/nms10205/"+SSG550_NAME+"_"+SSG550_IP+".txt")
     })
     public void testNetwork10205Links() throws Exception {
         m_nodeDao.save(getMumbai());
         m_nodeDao.save(getChennai());
         m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getSpaceExSw1());
         m_nodeDao.save(getBangalore());
+        m_nodeDao.save(getBagmane());
+        m_nodeDao.save(getMysore());
+        m_nodeDao.save(getSpaceExSw1());
+        m_nodeDao.save(getSpaceExSw2());
+        m_nodeDao.save(getJ635041());
+        m_nodeDao.save(getJ635042());
+        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(getSGG550());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setForceIpRouteDiscoveryOnEthernet(true);
+        example1.setUseCdpDiscovery(false);
         Iproutes iproutes = new Iproutes();
         Vendor juniper = new Vendor();
         juniper.setVendor_name("Juniper.junos");
         juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
         juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
+        juniper.addSpecific("2.9");
+        juniper.addSpecific("2.10");
+        juniper.addSpecific("2.11");
+        juniper.addSpecific("2.20");
         juniper.addSpecific("2.25");
         juniper.addSpecific("2.29");
         juniper.addSpecific("2.30");
-        juniper.addSpecific("2.9");
-        juniper.addSpecific("2.10");
+        juniper.addSpecific("2.31");
+        juniper.addSpecific("2.41");
+        juniper.addSpecific("2.57");
+
         iproutes.addVendor(juniper);
         m_linkdConfig.getConfiguration().setIproutes(iproutes);
         m_linkdConfig.update();
-
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode chennai = m_nodeDao.findByForeignId("linkd", CHENNAI_NAME);
         final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);
-        final OnmsNode spaceexsw1 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW1_NAME);
         final OnmsNode bangalore = m_nodeDao.findByForeignId("linkd", BANGALORE_NAME);
-        
+        final OnmsNode bagmane = m_nodeDao.findByForeignId("linkd", BAGMANE_NAME);
+        final OnmsNode mysore = m_nodeDao.findByForeignId("linkd", MYSORE_NAME);
+        final OnmsNode spaceexsw1 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW1_NAME);
+        final OnmsNode spaceexsw2 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW2_NAME);
+        final OnmsNode j635041 = m_nodeDao.findByForeignId("linkd", J6350_41_NAME);
+        final OnmsNode j635042 = m_nodeDao.findByForeignId("linkd", J6350_42_NAME);
+        final OnmsNode srx100 = m_nodeDao.findByForeignId("linkd", SRX_100_NAME);
+        final OnmsNode ssg550 = m_nodeDao.findByForeignId("linkd", SSG550_NAME);
+
         assertTrue(m_linkd.scheduleNodeCollection(chennai.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(bangalore.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(bagmane.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mysore.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(j635041.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(j635042.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(srx100.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ssg550.getId()));
 
         assertTrue(m_linkd.runSingleSnmpCollection(mumbai.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(chennai.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
-               
+        assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(j635041.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ssg550.getId()));
+             
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        // Should be 6 links only 4 found....
-        /*
-         * Node Id = Delhi IfIndex = 28503 Node ParentId = Mumbai Parent IfIndex = 519
-         * Node Id = Bangalore IfIndex = 2401 Node ParentId = Mumbai Parent IfIndex = 507
-         * Node Id = Chennai IfIndex = 528 Node ParentId = Mumbai Parent IfIndex = 520
-         * Node Id = Bangalore IfIndex = 2397 Node ParentId = Delhi Parent IfIndex = 3674
-         * 
-         */
-        assertEquals(4,m_dataLinkInterfaceDao.countAll());                
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        
+        assertEquals(9, links.size());
+        
+        // Linkd is able to find partially the topology using the next hop router
+        // among the core nodes:
+        // mumbai, chennai, delhi, mysore,bangalore and bagmane
+        // the link between chennai and delhi is lost 
+        // the link between chennai and bagmane is lost
+        // the link between bagmane and delhi is lost
+        // I checked the walks and no route info
+        // is there for discovering the link.
+        // I have to guess that linkd is working as expected
+        
+        // The bridge and RSTP topology information are
+        // unusuful, the devices supporting RSTP
+        // have themselves as designated bridge.
+        
+        // Other links are lost...
+        // no routing entry and no bridge 
+        // forwarding
+        
+        for (final DataLinkInterface datalinkinterface: links) {
+            switch(datalinkinterface.getId().intValue()) {
+                case 915: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                break;
+                case 916: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                break;
+                case 917: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                break;
+                case 918: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                break;
+                case 919: checkLink(chennai, mumbai, 528, 520, datalinkinterface);
+                break;
+                case 920: checkLink(mysore, chennai, 505, 517, datalinkinterface);
+                break;
+                case 921: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                break;
+                case 922: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                break;
+                case 923: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                break;
+                default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
+                break;                
+            }
+        }
     }
 }
