@@ -5,15 +5,15 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 
 public class CreateGroupOperation implements Constants, Operation{
     
     
-	TopologyProvider m_topologyProvider;
+    SimpleTopologyProvider m_topologyProvider;
     
-    public CreateGroupOperation(TopologyProvider topologyProvider) {
+    public CreateGroupOperation(SimpleTopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
     
