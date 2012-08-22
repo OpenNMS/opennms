@@ -475,54 +475,68 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		super.onBrowserEvent(event);
 
 		switch(DOM.eventGetType(event)) {
-		case Event.ONCONTEXTMENU:
-			EventTarget target = event.getEventTarget();
-
-			Element svg = this.getElement().getElementsByTagName("svg").getItem(0);
-
-			if (target.equals(svg)) {
-				showContextMenu(null, event.getClientX(), event.getClientY(), "map");
-				//m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			break;
-
-		case Event.ONMOUSEDOWN:
-
-			break;
-
-		case Event.ONMOUSEWHEEL:
-			double delta = event.getMouseWheelVelocityY() / 30.0;
-			double oldScale = m_scale;
-			final double newScale = oldScale + delta;
-			final int clientX = event.getClientX();
-			final int clientY = event.getClientY();
-			//broken now need to fix it
-			//    	    Command cmd = new Command() {
-			//                
-			//                public void execute() {
-			//                    m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
-			//                    m_client.updateVariable(m_paintableId, "clientX", clientX, false);
-			//                    m_client.updateVariable(m_paintableId, "clientY", clientY, false);
-			//                    
-			//                    m_client.sendPendingVariableChanges();
-			//                }
-			//            };
-			//            
-			//            if(BrowserInfo.get().isWebkit()) {
-			//                Scheduler.get().scheduleDeferred(cmd);
-			//            }else {
-			//                cmd.execute();
-			//            }
-
-			break;
+    		case Event.ONCONTEXTMENU:
+    			EventTarget target = event.getEventTarget();
+    
+    			Element svg = this.getElement().getElementsByTagName("svg").getItem(0);
+    
+    			if (target.equals(svg)) {
+    				showContextMenu(null, event.getClientX(), event.getClientY(), "map");
+    				//m_client.getContextMenu().showAt(this, event.getClientX(), event.getClientY());
+    				event.preventDefault();
+    				event.stopPropagation();
+    			}
+    			break;
+    
+    		case Event.ONMOUSEDOWN:
+    
+    			break;
+    
+    		case Event.ONMOUSEWHEEL:
+    			double delta = event.getMouseWheelVelocityY() / 30.0;
+    			double oldScale = m_scale;
+    			final double newScale = oldScale + delta;
+    			final int clientX = event.getClientX();
+    			final int clientY = event.getClientY();
+    			//broken now need to fix it
+    			//    	    Command cmd = new Command() {
+    			//                
+    			//                public void execute() {
+    			//                    m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
+    			//                    m_client.updateVariable(m_paintableId, "clientX", clientX, false);
+    			//                    m_client.updateVariable(m_paintableId, "clientY", clientY, false);
+    			//                    
+    			//                    m_client.sendPendingVariableChanges();
+    			//                }
+    			//            };
+    			//            
+    			//            if(BrowserInfo.get().isWebkit()) {
+    			//                Scheduler.get().scheduleDeferred(cmd);
+    			//            }else {
+    			//                cmd.execute();
+    			//            }
+    
+    			break;
+    			
+    		case Event.ONCLICK:
+    		    if(event.getEventTarget().equals(m_svg)) {
+    		        deselectVertices();
+    		    }
+    		    break;
 		}
 
 
 	}
 
-	private Handler<GWTVertex> vertexContextMenuHandler() {
+	private void deselectVertices() {
+	    m_client.updateVariable(m_paintableId, "clickedVertex", "", false);
+        m_client.updateVariable(m_paintableId, "shiftKeyPressed", false, false);
+
+        m_client.sendPendingVariableChanges();
+        
+    }
+
+    private Handler<GWTVertex> vertexContextMenuHandler() {
 		return new D3Events.Handler<GWTVertex>() {
 
 			public void call(final GWTVertex vertex, int index) {
@@ -743,7 +757,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				}
 
 				vertex.setSelected(booleanAttribute);
-				vertex.setIcon(child.getStringAttribute("iconUrl"));
+				vertex.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
 
 				if (child.hasAttribute("label")) {
 					vertex.setLabel(child.getStringAttribute("label"));

@@ -14,6 +14,7 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 	private CommandManager m_commandManager = new CommandManager();
 	private IconRepositoryManager m_iconRepositoryManager = new IconRepositoryManager();
     private TopologyProvider m_topologyProvider;
+    private String m_themeName = "reindeer";
 	
 	public CommandManager getCommandManager() {
         return m_commandManager;
@@ -25,7 +26,9 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
-		return new TopologyWidgetTestApplication(m_commandManager, getTopologyProvider(), m_iconRepositoryManager);
+		TopologyWidgetTestApplication application = new TopologyWidgetTestApplication(m_commandManager, getTopologyProvider(), m_iconRepositoryManager);
+		application.setTheme(m_themeName);
+        return application;
 	}
 
 	@Override
@@ -47,6 +50,10 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 
     public void setIconRepositoryManager(IconRepositoryManager iconRepositoryManager) {
         m_iconRepositoryManager = iconRepositoryManager;
+    }
+    
+    public void setTheme(String themeName) {
+        m_themeName = themeName;
     }
     
 }
