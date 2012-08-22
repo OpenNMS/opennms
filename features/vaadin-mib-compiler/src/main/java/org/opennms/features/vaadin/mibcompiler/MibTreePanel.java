@@ -103,8 +103,16 @@ public class MibTreePanel extends Panel {
         super("MIB Compiler");
 
         // Make sure MIB directories exist
-        MIBS_COMPILED_DIR.mkdirs();
-        MIBS_PENDING_DIR.mkdirs();
+        if (!MIBS_COMPILED_DIR.exists()) {
+            if (!MIBS_COMPILED_DIR.mkdirs()) {
+                throw new RuntimeException("Unable to create directory for compiled MIBs (" + MIBS_COMPILED_DIR + ")");
+            }
+        }
+        if (!MIBS_PENDING_DIR.exists()) {
+            if (!MIBS_PENDING_DIR.mkdirs()) {
+                throw new RuntimeException("Unable to create directory for pending MIBs (" + MIBS_PENDING_DIR + ")");
+            }
+        }
 
         // Parser Configuration
 
