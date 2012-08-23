@@ -51,26 +51,6 @@ import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
 
 public class VTopologyComponent extends Composite implements Paintable, ActionOwner, VHasDropHandler, SVGTopologyMap {
     
-    private class SelectionBin{
-        List<GWTVertex> m_selection = new ArrayList<GWTVertex>();
-        
-        public SelectionBin() {
-            
-        }
-        
-        public List<GWTVertex> getSelectedVertices() {
-            return m_selection;
-        }
-        
-        public void addVertex(GWTVertex vert) {
-            m_selection.add(vert);
-        }
-        
-        public void removeVertex(GWTVertex vert) {
-            m_selection.remove(vert);
-        }
-    }
-    
 	public class GraphDrawerNoTransition extends GraphDrawer{
 
 		public GraphDrawerNoTransition(GWTGraph graph, Element vertexGroup,Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler, Handler<GWTVertex> tooltipHandler, Handler<GWTEdge> edgeContextHandler, Handler<GWTEdge> edgeToolTipHandler) {
@@ -323,7 +303,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		}
 
 	}
-	
+
 	private static VTopologyComponentUiBinder uiBinder = GWT
 			.create(VTopologyComponentUiBinder.class);
 	
@@ -331,6 +311,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	UiBinder<Widget, VTopologyComponent> {
 	}
 
+	protected static final String VERTEX_CSS_CLASS = ".vertex";
 	private ApplicationConnection m_client;
 	private String m_paintableId;
 
@@ -663,7 +644,24 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		return new Handler<GWTVertex>() {
 
 			public void call(GWTVertex vertex, int index) {
-				m_client.updateVariable(m_paintableId, "updatedVertex", "id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected(), true);
+			    
+			    final List<String> values = new ArrayList<String>();
+			    final String[] vertexIds = m_dragObject.getDraggedVertices();
+			    D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME).each(new Handler<GWTVertex>() {
+
+                    @Override
+                    public void call(GWTVertex vertex, int index) {
+                        for(String id : vertexIds) {
+                            if(vertex.getId().equals(id)) {
+                                values.add("id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected());
+                            }
+                        }
+                    }
+                });
+			    
+			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), true);
+			    
+				//m_client.updateVariable(m_paintableId, "updatedVertex", "id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected(), true);
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
 			}
@@ -677,11 +675,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			public void call(GWTVertex vertex, int index) {
 				NativeEvent event = D3.getEvent();
 				Element draggableElement = Element.as(event.getEventTarget()).getParentElement();
-
-
-
-				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, m_svgViewPort);
-
+				
+				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, getSVGViewPort(), selectAllVertexElements());
 
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
@@ -707,9 +702,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		return new Handler<GWTVertex>() {
 
 			public void call(GWTVertex vertex, int index) {
-
-				vertex.setX( m_dragObject.getCurrentX() );
-				vertex.setY( m_dragObject.getCurrentY() );
 
 				m_dragObject.move();
 				D3.getEvent().preventDefault();
@@ -789,7 +781,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 					TooltipInfo ttInfo = new TooltipInfo(vertex.getTooltipText());
 					m_client.registerTooltip(this, vertex, ttInfo);
 				}
-
+				
 			}else if(child.getTag().equals("edge")) {
 				GWTVertex source = graphConverted.findVertexById(child.getStringAttribute("source"));
 				GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), source, graphConverted.findVertexById( child.getStringAttribute("target") ));
@@ -1032,6 +1024,41 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     @Override
     public D3 selectAllVertexElements() {
         return D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME);
+    }
+    
+    /**
+     * Centers the view on a selection
+     */
+    public void centerSelection() {
+        final D3 selection = D3.d3().selectAll(".vertex");
+        
+        selection.each(new Handler<GWTVertex>() {
+
+            @Override
+            public void call(GWTVertex vertex, int index) {
+                // TODO Auto-generated method stub
+                if(vertex.isSelected()) {
+                    SVGGElement vertGroup = m_vertexGroup.cast();
+                    SVGMatrix matrixTf = vertGroup.getCTM().inverse();
+                    
+                    SVGGElement elem = D3.d3().getElement(selection, index).cast();
+                    SVGPoint p = getSVGElement().createSVGPoint();
+                    p.setX(VTopologyComponent.this.getOffsetWidth()/2);
+                    p.setY(VTopologyComponent.this.getOffsetHeight()/2);
+                    SVGPoint p2 = p.matrixTransform(matrixTf);
+                    
+                    SVGMatrix m = matrixTf.inverse().translate(VTopologyComponent.this.getOffsetWidth()/2, VTopologyComponent.this.getOffsetHeight()/2);
+                    
+                    String matrixTransform = "matrix(" + m.getA() +
+                            ", " + m.getB() +
+                            ", " + m.getC() + 
+                            ", " + m.getD() +
+                            ", " + m.getE() + 
+                            ", " + m.getF() + ")";
+                    
+                }
+            }
+        });
     }
 
 }

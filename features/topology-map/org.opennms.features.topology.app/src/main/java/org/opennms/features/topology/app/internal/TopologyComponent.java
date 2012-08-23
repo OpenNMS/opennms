@@ -302,19 +302,21 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         if(variables.containsKey("updatedVertex")) {
             String vertexUpdate = (String) variables.get("updatedVertex");
-            String[] vertexProps = vertexUpdate.split("\\|");
-            
-            String id = vertexProps[0].split(",")[1];
-            int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
-            int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
-            boolean selected = vertexProps[3].split(",")[1] == "true" ;
-            
-            Vertex vertex = getGraph().getVertexByKey(id);
-            vertex.setX(x);
-            vertex.setY(y);
-            vertex.setSelected(selected);
+            updateVertex(vertexUpdate);
             
             requestRepaint();
+        }
+        
+        if(variables.containsKey("updateVertices")) {
+            String[] vertices = (String[]) variables.get("updateVertices");
+            for(String vUpdate : vertices) {
+                updateVertex(vUpdate);
+            }
+            
+            if(vertices.length > 0) {
+                requestRepaint();
+            }
+            
         }
         
         if(variables.containsKey("mapScale")) {
@@ -350,6 +352,20 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
         
         updateMenuItems();
+    }
+
+    private void updateVertex(String vertexUpdate) {
+        String[] vertexProps = vertexUpdate.split("\\|");
+        
+        String id = vertexProps[0].split(",")[1];
+        int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
+        int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
+        boolean selected = vertexProps[3].split(",")[1] == "true" ;
+        
+        Vertex vertex = getGraph().getVertexByKey(id);
+        vertex.setX(x);
+        vertex.setY(y);
+        vertex.setSelected(selected);
     }
     
 	private void clearAllVertexSelections() {
