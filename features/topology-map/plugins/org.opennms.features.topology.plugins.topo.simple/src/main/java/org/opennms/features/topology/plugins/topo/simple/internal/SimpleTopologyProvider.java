@@ -31,7 +31,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
     
-    private String m_topologyLocation = null;
+    private URL m_topologyLocation = null;
     
     public SimpleTopologyProvider() {
     	System.err.println("Creating a new SimpleTopologyProvider");
@@ -40,21 +40,15 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         m_edgeContainer.setBeanIdProperty("id");
         
         URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
-        
-        SimpleGraph graph = JAXB.unmarshal(defaultGraph, SimpleGraph.class);
-        
-        m_vertexContainer.removeAllItems();
-        m_vertexContainer.addAll(graph.m_vertices);
-        
-        m_edgeContainer.removeAllItems();
-        m_edgeContainer.addAll(graph.m_edges);
+
+        setTopologyLocation(defaultGraph);
     }
     
-    public String getTopologyLocation() {
+    public URL getTopologyLocation() {
 		return m_topologyLocation;
 	}
 
-	public void setTopologyLocation(String topologyLocation) {
+	public void setTopologyLocation(URL topologyLocation) {
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null) {
@@ -235,6 +229,16 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         JAXB.marshal(graph, new File(filename));
     }
     
+	public void load(URL url) {
+        SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
+        
+        m_vertexContainer.removeAllItems();
+        m_vertexContainer.addAll(graph.m_vertices);
+        
+        m_edgeContainer.removeAllItems();
+        m_edgeContainer.addAll(graph.m_edges);
+    }
+
     /* (non-Javadoc)
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#load(java.lang.String)
 	 */

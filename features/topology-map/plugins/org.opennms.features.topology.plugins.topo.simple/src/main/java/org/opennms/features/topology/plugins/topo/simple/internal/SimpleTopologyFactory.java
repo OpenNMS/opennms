@@ -1,5 +1,8 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,39 +37,45 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 	@Override
 	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
 		
-		if (!m_providers.containsKey(pid)) {
-			SimpleTopologyProvider topoProvider = new SimpleTopologyProvider();
-			topoProvider.setTopologyLocation((String)properties.get(TOPOLOGY_LOCATION));
-			
-			m_providers.put(pid, topoProvider);
-			
-			Properties metaData = new Properties();
-			metaData.put(Constants.SERVICE_PID, pid);
-			
-			if (properties.get(LABEL) != null) {
-				metaData.put(LABEL, properties.get(LABEL));
-			}
-			
-			ServiceRegistration registration = m_bundleContext.registerService(new String[] { TopologyProvider.class.getName(), EditableTopologyProvider.class.getName() },
-												topoProvider, metaData);
-			
-			m_registrations.put(pid, registration);
-			
-		} else {
-			m_providers.get(pid).setTopologyLocation((String)properties.get(TOPOLOGY_LOCATION));
-			
-			ServiceRegistration registration = m_registrations.get(pid);
-			
-			Properties metaData = new Properties();
-			metaData.put(Constants.SERVICE_PID, pid);
-			
-			if (properties.get(LABEL) != null) {
-				metaData.put(LABEL, properties.get(LABEL));
+		try {
+			String location = (String)properties.get(TOPOLOGY_LOCATION);
+			URL url = new URL(location);
+			if (!m_providers.containsKey(pid)) {
+				SimpleTopologyProvider topoProvider = new SimpleTopologyProvider();
+				topoProvider.setTopologyLocation(url);
+
+				m_providers.put(pid, topoProvider);
+
+				Properties metaData = new Properties();
+				metaData.put(Constants.SERVICE_PID, pid);
+
+				if (properties.get(LABEL) != null) {
+					metaData.put(LABEL, properties.get(LABEL));
+				}
+
+				ServiceRegistration registration = m_bundleContext.registerService(new String[] { TopologyProvider.class.getName(), EditableTopologyProvider.class.getName() },
+						topoProvider, metaData);
+
+				m_registrations.put(pid, registration);
+
+			} else {
+				m_providers.get(pid).setTopologyLocation(url);
+
+				ServiceRegistration registration = m_registrations.get(pid);
+
+				Properties metaData = new Properties();
+				metaData.put(Constants.SERVICE_PID, pid);
+
+				if (properties.get(LABEL) != null) {
+					metaData.put(LABEL, properties.get(LABEL));
+				}
+
+				registration.setProperties(metaData);
 			}
 
-			registration.setProperties(metaData);
+		} catch (MalformedURLException e) {
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid url");
 		}
-
 	}
 
 	@Override
