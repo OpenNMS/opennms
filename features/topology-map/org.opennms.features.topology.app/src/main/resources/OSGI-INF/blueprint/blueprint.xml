@@ -57,6 +57,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
                     <entry key="VIRTUALMACHINE_ICON_UNKNOWN" value="theme://images/vmware-virtualmachine-unknown.png"/>
                     <entry key="DATASTORE_ICON" value="theme://images/vmware-datastore.png"/>
                     <entry key="DATACENTER_ICON" value="theme://images/vmware-datacenter.png"/>
+                    <entry key="linkd-server" value="theme://images/vmware-hostsystem-on.png"/>
+                    <entry key="linkd-group" value="theme://images/cloud.png"/>
                 </map>
             </property>
         </bean>
