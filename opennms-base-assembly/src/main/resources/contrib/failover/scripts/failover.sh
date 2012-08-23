@@ -1,5 +1,21 @@
 #!/bin/bash
-/usr/bin/crontab  -u root /opt/opennms/contrib/failover/etc/sync-on.crontab
+## sub definition
+syncOn() {
+        TEMP=$(mktemp)
+        /usr/bin/crontab -l > $TEMP
+        /bin/sed -i -e '/^\s*$/d'  $TEMP
+        /bin/grep sync.sh $TEMP >/dev/null
+        if [ $? != 0 ]; then
+                cat  >> $TEMP <<AAAAA
+0 0 * * *       /opt/opennms/contrib/failover/scripts/sync.sh
+AAAAA
+                /usr/bin/crontab -u root $TEMP
+                service crond restart
+        fi
+        return $?
+}
+## start work
+syncOn
 /etc/rc.d/init.d/postgresql start
 OPENNMS_DUMP=/var/opennms/rrd
 DB_NAME=opennms
