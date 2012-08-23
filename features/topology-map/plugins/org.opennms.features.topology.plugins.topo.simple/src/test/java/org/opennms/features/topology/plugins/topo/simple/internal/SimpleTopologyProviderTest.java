@@ -3,8 +3,8 @@ package org.opennms.features.topology.plugins.topo.simple.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.GROUP_ICON;
-import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.SERVER_ICON;
+import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.GROUP_ICON_KEY;
+import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.SERVER_ICON_KEY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,6 +177,10 @@ public class SimpleTopologyProviderTest {
         if(m_topologyProvider == null) {
             m_topologyProvider = new SimpleTopologyProvider();
         }
+        
+		m_topologyProvider.resetContainer();
+		
+
     }
     
     @After
@@ -189,14 +193,15 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void test() {
 		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		topologyProvider.resetContainer();
 		
 		String vertexA = (String) topologyProvider.addVertex(50, 100);
 		String vertexB = (String) topologyProvider.addVertex(100, 50);
 		String vertexC = (String) topologyProvider.addVertex(100, 150);
 		String vertexD = (String) topologyProvider.addVertex(150, 100);
 		String vertexE = (String) topologyProvider.addVertex(200, 200);
-		String group1 = (String) topologyProvider.addGroup(GROUP_ICON);
-		String group2 = (String) topologyProvider.addGroup(GROUP_ICON);
+		String group1 = (String) topologyProvider.addGroup(GROUP_ICON_KEY);
+		String group2 = (String) topologyProvider.addGroup(GROUP_ICON_KEY);
 		topologyProvider.getVertexContainer().setParent(vertexA, group1);
 		topologyProvider.getVertexContainer().setParent(vertexB, group1);
 		topologyProvider.getVertexContainer().setParent(vertexC, group2);
@@ -231,7 +236,7 @@ public class SimpleTopologyProviderTest {
 	    List<Object> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
-	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON_KEY, m_topologyProvider);
 	    addOperation.execute(targets, operationContext);
 	    
 	    Collection<?> vertIds =  m_topologyProvider.getVertexIds();
@@ -241,7 +246,10 @@ public class SimpleTopologyProviderTest {
 
 	@Test
 	public void testAddVertexToAnotherVertexOperation() {
-	  //Add existing vertex
+
+		m_topologyProvider.resetContainer();
+
+		//Add existing vertex
         Object vertexId = addVertexToTopr();
 	    
 	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
@@ -256,7 +264,7 @@ public class SimpleTopologyProviderTest {
 	    targets.add("1");
 	    
 	    OperationContext operationContext = getOperationContext(graphContainer);
-	    AddVertexOperation addOperation = new AddVertexOperation(SERVER_ICON, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(SERVER_ICON_KEY, m_topologyProvider);
         addOperation.execute(targets, operationContext);
 	    
         Collection<?> vertIds = m_topologyProvider.getVertexIds();
@@ -271,7 +279,9 @@ public class SimpleTopologyProviderTest {
 	
     @Test
 	public void testConnectVertices() {
-        Object vertexId = m_topologyProvider.addVertex(0, 0);
+		m_topologyProvider.resetContainer();
+
+		Object vertexId = m_topologyProvider.addVertex(0, 0);
         
         assertEquals(1, m_topologyProvider.getVertexIds().size());
         Object vertId = m_topologyProvider.getVertexIds().iterator().next();
@@ -296,6 +306,9 @@ public class SimpleTopologyProviderTest {
     
     @Test
     public void testRemoveVertexOperation() {
+		m_topologyProvider.resetContainer();
+
+    	
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
         Object vertexId = addVertexToTopr();
@@ -327,7 +340,7 @@ public class SimpleTopologyProviderTest {
         SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
         assertEquals(2, parent.getMembers().size());
         
-        m_topologyProvider.addGroup(GROUP_ICON);
+        m_topologyProvider.addGroup(GROUP_ICON_KEY);
         
         EasyMock.verify(graphContainer);
     }
@@ -359,6 +372,9 @@ public class SimpleTopologyProviderTest {
     
     @Test
     public void testConnectVerticesOperation() {
+    	
+		m_topologyProvider.resetContainer();
+
         Object vertexId1 = addVertexToTopr();
         Object vertexId2 = addVertexToTopr();
         

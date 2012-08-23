@@ -31,10 +31,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </reference-list>
     
     <service interface="org.opennms.features.topology.api.IconRepository">
-        <bean class="org.opennms.features.topology.app.internal.support.DefaultIconRepository">
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
                 <map>
                     <entry key="server" value="theme://images/server.png"/>
+                    <entry key="group" value="theme://images/cloud.png"/>
+                    <entry key="NETWORK_ICON" value="theme://images/vmware-network.png"/>
+                    <entry key="HOSTSYSTEM_ICON_ON" value="theme://images/vmware-hostsystem-on.png"/>
+                    <entry key="HOSTSYSTEM_ICON_OFF" value="theme://images/vmware-hostsystem-off.png"/>
+                    <entry key="HOSTSYSTEM_ICON_STANDBY" value="theme://images/vmware-hostsystem-standby.png"/>
+                    <entry key="HOSTSYSTEM_ICON_UNKNOWN" value="theme://images/vmware-hostsystem-unknown.png"/>
+                    <entry key="VIRTUALMACHINE_ICON_ON" value="theme://images/vmware-virtualmachine-on.png"/>
+                    <entry key="VIRTUALMACHINE_ICON_OFF" value="theme://images/vmware-virtualmachine-off.png"/>
+                    <entry key="VIRTUALMACHINE_ICON_SUSPENDED" value="theme://images/vmware-virtualmachine-suspended.png"/>
+                    <entry key="VIRTUALMACHINE_ICON_UNKNOWN" value="theme://images/vmware-virtualmachine-unknown.png"/>
+                    <entry key="DATASTORE_ICON" value="theme://images/vmware-datastore.png"/>
+                    <entry key="DATACENTER_ICON" value="theme://images/vmware-datacenter.png"/>
                 </map>
             </property>
         </bean>
@@ -110,6 +122,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
+            <entry key="operation.menuLocation" value="Edit|Layout"/>
+            <entry key="operation.label" value="Real Ultimate Layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RealUltimateLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
             <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
             <entry key="operation.label" value="ISOM Layout"/>
         </service-properties>
@@ -168,7 +188,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout"/>
+            <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
             <entry key="operation.label" value="Spring Layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.SpringLayoutOperation"/>
