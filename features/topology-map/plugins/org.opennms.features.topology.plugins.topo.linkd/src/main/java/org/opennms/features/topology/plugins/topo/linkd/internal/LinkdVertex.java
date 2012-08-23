@@ -111,6 +111,14 @@ abstract public class LinkdVertex {
 		m_iconKey = icon;
 	}
 
+	public String getIcon() {
+		return null;
+	}
+
+	public void setIcon(String icon) {
+	
+	}
+
 	public String getLabel() {
 		return m_label;
 	}
