@@ -475,7 +475,7 @@ public class SimpleGraphContainer implements GraphContainer {
             protected GVertex make(String key, Object itemId, Item item) {
                 Object groupId = m_topologyProvider.getVertexContainer().getParent(itemId);
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
-                System.out.println("GVertex Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
+                // System.out.println("GVertex Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
                 GVertex gVertex = new GVertex(key, itemId, item, groupKey, groupId);
                 return gVertex;
             }
