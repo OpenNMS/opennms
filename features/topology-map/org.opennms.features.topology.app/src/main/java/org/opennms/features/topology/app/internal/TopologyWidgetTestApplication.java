@@ -160,7 +160,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		menuBarUpdated(m_commandManager);
 		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
 
-
+		m_graphContainer.redoLayout();
 	}
 
 

@@ -2,6 +2,7 @@ package org.opennms.features.topology.netutils.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -219,31 +220,37 @@ public class PingWindow extends Window{
 	 * @return Web address for ping command with submitted parameters
 	 * @throws MalformedURLException
 	 */
-	protected URL buildURL() {
-		boolean validInput = false;
-		try {
-			validInput = validateInput();
-		} catch (NumberFormatException e) {
-			getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.TYPE_WARNING_MESSAGE);
-			return null;
-		}
-		if (validInput){
-			String options = baseAddress;
-			options += "&address=" + ipDropdown.getValue().toString();
-			options += "&timeout=" + timeoutField.getValue().toString();
-			options += "&numberOfRequests=" + requestsField.getValue().toString();
-			options += "&packetSize=" + (Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
-			if (numericalDataCheckBox.getValue().equals(true))
-				options += "&numericOutput=true";
-			try { return new URL(options); } catch (MalformedURLException e) {
-				getApplication().getMainWindow().showNotification("Could not build URL", Notification.TYPE_WARNING_MESSAGE);
-				return null;
-			}
-		} else {
-			getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.TYPE_WARNING_MESSAGE);
-			return null;
-		}
-	}
+    protected URL buildURL() {
+        boolean validInput = false;
+        try {
+            validInput = validateInput();
+        } catch (NumberFormatException e) {
+            getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.TYPE_WARNING_MESSAGE);
+            return null;
+        }
+        if (validInput) {
+            final URL baseUrl = getApplication().getURL();
+            
+            final StringBuilder options = new StringBuilder(baseAddress);
+
+            options.append("&address=").append(ipDropdown.getValue())
+                .append("&timeout=").append(timeoutField.getValue())
+                .append("&numberOfRequests=").append(requestsField.getValue())
+                .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
+            if (numericalDataCheckBox.getValue().equals(true)) {
+                options.append("&numericOutput=true");
+            }
+            try {
+                return new URL(baseUrl, options.toString());
+            } catch (final MalformedURLException e) {
+                getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.TYPE_WARNING_MESSAGE);
+                return null;
+            }
+        } else {
+            getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.TYPE_WARNING_MESSAGE);
+            return null;
+        }
+    }
 
 	/**
 	 * The validateInput method checks the timeout text field and the
