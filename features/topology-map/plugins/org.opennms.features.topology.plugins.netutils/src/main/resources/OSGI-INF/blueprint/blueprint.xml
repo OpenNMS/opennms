@@ -6,16 +6,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="pingURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=ping"/>
-            <cm:property name="tracerouteURL" value="http://demo.opennms.org/opennms/ExecCommand.map?command=traceroute"/>
-            <cm:property name="eventsURL" value="http://demo.opennms.org/opennms/event/list"/>
-            <cm:property name="eventsFilter" value="http://demo.opennms.org/opennms/event/list?filter=node%3D"/>
-            <cm:property name="alarmsURL" value="http://demo.opennms.org/opennms/alarm/list.htm"/>
-            <cm:property name="alarmsFilter" value="http://demo.opennms.org/opennms/alarm/list.htm?sortby=id&amp;acktype=unacklimit=20&amp;filter=node%3D"/>
-        	<cm:property name="nodeInfoURL" value="http://demo.opennms.org/opennms/element/nodeList.htm"/>
-        	<cm:property name="nodeInfoFilter" value="http://demo.opennms.org/opennms/element/node.jsp?node="/>
-        	<cm:property name="resourceGraphsURL" value="http://demo.opennms.org/opennms/graph/index.jsp"/>
-        	<cm:property name="resourceGraphsFilter" value="http://demo.opennms.org/opennms/graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
+            <cm:property name="pingURL" value="/opennms/ExecCommand.map?command=ping"/>
+            <cm:property name="tracerouteURL" value="/opennms/ExecCommand.map?command=traceroute"/>
+            <cm:property name="eventsURL" value="/opennms/event/list"/>
+            <cm:property name="eventsFilter" value="/opennms/event/list?filter=node%3D"/>
+            <cm:property name="alarmsURL" value="/opennms/alarm/list.htm"/>
+            <cm:property name="alarmsFilter" value="/opennms/alarm/list.htm?sortby=id&amp;acktype=unacklimit=20&amp;filter=node%3D"/>
+        	<cm:property name="nodeInfoURL" value="/opennms/element/nodeList.htm"/>
+        	<cm:property name="nodeInfoFilter" value="/opennms/element/node.jsp?node="/>
+        	<cm:property name="resourceGraphsURL" value="/opennms/graph/index.jsp"/>
+        	<cm:property name="resourceGraphsFilter" value="/opennms/graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
         </cm:default-properties>
     </cm:property-placeholder>
     

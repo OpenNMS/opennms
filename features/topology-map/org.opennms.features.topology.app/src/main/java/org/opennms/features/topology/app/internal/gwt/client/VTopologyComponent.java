@@ -748,7 +748,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				group.setActionKeys(actionKeys);
 
 				group.setSelected(booleanAttribute);
-				group.setIcon(child.getStringAttribute("iconUrl"));
+				group.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
 				group.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
 
 				if (child.hasAttribute("label")) {

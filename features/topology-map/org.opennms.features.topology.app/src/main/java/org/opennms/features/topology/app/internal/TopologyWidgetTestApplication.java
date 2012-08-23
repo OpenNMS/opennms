@@ -83,10 +83,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_topologyComponent.setContextMenuHandler(this);
 
 		final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
-		final Slider slider = new Slider(1, 4);
+		final Slider slider = new Slider(0, 4);
 		slider.setResolution(2);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
+		scale.setValue(1.0);
 
 		slider.addListener(new ValueChangeListener(){
 
