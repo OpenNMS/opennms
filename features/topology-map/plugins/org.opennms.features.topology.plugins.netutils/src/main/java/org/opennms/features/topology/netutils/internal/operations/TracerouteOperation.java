@@ -22,10 +22,6 @@ public class TracerouteOperation implements Operation {
         String ipAddr = "";
 
         if (targets != null) {
-            final List<Object> selectedVertices = operationContext.getGraphContainer().getSelectedVertices();
-            if (selectedVertices != null && selectedVertices.size() > 0) {
-                return false;
-            }
             for (final Object target : targets) {
                 final Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
                 if (vertexItem != null) {
