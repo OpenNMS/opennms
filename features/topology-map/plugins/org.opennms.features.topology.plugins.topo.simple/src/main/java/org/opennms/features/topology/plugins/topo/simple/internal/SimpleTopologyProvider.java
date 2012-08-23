@@ -1,6 +1,7 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,16 @@ public class SimpleTopologyProvider implements TopologyProvider{
         m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
+        
+        URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
+        
+        SimpleGraph graph = JAXB.unmarshal(defaultGraph, SimpleGraph.class);
+        
+        m_vertexContainer.removeAllItems();
+        m_vertexContainer.addAll(graph.m_vertices);
+        
+        m_edgeContainer.removeAllItems();
+        m_edgeContainer.addAll(graph.m_edges);
     }
 
     public SimpleVertexContainer getVertexContainer() {
@@ -102,14 +113,14 @@ public class SimpleTopologyProvider implements TopologyProvider{
         return m_vertexContainer.addBean(vertex);
     }
     
-    private Item addGroup(String groupId, String icon, String label) {
+    private Item addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         System.err.println("Adding a group: " + groupId);
         SimpleVertex vertex = new SimpleGroup(groupId);
-        vertex.setIcon(icon);
         vertex.setLabel(label);
+        vertex.setIconKey(iconKey);
         return m_vertexContainer.addBean(vertex);
         
     }
@@ -269,9 +280,9 @@ public class SimpleTopologyProvider implements TopologyProvider{
     }
 
     @Override
-    public Object addGroup(String groupIcon) {
+    public Object addGroup(String groupIconKey) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIcon, "Group " + nextGroupId);
+        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
         return nextGroupId;
     }
 

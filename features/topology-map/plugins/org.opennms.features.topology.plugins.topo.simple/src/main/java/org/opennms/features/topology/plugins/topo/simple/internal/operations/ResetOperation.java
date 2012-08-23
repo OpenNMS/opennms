@@ -2,7 +2,6 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
@@ -17,12 +16,10 @@ public class ResetOperation implements Constants, Operation{
     }
 
     @Override
-    public Undoer execute(List<Object> targets,
-            OperationContext operationContext) {
-        DisplayState graphContainer = operationContext.getGraphContainer();
+    public Undoer execute(List<Object> targets, OperationContext operationContext) {
         
         m_topologyProvider.resetContainer();
-        Object groupId = m_topologyProvider.addGroup(GROUP_ICON);
+        Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
         Object vertexId = m_topologyProvider.addVertex(50, 50);
         m_topologyProvider.setParent(vertexId, groupId);
         return null;

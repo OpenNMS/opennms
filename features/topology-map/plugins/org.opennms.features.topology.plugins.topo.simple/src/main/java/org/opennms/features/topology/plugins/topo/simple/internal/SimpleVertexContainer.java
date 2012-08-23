@@ -11,6 +11,8 @@ import java.util.List;
 import org.opennms.features.topology.api.VertexContainer;
 
 public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex> {
+	private static final long serialVersionUID = 1L;
+
 	public SimpleVertexContainer() {
 		super(SimpleVertex.class);
 		setBeanIdProperty("id");

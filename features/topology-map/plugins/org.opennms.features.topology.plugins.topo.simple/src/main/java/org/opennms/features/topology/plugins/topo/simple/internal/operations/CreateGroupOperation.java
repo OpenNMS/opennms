@@ -22,18 +22,29 @@ public class CreateGroupOperation implements Constants, Operation{
         
         GraphContainer graphContainer = operationContext.getGraphContainer();
         
-        Object groupId = m_topologyProvider.addGroup(GROUP_ICON);
+        Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
         
-        m_topologyProvider.setParent(groupId, ROOT_GROUP_ID);
         
 //        for(Object itemId : targets) {
 //            m_topologyProvider.setParent(itemId, groupId);
 //        }
         
+        
+        Object parentGroup = null;
         for(Object key : targets) {
             Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
+            Object parent = m_topologyProvider.getVertexContainer().getParent(vertexId);
+            if (parentGroup == null) {
+            	parentGroup = parent;
+            } else if (parentGroup != parent) {
+            	parentGroup = ROOT_GROUP_ID;
+            }
             m_topologyProvider.setParent(vertexId, groupId);
         }
+
+        
+        m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+        
         return null;
     }
 

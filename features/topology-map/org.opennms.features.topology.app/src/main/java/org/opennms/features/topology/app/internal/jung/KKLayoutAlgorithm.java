@@ -15,7 +15,7 @@ import org.opennms.features.topology.app.internal.Vertex;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class KKLayoutAlgorithm implements LayoutAlgorithm {
+public class KKLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
 
 	public void updateLayout(GraphContainer graph) {
 		
@@ -46,7 +46,7 @@ public class KKLayoutAlgorithm implements LayoutAlgorithm {
 				return new Point(v.getX(), v.getY());
 			}
 		});
-		layout.setSize(new Dimension(750,750));
+		layout.setSize(new Dimension(LAYOUT_WIDTH,LAYOUT_HEIGHT));
 		
 		while(!layout.done()) {
 			layout.step();

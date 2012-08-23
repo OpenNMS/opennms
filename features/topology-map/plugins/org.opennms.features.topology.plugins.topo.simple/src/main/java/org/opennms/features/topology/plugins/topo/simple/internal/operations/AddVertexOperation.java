@@ -11,9 +11,9 @@ public class AddVertexOperation implements Operation{
     
     private SimpleTopologyProvider m_topologyProvider;
     
-    private String m_icon;
-    public AddVertexOperation(String icon, SimpleTopologyProvider topologyProvider) {
-        m_icon = icon;
+    private String m_iconKey;
+    public AddVertexOperation(String iconKey, SimpleTopologyProvider topologyProvider) {
+        m_iconKey = iconKey;
         m_topologyProvider = topologyProvider;
     }
     
@@ -35,25 +35,25 @@ public class AddVertexOperation implements Operation{
         return null;
     }
 
-    void connectNewVertex(String vertexId, String icon, DisplayState graphContainer) {
+    void connectNewVertex(String vertexId, String iconKey, DisplayState graphContainer) {
         Object vertId1 = m_topologyProvider.addVertex(0, 0);
         m_topologyProvider.setParent(vertId1, Constants.ROOT_GROUP_ID);
         m_topologyProvider.connectVertices(vertexId, vertId1);
         
     }
 
-    public String getIcon() {
-        return m_icon;
+    public String getIconKey() {
+        return m_iconKey;
     }
 
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         System.err.println("/*** Executing add Vertex in AddVertexOperation ***/");
         Object vertexKey = targets.isEmpty() ? null : targets.get(0);
         Object vertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(vertexKey);
-        String icon = getIcon();
+        String icon = getIconKey();
         if (vertexId == null) {
             if (operationContext.getGraphContainer().getVertexContainer().containsId(Constants.CENTER_VERTEX_ID)) {
-            	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON, operationContext.getGraphContainer());
+            	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON_KEY, operationContext.getGraphContainer());
             }
             else {
                 Object vertId = m_topologyProvider.addVertex(250, 250);

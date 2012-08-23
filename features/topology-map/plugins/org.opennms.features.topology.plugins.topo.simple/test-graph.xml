@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <graph>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png</icon>
+        <iconKey>server</iconKey>
         <id>v0</id>
         <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v0</label>
@@ -13,7 +13,7 @@
         <y>100</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png</icon>
+        <iconKey>server</iconKey>
         <id>v1</id>
         <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v1</label>
@@ -25,7 +25,7 @@
         <y>50</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png</icon>
+        <iconKey>server</iconKey>
         <id>v2</id>
         <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v2</label>
@@ -37,7 +37,7 @@
         <y>150</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png</icon>
+        <iconKey>server</iconKey>
         <id>v3</id>
         <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v3</label>
@@ -49,7 +49,7 @@
         <y>100</y>
     </vertex>
     <vertex>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/server.png</icon>
+        <iconKey>server</iconKey>
         <id>v4</id>
         <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v4</label>
@@ -60,7 +60,7 @@
         <y>200</y>
     </vertex>
     <group>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png</icon>
+        <iconKey>group</iconKey>
         <id>g0</id>
         <ipAddr>127.0.0.1</ipAddr>
         <label>Group g0</label>
@@ -73,7 +73,7 @@
         <members>v1</members>
     </group>
     <group>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png</icon>
+        <iconKey>group</iconKey>
         <id>g1</id>
         <ipAddr>127.0.0.1</ipAddr>
         <label>Group g1</label>

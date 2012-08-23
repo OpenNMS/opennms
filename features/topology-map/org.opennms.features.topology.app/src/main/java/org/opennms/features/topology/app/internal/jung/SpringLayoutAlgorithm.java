@@ -15,7 +15,7 @@ import org.opennms.features.topology.app.internal.Vertex;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class SpringLayoutAlgorithm implements LayoutAlgorithm {
+public class SpringLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
 
 	public void updateLayout(GraphContainer graph) {
 		
@@ -47,8 +47,8 @@ public class SpringLayoutAlgorithm implements LayoutAlgorithm {
 				return new Point(v.getX(), v.getY());
 			}
 		});
-		layout.setSize(new Dimension(750,750));
-		layout.setRepulsionRange(250);
+		layout.setSize(new Dimension(LAYOUT_WIDTH,LAYOUT_HEIGHT));
+		layout.setRepulsionRange(LAYOUT_REPULSION);
 		
 		int count = 0;
 		while(!layout.done() && count < 700) {

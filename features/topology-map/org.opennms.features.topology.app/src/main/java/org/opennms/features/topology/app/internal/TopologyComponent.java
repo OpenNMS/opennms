@@ -133,7 +133,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", group.getX());
         		target.addAttribute("y", group.getY());
         		target.addAttribute("selected", group.isSelected());
-        		target.addAttribute("iconUrl", group.getIconUrl());
+        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(group.getIconKey()));
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
 
