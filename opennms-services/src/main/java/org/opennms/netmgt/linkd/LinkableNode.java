@@ -64,7 +64,15 @@ public class LinkableNode {
     
     private Integer m_lldpChassisIdSubtype;
     
-
+    private InetAddress m_ospfRouterId;
+    
+    public InetAddress getOspfRouterId() {
+        return m_ospfRouterId;
+    }
+    public void setOspfRouterId(InetAddress ospfRouterId) {
+        m_ospfRouterId = ospfRouterId;
+    }
+    
     public void setLldpSysname(String lldpSysname) {
         m_lldpSysname = lldpSysname;
     }
@@ -88,17 +96,15 @@ public class LinkableNode {
 
     private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
 
-    public List<LldpRemInterface> getLldpRemInterfaces() {
-        return m_lldpreminterfaces;
-    }
-    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
-        m_lldpreminterfaces = lldpreminterfaces;
-    }
-
     private boolean m_hascdpinterfaces = false;
 
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-	
+
+    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
+    
+    private Map<InetAddress, Integer> m_ospfipaddresstoifindex = new HashMap<InetAddress, Integer>();
+    
+
     private boolean m_hasrouteinterfaces = false;
 	
     private boolean m_isBridgeNode = false;
@@ -159,6 +165,31 @@ public class LinkableNode {
 	public InetAddress getSnmpPrimaryIpAddr() {
 		return m_snmpprimaryaddr;
 	}
+
+	    public List<LldpRemInterface> getLldpRemInterfaces() {
+	        return m_lldpreminterfaces;
+	    }
+	    
+	    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
+	        m_lldpreminterfaces = lldpreminterfaces;
+	    }
+	    
+	    public List<OspfNbrInterface> getOspfinterfaces() {
+	        return m_ospfinterfaces;
+	    }
+
+	    public void setOspfinterfaces(List<OspfNbrInterface> ospfinterfaces) {
+	        m_ospfinterfaces = ospfinterfaces;
+	    }
+	    
+	    public Map<InetAddress, Integer> getOspfipaddresstoifindex() {
+	        return m_ospfipaddresstoifindex;
+	    }
+	    
+	    public void setOspfipaddresstoifindex(
+	            Map<InetAddress, Integer> ospfipaddresstoifindex) {
+	        m_ospfipaddresstoifindex = ospfipaddresstoifindex;
+	    }
 
 	/**
 	 * <p>getCdpInterfaces</p>
