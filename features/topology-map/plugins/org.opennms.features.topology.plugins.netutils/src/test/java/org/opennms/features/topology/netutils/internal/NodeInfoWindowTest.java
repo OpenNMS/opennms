@@ -1,6 +1,9 @@
 package org.opennms.features.topology.netutils.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +20,9 @@ public class NodeInfoWindowTest {
 	@Before
 	public void setUp() throws Exception {
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
-		window = new NodeInfoWindow(null, "http://localhost:8080/");
-		window2 = new NodeInfoWindow(testNode1, "http://localhost:8080/");
+		final URL url = new URL("http://localhost:8080/");
+        window = new NodeInfoWindow(null, url);
+		window2 = new NodeInfoWindow(testNode1, url);
 		mainWindow = new Window();
 		app = new Application() { //Empty Application
 			@Override
