@@ -17,11 +17,9 @@ import com.vaadin.Application;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -167,16 +165,18 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private Layout createWestLayout() {
         m_tree = createTree();
         
-        TextField filterField = new TextField("Filter");
-        filterField.setTextChangeEventMode(TextChangeEventMode.LAZY);
+        final TextField filterField = new TextField("Filter");
         filterField.setTextChangeTimeout(200);
-        filterField.addListener(new TextChangeListener() {
-            
+        
+        Button filterBtn = new Button("Filter");
+        
+        filterBtn.addListener(new ClickListener() {
+
             @Override
-            public void textChange(TextChangeEvent event) {
+            public void buttonClick(ClickEvent event) {
                 VertexContainer<Object, GVertex> container = (VertexContainer<Object, GVertex>) m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
-                container.addContainerFilter(Vertex.LABEL_PROPERTY, event.getText(), true, false);
+                container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
                 
             }
         });
@@ -191,6 +191,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
         absLayout.addComponent(filterField, "top: 25px; left: 0px;");
+        absLayout.addComponent(filterBtn, "top: 25px; left: 135px;");
         absLayout.addComponent(scrollPanel, "top: 75px; left: 0px; bottom:0px;"); 
         
         return absLayout;
