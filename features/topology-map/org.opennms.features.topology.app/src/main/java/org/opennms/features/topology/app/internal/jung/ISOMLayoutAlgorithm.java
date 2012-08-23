@@ -15,7 +15,7 @@ import org.opennms.features.topology.app.internal.Vertex;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class ISOMLayoutAlgorithm implements LayoutAlgorithm {
+public class ISOMLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
 
 	public void updateLayout(GraphContainer graph) {
 		
@@ -46,7 +46,7 @@ public class ISOMLayoutAlgorithm implements LayoutAlgorithm {
 				return new Point(v.getX(), v.getY());
 			}
 		});
-		layout.setSize(new Dimension(750,750));
+		layout.setSize(new Dimension(LAYOUT_WIDTH,LAYOUT_HEIGHT));
 		
 		while(!layout.done()) {
 			layout.step();

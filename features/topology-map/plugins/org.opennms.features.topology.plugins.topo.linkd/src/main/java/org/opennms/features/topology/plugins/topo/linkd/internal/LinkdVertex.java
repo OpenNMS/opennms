@@ -16,7 +16,7 @@ abstract public class LinkdVertex {
 	int m_y;
 	boolean m_selected;
 	boolean m_locked = false;
-	String m_icon;
+	String m_iconKey;
 	String m_label;
 	String m_ipAddr;
 	LinkdGroup m_parent = null;
@@ -25,18 +25,18 @@ abstract public class LinkdVertex {
 	
 	public LinkdVertex() {}
 
-	public LinkdVertex(String id, String icon, String label, String ipAddr) {
+	public LinkdVertex(String id, String iconKey, String label, String ipAddr) {
 	    m_id=id;
-	    m_icon=icon;
+	    m_iconKey=iconKey;
 	    m_label = label;
 	    m_ipAddr = ipAddr;
 	}
 	
-	public LinkdVertex(String id, int x, int y, String icon, String label, String ipAddr) {
+	public LinkdVertex(String id, int x, int y, String iconKey, String label, String ipAddr) {
 		m_id=id;
 		m_x=x;
 		m_y=y;
-		m_icon=icon;
+		m_iconKey=iconKey;
 		m_label=label;
 		m_ipAddr = ipAddr;
 	}
@@ -103,12 +103,20 @@ abstract public class LinkdVertex {
 		m_selected = selected;
 	}
 
+	public String getIconKey() {
+		return m_iconKey;
+	}
+
+	public void setIconKey(String icon) {
+		m_iconKey = icon;
+	}
+
 	public String getIcon() {
-		return m_icon;
+		return null;
 	}
 
 	public void setIcon(String icon) {
-		m_icon = icon;
+	
 	}
 
 	public String getLabel() {

@@ -46,7 +46,6 @@ import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -126,10 +125,10 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
         synchronized (m_portMutex) {
             if (m_port.get() == null) {
                 // Fetch a new ephemeral port
-                localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
+                localAddress = new InetSocketAddress(0);
                 m_port.set(localAddress.getPort());
             } else {
-                localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), m_port.get());
+                localAddress = new InetSocketAddress(m_port.get());
             }
         }
         final ConnectFuture cf = connector.connect(remoteAddress, localAddress, init);
