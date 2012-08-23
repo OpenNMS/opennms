@@ -14,56 +14,48 @@ public class PingOperation implements Operation {
 
 	private String pingURL;
 
-	public boolean display(List<Object> targets, OperationContext operationContext) {
-		String ipAddr = "";
-
-		if (targets != null) {
-			for(Object target : targets) {
-				Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
-				if (vertexItem != null) {
-					Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
-					ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
-				}
-			}
-		}
-		if ("".equals(ipAddr)) return false;
-		return true;
+	public boolean display(final List<Object> targets, final OperationContext operationContext) {
+	    return true;
 	}
 
-	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		return true;
+	public boolean enabled(final List<Object> targets, final OperationContext operationContext) {
+	    if (targets == null || targets.size() < 2) return true;
+	    return false;
 	}
 
-	public Undoer execute(List<Object> targets, OperationContext operationContext) {
-		String ipAddr = "";
-		String label = "";
-		int nodeID = -1;
+	public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+	    String ipAddr = "";
+	    String label = "";
+	    int nodeID = -1;
 
-		if (targets != null) {
-			for(Object target : targets) {
-				Property ipAddrProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr");
-				ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
-				Property labelProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label");
-				label = labelProperty == null ? "" : (String) labelProperty.getValue();
-				Property nodeIDProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID");
-				nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
-			}
-		}
-		Node node = new Node(nodeID, ipAddr, label);
-		operationContext.getMainWindow().addWindow(new PingWindow(node, getPingURL()));
-		return null;
+            if (targets != null) {
+                for (final Object target : targets) {
+                    final Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
+                    if (vertexItem != null) {
+                        final Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
+                        ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
+                        final Property labelProperty = vertexItem.getItemProperty("label");
+                        label = labelProperty == null ? "" : (String) labelProperty.getValue();
+                        final Property nodeIDProperty = vertexItem.getItemProperty("nodeID");
+                        nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
+                    }
+                }
+            }
+            final Node node = new Node(nodeID, ipAddr, label);
+            operationContext.getMainWindow().addWindow(new PingWindow(node, getPingURL()));
+            return null;
 	}
 
 	public String getId() {
-		return "ping";
+	    return "ping";
 	}
 
-	public void setPingURL(String url) {
-		pingURL = url;
+	public void setPingURL(final String url) {
+	    pingURL = url;
 	}
 
 	public String getPingURL() {
-		return pingURL;
+	    return pingURL;
 	}
 
 }

@@ -21,7 +21,6 @@ public class NodeInfoWindow extends Window {
     private final double sizePercentage = 0.80; // Window size ratio to the main window
     private final int widthCushion = 50; //Border cushion for width of window;
     private final int heightCushion = 110; //Border cushion for height of window
-    private URL nodeInfoURL = null; //Web address of the Resources Graphs page
     private Embedded nodeInfoBrowser = null; //Browser component which is directed at the Resource Graphs page
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 
@@ -34,26 +33,16 @@ public class NodeInfoWindow extends Window {
      * @param height Height of the main window
      * @throws MalformedURLException
      */
-    public NodeInfoWindow(Node n, String baseURL) throws MalformedURLException{
+    public NodeInfoWindow(final Node node, final URL nodeURL) throws MalformedURLException{
         
-		Node node = n;
-		if (node == null) {
-			node = new Node(-1, "", "");
-		}
-		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		if (node.getNodeID() >= 0) {
-			baseURL += node.getNodeID();
-		}
-    	/*Sets the web address to the Resource Graphs page of the selected node and initializes the browser*/
-    	nodeInfoURL = new URL(baseURL);
-        nodeInfoBrowser = new Embedded("", new ExternalResource(nodeInfoURL));
+        nodeInfoBrowser = new Embedded("", new ExternalResource(nodeURL));
 
-		String label = node.getLabel();
-		/*Sets up window settings*/
-		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
-			label = "";
-		} else label = " - " + label;
-		setCaption("Node Info" + label);
+        String label = node == null? "" : node.getLabel();
+        /*Sets up window settings*/
+        if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
+            label = "";
+        } else label = " - " + label;
+        setCaption("Node Info" + label);
         setImmediate(true);
         setResizable(false);
         
