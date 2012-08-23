@@ -16,34 +16,14 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
 		<property name="bundleContext" ref="blueprintBundleContext" />
 	</bean>
 	
-	<bean id="topologySelector" class="org.opennms.features.topology.plugins.topo.simple.internal.operations.TopologySelector">
-		<property name="bundleContext" ref="blueprintBundleContext" />
-	</bean>
-	
-	<reference-list id="topologyProviders" interface="org.opennms.features.topology.api.TopologyProvider" availability="optional" >
-	  <reference-listener ref="topologySelector" bind-method="addTopologyProvider" unbind-method="removeTopologyProvider" />
-	</reference-list>
-
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="simpleTopologyFactory">
     	<service-properties>
     	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.simple"/>
     	</service-properties>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Save Topology to XML"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.SaveToXML">
-
-        </bean>
-    </service>
-
-
 <!-- 
-    <reference id="activeTopoProvider" interface="org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider" availability="optional"
+    <reference id="activeTopoProvider" interface="org.opennms.features.topology.api.EditableTopologyProvider" availability="optional"
     	filter="(org.opennms.features.topology.plugins.topo.simple.active=true)" />
     
     <service interface="org.opennms.features.topology.api.Operation" >

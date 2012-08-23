@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -139,6 +140,16 @@ public class OnmsTopologyProviderTest {
 	public List<Object> getSelectedVertices() {
 	    // TODO Auto-generated method stub
 	    return null;
+	}
+
+	@Override
+	public TopologyProvider getDataSource() {
+		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
+	}
+
+	@Override
+	public void setDataSource(TopologyProvider topologyProvider) {
+		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
 	}
 
     }

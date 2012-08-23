@@ -1,6 +1,5 @@
-package org.opennms.features.topology.plugins.topo.simple.internal;
+package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.TopologyProvider;
 
 public interface EditableTopologyProvider extends TopologyProvider {
 

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -31,7 +32,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 	}
 
 	@Override
-	public void updated(String pid, Dictionary properties) throws ConfigurationException {
+	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
 		
 		if (!m_providers.containsKey(pid)) {
 			SimpleTopologyProvider topoProvider = new SimpleTopologyProvider();

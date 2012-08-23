@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.simple.internal.operations;
+package org.opennms.features.topology.app.internal.operations;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +36,7 @@ public class TopologySelector  {
 
     	@Override
     	public Undoer execute(List<Object> targets, OperationContext operationContext) {
-    		m_activeTopologyProvider = m_topologyProvider;
+    		operationContext.getGraphContainer().setDataSource(m_topologyProvider);
     		return null;
     	}
 
@@ -57,7 +57,9 @@ public class TopologySelector  {
 
 		@Override
 		public boolean isChecked(List<Object> targets,	OperationContext operationContext) {
-			return m_topologyProvider == m_activeTopologyProvider;
+			TopologyProvider activeTopologyProvider = operationContext.getGraphContainer().getDataSource();
+			System.err.println("Active Provider is " + activeTopologyProvider + ": Expected " + m_topologyProvider);
+			return m_topologyProvider.equals(activeTopologyProvider);
 		}
     }
     

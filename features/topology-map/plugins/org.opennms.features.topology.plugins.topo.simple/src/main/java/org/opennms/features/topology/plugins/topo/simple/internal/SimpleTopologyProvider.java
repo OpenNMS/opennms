@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.TopologyProvider;
 
 import com.vaadin.data.Item;
