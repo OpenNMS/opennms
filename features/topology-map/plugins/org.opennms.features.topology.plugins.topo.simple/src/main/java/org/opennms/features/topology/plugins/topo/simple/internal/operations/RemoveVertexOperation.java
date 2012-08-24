@@ -3,16 +3,16 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 
 public class RemoveVertexOperation implements Operation {
 
-    SimpleTopologyProvider m_topologyProvider;
+    EditableTopologyProvider m_topologyProvider;
     
-    public RemoveVertexOperation(SimpleTopologyProvider topologyProvider) {
+    public RemoveVertexOperation(EditableTopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
     

@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
@@ -141,6 +142,16 @@ public class SimpleTopologyProviderTest {
 	    // TODO Auto-generated method stub
 	    return null;
 	}
+
+	@Override
+	public TopologyProvider getDataSource() {
+		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
+	}
+
+	@Override
+	public void setDataSource(TopologyProvider topologyProvider) {
+		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
+	}
         
     }
     
@@ -219,6 +230,15 @@ public class SimpleTopologyProviderTest {
 		
 		topologyProvider.load("test-graph.xml");
 		
+	}
+	
+	@Test
+	public void loadSampleGraph() {
+		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		topologyProvider.load("saved-vmware-graph.xml");
+		
+		System.err.println("Vertex Count: " + topologyProvider.getVertexIds().size());
+		System.err.println("Edge Count: " + topologyProvider.getEdgeIds().size());
 	}
 	
 	@Test

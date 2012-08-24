@@ -2,6 +2,7 @@ package org.opennms.features.topology.netutils.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
@@ -20,7 +21,6 @@ public class ResourceGraphsWindow extends Window {
 	private final double sizePercentage = 0.80; // Window size ratio to the main window
 	private final int widthCushion = 50; //Border cushion for width of window;
 	private final int heightCushion = 110; //Border cushion for height of window
-	private URL rgURL = null; //Web address for the Resource Graphs page
 	private Embedded rgBrowser = null; //Browser component which is directed at the Resource Graphs page
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 	
@@ -33,26 +33,17 @@ public class ResourceGraphsWindow extends Window {
 	 * @param height Height of the main window
 	 * @throws MalformedURLException
 	 */
-	public ResourceGraphsWindow(Node n, String baseURL) throws MalformedURLException{
+	public ResourceGraphsWindow(final Node node, final URL nodeURL) throws MalformedURLException{
 		
-		Node node = n;
-		if (node == null) {
-			node = new Node(-1, "", "");
-		}
-		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		if (node.getNodeID() >= 0) {
-			baseURL += ("[" + node.getNodeID() + "]");
-		}
-		
-		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		rgURL = new URL(baseURL);
-		rgBrowser = new Embedded("", new ExternalResource(rgURL));
+		rgBrowser = new Embedded("", new ExternalResource(nodeURL));
 		
 		String label = node.getLabel();
 		/*Sets up window settings*/
 		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
 			label = "";
-		} else label = " - " + label;
+		} else {
+		    label = " - " + label;
+		}
 		setCaption("Resource Graphs" + label);
 		setImmediate(true);
 		setResizable(false);

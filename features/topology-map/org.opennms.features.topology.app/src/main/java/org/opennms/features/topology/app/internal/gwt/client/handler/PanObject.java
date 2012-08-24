@@ -1,5 +1,6 @@
 package org.opennms.features.topology.app.internal.gwt.client.handler;
 
+import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
@@ -19,7 +20,7 @@ public class PanObject extends DragObject{
 	private SVGPoint m_stateOrigin;
 
 	public PanObject(SVGTopologyMap svgTopologyMap, Element draggableElement, Element containerElement) {
-		super(svgTopologyMap, draggableElement, containerElement);
+		super(svgTopologyMap, draggableElement, containerElement, D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME));
 
 		SVGGElement g = draggableElement.cast();
 		m_stateTf = g.getCTM().inverse();

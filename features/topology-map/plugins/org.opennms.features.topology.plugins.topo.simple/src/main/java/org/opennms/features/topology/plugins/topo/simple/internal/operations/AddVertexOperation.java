@@ -3,16 +3,16 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 public class AddVertexOperation implements Operation{
     
-    private SimpleTopologyProvider m_topologyProvider;
+    private EditableTopologyProvider m_topologyProvider;
     
     private String m_iconKey;
-    public AddVertexOperation(String iconKey, SimpleTopologyProvider topologyProvider) {
+    public AddVertexOperation(String iconKey, EditableTopologyProvider topologyProvider) {
         m_iconKey = iconKey;
         m_topologyProvider = topologyProvider;
     }

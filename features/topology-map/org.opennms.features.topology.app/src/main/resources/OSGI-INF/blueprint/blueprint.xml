@@ -13,21 +13,31 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </cm:default-properties>
     </cm:property-placeholder>
     
+    <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
+
+    
+    
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
         <property name="commandManager" ref="commandManager"/>
-        <property name="topologyProvider" ref="topologyProvider"/>
         <property name="iconRepositoryManager" ref="iconRepoManager"/>
-        <property name="theme" value="${servletAlias}"/>
+        <property name="topologyProvider" ref="topologyProvider" />
+        <property name="theme" value="${theme}"/>
     </bean>
     
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
+    <bean id="topologySelector" class="org.opennms.features.topology.app.internal.operations.TopologySelector">
+    	<property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+    
+    <reference-list interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory">
+        <reference-listener bind-method="addTopologyProvider" unbind-method="removeTopologyProvider" ref="topologySelector" />
+    </reference-list>
+
     
     <!-- Icon Repository Manager -->
     <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
     
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager">
-        </reference-listener>
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
     
     <service interface="org.opennms.features.topology.api.IconRepository">
@@ -47,6 +57,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
                     <entry key="VIRTUALMACHINE_ICON_UNKNOWN" value="theme://images/vmware-virtualmachine-unknown.png"/>
                     <entry key="DATASTORE_ICON" value="theme://images/vmware-datastore.png"/>
                     <entry key="DATACENTER_ICON" value="theme://images/vmware-datacenter.png"/>
+                    <entry key="linkd-server" value="theme://images/vmware-hostsystem-on.png"/>
+                    <entry key="linkd-group" value="theme://images/cloud.png"/>
                 </map>
             </property>
         </bean>

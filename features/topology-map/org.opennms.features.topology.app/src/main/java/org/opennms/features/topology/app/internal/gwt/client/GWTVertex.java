@@ -137,6 +137,17 @@ public class GWTVertex extends JavaScriptObject {
             
         };
     }
+    
+    protected static Func<String, GWTVertex> strokeFilter(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "blue" : "none";
+            }
+            
+        };
+    }
 
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
@@ -179,7 +190,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("transform", GWTVertex.getTranslation()).style("stroke", GWTVertex.strokeFilter()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
