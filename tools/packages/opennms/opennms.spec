@@ -333,7 +333,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %package config-data
 Summary:       Configuration Data for OpenNMS Upgrades
 Group:         Applications/System
-Requires(pre): git, perl(Carp), perl(Cwd), perl(Data::Dumper), perl(File::Basename), perl(File::Copy), perl(File::Path), perl(File::Spec), perl(File::Temp), perl(Getopt::Long), perl(Git), perl(IO::Handle)
+Requires(pre): git >= 1.7, perl(Carp), perl(Cwd), perl(Data::Dumper), perl(File::Basename), perl(File::Copy), perl(File::Path), perl(File::Spec), perl(File::Temp), perl(Getopt::Long), perl(Git), perl(IO::Handle)
 
 %description config-data
 Configuration data (etc-pristine) useful for doing OpenNMS upgrades.
@@ -810,7 +810,7 @@ echo "config-data post: storing pristine configuration files"
 
 %pre upgrade
 if [ -n "$DEBUG" ]; then
-	echo "=== config-data ==="
+	echo "=== upgrade ==="
 	env | sort -u
 fi
 
