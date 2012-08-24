@@ -64,8 +64,8 @@ public class LightweightMeasurementSet implements MeasurementSet {
     public void addMeasurement(String metricId, String metricType, String value) {
         ArrayList<String> valueTypeList = new ArrayList<String>(2);
 
-        valueTypeList.set(0, metricType);
-        valueTypeList.set(1, value);
+        valueTypeList.add(metricType);
+        valueTypeList.add(value);
 
         m_values.put(metricId, valueTypeList);
     }

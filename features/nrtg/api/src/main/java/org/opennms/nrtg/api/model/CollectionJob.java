@@ -58,6 +58,8 @@ public interface CollectionJob extends Serializable {
 
     public void setMetricValue(String metricId, String metricType, String value) throws IllegalArgumentException;
 
+    public void setMetricValue(String metricId, String value) throws IllegalArgumentException;
+
     public String getMetricValue(String metricId) throws IllegalArgumentException;
 
     public void addMetric(String metricId, Set<String> destinationSet) throws IllegalArgumentException;

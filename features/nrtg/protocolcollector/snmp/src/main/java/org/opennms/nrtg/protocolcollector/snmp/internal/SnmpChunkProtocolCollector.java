@@ -113,13 +113,13 @@ public class SnmpChunkProtocolCollector implements ProtocolCollector {
 
         for (String metric : collectionJob.getAllMetrics()) {
 
-            String metricType = typeToString(snmpValues[i].getType());
-
             if (snmpValues.length > i && snmpValues[i] != null) {
                 logger.trace("Chunked results: '{}'", snmpValues[i].toDisplayString());
+                String metricType = typeToString(snmpValues[i].getType());
+
                 collectionJob.setMetricValue(metric, metricType, snmpValues[i].toDisplayString());
             } else {
-                collectionJob.setMetricValue(metric, metricType, null);
+                collectionJob.setMetricValue(metric, null);
             }
             i++;
         }

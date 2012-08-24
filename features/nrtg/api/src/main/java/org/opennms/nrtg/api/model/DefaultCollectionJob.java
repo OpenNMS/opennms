@@ -41,6 +41,7 @@ import java.util.*;
  */
 public class DefaultCollectionJob implements CollectionJob {
     private static final long serialVersionUID = -857193182688356245L;
+    private static final String METRIC_TYPE_UNKNOWN = "metricTypeUnknown";
 
     private static Logger logger = LoggerFactory.getLogger(DefaultCollectionJob.class);
 
@@ -234,10 +235,15 @@ public class DefaultCollectionJob implements CollectionJob {
 
         ArrayList<String> valueTypeList = new ArrayList<String>(2);
 
-        valueTypeList.set(0, metricType);
-        valueTypeList.set(1, value);
+        valueTypeList.add(metricType);
+        valueTypeList.add(value);
 
         m_allMetrics.put(metricId, valueTypeList);
+    }
+
+    @Override
+    public void setMetricValue(String metricId, String value) throws IllegalArgumentException {
+        setMetricValue(metricId, METRIC_TYPE_UNKNOWN, value);
     }
 
     @Override
