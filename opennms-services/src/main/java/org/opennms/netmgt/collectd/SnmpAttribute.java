@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -176,6 +177,8 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             return null;
         } else if (getValue().isNumeric()) {
             return Long.toString(getValue().toLong());
+        } else if (getValue().getBytes().length == 8) {
+            return Long.toString(SnmpUtils.getProtoCounter64Value(getValue()));
         } else {
             try {
                 return Double.valueOf(getValue().toString()).toString();

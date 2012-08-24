@@ -343,4 +343,22 @@ public class SnmpUtils {
 	    throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
 	}
 
+	public static Long getProtoCounter64Value(SnmpValue value) {
+	    byte[] valBytes = value.getBytes();
+	    if (valBytes.length != 8) {
+	        LogUtils.tracef(SnmpUtils.class, "Value should be 8 bytes long for a proto-Counter64 but this one is %d bytes.", valBytes);
+	        return null;
+	    }
+	    if (SnmpUtils.allBytesDisplayable(valBytes)) {
+	        LogUtils.infof(SnmpUtils.class, "Value '%s' is entirely displayable. Still treating it as a proto-Counter64. This may not be what you want.", new String(valBytes));
+	    }
+	    if (valBytes == new byte[]{ (byte)0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }) {
+	        LogUtils.tracef(SnmpUtils.class, "Value has high-order bit set and all others zero, which indicates not supported in FCMGMT-MIB convention");
+	        return null;
+	    }
+
+	    Long retVal = Long.decode(String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7]));
+	    LogUtils.tracef(SnmpUtils.class, "Converted octet-string 0x%02x%02x%02x%02x%02x%02x%02x%02x as a proto-Counter64 of value %d", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7], retVal);
+	    return retVal;
+	}
 }
