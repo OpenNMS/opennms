@@ -1529,7 +1529,7 @@ public final class DiscoveryLink implements ReadyRunnable {
      *            a boolean.
      */
     public void setDiscoveryUsingOspf(boolean discoveryUsingOspf) {
-        this.discoveryUsingBridge = discoveryUsingOspf;
+        this.discoveryUsingOspf = discoveryUsingOspf;
     }
 
     /**

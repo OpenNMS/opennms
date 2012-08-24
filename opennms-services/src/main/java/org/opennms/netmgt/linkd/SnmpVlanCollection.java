@@ -98,11 +98,9 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	private QBridgeDot1dTpFdbTable m_dot1qTpFdbTable;
 
 
-	private boolean m_collectStpNode = true;
-	
-	private boolean m_collectStpInterface = true;
-	
-	private boolean m_collectBridgeForwardingTable = true;
+	private boolean m_collectStp = true;
+		
+	private boolean m_collectBridge = true;
 
 	/**
 	 * Constructs a new SNMP collector for a node using the passed interface as
@@ -133,7 +131,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 *            The SnmpPeer object to collect from.
 	 *  
 	 */
-	SnmpVlanCollection(final SnmpAgentConfig agentConfig, final boolean collectStpNode, final boolean collectStpTable, final boolean collectBridgeForwardingTable) {
+	SnmpVlanCollection(final SnmpAgentConfig agentConfig, final boolean collectStp, final boolean collectBridge) {
 		m_agentConfig = agentConfig;
 		m_address = m_agentConfig.getEffectiveAddress();
 		m_dot1dBase = null;
@@ -141,9 +139,8 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		m_dot1dStp = null;
 		m_dot1dStpTable = null;
 		m_dot1dTpFdbTable = null;
-		m_collectStpNode = collectStpNode;
-		m_collectStpInterface = collectStpTable;
-		m_collectBridgeForwardingTable = collectBridgeForwardingTable;
+		m_collectStp = collectStp;
+		m_collectBridge = collectBridge;
 	}
 
 	/**
@@ -274,33 +271,17 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			
 			SnmpWalker walker = null;
 			
-			if (m_collectBridgeForwardingTable && m_collectStpInterface && m_collectStpNode) {
+			if (m_collectBridge && m_collectStp) {
 		        walker = SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dBaseTable/dot1dStp/dot1dStpTable/dot1dTpFdbTable ", 
 		        			new CollectionTracker[] { m_dot1dBase, m_dot1dBaseTable, m_dot1dStp, m_dot1dStpTable, m_dot1dTpFdbTable});
-			} else if(m_collectBridgeForwardingTable && m_collectStpInterface ) {
-		        walker = 
-		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dBaseTable/dot1dStp/dot1dStpTable/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] { m_dot1dBase, m_dot1dBaseTable, m_dot1dStp, m_dot1dStpTable, m_dot1dTpFdbTable});
-			} else if (m_collectBridgeForwardingTable && m_collectStpInterface ) {
-		        walker = 
-		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBaseTable/dot1dStpTable/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] {m_dot1dBaseTable, m_dot1dStpTable,m_dot1dTpFdbTable});
-			} else if(m_collectBridgeForwardingTable && m_collectStpNode) {
-		        walker = 
-		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dStp/dot1dTpFdbTable ", 
-		        			new CollectionTracker[] { m_dot1dBase, m_dot1dStp,m_dot1dTpFdbTable});
-			} else if(m_collectBridgeForwardingTable) {
+			} else if(m_collectBridge) {
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dTpFdbTable ", 
 		        			new CollectionTracker[] {m_dot1dTpFdbTable});
-			} else if(m_collectStpNode) {
+			} else if(m_collectStp) {
 		        walker = 
-		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dStp ", 
-		        			new CollectionTracker[] { m_dot1dBase, m_dot1dStp});
-			} else if(m_collectStpInterface) {
-		        walker = 
-		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBaseTable/dot1dStpTable ", 
-		        			new CollectionTracker[] { m_dot1dBaseTable, m_dot1dStpTable});
+		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dStp/dot1dBaseTable/dot1dStpTable ", 
+		        			new CollectionTracker[] { m_dot1dBase, m_dot1dStp, m_dot1dBaseTable, m_dot1dStpTable});
 			} else {
 			    LogUtils.infof(this, "run: no info to collect return");
 				return;
@@ -341,7 +322,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			//if not found macaddresses forwarding table find it in Qbridge
 			//ExtremeNetwork works.....
 			
-			if (m_dot1dTpFdbTable.isEmpty() && m_collectBridgeForwardingTable) {
+			if (m_dot1dTpFdbTable.isEmpty() && m_collectBridge) {
 			    LogUtils.infof(this, "run: Trying to collect QbridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 				m_dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(m_address);
 		        walker =  SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", new CollectionTracker[] { m_dot1qTpFdbTable });

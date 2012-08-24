@@ -320,17 +320,16 @@ public class Linkd extends AbstractServiceDaemon {
         coll.setIpRouteClass(ipRouteClassName);
         coll.setInitialSleepTime(initialSleepTime);
         coll.setPollInterval(snmpPollInterval);
-        coll.collectCdpTable(useCdpDiscovery);
+        coll.collectCdp(useCdpDiscovery);
         coll.SaveIpRouteTable(saveRouteTable);
-        coll.collectIpRouteTable(useIpRouteDiscovery || saveRouteTable);
-        coll.collectLldpTable(useLldpDiscovery);
-        coll.collectOspfTable(useOspfDiscovery);
-        coll.collectBridgeForwardingTable(useBridgeDiscovery);
+        coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable);
+        coll.collectLldp(useLldpDiscovery);
+        coll.collectOspf(useOspfDiscovery);
+        coll.collectBridge(useBridgeDiscovery);
         coll.saveStpNodeTable(saveStpNodeTable);
-        coll.collectStpNode(useBridgeDiscovery || saveStpNodeTable);
+        coll.collectStp(useBridgeDiscovery || saveStpNodeTable || saveStpInterfaceTable);
         coll.saveStpInterfaceTable(saveStpInterfaceTable);
-        coll.collectStpTable(useBridgeDiscovery || saveStpInterfaceTable);
-
+ 
         if ( (pkg.hasEnableVlanDiscovery()  && pkg.getEnableVlanDiscovery()) 
                 || 
              (!pkg.hasEnableVlanDiscovery() && m_linkdConfig.isVlanDiscoveryEnabled())
