@@ -53,22 +53,49 @@ import org.slf4j.LoggerFactory;
 public class SnmpChunkProtocolCollector implements ProtocolCollector {
 
     private static Logger logger = LoggerFactory.getLogger(SnmpChunkProtocolCollector.class);
-    
+
     private SnmpStrategy m_snmpStrategy;
-    
+
     public SnmpStrategy getSnmpStrategy() {
-		return m_snmpStrategy;
-	}
+        return m_snmpStrategy;
+    }
 
-	public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
-		m_snmpStrategy = snmpStrategy;
-	}
+    public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
+        m_snmpStrategy = snmpStrategy;
+    }
 
-	@Override
+    private String typeToString(int type) {
+        switch (type) {
+            case SnmpValue.SNMP_COUNTER32:
+                return "counter32";
+            case SnmpValue.SNMP_COUNTER64:
+                return "counter64";
+            case SnmpValue.SNMP_GAUGE32:
+                return "gauge32";
+            case SnmpValue.SNMP_INT32:
+                return "int32";
+            case SnmpValue.SNMP_IPADDRESS:
+                return "ipAddress";
+            case SnmpValue.SNMP_OCTET_STRING:
+                return "octetString";
+            case SnmpValue.SNMP_OPAQUE:
+                return "opaque";
+            case SnmpValue.SNMP_TIMETICKS:
+                return "timeticks";
+            case SnmpValue.SNMP_OBJECT_IDENTIFIER:
+                return "objectIdentifier";
+            case SnmpValue.SNMP_NULL:
+                return "null";
+            default:
+                return "unknown";
+        }
+    }
+
+    @Override
     public CollectionJob collect(CollectionJob collectionJob) {
         logger.trace("SnmpChunkProtocolCollector is collecting collectionJob '{}' from '{}'",
                 collectionJob.getId(), collectionJob.getNetInterface());
-        
+
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
         SnmpObjId[] oids = new SnmpObjId[collectionJob.getAllMetrics().size()];
@@ -85,11 +112,14 @@ public class SnmpChunkProtocolCollector implements ProtocolCollector {
         int i = 0;
 
         for (String metric : collectionJob.getAllMetrics()) {
+
+            String metricType = typeToString(snmpValues[i].getType());
+
             if (snmpValues.length > i && snmpValues[i] != null) {
                 logger.trace("Chunked results: '{}'", snmpValues[i].toDisplayString());
-                collectionJob.setMetricValue(metric, snmpValues[i].toDisplayString());
+                collectionJob.setMetricValue(metric, metricType, snmpValues[i].toDisplayString());
             } else {
-                collectionJob.setMetricValue(metric, null);
+                collectionJob.setMetricValue(metric, metricType, null);
             }
             i++;
         }

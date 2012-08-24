@@ -19,7 +19,7 @@ public class LightweightMeasurementSetTest {
     public void testGetMeasurements() throws Exception {
 
         final int numberOfMetrics = 10;
-
+        // metricId, metricValue
         HashMap<String, String> metrics = new HashMap<String, String>();
 
         for (int i=0;i<numberOfMetrics;i++) {
@@ -31,7 +31,7 @@ public class LightweightMeasurementSetTest {
         LightweightMeasurementSet lightweightMeasurementSet = new LightweightMeasurementSet(1, "service", "interface", date);
 
         for (String metricId : metrics.keySet()) {
-            lightweightMeasurementSet.addMeasurement(metricId, metrics.get(metricId));
+            lightweightMeasurementSet.addMeasurement(metricId, "int32", metrics.get(metricId));
         }
 
         List<Measurement> measurementList = lightweightMeasurementSet.getMeasurements();

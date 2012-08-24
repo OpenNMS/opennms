@@ -126,7 +126,7 @@ public class CollectionJobListener implements MessageListener {
             for (String metricId : collectionJob.getAllMetrics()) {
 
                 if (collectionJob.getMetricValue(metricId) == null) {
-                    errorMeasurementSet.addMeasurement(metricId, null);
+                    errorMeasurementSet.addMeasurement(metricId, collectionJob.getMetricType(metricId), null);
                 }
 
                 logger.trace("collected metric of job #{}='{}'", counter + ": "

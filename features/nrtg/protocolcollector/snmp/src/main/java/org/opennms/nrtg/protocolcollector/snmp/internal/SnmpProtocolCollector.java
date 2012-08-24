@@ -47,29 +47,58 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 
     private static final String PROTOCOL = "SNMP";
 
-	private SnmpStrategy m_snmpStrategy;
+    private SnmpStrategy m_snmpStrategy;
 
     public SnmpStrategy getSnmpStrategy() {
-		return m_snmpStrategy;
-	}
+        return m_snmpStrategy;
+    }
 
-	public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
-		m_snmpStrategy = snmpStrategy;
-	}
+    public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
+        m_snmpStrategy = snmpStrategy;
+    }
 
-	@Override
+    private String typeToString(int type) {
+        switch (type) {
+            case SnmpValue.SNMP_COUNTER32:
+                return "counter32";
+            case SnmpValue.SNMP_COUNTER64:
+                return "counter64";
+            case SnmpValue.SNMP_GAUGE32:
+                return "gauge32";
+            case SnmpValue.SNMP_INT32:
+                return "int32";
+            case SnmpValue.SNMP_IPADDRESS:
+                return "ipAddress";
+            case SnmpValue.SNMP_OCTET_STRING:
+                return "octetString";
+            case SnmpValue.SNMP_OPAQUE:
+                return "opaque";
+            case SnmpValue.SNMP_TIMETICKS:
+                return "timeticks";
+            case SnmpValue.SNMP_OBJECT_IDENTIFIER:
+                return "objectIdentifier";
+            case SnmpValue.SNMP_NULL:
+                return "null";
+            default:
+                return "unknown";
+        }
+    }
+
+    @Override
     public CollectionJob collect(CollectionJob collectionJob) {
         logger.info("SnmpProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
-        
+
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
         for (String metric : collectionJob.getAllMetrics()) {
             SnmpValue snmpValue = m_snmpStrategy.get(snmpAgentConfig, SnmpObjId.get(metric));
+            String metricType = typeToString(snmpValue.getType());
+
             logger.trace("Collected SnmpValue '{}'", snmpValue);
             if (snmpValue == null) {
-                collectionJob.setMetricValue(metric, null);
+                collectionJob.setMetricValue(metric, metricType, null);
             } else {
-                collectionJob.setMetricValue(metric, snmpValue.toDisplayString());
+                collectionJob.setMetricValue(metric, metricType, snmpValue.toDisplayString());
             }
         }
         return collectionJob;

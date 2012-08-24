@@ -52,7 +52,7 @@ public class DefaultCollectionJob implements CollectionJob {
     private String m_protocolConfiguration;
 
     private HashMap<Set<String>, Set<String>> m_metricSets = new HashMap<Set<String>, Set<String>>();
-    private HashMap<String, String> m_allMetrics = new HashMap<String, String>();
+    private HashMap<String, ArrayList<String>> m_allMetrics = new HashMap<String, ArrayList<String>>();
     private HashMap<String, Object> m_parameters = null;
     private Date m_creationTimestamp = new Date();
     private Date m_finishedTimestamp = null;
@@ -137,7 +137,7 @@ public class DefaultCollectionJob implements CollectionJob {
             Set<String> metricSet = m_metricSets.get(destinationSet);
 
             for (String metricId : metricSet) {
-                measurementSet.addMeasurement(metricId, getMetricValue(metricId));
+                measurementSet.addMeasurement(metricId, getMetricType(metricId), getMetricValue(metricId));
             }
         }
 
@@ -219,7 +219,7 @@ public class DefaultCollectionJob implements CollectionJob {
     }
 
     @Override
-    public void setMetricValue(String metricId, String value) throws IllegalArgumentException {
+    public void setMetricValue(String metricId, String metricType, String value) throws IllegalArgumentException {
         if (metricId == null) {
             throw new IllegalArgumentException("metricId must not be null");
         } else {
@@ -232,7 +232,12 @@ public class DefaultCollectionJob implements CollectionJob {
             }
         }
 
-        m_allMetrics.put(metricId, value);
+        ArrayList<String> valueTypeList = new ArrayList<String>(2);
+
+        valueTypeList.set(0, metricType);
+        valueTypeList.set(1, value);
+
+        m_allMetrics.put(metricId, valueTypeList);
     }
 
     @Override
@@ -249,7 +254,24 @@ public class DefaultCollectionJob implements CollectionJob {
             }
         }
 
-        return m_allMetrics.get(metricId);
+        return m_allMetrics.get(metricId).get(1);
+    }
+
+    @Override
+    public String getMetricType(String metricId) throws IllegalArgumentException {
+        if (metricId == null) {
+            throw new IllegalArgumentException("metricId must not be null");
+        } else {
+            if ("".equals(metricId)) {
+                throw new IllegalArgumentException("metricId must not be ''");
+            } else {
+                if (!m_allMetrics.containsKey(metricId)) {
+                    throw new IllegalArgumentException("metricId is undefined");
+                }
+            }
+        }
+
+        return m_allMetrics.get(metricId).get(0);
     }
 
     private String getDestinationString(Set<String> destinationSet) {
@@ -278,7 +300,7 @@ public class DefaultCollectionJob implements CollectionJob {
             Set<String> metricSet = m_metricSets.get(destinationSet);
 
             for (String metricId : metricSet) {
-                measurementSet.addMeasurement(metricId, getMetricValue(metricId));
+                measurementSet.addMeasurement(metricId, getMetricType(metricId), getMetricValue(metricId));
             }
 
             measurementMap.put(getDestinationString(destinationSet), measurementSet);
@@ -286,7 +308,6 @@ public class DefaultCollectionJob implements CollectionJob {
 
         return measurementMap;
     }
-
 
     @Override
     public Set<String> getAllMetrics() {

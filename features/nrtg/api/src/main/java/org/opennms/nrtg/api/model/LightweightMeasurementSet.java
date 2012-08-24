@@ -46,7 +46,6 @@ import java.util.List;
  */
 public class LightweightMeasurementSet implements MeasurementSet {
     private static final long serialVersionUID = 1166779403641774595L;
-    private static final String UNKNOWN_METRIC_TYPE = "unknown";
     private HashMap<String, ArrayList<String>> m_values = new HashMap<String, ArrayList<String>>();
     private int m_nodeId;
     private String m_interface, m_service;
@@ -66,15 +65,6 @@ public class LightweightMeasurementSet implements MeasurementSet {
         ArrayList<String> valueTypeList = new ArrayList<String>(2);
 
         valueTypeList.set(0, metricType);
-        valueTypeList.set(1, value);
-
-        m_values.put(metricId, valueTypeList);
-    }
-
-    public void addMeasurement(String metricId, String value) {
-        ArrayList<String> valueTypeList = new ArrayList<String>(2);
-
-        valueTypeList.set(0, UNKNOWN_METRIC_TYPE);
         valueTypeList.set(1, value);
 
         m_values.put(metricId, valueTypeList);

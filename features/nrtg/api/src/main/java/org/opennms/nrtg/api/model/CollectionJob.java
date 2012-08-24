@@ -56,37 +56,37 @@ public interface CollectionJob extends Serializable {
 
     public Set<String> getAllMetrics();
 
-    void setMetricValue(String metricId, String value) throws IllegalArgumentException;
+    public void setMetricValue(String metricId, String metricType, String value) throws IllegalArgumentException;
 
-    String getMetricValue(String metricId) throws IllegalArgumentException;
+    public String getMetricValue(String metricId) throws IllegalArgumentException;
 
-    void addMetric(String metricId, Set<String> destinationSet) throws IllegalArgumentException;
+    public void addMetric(String metricId, Set<String> destinationSet) throws IllegalArgumentException;
 
-    void setParameters(HashMap<String, Object> parameters);
+    public void setParameters(HashMap<String, Object> parameters);
 
-    HashMap<String, Object> getParameters();
+    public HashMap<String, Object> getParameters();
 
     public MeasurementSet getMeasurementSet();
 
-    void setId(String id);
+    public void setId(String id);
 
     public String getId();
 
-    void setNodeId(int nodeId);
+    public void setNodeId(int nodeId);
 
-    int getNodeId();
+    public int getNodeId();
 
-    void setSite(String site);
+    public void setSite(String site);
 
-    String getSite();
+    public String getSite();
 
-    void setCreationTimestamp(Date creationTimestamp);
+    public void setCreationTimestamp(Date creationTimestamp);
 
-    Date getCreationTimestamp();
+    public Date getCreationTimestamp();
 
-    void setFinishedTimestamp(Date finishedTimestamp);
+    public void setFinishedTimestamp(Date finishedTimestamp);
 
-    Date getFinishedTimestamp();
+    public Date getFinishedTimestamp();
 
     public void setNetInterface(String theInterface);
 
@@ -102,5 +102,7 @@ public interface CollectionJob extends Serializable {
 	public void setProtocolConfiguration(String configurationString);
 	
 	public String getProtocolConfiguration();
+
+    public String getMetricType(String metricId) throws IllegalArgumentException;
 
 }
