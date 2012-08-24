@@ -47,6 +47,8 @@ import java.net.UnknownHostException;
 import java.util.TreeSet;
 
 /**
+ * TODO: use mock snmp agent
+ *
  * @author Markus Neumann
  */
 public class SnmpChunkProtocolCollectorTest {
@@ -68,7 +70,7 @@ public class SnmpChunkProtocolCollectorTest {
         collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testCollectOneSingleOid() {
         TreeSet<String> destinationSet = new TreeSet<String>();
@@ -88,7 +90,7 @@ public class SnmpChunkProtocolCollectorTest {
         }
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testCollectOneSingleTableOid() {
         TreeSet<String> destinationSet = new TreeSet<String>();
@@ -109,7 +111,7 @@ public class SnmpChunkProtocolCollectorTest {
         }
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testCollectManySingleValueOids() {
         TreeSet<String> destinationSet = new TreeSet<String>();
