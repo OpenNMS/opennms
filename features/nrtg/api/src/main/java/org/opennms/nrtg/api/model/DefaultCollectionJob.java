@@ -109,13 +109,13 @@ public class DefaultCollectionJob implements CollectionJob {
 
     @Override
     public String getProtocolConfiguration() {
-		return m_protocolConfiguration;
-	}
+        return m_protocolConfiguration;
+    }
 
     @Override
-	public void setProtocolConfiguration(String protocolConfiguration) {
-		m_protocolConfiguration = protocolConfiguration;
-	}
+    public void setProtocolConfiguration(String protocolConfiguration) {
+        m_protocolConfiguration = protocolConfiguration;
+    }
 
 
     @Override

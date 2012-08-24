@@ -46,7 +46,8 @@ import java.util.List;
  */
 public class LightweightMeasurementSet implements MeasurementSet {
     private static final long serialVersionUID = 1166779403641774595L;
-    private HashMap<String, String> m_values = new HashMap<String, String>();
+    private static final String UNKNOWN_METRIC_TYPE = "unknown";
+    private HashMap<String, ArrayList<String>> m_values = new HashMap<String, ArrayList<String>>();
     private int m_nodeId;
     private String m_interface, m_service;
     private Date m_timestamp = new Date();
@@ -61,8 +62,22 @@ public class LightweightMeasurementSet implements MeasurementSet {
         setTimestamp(timestamp);
     }
 
+    public void addMeasurement(String metricId, String metricType, String value) {
+        ArrayList<String> valueTypeList = new ArrayList<String>(2);
+
+        valueTypeList.set(0, metricType);
+        valueTypeList.set(1, value);
+
+        m_values.put(metricId, valueTypeList);
+    }
+
     public void addMeasurement(String metricId, String value) {
-        m_values.put(metricId, value);
+        ArrayList<String> valueTypeList = new ArrayList<String>(2);
+
+        valueTypeList.set(0, UNKNOWN_METRIC_TYPE);
+        valueTypeList.set(1, value);
+
+        m_values.put(metricId, valueTypeList);
     }
 
     @Override
@@ -77,7 +92,11 @@ public class LightweightMeasurementSet implements MeasurementSet {
             measurement.setNodeId(getNodeId());
             measurement.setService(getService());
             measurement.setMetricId(metricId);
-            measurement.setValue(m_values.get(metricId));
+
+            ArrayList<String> valueTypeList = m_values.get(metricId);
+
+            measurement.setMetricType(valueTypeList.get(0));
+            measurement.setValue(valueTypeList.get(1));
 
             measurements.add(measurement);
         }
@@ -119,23 +138,28 @@ public class LightweightMeasurementSet implements MeasurementSet {
 
     @Override
     public String getJson() {
-    	StringBuilder buf = new StringBuilder("[");
-    	
-    	boolean first = true;
-    	for(Measurement m : getMeasurements()) {
-    		if (!first) { buf.append(","); } else { first = false; }
-    		buf.append("{");
-    		buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
-    		buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
-    		buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
-    		buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
-    		buf.append("'timeStamp'").append(":").append(m.getTimestamp().getTime()).append(",");
-    		buf.append("'value'").append(":").append(m.getValue());
-    		buf.append("}");
-    	}
-    	
-    	buf.append("]");
-    	return buf.toString();
+        StringBuilder buf = new StringBuilder("[");
+
+        boolean first = true;
+        for (Measurement m : getMeasurements()) {
+            if (!first) {
+                buf.append(",");
+            } else {
+                first = false;
+            }
+            buf.append("{");
+            buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
+            buf.append("'metricType'").append(":'").append(m.getMetricType()).append("'").append(",");
+            buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
+            buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
+            buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
+            buf.append("'timeStamp'").append(":").append(m.getTimestamp().getTime()).append(",");
+            buf.append("'value'").append(":").append(m.getValue());
+            buf.append("}");
+        }
+
+        buf.append("]");
+        return buf.toString();
     }
 
 

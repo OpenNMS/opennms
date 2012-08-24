@@ -40,7 +40,7 @@ import java.util.Date;
 public class DefaultMeasurement implements Measurement {
 
     private static final long serialVersionUID = -7788974682113621268L;
-    private String m_interface, m_service, m_metricId, m_value;
+    private String m_interface, m_service, m_metricId, m_value, m_metricType;
     private int m_nodeId;
     private Date m_timestamp;
 
@@ -62,6 +62,11 @@ public class DefaultMeasurement implements Measurement {
     @Override
     public void setMetricId(String metricId) {
         m_metricId = metricId;
+    }
+
+    @Override
+    public void setMetricType(String metricType) {
+        m_metricType = metricType;
     }
 
     @Override
@@ -95,6 +100,11 @@ public class DefaultMeasurement implements Measurement {
     }
 
     @Override
+    public String getMetricType() {
+        return m_metricType;
+    }
+
+    @Override
     public String getValue() {
         return m_value;
     }
@@ -106,6 +116,6 @@ public class DefaultMeasurement implements Measurement {
 
     @Override
     public String toString() {
-        return "DefaultMeasurement{" + "m_interface=" + m_interface + ", m_service=" + m_service + ", m_metricId=" + m_metricId + ", m_value=" + m_value + ", m_nodeId=" + m_nodeId + ", m_timestamp=" + m_timestamp + '}';
+        return "DefaultMeasurement{" + "m_interface=" + m_interface + ", m_service=" + m_service + ", m_metricId=" + m_metricId + ", m_metricType=" + m_metricType + ", m_value=" + m_value + ", m_nodeId=" + m_nodeId + ", m_timestamp=" + m_timestamp + '}';
     }
 }

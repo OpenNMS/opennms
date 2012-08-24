@@ -55,8 +55,9 @@ public class DefaultMeasurementSet implements MeasurementSet {
     	for(Measurement m : getMeasurements()) {
     		if (!first) { buf.append(","); } else { first = false; }
     		buf.append("{");
-    		buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
-    		buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
+            buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
+            buf.append("'metricType'").append(":'").append(m.getMetricType()).append("'").append(",");
+            buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
     		buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
     		buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
     		buf.append("'timeStamp'").append(":").append(m.getTimestamp().getTime()).append(",");

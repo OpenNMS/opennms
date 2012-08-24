@@ -49,6 +49,8 @@ public interface Measurement extends Serializable {
 
     public void setMetricId(String metricId);
 
+    public void setMetricType(String metricType);
+
     public void setValue(String value);
 
     public void setTimestamp(Date timestamp);
@@ -60,6 +62,8 @@ public interface Measurement extends Serializable {
     public String getService();
 
     public String getMetricId();
+
+    public String getMetricType();
 
     public String getValue();
 
