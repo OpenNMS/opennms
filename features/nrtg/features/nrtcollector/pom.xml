@@ -16,7 +16,6 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
         <configuration>
           <features>
             <feature>osgi-nrtg-api</feature>
