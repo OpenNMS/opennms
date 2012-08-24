@@ -1,12 +1,30 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
-
+http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+">
+<!-- 
     <bean id="simpleTopologyProvider" class="org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider" />
     
     <service interface="org.opennms.features.topology.api.TopologyProvider" ref="simpleTopologyProvider"/>
+-->    
+
+	<bean id="simpleTopologyFactory" class="org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyFactory">
+		<property name="bundleContext" ref="blueprintBundleContext" />
+	</bean>
+	
+    <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="simpleTopologyFactory">
+    	<service-properties>
+    	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.simple"/>
+    	</service-properties>
+    </service>
+    
+<!-- 
+    <reference id="activeTopoProvider" interface="org.opennms.features.topology.api.EditableTopologyProvider" availability="optional"
+    	filter="(org.opennms.features.topology.plugins.topo.simple.active=true)" />
     
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
@@ -16,7 +34,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation">
             <argument value="VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png"/>
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -27,7 +45,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation">
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -38,7 +56,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.CreateGroupOperation">
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -48,7 +66,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Open"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.OpenOperation">
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -59,7 +77,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation">
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -70,7 +88,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.ResetOperation">
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -80,8 +98,10 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Save"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.SaveOperation">
-            <argument ref="simpleTopologyProvider"/>
+            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
+    
+    -->
     
 </blueprint>

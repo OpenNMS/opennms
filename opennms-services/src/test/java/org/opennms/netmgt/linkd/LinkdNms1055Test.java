@@ -52,8 +52,6 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;

@@ -13,19 +13,31 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 
 public abstract class ElementHolder<T> {
+	String m_prefix;
 	Container m_itemContainer;
 	List<T> m_graphElements = Collections.emptyList();
 	List<Object> m_itemIds = Collections.emptyList();
 	KeyMapper m_elementKey2ItemId;
 	Map<String, T> m_keyToElementMap = new HashMap<String, T>();
 	
+	ElementHolder(String prefix) {
+		m_prefix = prefix;
+		m_elementKey2ItemId  = new KeyMapper(m_prefix);	
+	}
+	
 	ElementHolder(Container container, String prefix) {
+		this(prefix);
+		setContainer(container);
+	}
+
+	public void setContainer(Container container) {
 		m_itemContainer = container;
 		
-		m_elementKey2ItemId  = new KeyMapper(prefix);
 		
 		update();
 	}
+	
+	
 	
 	public void update() {
 		List<Object> oldItemIds = m_itemIds;

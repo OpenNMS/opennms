@@ -11,9 +11,9 @@ import com.vaadin.Application;
 
 public class TopologyWidgetTestApplicationFactory implements ApplicationFactory {
     
+	private TopologyProvider m_topologyProvider;
 	private CommandManager m_commandManager = new CommandManager();
 	private IconRepositoryManager m_iconRepositoryManager = new IconRepositoryManager();
-    private TopologyProvider m_topologyProvider;
     private String m_themeName = "reindeer";
 	
 	public CommandManager getCommandManager() {
@@ -26,8 +26,10 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
-		TopologyWidgetTestApplication application = new TopologyWidgetTestApplication(m_commandManager, getTopologyProvider(), m_iconRepositoryManager);
+    	System.err.println("createApplication");
+		TopologyWidgetTestApplication application = new TopologyWidgetTestApplication(m_commandManager, m_topologyProvider, m_iconRepositoryManager);
 		application.setTheme(m_themeName);
+		System.err.println("application is " + application);
         return application;
 	}
 
@@ -35,14 +37,6 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 	public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
 		return TopologyWidgetTestApplication.class;
 	}
-
-    public TopologyProvider getTopologyProvider() {
-        return m_topologyProvider;
-    }
-
-    public void setTopologyProvider(TopologyProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
 
     public IconRepositoryManager getIconRepositoryManager() {
         return m_iconRepositoryManager;
@@ -55,5 +49,13 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
     public void setTheme(String themeName) {
         m_themeName = themeName;
     }
+
+	public TopologyProvider getTopologyProvider() {
+		return m_topologyProvider;
+	}
+
+	public void setTopologyProvider(TopologyProvider topologyProvider) {
+		m_topologyProvider = topologyProvider;
+	}
     
 }

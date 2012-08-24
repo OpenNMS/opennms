@@ -17,28 +17,14 @@ public class ResourceGraphsOperation implements Operation {
     private String m_resourceGraphNodeURL;
 
     public boolean display(final List<Object> targets, final OperationContext operationContext) {
-        int nodeID = -1;
-        if (targets != null) {
-            final List<Object> selectedVertices = operationContext.getGraphContainer().getSelectedVertices();
-            if (selectedVertices != null && selectedVertices.size() > 0) {
-                return false;
-            }
-            for (final Object target : targets) {
-                final Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
-                if (vertexItem != null) {
-                    final Property nodeIDProperty = vertexItem.getItemProperty("nodeID");
-                    nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
-                }
-            }
-        }
-        if (nodeID < 0) {
-            return false;
-        }
         return true;
     }
 
     public boolean enabled(final List<Object> targets, final OperationContext operationContext) {
-        return true;
+        if (targets == null || targets.size() < 2) {
+            return true;
+        }
+        return false;
     }
 
     public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
@@ -64,7 +50,7 @@ public class ResourceGraphsOperation implements Operation {
             final URL nodeURL;
 
             if (node.getNodeID() >= 0) {
-                nodeURL = new URL(baseURL, getResourceGraphNodeURL() + node.getNodeID());
+                nodeURL = new URL(baseURL, getResourceGraphNodeURL() + "[" + node.getNodeID() + "]");
             } else {
                 nodeURL = new URL(baseURL, getResourceGraphListURL());
             }

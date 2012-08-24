@@ -4,13 +4,15 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 
 public class SaveOperation implements Operation {
     
-    SimpleTopologyProvider m_topologyProvider;
-	public SaveOperation(SimpleTopologyProvider topologyProvider) {
+    TopologyProvider m_topologyProvider;
+	
+    public SaveOperation(SimpleTopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
 
