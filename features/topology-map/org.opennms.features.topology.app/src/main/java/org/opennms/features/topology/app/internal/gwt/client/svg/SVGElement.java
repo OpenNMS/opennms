@@ -14,7 +14,7 @@ public class SVGElement extends Element{
         return this.createSVGMatrix();
     }-*/;
 
-    public final native SVGElement getCTM() /*-{
+    public final native SVGMatrix getCTM() /*-{
         return this.getCTM();
     }-*/;
 
@@ -33,5 +33,14 @@ public class SVGElement extends Element{
     public final native SVGRect getBBox() /*-{
         return this.getBBox();
     }-*/;
+    
+    public final native ClientRect getBoundingClientRect() /*-{
+        return this.getBoundingClientRect();
+    }-*/;
+
+    public final native SVGMatrix inverse() /*-{
+        return this.inverse();
+    }-*/;
+
 
 }

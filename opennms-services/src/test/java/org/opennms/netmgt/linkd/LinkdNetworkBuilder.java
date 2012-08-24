@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
@@ -45,8 +50,19 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 public abstract class LinkdNetworkBuilder {
 
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    private NodeDao m_nodeDao;
+    
     NetworkBuilder m_networkBuilder;
 
+    void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
 
     NetworkBuilder getNetworkBuilder() {
         if ( m_networkBuilder == null )
@@ -58,14 +74,17 @@ public abstract class LinkdNetworkBuilder {
             Map<InetAddress, Integer> ipinterfacemap,
             Map<Integer,String> ifindextoifnamemap,
             Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap) {
+            Map<Integer,String> ifindextoifdescrmap,
+            Map<Integer,String> ifindextoifalias)
+    {
         NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setType("A");
+        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setSysName(name).setType("A");
         final Map<Integer, SnmpInterfaceBuilder> ifindexsnmpbuildermap = new HashMap<Integer, SnmpInterfaceBuilder>();
         for (Integer ifIndex: ifindextoifnamemap.keySet()) {
             ifindexsnmpbuildermap.put(ifIndex, nb.addSnmpInterface(ifIndex).
                                       setIfType(6).
                                       setIfName(ifindextoifnamemap.get(ifIndex)).
+                                      setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
                                       setIfSpeed(100000000).
                                       setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
         }
@@ -98,6 +117,84 @@ public abstract class LinkdNetworkBuilder {
         nb.addNode(name).setForeignSource("linkd").setForeignId(name).setType("A");
         nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
         return nb.getCurrentNode();
+    }
+    
+    void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
+        System.err.println("-----------------------------------------------------------");    
+        System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
+        System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
+        System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
+        System.err.println("getCdpCacheAddress: "+cdpCacheTableEntry.getCdpCacheAddress());
+        System.err.println("getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
+        System.err.println("getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
+        System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
+        System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");        
+        
+    }
+
+    void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
+            String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
+        System.err.println("-----------------------------------------------------------");    
+        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
+        System.err.println("getLldpRemSysname: "+lldpRemSysname);
+        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
+        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
+        System.err.println("getLldpRemPortid: "+lldpRemPortid);
+        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");        
+    }
+    
+    void printLldpLocRow(Integer lldpLocPortNum,
+            Integer lldpLocPortidSubtype, String lldpLocPortid) {
+        System.err.println("-----------------------------------------------------------");    
+        System.err.println("getLldpLocPortNum: "+lldpLocPortNum);
+        System.err.println("getLldpLocPortid: "+lldpLocPortid);
+        System.err.println("getLldpRemPortidSubtype: "+lldpLocPortidSubtype);
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");
+      
+    }
+    
+    void printLink(DataLinkInterface datalinkinterface) {
+        System.out.println("----------------Link------------------");
+        Integer nodeid = datalinkinterface.getNode().getId();
+        System.out.println("linkid: " + datalinkinterface.getId());
+        System.out.println("nodeid: " + nodeid);
+        System.out.println("nodelabel: " + m_nodeDao.get(nodeid).getLabel());       
+        Integer ifIndex = datalinkinterface.getIfIndex();
+        System.out.println("ifindex: " + ifIndex);
+        System.out.println("ifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,ifIndex).getIfName());
+        Integer nodeparent = datalinkinterface.getNodeParentId();
+        System.out.println("nodeparent: " + nodeparent);
+        System.out.println("parentnodelabel: " + m_nodeDao.get(nodeparent).getLabel());
+        Integer parentifindex = datalinkinterface.getParentIfIndex();
+        System.out.println("parentifindex: " + parentifindex);        
+        System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
+        System.out.println("--------------------------------------");
+        System.out.println("");
+
+    }
+    
+    void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
+        printLink(datalinkinterface);
+        printNode(node);
+        printNode(nodeparent);
+        assertEquals(node.getId(),datalinkinterface.getNode().getId());
+        assertEquals(ifindex,datalinkinterface.getIfIndex().intValue());
+        assertEquals(nodeparent.getId(), datalinkinterface.getNodeParentId());
+        assertEquals(parentifindex,datalinkinterface.getParentIfIndex().intValue());
+    }
+
+    private void printNode(OnmsNode node) {
+        System.out.println("----------------Node------------------");
+        System.out.println("nodeid: " + node.getId());
+        System.out.println("nodelabel: " + node.getLabel());
+        System.out.println("--------------------------------------");
+        System.out.println("");
+        
     }
     
 }

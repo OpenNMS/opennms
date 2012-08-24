@@ -98,6 +98,11 @@ public class MockLinkdConfig implements LinkdConfig {
     }
 
     @Override
+    public boolean useLldpDiscovery() {
+        return false;
+    }
+
+    @Override
     public boolean useBridgeDiscovery() {
         return false;
     }

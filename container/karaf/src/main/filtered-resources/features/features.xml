@@ -193,8 +193,8 @@
     </feature>
 -->
 
-    <feature name="http" version="2.2.0.ONMS" description="HTTP feature using Felix servlet bridge">
-        <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/2.2.0</bundle>
+    <feature name="http" version="2.2.0.ONMS" description="HTTP feature using custom servlet bridge">
+        <bundle>mvn:org.opennms.container/bridge/${project.version}</bundle>
     </feature>
 
 <!--

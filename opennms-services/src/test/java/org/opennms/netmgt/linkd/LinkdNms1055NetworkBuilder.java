@@ -47,57 +47,69 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     static final String PENROSE_IP = "10.155.69.16";
     static final String PENROSE_NAME = "penrose-mx480";
     static final String PENROSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
-   
+    static final String PENROSE_LLDP_CHASSISID = "80711f8fafc0";
+    
     static final Map<InetAddress,Integer> PENROSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> PENROSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> PENROSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> PENROSE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> PENROSE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String DELAWARE_IP = "10.155.69.17";
     static final String DELAWARE_NAME = "delaware";
     static final String DELAWARE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
-   
+    static final String DELAWARE_LLDP_CHASSISID = "0022830957c0";
+    
     static final Map<InetAddress,Integer> DELAWARE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> DELAWARE_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> DELAWARE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> DELAWARE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> DELAWARE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static final String PHOENIX_IP = "10.155.69.42";
     static final String PHOENIX_NAME = "phoenix-mx80";
     static final String PHOENIX_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
-   
+    static final String PHOENIX_LLDP_CHASSISID = "80711fc414c0";
+    
     static final Map<InetAddress,Integer> PHOENIX_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> PHOENIX_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> PHOENIX_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> PHOENIX_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> PHOENIX_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     
     
     static final String AUSTIN_IP = "10.155.69.43";
     static final String AUSTIN_NAME = "Austin";
     static final String AUSTIN_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
-   
+    static final String AUSTIN_LLDP_CHASSISID = "80711fc413c0";
+
     static final Map<InetAddress,Integer> AUSTIN_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> AUSTIN_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> AUSTIN_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> AUSTIN_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> AUSTIN_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     
     static final String SANJOSE_IP = "10.155.69.12";
     static final String SANJOSE_NAME = "sanjose-mx240";
     static final String SANJOSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+    static final String SANJOSE_LLDP_CHASSISID = "002283d857c0";
    
     static final Map<InetAddress,Integer> SANJOSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> SANJOSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SANJOSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> SANJOSE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SANJOSE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     
     static final String RIOVISTA_IP = "10.155.69.107";
     static final String RIOVISTA_NAME = "Riovista-ce";
     static final String RIOVISTA_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
-   
+    static final String RIOVISTA_LLDP_CHASSISID = "001f12373dc0";
+
     static final Map<InetAddress,Integer> RIOVISTA_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> RIOVISTA_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> RIOVISTA_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> RIOVISTA_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RIOVISTA_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static {
         try {
@@ -819,6 +831,10 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(529, "ge-1/1/7");
         AUSTIN_IF_IFDESCR_MAP.put(529, "ge-1/1/7");
         AUSTIN_IF_MAC_MAP.put(529, "80711fc4137f");
+        AUSTIN_IF_IFALIAS_MAP.put(563, "No description available for selected UNI interface.");
+        AUSTIN_IF_IFALIAS_MAP.put(508, "<ToPHX-xe000>");
+        AUSTIN_IF_IFALIAS_MAP.put(564, "No description available for selected UNI interface.");
+        AUSTIN_IF_IFALIAS_MAP.put(561, "No description available for selected UNI interface.");
         PHOENIX_IF_IFNAME_MAP.put(518, "ge-1/0/6");
         PHOENIX_IF_IFDESCR_MAP.put(518, "ge-1/0/6");
         PHOENIX_IF_MAC_MAP.put(518, "80711fc41466");
@@ -1064,6 +1080,9 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(522, "ge-1/1/0");
         PHOENIX_IF_IFDESCR_MAP.put(522, "ge-1/1/0");
         PHOENIX_IF_MAC_MAP.put(522, "80711fc41478");
+        PHOENIX_IF_IFALIAS_MAP.put(508, "<ToAUS-xe000>");
+        PHOENIX_IF_IFALIAS_MAP.put(5367, "No description available for selected UNI interface.");
+        PHOENIX_IF_IFALIAS_MAP.put(5423, "No description available for selected UNI interface.");
         DELAWARE_IF_IFNAME_MAP.put(7, "tap");
         DELAWARE_IF_IFDESCR_MAP.put(7, "tap");
         DELAWARE_IF_IFNAME_MAP.put(564, "lc-1/0/0");
@@ -1444,6 +1463,33 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
         DELAWARE_IF_IFNAME_MAP.put(587, "ge-1/2/9");
         DELAWARE_IF_IFDESCR_MAP.put(587, "ge-1/2/9");
         DELAWARE_IF_MAC_MAP.put(587, "0022830951f7");
+        DELAWARE_IF_IFALIAS_MAP.put(517, "test");
+        DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
+        DELAWARE_IF_IFALIAS_MAP.put(610, "test unit1");
+        DELAWARE_IF_IFALIAS_MAP.put(611, "test unit2");
+        DELAWARE_IF_IFALIAS_MAP.put(612, "test unit3");
+        DELAWARE_IF_IFALIAS_MAP.put(613, "test unit4");
+        DELAWARE_IF_IFALIAS_MAP.put(614, "test unit5");
+        DELAWARE_IF_IFALIAS_MAP.put(615, "test unit6");
+        DELAWARE_IF_IFALIAS_MAP.put(616, "test unit7");
+        DELAWARE_IF_IFALIAS_MAP.put(617, "test unit8");
+        DELAWARE_IF_IFALIAS_MAP.put(618, "test unit9");
+        DELAWARE_IF_IFALIAS_MAP.put(619, "test unit10");
+        DELAWARE_IF_IFALIAS_MAP.put(621, "test unit11");
+        DELAWARE_IF_IFALIAS_MAP.put(622, "test unit12");
+        DELAWARE_IF_IFALIAS_MAP.put(623, "test unit13");
+        DELAWARE_IF_IFALIAS_MAP.put(624, "test unit14");
+        DELAWARE_IF_IFALIAS_MAP.put(625, "test unit15");
+        DELAWARE_IF_IFALIAS_MAP.put(626, "test unit16");
+        DELAWARE_IF_IFALIAS_MAP.put(627, "test unit17");
+        DELAWARE_IF_IFALIAS_MAP.put(628, "test unit18");
+        DELAWARE_IF_IFALIAS_MAP.put(629, "test unit19");
+        DELAWARE_IF_IFALIAS_MAP.put(630, "test unit20");
+        DELAWARE_IF_IFALIAS_MAP.put(631, "test unit21");
+        DELAWARE_IF_IFALIAS_MAP.put(632, "test unit22");
+        DELAWARE_IF_IFALIAS_MAP.put(633, "test unit24");
+        DELAWARE_IF_IFALIAS_MAP.put(634, "test unit25");
+        DELAWARE_IF_IFALIAS_MAP.put(641, "test unit23");
         PENROSE_IF_IFNAME_MAP.put(511, "xe-1/0/1");
         PENROSE_IF_IFDESCR_MAP.put(511, "xe-1/0/1");
         PENROSE_IF_MAC_MAP.put(511, "80711f8fa94b");
@@ -1560,6 +1606,7 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
         PENROSE_IF_MAC_MAP.put(529, "80711f8faa45");
         PENROSE_IF_IFNAME_MAP.put(510, "xe-1/0/0");
         PENROSE_IF_IFDESCR_MAP.put(510, "xe-1/0/0");
+        PENROSE_IF_IFALIAS_MAP.put(510, "<To_Delaware>");
         PENROSE_IF_MAC_MAP.put(510, "80711f8fa94a");
         PENROSE_IF_IFNAME_MAP.put(524, "ge-1/3/0");
         PENROSE_IF_IFDESCR_MAP.put(524, "ge-1/3/0");
@@ -1616,27 +1663,27 @@ public abstract class LinkdNms1055NetworkBuilder extends LinkdNetworkBuilder {
     }
 
     OnmsNode getPenrose() {
-        return getNode(PENROSE_NAME,PENROSE_SYSOID,PENROSE_IP,PENROSE_IP_IF_MAP,PENROSE_IF_IFNAME_MAP,PENROSE_IF_MAC_MAP,PENROSE_IF_IFDESCR_MAP);
+        return getNode(PENROSE_NAME,PENROSE_SYSOID,PENROSE_IP,PENROSE_IP_IF_MAP,PENROSE_IF_IFNAME_MAP,PENROSE_IF_MAC_MAP,PENROSE_IF_IFDESCR_MAP,PENROSE_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getDelaware() {
-        return getNode(DELAWARE_NAME,DELAWARE_SYSOID,DELAWARE_IP,DELAWARE_IP_IF_MAP,DELAWARE_IF_IFNAME_MAP,DELAWARE_IF_MAC_MAP,DELAWARE_IF_IFDESCR_MAP);
+        return getNode(DELAWARE_NAME,DELAWARE_SYSOID,DELAWARE_IP,DELAWARE_IP_IF_MAP,DELAWARE_IF_IFNAME_MAP,DELAWARE_IF_MAC_MAP,DELAWARE_IF_IFDESCR_MAP,DELAWARE_IF_IFALIAS_MAP);
     }    
     
     OnmsNode getPhoenix() {
-        return getNode(PHOENIX_NAME,PHOENIX_SYSOID,PHOENIX_IP,PHOENIX_IP_IF_MAP,PHOENIX_IF_IFNAME_MAP,PHOENIX_IF_MAC_MAP,PHOENIX_IF_IFDESCR_MAP);
+        return getNode(PHOENIX_NAME,PHOENIX_SYSOID,PHOENIX_IP,PHOENIX_IP_IF_MAP,PHOENIX_IF_IFNAME_MAP,PHOENIX_IF_MAC_MAP,PHOENIX_IF_IFDESCR_MAP,DELAWARE_IF_IFALIAS_MAP);
     }    
 
     OnmsNode getAustin() {
-        return getNode(AUSTIN_NAME,AUSTIN_SYSOID,AUSTIN_IP,AUSTIN_IP_IF_MAP,AUSTIN_IF_IFNAME_MAP,AUSTIN_IF_MAC_MAP,AUSTIN_IF_IFDESCR_MAP);
+        return getNode(AUSTIN_NAME,AUSTIN_SYSOID,AUSTIN_IP,AUSTIN_IP_IF_MAP,AUSTIN_IF_IFNAME_MAP,AUSTIN_IF_MAC_MAP,AUSTIN_IF_IFDESCR_MAP,AUSTIN_IF_IFALIAS_MAP);
     }
 
     OnmsNode getSanjose() {
-        return getNode(SANJOSE_NAME,SANJOSE_SYSOID,SANJOSE_IP,SANJOSE_IP_IF_MAP,SANJOSE_IF_IFNAME_MAP,SANJOSE_IF_MAC_MAP,SANJOSE_IF_IFDESCR_MAP);
+        return getNode(SANJOSE_NAME,SANJOSE_SYSOID,SANJOSE_IP,SANJOSE_IP_IF_MAP,SANJOSE_IF_IFNAME_MAP,SANJOSE_IF_MAC_MAP,SANJOSE_IF_IFDESCR_MAP,SANJOSE_IF_IFALIAS_MAP);
     }
 
     OnmsNode getRiovista() {
-        return getNode(RIOVISTA_NAME,RIOVISTA_SYSOID,RIOVISTA_IP,RIOVISTA_IP_IF_MAP,RIOVISTA_IF_IFNAME_MAP,RIOVISTA_IF_MAC_MAP,RIOVISTA_IF_IFDESCR_MAP);        
+        return getNode(RIOVISTA_NAME,RIOVISTA_SYSOID,RIOVISTA_IP,RIOVISTA_IP_IF_MAP,RIOVISTA_IF_IFNAME_MAP,RIOVISTA_IF_MAC_MAP,RIOVISTA_IF_IFDESCR_MAP,RIOVISTA_IF_IFALIAS_MAP);        
     }
         
 }

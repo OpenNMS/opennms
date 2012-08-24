@@ -35,9 +35,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -56,6 +58,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class AsyncDetectorFileDescriptorLeakTest {
 
     private SimpleServer m_server;
+    private ServerSocket m_socket;
 
     @Before
     public void setUp() {
@@ -67,7 +70,10 @@ public class AsyncDetectorFileDescriptorLeakTest {
         TcpDetector detector = new TcpDetector();
         detector.setServiceName("TCP");
         detector.setPort(port);
-        detector.setTimeout(10000);
+        // Three seconds
+        detector.setTimeout(3000);
+        // Three seconds
+        detector.setIdleTime(3000);
         detector.setBanner(bannerRegex);
         detector.setRetries(3);
         detector.init();
@@ -83,12 +89,22 @@ public class AsyncDetectorFileDescriptorLeakTest {
         
     }
 
+    private void setUpSocket() throws Exception {
+        m_socket = new ServerSocket();
+        m_socket.bind(null);
+    }
+
     private void setUpServer(final String banner) throws Exception {
+        setUpServer(banner, 0);
+    }
+
+    private void setUpServer(final String banner, final int bannerDelay) throws Exception {
         m_server = new SimpleServer() {
             
             public void onInit() {
                 if (banner != null) {
                     setBanner(banner);
+                    setBannerDelay(bannerDelay);
                 }
             }
             
@@ -96,8 +112,60 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
         // No timeout
         m_server.setTimeout(0);
+        //m_server.setThreadSleepLength(0);
         m_server.init();
         m_server.startServer();
+    }
+    
+    @Test
+    public void testDetectorTimeoutWaitingForBanner() throws Throwable {
+        // Start a socket that doesn't have a thread servicing it
+        setUpSocket();
+        final int port = m_socket.getLocalPort();
+        final InetAddress address = m_socket.getInetAddress();
+
+        AsyncServiceDetector detector = getNewDetector(port, "Hello");
+
+        assertNotNull(detector);
+
+        final DetectFuture future = (DetectFuture)detector.isServiceDetected(address);
+
+        assertNotNull(future);
+        future.awaitFor();
+        if (future.getException() != null) {
+            LogUtils.debugf(this, future.getException(), "got future exception");
+            throw future.getException();
+        }
+        assertFalse("False positive during detection!!", future.isServiceDetected());
+        assertNull(future.getException());
+    }
+    
+    /**
+     * TODO: This test will fail if there are more than a few milliseconds of delay 
+     * between the characters of the banner. We need to fix this behavior.
+     */
+    @Test
+    @Ignore
+    public void testDetectorBannerTimeout() throws Throwable {
+        // Add 50 milliseconds of delay in between sending bytes of the banner
+        setUpServer("Banner", 50);
+        final int port = m_server.getLocalPort();
+        final InetAddress address = m_server.getInetAddress();
+
+        AsyncServiceDetector detector = getNewDetector(port, "Banner");
+
+        assertNotNull(detector);
+
+        final DetectFuture future = (DetectFuture)detector.isServiceDetected(address);
+
+        assertNotNull(future);
+        future.awaitFor();
+        if (future.getException() != null) {
+            LogUtils.debugf(this, future.getException(), "got future exception");
+            throw future.getException();
+        }
+        assertTrue("False negative during detection!!", future.isServiceDetected());
+        assertNull(future.getException());
     }
     
     @Test

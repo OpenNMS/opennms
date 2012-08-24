@@ -31,6 +31,9 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
@@ -49,6 +52,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,7 +86,10 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
     @Autowired
     private NodeDao m_nodeDao;
-    
+
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
     
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -95,9 +103,13 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-//        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-//        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
+
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
 
     }
 
@@ -107,6 +119,39 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
             m_nodeDao.delete(node);
         }
         m_nodeDao.flush();
+    }
+    
+    @Test
+    public void testAbstractQueryManagerforLldp() {
+        m_nodeDao.save(getDelaware());
+        m_nodeDao.flush();
+        
+        HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
+        /*
+         *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
+         *         DELAWARE_IF_IFALIAS_MAP.put(517, "test");
+         */
+        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").intValue());
+        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").intValue());
+
+        /*
+         * DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
+         */
+        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").intValue());
+        /*
+         * DELAWARE_IP_IF_MAP.put(InetAddress.getByName("10.155.69.17"), 13);
+         */
+        try {
+            assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddress.getByName("10.155.69.17")).intValue());
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+   
+        /*
+         * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
+         */
+        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").intValue());
     }
 
     /*
@@ -142,6 +187,50 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
      * 
      * Sanjose: baseBridgeAddress = 002283d857d0
      * Sanjose: Spanning Tree is disabled
+     * 
+     * There are two links found between Penrose and Delaware,
+     * one on ae0 using stp and another over xe-1/0/0.0 using the ip route next hop strategy
+     * 
+     * Also the link between Austin and Delaware is not found because
+     * no route entry is found so no way to find it.
+     * This prove how weak is the way in which is set up linkd.
+     * This test passes because i've verified that this is what the linkd can discover using it's values
+     * 
+     * root@sanjose-mx240# run show lldp neighbors    
+     * Local Interface Chassis Id        Port info     System Name
+     * ge-1/0/1        80:71:1f:c4:13:c0  ge-1/0/3     Austin       
+     * ge-1/0/0        80:71:1f:c4:14:c0  ge-1/0/3     phoenix-mx80 
+     * 
+     * root@phoenix-mx80# run show lldp neighbors 
+     * Local Interface Chassis Id        Port info     System Name
+     * ge-1/0/3        00:22:83:d8:57:c0  ge-1/0/0     sanjose-mx240 
+     * xe-0/0/1        80:71:1f:8f:af:c0  xe-1/0/1     penrose-mx480 
+     * xe-0/0/0        80:71:1f:c4:13:c0  <ToPHX-xe000> Austin
+     * root@Austin# run show lldp neighbors 
+     * Local Interface Chassis Id        Port info     System Name
+     * xe-0/0/1        00:22:83:09:57:c0  xe-1/0/1     delaware     
+     * ge-1/0/3        00:22:83:d8:57:c0  ge-1/0/1     sanjose-mx240 
+     * xe-0/0/0        80:71:1f:c4:14:c0  <ToAUS-xe000> phoenix-mx80 
+     * 
+     * root@penrose-mx480# run show lldp neighbors 
+     * Local Interface Chassis Id        Port info     System Name
+     * ge-1/2/1        00:1f:12:37:3d:c0  ge-0/0/0.0   Riovista-ce  
+     * ge-1/3/1        00:22:83:09:57:c0  ge-0/0/6     delaware     
+     * xe-1/0/0        00:22:83:09:57:c0  <To_Penrose> delaware     
+     * xe-1/0/1        80:71:1f:c4:14:c0  xe-0/0/1     phoenix-mx80 
+     * 
+     * root@delaware# run show lldp neighbors 
+     * Local Interface Chassis Id        Port info     System Name
+     * ge-0/2/0        00:1f:12:37:3d:c0  ge-0/0/46.0  Riovista-ce  
+     * xe-1/0/0        80:71:1f:8f:af:c0  <To_Delaware> penrose-mx480 
+     * ge-0/0/6        80:71:1f:8f:af:c0  ge-1/3/1     penrose-mx480 
+     * xe-1/0/1        80:71:1f:c4:13:c0  xe-0/0/1     Austin      
+     * 
+     * root@Riovista-ce# run show lldp neighbors 
+     * Local Interface    Parent Interface    Chassis Id          Port info          System Name
+     * ge-0/0/46.0        -                   00:22:83:09:57:c0   ge-0/2/0           delaware            
+     * ge-0/0/0.0         -                   80:71:1f:8f:af:c0   ge-1/2/1           penrose-mx480       
+     * 
      */
     @Test
     @JUnitSnmpAgents(value={
@@ -163,6 +252,7 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
+        example1.setUseLldpDiscovery(true);
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         Iproutes iproutes = new Iproutes();
         Vendor juniper = new Vendor();
@@ -204,6 +294,65 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(8,m_dataLinkInterfaceDao.countAll());                
+        assertEquals(15,m_dataLinkInterfaceDao.countAll());
+        final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+                
+        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
+//            printLink(datalinkinterface);
+            Integer linkid = datalinkinterface.getId();
+            if ( linkid == 968) {
+                // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
+                checkLink(delaware, penrose, 574, 510, datalinkinterface);
+            } else if (linkid == 969 ) {
+                // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
+                checkLink(delaware, penrose, 522, 525, datalinkinterface);
+            } else if (linkid == 970) {
+                // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
+                checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
+            } else if (linkid == 971) {
+                // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
+                // this link is also discovered using the bridge strategy
+                checkLink(riovista, penrose, 584, 515, datalinkinterface);                   
+            } else if (linkid == 972) {
+                // delaware xe-1/0/1 -> austin xe-0/0/1  --lldp
+                checkLink(austin, delaware, 509, 575, datalinkinterface);                   
+            } else if (linkid == 973) {
+                // delaware ge-0/2/0 -> riovista ge-0/0/46.0  --lldp
+                // this link is also discovered using the bridge strategy
+                checkLink(riovista, delaware, 503, 540, datalinkinterface);
+            } else if (linkid == 974) {
+                // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
+                checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
+            } else if (linkid == 975) {
+                // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
+                checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
+            } else if (linkid == 976) {
+                // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
+                checkLink(sanjose, austin, 517, 515, datalinkinterface);                
+            } else if ( linkid == 977) {
+                // penrose ae0 -> delaware ae0 --rsvp
+                checkLink(penrose,delaware,2693,658,datalinkinterface);
+            } else if (linkid == 978 ) {
+                // penrose   -> phoenix     --ip route next hop
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+            } else if (linkid == 979) {
+                // penrose  -> delaware --ip route next hop
+                checkLink(delaware, penrose, 598, 535, datalinkinterface);
+            } else if (linkid == 980) {
+                // phoenix  -> austin --ip route next hop
+                checkLink(austin,phoenix,554,565,datalinkinterface);
+            } else if (linkid == 981) {
+                // phoenix  -> sanjose --ip route next hop
+                checkLink(phoenix,sanjose,566,564,datalinkinterface);
+            } else if (linkid == 982) {
+                // austin  -> sanjose --ip route next hop
+                checkLink(austin, sanjose, 586, 8562, datalinkinterface);
+            } else {
+                // error
+                checkLink(penrose,penrose,-1,-1,datalinkinterface);
+            }
+        }
+               
+
     }
 }

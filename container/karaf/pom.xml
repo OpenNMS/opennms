@@ -48,14 +48,29 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-              <directory>src/main/filtered-resources</directory>
-              <filtering>true</filtering>
-            </resource>
-        </resources>
-
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter-features-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/filtered-resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/filtered-resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -90,7 +105,7 @@
                 <configuration>
                   <artifacts>
                     <artifact>
-                      <file>src/main/filtered-resources/features/features.xml</file>
+                      <file>target/filtered-resources/features/features.xml</file>
                       <type>xml</type>
                       <classifier>features</classifier>
                     </artifact>

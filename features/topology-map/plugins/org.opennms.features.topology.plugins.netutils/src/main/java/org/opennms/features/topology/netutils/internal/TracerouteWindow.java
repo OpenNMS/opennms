@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
@@ -15,7 +16,6 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 
 /**
@@ -42,7 +42,7 @@ public class TracerouteWindow extends Window{
 	private int splitHeight = 180;//Height from top of the window to the split location in pixels
 	private int topHeight = 220;//Set height size for everything above the split
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
-	private String baseAddress;
+	private String tracerouteUrl;
 
 	/**
 	 * The TracerouteWindow method constructs a TracerouteWindow component with a size proportionate to the 
@@ -51,9 +51,9 @@ public class TracerouteWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public TracerouteWindow(Node node, String baseAddress){
+	public TracerouteWindow(Node node, String url) {
 
-		this.baseAddress = baseAddress;
+		this.tracerouteUrl = url;
 		
 		String label = "";
 		String ipAddress = "";
@@ -197,27 +197,34 @@ public class TracerouteWindow extends Window{
 	 * @throws MalformedURLException
 	 */
 	protected URL buildURL() {
-		boolean validInput = false;
-		try { validInput = validateInput(); } catch (Exception e) {
-			getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_WARNING_MESSAGE);
-			return null;
-		}
-		if (validInput) {
-			String options = baseAddress;
-			options += "&address=" + ipDropdown.getValue().toString();
-			if (!("".equals(forcedHopField.getValue().toString()))) {
-				options += "&hopAddress=" + forcedHopField.getValue().toString();
-			}
-			if (numericalDataCheckBox.getValue().equals(true))
-				options += "&numericOutput=true";
-			try { return new URL(options); } catch (MalformedURLException e) {
-				getApplication().getMainWindow().showNotification("Could not build URL", Notification.TYPE_WARNING_MESSAGE);
-				return null;
-			}
-		} else {
-			getApplication().getMainWindow().showNotification("Invalid IP addresss", Notification.TYPE_WARNING_MESSAGE);
-			return null;
-		}
+	    boolean validInput = false;
+	    try {
+	        validInput = validateInput();
+	    } catch (Exception e) {
+	        getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_WARNING_MESSAGE);
+	        return null;
+	    }
+	    if (validInput) {
+	        final URL baseUrl = getApplication().getURL();
+
+	        final StringBuilder options = new StringBuilder(tracerouteUrl);
+	        options.append("&address=").append(ipDropdown.getValue());
+	        if (!("".equals(forcedHopField.getValue().toString()))) {
+	            options.append("&hopAddress=").append(forcedHopField.getValue());
+	        }
+	        if (numericalDataCheckBox.getValue().equals(true)) {
+	            options.append("&numericOutput=true");
+	        }
+	        try {
+	            return new URL(baseUrl, options.toString());
+	        } catch (final MalformedURLException e) {
+	            getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.TYPE_WARNING_MESSAGE);
+	            return null;
+	        }
+	    } else {
+	        getApplication().getMainWindow().showNotification("Invalid IP addresss", Notification.TYPE_WARNING_MESSAGE);
+	        return null;
+	    }
 	}
 
 	/**

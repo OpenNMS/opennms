@@ -575,23 +575,23 @@ public abstract class LinkdNms7467NetworkBuilder extends LinkdNetworkBuilder {
 
         
     OnmsNode getCiscoC870() {
-        return getNode(CISCO_C870_NAME,CISCO_C870_SYSOID,CISCO_C870_IP,CISCO_C870_IP_IF_MAP,CISCO_C870_IF_IFNAME_MAP,CISCO_C870_IF_MAC_MAP,CISCO_C870_IF_IFDESCR_MAP);
+        return getNode(CISCO_C870_NAME,CISCO_C870_SYSOID,CISCO_C870_IP,CISCO_C870_IP_IF_MAP,CISCO_C870_IF_IFNAME_MAP,CISCO_C870_IF_MAC_MAP,CISCO_C870_IF_IFDESCR_MAP,new HashMap<Integer, String>());
     }
     
     OnmsNode getCiscoWsC2948() {
-        return getNode(CISCO_WS_C2948_NAME,CISCO_WS_C2948_SYSOID,CISCO_WS_C2948_IP,CISCO_WS_C2948_IP_IF_MAP,CISCO_WS_C2948_IF_IFNAME_MAP,CISCO_WS_C2948_IF_MAC_MAP, new HashMap<Integer, String>());
+        return getNode(CISCO_WS_C2948_NAME,CISCO_WS_C2948_SYSOID,CISCO_WS_C2948_IP,CISCO_WS_C2948_IP_IF_MAP,CISCO_WS_C2948_IF_IFNAME_MAP,CISCO_WS_C2948_IF_MAC_MAP, new HashMap<Integer, String>(),new HashMap<Integer, String>());
     }
     
     OnmsNode getNetGearSw108() {
-        return getNode(NETGEAR_SW_108_NAME,NETGEAR_SW_108_SYSOID,NETGEAR_SW_108_IP,NETGEAR_SW_108_IP_IF_MAP,NETGEAR_SW_108_IF_IFNAME_MAP,NETGEAR_SW_108_IF_MAC_MAP,new HashMap<Integer, String>());
+        return getNode(NETGEAR_SW_108_NAME,NETGEAR_SW_108_SYSOID,NETGEAR_SW_108_IP,NETGEAR_SW_108_IP_IF_MAP,NETGEAR_SW_108_IF_IFNAME_MAP,NETGEAR_SW_108_IF_MAC_MAP,new HashMap<Integer, String>(),new HashMap<Integer, String>());
     }
     
     OnmsNode getLinuxUbuntu() {
-        return getNode(LINUX_UBUNTU_NAME, LINUX_UBUNTU_SYSOID, LINUX_UBUNTU_IP, LINUX_UBUNTU_IP_IF_MAP, LINUX_UBUNTU_IF_IFNAME_MAP, LINUX_UBUNTU_IF_MAC_MAP, new HashMap<Integer, String>());
+        return getNode(LINUX_UBUNTU_NAME, LINUX_UBUNTU_SYSOID, LINUX_UBUNTU_IP, LINUX_UBUNTU_IP_IF_MAP, LINUX_UBUNTU_IF_IFNAME_MAP, LINUX_UBUNTU_IF_MAC_MAP, new HashMap<Integer, String>(),new HashMap<Integer, String>());
     }
     
     OnmsNode getDarwin108() {
-        return getNode(DARWIN_10_8_NAME,DARWIN_10_8_SYSOID,DARWIN_10_8_IP,DARWIN_10_8_IP_IF_MAP,DARWIN_10_8_IF_IFNAME_MAP,DARWIN_10_8_IF_MAC_MAP, new HashMap<Integer, String>());
+        return getNode(DARWIN_10_8_NAME,DARWIN_10_8_SYSOID,DARWIN_10_8_IP,DARWIN_10_8_IP_IF_MAP,DARWIN_10_8_IF_IFNAME_MAP,DARWIN_10_8_IF_MAC_MAP, new HashMap<Integer, String>(),new HashMap<Integer, String>());
     }
     
 }

@@ -22,5 +22,17 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
+        <service interface="org.opennms.features.topology.api.IconRepository">
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
+            <property name="iconMap">
+                <map>
+                    <entry key="linkd-server" value="theme://images/screenos.png"/>
+                    <entry key="linkd-group" value="theme://images/cloud.png"/>
+                </map>
+            </property>
+        </bean>
+    </service>
+    
+    
     
 </blueprint>

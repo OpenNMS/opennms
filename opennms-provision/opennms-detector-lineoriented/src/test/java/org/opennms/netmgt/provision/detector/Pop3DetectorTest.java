@@ -82,7 +82,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
     public void testSuccess() throws Exception {
         
         m_detector = createDetector(m_server.getLocalPort());
-        m_detector.setIdleTime(100);
+        m_detector.setIdleTime(1000);
         assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     

@@ -441,6 +441,16 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
+     * <p>useLldpDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    public boolean useLldpDiscovery() {
+        if (m_config.hasUseLldpDiscovery()) return m_config.getUseLldpDiscovery();
+        return false;
+    }
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.

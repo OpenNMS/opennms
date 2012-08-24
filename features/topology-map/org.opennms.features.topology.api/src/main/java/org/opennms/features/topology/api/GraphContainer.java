@@ -26,5 +26,9 @@ public interface GraphContainer extends DisplayState {
 	public Collection<?> getEdgeIdsForVertex(Object vertexId);
 
     public Object getVertexItemIdForVertexKey(Object key);
+    
+    public TopologyProvider getDataSource();
 	
+    public void setDataSource(TopologyProvider topologyProvider);
+    
 }

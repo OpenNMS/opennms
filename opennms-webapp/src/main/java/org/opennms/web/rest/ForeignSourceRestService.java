@@ -193,11 +193,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
-    public int getDeployedCount() {
+    public String getDeployedCount() {
         readLock();
         try {
             m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getForeignSourceCount();
+            return Integer.toString(m_pendingForeignSourceRepository.getForeignSourceCount());
         } finally {
             readUnlock();
         }
@@ -234,10 +234,10 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public int getTotalCount() throws ParseException {
+    public String getTotalCount() throws ParseException {
         readLock();
         try {
-            return getActiveForeignSourceNames().size();
+            return Integer.toString(getActiveForeignSourceNames().size());
         } finally {
             readUnlock();
         }

@@ -54,9 +54,9 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 92;
-    private static final int systemDefCount = 143;
-    private static final int groupsCount = 212;
+    private static final int resourceTypesCount = 106;
+    private static final int systemDefCount = 147;
+    private static final int groupsCount = 227;
     private Level errorLevel;
 
     @Before
@@ -112,7 +112,7 @@ public class DataCollectionConfigParserTest {
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(141, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(162, collection.getGroups().getGroupCount()); // Unused groups will be ignored
+        Assert.assertEquals(167, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
     @Test
@@ -134,7 +134,7 @@ public class DataCollectionConfigParserTest {
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(17, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(61, collection.getGroups().getGroupCount());
+        Assert.assertEquals(64, collection.getGroups().getGroupCount());
     }
 
     @Test
@@ -200,7 +200,7 @@ public class DataCollectionConfigParserTest {
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(2, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(28, collection.getGroups().getGroupCount());
+        Assert.assertEquals(31, collection.getGroups().getGroupCount());
     }
 
     @Test

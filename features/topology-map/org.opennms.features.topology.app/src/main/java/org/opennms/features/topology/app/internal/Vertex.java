@@ -18,6 +18,7 @@ public class Vertex implements Paintable {
     public static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
     private static final Object IP_ADDRESS_PROPERTY = "ipAddr";
     private static final Object NODE_ID = "nodeID";
+    private static final String ICON_KEY = "iconKey";
 	private String m_key;
 	private Object m_itemId;
 	private Item m_item;
@@ -126,5 +127,9 @@ public class Vertex implements Paintable {
 	public void setGroupKey(String groupKey) {
 		m_groupKey = groupKey;
 	}
+
+    public String getIconKey() {
+        return (String) m_item.getItemProperty(ICON_KEY).getValue();
+    }
 
 }

@@ -31,23 +31,18 @@ public class OpenOperation implements Operation {
 	}
 
 	@Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean display(List<Object> targets, OperationContext operationContext) {
+        return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets,
-            OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    	return true;
     }
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return null;
+    	return "LinkdFileOpen";
     }
 
 }

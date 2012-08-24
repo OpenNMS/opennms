@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+    <artifactId>themes</artifactId>
+    <groupId>org.opennms.features.topology</groupId>
+    <version>1.11.2-SNAPSHOT</version>
+  </parent>
+
+    <groupId>org.opennms.features.topology.themes</groupId>
+    <artifactId>default-theme</artifactId>
+    <packaging>bundle</packaging>
+
+    <properties>
+        <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>
+    </properties>
+    <description>This is an OSGi bundle created with the OpenNMS Operation archetype</description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.osgi.features.topology</groupId>
+            <artifactId>opennms-topology-api</artifactId>
+            <version>1.11.2-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.osgi.features.topology</groupId>
+            <artifactId>vaadin</artifactId>
+            <version>1.11.2-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+            </resource>
+        </resources>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Fragment-Host>com.vaadin;bundle-version=6.8.1</Fragment-Host>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

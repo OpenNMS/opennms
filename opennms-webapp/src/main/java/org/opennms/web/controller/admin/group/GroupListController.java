@@ -56,16 +56,15 @@ public class GroupListController extends AbstractController {
 
 	/** {@inheritDoc} */
 	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Group> groups = m_groupManager.getGroups();
 		List<Group> groupList = new ArrayList<Group>(groups.values());
 		Collections.sort(groupList, new Comparator<Group>() {
 		    public int compare(Group g1, Group g2) {
-                        return g1.getName().compareTo(g2.getName());
+		        return g1.getName().toLowerCase().compareTo(g2.getName().toLowerCase());
 		    }
 		});
-	        return new ModelAndView("admin/userGroupView/groups/list", "groups", groupList);
+		return new ModelAndView("admin/userGroupView/groups/list", "groups", groupList);
 	}
 
 	/**

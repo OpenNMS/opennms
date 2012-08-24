@@ -182,6 +182,13 @@ public interface LinkdConfig {
     boolean useBridgeDiscovery();
 
     /**
+     * <p>useLldpDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useLldpDiscovery();
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.

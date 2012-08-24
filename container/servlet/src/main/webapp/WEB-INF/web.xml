@@ -35,6 +35,20 @@
   </listener>
   <!-- WARMERGE: end listener -->
 
+  <!-- WARMERGE: begin filter -->
+  <filter>
+    <filter-name>proxy</filter-name>
+    <filter-class>org.opennms.container.web.ProxyFilter</filter-class>
+  </filter>
+  <!-- WARMERGE: end filter -->
+
+  <!-- WARMERGE: begin filter-mapping -->
+  <filter-mapping>
+    <filter-name>proxy</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!-- WARMERGE: end filter-mapping -->
+
   <!-- WARMERGE: begin servlet -->
   <servlet>
     <servlet-name>proxy</servlet-name>

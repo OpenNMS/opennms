@@ -132,6 +132,8 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("PENROSE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("PENROSE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("PENROSE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -167,6 +169,8 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("DELAWARE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("DELAWARE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("DELAWARE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -200,6 +204,8 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("PHOENIX_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("PHOENIX_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("PHOENIX_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -233,6 +239,8 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("AUSTIN_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("AUSTIN_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("AUSTIN_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -266,6 +274,8 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("SANJOSE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("SANJOSE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("SANJOSE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();
@@ -299,6 +309,8 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
             System.out.println("RIOVISTA_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
             System.out.println("RIOVISTA_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println("RIOVISTA_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
         }
         
         m_capsd.stop();

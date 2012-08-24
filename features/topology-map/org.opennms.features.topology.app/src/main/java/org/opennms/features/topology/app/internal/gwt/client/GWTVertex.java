@@ -9,7 +9,12 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
 public class GWTVertex extends JavaScriptObject {
-
+    
+    /**
+     * CSS Class name for a vertex
+     */
+    public static final String VERTEX_CLASS_NAME = ".vertex";
+    
     protected GWTVertex() {};
     
     public final native String getId()/*-{
@@ -132,6 +137,17 @@ public class GWTVertex extends JavaScriptObject {
             
         };
     }
+    
+    protected static Func<String, GWTVertex> strokeFilter(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "blue" : "none";
+            }
+            
+        };
+    }
 
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
@@ -148,8 +164,9 @@ public class GWTVertex extends JavaScriptObject {
 
             public String call(GWTVertex datum, int index) {
                 if(datum.getIconUrl().equals("")) {
-                    return GWT.getModuleBaseURL() + "topologywidget/images/server.png";
+                    return GWT.getModuleBaseURL() + "topologywidget/images/test.svg";
                 }else {
+                    
                     return datum.getIconUrl();
                 }
                 
@@ -173,7 +190,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("transform", GWTVertex.getTranslation()).style("stroke", GWTVertex.strokeFilter()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
@@ -183,7 +200,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                D3 vertex = selection.append("g").attr("class", "little");
+                D3 vertex = selection.append("g").attr("class", "vertex");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
                 
@@ -210,6 +227,10 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
+    public static final native void logDocument(Object doc)/*-{
+        $wnd.console.log(doc)
+    }-*/;
+    
 	public final native void setParent(GWTGroup group) /*-{
 		this.group = group;
 	}-*/;

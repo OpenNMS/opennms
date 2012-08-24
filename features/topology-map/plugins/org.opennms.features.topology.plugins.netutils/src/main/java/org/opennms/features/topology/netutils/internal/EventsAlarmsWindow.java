@@ -22,8 +22,6 @@ public class EventsAlarmsWindow extends Window {
 	private final double sizePercentage = 0.80; // Window size ratio to the main window
 	private final int widthCushion = 50; //Border cushion for width of window;
 	private final int heightCushion = 110; //Border cushion for height of window
-	private URL eventsURL = null; //Web address for the events page of the selected node
-	private URL alarmsURL = null; //Web address for the alarms page of the selected node
 	private Embedded eventsBrowser = null; //Browser component which is directed at the events page
 	private Embedded alarmsBrowser = null; //Browser component which is directed at the alarms page
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
@@ -37,27 +35,17 @@ public class EventsAlarmsWindow extends Window {
 	 * @param height Height of main window
 	 * @throws MalformedURLException
 	 */
-	public EventsAlarmsWindow(Node n, String eventsURL, String alarmsURL) throws MalformedURLException {
+	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) throws MalformedURLException {
+		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
+		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
 		
-		Node node = n;
-		if (node == null) {
-			node = new Node(-1, "", "");
-		}
-		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		if (node.getNodeID() >= 0) {
-			eventsURL += node.getNodeID();
-			alarmsURL += node.getNodeID();
-		}
-		this.eventsURL = new URL(eventsURL);
-		this.alarmsURL = new URL(alarmsURL);
-		eventsBrowser = new Embedded("", new ExternalResource(this.eventsURL));
-		alarmsBrowser = new Embedded("", new ExternalResource(this.alarmsURL));
-		
-		String label = node.getLabel();
+		String label = node == null? "" : node.getLabel();
 		/*Sets up window settings*/
 		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
 			label = "";
-		} else label = " - " + label;
+		} else {
+		    label = " - " + label;
+		}
 		
 		setCaption("Events & Alarms" + label);
 		setImmediate(true);

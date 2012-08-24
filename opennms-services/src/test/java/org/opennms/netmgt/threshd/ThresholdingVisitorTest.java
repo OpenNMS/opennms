@@ -123,9 +123,75 @@ public class ThresholdingVisitorTest {
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
-    private Comparator<Parm> m_parmComparator;
-    private Comparator<Event> m_eventComparator;
-    
+    private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
+        public int compare(Parm o1, Parm o2) {
+            if (o1 == null && o2 == null) return 0;
+            if (o1 == null && o2 != null) return 1;
+            if (o1 != null && o2 == null) return -1;
+
+            int retVal = o1.getParmName().compareTo(o2.getParmName());
+            if (retVal == 0) {
+                String c1 = o1.getValue().getContent();
+                String c2 = o2.getValue().getContent();
+                if (c1 == null && c2 == null) return 0;
+                if (c1 == null && c2 != null) return 1;
+                if (c1 != null && c2 == null) return -1;
+
+                retVal = c1.compareTo(c2);
+            }
+            return retVal;
+        }
+    };
+
+    private static final Comparator<Event> EVENT_COMPARATOR = new Comparator<Event>() {
+
+        private int compareStrings(String s1, String s2) {
+            if (s1 == null && s2 == null) return 0;
+            if (s1 == null && s2 != null) return 1;
+            if (s1 != null && s2 == null) return -1;
+            return (s1.compareTo(s2));
+        }
+
+        public int compare(Event e1, Event e2) {
+            if (e1 == null && e2 == null) return 0;
+            if (e1 == null && e2 != null) return 1;
+            if (e1 != null && e2 == null) return -1;
+
+            int retVal = compareStrings(e1.getUei(), e2.getUei());
+            if (retVal == 0) {
+                retVal = InetAddressUtils.toInteger(e1.getInterfaceAddress()).compareTo(InetAddressUtils.toInteger(e2.getInterfaceAddress()));
+            }
+            if (retVal == 0) {
+                retVal = compareStrings(e1.getService(), e2.getService());
+            }
+            if (retVal == 0) {
+                List<Parm> anticipatedParms = e1.getParmCollection();
+                List<Parm> receivedParms = e2.getParmCollection();
+                Collections.sort(anticipatedParms, PARM_COMPARATOR);
+                Collections.sort(receivedParms, PARM_COMPARATOR);
+                if (anticipatedParms.size() != receivedParms.size()) {
+                    retVal = Integer.valueOf(anticipatedParms.size()).compareTo(Integer.valueOf(receivedParms.size()));
+                }
+                if (retVal == 0) {
+                    for (int i = 0; i < anticipatedParms.size(); i++) {
+                        Parm anticipated = anticipatedParms.get(i);
+                        Parm received = receivedParms.get(i);
+
+                        retVal = compareStrings(anticipated.getParmName(), received.getParmName());
+                        if (retVal == 0) {
+                            retVal = compareStrings(anticipated.getValue().getContent(), received.getValue().getContent());
+                        }
+                        if (retVal != 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return retVal;
+        }
+    };
+
     @Before
     public void setUp() throws Exception {
         // Resets Counters Cache Data
@@ -168,78 +234,8 @@ public class ThresholdingVisitorTest {
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<Event>();
-        
-        m_parmComparator = new Comparator<Parm>() {
-
-            public int compare(Parm o1, Parm o2) {
-                if (o1 == null && o2 == null) return 0;
-                if (o1 == null && o2 != null) return 1;
-                if (o1 != null && o2 == null) return -1;
-
-                int retVal = o1.getParmName().compareTo(o2.getParmName());
-                if (retVal == 0) {
-                    String c1 = o1.getValue().getContent();
-                    String c2 = o2.getValue().getContent();
-                    if (c1 == null && c2 == null) return 0;
-                    if (c1 == null && c2 != null) return 1;
-                    if (c1 != null && c2 == null) return -1;
-                    
-                    retVal = c1.compareTo(c2);
-                }
-                return retVal;
-            }
-        };
-
-        m_eventComparator = new Comparator<Event>() {
-
-            private int compareStrings(String s1, String s2) {
-                if (s1 == null && s2 == null) return 0;
-                if (s1 == null && s2 != null) return 1;
-                if (s1 != null && s2 == null) return -1;
-                return (s1.compareTo(s2));
-            }
-
-            public int compare(Event e1, Event e2) {
-                if (e1 == null && e2 == null) return 0;
-                if (e1 == null && e2 != null) return 1;
-                if (e1 != null && e2 == null) return -1;
-
-                int retVal = compareStrings(e1.getUei(), e2.getUei());
-                if (retVal == 0) {
-                    retVal = InetAddressUtils.toInteger(e1.getInterfaceAddress()).compareTo(InetAddressUtils.toInteger(e2.getInterfaceAddress()));
-                }
-                if (retVal == 0) {
-                    retVal = compareStrings(e1.getService(), e2.getService());
-                }
-                if (retVal == 0) {
-                    List<Parm> anticipatedParms = e1.getParmCollection();
-                    List<Parm> receivedParms = e2.getParmCollection();
-                    Collections.sort(anticipatedParms, m_parmComparator);
-                    Collections.sort(receivedParms, m_parmComparator);
-                    if (anticipatedParms.size() != receivedParms.size()) {
-                        retVal = Integer.valueOf(anticipatedParms.size()).compareTo(Integer.valueOf(receivedParms.size()));
-                    }
-                    if (retVal == 0) {
-                        for (int i = 0; i < anticipatedParms.size(); i++) {
-                            Parm anticipated = anticipatedParms.get(i);
-                            Parm received = receivedParms.get(i);
-                            
-                            retVal = compareStrings(anticipated.getParmName(), received.getParmName());
-                            if (retVal == 0) {
-                                retVal = compareStrings(anticipated.getValue().getContent(), received.getValue().getContent());
-                            }
-                            if (retVal != 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                return retVal;
-            }
-        };
-    }
-
+    };
+    
     private void initFactories(String threshd, String thresholds) throws Exception {
         log().info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
@@ -299,6 +295,55 @@ public class ThresholdingVisitorTest {
         // Collect Step 1 : Initialize counter cache.
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1000));
+        resource.visit(visitor);
+
+        // Collect Step 2 : Trigger. (last-current)/step => (5500-1000)/300=15
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+300000));
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(5500));
+        resource.visit(visitor);
+
+        // Collect Step 3 : Rearm. (last-current)/step => (6100-5500)/300=2
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+600000));
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+        verifyEvents(0);
+    }
+
+    @Test
+    public void testZeroIntervalResourceCounterData() throws Exception {
+        initFactories("/threshd-configuration.xml", "/test-thresholds-counters.xml");
+        ThresholdingVisitor visitor = createVisitor();
+
+        CollectionAgent agent = createCollectionAgent();
+        NodeResourceType resourceType = createNodeResourceType(agent);
+        MibObject mibObject = createMibObject("counter", "myCounter", "0");
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+
+        // Add Events
+        addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
+        addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
+
+        long baseDate = new Date().getTime();
+        // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held 
+        // Normally visiting the CollectionSet would end up visiting the resources, but we're fudging that for the test
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate));
+
+        // Collect Step 1 : Initialize counter cache.
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1000));
+        resource.visit(visitor);
+
+        // Collect Step 1.5 : Send a new data point with the same timestamp as before and a
+        // different value. This should not trigger a threshold violation because the time
+        // interval is zero. It should also not reset the cached value for the attribute
+        // because the time interval is zero.
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate));
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(5500));
         resource.visit(visitor);
 
         // Collect Step 2 : Trigger. (last-current)/step => (5500-1000)/300=15
@@ -687,7 +732,7 @@ public class ThresholdingVisitorTest {
         String lowExpression = "(100-((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
         addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
         addHighRearmEvent(1, 30, 25, Double.NaN, "/opt", "1", highExpression, null, null);
-        addEvent(lowThresholdUei, "127.0.0.1", "SNMP", 1, 10.0, 20.0, 5.0, "/opt", "1", lowExpression, null, null);
+        addEvent(lowThresholdUei, "127.0.0.1", "SNMP", 1, 10.0, 20.0, 5.0, "/opt", "1", lowExpression, null, null, m_anticipator, m_anticipatedEvents);
 
         // Step 1: Trigger threshold
         runFileSystemDataTest(visitor, 1, "/opt", 500, 1000);
@@ -846,12 +891,12 @@ public class ThresholdingVisitorTest {
         String expression = "hrStorageSize-hrStorageUsed";
 
         // Trigger Low Threshold
-        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 10.0, 15.0, 5.0, "/opt", "1", expression, null, null);
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 10.0, 15.0, 5.0, "/opt", "1", expression, null, null, m_anticipator, m_anticipatedEvents);
         runFileSystemDataTest(visitor, 1, "/opt", 95, 100);
         verifyEvents(0);
 
         // Rearm Low Threshold and Trigger High Threshold
-        addEvent(EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 10.0, 15.0, 60.0, "/opt", "1", expression, null, null);
+        addEvent(EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 10.0, 15.0, 60.0, "/opt", "1", expression, null, null, m_anticipator, m_anticipatedEvents);
         addHighThresholdEvent(1, 50, 45, 60, "/opt", "1", expression, null, null);
         runFileSystemDataTest(visitor, 1, "/opt", 40, 100);
         verifyEvents(0);
@@ -982,7 +1027,7 @@ public class ThresholdingVisitorTest {
     public void testBug3748() throws Exception {
         initFactories("/threshd-configuration-bug3748.xml","/test-thresholds-bug3748.xml");
         // Absolute threshold evaluator doesn't show threshold and rearm levels on the event.
-        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null);
+        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 2); // Set initial value
         runGaugeDataTest(visitor, 6); // Increment the value above configured threshold level: 6 - lastValue > 3, where lastValue=2
@@ -1000,7 +1045,7 @@ public class ThresholdingVisitorTest {
     public void testNMS5115() throws Exception {
         initFactories("/threshd-configuration.xml","/test-thresholds-NMS5115.xml");
 
-        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "Unknown", null, "memAvailSwap / memTotalSwap * 100.0", null, null);
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "Unknown", null, "memAvailSwap / memTotalSwap * 100.0", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
 
         CollectionAgent agent = createCollectionAgent();
@@ -1021,8 +1066,8 @@ public class ThresholdingVisitorTest {
         Long ifSpeed = 10000000l;
         String ifName = "wlan0";
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
         visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
         runInterfaceResource(visitor, "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
@@ -1129,7 +1174,7 @@ public class ThresholdingVisitorTest {
             assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
         assertTrue(triggerEvents.size() == 1);
 
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null, m_anticipator, m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -1158,7 +1203,7 @@ public class ThresholdingVisitorTest {
         assertTrue(thresholdingSet.hasThresholds(attributes));
         List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
         assertTrue(triggerEvents.size() == 1);
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null, m_anticipator, m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -1237,7 +1282,7 @@ public class ThresholdingVisitorTest {
 
         long timestamp = new Date().getTime();
         // Step 1
-        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp));
+        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp));
         IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
@@ -1245,7 +1290,7 @@ public class ThresholdingVisitorTest {
         resource.visit(visitor);
 
         // Step 2 - Increment Counters
-        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp+300000));
+        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp+300000));
         ifInfo = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
@@ -1282,11 +1327,11 @@ public class ThresholdingVisitorTest {
          ThresholdingVisitor visitor = createVisitor();
 
          // Define Main Events
-         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 65.0, "/opt", "1", "hrStorageUsed", null, null);
-         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 70.0, "/var", "1", "hrStorageUsed", null, null);
+         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 65.0, "/opt", "1", "hrStorageUsed", null, null, m_anticipator, m_anticipatedEvents);
+         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, 70.0, "/var", "1", "hrStorageUsed", null, null, m_anticipator, m_anticipatedEvents);
 
          // Define Rearm Event - This is because the configuration of an already triggered threshold has been changed.
-         addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, Double.NaN, "/opt", "1", "hrStorageUsed", null, null);
+         addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", 1, 50.0, 45.0, Double.NaN, "/opt", "1", "hrStorageUsed", null, null, m_anticipator, m_anticipatedEvents);
 
          // Trigger high Threshold for /opt
          runFileSystemDataTest(visitor, 1, "/opt", 65, 100);
@@ -1425,8 +1470,8 @@ public class ThresholdingVisitorTest {
         }
 
         // Validate Events
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
-        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.add(rearmEvents);
@@ -1657,7 +1702,7 @@ public class ThresholdingVisitorTest {
 
         long timestamp = new Date().getTime();
         // Step 1 - Initialize Counter
-        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp));
+        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp));
         BigDecimal n = new BigDecimal(Math.pow(2, bits) - 20000);
         SnmpValue snmpValue1 = SnmpUtils.getValueFactory().getCounter64(n.toBigInteger());
         SnmpCollectionResource resource1 = new IfInfo(resourceType, agent, ifData);
@@ -1665,7 +1710,7 @@ public class ThresholdingVisitorTest {
         resource1.visit(visitor);
         
         // Step 2 - Wrap Counter
-        visitor.visitCollectionSet(this.createAnonymousCollectionSet(timestamp+300000));
+        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp+300000));
         SnmpValue snmpValue2 = SnmpUtils.getValueFactory().getCounter64(new BigInteger("40000"));
         SnmpCollectionResource resource2 = new IfInfo(resourceType, agent, ifData);
         resource2.setAttributeValue(objectType, snmpValue2);
@@ -1676,7 +1721,7 @@ public class ThresholdingVisitorTest {
         verifyEvents(0);
     }
     
-    private CollectionAgent createCollectionAgent() {
+    private static CollectionAgent createCollectionAgent() {
         CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getStorageDir()).andReturn(new File(String.valueOf(1))).anyTimes();
@@ -1686,19 +1731,19 @@ public class ThresholdingVisitorTest {
         return agent;
     }
 
-    private NodeResourceType createNodeResourceType(CollectionAgent agent) {
+    private static NodeResourceType createNodeResourceType(CollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new NodeResourceType(agent, collection);
     }
 
-    private IfResourceType createInterfaceResourceType(CollectionAgent agent) {
+    private static IfResourceType createInterfaceResourceType(CollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new IfResourceType(agent, collection);
     }
 
-    private GenericIndexResourceType createGenericIndexResourceType(CollectionAgent agent, String resourceTypeName) {
+    private static GenericIndexResourceType createGenericIndexResourceType(CollectionAgent agent, String resourceTypeName) {
         org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
@@ -1713,14 +1758,14 @@ public class ThresholdingVisitorTest {
         return new GenericIndexResourceType(agent, collection, type);
     }
 
-    private void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
+    private static void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
         SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", "ignore"));
         SnmpValue snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(value) : SnmpUtils.getValueFactory().getGauge32(value);
         resource.setAttributeValue(objectType, snmpValue);
     }
 
-    private MibObject createMibObject(String type, String alias, String instance) {
+    private static MibObject createMibObject(String type, String alias, String instance) {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
         mibObject.setAlias(alias);
@@ -1731,21 +1776,21 @@ public class ThresholdingVisitorTest {
         return mibObject;
     }
 
-    private RrdRepository getRepository() {
+    private static RrdRepository getRepository() {
         RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File("/tmp"));
         return repo;		
     }
 
     private void addHighThresholdEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex, m_anticipator, m_anticipatedEvents);
     }
 
     private void addHighRearmEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex, m_anticipator, m_anticipatedEvents);
     }
 
-    private void addEvent(String uei, String ipaddr, String service, Integer trigger, Double threshold, Double rearm, Double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
+    private static void addEvent(String uei, String ipaddr, String service, Integer trigger, Double threshold, Double rearm, Double value, String label, String instance, String ds, String ifLabel, String ifIndex, EventAnticipator anticipator, List<Event> anticipatedEvents) {
         
         EventBuilder bldr = new EventBuilder(uei, "ThresholdingVisitorTest");
         bldr.setNodeid(1);
@@ -1782,16 +1827,16 @@ public class ThresholdingVisitorTest {
             bldr.addParam("rearm", rearm);
         }
 
-        m_anticipator.anticipateEvent(bldr.getEvent(), true);
-        m_anticipatedEvents.add(bldr.getEvent());
+        anticipator.anticipateEvent(bldr.getEvent(), true);
+        anticipatedEvents.add(bldr.getEvent());
     }
 
     private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
             List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
             
-            Collections.sort(receivedList, m_eventComparator);
-            Collections.sort(m_anticipatedEvents, m_eventComparator);
+            Collections.sort(receivedList, EVENT_COMPARATOR);
+            Collections.sort(m_anticipatedEvents, EVENT_COMPARATOR);
             log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
             if (m_anticipatedEvents.size() != receivedList.size()) {
                 for (Event e : m_anticipatedEvents) {
@@ -1808,7 +1853,7 @@ public class ThresholdingVisitorTest {
         m_anticipator.verifyAnticipated(0, 0, 0, remainEvents, 0);
     }
     
-    private void compareEvents(Event anticipated, Event received) {
+    private static void compareEvents(Event anticipated, Event received) {
         assertEquals("UEIs must match", anticipated.getUei(), received.getUei());
         assertEquals("NodeIDs must match", anticipated.getNodeid(), received.getNodeid());
         assertEquals("interfaces must match", anticipated.getInterface(), received.getInterface());
@@ -1816,9 +1861,9 @@ public class ThresholdingVisitorTest {
         compareParms(anticipated.getParmCollection(), received.getParmCollection());
     }
 
-    private void compareParms(List<Parm> anticipatedParms, List<Parm> receivedParms) {
-        Collections.sort(anticipatedParms, m_parmComparator);
-        Collections.sort(receivedParms, m_parmComparator);
+    private static void compareParms(List<Parm> anticipatedParms, List<Parm> receivedParms) {
+        Collections.sort(anticipatedParms, PARM_COMPARATOR);
+        Collections.sort(receivedParms, PARM_COMPARATOR);
         for (Parm source : anticipatedParms) {
             Parm found = null;
             for (Parm p : receivedParms) {
@@ -1836,7 +1881,7 @@ public class ThresholdingVisitorTest {
         m_anticipatedEvents.clear();
     }
 
-    private SnmpIfData createSnmpIfData(String ipAddress, String ifName, Long ifSpeed, Integer ifIndex, boolean collectionEnabled) {
+    private static SnmpIfData createSnmpIfData(String ipAddress, String ifName, Long ifSpeed, Integer ifIndex, boolean collectionEnabled) {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("testNode");
@@ -1850,7 +1895,7 @@ public class ThresholdingVisitorTest {
         return new SnmpIfData(snmpIface);
     }
     
-    private void setupSnmpInterfaceDatabase(String ipAddress, String ifName) throws Exception {
+    private static void setupSnmpInterfaceDatabase(String ipAddress, String ifName) throws Exception {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
         network.addNode(1, "testNode");
@@ -1883,7 +1928,7 @@ public class ThresholdingVisitorTest {
         return path.delete();
     }
     
-    private CollectionSet createAnonymousCollectionSet(long timestamp) {
+    private static CollectionSet createAnonymousCollectionSet(long timestamp) {
     	final Date internalTimestamp = new Date(timestamp);
     	return new CollectionSet() {
 			@Override
