@@ -1,5 +1,6 @@
 package org.opennms.nrtg.web.internal;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -169,14 +171,14 @@ public class NrtController {
         //get all metrics to columns mappings from the files in to hashmap
         for (RrdGraphAttribute attr : getRequiredRrdGraphAttributes(onmsResource, prefabGraph)) {
             String fileName = null;
-
+            BufferedReader bf = null;
             try {
                 fileName = m_resourceDao.getRrdDirectory() + File.separator + attr.getRrdRelativePath();
 
                 //get meta files instead of rrd or jrb
                 fileName = fileName.substring(0, fileName.lastIndexOf("."));
                 fileName = fileName.concat(".meta");
-                BufferedReader bf = new BufferedReader(new FileReader(fileName));
+                bf = new BufferedReader(new FileReader(fileName));
 
                 String mappingLine = "";
                 while (mappingLine != null) {
@@ -187,6 +189,10 @@ public class NrtController {
                 }
             } catch (Exception ex) {
                 logger.error("Problem by looking up metrics for cloumns in context of prefabgraphs from meta file '{}' '{}'", fileName, ex.getMessage());
+            } finally {
+            	if(bf != null) {
+            		IOUtils.closeQuietly(bf);
+            	}
             }
         }
         /**
