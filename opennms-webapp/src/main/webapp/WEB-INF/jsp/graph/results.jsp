@@ -208,12 +208,12 @@
 
 <script type="text/javascript">
     function postPopup( formElem ) {
-        window.open( '', 'NRTG', 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
+        window.open( '', '_blank', 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
         setTimeout("document.getElementById('nrtgForm').submit();",50);
         return false;
     }
 </script>
-            <form action="osgi/nrt/starter" target="NRTG" onsubmit="return postPopup();" id="nrtgForm" >
+            <form action="osgi/nrt/starter" target="_blank" onsubmit="return postPopup();" id="nrtgForm" >
                 <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
                 <input type="hidden" name="report" value="${resultSet.graphs[0].name}"/>
                 <input type="submit" name="nrt" value="NRT Graph"/>
