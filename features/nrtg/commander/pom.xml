@@ -46,13 +46,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.0.4</version>
-      <scope>test</scope>
+      <!--<scope>test</scope>-->
     </dependency>
     <!-- Spring -->
     <dependency>
@@ -60,13 +60,21 @@
       <artifactId>spring</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
+    </dependency> 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jms</artifactId>
       <version>${spring.version}</version>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
     </dependency>
+    
+    <!-- GCLIB -->
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+  
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>

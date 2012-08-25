@@ -267,21 +267,15 @@
         <param-value>tcp://localhost:61616</param-value>
         <description>The URL of the Message Broker to connect to</description>
     </context-param>
-
-    <context-param>
-        <param-name>org.apache.activemq.embeddedBroker</param-name>
-        <param-value>false</param-value>
-        <description>Whether we should include an embedded broker or not</description>
-    </context-param>
   
-  <servlet>
+    <servlet>
       <servlet-name>AjaxServlet</servlet-name>
       <servlet-class>org.opennms.web.controller.nrt.NrtAmqAjaxServlet</servlet-class>
       <!-- servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class -->
       <load-on-startup>1</load-on-startup>
-  </servlet>
+    </servlet>
   
-  <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>AjaxServlet</servlet-name>
         <url-pattern>/amq/*</url-pattern>
     </servlet-mapping>

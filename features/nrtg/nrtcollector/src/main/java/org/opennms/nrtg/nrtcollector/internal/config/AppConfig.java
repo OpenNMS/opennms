@@ -69,7 +69,6 @@ public class AppConfig {
     @Bean(name = "amqConnectionFactory")
     public ConnectionFactory amqConnectionFactory() {
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_BROKER_URL);
-//        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://10.174.24.10:61616");
 
         return connectionFactory;
     }
@@ -78,8 +77,11 @@ public class AppConfig {
     // JMS Template
     //
     @Bean(name = "JmsTemplate")
-    public JmsTemplate jmsTemplate() {
-        return new JmsTemplate(connectionFactory());
+    public JmsTemplate jmsTemplate() {     
+        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory());
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setTimeToLive(120000);
+        return jmsTemplate;
     }
 
     //
