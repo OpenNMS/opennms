@@ -494,8 +494,11 @@ public final class SnmpCollection implements ReadyRunnable {
         }
 
         CollectionTracker[] tracker;
-        int i=1;
+        int i=0;
 
+        if (m_collectBridge) {
+            i++;
+        }
         if (m_collectOspf) {
             i=i+3;
         }
@@ -515,47 +518,61 @@ public final class SnmpCollection implements ReadyRunnable {
         tracker = new CollectionTracker[i];
         
         i=0;
-        String name = "ipNetToMediaTable";
-        tracker[i++] = m_ipNetToMedia;
+        String name = "";
+        if (m_collectBridge) {
+            name += "ipNetToMediaTable";
+            tracker[i++] = m_ipNetToMedia;            
+        }
         if (m_collectOspf) {
-            name += "/ospfGeneralGroup/ospfIfTable/OspfNbrTable";
+            if ( i > 0)
+                name+="/";
+            name += "ospfGeneralGroup/ospfIfTable/OspfNbrTable";
             tracker[i++] = m_ospfGeneralGroup;
             tracker[i++] = m_ospfIfTable;
             tracker[i++] = m_osNbrTable;            
         }
         if (m_collectLldp) {
-            name += "/lldpLocalGroup/lldpLocTable/lldpRemTable";
+            if ( i > 0)
+                name+="/";
+            name += "lldpLocalGroup/lldpLocTable/lldpRemTable";
             tracker[i++] = m_lldpLocalGroup;
             tracker[i++] = m_lldpLocTable;
             tracker[i++] = m_lldpRemTable;
         }
         if (collectIpRouteTable) {
-            name += "/ipRouteTable";
+            if ( i > 0)
+                name+="/";
+                name += "ipRouteTable";
             tracker[i++] = m_ipRoute;
         }
         if (m_collectCdp) {
-            name += "/cdpCacheTable";
+            if ( i > 0)
+                name+="/";
+            name += "cdpCacheTable";
             tracker[i++] = m_CdpCache;
         }
         if (collectVlanTable) {
-            name += "/vlanTable";
+            if ( i > 0)
+                name+="/";
+            name += "vlanTable";
             tracker[i++] = m_vlanTable;
         }
         
         LogUtils.infof(this, "run: Collecting %s from %s", name,
                        str(m_agentConfig.getEffectiveAddress()));
 
-        walker = SnmpUtils.createWalker(m_agentConfig, name, tracker);
+        if (i > 0) {
+            walker = SnmpUtils.createWalker(m_agentConfig, name, tracker);
 
-        walker.start();
+            walker.start();
 
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-            LogUtils.errorf(this, e, "run: collection interrupted, exiting");
-            return;
+            try {
+                walker.waitFor();
+            } catch (final InterruptedException e) {
+                LogUtils.errorf(this, e, "run: collection interrupted, exiting");
+                return;
+            }
         }
-
         // Log any failures
         //
         if (m_collectOspf && !this.hasOspfGeneralGroup())
@@ -582,7 +599,7 @@ public final class SnmpCollection implements ReadyRunnable {
             LogUtils.infof(this,
                            "run: failed to collect lldpRemTable for %s",
                            hostAddress);
-        if (!this.hasIpNetToMediaTable())
+        if (m_collectBridge && !this.hasIpNetToMediaTable())
             LogUtils.infof(this,
                            "run: failed to collect ipNetToMediaTable for %s",
                            hostAddress);

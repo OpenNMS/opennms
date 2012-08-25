@@ -289,7 +289,7 @@ public class DbEventWriter extends AbstractQueryManager {
             if (snmpcoll.hasOspfGeneralGroup() && snmpcoll.hasOspfIfTable() && snmpcoll.hasOspfNbrTable()) {
                 processOspf(node,snmpcoll,dbConn,scanTime);
             }
-            if (snmpcoll.hasLldpLocalGroup() && snmpcoll.hasLldpLocTable() && snmpcoll.hasLldpRemTable()) {
+            if (snmpcoll.hasLldpLocalGroup()) {
                 processLldp(node,snmpcoll,dbConn,scanTime);
             }
             

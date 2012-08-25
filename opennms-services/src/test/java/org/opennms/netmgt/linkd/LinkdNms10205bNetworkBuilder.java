@@ -47,7 +47,7 @@ public abstract class LinkdNms10205bNetworkBuilder extends LinkdNetworkBuilder {
     static final String MUMBAI_IP = "10.205.56.5";
     static final String MUMBAI_NAME = "Mumbai";
     static final String MUMBAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.9";
-   
+    
     static final Map<InetAddress,Integer> MUMBAI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> MUMBAI_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> MUMBAI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
@@ -117,6 +117,7 @@ public abstract class LinkdNms10205bNetworkBuilder extends LinkdNetworkBuilder {
     static final String J6350_42_IP = "10.205.56.42";
     static final String J6350_42_NAME = "J6350-2";
     static final String J6350_42_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
+    static final String J6350_42_LLDP_CHASSISID = "2c6bf55dc100";
    
     static final Map<InetAddress,Integer> J6350_42_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static final Map<Integer,String> J6350_42_IF_IFNAME_MAP = new HashMap<Integer, String>();

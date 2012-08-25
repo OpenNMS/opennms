@@ -197,7 +197,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	}
         
 	LogUtils.debugf(this, "storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: %b/%b/%b", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
-        if (snmpColl.hasLldpLocalGroup() && snmpColl.hasLldpLocTable() && snmpColl.hasLldpRemTable()) {
+        if (snmpColl.hasLldpLocalGroup()) {
 	        processLldp(node,snmpColl,null,scanTime);
 	}
         

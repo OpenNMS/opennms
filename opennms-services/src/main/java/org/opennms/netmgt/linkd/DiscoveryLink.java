@@ -176,42 +176,40 @@ public final class DiscoveryLink implements ReadyRunnable {
 
         for (final LinkableNode linkableNode : linkableNodes) {
             LogUtils.debugf(this,
-                            "run: Iterating on LinkableNode's found node with ID %d",
-                            linkableNode.getNodeId());
+                            "run: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress %d/%s/%s",
+                            linkableNode.getNodeId(),linkableNode.getSysoid(),str(linkableNode.getSnmpPrimaryIpAddr()));
             if (discoveryUsingOspf && linkableNode.getOspfRouterId() != null
                     && linkableNode.getOspfinterfaces() != null
                     && linkableNode.getOspfipaddresstoifindex() != null) {
                 LogUtils.debugf(this,
-                                "run: adding to ospf node list: node with ID %d",
-                                linkableNode.getNodeId());
+                                "run: adding to ospf node list: node with nodeid/ospfrouterid %d/%s",
+                                linkableNode.getNodeId(),str(linkableNode.getOspfRouterId()));
                 m_ospfNodes.add(linkableNode);
             }   
             if (discoveryUsingLldp && linkableNode.getLldpChassisId() != null
-                    && linkableNode.getLldpChassisIdSubtype() != null
-                    && linkableNode.getLldpRemInterfaces() != null) {
+                    && linkableNode.getLldpChassisIdSubtype() != null) {
                 LogUtils.debugf(this,
-                                "run: adding to lldp node list: node with ID %d",
-                                linkableNode.getNodeId());
+                                "run: adding to lldp node list: node with nodeid/sysname/chassisid %d/%s/%s",
+                                linkableNode.getNodeId(),linkableNode.getLldpSysname(),linkableNode.getLldpChassisId());
                 m_lldpNodes.add(linkableNode);
             }
             if (discoveryUsingBridge && linkableNode.isBridgeNode()) {
                 LogUtils.debugf(this,
-                                "run: adding to bridge node list: node with ID %d",
-                                linkableNode.getNodeId());
+                                "run: adding to bridge node list: node with nodeid/bridgeidentifier %d/%s",
+                                linkableNode.getNodeId(),linkableNode.getBridgeIdentifiers().get(0));
                 m_bridgeNodes.put(new Integer(linkableNode.getNodeId()),
                                   linkableNode);
             }
             if (discoveryUsingCdp && linkableNode.hasCdpInterfaces()) {
-                addCdpLinks(linkableNode);
                 LogUtils.debugf(this,
-                                "run: adding to CDP node list: node with ID %d",
-                                linkableNode.getNodeId());
-
+                                "run: adding to CDP node list: node with nodeid/#cdpinterfaces %d/#%d",
+                                linkableNode.getNodeId(),linkableNode.getCdpInterfaces().size());
+                addCdpLinks(linkableNode);
             }
             if (discoveryUsingRoutes && linkableNode.hasRouteInterfaces()) {
                 LogUtils.debugf(this,
-                                "run: adding to router node list: node with ID %d",
-                                linkableNode.getNodeId());
+                                "run: adding to router node list: node with nodeid/#iprouteinterface %d/#%d",
+                                linkableNode.getNodeId(),linkableNode.getRouteInterfaces().size());
                 m_routerNodes.add(linkableNode);
             }
 
@@ -220,7 +218,8 @@ public final class DiscoveryLink implements ReadyRunnable {
         // This will found all mac address on
         // current package and their association
         // with ip addresses.
-        populateMacToAtInterface();
+        if (discoveryUsingBridge)
+            populateMacToAtInterface();
 
         // now perform operation to complete
         if (enableDownloadDiscovery) {
@@ -228,6 +227,13 @@ public final class DiscoveryLink implements ReadyRunnable {
                            "run: fetching further unknown MAC address SNMP bridge table info");
             parseBridgeNodes();
         }
+
+        // this part could have several special function to get inter-router
+        // links, but at the moment we worked much on switches.
+        // In future we can try to extend this part.
+        getLinksFromRouteTable();
+
+        getLinksFromOspf();
 
         // Try Link Layer Discovery Protocol to found link among all nodes
         getLinkdFromLldp();
@@ -242,13 +248,6 @@ public final class DiscoveryLink implements ReadyRunnable {
         // Try Cisco Discovery Protocol to found link among all nodes
         getLinksFromCdp();
 
-        // this part could have several special function to get inter-router
-        // links, but at the moment we worked much on switches.
-        // In future we can try to extend this part.
-        getLinksFromRouteTable();
-
-        getLinksFromOspf();
-        
         m_bridgeNodes.clear();
         m_routerNodes.clear();
         m_cdpLinks.clear();
@@ -257,7 +256,8 @@ public final class DiscoveryLink implements ReadyRunnable {
         m_lldpNodes.clear();
         m_ospfNodes.clear();
         
-        getLinkd().getAtInterfaces(getPackageName()).clear();
+        if (getLinkd().getAtInterfaces(getPackageName()) != null)
+            getLinkd().getAtInterfaces(getPackageName()).clear();
 
         m_linkd.updateDiscoveryLinkCollection(this);
 
@@ -440,7 +440,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     }
 
     private void getBackBoneLinksFromBridges() {
-        if (m_bridgeNodes.size() > 0) {
+        if (m_bridgeNodes != null && m_bridgeNodes.size() > 0) {
             LogUtils.infof(this,
                            "run: trying to find backbone ethernet links among bridge nodes using Spanning Tree Protocol");
         }
@@ -968,13 +968,15 @@ public final class DiscoveryLink implements ReadyRunnable {
     // If node1 has a lldp rem entry for node2
     // then node2 mast have an lldp rem entry for node1
     // the parent node is that with nodeid1 < nodeid2
+    
+    // FIXME We must manage the case in which one of the two device has no RemTable
     private void getLinkdFromLldp() {
         LogUtils.infof(this,
                        "run: adding links using Layer Link Discovery Protocol");
         int i = 0;
         for (LinkableNode linknode1 : m_lldpNodes) {
             for (LinkableNode linknode2 : m_lldpNodes) {
-                if (linknode1.getNodeId() > linknode2.getNodeId())
+                if (linknode1.getNodeId() == linknode2.getNodeId())
                     continue;
                 for (NodeToNodeLink lldpLink : getLldpLink(linknode1,
                                                            linknode2)) {
@@ -991,7 +993,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     private List<NodeToNodeLink> getLldpLink(LinkableNode linknode1,
             LinkableNode linknode2) {
         LogUtils.infof(this,
-                       "run: finding LLDP links between node with id %d and node with id %d.",
+                       "run: finding LLDP links between node parent with id %d and node with id %d.",
                        linknode1.getNodeId(), linknode2.getNodeId());
         List<NodeToNodeLink> links = new ArrayList<NodeToNodeLink>();
         for (LldpRemInterface lldpremiface : linknode1.getLldpRemInterfaces()) {
@@ -1006,9 +1008,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 link.setParentifindex(lldpremiface.getLldpLocIfIndex());
                 links.add(link);
             }
-
         }
-
         return links;
     }
 
