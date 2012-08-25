@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.dao.NodeDao;
@@ -197,4 +198,12 @@ public abstract class LinkdNetworkBuilder {
         
     }
     
+    int getStartPoint(List<DataLinkInterface> links) {
+        int start = 0;
+        for (final DataLinkInterface link:links) {
+            if (start==0 || link.getId().intValue() < start)
+                start = link.getId().intValue();                
+        }
+        return start;
+    }
 }

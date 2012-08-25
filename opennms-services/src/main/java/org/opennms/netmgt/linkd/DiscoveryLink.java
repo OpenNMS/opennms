@@ -1441,7 +1441,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                                            + " is excluded from discovery package! Skipping...");
                     continue;
                 }
-                if (m_linkd.getAtInterfaces(getPackageName()).containsKey(curMacAddress)) {
+                if (m_linkd.getAtInterfaces(getPackageName()) != null && m_linkd.getAtInterfaces(getPackageName()).containsKey(curMacAddress)) {
                     List<AtInterface> ats = m_linkd.getAtInterfaces(getPackageName()).get(curMacAddress);
                     for (AtInterface at : ats) {
                         NodeToNodeLink lNode = new NodeToNodeLink(
@@ -1759,17 +1759,18 @@ public final class DiscoveryLink implements ReadyRunnable {
                         "getNotAlreadyFoundMacsOnNode: Searching Not Yet Found MAC Address Occurrence on Node: %d",
                         node.getNodeId());
 
-        for (String curMac : getLinkd().getAtInterfaces(getPackageName()).keySet()) {
-            if (node.hasMacAddress(curMac))
-                continue;
-            if (macs.contains(curMac))
-                continue;
-            LogUtils.debugf(this,
+        if (getLinkd().getAtInterfaces(getPackageName()) != null) { 
+            for (String curMac : getLinkd().getAtInterfaces(getPackageName()).keySet()) {
+                if (node.hasMacAddress(curMac))
+                    continue;
+                if (macs.contains(curMac))
+                    continue;
+                LogUtils.debugf(this,
                             "getNotAlreadyFoundMacsOnNode: Found a MAC Address %s that was not found in bridge forwarding table for bridge node: %d",
                             curMac, node.getNodeId());
-            macs.add(curMac);
+                macs.add(curMac);
+            }
         }
-
         return macs;
     }
 
