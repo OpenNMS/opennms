@@ -288,27 +288,27 @@ Address          Interface              State     ID               Pri  Dead
 
                 The topology layout:
 
-Parentnode     ParentInterface                  Node            Interface               LinkdStrategy
+Parentnode     ParentInterface                  Node            Interface               LinkdStrategy           id
 
-Mumbai          ge-0/1/2.0      (519)  ----> Delhi             ge-1/0/2.0      (28503)  next hop router
-Mumbai          ge-0/0/1.0      (507)  ----> Bangalore         ge-0/0/0.0      (2401)   next hop router
-Mumbai          ge-0/0/2.0      (977)  ----> Bagmane           ge-1/0/0.0      (534)    next hop router
-Mumbai          ge-0/1/1.0      (978)  ----> Mysore            ge-0/0/1.0      (508)    next hop router
+Mumbai          ge-0/1/2.0      (519)  ----> Delhi             ge-1/0/2.0      (28503)  next hop router         800
+Mumbai          ge-0/0/1.0      (507)  ----> Bangalore         ge-0/0/0.0      (2401)   next hop router         801
+Mumbai          ge-0/0/2.0      (977)  ----> Bagmane           ge-1/0/0.0      (534)    next hop router         802
+Mumbai          ge-0/1/1.0      (978)  ----> Mysore            ge-0/0/1.0      (508)    next hop router         803
 
-Delhi           ge-1/0/1.0     (3674)  ----> Bangalore         ge-0/0/1.0      (2397)   next hop router
-Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1
-Delhi           ge-1/1/6       (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)    lldp            ****1
-Delhi           ge-1/1/5       (28519) ----> Bagmane           ge-1/0/1        (513)    lldp
+Delhi           ge-1/0/1.0     (3674)  ----> Bangalore         ge-0/0/1.0      (2397)   next hop router         804
+Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   not saved
+Delhi           ge-1/1/6       (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)    lldp            ****1   805
+Delhi           ge-1/1/5       (28519) ----> Bagmane           ge-1/0/1        (513)    lldp                    811
 
-Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (551)    next hop router
-Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router
+Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (551)    next hop router         806
+Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router         807
 
-Bagmane         ge-1/0/5.0      (654)  ----> Mysore            ge-0/1/1.0      (520)    next hop router
-Bagmane         ge-1/0/2        (514)  ----> J6350-2           ge-0/0/2.0      (549)    lldp            ****2
-Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2
+Bagmane         ge-1/0/5.0      (654)  ----> Mysore            ge-0/1/1.0      (520)    next hop router         808
+Bagmane         ge-1/0/2        (514)  ----> J6350-2           ge-0/0/2.0      (549)    lldp            ****2   809
+Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   not saved
 
-Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3
-Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3
+Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3   810
+Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3   810
 
         Here you clearly see 15 links but globally linkd saves only 12 nodes.
         The problem is that somewhere is stated that nodeid,ifindex must be unique.
@@ -331,37 +331,34 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
          */
         
         for (final DataLinkInterface datalinkinterface: links) {
-            printLink(datalinkinterface);
-            /*
             switch(datalinkinterface.getId().intValue()) {
-                case 800: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+                case 800: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
                 break;
-                case 801: checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
+                case 801: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
                 break;
-                case 802: checkLink(j635042, bagmane, 549, 540, datalinkinterface);
+                case 802: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
                 break;
-                case 803: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                case 803: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
                 break;
-                case 804: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                case 804: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
                 break;
-                case 805: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                case 805: checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
                 break;
-                case 806: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                case 806: checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
                 break;
-                case 807: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                case 807: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
                 break;
-                case 808: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                case 808: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
                 break;
-                case 809: checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                case 809: checkLink(j635042, bagmane, 549, 514, datalinkinterface);
                 break;
-                case 810: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                case 810: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
                 break;
-                case 811: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                case 811: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
                 break;
                 default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
                 break;                
             }
-            */
         }
     }
 }
