@@ -181,22 +181,22 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
         for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
 //            printLink(datalinkinterface);
             Integer linkid = datalinkinterface.getId();
-            if ( linkid == 114) {
+            if ( linkid == 174) {
                 // switch1 gi0/9 -> switch2 gi0/1 --lldp
                 checkLink(switch2, switch1, 10101, 10109, datalinkinterface);
-            } else if (linkid == 115 ) {
+            } else if (linkid == 175 ) {
                 // switch1 gi0/10 -> switch2 gi0/2 --lldp
                 checkLink(switch2, switch1, 10102, 10110, datalinkinterface);
-            } else if (linkid == 116) {
+            } else if (linkid == 176) {
                 // switch1 gi0/11 -> switch2 gi0/3 --lldp
                 checkLink(switch2, switch1, 10103, 10111, datalinkinterface);
-            } else if (linkid == 117) {
+            } else if (linkid == 177) {
                 // switch1 gi0/12 -> switch2 gi0/4 --lldp
                 checkLink(switch2, switch1, 10104, 10112, datalinkinterface);
-            } else if (linkid == 118) {
+            } else if (linkid == 178) {
                 // switch2 gi0/19 -> switch3 Fa0/19 --lldp
                 checkLink(switch3, switch2, 10019, 10119, datalinkinterface);
-            } else if (linkid == 119) {
+            } else if (linkid == 179) {
                 // switch2 gi0/20 -> switch3 Fa0/20 --lldp
                 checkLink(switch3, switch2, 10020, 10120, datalinkinterface);
             } else {
