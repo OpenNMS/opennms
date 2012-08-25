@@ -67,6 +67,7 @@ public class AppConfig {
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory());
         jmsTemplate.setDeliveryPersistent(false);
         jmsTemplate.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setTimeToLive(120000);
         return jmsTemplate;
     }

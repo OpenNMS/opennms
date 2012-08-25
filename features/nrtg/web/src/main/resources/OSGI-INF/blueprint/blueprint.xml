@@ -28,6 +28,8 @@
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="deliveryPersistent" value="false"/>
         <property name="deliveryMode" value="1"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <property name="timeToLive" value="120000"/>
     </bean>
   
     <bean id="nrtServlet" class="org.opennms.nrtg.web.internal.NrtServlet">
