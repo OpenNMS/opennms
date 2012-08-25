@@ -52,7 +52,7 @@ public class PingWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public PingWindow(Node node, String baseAddress){
+	public PingWindow(final Node node, final String baseAddress){
 
 		this.baseAddress = baseAddress;
 
