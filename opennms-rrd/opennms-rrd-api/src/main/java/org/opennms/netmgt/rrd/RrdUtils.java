@@ -77,7 +77,7 @@ public abstract class RrdUtils {
      * @param attributeMappings a {@link Map<String, String>} that represents
      * the mapping of attributeId to rrd track names
      */
-    private static void createMetaDataFile(String directory, String rrdName, Map<String, String> attributeMappings) {
+    public static void createMetaDataFile(String directory, String rrdName, Map<String, String> attributeMappings) {
         if (attributeMappings != null) {
             Writer fileWriter = null;
             String mapping = "";
@@ -248,26 +248,18 @@ public abstract class RrdUtils {
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public static boolean createRRD(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList, Map<String, String> attributeMappings) throws RrdException {
-        String fileName = rrdName + getExtension();
-
-        String completePath = directory + File.separator + fileName;
-
+    	Object def = null;
+    	
         try {
-            Object def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
-            //TODO this statment is not fixing the NMS-4845 issue... it's never null
-            if (def != null) {
-                //TODO tak find a better place for metadata
-                createMetaDataFile(directory, rrdName, attributeMappings);
-                log().info("createRRD: creating RRD file " + completePath);
-            }else {
-                log().debug("createRRD: skipping RRD file " + completePath);
-            }
-            getStrategy().createFile(def);
+            def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
+            // def can be null if the rrd-db exists already, but doesn't have to be (see MultiOutput/QueuingRrdStrategy
+            getStrategy().createFile(def, attributeMappings);
 
             return true;
         } catch (Throwable e) {
-            log().error("createRRD: An error occured creating rrdfile " + completePath + ": " + e, e);
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + completePath + ": " + e, e);
+            String path = directory + File.separator + rrdName + getStrategy().getDefaultFileExtension();
+			log().error("createRRD: An error occured creating rrdfile " + path + ": " + e, e);
+            throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + path + ": " + e, e);
         }
     }
 

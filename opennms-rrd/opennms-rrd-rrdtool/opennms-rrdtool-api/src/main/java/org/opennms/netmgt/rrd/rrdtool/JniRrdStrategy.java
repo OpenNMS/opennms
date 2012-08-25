@@ -37,6 +37,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.StringUtils;
@@ -62,12 +63,30 @@ import org.springframework.util.FileCopyUtils;
  * @author ranger
  * @version $Id: $
  */
-public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
+public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand ,StringBuffer> {
 	
 	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
 	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
 
     private Properties m_configurationProperties;
+    
+    public static class CreateCommand {
+    	
+    	String filename;
+    	final String operation = "create";
+    	String parameter;
+    	
+		public CreateCommand(String filename, String parameter) {
+			super();
+			this.filename = filename;
+			this.parameter = parameter;
+		}
+		
+		public String toString() {
+			return operation + " " + filename + " " + parameter;
+		}
+		
+    }
 
     /**
      * <p>getConfigurationProperties</p>
@@ -100,40 +119,41 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     }
 
     /** {@inheritDoc} */
-    public String createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
+    public CreateCommand createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
         if (new File(fileName).exists()) {
+			log().debug(
+					"createDefinition: filename [" + fileName
+							+ "] already exists returning null as definition");
             return null;
         }
 
-        StringBuffer createCmd = new StringBuffer("create");
+        StringBuffer parameter = new StringBuffer();
 
-        createCmd.append(' ' + fileName);
+        parameter.append(" --start=" + (System.currentTimeMillis() / 1000L - 10L));
 
-        createCmd.append(" --start=" + (System.currentTimeMillis() / 1000L - 10L));
-
-        createCmd.append(" --step=" + step);
+        parameter.append(" --step=" + step);
         
         for (RrdDataSource dataSource : dataSources) {
-            createCmd.append(" DS:");
-            createCmd.append(dataSource.getName()).append(':');
-            createCmd.append(dataSource.getType()).append(":");
-            createCmd.append(dataSource.getHeartBeat()).append(':');
-            createCmd.append(dataSource.getMin()).append(':');
-            createCmd.append(dataSource.getMax());
+        	parameter.append(" DS:");
+        	parameter.append(dataSource.getName()).append(':');
+        	parameter.append(dataSource.getType()).append(":");
+        	parameter.append(dataSource.getHeartBeat()).append(':');
+        	parameter.append(dataSource.getMin()).append(':');
+        	parameter.append(dataSource.getMax());
         }
 
 
         for (String rra : rraList) {
-            createCmd.append(' ');
-            createCmd.append(rra);
+        	parameter.append(' ');
+        	parameter.append(rra);
         }
 
-        return createCmd.toString();
+        return new CreateCommand(fileName, parameter.toString());
     }
 
 
@@ -141,13 +161,24 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      * Creates a the rrd file from the rrdDefinition. Since this definition is
      * really just the create command string it just executes it.
      *
-     * @param rrdDef a {@link java.lang.String} object.
+     * @param createCommand a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public void createFile(String rrdDef) throws Exception {
-        if (rrdDef == null) return;
-        log().debug("Executing: rrdtool "+rrdDef.toString());
-        Interface.launch(rrdDef);
+    public void createFile(CreateCommand createCommand, Map<String, String> attributeMappings) throws Exception {
+        if (createCommand == null) {
+        	log().debug("createRRD: skipping RRD file");
+        	return;
+        }
+        log().debug("Executing: rrdtool "+createCommand.toString());
+        Interface.launch(createCommand.toString());
+        
+        String filenameWithoutExtension = createCommand.filename.replace(RrdUtils.getExtension(), "");
+        int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
+        
+		RrdUtils.createMetaDataFile(
+				filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+				filenameWithoutExtension.substring(lastIndexOfSeparator),
+				attributeMappings);
     }
 
     /**

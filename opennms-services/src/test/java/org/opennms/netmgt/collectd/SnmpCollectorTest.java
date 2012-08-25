@@ -325,7 +325,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        m_rrdStrategy.createFile(def);
+        m_rrdStrategy.createFile(def, null);
 
         Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
