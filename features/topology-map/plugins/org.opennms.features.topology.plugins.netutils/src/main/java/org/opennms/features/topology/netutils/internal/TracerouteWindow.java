@@ -51,7 +51,7 @@ public class TracerouteWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public TracerouteWindow(Node node, String url) {
+	public TracerouteWindow(final Node node, final String url) {
 
 		this.tracerouteUrl = url;
 		

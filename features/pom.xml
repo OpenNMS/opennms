@@ -19,6 +19,9 @@
     <module>poller</module>
     <module>provisioning</module>
     <module>reporting</module>
+    <module>remote-poller</module>
+    <module>remote-poller-jnlp</module>
+    <module>remote-poller-gwt</module>
     <module>request-tracker</module>
     <module>springframework-security</module>
     <module>system-report</module>
@@ -44,17 +47,4 @@
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
   </modules>
-  <profiles>
-    <profile>
-      <id>build.features.remote-poller</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>remote-poller</module>
-        <module>remote-poller-jnlp</module>
-        <module>remote-poller-gwt</module>
-      </modules>
-    </profile>
-  </profiles>
 </project>

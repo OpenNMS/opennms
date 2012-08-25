@@ -37,7 +37,7 @@ public class ResourceGraphsWindow extends Window {
 		
 		rgBrowser = new Embedded("", new ExternalResource(nodeURL));
 		
-		String label = node.getLabel();
+		String label = node == null? "" : node.getLabel();
 		/*Sets up window settings*/
 		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
 			label = "";
