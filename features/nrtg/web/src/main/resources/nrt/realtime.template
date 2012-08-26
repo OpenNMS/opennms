@@ -52,9 +52,11 @@ $(function() {
         timeout: 45, 
         clientId:(new Date()).getTime().toString() 
     });
-
+    var counterMetrics;
+    var counterMetricsValues;
     amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
         if (message != null) {
+// TODO make the json valid to use parseJSON and not eval...
 //            var dataSet = $.parseJSON(message.textContent);
             var dataSet = eval(message.textContent);
 
@@ -65,16 +67,46 @@ $(function() {
             $("#debug_messages").html(message.textContent);
 
             dataSet = $.map(dataSet, function(e, i) {
-                return {
+                 temp = {
                     'metricId': e['metricId'],
+                    'metricType': e['metricType'],
                     'netInterface': e['netInterface'],
                     'nodeId': e['nodeId'],
                     'service': e['service'],
                     'timeStamp': parseInt(e['timeStamp']),
                     'value': parseInt(e['value'])
                 };
+                if (temp.metricType == "counter32") {
+                    //first counterMetric ever? Build arrays for merticId and values
+                    if(counterMetrics == null) {
+                        counterMetrics = new Array();
+                        counterMetricsValues = new Array();
+                        counterMetrics[0] = temp.metricId;
+                        counterMetricsValues[0] = temp.value;
+                    } 
+                    //there was a counterMetric before, check it metricId is knowen
+                    else {
+                        var newMetric = true;
+                        for (var i = 0; i < counterMetrics.length; i++) {
+                            if (counterMetrics[i] == temp.metricId) {
+                                newMetric = i;
+                            }
+                        }
+                        if (newMetric == true) {
+                            counterMetrics.push(temp.metricId);
+                            counterMetricsValues.push(temp.value);
+                        }
+                        // there is an old value for this counter metric
+                        else {
+                            var valueDiff = temp.value - counterMetricsValues[newMetric];
+                            counterMetricsValues[newMetric] = temp.value;
+                            temp.value = valueDiff; 
+                        }
+                    }
+                }
+                lastMeasurement = temp;
+                return temp;
             });
-            
             dataCollector.push(dataSet);
         }
     });
