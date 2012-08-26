@@ -718,8 +718,12 @@ public abstract class JMXCollector implements ServiceCollector {
 
         @Override
         public String getAttributeId() {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            return "JmxNotSupportedYet";
+            String attributeId = m_groupType.getName();
+            attributeId = attributeId.replace("_type_", ":type=");
+            attributeId = attributeId.replace("_", ".");
+            attributeId = attributeId.concat(".");
+            attributeId = attributeId.concat(m_name);
+            return "JMX_".concat(attributeId);
         }
     }
     
