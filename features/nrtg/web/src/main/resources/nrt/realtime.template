@@ -52,6 +52,8 @@ $(function() {
         timeout: 45, 
         clientId:(new Date()).getTime().toString() 
     });
+    
+    var firstDataSet = true;
     var counterMetrics;
     var counterMetricsValues;
     amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
@@ -76,7 +78,7 @@ $(function() {
                     'timeStamp': parseInt(e['timeStamp']),
                     'value': parseInt(e['value'])
                 };
-                if (temp.metricType == "counter32") {
+                if (temp.metricType == "counter32" || temp.metricType == "counter64") {
                     //first counterMetric ever? Build arrays for merticId and values
                     if(counterMetrics == null) {
                         counterMetrics = new Array();
@@ -104,10 +106,16 @@ $(function() {
                         }
                     }
                 }
-                lastMeasurement = temp;
                 return temp;
             });
-            dataCollector.push(dataSet);
+            //skip pushing the data into the graph for the first dataset with counters
+            if (firstDataSet) {
+                firstDataSet = false;
+                if (counterMetrics != null) {
+                    return;
+                }
+            }
+            dataCollector.push(dataSet);   
         }
     });
 
@@ -115,7 +123,7 @@ $(function() {
     var refreshTimerJob = {
         /// Submits the AJAX collection job request and requeues the timer.
         submitJob: function() {
-            $.get("/opennms/osgi/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+            $.get("/opennms/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
             this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPuplishingInterval);
         },
 
