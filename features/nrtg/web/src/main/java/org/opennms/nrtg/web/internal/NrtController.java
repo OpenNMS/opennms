@@ -1,6 +1,5 @@
 package org.opennms.nrtg.web.internal;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -27,7 +26,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Markus Neumann
@@ -191,7 +195,11 @@ public class NrtController {
                 logger.error("Problem by looking up metrics for cloumns in context of prefabgraphs from meta file '{}' '{}'", fileName, ex.getMessage());
             } finally {
             	if(bf != null) {
-            		IOUtils.closeQuietly(bf);
+                    try {
+                        bf.close();
+                    } catch (IOException ex) {
+                        logger.warn("problem by reader close", ex);
+                    }
             	}
             }
         }
