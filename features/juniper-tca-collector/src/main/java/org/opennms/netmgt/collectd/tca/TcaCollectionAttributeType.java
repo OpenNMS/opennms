@@ -74,7 +74,7 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 
     @Override
     public String getAttributeId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Not supported yet._" + "TCA_" + getName();
     }
 
 }

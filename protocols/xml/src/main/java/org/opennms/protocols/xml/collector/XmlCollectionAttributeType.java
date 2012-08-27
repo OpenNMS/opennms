@@ -96,6 +96,6 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
 
     @Override
     public String getAttributeId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Not supported yet._" + "XML_" + getName();
     }
 }

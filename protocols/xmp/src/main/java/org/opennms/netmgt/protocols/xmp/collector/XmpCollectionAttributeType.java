@@ -86,9 +86,11 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
      *
      * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
+    @Override
     public AttributeGroupType getGroupType() { return groupType; }
 
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(CollectionAttribute attrib, Persister persister)
     {
         log().debug("XmpCollectionAttributeType: store "+attrib);
@@ -137,12 +139,14 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() { return aVar.getObjName(); }
     /**
      * <p>getType</p>
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getType() { return Xmp.syntaxToString(aVar.getSyntax()); }
 
     /**
@@ -150,11 +154,12 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return "XmpCollectionAttributeType "+Xmp.syntaxToString(aVar.getSyntax()); }
 
     @Override
     public String getAttributeId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Not supported yet._" + "XMP_" + getName();
     }
 
 } /* class XmpCollectionAttributeType */
