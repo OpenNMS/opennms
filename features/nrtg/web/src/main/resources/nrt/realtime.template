@@ -56,6 +56,8 @@ $(function() {
     var firstDataSet = true;
     var counterMetrics;
     var counterMetricsValues;
+    var counterMetricsTimeStamps;
+
     amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
         if (message != null) {
 // TODO make the json valid to use parseJSON and not eval...
@@ -83,10 +85,12 @@ $(function() {
                     if(counterMetrics == null) {
                         counterMetrics = new Array();
                         counterMetricsValues = new Array();
+                        counterMetricsTimeStamps = new Array();
                         counterMetrics[0] = temp.metricId;
                         counterMetricsValues[0] = temp.value;
+                        counterMetricsTimeStamps[0] = temp.timeStamp;
                     } 
-                    //there was a counterMetric before, check it metricId is knowen
+                    //there was a counterMetric before, check it metricId is known
                     else {
                         var newMetric = true;
                         for (var i = 0; i < counterMetrics.length; i++) {
@@ -97,12 +101,17 @@ $(function() {
                         if (newMetric == true) {
                             counterMetrics.push(temp.metricId);
                             counterMetricsValues.push(temp.value);
+                            counterMetricsTimeStamps.push(temp.timeStamp);
                         }
                         // there is an old value for this counter metric
                         else {
                             var valueDiff = temp.value - counterMetricsValues[newMetric];
                             counterMetricsValues[newMetric] = temp.value;
-                            temp.value = valueDiff; 
+
+                            timeDiff = temp.timeStamp - counterMetricsTimeStamps[newMetric];
+                            counterMetricsTimeStamps[newMetric] = temp.timeStamp;
+
+                            temp.value = valueDiff * (1000.0 / timeDiff);
                         }
                     }
                 }
