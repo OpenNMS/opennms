@@ -66,6 +66,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
+    private boolean m_panToSelection = false;
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -107,6 +108,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.addAttribute("clientX", m_mapManager.getClientX());
         target.addAttribute("clientY", m_mapManager.getClientY());
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
+        
+        target.addAttribute("panToSelection", getPanToSelection());
+        if (getPanToSelection()) {
+            
+        }
+        setPanToSelection(false);
+        
         
         Set<Action> actions = new HashSet<Action>();
 		m_actionMapper = new KeyMapper();
@@ -233,6 +241,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		target.endTag("actions");
 
         
+    }
+
+    private void setPanToSelection(boolean b) {
+        m_panToSelection  = b;
+    }
+
+    private boolean getPanToSelection() {
+        return m_panToSelection;
     }
 
     private List<Action> sortActionHandlers(List<Handler> actionHandlers, Object target, Object sender) {
@@ -391,7 +407,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             toggleSelectVertexByItemId(itemId);
         }
         
-        if(itemIds.size() == 0) {
+        if(itemIds.size() > 0) {
+            setPanToSelection(true);
             requestRepaint();
         }
     }
