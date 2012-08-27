@@ -265,7 +265,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 e.printStackTrace();
             }
             Integer ifIndex = ospfIfTableEntry.getOspfAddressLessIf();
-            LogUtils.debugf(this, "processOspf: ospf node/ospfifipaddress/ospfAddressLessIf: %d/%s/%i", node.getNodeId(), str(ospfIfAddress),ifIndex); 
+            LogUtils.debugf(this, "processOspf: ospf node/ospfifipaddress/ospfAddressLessIf: %d/%s/%d", node.getNodeId(), str(ospfIfAddress),ifIndex); 
             if (ifIndex.intValue() == 0) {
                 ifIndex = getIfIndex(node.getNodeId(), str(ospfIfAddress));
             }
