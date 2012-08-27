@@ -1020,8 +1020,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     }
 
     @Override
-    public Element getSVGViewPort() {
-        return m_svgViewPort;
+    public SVGGElement getSVGViewPort() {
+        return m_svgViewPort.cast();
     }
 
     @Override
@@ -1050,36 +1050,31 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
      */
     public void centerSelection() {
         
-        final D3 selection = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+        final D3 selection = D3.d3().select(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+        final SVGGElement vertexElem = D3.d3().getElement(selection,0).cast();
         
         selection.each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vertex, int index) {
                 // TODO Auto-generated method stub
-                consoleLog("showing selected vertex: " + vertex.getLabel());
+                SVGMatrix viewportMatrix = getSVGViewPort().getCTM();
                 
-                SVGGElement viewPort = m_svgViewPort.cast();
-                SVGMatrix matrixTf = viewPort.getCTM();
+                SVGMatrix vertexCTM = vertexElem.getCTM();
+                ClientRect vertexClientRect = vertexElem.getBoundingClientRect();
                 
-                SVGGElement elem = D3.d3().getElement(selection, index).cast();
-                SVGMatrix selectedVertexMatrix = elem.createSVGMatrix();
+                double vertexCenterX = vertexCTM.getE();
+                double vertexCenterY = vertexCTM.getF();
                 
+                double svgCenterX = Math.abs(getSVGElement().getCTM().getE() - getSVGElement().getBoundingClientRect().getWidth()/2);
+                double svgCenterY = Math.abs(getSVGElement().getCTM().getF() - getSVGElement().getBoundingClientRect().getHeight()/2);
                 
-                ClientRect rect = getSVGElement().getBoundingClientRect();
+                double scaleFactor = viewportMatrix.getA();
+                double percent = 100 / (scaleFactor * 100);
+                double translateX = (svgCenterX - vertexCenterX) * percent;
+                double translateY = (svgCenterY - vertexCenterY) * percent;
                 
-                SVGPoint svgCenterPoint = getSVGElement().createSVGPoint();
-                svgCenterPoint.setX(rect.getWidth()/2);
-                svgCenterPoint.setY(rect.getHeight()/2);
-                
-                matrixTf.inverse().translate(svgCenterPoint.getX(), svgCenterPoint.getY());
-                matrixTf.translate(matrixTf.getX() - selectedVertexMatrix.getX(), matrixTf.getY() - selectedVertexMatrix.getY());
-                
-                viewPort.setAttribute("transform", matrixTransform(matrixTf));
-                
-                makeGlobal("selectedVertexMatrix", selectedVertexMatrix);
-                makeGlobal("svgCenterPoint", svgCenterPoint);
-                makeGlobal("matrixTf", matrixTf);
+                D3.d3().select(getSVGViewPort()).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY)));
             }
         });
     }
