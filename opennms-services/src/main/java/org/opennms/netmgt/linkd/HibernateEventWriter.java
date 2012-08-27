@@ -191,8 +191,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
 		final Timestamp scanTime = new Timestamp(System.currentTimeMillis());
 	
-	LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfIfTable/hasOspfNbrTable: %b/%b/%b", snmpColl.hasOspfGeneralGroup() ,snmpColl.hasOspfIfTable() ,snmpColl.hasOspfNbrTable());
-	if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfIfTable() && snmpColl.hasOspfNbrTable()) {
+	LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
+	if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
 	    processOspf(node,snmpColl,null,scanTime);
 	}
         

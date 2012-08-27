@@ -286,7 +286,7 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(dbConn);
             Timestamp scanTime = new Timestamp(System.currentTimeMillis());
     
-            if (snmpcoll.hasOspfGeneralGroup() && snmpcoll.hasOspfIfTable() && snmpcoll.hasOspfNbrTable()) {
+            if (snmpcoll.hasOspfGeneralGroup() && snmpcoll.hasOspfNbrTable()) {
                 processOspf(node,snmpcoll,dbConn,scanTime);
             }
             if (snmpcoll.hasLldpLocalGroup()) {

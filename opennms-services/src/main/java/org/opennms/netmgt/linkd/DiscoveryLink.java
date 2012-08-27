@@ -179,11 +179,10 @@ public final class DiscoveryLink implements ReadyRunnable {
                             "run: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress %d/%s/%s",
                             linkableNode.getNodeId(),linkableNode.getSysoid(),str(linkableNode.getSnmpPrimaryIpAddr()));
             if (discoveryUsingOspf && linkableNode.getOspfRouterId() != null
-                    && linkableNode.getOspfinterfaces() != null
-                    && linkableNode.getOspfipaddresstoifindex() != null) {
+                    && linkableNode.getOspfinterfaces() != null ) {
                 LogUtils.debugf(this,
-                                "run: adding to ospf node list: node with nodeid/ospfrouterid %d/%s",
-                                linkableNode.getNodeId(),str(linkableNode.getOspfRouterId()));
+                                "run: adding to ospf node list: node with nodeid/ospfrouterid/#ospfinterface %d/%s/#%d",
+                                linkableNode.getNodeId(),str(linkableNode.getOspfRouterId()),linkableNode.getOspfinterfaces().size());
                 m_ospfNodes.add(linkableNode);
             }   
             if (discoveryUsingLldp && linkableNode.getLldpChassisId() != null
@@ -915,7 +914,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         int i = 0;
         for (LinkableNode linknode1 : m_ospfNodes) {
             for (LinkableNode linknode2 : m_ospfNodes) {
-                if (linknode1.getNodeId() > linknode2.getNodeId())
+                if (linknode1.getNodeId() >= linknode2.getNodeId())
                     continue;
                 for (NodeToNodeLink lldpLink : getOspfLink(linknode1,
                                                            linknode2)) {

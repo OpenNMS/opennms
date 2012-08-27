@@ -36,7 +36,6 @@ import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
-import org.opennms.netmgt.linkd.snmp.OspfIfTable;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsVlan;
@@ -156,7 +155,6 @@ public final class SnmpCollection implements ReadyRunnable {
     public LldpRemTable m_lldpRemTable;
     
     public OspfGeneralGroup m_ospfGeneralGroup;
-    public OspfIfTable m_ospfIfTable;
     public OspfNbrTable m_osNbrTable;
     /**
      * The ipnettomedia table information
@@ -229,14 +227,6 @@ public final class SnmpCollection implements ReadyRunnable {
     
     OspfGeneralGroup getOspfGeneralGroup() {
         return m_ospfGeneralGroup; 
-    }
-    
-    boolean hasOspfIfTable() {
-        return (m_ospfIfTable != null && !m_ospfIfTable.failed() && !m_ospfIfTable.isEmpty());
-    }
-    
-    OspfIfTable getOspfIfTable() {
-        return m_ospfIfTable;
     }
     
     boolean hasOspfNbrTable() {
@@ -412,8 +402,6 @@ public final class SnmpCollection implements ReadyRunnable {
         
         m_ospfGeneralGroup = new OspfGeneralGroup(m_address);
         
-        m_ospfIfTable = new OspfIfTable(m_address);
-        
         m_osNbrTable = new OspfNbrTable(m_address);
 
         LogUtils.debugf(this, "run: collecting : %s", m_agentConfig);
@@ -500,7 +488,7 @@ public final class SnmpCollection implements ReadyRunnable {
             i++;
         }
         if (m_collectOspf) {
-            i=i+3;
+            i=i+2;
         }
         if (m_collectLldp) {
             i=i+3;
@@ -526,9 +514,8 @@ public final class SnmpCollection implements ReadyRunnable {
         if (m_collectOspf) {
             if ( i > 0)
                 name+="/";
-            name += "ospfGeneralGroup/ospfIfTable/OspfNbrTable";
+            name += "ospfGeneralGroup/OspfNbrTable";
             tracker[i++] = m_ospfGeneralGroup;
-            tracker[i++] = m_ospfIfTable;
             tracker[i++] = m_osNbrTable;            
         }
         if (m_collectLldp) {
@@ -578,10 +565,6 @@ public final class SnmpCollection implements ReadyRunnable {
         if (m_collectOspf && !this.hasOspfGeneralGroup())
             LogUtils.infof(this,
                            "run: failed to collect ospfGeneralGroup for %s",
-                           hostAddress);
-        if (m_collectOspf && !this.hasOspfIfTable())
-            LogUtils.infof(this,
-                           "run: failed to collect ospfIfTable for %s",
                            hostAddress);
         if (m_collectOspf && !this.hasOspfNbrTable())
             LogUtils.infof(this,
@@ -694,7 +677,6 @@ public final class SnmpCollection implements ReadyRunnable {
         m_lldpLocTable = null;
         m_lldpRemTable = null;
         m_ospfGeneralGroup = null;
-        m_ospfIfTable = null;
         m_osNbrTable = null;
 
         m_snmpVlanCollection.clear();

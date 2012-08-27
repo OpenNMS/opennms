@@ -61,7 +61,6 @@ import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
 import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
-import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
@@ -252,31 +251,6 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         node.setOspfRouterId(ospfRouterId);
 
-        Map<InetAddress,Integer> ospfipaddresstoifindex = new HashMap<InetAddress, Integer>();
-        for (final OspfIfTableEntry ospfIfTableEntry: snmpcoll.getOspfIfTable()) {
-            InetAddress ospfIfAddress = ospfIfTableEntry.getOspfIpAddress();
-            LogUtils.debugf(this, "processOspf: addind ospf node/ospfifipaddress: %d/%s", node.getNodeId(), str(ospfIfAddress)); 
-            try {
-                if (InetAddress.getByName("0.0.0.0").equals(ospfIfAddress)) {
-                    LogUtils.infof(this, "processOspf: invalid ospf interface ip address. node/ospfipipaddr: %d/%s. Skipping!", node.getNodeId(), str(ospfIfAddress)); 
-                    continue;
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-            Integer ifIndex = ospfIfTableEntry.getOspfAddressLessIf();
-            LogUtils.debugf(this, "processOspf: ospf node/ospfifipaddress/ospfAddressLessIf: %d/%s/%d", node.getNodeId(), str(ospfIfAddress),ifIndex); 
-            if (ifIndex.intValue() == 0) {
-                ifIndex = getIfIndex(node.getNodeId(), str(ospfIfAddress));
-            }
-            LogUtils.infof(this, "processOspf: ospf node/ospfifipaddress/ifIndex: %d/%s/%d", node.getNodeId(), str(ospfIfAddress),ifIndex); 
-            if (ifIndex != null && ifIndex.intValue() > 0)
-                ospfipaddresstoifindex.put(ospfIfAddress, ifIndex);
-            else 
-                LogUtils.infof(this, "processOspf: ospf invalid if index. node/ospfifipaddress/ifIndex: %d/%s/%d. Skipping!", node.getNodeId(), str(ospfIfAddress),ifIndex);                 
-        }
-        node.setOspfipaddresstoifindex(ospfipaddresstoifindex);
-        
         List<OspfNbrInterface> ospfinterfaces = new ArrayList<OspfNbrInterface>();
         
         for (final OspfNbrTableEntry ospfNbrTableEntry: snmpcoll.getOspfNbrTable()) {

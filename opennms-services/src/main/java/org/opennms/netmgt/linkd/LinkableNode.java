@@ -101,10 +101,7 @@ public class LinkableNode {
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 
     private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
-    
-    private Map<InetAddress, Integer> m_ospfipaddresstoifindex = new HashMap<InetAddress, Integer>();
-    
-
+        
     private boolean m_hasrouteinterfaces = false;
 	
     private boolean m_isBridgeNode = false;
@@ -182,15 +179,6 @@ public class LinkableNode {
 	        m_ospfinterfaces = ospfinterfaces;
 	    }
 	    
-	    public Map<InetAddress, Integer> getOspfipaddresstoifindex() {
-	        return m_ospfipaddresstoifindex;
-	    }
-	    
-	    public void setOspfipaddresstoifindex(
-	            Map<InetAddress, Integer> ospfipaddresstoifindex) {
-	        m_ospfipaddresstoifindex = ospfipaddresstoifindex;
-	    }
-
 	/**
 	 * <p>getCdpInterfaces</p>
 	 *
