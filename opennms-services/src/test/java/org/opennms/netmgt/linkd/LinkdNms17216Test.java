@@ -203,7 +203,6 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setUseBridgeDiscovery(false);
-        example1.setUseCdpDiscovery(true);
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
         example1.setUseLldpDiscovery(true);
