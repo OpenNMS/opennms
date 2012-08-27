@@ -139,7 +139,7 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
      * switch3 Fa0/19 -->  10019
      * switch3 Fa0/20 -->  10020
      * 
-     * Here we add cd discovery and all test lab devices
+     * Here we add cdp discovery and all test lab devices
      * To the previuos links discovered by lldp
      * should be added the followings discovered with cdp:
      * switch3 Fa0/23 Fa0/24 ---> switch5 Fa0/1 Fa0/9
