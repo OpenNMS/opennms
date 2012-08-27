@@ -207,6 +207,33 @@ public class LinkdNms10205OspfTest extends LinkdNms10205NetworkBuilder implement
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         
-        assertEquals(0, links.size());        
+        assertEquals(9, links.size());  
+        
+        int start = getStartPoint(links);
+        for (final DataLinkInterface datalinkinterface: links) {
+            int id = datalinkinterface.getId().intValue();
+            if (start == id ) {
+                checkLink(chennai, mumbai, 528, 520, datalinkinterface);
+            } else if (start+1 == id ) {
+                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+            } else if (start+2 == id ) {
+                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+            } else if (start+3 == id ) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+            } else if (start+4 == id ) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+            } else if (start+5 == id ) {
+                checkLink(mysore, chennai, 505, 517, datalinkinterface);
+            } else if (start+6 == id ) {
+               checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+            } else if (start+7 == id ) {
+                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+            } else if (start+8 == id ) {
+                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+            } else {
+                checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
+            }
+        }
+
     }
 }
