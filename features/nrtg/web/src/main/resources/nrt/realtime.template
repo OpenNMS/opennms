@@ -92,13 +92,13 @@ $(function() {
                     } 
                     //there was a counterMetric before, check it metricId is known
                     else {
-                        var newMetric = true;
+                        var newMetric = -1;
                         for (var i = 0; i < counterMetrics.length; i++) {
                             if (counterMetrics[i] == temp.metricId) {
                                 newMetric = i;
                             }
                         }
-                        if (newMetric == true) {
+                        if (newMetric == -1) {
                             counterMetrics.push(temp.metricId);
                             counterMetricsValues.push(temp.value);
                             counterMetricsTimeStamps.push(temp.timeStamp);
