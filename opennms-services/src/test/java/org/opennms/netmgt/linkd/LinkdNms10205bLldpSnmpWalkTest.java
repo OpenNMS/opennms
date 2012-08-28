@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.junit.Assert.assertEquals;
-
-import java.net.InetAddress;
-import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -40,11 +35,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.linkd.snmp.LldpLocTable;
-import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
-import org.opennms.netmgt.linkd.snmp.LldpRemTable;
-import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
+import org.opennms.netmgt.linkd.snmp.*;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -53,96 +44,99 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.net.InetAddress;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
+@ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/applicationContext-linkd-test.xml"
 })
 @JUnitConfigurationEnvironment
 public class LinkdNms10205bLldpSnmpWalkTest extends LinkdNms10205bNetworkBuilder implements InitializingBean {
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
     @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
     })
     public void testNetwork10205bJ63542LldpLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
         LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(J6350_42_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
+        tracker = new CollectionTracker[]{m_lLldpLocalGroup};
         SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(J6350_42_IP));
         SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
         walker.start();
 
         try {
-                walker.waitFor();
+            walker.waitFor();
         } catch (final InterruptedException e) {
 
         }
-        
+
         assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(J6350_42_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(J6350_42_LLDP_CHASSISID, m_lLldpLocalGroup.getLldpLocChassisid());
         assertEquals(J6350_42_NAME, m_lLldpLocalGroup.getLldpLocSysname());
     }
-    
+
 
     @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
     })
     public void testNetwork10205bJ63542LldpRemTableCollection() throws Exception {
 
         String name = "lldpRemTable";
         LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddress.getByName(J6350_42_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
+        tracker = new CollectionTracker[]{m_lldpRemTable};
         SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(J6350_42_IP));
         SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
         walker.start();
 
         try {
-                walker.waitFor();
+            walker.waitFor();
         } catch (final InterruptedException e) {
             assertEquals(false, true);
         }
-        
+
         final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(0, lldpTableEntryCollection.size());        
+        assertEquals(0, lldpTableEntryCollection.size());
     }
 
     @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
     })
     public void testNetwork10205bJ63542LldpLocTableCollection() throws Exception {
 
         String name = "lldpLocTable";
         LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddress.getByName(J6350_42_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpLocTable};
+        tracker = new CollectionTracker[]{m_lldpLocTable};
         SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(J6350_42_IP));
         SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
         walker.start();
 
         try {
-                walker.waitFor();
+            walker.waitFor();
         } catch (final InterruptedException e) {
             assertEquals(false, true);
         }
-        
+
         final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
         assertEquals(4, lldpTableEntryCollection.size());
-        for (final LldpLocTableEntry entry: lldpTableEntryCollection) {
+        for (final LldpLocTableEntry entry : lldpTableEntryCollection) {
             assertEquals(7, entry.getLldpLocPortIdSubtype().intValue());
         }
-        
+
     }
-
-
 }
