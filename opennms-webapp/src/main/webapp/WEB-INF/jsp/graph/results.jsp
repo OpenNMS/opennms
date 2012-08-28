@@ -184,14 +184,8 @@
 
         <!-- NRTG Starter script -->
         <script type="text/javascript">
-            function postPopup( formElem ) {
-                window.open( '', '_blank', 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
-                setTimeout("document.getElementById('nrtgForm').submit();",50);
-                return false;
-            }
-                
-            function testPopUp(resourceId, report) {
-                window.open( 'nrt/starter?resourceId='+resourceId+'&report='+report, 'window'+resourceId+report, 'width=800, height=600, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
+            function nrtgPopUp(resourceId, report) {
+                window.open( 'nrt/starter?resourceId='+resourceId+'&report='+report, 'window'+resourceId+report, 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
             }
         </script>
 
@@ -219,11 +213,11 @@
                     <!-- NRTG Starter Zoom -->
                     <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP')}">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-                            <a href="javascript:testPopUp('${resultSet.resource.id}','${resultSet.graphs[0].name}')"><font size="-1"> Start NRT-Graphing for ${resultSet.graphs[0].title} </font></a><br>
+                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${resultSet.graphs[0].name}')"><font size="-1"> Start NRT-Graphing for ${resultSet.graphs[0].title} </font></a><br>
                             </c:if>
                         </c:if>
                     <!--
-                                        <form action="nrt/starter" onsubmit="return postPopup();" id="nrtgForm" >
+                                        <form action="nrt/starter" onsubmit="return nrtgPopup();" id="nrtgForm" >
                                             <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
                                             <input type="hidden" name="report" value="${graph.name}"/>
                                             <input type="submit" name="nrt" value="NRT Graph"/>
@@ -254,12 +248,12 @@
 
                     <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP')}">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-                            <a href="javascript:testPopUp('${resultSet.resource.id}','${graph.name}')"><font size="-1"> Start NRT-Graphing for ${graph.title} </font></a><br>
+                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')"><font size="-1"> Start NRT-Graphing for ${graph.title} </font></a><br>
                             </c:if>
                         </c:if>
 
                     <!--
-                                        <form action="nrt/starter" onsubmit="return postPopup();" id="nrtgForm" >
+                                        <form action="nrt/starter" onsubmit="return nrtgPopup();" id="nrtgForm" >
                                             <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
                                             <input type="hidden" name="report" value="${graph.name}"/>
                                             <input type="submit" name="nrt" value="NRT Graph"/>
