@@ -72,6 +72,9 @@ public abstract class RrdUtils {
     /**
      * Writes a file with the attribute to rrd track mapping next to the rrd file.
      *
+     * attributMappings = Key(attributeId, for example SNMP OID or JMX bean)
+     *                  = value(Name of data source, for example ifInOctets)
+     *
      * @param directory
      * @param rrdName
      * @param attributeMappings a {@link Map<String, String>} that represents

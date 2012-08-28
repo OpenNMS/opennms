@@ -89,7 +89,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.opennms.nrtg.collectioncommander.internal.CollectionCommanderStarter</mainClass>
+	      <mainClass>org.opennms.nrtg.commander.internal.CollectionCommanderStarter</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
