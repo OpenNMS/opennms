@@ -336,7 +336,7 @@ Group:         Applications/System
 Requires(pre): git >= 1.7, perl(Carp), perl(Cwd), perl(Data::Dumper), perl(File::Basename), perl(File::Copy), perl(File::Path), perl(File::Spec), perl(File::Temp), perl(Getopt::Long), perl(Git), perl(IO::Handle)
 
 %description config-data
-Configuration data (etc-pristine) useful for doing OpenNMS upgrades.
+Configuration data (etc-pristine) for doing OpenNMS upgrades.
 
 %{extrainfo}
 %{extrainfo2}
@@ -775,42 +775,6 @@ rm -rf $RPM_BUILD_ROOT
 %files upgrade
 %{instprefix}/bin/config-tools/.upgrade-%{version}-%{release}
 
-%post config-data
-if [ -n "$DEBUG" ]; then
-	echo "=== config-data ==="
-	env | sort -u
-fi
-
-if [ -n "$OPENNMS_SKIP_CONFIG_UPGRADE" ]; then
-	exit 0;
-fi
-
-CURRENT_VERSION="%{version}-%{release}"
-OPENNMS_CORE=`rpm -q opennms-core 2>/dev/null`
-if [ $? -eq 0 ] && [ -n "$OPENNMS_CORE" ]; then
-	echo "config-data post: opennms-core is already installed"
-	echo "config-data post: rpm -q --queryformat='%%{version}-%%{release}' opennms-core"
-	CURRENT_VERSION=`rpm -q --queryformat='%%{version}-%%{release}' opennms-core 2>/dev/null`
-	if [ $? -ne 0 ] || [ -z "$CURRENT_VERSION" ]; then
-		echo "config-data post: unable to determine current version!"
-		exit 150
-	fi
-else
-	echo "config-data post: opennms-core is not already installed"
-fi
-echo "config-data post: OpenNMS configuration version: $CURRENT_VERSION"
-
-if [ ! -d "$RPM_INSTALL_PREFIX0/etc/.git" ]; then
-	echo "config-data post: $RPM_INSTALL_PREFIX0/etc/.git does not exist, initializing"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" init -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" || exit 151
-fi
-
-echo "config-data post: storing pristine configuration files"
-"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" || exit 152
-
-echo "config-data post: storing current user configuration files"
-"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" || exit 153
-
 %pre upgrade
 if [ -n "$DEBUG" ]; then
 	echo "=== upgrade ==="
@@ -843,12 +807,23 @@ UPGRADE_TO_VERSION="%{version}-%{release}"
 
 pushd "$RPM_INSTALL_PREFIX0/etc"
 	echo "upgrade pre: upgrading from $UPGRADE_FROM_VERSION to $UPGRADE_TO_VERSION"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -o "$RPM_INSTALL_PREFIX0" -f "$UPGRADE_FROM_VERSION" -t "$UPGRADE_TO_VERSION" || exit 161
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" upgrade -o "$RPM_INSTALL_PREFIX0" -f "$UPGRADE_FROM_VERSION" -t "$UPGRADE_TO_VERSION" -c "opennms-upgrade" || exit 161
 	echo "upgrade pre: git branch -D opennms-git-config-work"
 	git branch -D opennms-git-config-work || :
 	echo "upgrade pre: git branch opennms-git-config-work opennms-git-config-pristine-$UPGRADE_TO_VERSION"
 	git branch opennms-git-config-work "opennms-git-config-pristine-$UPGRADE_TO_VERSION" || exit 162
 popd
+
+%post upgrade
+#if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
+#fi
+
+if [ -n "$DEBUG" ]; then
+	env | grep RPM_INSTALL_PREFIX | sort -u
+fi
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
@@ -869,9 +844,12 @@ fi
 
 %pre core
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+	echo "core pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-core" || exit 163
+
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
 fi
 
 # clean out old jasper files
@@ -881,14 +859,11 @@ rpm -ql opennms-core | grep -v 'etc-pristine' | grep -v '/subreports/' | grep -E
 done
 
 %post core
-if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "core post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 163
-
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
-fi
+#if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
+#fi
 
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
@@ -969,6 +944,11 @@ for LIBNAME in jicmp jicmp6 jrrd; do
 	fi
 done
 
+if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
+	echo "core post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-core" || exit 163
+fi
+
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
@@ -989,238 +969,303 @@ fi
 
 %pre remote-poller
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "remote-poller pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-remote-poller" || exit 164
 fi
 
 %post remote-poller
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "remote-poller post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 164
+	echo "remote-poller post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-remote-poller" || exit 164
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre webapp-jetty
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "webapp-jetty pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-webapp-jetty" || exit 165
 fi
 
 %post webapp-jetty
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "webapp-jetty post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 165
+	echo "webapp-jetty post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-webapp-jetty" || exit 165
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre ncs
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "ncs pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-ncs" || exit 166
 fi
 
 %post ncs
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "ncs post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 166
+	echo "ncs post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-ncs" || exit 166
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-provisioning-dns
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-provisioning-dns pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-dns" || exit 167
 fi
 
 %post plugin-provisioning-dns
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-provisioning-dns post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 167
+	echo "plugin-provisioning-dns post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-dns" || exit 167
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-provisioning-link
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-provisioning-link pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-link" || exit 168
 fi
 
 %post plugin-provisioning-link
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-provisioning-link post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 168
+	echo "plugin-provisioning-link post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-link" || exit 168
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#3	pushd "$RPM_INSTALL_PREFIX0/etc"
+#3		git checkout opennms-git-config-local || exit 199
+#3	popd
 fi
 
 %pre plugin-provisioning-map
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-provisioning-map pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-map" || exit 169
 fi
 
 %post plugin-provisioning-map
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-provisioning-map post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 169
+	echo "plugin-provisioning-map post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-map" || exit 169
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-provisioning-rancid
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-provisioning-rancid pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-rancid" || exit 170
 fi
 
 %post plugin-provisioning-rancid
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-provisioning-rancid post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 170
+	echo "plugin-provisioning-rancid post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-rancid" || exit 170
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-provisioning-snmp-asset
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-provisioning-snmp-asset pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-snmp-asset" || exit 171
 fi
 
 %post plugin-provisioning-snmp-asset
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-provisioning-snmp-asset post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 171
+	echo "plugin-provisioning-snmp-asset post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-provisioning-snmp-asset" || exit 171
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-protocol-dhcp
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-protocol-dhcp pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-dhcp" || exit 172
 fi
 
 %post plugin-protocol-dhcp
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-protocol-dhcp post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 172
+	echo "plugin-protocol-dhcp post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-dhcp" || exit 172
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-protocol-nsclient
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-protocol-nsclient pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-nsclient" || exit 173
 fi
 
 %post plugin-protocol-nsclient
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-protocol-nsclient post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 173
+	echo "plugin-protocol-nsclient post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-nsclient" || exit 173
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-protocol-radius
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-protocol-radius pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-radius" || exit 174
 fi
 
 %post plugin-protocol-radius
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-protocol-radius post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 174
+	echo "plugin-protocol-radius post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-radius" || exit 174
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-protocol-xml
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-protocol-xml pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-xml" || exit 175
 fi
 
 %post plugin-protocol-xml
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-protocol-xml post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 175
+	echo "plugin-protocol-xml post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-xml" || exit 175
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-protocol-xmp
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-protocol-xmp pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-xmp" || exit 176
 fi
 
 %post plugin-protocol-xmp
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-protocol-xmp post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 176
+	echo "plugin-protocol-xmp post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-protocol-xmp" || exit 176
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
 
 %pre plugin-collector-juniper-tca
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-work || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-work || exit 199
+#	popd
+	echo "plugin-collector-juniper-tca pre: storing pristine configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-collector-juniper-tca" || exit 177
 fi
 
 %post plugin-collector-juniper-tca
 if [ -z "$OPENNMS_SKIP_CONFIG_UPGRADE" ] && [ -n "$RPM_INSTALL_PREFIX0" ]; then
-	echo "plugin-collector-juniper-tca post: storing pristine configuration files"
-	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` || exit 177
+	echo "plugin-collector-juniper-tca post: storing current configuration files"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v `cat "$RPM_INSTALL_PREFIX0/.version"` -c "opennms-plugin-collector-juniper-tca" || exit 177
 
-	pushd "$RPM_INSTALL_PREFIX0/etc"
-		git checkout opennms-git-config-local || exit 199
-	popd
+#	pushd "$RPM_INSTALL_PREFIX0/etc"
+#		git checkout opennms-git-config-local || exit 199
+#	popd
 fi
+
+%post config-data
+if [ -n "$DEBUG" ]; then
+	echo "=== config-data ==="
+	env | sort -u
+fi
+
+if [ -n "$OPENNMS_SKIP_CONFIG_UPGRADE" ]; then
+	exit 0;
+fi
+
+CURRENT_VERSION="%{version}-%{release}"
+OPENNMS_CORE=`rpm -q opennms-core 2>/dev/null`
+if [ $? -eq 0 ] && [ -n "$OPENNMS_CORE" ]; then
+	echo "config-data post: opennms-core is already installed"
+	echo "config-data post: rpm -q --queryformat='%%{version}-%%{release}' opennms-core"
+	CURRENT_VERSION=`rpm -q --queryformat='%%{version}-%%{release}' opennms-core 2>/dev/null`
+	if [ $? -ne 0 ] || [ -z "$CURRENT_VERSION" ]; then
+		echo "config-data post: unable to determine current version!"
+		exit 150
+	fi
+else
+	echo "config-data post: opennms-core is not already installed"
+fi
+echo "config-data post: OpenNMS configuration version: $CURRENT_VERSION"
+
+if [ ! -d "$RPM_INSTALL_PREFIX0/etc/.git" ]; then
+	echo "config-data post: $RPM_INSTALL_PREFIX0/etc/.git does not exist, initializing"
+	"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" init -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" -c "opennms-config-data" || exit 151
+fi
+
+echo "config-data post: storing pristine configuration files"
+"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storepristine -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" -c "opennms-config-data" || exit 152
+
+echo "config-data post: storing current user configuration files"
+"$RPM_INSTALL_PREFIX0/bin/config-tools/git-config.pl" storecurrent -o "$RPM_INSTALL_PREFIX0" -v "$CURRENT_VERSION" -c "opennms-config-data" || exit 153
+
