@@ -45,9 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -74,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements InitializingBean {
+public class LinkdNms10205OspfTest extends LinkdNms10205NetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -118,16 +116,9 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
     }
 
     /*
-     *  The 
-     *  MUMBAI:port ge 0/1/3:ip 192.168.5.5   ------> CHENNAI:port ge 4/0/2: ip 192.168.5.6
-     *  MUMBAI:port ge 0/1/2:ip 192.168.5.9   ------> DELHI:port ge 1/0/2: ip 192.168.5.10
-     *  MUMBAI:port ge 0/0/1:ip 192.168.5.13   ------> BANGALORE:port ge 0/0/0: ip 192.168.5.14
-     *  DELHI:port ge 1/0/1:ip 192.168.1.5     ------> BANGALORE:port ge 0/0/1: ip 192.168.1.6
-     *  DELHI:port ge 1/1/6:ip 172.16.7.1     ------> Space-EX-SW1: port 0/0/6: ip 172.16.7.1 ???? same ip address
-     *  CHENNAI:port ge 4/0/3:ip 192.168.1.1  ------> DELHI: port ge 1/1/0: ip 192.168.1.2
      *  
-     *  a lot of duplicated ip this is a clear proof that linkd is not able to 
-     *  gather topology of this lab using the useBridgeTopology and ip routes.
+     *  No Ospf nbr Table for these nodes.
+     *  Not able to get links.
      */
     @Test
     @JUnitSnmpAgents(value={
@@ -161,26 +152,13 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
-        example1.setForceIpRouteDiscoveryOnEthernet(true);
         example1.setUseCdpDiscovery(false);
-        Iproutes iproutes = new Iproutes();
-        Vendor juniper = new Vendor();
-        juniper.setVendor_name("Juniper.junos");
-        juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
-        juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
-        juniper.addSpecific("2.9");
-        juniper.addSpecific("2.10");
-        juniper.addSpecific("2.11");
-        juniper.addSpecific("2.20");
-        juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.30");
-        juniper.addSpecific("2.31");
-        juniper.addSpecific("2.41");
-        juniper.addSpecific("2.57");
-
-        iproutes.addVendor(juniper);
-        m_linkdConfig.getConfiguration().setIproutes(iproutes);
+        example1.setUseBridgeDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setSaveStpNodeTable(false);
+        example1.setUseOspfDiscovery(true);
         m_linkdConfig.update();
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
@@ -229,39 +207,21 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         
-        assertEquals(9, links.size());
-        
-        // Linkd is able to find partially the topology using the next hop router
-        // among the core nodes:
-        // mumbai, chennai, delhi, mysore,bangalore and bagmane
-        // the link between chennai and delhi is lost 
-        // the link between chennai and bagmane is lost
-        // the link between bagmane and delhi is lost
-        // I checked the walks and no route info
-        // is there for discovering the link.
-        // I have to guess that linkd is working as expected
-        
-        // The bridge and RSTP topology information are
-        // unusuful, the devices supporting RSTP
-        // have themselves as designated bridge.
-        
-        // Other links are lost...
-        // no routing entry and no bridge 
-        // forwarding
+        assertEquals(9, links.size());  
         
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
             if (start == id ) {
-                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
-            } else if (start+1 == id ) {
-                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
-            } else if (start+2 == id ) {
-                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
-            } else if (start+3 == id ) {
-                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
-            } else if (start+4 == id ) {
                 checkLink(chennai, mumbai, 528, 520, datalinkinterface);
+            } else if (start+1 == id ) {
+                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+            } else if (start+2 == id ) {
+                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+            } else if (start+3 == id ) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+            } else if (start+4 == id ) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
             } else if (start+5 == id ) {
                 checkLink(mysore, chennai, 505, 517, datalinkinterface);
             } else if (start+6 == id ) {
@@ -274,5 +234,6 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
                 checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
         }
+
     }
 }

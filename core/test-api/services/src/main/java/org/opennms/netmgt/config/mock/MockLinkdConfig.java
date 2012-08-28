@@ -185,4 +185,9 @@ public class MockLinkdConfig implements LinkdConfig {
             ValidationException {        
     }
 
+    @Override
+    public boolean useOspfDiscovery() {
+        return false;
+    }
+
 }

@@ -45,9 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -74,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205bTest extends LinkdNms10205bNetworkBuilder implements InitializingBean {
+public class LinkdNms10205bOspfTest extends LinkdNms10205bNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -120,7 +118,7 @@ public class LinkdNms10205bTest extends LinkdNms10205bNetworkBuilder implements 
 
     /*
      * 
-MUMBAI_10.205.56.5: (LLDP is not supported on this device_family=m320)
+MUMBAI_10.205.56.5: 
 ===================
 root@Mumbai> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
@@ -131,18 +129,13 @@ Address          Interface              State     ID               Pri  Dead
 
 DELHI_10.205.56.7:
 ==================
-admin@Delhi> show lldp neighbors
-Local Interface Chassis Id        Port info     System Name
-ge-1/1/6        00:23:9c:02:3b:40  ge-0/0/6.0   Space-EX-SW1
-ge-1/1/5        80:71:1f:c7:0f:c0  ge-1/0/1     Bagmane
 admin@Delhi> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
 192.168.1.6      ge-1/0/1.0             Full      192.168.9.1      128    31  ---->Bangalore
 192.168.5.9      ge-1/0/2.0             Full      192.168.5.1      128    39  ---->Mumbai
 172.16.7.2       ge-1/1/6.0             Full      10.205.56.1      128    33  ---->Space_ex_sw1
 
-
-BANGALORE_10.205.56.9: (LLDP is not supported on this device_family=m7i)
+BANGALORE_10.205.56.9:
 ======================
 root@Bangalore> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
@@ -153,11 +146,6 @@ Address          Interface              State     ID               Pri  Dead
 
 Bagmane_10.205.56.20:
 ====================
-admin@Bagmane> show lldp neighbors
-Local Interface Chassis Id        Port info     System Name
-ge-1/0/1        00:22:83:f1:67:c0  ge-1/1/5     Delhi
-ge-1/0/3        00:26:88:6a:9a:80  ge-1/0/6.0   sw21
-ge-1/0/2        2c:6b:f5:5d:c1:00  TO-BAMANE    J6350-2
 admin@Bagmane> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
 192.168.5.17     ge-1/0/0.0             Full      192.168.5.1      128    30 ----> Mumbai
@@ -165,7 +153,7 @@ Address          Interface              State     ID               Pri  Dead
 192.168.1.9      ge-1/0/4.0             Full      192.168.9.1      128    32 ----> Bangalore
 192.168.1.14     ge-1/0/5.0             Full      192.168.22.1     128    33 ----> Mysore
 
-Mysore_10.205.56.22:(LLDP is not supported on this device_family=m10i)
+Mysore_10.205.56.22:
 ===================
 admin@Mysore> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
@@ -174,11 +162,6 @@ Address          Interface              State     ID               Pri  Dead
 
 Space-EX-SW1_10.205.56.1:
 =========================
-root@Space-EX-SW1> show lldp neighbors
-Local Interface    Parent Interface    Chassis Id          Port info          System Name
-ge-0/0/0.0         -                   00:21:59:cf:4c:00   ge-0/0/0.0         Space-EX-SW2
-ge-0/0/6.0         -                   00:22:83:f1:67:c0   ge-1/1/6           Delhi
-ge-0/0/4.0         -                   00:26:88:6a:9a:80   ge-2/0/33.0        sw21
 root@Space-EX-SW1> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
 172.16.10.2      ge-0/0/0.0             Full      10.205.56.2      128    34 ----> Space_ex_sw2
@@ -186,10 +169,6 @@ Address          Interface              State     ID               Pri  Dead
 
 Space-EX-SW2_10.205.56.2: 
 =========================
-root@Space-EX-SW2> show lldp neighbors
-Local Interface    Parent Interface    Chassis Id          Port info     System Name
-ge-0/0/0.0         -                   00:23:9c:02:3b:40   TO-EX-SW1    Space-EX-SW1
-me0.0              -                   00:26:88:6a:9a:80   ge-0/0/15.0  sw21
 root@Space-EX-SW2> show ospf neighbor
 Address          Interface              State     ID               Pri  Dead
 172.16.10.1      ge-0/0/0.0             Full      10.205.56.1      128    35 ----> Space_ex_sw1
@@ -208,7 +187,7 @@ Address          Interface              State     ID               Pri  Dead
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
     })
-    public void testNetwork10205bLinks() throws Exception {
+    public void testNetwork10205bOspfLinks() throws Exception {
         m_nodeDao.save(getMumbai());
         m_nodeDao.save(getDelhi());
         m_nodeDao.save(getBangalore());
@@ -222,28 +201,14 @@ Address          Interface              State     ID               Pri  Dead
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
-        example1.setForceIpRouteDiscoveryOnEthernet(true);
         example1.setUseCdpDiscovery(false);
-        example1.setUseLldpDiscovery(true);
-        
-        Iproutes iproutes = new Iproutes();
-        Vendor juniper = new Vendor();
-        juniper.setVendor_name("Juniper.junos");
-        juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
-        juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
-        juniper.addSpecific("2.9");
-        juniper.addSpecific("2.10");
-        juniper.addSpecific("2.11");
-        juniper.addSpecific("2.20");
-        juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.30");
-        juniper.addSpecific("2.31");
-        juniper.addSpecific("2.41");
-        juniper.addSpecific("2.57");
-
-        iproutes.addVendor(juniper);
-        m_linkdConfig.getConfiguration().setIproutes(iproutes);
+        example1.setUseLldpDiscovery(false);
+        example1.setUseBridgeDiscovery(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setSaveStpNodeTable(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setSaveRouteTable(false);
+        example1.setUseOspfDiscovery(true);
         m_linkdConfig.update();
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
@@ -282,11 +247,11 @@ Address          Interface              State     ID               Pri  Dead
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(12, links.size());
+        assertEquals(11, links.size());
         
         /*
 
-                The topology layout:
+                The ospf topology layout:
 
 Parentnode     ParentInterface                  Node            Interface               LinkdStrategy           id
 
@@ -296,68 +261,45 @@ Mumbai          ge-0/0/2.0      (977)  ----> Bagmane           ge-1/0/0.0      (
 Mumbai          ge-0/1/1.0      (978)  ----> Mysore            ge-0/0/1.0      (508)    next hop router         803
 
 Delhi           ge-1/0/1.0     (3674)  ----> Bangalore         ge-0/0/1.0      (2397)   next hop router         804
-Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   not saved
-Delhi           ge-1/1/6       (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)    lldp            ****1   805
-Delhi           ge-1/1/5       (28519) ----> Bagmane           ge-1/0/1        (513)    lldp                    811
+Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router         805
 
-Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (551)    next hop router         806
-Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router         807
+Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router         806
+Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (551)    next hop router         807
 
 Bagmane         ge-1/0/5.0      (654)  ----> Mysore            ge-0/1/1.0      (520)    next hop router         808
-Bagmane         ge-1/0/2        (514)  ----> J6350-2           ge-0/0/2.0      (549)    lldp            ****2   809
-Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   not saved
+Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router         809
 
-Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3   810
-Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3   810
-
-        Here you clearly see 15 links but globally linkd saves only 12 nodes.
-        The problem is that somewhere is stated that nodeid,ifindex must be unique.
-        This means that the links with * are overwritten. because the iproute strategy follows the 
-        lldp strategy then the route link is saved.
+Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router         810
         
-        Linkd is able to find the topology using the next hop router
-        and lldp among the core nodes:
-        mumbai, delhi, mysore,bangalore and bagmane
-        
-        Also is able to find the topology among the core nodes and the peripherals:
-        space_ex_sw1, space_ex_sw2, j6350_42
-
-        The bridge and RSTP topology information are
-        unusuful, the devices supporting RSTP
-        have themselves as designated bridge.
-        
-        But The link between Mysore and SRX-100 is lost        
-
          */
         
+        int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
-            switch(datalinkinterface.getId().intValue()) {
-                case 800: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
-                break;
-                case 801: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
-                break;
-                case 802: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
-                break;
-                case 803: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
-                break;
-                case 804: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
-                break;
-                case 805: checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
-                break;
-                case 806: checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
-                break;
-                case 807: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
-                break;
-                case 808: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
-                break;
-                case 809: checkLink(j635042, bagmane, 549, 514, datalinkinterface);
-                break;
-                case 810: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
-                break;
-                case 811: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
-                break;
-                default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
-                break;                
+            int id = datalinkinterface.getId().intValue();
+            if (start == id ) {
+                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+            } else if (start+1 == id) {
+                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+            } else if (start+2 == id) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);            
+            } else if (start+3 == id) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+            } else if (start+4 == id) {
+                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+            } else if (start+5 == id) {
+                checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
+            } else if (start+6 == id ) {
+                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+            } else if (start+7 == id) {
+                checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+            } else if (start+8 == id) {
+                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+            } else if (start+9 == id) {
+                checkLink(j635042, bagmane, 549, 540, datalinkinterface);
+            } else if (start+10 == id) {
+                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+            } else {
+                checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
         }
     }

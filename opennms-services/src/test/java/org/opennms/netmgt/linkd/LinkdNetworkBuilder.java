@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.dao.NodeDao;
@@ -39,7 +40,9 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 /**
@@ -69,13 +72,23 @@ public abstract class LinkdNetworkBuilder {
             m_networkBuilder = new NetworkBuilder();
         return m_networkBuilder;
     }
+
+    OnmsNode getNode(String name, String sysoid, String primaryip,
+            Map<InetAddress, Integer> ipinterfacemap,
+            Map<Integer,String> ifindextoifnamemap,
+            Map<Integer,String> ifindextomacmap, 
+            Map<Integer,String> ifindextoifdescrmap,
+            Map<Integer,String> ifindextoifalias) {
+        return getNode(name, sysoid, primaryip, ipinterfacemap, ifindextoifnamemap, ifindextomacmap, ifindextoifdescrmap, ifindextoifalias, new HashMap<Integer, InetAddress>());
+    }
     
     OnmsNode getNode(String name, String sysoid, String primaryip,
             Map<InetAddress, Integer> ipinterfacemap,
             Map<Integer,String> ifindextoifnamemap,
             Map<Integer,String> ifindextomacmap, 
             Map<Integer,String> ifindextoifdescrmap,
-            Map<Integer,String> ifindextoifalias)
+            Map<Integer,String> ifindextoifalias, 
+            Map<Integer,InetAddress>ifindextonetmaskmap)
     {
         NetworkBuilder nb = getNetworkBuilder();
         nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setSysName(name).setType("A");
@@ -86,6 +99,7 @@ public abstract class LinkdNetworkBuilder {
                                       setIfName(ifindextoifnamemap.get(ifIndex)).
                                       setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
                                       setIfSpeed(100000000).
+                                      setNetMask(getMask(ifindextonetmaskmap,ifIndex)).
                                       setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
         }
         
@@ -104,6 +118,13 @@ public abstract class LinkdNetworkBuilder {
         return nb.getCurrentNode();
     }
     
+    private InetAddress getMask(
+            Map<Integer, InetAddress> ifindextonetmaskmap, Integer ifIndex) {
+        if (ifindextonetmaskmap.containsKey(ifIndex))
+            return ifindextonetmaskmap.get(ifIndex);
+        return null;
+    }
+
     private String getSuitableString(Map<Integer,String> ifindextomacmap, Integer ifIndex) {
         String value = "";
         if (ifindextomacmap.containsKey(ifIndex))
@@ -197,4 +218,31 @@ public abstract class LinkdNetworkBuilder {
         
     }
     
+    int getStartPoint(List<DataLinkInterface> links) {
+        int start = 0;
+        for (final DataLinkInterface link:links) {
+            if (start==0 || link.getId().intValue() < start)
+                start = link.getId().intValue();                
+        }
+        return start;
+    }
+    
+    void printipInterface(String nodeStringId,OnmsIpInterface ipinterface) {
+        System.out.println(nodeStringId+"_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+    }
+    
+    void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
+        if ( snmpinterface.getIfName() != null)
+            System.out.println(nodeStringId+"_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+            if (snmpinterface.getIfDescr() != null)
+            System.out.println(nodeStringId+"_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            if (snmpinterface.getPhysAddr() != null)
+            System.out.println(nodeStringId+"_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            if (snmpinterface.getIfAlias() != null)
+            System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
+            System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddress.getByName(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
+        
+    }
+
 }

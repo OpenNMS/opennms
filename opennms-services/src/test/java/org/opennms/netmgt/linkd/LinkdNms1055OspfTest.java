@@ -72,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implements InitializingBean {
+public class LinkdNms1055OspfTest extends LinkdNms1055NetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -82,10 +82,11 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
 
     @Autowired
     private NodeDao m_nodeDao;
-    
+
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
+    
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
         
@@ -105,6 +106,7 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
 
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
+
     }
 
     @After
@@ -116,38 +118,25 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
     }
     
     /*
-     * These are the links among the following nodes discovered using 
-     * only the lldp protocol
-     * switch1 Gi0/9 Gi0/10 Gi0/11 Gi0/12 ----> switch2 Gi0/1 Gi0/2 Gi0/3 Gi0/4
-     * switch2 Gi0/19 Gi0/20              ----> switch3 Fa0/19 Fa0/20
-     * 
-     * here are the corresponding ifindex:
-     * switch1 Gi0/9 --> 10109
-     * switch1 Gi0/10 --> 10110
-     * switch1 Gi0/11 --> 10111
-     * switch1 Gi0/12 --> 10112
-     * 
-     * switch2 Gi0/1 --> 10101
-     * switch2 Gi0/2 --> 10102
-     * switch2 Gi0/3 --> 10103
-     * switch2 Gi0/4 --> 10104
-     * switch2 Gi0/19 --> 10119
-     * switch2 Gi0/20 --> 10120
-     * 
-     * switch3 Fa0/19 -->  10019
-     * switch3 Fa0/20 -->  10020
-     * 
+     * We want to test that the next hop router discovered 
+     * links can be discovered using the ospf neb table
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH1_NAME+"-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH2_NAME+"-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH3_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
-    public void testNetwork17216LldpLinks() throws Exception {
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
+    public void testNetwork1055OspfLinks() throws Exception {
+        m_nodeDao.save(getPenrose());
+        m_nodeDao.save(getDelaware());
+        m_nodeDao.save(getPhoenix());
+        m_nodeDao.save(getAustin());
+        m_nodeDao.save(getSanjose());
+        m_nodeDao.save(getRiovista());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -155,54 +144,66 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
         example1.setUseBridgeDiscovery(false);
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
-        example1.setEnableVlanDiscovery(false);
-        example1.setUseLldpDiscovery(true);
+        example1.setUseOspfDiscovery(true);
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setSaveStpNodeTable(false);
+        m_linkdConfig.update();
+
         
-        final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
-        final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
-        final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
+        final OnmsNode penrose = m_nodeDao.findByForeignId("linkd", PENROSE_NAME);
+        final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
+        final OnmsNode phoenix = m_nodeDao.findByForeignId("linkd", PHOENIX_NAME);
+        final OnmsNode austin = m_nodeDao.findByForeignId("linkd", AUSTIN_NAME);
+        final OnmsNode sanjose = m_nodeDao.findByForeignId("linkd", SANJOSE_NAME);
+        final OnmsNode riovista = m_nodeDao.findByForeignId("linkd", RIOVISTA_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
- 
-        assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(penrose.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(phoenix.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(austin.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(sanjose.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(riovista.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(penrose.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(delaware.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(phoenix.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(austin.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(sanjose.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(riovista.getId()));
                
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(6,m_dataLinkInterfaceDao.countAll());
-        final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+        assertEquals(5,m_dataLinkInterfaceDao.countAll());
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
                 
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-//            printLink(datalinkinterface);
+        final int start = getStartPoint(links);
+        for (final DataLinkInterface datalinkinterface: links) {
             Integer linkid = datalinkinterface.getId();
-            if ( linkid == 174) {
-                // switch1 gi0/9 -> switch2 gi0/1 --lldp
-                checkLink(switch2, switch1, 10101, 10109, datalinkinterface);
-            } else if (linkid == 175 ) {
-                // switch1 gi0/10 -> switch2 gi0/2 --lldp
-                checkLink(switch2, switch1, 10102, 10110, datalinkinterface);
-            } else if (linkid == 176) {
-                // switch1 gi0/11 -> switch2 gi0/3 --lldp
-                checkLink(switch2, switch1, 10103, 10111, datalinkinterface);
-            } else if (linkid == 177) {
-                // switch1 gi0/12 -> switch2 gi0/4 --lldp
-                checkLink(switch2, switch1, 10104, 10112, datalinkinterface);
-            } else if (linkid == 178) {
-                // switch2 gi0/19 -> switch3 Fa0/19 --lldp
-                checkLink(switch3, switch2, 10019, 10119, datalinkinterface);
-            } else if (linkid == 179) {
-                // switch2 gi0/20 -> switch3 Fa0/20 --lldp
-                checkLink(switch3, switch2, 10020, 10120, datalinkinterface);
+            if ( linkid == start) {
+                // penrose  -> delaware --ip route next hop
+                checkLink(delaware, penrose, 598, 535, datalinkinterface);
+            } else if (linkid == start+1 ) {
+                // penrose   -> phoenix     --ip route next hop
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+            } else if (linkid == start+2) {
+                // phoenix  -> austin --ip route next hop
+                checkLink(austin,phoenix,554,565,datalinkinterface);
+            } else if (linkid == start+3) {
+                // phoenix  -> sanjose --ip route next hop
+                checkLink(sanjose,phoenix,564,566,datalinkinterface);
+            } else if (linkid == start+4) {
+                // austin  -> sanjose --ip route next hop
+                checkLink(sanjose,austin ,8562 , 586, datalinkinterface);
             } else {
                 // error
-                checkLink(switch1,switch1,-1,-1,datalinkinterface);
-            }   
+                checkLink(penrose,penrose,-1,-1,datalinkinterface);
+            }
         }
+               
+
     }
 }
