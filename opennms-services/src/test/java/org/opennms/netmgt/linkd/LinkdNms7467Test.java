@@ -128,6 +128,12 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
+        
         MockLogAppender.setupLogging(p);
 
     }

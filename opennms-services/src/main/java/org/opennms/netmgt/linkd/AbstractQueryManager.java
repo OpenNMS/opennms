@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
 import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
+import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsAtInterface;
@@ -233,6 +235,60 @@ public abstract class AbstractQueryManager implements QueryManager {
         return -1;
     }
 
+    protected void processOspf(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+        
+        InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
+
+        LogUtils.debugf(this, "processOspf: ospf node/ospfrouterid: %d/%s", node.getNodeId(), str(ospfRouterId)); 
+        try {
+            if (InetAddress.getByName("0.0.0.0").equals(ospfRouterId)) {
+                LogUtils.infof(this, "processOspf: invalid ospf ruoter id. node/ospfrouterid: %d/%s. Skipping!", node.getNodeId(), str(ospfRouterId)); 
+                return;
+            }
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        node.setOspfRouterId(ospfRouterId);
+
+        List<OspfNbrInterface> ospfinterfaces = new ArrayList<OspfNbrInterface>();
+        
+        for (final OspfNbrTableEntry ospfNbrTableEntry: snmpcoll.getOspfNbrTable()) {
+            InetAddress ospfNbrRouterId = ospfNbrTableEntry.getOspfNbrRouterId();
+            InetAddress ospfNbrIpAddr = ospfNbrTableEntry.getOspfNbrIpAddress();
+            LogUtils.debugf(this, "processOspf: addind ospf node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
+            try {
+                if (InetAddress.getByName("0.0.0.0").equals(ospfNbrIpAddr) || InetAddress.getByName("0.0.0.0").equals(ospfNbrRouterId)) {
+                    LogUtils.infof(this, "processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
+                    continue;
+                }
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            Integer ifIndex = ospfNbrTableEntry.getOspfNbrAddressLessIndex();
+            LogUtils.debugf(this, "processOspf: ospf node/ospfnbraddress/ospfnbrrouterid/ospfnbrAddressLessIfIndex: %d/%s/%s/%d", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex); 
+            List<OnmsIpInterface> ipinterfaces = getIpInterfaceDao().findByIpAddress(str(ospfNbrIpAddr));
+            for (OnmsIpInterface ipinterface:ipinterfaces ) {
+                
+                if (ifIndex.intValue() == 0) 
+                    ifIndex = ipinterface.getIfIndex();
+                LogUtils.debugf(this, "processOspf: ospf node/ospfnbraddress/ospfnbrrouterid/ifIndex: %d/%s/%s/%d", ipinterface.getNode().getId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex);             
+                if (ifIndex != null && ifIndex.intValue() > 0) {
+                    OspfNbrInterface ospfinterface = new OspfNbrInterface(ospfNbrRouterId);
+                    ospfinterface.setOspfNbrNodeId(ipinterface.getNode().getId());
+                    ospfinterface.setOspfNbrIpAddr(ospfNbrIpAddr);
+                    ospfinterface.setOspfNbrNetMask(getSnmpInterfaceDao().findByNodeIdAndIfIndex(ipinterface.getNode().getId(), ifIndex).getNetMask());
+                    ospfinterface.setOspfNbrIfIndex(ifIndex);
+                    LogUtils.debugf(this, "processOspf: adding ospf interface. node/ospfinterface: %d/%s", node.getNodeId(), ospfinterface);           
+                    ospfinterfaces.add(ospfinterface);
+                } else {
+                    LogUtils.infof(this, "processOspf: ospf invalid if index. node/ospfnbraddress/ospfnbrrouterid/ifIndex: %d/%s/%s/%d. Skipping!", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex);                             
+                }
+            }
+        }
+        node.setOspfinterfaces(ospfinterfaces);
+    }
+    
     protected void processLldp(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
 
         node.setLldpChassisId(snmpcoll.getLldpLocalGroup().getLldpLocChassisid());
@@ -246,13 +302,13 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             Integer lldpLocIfIndex = getLldpLocIfIndex(node.getLldpSysname(), localPortNumberToLocTableEntryMap.get(lldpRemTableEntry.getLldpRemLocalPortNum()));
             if (lldpLocIfIndex == null || lldpLocIfIndex.intValue() == -1) {
-                LogUtils.warnf(this, "processLldpRemTable: lldp local ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
+                LogUtils.warnf(this, "processLldp: lldp local ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
                 continue;
             }
 
             Integer lldpRemIfIndex = getLldpRemIfIndex(lldpRemTableEntry);
             if (lldpRemIfIndex == null || lldpRemIfIndex.intValue() == -1) {
-                LogUtils.warnf(this, "processLldpRemTable: lldp remote ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
+                LogUtils.warnf(this, "processLldp: lldp remote ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
                 continue;
             }
             

@@ -144,7 +144,6 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         try {
             assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddress.getByName("10.155.69.17")).intValue());
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
    
@@ -295,58 +294,58 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         assertEquals(15,m_dataLinkInterfaceDao.countAll());
-        final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
                 
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-//            printLink(datalinkinterface);
+        final int start = getStartPoint(links);
+        for (final DataLinkInterface datalinkinterface: links) {
             Integer linkid = datalinkinterface.getId();
-            if ( linkid == 968) {
+            if ( linkid == start) {
+                // penrose   -> phoenix     --ip route next hop
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+            } else if (linkid == start+1 ) {
+                // penrose  -> delaware --ip route next hop
+                checkLink(delaware, penrose, 598, 535, datalinkinterface);
+            } else if (linkid == start+2) {
+                // phoenix  -> austin --ip route next hop
+                checkLink(austin,phoenix,554,565,datalinkinterface);
+            } else if (linkid == start+3) {
+                // phoenix  -> sanjose --ip route next hop
+                checkLink(phoenix,sanjose,566,564,datalinkinterface);
+            } else if (linkid == start+4) {
+                // austin  -> sanjose --ip route next hop
+                checkLink(austin, sanjose, 586, 8562, datalinkinterface);
+            } else if (linkid == start+5) {
                 // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
                 checkLink(delaware, penrose, 574, 510, datalinkinterface);
-            } else if (linkid == 969 ) {
+            } else if (linkid == start+6) {
                 // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
                 checkLink(delaware, penrose, 522, 525, datalinkinterface);
-            } else if (linkid == 970) {
+            } else if (linkid == start+7) {
                 // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
                 checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
-            } else if (linkid == 971) {
+            } else if (linkid == start+8) {
                 // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, penrose, 584, 515, datalinkinterface);                   
-            } else if (linkid == 972) {
+            } else if ( linkid == start+9) {
                 // delaware xe-1/0/1 -> austin xe-0/0/1  --lldp
                 checkLink(austin, delaware, 509, 575, datalinkinterface);                   
-            } else if (linkid == 973) {
+            } else if (linkid == start+10 ) {
                 // delaware ge-0/2/0 -> riovista ge-0/0/46.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, delaware, 503, 540, datalinkinterface);
-            } else if (linkid == 974) {
+            } else if (linkid == start+11) {
                 // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
                 checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
-            } else if (linkid == 975) {
+            } else if (linkid == start+12) {
                 // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
                 checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
-            } else if (linkid == 976) {
+            } else if (linkid == start+13) {
                 // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
                 checkLink(sanjose, austin, 517, 515, datalinkinterface);                
-            } else if ( linkid == 977) {
-                // penrose ae0 -> delaware ae0 --rsvp
+            } else if (linkid == start+14) {
+                // penrose ae0 -> delaware ae0 --rstp
                 checkLink(penrose,delaware,2693,658,datalinkinterface);
-            } else if (linkid == 978 ) {
-                // penrose   -> phoenix     --ip route next hop
-                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
-            } else if (linkid == 979) {
-                // penrose  -> delaware --ip route next hop
-                checkLink(delaware, penrose, 598, 535, datalinkinterface);
-            } else if (linkid == 980) {
-                // phoenix  -> austin --ip route next hop
-                checkLink(austin,phoenix,554,565,datalinkinterface);
-            } else if (linkid == 981) {
-                // phoenix  -> sanjose --ip route next hop
-                checkLink(phoenix,sanjose,566,564,datalinkinterface);
-            } else if (linkid == 982) {
-                // austin  -> sanjose --ip route next hop
-                checkLink(austin, sanjose, 586, 8562, datalinkinterface);
             } else {
                 // error
                 checkLink(penrose,penrose,-1,-1,datalinkinterface);

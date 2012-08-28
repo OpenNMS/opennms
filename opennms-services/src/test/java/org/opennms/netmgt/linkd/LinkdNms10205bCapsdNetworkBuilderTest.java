@@ -76,8 +76,6 @@ import org.springframework.transaction.annotation.Transactional;
         // override snmp-config configuration
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-// TODO: this class should be the starting point for Integration tests
-// either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetworkBuilder implements InitializingBean {
@@ -101,22 +99,49 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         MockLogAppender.setupLogging(p);
         assertTrue("Capsd must not be null", m_capsd != null);
-//        assertTrue("Linkd must not be null", m_linkd != null);
-        
     }
-
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205b/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205b/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205b/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42"+"_"+J6350_42_IP+".txt"),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
     })
     @Transactional
-    public final void testMumbay() throws MarshalException, ValidationException, IOException {
+    public final void testToGenerateNetworkData() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(MUMBAI_IP);
-        
 
+        m_capsd.scanSuspectInterface(MUMBAI_IP);
+        m_capsd.scanSuspectInterface(DELHI_IP);
+        m_capsd.scanSuspectInterface(BANGALORE_IP);
+        m_capsd.scanSuspectInterface(BAGMANE_IP);
+        m_capsd.scanSuspectInterface(MYSORE_IP);
+        m_capsd.scanSuspectInterface(SPACE_EX_SW1_IP);
+        m_capsd.scanSuspectInterface(SPACE_EX_SW2_IP);
+        m_capsd.scanSuspectInterface(J6350_42_IP);
+        m_capsd.scanSuspectInterface(SRX_100_IP);
+
+        printBagmane();
+        printBangalore();
+        printDelhi();
+        printJ635042();
+        printMumbai();
+        printMysore();
+        printSpaceExSw1();
+        printSpaceExSw2();
+        printSRX100();
+        
+        m_capsd.stop();        
+    }
+        
+    private final void printMumbai() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(MUMBAI_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -124,36 +149,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("MUMBAI_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("MUMBAI", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("MUMBAI_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("MUMBAI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("MUMBAI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("MUMBAI_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-
-        
+            printSnmpInterface("MUMBAI", snmpinterface);
+        }        
     }
     
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt")
-    })
-    @Transactional
-    public final void testDelhi() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(DELHI_IP);
-        
-
+    private final void printDelhi() {        
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(DELHI_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -161,35 +165,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("DELHI_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("DELHI", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("DELHI_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("DELHI_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("DELHI_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("DELHI_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-
-        }
-        
-        m_capsd.stop();
+            printSnmpInterface("DELHI", snmpinterface);
+        }        
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205b/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt")
-    })
-    @Transactional
-    public final void testBangalore() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(BANGALORE_IP);
-        
-
+    private final void printBangalore() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(BANGALORE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -197,35 +181,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("BANGALORE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("BANGALORE", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("BANGALORE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("BANGALORE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("BANGALORE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("BANGALORE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-
-        }
-        
-        m_capsd.stop();
+            printSnmpInterface("BANGALORE", snmpinterface);
+        }        
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205b/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt")
-    })
-    @Transactional
-    public final void testBagmane() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(BAGMANE_IP);
-        
-
+    private final void printBagmane() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(BAGMANE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -233,35 +197,16 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("BAGMANE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("BAGMANE", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("BAGMANE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("BAGMANE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("BAGMANE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("BAGMANE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-
-        }
+            printSnmpInterface("BAGMANE", snmpinterface);
+        }        
         
-        m_capsd.stop();
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205b/"+MYSORE_NAME+"_"+MYSORE_IP+".txt")
-    })
-    @Transactional
-    public final void testMysore() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(MYSORE_IP);
-        
-
+    private final void printMysore() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(MYSORE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -269,35 +214,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("MYSORE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("MYSORE", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("MYSORE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("MYSORE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("MYSORE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("MYSORE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-
-        }
-        
-        m_capsd.stop();
+            printSnmpInterface("MYSORE", snmpinterface);
+        }         
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt")
-    })
-    @Transactional
-    public final void testSpaceExSw1() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SPACE_EX_SW1_IP);
-        
-
+    private final void printSpaceExSw1() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SPACE_EX_SW1_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -305,34 +230,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("SPACE_EX_SW1_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("SPACE_EX_SW1", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SPACE_EX_SW1_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SPACE_EX_SW1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SPACE_EX_SW1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SPACE_EX_SW1_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
+            printSnmpInterface("SPACE_EX_SW1", snmpinterface);
+        }        
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt")
-    })
-    @Transactional
-    public final void testSpaceExSw2() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SPACE_EX_SW2_IP);
-        
-
+    private final void printSpaceExSw2() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SPACE_EX_SW2_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -340,34 +246,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("SPACE_EX_SW2_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("SPACE_EX_SW2", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SPACE_EX_SW2_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SPACE_EX_SW2_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SPACE_EX_SW2_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SPACE_EX_SW2_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("SPACE_EX_SW2", snmpinterface);
         }
-        
-        m_capsd.stop();
     }
   
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42"+"_"+J6350_42_IP+".txt")
-    })
-    @Transactional
-    public final void testJ635042() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(J6350_42_IP);
-        
-
+    private final void printJ635042() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(J6350_42_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -375,35 +262,15 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("J6350_42_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("J6350_42", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("J6350_42_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("J6350_42_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("J6350_42_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("J6350_42_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-
-        }
-        
-        m_capsd.stop();
+            printSnmpInterface("J6350_42", snmpinterface);
+        }        
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
-    })
-    @Transactional
-    public final void testSRX100() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SRX_100_IP);
-        
-
+    private final void printSRX100() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SRX_100_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -411,22 +278,11 @@ public class LinkdNms10205bCapsdNetworkBuilderTest extends LinkdNms10205bNetwork
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("SRX_100_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("SRX_100", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SRX_100_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SRX_100_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SRX_100_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SRX_100_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-
+            printSnmpInterface("SRX_100", snmpinterface);
         }
-        
-        m_capsd.stop();
     }
-
 }

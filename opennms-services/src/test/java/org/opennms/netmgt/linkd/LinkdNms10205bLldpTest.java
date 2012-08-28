@@ -198,6 +198,9 @@ it has a link to Mysore that does not support LLDP
         example1.setUseBridgeDiscovery(false);
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setSaveStpNodeTable(false);
         example1.setUseLldpDiscovery(true);
         
         m_linkdConfig.update();
@@ -243,15 +246,20 @@ it has a link to Mysore that does not support LLDP
 
         // Linkd is able to find all the lldp links
         // 
+        
+        //Delhi           ge-1/1/5        (28519) ----> Bagmane           ge-1/0/1        (513)   514     lldp
+        //Delhi           ge-1/1/6        (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)   515     lldp
+        //Bagmane         ge-1/0/2        (514)   ----> J6350-2           ge-0/0/2.0      (549)   516     lldp
+        //Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2      ge-0/0/0.0      (531)   517     lldp
         for (final DataLinkInterface datalinkinterface: links) {
             switch(datalinkinterface.getId().intValue()) {
-            case 569: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+            case 514: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
             break;
-            case 570: checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+            case 515: checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
             break;
-            case 571: checkLink(j635042, bagmane, 549, 514, datalinkinterface);
+            case 516: checkLink(j635042, bagmane, 549, 514, datalinkinterface);
             break;
-            case 572: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+            case 517: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
             break;
             default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             break;                
