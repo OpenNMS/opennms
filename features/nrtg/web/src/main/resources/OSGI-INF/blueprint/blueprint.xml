@@ -46,6 +46,7 @@
     <service interface="javax.servlet.Servlet" ref="amqAjaxServlet">
         <service-properties>
             <entry key="alias" value="/amq" />
+            <entry key="org.apache.activemq.brokerURL" value="tcp://127.0.0.1:61616" />
         </service-properties>
     </service>    
 </blueprint>
