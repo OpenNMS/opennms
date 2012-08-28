@@ -35,6 +35,8 @@ import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
+import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
+import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -102,17 +104,17 @@ public final class SnmpCollection implements ReadyRunnable {
     /**
      * A boolean used to decide if you can collect VLAN Table and Bridge Data
      */
-    private boolean m_collectVlanTable = false;
+    private boolean m_collectVlan = false;
 
     /**
      * A boolean used to decide if you can collect Route Table
      */
-    private boolean m_collectIpRouteTable = false;
+    private boolean m_collectIpRoute = false;
 
     /**
      * A boolean used to decide if you can collect STP Base Info
      */
-    private boolean m_collectStpNode = false;
+    private boolean m_collectStp = false;
 
     /**
      * A boolean used to decide if save StpNode Table
@@ -123,35 +125,37 @@ public final class SnmpCollection implements ReadyRunnable {
      * A boolean used to decide if save IpRouteTable
      */
     private boolean m_saveIpRouteTable = false;
-
     /**
      * A boolean used to decide if you save StpInterfaceTable
      */
     private boolean m_saveStpInterfaceTable = false;
 
     /**
-     * A boolean used to decide if you can collect STP Table
-     */
-    private boolean m_collectStpTable = false;
-
-    /**
      * A boolean used to decide if you can collect Bridge Forwarding Table
      */
-    private boolean m_collectBridgeForwardingTable = false;
+    private boolean m_collectBridge = false;
 
     /**
      * A boolean used to decide if you can collect CDP Table
      */
-    private boolean m_collectCdpTable = false;
+    private boolean m_collectCdp = false;
 
     /**
      * A boolean used to decide if you can collect LLDP Table
      */
-    private boolean m_collectLldpTable = false;
+    private boolean m_collectLldp = false;
+
+    /**
+     * A boolean used to decide if you can collect OSPF Table
+     */
+    private boolean m_collectOspf = false;
 
     public LldpLocalGroup m_lldpLocalGroup;
     public LldpLocTable m_lldpLocTable;
     public LldpRemTable m_lldpRemTable;
+    
+    public OspfGeneralGroup m_ospfGeneralGroup;
+    public OspfNbrTable m_osNbrTable;
     /**
      * The ipnettomedia table information
      */
@@ -217,8 +221,24 @@ public final class SnmpCollection implements ReadyRunnable {
         m_address = m_agentConfig.getEffectiveAddress();
     }
 
+    boolean hasOspfGeneralGroup() {
+        return (m_ospfGeneralGroup != null && !m_ospfGeneralGroup.failed() && m_ospfGeneralGroup.getOspfRouterId() != null);        
+    }
+    
+    OspfGeneralGroup getOspfGeneralGroup() {
+        return m_ospfGeneralGroup; 
+    }
+    
+    boolean hasOspfNbrTable() {
+        return (m_osNbrTable != null && !m_osNbrTable.failed() && !m_osNbrTable.isEmpty());
+    }
+
+    OspfNbrTable getOspfNbrTable() {
+        return m_osNbrTable;    
+    }
+    
     boolean hasLldpLocalGroup() {
-        return (m_lldpLocalGroup != null && !m_lldpLocalGroup.failed());
+        return (m_lldpLocalGroup != null && !m_lldpLocalGroup.failed() && m_lldpLocalGroup.getLldpLocChassisid() != null);
     }
 
     LldpLocalGroup getLldpLocalGroup() {
@@ -226,7 +246,7 @@ public final class SnmpCollection implements ReadyRunnable {
     }
 
     boolean hasLldpRemTable() {
-        return (m_lldpRemTable != null && !m_lldpRemTable.failed());
+        return (m_lldpRemTable != null && !m_lldpRemTable.failed() && !m_lldpRemTable.isEmpty());
     }
 
     LldpRemTable getLldpRemTable() {
@@ -234,7 +254,7 @@ public final class SnmpCollection implements ReadyRunnable {
     }
 
     boolean hasLldpLocTable() {
-        return (m_lldpLocTable != null && !m_lldpLocTable.failed());
+        return (m_lldpLocTable != null && !m_lldpLocTable.failed() && !m_lldpLocTable.isEmpty());
     }
 
     LldpLocTable getLldpLocTable() {
@@ -245,7 +265,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * Returns true if the IP net to media table was collected.
      */
     boolean hasIpNetToMediaTable() {
-        return (m_ipNetToMedia != null && !m_ipNetToMedia.failed());
+        return (m_ipNetToMedia != null && !m_ipNetToMedia.failed() && !m_ipNetToMedia.isEmpty());
     }
 
     /**
@@ -259,7 +279,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * Returns true if the IP route table was collected.
      */
     boolean hasRouteTable() {
-        return (m_ipRoute != null && !m_ipRoute.failed());
+        return (m_ipRoute != null && !m_ipRoute.failed() && !m_ipRoute.isEmpty());
     }
 
     /**
@@ -273,7 +293,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * Returns true if the CDP Cache table was collected.
      */
     boolean hasCdpCacheTable() {
-        return (m_CdpCache != null && !m_CdpCache.failed());
+        return (m_CdpCache != null && !m_CdpCache.failed() && !m_CdpCache.isEmpty());
     }
 
     /**
@@ -287,7 +307,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * Returns true if the VLAN table was collected.
      */
     boolean hasVlanTable() {
-        return (m_vlanTable != null && !m_vlanTable.failed());
+        return (m_vlanTable != null && !m_vlanTable.failed() && !m_vlanTable.isEmpty());
     }
 
     /**
@@ -350,7 +370,6 @@ public final class SnmpCollection implements ReadyRunnable {
      * thread context synchronization must be added.
      * </p>
      */
-    @SuppressWarnings("unchecked")
     public void run() {
         if (suspendCollection) {
             LogUtils.debugf(this, "run: address: %s Suspended!",
@@ -380,12 +399,25 @@ public final class SnmpCollection implements ReadyRunnable {
         m_lldpRemTable = new LldpRemTable(m_address);
 
         m_lldpLocTable = new LldpLocTable(m_address);
+        
+        m_ospfGeneralGroup = new OspfGeneralGroup(m_address);
+        
+        m_osNbrTable = new OspfNbrTable(m_address);
 
         LogUtils.debugf(this, "run: collecting : %s", m_agentConfig);
+        LogUtils.debugf(this, "run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf: %b/%b/%b/%b/%b/%b/%b",
+                        m_collectVlan, m_collectIpRoute,
+                        m_collectStp, m_collectBridge,
+                        m_collectCdp,m_collectLldp,m_collectOspf);
+
+        LogUtils.debugf(this, "run: m_saveStpNodeTable/m_saveIpRouteTable/m_saveStpInterfaceTable: %b/%b/%b",
+                        m_saveStpNodeTable, m_saveIpRouteTable,
+                        m_saveStpInterfaceTable);
+
 
         SnmpWalker walker = null;
 
-        boolean collectIpRouteTable = m_collectIpRouteTable;
+        boolean collectIpRouteTable = m_collectIpRoute;
         if (collectIpRouteTable) {
             Class<SnmpTable<SnmpStore>> ipRouteGetter = null;
             try {
@@ -415,7 +447,7 @@ public final class SnmpCollection implements ReadyRunnable {
             }
         }
 
-        boolean collectVlanTable = m_collectVlanTable;
+        boolean collectVlanTable = m_collectVlan;
         if (collectVlanTable) {
             Class<SnmpTable<SnmpStore>> vlanGetter = null;
             try {
@@ -449,117 +481,108 @@ public final class SnmpCollection implements ReadyRunnable {
             }
         }
 
-        String name = null;
-        CollectionTracker[] tracker = new CollectionTracker[0];
+        CollectionTracker[] tracker;
+        int i=0;
 
-        if (m_collectLldpTable && collectVlanTable && collectIpRouteTable
-                && m_collectCdpTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable/cdpCacheTable/vlanTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia,
-                    m_ipRoute, m_CdpCache, m_vlanTable };
-        } else if (m_collectLldpTable && m_collectCdpTable
-                && collectIpRouteTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable/cdpCacheTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia,
-                    m_ipRoute, m_CdpCache };
-        } else if (m_collectLldpTable && collectVlanTable
-                && collectIpRouteTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable/vlanTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia,
-                    m_ipRoute, m_vlanTable };
-        } else if (m_collectLldpTable && collectVlanTable
-                && m_collectCdpTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/vlanTable/cdpCacheTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia,
-                    m_vlanTable, m_CdpCache };
-        } else if (collectVlanTable && collectIpRouteTable
-                && m_collectCdpTable) {
-            name = "ipRouteTable/cdpCacheTable/vlanTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_ipRoute,
-                    m_CdpCache, m_vlanTable };
-        } else if (m_collectLldpTable && collectIpRouteTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/ipRouteTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia, m_ipRoute };
-        } else if (m_collectLldpTable && collectVlanTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/vlanTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia,
-                    m_vlanTable };
-        } else if (m_collectLldpTable && m_collectCdpTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable/cdpCacheTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia,
-                    m_CdpCache };
-        } else if (m_collectCdpTable && collectIpRouteTable) {
-            name = "ipNetToMediaTable/ipRouteTable/cdpCacheTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_ipRoute,
-                    m_CdpCache };
-        } else if (collectVlanTable && collectIpRouteTable) {
-            name = "ipNetToMediaTable/ipRouteTable/vlanTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_ipRoute,
-                    m_vlanTable };
-        } else if (collectVlanTable && m_collectCdpTable) {
-            name = "ipNetToMediaTable/vlanTable/cdpCacheTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_vlanTable,
-                    m_CdpCache };
-        } else if (m_collectLldpTable) {
-            name = "lldpLocalGroup/lldpLocTable/lldpRemTable/ipNetToMediaTable";
-            tracker = new CollectionTracker[] { m_lldpLocalGroup,
-                    m_lldpLocTable, m_lldpRemTable, m_ipNetToMedia };
-        } else if (collectIpRouteTable) {
-            name = "ipNetToMediaTable/ipRouteTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_ipRoute };
-        } else if (collectVlanTable) {
-            name = "ipNetToMediaTable/vlanTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_vlanTable };
-        } else if (m_collectCdpTable) {
-            name = "ipNetToMediaTable/cdpCacheTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia, m_CdpCache };
-        } else {
-            name = "ipNetToMediaTable";
-            tracker = new CollectionTracker[] { m_ipNetToMedia };
+        if (m_collectBridge) {
+            i++;
+        }
+        if (m_collectOspf) {
+            i=i+2;
+        }
+        if (m_collectLldp) {
+            i=i+3;
+        }
+        if (collectIpRouteTable) {
+            i++;
+        }
+        if (m_collectCdp) {
+            i++;
+        }
+        if (collectVlanTable) {
+            i++;
         }
 
-        // if (name == null) {
-        // LogUtils.infof(this,
-        // "run: Unable to determine data to collect from %s",
-        // str(m_agentConfig.getEffectiveAddress()));
-        // return;
-        // } else {
+        tracker = new CollectionTracker[i];
+        
+        i=0;
+        String name = "";
+        if (m_collectBridge) {
+            name += "ipNetToMediaTable";
+            tracker[i++] = m_ipNetToMedia;            
+        }
+        if (m_collectOspf) {
+            if ( i > 0)
+                name+="/";
+            name += "ospfGeneralGroup/OspfNbrTable";
+            tracker[i++] = m_ospfGeneralGroup;
+            tracker[i++] = m_osNbrTable;            
+        }
+        if (m_collectLldp) {
+            if ( i > 0)
+                name+="/";
+            name += "lldpLocalGroup/lldpLocTable/lldpRemTable";
+            tracker[i++] = m_lldpLocalGroup;
+            tracker[i++] = m_lldpLocTable;
+            tracker[i++] = m_lldpRemTable;
+        }
+        if (collectIpRouteTable) {
+            if ( i > 0)
+                name+="/";
+                name += "ipRouteTable";
+            tracker[i++] = m_ipRoute;
+        }
+        if (m_collectCdp) {
+            if ( i > 0)
+                name+="/";
+            name += "cdpCacheTable";
+            tracker[i++] = m_CdpCache;
+        }
+        if (collectVlanTable) {
+            if ( i > 0)
+                name+="/";
+            name += "vlanTable";
+            tracker[i++] = m_vlanTable;
+        }
+        
         LogUtils.infof(this, "run: Collecting %s from %s", name,
                        str(m_agentConfig.getEffectiveAddress()));
-        // }
-        walker = SnmpUtils.createWalker(m_agentConfig, name, tracker);
 
-        walker.start();
+        if (i > 0) {
+            walker = SnmpUtils.createWalker(m_agentConfig, name, tracker);
 
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-            LogUtils.errorf(this, e, "run: collection interrupted, exiting");
-            return;
+            walker.start();
+
+            try {
+                walker.waitFor();
+            } catch (final InterruptedException e) {
+                LogUtils.errorf(this, e, "run: collection interrupted, exiting");
+                return;
+            }
         }
-
         // Log any failures
         //
-        if (m_collectLldpTable && !this.hasLldpLocalGroup())
+        if (m_collectOspf && !this.hasOspfGeneralGroup())
+            LogUtils.infof(this,
+                           "run: failed to collect ospfGeneralGroup for %s",
+                           hostAddress);
+        if (m_collectOspf && !this.hasOspfNbrTable())
+            LogUtils.infof(this,
+                           "run: failed to collect ospfNbrTable for %s",
+                           hostAddress);
+        if (m_collectLldp && !this.hasLldpLocalGroup())
             LogUtils.infof(this,
                            "run: failed to collect lldpLocalGroup for %s",
                            hostAddress);
-        if (m_collectLldpTable && !this.hasLldpLocTable())
+        if (m_collectLldp && !this.hasLldpLocTable())
             LogUtils.infof(this,
                            "run: failed to collect lldpLocTable for %s",
                            hostAddress);
-        if (m_collectLldpTable && !this.hasLldpRemTable())
+        if (m_collectLldp && !this.hasLldpRemTable())
             LogUtils.infof(this,
                            "run: failed to collect lldpRemTable for %s",
                            hostAddress);
-        if (!this.hasIpNetToMediaTable())
+        if (m_collectBridge && !this.hasIpNetToMediaTable())
             LogUtils.infof(this,
                            "run: failed to collect ipNetToMediaTable for %s",
                            hostAddress);
@@ -567,7 +590,7 @@ public final class SnmpCollection implements ReadyRunnable {
             LogUtils.infof(this,
                            "run: failed to collect ipRouteTable for %s",
                            hostAddress);
-        if (m_collectCdpTable && !this.hasCdpCacheTable())
+        if (m_collectCdp && !this.hasCdpCacheTable())
             LogUtils.infof(this,
                            "run: failed to collect dpCacheTable for %s",
                            hostAddress);
@@ -653,6 +676,9 @@ public final class SnmpCollection implements ReadyRunnable {
         m_lldpLocalGroup = null;
         m_lldpLocTable = null;
         m_lldpRemTable = null;
+        m_ospfGeneralGroup = null;
+        m_osNbrTable = null;
+
         m_snmpVlanCollection.clear();
 
         builder = new EventBuilder(
@@ -670,9 +696,8 @@ public final class SnmpCollection implements ReadyRunnable {
     private void runAndSaveSnmpVlanCollection(OnmsVlan vlan) {
         SnmpVlanCollection snmpvlancollection = new SnmpVlanCollection(
                                                                        m_agentConfig,
-                                                                       m_collectStpNode,
-                                                                       m_collectStpTable,
-                                                                       m_collectBridgeForwardingTable);
+                                                                       m_collectStp,
+                                                                       m_collectBridge);
         snmpvlancollection.run();
 
         if (snmpvlancollection.failed()) {
@@ -843,7 +868,7 @@ public final class SnmpCollection implements ReadyRunnable {
         if (className == null || className.equals(""))
             return;
         m_ipRouteClass = className;
-        m_collectIpRouteTable = true;
+        m_collectIpRoute = true;
     }
 
     /**
@@ -869,7 +894,7 @@ public final class SnmpCollection implements ReadyRunnable {
         if (className == null || className.equals(""))
             return;
         m_vlanClass = className;
-        m_collectVlanTable = true;
+        m_collectVlan = true;
     }
 
     /**
@@ -889,7 +914,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * @return Returns the m_collectVlanTable.
      */
     public boolean collectVlanTable() {
-        return m_collectVlanTable;
+        return m_collectVlan;
     }
 
     /**
@@ -948,12 +973,11 @@ public final class SnmpCollection implements ReadyRunnable {
         return "ReadyRunnable SnmpCollection" + " ip=" + str(getTarget())
                 + " port=" + getPort() + " community=" + getReadCommunity()
                 + " package=" + getPackageName()
-                + " collectBridgeForwardingTable="
-                + getCollectBridgeForwardingTable() + " collectStpNode="
-                + getCollectStpNode() + " collectStpTable="
-                + getCollectStpTable() + " collectCdpTable="
-                + getCollectCdpTable() + " collectIpRouteTable="
-                + getCollectIpRouteTable() + " saveIpRouteTable="
+                + " collectBridge="
+                + getCollectBridge() + " collectStpNode="
+                + getCollectStp() + " collectCdp="
+                + getCollectCdp() + " collectIpRoute="
+                + getCollectIpRoute() + " saveIpRouteTable="
                 + getSaveIpRouteTable() + " saveStpInterfaceTable="
                 + getSaveStpInterfaceTable() + " saveStpNodeTable="
                 + getSaveStpNodeTable();
@@ -961,11 +985,11 @@ public final class SnmpCollection implements ReadyRunnable {
     }
 
     public boolean getCollectLldpTable() {
-        return m_collectLldpTable;
+        return m_collectLldp;
     }
 
-    public void collectLldpTable(boolean collectLldpTable) {
-        m_collectLldpTable = collectLldpTable;
+    public void collectLldp(boolean collectLldpTable) {
+        m_collectLldp = collectLldpTable;
     }
 
     /**
@@ -975,8 +999,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a boolean.
      */
-    public boolean getCollectBridgeForwardingTable() {
-        return m_collectBridgeForwardingTable;
+    public boolean getCollectBridge() {
+        return m_collectBridge;
     }
 
     /**
@@ -987,8 +1011,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * @param bridgeForwardingTable
      *            a boolean.
      */
-    public void collectBridgeForwardingTable(boolean bridgeForwardingTable) {
-        m_collectBridgeForwardingTable = bridgeForwardingTable;
+    public void collectBridge(boolean bridgeForwardingTable) {
+        m_collectBridge = bridgeForwardingTable;
     }
 
     /**
@@ -998,8 +1022,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a boolean.
      */
-    public boolean getCollectCdpTable() {
-        return m_collectCdpTable;
+    public boolean getCollectCdp() {
+        return m_collectCdp;
     }
 
     /**
@@ -1010,8 +1034,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * @param cdpTable
      *            a boolean.
      */
-    public void collectCdpTable(boolean cdpTable) {
-        m_collectCdpTable = cdpTable;
+    public void collectCdp(boolean cdpTable) {
+        m_collectCdp = cdpTable;
     }
 
     /**
@@ -1021,8 +1045,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a boolean.
      */
-    public boolean getCollectIpRouteTable() {
-        return m_collectIpRouteTable;
+    public boolean getCollectIpRoute() {
+        return m_collectIpRoute;
     }
 
     /**
@@ -1033,8 +1057,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * @param ipRouteTable
      *            a boolean.
      */
-    public void collectIpRouteTable(boolean ipRouteTable) {
-        m_collectIpRouteTable = ipRouteTable;
+    public void collectIpRoute(boolean ipRouteTable) {
+        m_collectIpRoute = ipRouteTable;
     }
 
     /**
@@ -1044,8 +1068,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a boolean.
      */
-    public boolean getCollectStpNode() {
-        return m_collectStpNode;
+    public boolean getCollectStp() {
+        return m_collectStp;
     }
 
     /**
@@ -1056,31 +1080,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * @param stpNode
      *            a boolean.
      */
-    public void collectStpNode(boolean stpNode) {
-        m_collectStpNode = stpNode;
-    }
-
-    /**
-     * <p>
-     * getCollectStpTable
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    public boolean getCollectStpTable() {
-        return m_collectStpTable;
-    }
-
-    /**
-     * <p>
-     * collectStpTable
-     * </p>
-     * 
-     * @param stpTable
-     *            a boolean.
-     */
-    public void collectStpTable(boolean stpTable) {
-        m_collectStpTable = stpTable;
+    public void collectStp(boolean stpNode) {
+        m_collectStp = stpNode;
     }
 
     /**
@@ -1168,4 +1169,11 @@ public final class SnmpCollection implements ReadyRunnable {
         m_saveStpInterfaceTable = stpInterfaceTable;
     }
 
+    public void collectOspf(boolean collectOspfTable) {        
+        m_collectOspf = collectOspfTable;
+    }
+
+    public boolean getCollectOspfTable() {
+       return m_collectOspf;
+    }
 }

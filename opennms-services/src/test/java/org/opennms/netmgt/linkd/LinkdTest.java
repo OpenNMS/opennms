@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -248,5 +249,25 @@ public class LinkdTest implements InitializingBean {
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         assertEquals("we should have found 6 data links", 6, ifaces.size());
+    }
+    
+    @Test
+    public void testDiscoveryOspfGetSubNetAddress() throws Exception {
+        DiscoveryLink discovery = m_linkd.getDiscoveryLink("example1");
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddress.getByName("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddress.getByName("192.168.15.45"));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.0"));        
+        assertEquals(InetAddress.getByName("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.0.0"));
+        assertEquals(InetAddress.getByName("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.252"));
+        assertEquals(InetAddress.getByName("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
+        assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
+
     }
 }
