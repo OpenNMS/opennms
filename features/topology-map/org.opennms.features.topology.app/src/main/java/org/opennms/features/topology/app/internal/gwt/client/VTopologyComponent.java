@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -870,7 +871,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private void setGraph(GWTGraph graph) {
 		m_graph = graph;
 		
-		makeGlobal("panTo", getPanToSelection());
 		if(getPanToSelection()) {
 		    repaintGraphNow();
 		    centerSelection();
@@ -1054,14 +1054,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         final D3 selection = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
         
         SVGMatrix viewportMatrix = getSVGViewPort().getCTM();
-        int svgWidth = getSVGElement().getBoundingClientRect().getWidth();
-        int svgHeight = getSVGElement().getBoundingClientRect().getHeight();
+        final int svgWidth = getSVGElement().getBoundingClientRect().getWidth();
+        final int svgHeight = getSVGElement().getBoundingClientRect().getHeight();
 
         double svgCenterX = Math.abs(getSVGElement().getCTM().getE() - svgWidth/2);
         double svgCenterY = Math.abs(getSVGElement().getCTM().getF() - svgHeight/2);
         
         final BoundingRect rect = new BoundingRect();
-        
+
         selection.each(new Handler<GWTVertex>() {
 
             @Override
@@ -1069,43 +1069,48 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 SVGGElement vertexElem = D3.d3().getElement(selection, index).cast();
                 
                 SVGMatrix vertexCTM = vertexElem.getCTM();
+
+                double vertexX = vertexCTM.getE();
+                double vertexY = vertexCTM.getF();
                 
-                double vertexCenterX = vertexCTM.getE();
-                double vertexCenterY = vertexCTM.getF();
-                
-                rect.addPoint(new Point(vertexCenterX, vertexCenterY));
-                rect.addClientRect(vertexElem.getBoundingClientRect());
-                
+                rect.addPoint(new Point(vertexX, vertexY));
             }
         });
         
-        double scaleFactor = viewportMatrix.getA();
-        double percent = 100 / (scaleFactor * 100);
+        final double scaleFactor = viewportMatrix.getA();
+        final double percent = 100 / (scaleFactor * 100);
         double translateX = (svgCenterX - rect.getCenterX()) * percent;
         double translateY = (svgCenterY - rect.getCenterY()) * percent;
         
-        D3.d3().select(getSVGViewPort()).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY)));
+        D3.d3().select(getSVGViewPort()).transition().duration(500).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY))).each("end", new AnonymousFunc() {
+
+            @Override
+            public void call() {
+                
+                double rectWidthPercent = svgWidth / rect.getWidth() ;
+                double rectHeightPercent = svgHeight / rect.getHeight() ;
+                        
+                if(rectWidthPercent < 1 && rectWidthPercent < rectHeightPercent) {
+                    setMapScaleNow( rectWidthPercent * scaleFactor );
+                }else if(rectHeightPercent < 1 && rectHeightPercent < rectWidthPercent) {
+                    setMapScaleNow( rectHeightPercent * scaleFactor );
+                }else if(scaleFactor < 1) {
+                    setMapScaleNow(1);
+                }
+            }
+        });
         
         
-        if(rect.getWidth() > svgWidth) {
-            setMapScale( svgWidth / rect.getWidth() );
-        }else if(rect.getHeight() > svgHeight) {
-            setMapScale( svgHeight / rect.getHeight() );
-        }
+        
         
     }
 
-    private void setMapScale(double scale) {
+    private void setMapScaleNow(double scale) {
         m_client.updateVariable(m_paintableId, "mapScale", scale, true);
     }
-
-    protected final native void makeGlobal(String name, Object object) /*-{
-        try{
-        console.log(name + object);
-        $wnd[name] = object;
-        }catch(err){
-            console.log("error: " + err);
-        }
-    }-*/;
+    
+    private void setMapScale(double scale, boolean immediate) {
+        m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
+    }
 
 }

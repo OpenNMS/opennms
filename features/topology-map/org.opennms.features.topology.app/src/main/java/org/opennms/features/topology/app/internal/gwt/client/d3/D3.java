@@ -132,6 +132,20 @@ public class D3 extends JavaScriptObject {
 	    }
 	    return this.each(f);
 	}-*/;
+	
+	/**
+	 * Only used for transitions
+	 * 
+	 * @param type
+	 * @param handler
+	 */
+	public final native void each(String type, AnonymousFunc func) /*-{
+        var f = function(){
+            func.@org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc::call()();
+        }
+        
+        return this.each(type, f);
+    }-*/;
 
 	public final native D3 on(String event, Handler<?> handler) /*-{
 	   	var f = function(d, i) {
@@ -250,6 +264,13 @@ public class D3 extends JavaScriptObject {
         }
         this.xml(iconUrl, mimeType, f);
     }-*/;
+
+    public final native int length() /*-{
+        return this.data().length;
+        
+    }-*/;
+
+    
 
     
 
