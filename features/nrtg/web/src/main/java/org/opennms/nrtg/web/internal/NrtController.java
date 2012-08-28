@@ -119,7 +119,6 @@ public class NrtController {
 
         Set<String> resultDestinations = new HashSet<String>();
         resultDestinations.add(nrtCollectionTaskId);
-        //resultDestinations.add("NrtPersistMe");
 
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
