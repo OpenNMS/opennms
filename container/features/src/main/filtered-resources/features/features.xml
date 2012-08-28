@@ -22,6 +22,7 @@
 
   <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
     <feature>opennms-topology-runtime-simple</feature>
+    <feature>opennms-topology-runtime-linkd</feature>
     <feature>opennms-topology-dev</feature>
     <feature>nrtg</feature>
   </feature>

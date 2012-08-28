@@ -54,7 +54,7 @@ public class JmxDatacollectionConfiggeneratorTest {
         jmxConfiggenerator = new JmxDatacollectionConfiggenerator();
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName objectName = new ObjectName("org.opennms.tools.jmxconfiggenerator.jmxconfig:type=JmxTest");
-        JmxTestMBean testMBean = new JmxTest();
+        JmxTestDummyMBean testMBean = new JmxTestDummy();
         platformMBeanServer.registerMBean(testMBean, objectName);
     }
 

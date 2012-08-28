@@ -14,6 +14,7 @@ public class GWTVertex extends JavaScriptObject {
      * CSS Class name for a vertex
      */
     public static final String VERTEX_CLASS_NAME = ".vertex";
+    public static final String SELECTED_VERTEX_CLASS_NAME = ".vertex.selected";
     
     protected GWTVertex() {};
     
@@ -138,6 +139,16 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    protected static Func<String, GWTVertex> getClassName() {
+        // TODO Auto-generated method stub
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "vertex selected" : "vertex";
+            }};
+    }
+    
     protected static Func<String, GWTVertex> strokeFilter(){
         return new Func<String, GWTVertex>(){
 
@@ -190,7 +201,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).style("stroke", GWTVertex.strokeFilter()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).style("stroke", GWTVertex.strokeFilter()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }

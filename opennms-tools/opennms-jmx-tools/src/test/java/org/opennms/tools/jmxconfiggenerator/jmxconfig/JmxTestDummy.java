@@ -26,11 +26,14 @@
 
 package org.opennms.tools.jmxconfiggenerator.jmxconfig;
 
+import org.junit.Ignore;
+
 /**
  *
  * @author Markus Neumann <markus@opennms.com>
  */
-public class JmxTest implements JmxTestMBean {
+@Ignore 
+public class JmxTestDummy implements JmxTestDummyMBean {
 
     String name = "JmxTest";
     

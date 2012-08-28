@@ -70,7 +70,7 @@ public class TopologySelector  {
 	
     public void addTopologyProvider(TopologyProvider topologyProvider, Map metaData) {
     	
-    	System.err.println("Adding Topology Provider" + topologyProvider);
+    	System.err.println("Adding Topology Provider " + topologyProvider);
     	
     	TopologySelectorOperation operation = new TopologySelectorOperation(topologyProvider, metaData);
     	
