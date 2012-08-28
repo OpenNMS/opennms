@@ -103,17 +103,7 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
         assertTrue("Capsd must not be null", m_capsd != null);        
     }
 
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
-    })
-    @Transactional
-    public final void testPenrose() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(PENROSE_IP);
-        
+    private final void printPenrose() {
 
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(PENROSE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
@@ -122,36 +112,15 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("PENROSE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("PENROSE", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("PENROSE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("PENROSE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("PENROSE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("PENROSE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("PENROSE", snmpinterface);
         }
-        
-        m_capsd.stop();
-
-        
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
-    })
-    @Transactional
-    public final void testDelaware() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(DELAWARE_IP);
-        
-
+    private final void printDelaware() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(DELAWARE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -159,34 +128,15 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("DELAWARE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("DELAWARE", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("DELAWARE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("DELAWARE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("DELAWARE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("DELAWARE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("DELAWARE", snmpinterface);
         }
-        
-        m_capsd.stop();
     }
-    
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt")
-    })
-    @Transactional
-    public final void testPhoenix() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(PHOENIX_IP);
-        
 
+    private final void printPhoenix() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(PHOENIX_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -194,34 +144,15 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("PHOENIX_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("PHOENIX", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("PHOENIX_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("PHOENIX_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("PHOENIX_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("PHOENIX_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("PHOENIX", snmpinterface);
         }
-        
-        m_capsd.stop();
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt")
-    })
-    @Transactional
-    public final void testAustin() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(AUSTIN_IP);
-        
-
+    private final void printAustin() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(AUSTIN_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -229,34 +160,15 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("AUSTIN_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("AUSTIN", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("AUSTIN_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("AUSTIN_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("AUSTIN_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("AUSTIN_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("AUSTIN", snmpinterface);        
         }
-        
-        m_capsd.stop();
     }
 
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt")
-    })
-    @Transactional
-    public final void testSanjose() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SANJOSE_IP);
-        
-
+    private final void printSanjose() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SANJOSE_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -264,34 +176,15 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("SANJOSE_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("SANJOSE", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SANJOSE_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SANJOSE_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SANJOSE_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("SANJOSE_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("SANJOSE", snmpinterface);
         }
-        
-        m_capsd.stop();
     }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
-    })
-    @Transactional
-    public final void testRiovista() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(RIOVISTA_IP);
-        
-
+    
+    private final void printRiovista() {
         List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(RIOVISTA_IP);
         assertTrue("Has only one ip interface", ips.size() == 1);
 
@@ -299,21 +192,44 @@ public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuil
 
         for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
             if (ipinterface.getIfIndex() != null )
-                System.out.println("RIOVISTA_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+                printipInterface("RIOVISTA", ipinterface);
         }
 
         for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("RIOVISTA_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("RIOVISTA_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("RIOVISTA_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("RIOVISTA_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            printSnmpInterface("RIOVISTA", snmpinterface);
         }
-        
-        m_capsd.stop();
     }
 
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+    })
+    @Transactional
+    public final void testPenrose() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+
+        m_capsd.scanSuspectInterface(PENROSE_IP);
+        m_capsd.scanSuspectInterface(DELAWARE_IP);
+        m_capsd.scanSuspectInterface(PHOENIX_IP);
+        m_capsd.scanSuspectInterface(AUSTIN_IP);
+        m_capsd.scanSuspectInterface(SANJOSE_IP);
+        m_capsd.scanSuspectInterface(RIOVISTA_IP);
+
+        printPenrose();
+        printDelaware();
+        printPhoenix();
+        printAustin();
+        printSanjose();
+        printRiovista();
+
+        m_capsd.stop();
+
+        
+    }       
 }

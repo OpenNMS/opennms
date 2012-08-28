@@ -20,6 +20,7 @@ import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
 import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
 import org.opennms.features.topology.app.internal.gwt.client.handler.PanHandler;
 import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
+import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -365,6 +366,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private int m_semanticZoomLevel;
 	private int m_oldSemanticZoomLevel;
 	private DragHandlerManager m_svgDragHandlerManager;
+    private boolean m_panToSelection = false;
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -676,7 +678,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				NativeEvent event = D3.getEvent();
 				Element draggableElement = Element.as(event.getEventTarget()).getParentElement();
 				
-				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, getSVGViewPort(), selectAllVertexElements());
+				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, getSVGViewPort(), D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME));
 
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
@@ -724,6 +726,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		setScale(uidl.getDoubleAttribute("scale"), uidl.getIntAttribute("clientX"), uidl.getIntAttribute("clientY"));
 		setSemanticZoomLevel(uidl.getIntAttribute("semanticZoomLevel"));
 		setActionKeys(uidl.getStringArrayAttribute("backgroundActions"));
+		setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
 
 		UIDL graph = uidl.getChildByTagName("graph");
 		Iterator<?> children = graph.getChildIterator();
@@ -813,7 +816,15 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 
-	private void setSemanticZoomLevel(int level) {
+	private void setPanToSelection(boolean bool) {
+        m_panToSelection = bool;
+    }
+	
+	private boolean getPanToSelection() {
+	    return m_panToSelection;
+	}
+
+    private void setSemanticZoomLevel(int level) {
 		m_oldSemanticZoomLevel = m_semanticZoomLevel;
 		m_semanticZoomLevel = level;
 	}
@@ -857,7 +868,15 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	private void setGraph(GWTGraph graph) {
 		m_graph = graph;
-		repaintGraph();
+		
+		makeGlobal("panTo", getPanToSelection());
+		if(getPanToSelection()) {
+		    repaintGraphNow();
+		    centerSelection();
+		}else {
+		    repaintGraph();
+		}
+		
 	}
 
 	private void repaintGraph() {
@@ -1001,8 +1020,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     }
 
     @Override
-    public Element getSVGViewPort() {
-        return m_svgViewPort;
+    public SVGGElement getSVGViewPort() {
+        return m_svgViewPort.cast();
     }
 
     @Override
@@ -1030,35 +1049,43 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
      * Centers the view on a selection
      */
     public void centerSelection() {
-        final D3 selection = D3.d3().selectAll(".vertex");
+        
+        final D3 selection = D3.d3().select(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+        final SVGGElement vertexElem = D3.d3().getElement(selection,0).cast();
         
         selection.each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vertex, int index) {
                 // TODO Auto-generated method stub
-                if(vertex.isSelected()) {
-                    SVGGElement vertGroup = m_vertexGroup.cast();
-                    SVGMatrix matrixTf = vertGroup.getCTM().inverse();
-                    
-                    SVGGElement elem = D3.d3().getElement(selection, index).cast();
-                    SVGPoint p = getSVGElement().createSVGPoint();
-                    p.setX(VTopologyComponent.this.getOffsetWidth()/2);
-                    p.setY(VTopologyComponent.this.getOffsetHeight()/2);
-                    SVGPoint p2 = p.matrixTransform(matrixTf);
-                    
-                    SVGMatrix m = matrixTf.inverse().translate(VTopologyComponent.this.getOffsetWidth()/2, VTopologyComponent.this.getOffsetHeight()/2);
-                    
-                    String matrixTransform = "matrix(" + m.getA() +
-                            ", " + m.getB() +
-                            ", " + m.getC() + 
-                            ", " + m.getD() +
-                            ", " + m.getE() + 
-                            ", " + m.getF() + ")";
-                    
-                }
+                SVGMatrix viewportMatrix = getSVGViewPort().getCTM();
+                
+                SVGMatrix vertexCTM = vertexElem.getCTM();
+                ClientRect vertexClientRect = vertexElem.getBoundingClientRect();
+                
+                double vertexCenterX = vertexCTM.getE();
+                double vertexCenterY = vertexCTM.getF();
+                
+                double svgCenterX = Math.abs(getSVGElement().getCTM().getE() - getSVGElement().getBoundingClientRect().getWidth()/2);
+                double svgCenterY = Math.abs(getSVGElement().getCTM().getF() - getSVGElement().getBoundingClientRect().getHeight()/2);
+                
+                double scaleFactor = viewportMatrix.getA();
+                double percent = 100 / (scaleFactor * 100);
+                double translateX = (svgCenterX - vertexCenterX) * percent;
+                double translateY = (svgCenterY - vertexCenterY) * percent;
+                
+                D3.d3().select(getSVGViewPort()).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY)));
             }
         });
     }
+
+    protected final native void makeGlobal(String name, Object object) /*-{
+        try{
+        console.log(name + object);
+        $wnd[name] = object;
+        }catch(err){
+            console.log("error: " + err);
+        }
+    }-*/;
 
 }

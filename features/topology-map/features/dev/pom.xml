@@ -26,9 +26,6 @@
           <repositories>
             <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
-          <bundles>
-            <bundle>wrap:mvn:junit/junit/${junit.version}</bundle>
-          </bundles>
         </configuration>
       </plugin>
     </plugins>
@@ -50,6 +47,11 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins</groupId>
+      <artifactId>devutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 </project>

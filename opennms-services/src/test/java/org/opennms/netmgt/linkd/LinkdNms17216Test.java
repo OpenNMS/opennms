@@ -139,7 +139,7 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
      * switch3 Fa0/19 -->  10019
      * switch3 Fa0/20 -->  10020
      * 
-     * Here we add cd discovery and all test lab devices
+     * Here we add cdp discovery and all test lab devices
      * To the previuos links discovered by lldp
      * should be added the followings discovered with cdp:
      * switch3 Fa0/23 Fa0/24 ---> switch5 Fa0/1 Fa0/9
@@ -203,7 +203,6 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setUseBridgeDiscovery(false);
-        example1.setUseCdpDiscovery(true);
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
         example1.setUseLldpDiscovery(true);
@@ -284,45 +283,46 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
 
         assertEquals(13,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
-                
+
+        int start=getStartPoint(datalinkinterfaces);
+
         for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-            
             Integer linkid = datalinkinterface.getId();
-            if ( linkid == 291) {
+            if ( linkid == start) {
                 // switch1 gi0/9 -> switch2 gi0/1 --lldp --cdp
                 checkLink(switch2, switch1, 10101, 10109, datalinkinterface);
-            } else if (linkid == 292 ) {
+            } else if (linkid == start+1 ) {
                 // switch1 gi0/10 -> switch2 gi0/2 --lldp --cdp
                 checkLink(switch2, switch1, 10102, 10110, datalinkinterface);
-            } else if (linkid == 293) {
+            } else if (linkid == start+2) {
                 // switch1 gi0/11 -> switch2 gi0/3 --lldp --cdp
                 checkLink(switch2, switch1, 10103, 10111, datalinkinterface);
-            } else if (linkid == 294) {
+            } else if (linkid == start+3) {
                 // switch1 gi0/12 -> switch2 gi0/4 --lldp --cdp
                 checkLink(switch2, switch1, 10104, 10112, datalinkinterface);
-            } else if (linkid == 295) {
+            } else if (linkid == start+4) {
                 // switch2 gi0/19 -> switch3 Fa0/19 --lldp --cdp
                 checkLink(switch3, switch2, 10019, 10119, datalinkinterface);
-            } else if (linkid == 296) {
+            } else if (linkid == start+5) {
                 // switch2 gi0/20 -> switch3 Fa0/20 --lldp --cdp
                 checkLink(switch3, switch2, 10020, 10120, datalinkinterface);
-            } else if (linkid == 297) {
+            } else if (linkid == start+6) {
                 // switch1 gi0/1 -> router1 Fa0/20 --cdp
                 checkLink(router1, switch1, 7, 10101, datalinkinterface);
-            } else if (linkid == 298) {
+            } else if (linkid == start+7) {
                 // switch3 Fa0/1 -> switch5 Fa0/23 --cdp
                 checkLink(switch5, switch3, 10001, 10023, datalinkinterface);
-            } else if (linkid == 299) {
+            } else if (linkid == start+8) {
                 // switch3 gi0/1 -> switch5 Fa0/20 --cdp
                 checkLink(switch5, switch3, 10013, 10024, datalinkinterface);
-            } else if (linkid == 300) {
+            } else if (linkid == start+9) {
                 //switch4 FastEthernet0/1    ----> router3   GigabitEthernet0/1
                 checkLink(router3, switch4, 9, 10001, datalinkinterface);
-            } else if (linkid == 301) {
+            } else if (linkid == start+10) {
                 checkLink(router2, router1, 12, 13, datalinkinterface);
-            } else if (linkid == 302) {
+            } else if (linkid == start+11) {
                 checkLink(router3, router2, 13, 13, datalinkinterface);
-            } else if (linkid == 303) {
+            } else if (linkid == start+12) {
                 checkLink(router4, router3, 3, 8, datalinkinterface);
             } else {
                 // error

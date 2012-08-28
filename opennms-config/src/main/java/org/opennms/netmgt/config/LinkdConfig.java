@@ -189,6 +189,13 @@ public interface LinkdConfig {
     boolean useLldpDiscovery();
 
     /**
+     * <p>useOspfDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useOspfDiscovery();
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.

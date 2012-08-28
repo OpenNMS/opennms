@@ -29,7 +29,7 @@ package org.opennms.tools.jmxconfiggenerator.jmxconfig;
  *
  * @author Markus Neumann <markus@opennms.com>
  */
-public interface JmxTestMBean {
+public interface JmxTestDummyMBean {
 
     public String getName();
 

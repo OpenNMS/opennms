@@ -451,6 +451,16 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
+     * <p>useOspfDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    public boolean useOspfDiscovery() {
+        if (m_config.hasUseOspfDiscovery()) return m_config.getUseOspfDiscovery();
+        return false;
+    }
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.
