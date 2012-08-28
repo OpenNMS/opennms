@@ -10,7 +10,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
     </bean>
     
-    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="linkdTopologyProvider"/>
+    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="linkdTopologyProvider">
+      	<service-properties>
+            <entry key="label" value="Linkd"/>
+        </service-properties>
+    </service>
         
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
