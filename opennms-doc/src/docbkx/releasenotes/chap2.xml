@@ -111,6 +111,31 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.5">
+		<title>Changes in OpenNMS 1.10.5</title>
+
+		<section id="opennms-1.10.5-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Arithmetic Exception in QueuedStrategy (Issue <ulink url='http://issues.opennms.org/browse/NMS-4437'>NMS-4437</ulink>)</para></listitem>
+				<listitem><para>Installer fails when using the &quot;EnterpriseDB&quot; PostgreSQL database. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5431'>NMS-5431</ulink>)</para></listitem>
+				<listitem><para>WebStart (JNLP) remote poller is missing ConfigurationGui and other Groovy bits (Issue <ulink url='http://issues.opennms.org/browse/NMS-5447'>NMS-5447</ulink>)</para></listitem>
+				<listitem><para>Include/Exclude range (Issue <ulink url='http://issues.opennms.org/browse/NMS-5465'>NMS-5465</ulink>)</para></listitem>
+				<listitem><para>Fix ReST &quot;count&quot; requests, refactor PUT/POST to use Post/Redirect/Get pattern (Issue <ulink url='http://issues.opennms.org/browse/NMS-5489'>NMS-5489</ulink>)</para></listitem>
+				<listitem><para>Debian package misses postgresql requirement for dependency-based booting (Issue <ulink url='http://issues.opennms.org/browse/NMS-5490'>NMS-5490</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.5-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>No packaging for mib2events, mibparser, and Provisioning Adapters (Issue <ulink url='http://issues.opennms.org/browse/NMS-3183'>NMS-3183</ulink>)</para></listitem>
+				<listitem><para>Greater flexibility in RelativeTime for Statistics Reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-5422'>NMS-5422</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.4">
 		<title>Changes in OpenNMS 1.10.4</title>
 
