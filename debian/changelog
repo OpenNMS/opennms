@@ -1,3 +1,9 @@
+opennms (1.11.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 29 Aug 2012 11:09:00 -0400
+
 opennms (1.11.1-1) unstable; urgency=low
 
   * New upstream release.
