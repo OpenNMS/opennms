@@ -102,7 +102,10 @@ public class MibTreePanel extends Panel {
     public MibTreePanel(final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
 
+        logger.info("Reading MIBs from " + MIBS_ROOT_DIR);
+
         // Make sure MIB directories exist
+
         if (!MIBS_COMPILED_DIR.exists()) {
             if (!MIBS_COMPILED_DIR.mkdirs()) {
                 throw new RuntimeException("Unable to create directory for compiled MIBs (" + MIBS_COMPILED_DIR + ")");

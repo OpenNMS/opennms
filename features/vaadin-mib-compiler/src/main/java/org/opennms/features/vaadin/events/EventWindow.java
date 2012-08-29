@@ -70,7 +70,9 @@ public class EventWindow extends Window {
     public EventWindow(final String caption, final Events events, final Logger logger) throws Exception {
         super(caption);
 
-        // TODO: Is this the best way ? If not, getRootEvents must be exposed through EventConfDao and use BeanUtils or @Autowired
+        // FIXME: I believe that this is not the best way.
+        // This is also used on opennms-webapp/src/main/webapp/admin/notification/noticeWizard/eventNotices.jsp
+        // I need getRootEvents in order to add a reference to the new file inside eventconf.xml
         eventsDao = new DefaultEventConfDao();
         eventsDao.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
         eventsDao.afterPropertiesSet();
