@@ -30,4 +30,7 @@ public enum D3Events {
 	    public void call(T t);
 	}
 	
+	public interface AnonymousHandler{
+	    public void call();
+	}
 }
