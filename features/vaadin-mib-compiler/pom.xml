@@ -15,6 +15,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>6.8.2</vaadin.version>
+    <pax.vaadin.version>0.1.0-ONMS-20120621</pax.vaadin.version>
   </properties>
 
   <build>
@@ -118,6 +119,12 @@
   </pluginRepositories>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.ops4j.pax.vaadin</groupId>
+      <artifactId>service</artifactId>
+      <version>${pax.vaadin.version}</version>
+    </dependency>
 
     <!-- Vaadin Dependencies -->
 
