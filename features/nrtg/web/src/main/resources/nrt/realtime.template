@@ -20,7 +20,16 @@ html, body, div {
 
     
 <script type="text/javascript">
-    
+
+var outerRefreshTimerJob;
+var outerJobPublishingInterval;
+
+var isPaused = 0;
+
+var pausePlayImages = new Array();
+
+pausePlayImages[0] = "/opennms/images/nrtg/pause.png";
+pausePlayImages[1] = "/opennms/images/nrtg/play.png";
 
 // Eingabe foo Zeug
 $(function() {
@@ -34,7 +43,7 @@ $(function() {
     };
 
     // Represents the frequency of data requests.
-    var jobPuplishingInterval = 250;
+    var jobPuplishingInterval = 1000;
     
     // Create and initialize graph and real time wrapper
     var graphs = RRDGraph.init('.rrdgraph', rrdGraphString);
@@ -65,9 +74,8 @@ $(function() {
             var dataSet = eval(message.textContent);
 
             // Debug output
-            $("#debug_value_count").html(parseInt($("#debug_value_count").html()) + 1);
-            
-            $("#debug_message_count").html(parseInt($("#debug_message_count").html()) + dataSet.length);
+            $("#debug_messages_received").html(parseInt($("#debug_messages_received").html()) + 1);
+            $("#debug_datasets_received").html(parseInt($("#debug_datasets_received").html()) + dataSet.length);
             $("#debug_messages").html(message.textContent);
 
             dataSet = $.map(dataSet, function(e, i) {
@@ -128,12 +136,16 @@ $(function() {
         }
     });
 
+    var counter=0;
+
     // Timer for  AJAX nrtCollectionJobTrigger to republish the CollectionJobCollectionJob
     var refreshTimerJob = {
         /// Submits the AJAX collection job request and requeues the timer.
         submitJob: function() {
             $.get("/opennms/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
             this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPuplishingInterval);
+            counter++;
+            document.getElementById('counterDiv').innerHTML = counter;
         },
 
         /// Used for setting up and starting the refresh timer job.
@@ -156,12 +168,41 @@ $(function() {
     $('#jobPuplishingInterval').val(jobPuplishingInterval);
     $('#jobPuplishingInterval').bind('change', function() {
         jobPuplishingInterval = $(this).val();
-        refreshTimerJob.setup(jobPuplishingInterval);
+        outerJobPublishingInterval = jobPuplishingInterval;
+        if (isPaused == 0) {
+            refreshTimerJob.setup(jobPuplishingInterval);
+        }
     });
     
     // Start the AJAX job timer.
     refreshTimerJob.setup(jobPuplishingInterval);
+
+    outerJobPublishingInterval = jobPuplishingInterval;
+    outerRefreshTimerjob = refreshTimerJob;
 });
+
+function togglePlay() {
+    isPaused = 1 - isPaused;
+
+    document.images['playPause'].src = pausePlayImages[isPaused];
+
+    if (isPaused == 1) {
+        // stop code
+        outerRefreshTimerjob.stop();
+    } else {
+        // start code
+        outerRefreshTimerjob.setup(outerJobPublishingInterval);
+    }
+}
+
+function toggleDebug(){
+    if (document.getElementById('debug').style.display == 'none') {
+        document.getElementById('debug').style.display = 'block';
+    } else {
+        document.getElementById('debug').style.display = 'none';
+    }
+}
+
 </script>
 
 </head>
@@ -170,14 +211,42 @@ $(function() {
     <div id="main"></div>
     <center>
         <div class="rrdgraph" data-src="realtime=1"></div>
+        <div id="nrtControls">
+            <a href="javascript:togglePlay();"><img name="playPause" src="/opennms/images/nrtg/pause.png" width="64" border="0"/></a>
+            <form>
+                <select id="jobPuplishingInterval" type="select">
+                    <option value="250">0.25s</option>
+                    <option value="1000" selected>1.00s</option>
+                    <option value="5000">5.00s</option>
+                    <option value="10000">10.00s</option>
+                    <option value="30000">30.00s</option>
+                    <option value="60000">60.00s</option>
+                </select>
+            </form>
+            <font size="-1" ><a style="color:#dddddd;" href="javascript:toggleDebug();">Debug</a></font>
+        </div>
     </center>
-<!--
-    <div>Refresh Interval (in ms)<input id="jobPuplishingInterval" name="jobPuplishingInterval"></input></div>
-    <div>Graph Duration (in seconds)<input id="durationInterval" name="durationInterval"></input></div>
-    <div id="errorDiv"></div>
-    <div id="debug_rrd_string"><pre>$ {rrdGraphString}</pre></div>
-    <div id="debug_value_count">0</div>
-    <div id="debug_message_count">0</div>
-    <div id="debug_messages">No Message jet</div>  
--->
+
+    <div align="center" id="debug" style="display:none;">
+        <table border="1" width="75%">
+            <tr>
+                <td><b>Error message(s)</b></td>
+                <td><div id="errorDiv"></div></td>
+            </tr><tr>
+                <td><b>JobRequest(s) sent</b></td>
+                <td><div id="counterDiv">0</div></td>
+            </tr><tr>
+                <td><b>Message(s) received<b></td>
+                <td><div id="debug_messages_received">0</div></td>
+            </tr><tr>
+                <td><b>Dataset(s) received<b></td>
+                <td><div id="debug_datasets_received">0</div></td>
+            </tr><tr>
+                <td><b>Last message received<b></td>
+                <td><div id="debug_messages"></div></td>
+            </tr><tr>
+                <td><b>RRD command<b></td>
+                <td><div id="debug_rrd_string">${rrdGraphString}</div></td>
+            </tr>
+    </div>
 </body>
