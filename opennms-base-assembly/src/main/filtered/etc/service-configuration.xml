@@ -268,7 +268,6 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-<!-- Disabled Daemons
   <service>
     <name>OpenNMS:Name=Linkd</name>
     <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
@@ -277,6 +276,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
+<!-- Disabled Daemons
   <service>
     <name>OpenNMS:Name=Importer</name>
     <class-name>org.opennms.netmgt.importer.jmx.ImporterService</class-name>
