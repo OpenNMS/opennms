@@ -38,6 +38,10 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
+
 /**
  * The Class Data Collection Window.
  * 
@@ -69,13 +73,6 @@ public class DataCollectionWindow extends Window {
             }
             @Override
             public void generateDataCollectionFile(DatacollectionGroup group) {
-                /*
-                 * TODO Validations
-                 * 
-                 * 1) If the file exists, ask if you really want to override the file
-                 * 2) Check if there is no DCGroup with the same name
-                 */
-                close();
                 processDataCollection(group, logger);
             }
         });
@@ -87,9 +84,42 @@ public class DataCollectionWindow extends Window {
      * @param dcGroup the OpenNMS Data Collection Group
      * @param logger the logger
      */
+    /*
+     * TODO Validations
+     * 
+     * - Check if there is no DCGroup with the same name
+     */
     public void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
-        File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
-        File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+        final File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
+        if (file.exists()) {
+            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to override the existig file?<br/>All current information will be lost.",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+            mb.addStyleName(Runo.WINDOW_DIALOG);
+            mb.show(new EventListener() {
+                public void buttonClicked(ButtonType buttonType) {
+                    if (buttonType == MessageBox.ButtonType.YES) {
+                        saveFile(file, dcGroup, logger);
+                    }
+                }
+            });
+        } else {
+            saveFile(file, dcGroup, logger);
+        }
+    }
+
+    /**
+     * Save file.
+     *
+     * @param file the file
+     * @param dcGroup the datacollection-group
+     * @param logger the logger
+     */
+    private void saveFile(final File file, final DatacollectionGroup dcGroup, final Logger logger) {
         try {
             FileWriter writer = new FileWriter(file);
             JaxbUtils.marshal(dcGroup, writer);
@@ -98,6 +128,7 @@ public class DataCollectionWindow extends Window {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+        close();
     }
 
 }

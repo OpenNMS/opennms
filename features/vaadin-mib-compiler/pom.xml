@@ -8,7 +8,7 @@
     <version>1.11.2-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
-  <artifactId>org.opennms.features.vaadin-mib-compiler</artifactId>
+  <artifactId>vaadin-mib-compiler</artifactId>
   <packaging>war</packaging>
   <name>OpenNMS MIB Compiler</name>
 
@@ -91,6 +91,9 @@
   </pluginRepositories>
 
   <dependencies>
+
+    <!-- Vaadin Dependencies -->
+
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin</artifactId>
@@ -106,6 +109,9 @@
       <artifactId>messagebox</artifactId>
       <version>1.1.1</version>
     </dependency>
+
+    <!-- Compiler Dependencies -->
+
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
@@ -123,9 +129,10 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-
-    <!-- Compiler Dependencies -->
-
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms.netmgt.mib2events</groupId>
       <artifactId>mib2events</artifactId>

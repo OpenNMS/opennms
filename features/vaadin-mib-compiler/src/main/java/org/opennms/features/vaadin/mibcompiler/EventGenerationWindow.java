@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -45,15 +46,18 @@ public abstract class EventGenerationWindow extends Window implements Button.Cli
     /** The Event UEI base. */
     private final TextField ueiBase;
 
-    /** The cancel. */
+    /** The OK button. */
     private final Button okButton;
+
+    /** The CANCEL button. */
+    private final Button cancelButton;
 
     /**
      * Instantiates a new Event Generator window.
      *
      */
     public EventGenerationWindow() {
-        setCaption("Edit MIB");
+        setCaption("Generate Events");
         setModal(true);
         setWidth("400px");
         setHeight("150px");
@@ -71,19 +75,32 @@ public abstract class EventGenerationWindow extends Window implements Button.Cli
         okButton = new Button("Continue");
         okButton.addListener(this);
 
-        addComponent(ueiBase);
-        addComponent(okButton);
+        cancelButton = new Button("Cancel");
+        cancelButton.addListener(this);
 
-        ((VerticalLayout) getContent()).setComponentAlignment(okButton, Alignment.BOTTOM_RIGHT);
+        HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.addComponent(okButton);
+        toolbar.addComponent(cancelButton);
+
+        addComponent(ueiBase);
+        addComponent(toolbar);
+
+        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
     public void buttonClick(Button.ClickEvent event) {
-        if (ueiBase.getValue() != null && ! ((String)ueiBase.getValue()).trim().equals("")) {
+        final Button btn = event.getButton();
+        if (btn == okButton) {
+            if (ueiBase.getValue() != null && ! ((String) ueiBase.getValue()).trim().equals("")) {
+                close();
+                changeUeiHandler((String)ueiBase.getValue());
+            }
+        }
+        if (btn == cancelButton) {
             close();
-            changeUeiHandler((String)ueiBase.getValue());
         }
     }
 
