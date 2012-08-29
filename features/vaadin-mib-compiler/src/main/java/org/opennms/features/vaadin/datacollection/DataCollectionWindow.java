@@ -27,8 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.io.StringWriter;
+import java.io.File;
+import java.io.FileWriter;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -67,6 +69,12 @@ public class DataCollectionWindow extends Window {
             }
             @Override
             public void generateDataCollectionFile(DatacollectionGroup group) {
+                /*
+                 * TODO Validations
+                 * 
+                 * 1) If the file exists, ask if you really want to override the file
+                 * 2) Check if there is no DCGroup with the same name
+                 */
                 close();
                 processDataCollection(group, logger);
             }
@@ -79,14 +87,14 @@ public class DataCollectionWindow extends Window {
      * @param dcGroup the OpenNMS Data Collection Group
      * @param logger the logger
      */
-    /*
-     * FIXME This is just for testing purposes
-     */
     public void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
-        StringWriter writer = new StringWriter();
+        File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+        File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
         try {
+            FileWriter writer = new FileWriter(file);
             JaxbUtils.marshal(dcGroup, writer);
-            logger.debug("The XML file:<pre>" + writer.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") + "</pre>");
+            logger.info("Saving XML data into " + file.getAbsolutePath());
+            logger.warn("Remember to update datacollection-config.xml to include the group " + dcGroup.getName() + " and restart OpenNMS.");
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

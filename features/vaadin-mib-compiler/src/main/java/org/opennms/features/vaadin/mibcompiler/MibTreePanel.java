@@ -149,13 +149,6 @@ public class MibTreePanel extends Panel {
      * @param logger the logger
      */
     private void initMibTree(final Logger logger) {
-        if (! MIBS_COMPILED_DIR.exists()) {
-            MIBS_COMPILED_DIR.mkdirs();
-        }
-        if (! MIBS_PENDING_DIR.exists()) {
-            MIBS_PENDING_DIR.mkdirs();
-        }
-
         File[] folders = new File[] { MIBS_COMPILED_DIR, MIBS_PENDING_DIR };
         for (File folder : folders) {
             addTreeItem(folder.getName(), null);

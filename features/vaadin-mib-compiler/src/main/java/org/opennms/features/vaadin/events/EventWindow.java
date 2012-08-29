@@ -27,8 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.io.StringWriter;
+import java.io.File;
+import java.io.FileWriter;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -66,6 +68,12 @@ public class EventWindow extends Window {
             }
             @Override
             public void generateEventFile(Events events) {
+                /*
+                 * TODO Validations
+                 * 
+                 * 1) If the file exists, ask if you really want to override the file
+                 * 2) Verify that the events doesn't exist on eventconf.xml. If they exists, request if you want to override events.
+                 */
                 processEvents(events, logger);
                 close();
             }
@@ -79,17 +87,19 @@ public class EventWindow extends Window {
      * @param logger the logger
      */
     /*
-     * FIXME This is just for testing purposes
-     * TODO  Pending processing
-     * 1. Verify that the events doesn't exist on eventconf. If they exists, request if you want to override events.
-     * 2. Save the file on /opt/opennms/etc/events
-     * 3. Add a link (depending on step 1) on eventconf.xml
+     * TODO Post-Processing
+     * 
+     * 1) Add a reference to the file right above defaults inside eventconf.xml
+     * 2) Send reload event configuration after saving the file.
      */
     public void processEvents(final Events events, final Logger logger) {
-        StringWriter writer = new StringWriter();
+        File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
+        File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
         try {
+            FileWriter writer = new FileWriter(file);
             events.marshal(writer);
-            logger.debug("The XML file:<pre>" + writer.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") + "</pre>");
+            logger.info("Saving XML data into " + file.getAbsolutePath());
+            logger.warn("Remember to update eventconf.xml to include a reference to the new file and reload event configuration.");
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
