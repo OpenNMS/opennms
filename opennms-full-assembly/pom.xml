@@ -236,6 +236,7 @@
   </build>
 
   <modules>
+    <module>../container/features</module>
     <module>../core/build/keystore</module>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
