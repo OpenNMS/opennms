@@ -9,15 +9,8 @@
         
         <script type="text/javascript" src="/opennms/js/d3.v2.js"></script>
         <script type="text/javascript" src="/opennms/js/rrdgraph.js"></script>
-
-<style type="text/css">
-
-html, body, div {
-  padding: 0;
-  margin: 0;
-}
-</style>
-
+        
+        <link rel="stylesheet" type="text/css" href="/opennms/css/styles.css" media="screen" />
     
 <script type="text/javascript">
 
