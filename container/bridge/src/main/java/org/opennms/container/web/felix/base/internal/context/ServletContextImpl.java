@@ -139,12 +139,12 @@ public final class ServletContextImpl
 
     public String getInitParameter(String name)
     {
-        return null;
+        return this.context.getInitParameter(name);
     }
 
     public Enumeration getInitParameterNames()
     {
-        return Collections.enumeration(Collections.emptyList());
+        return this.context.getInitParameterNames();
     }
 
     public Object getAttribute(String name)
