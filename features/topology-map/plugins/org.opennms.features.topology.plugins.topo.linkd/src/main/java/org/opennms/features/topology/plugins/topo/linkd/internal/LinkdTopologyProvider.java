@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.features.topology.api.TopologyProvider;
 
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -28,6 +29,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
+    NodeDao m_nodeDao;
+    
     private LinkdVertexContainer m_vertexContainer;
     private BeanContainer<String, LinkdEdge> m_edgeContainer;
 
@@ -39,6 +42,14 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
     public LinkdTopologyProvider() {
@@ -207,7 +218,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     private void loadtopology() {
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             OnmsNode node = link.getNode();
-			String sourceId = node.getNodeId();
+            String sourceId = node.getNodeId();
             LinkdVertex source;
             BeanItem<LinkdVertex> item = m_vertexContainer.getItem(sourceId);
             if (item == null) {
@@ -218,11 +229,12 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 source = item.getBean();
             }
 
-            String targetId = link.getNodeParentId().toString();
+            OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
+            String targetId = parentNode.getNodeId();
             LinkdVertex target;
             item = m_vertexContainer.getItem(targetId);
             if (item == null) {
-                target = new LinkdNodeVertex(targetId, 0, 0, SERVER_ICON_KEY, "FIX ME: nodeParentId: " + targetId, null);
+                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, SERVER_ICON_KEY, parentNode.getLabel(), getAddress(parentNode));
                 m_vertexContainer.addBean( target);                    
             }
             else {

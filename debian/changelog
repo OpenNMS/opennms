@@ -1,3 +1,9 @@
+opennms (1.11.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 29 Aug 2012 11:09:00 -0400
+
 opennms (1.11.1-1) unstable; urgency=low
 
   * New upstream release.
@@ -9,6 +15,13 @@ opennms (1.11.0-1) unstable; urgency=low
   * New upstream release.
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 11:21:00 -0400
+
+opennms (1.10.5-1) stable; urgency=high
+
+  * New upstream release.  This issue fixes an issue in the remote poller where
+    the GUI code (including the password prompt) would not initialize.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 28 Aug 2012 11:38:00 -0400
 
 opennms (1.10.4-1) stable; urgency=low
 

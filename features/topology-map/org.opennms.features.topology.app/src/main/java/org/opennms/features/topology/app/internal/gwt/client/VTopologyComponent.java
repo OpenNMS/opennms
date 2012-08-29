@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -20,7 +21,7 @@ import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
 import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
 import org.opennms.features.topology.app.internal.gwt.client.handler.PanHandler;
 import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
-import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
+import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -32,6 +33,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -869,7 +871,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	private void setGraph(GWTGraph graph) {
 		m_graph = graph;
 		
-		makeGlobal("panTo", getPanToSelection());
 		if(getPanToSelection()) {
 		    repaintGraphNow();
 		    centerSelection();
@@ -1050,42 +1051,66 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
      */
     public void centerSelection() {
         
-        final D3 selection = D3.d3().select(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
-        final SVGGElement vertexElem = D3.d3().getElement(selection,0).cast();
+        final D3 selection = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
         
+        SVGMatrix viewportMatrix = getSVGViewPort().getCTM();
+        final int svgWidth = getSVGElement().getBoundingClientRect().getWidth();
+        final int svgHeight = getSVGElement().getBoundingClientRect().getHeight();
+
+        double svgCenterX = Math.abs(getSVGElement().getCTM().getE() - svgWidth/2);
+        double svgCenterY = Math.abs(getSVGElement().getCTM().getF() - svgHeight/2);
+        
+        final BoundingRect rect = new BoundingRect();
+
         selection.each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vertex, int index) {
-                // TODO Auto-generated method stub
-                SVGMatrix viewportMatrix = getSVGViewPort().getCTM();
+                SVGGElement vertexElem = D3.d3().getElement(selection, index).cast();
                 
                 SVGMatrix vertexCTM = vertexElem.getCTM();
-                ClientRect vertexClientRect = vertexElem.getBoundingClientRect();
+
+                double vertexX = vertexCTM.getE();
+                double vertexY = vertexCTM.getF();
                 
-                double vertexCenterX = vertexCTM.getE();
-                double vertexCenterY = vertexCTM.getF();
-                
-                double svgCenterX = Math.abs(getSVGElement().getCTM().getE() - getSVGElement().getBoundingClientRect().getWidth()/2);
-                double svgCenterY = Math.abs(getSVGElement().getCTM().getF() - getSVGElement().getBoundingClientRect().getHeight()/2);
-                
-                double scaleFactor = viewportMatrix.getA();
-                double percent = 100 / (scaleFactor * 100);
-                double translateX = (svgCenterX - vertexCenterX) * percent;
-                double translateY = (svgCenterY - vertexCenterY) * percent;
-                
-                D3.d3().select(getSVGViewPort()).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY)));
+                rect.addPoint(new Point(vertexX, vertexY));
             }
         });
+        
+        final double scaleFactor = viewportMatrix.getA();
+        final double percent = 100 / (scaleFactor * 100);
+        double translateX = (svgCenterX - rect.getCenterX()) * percent;
+        double translateY = (svgCenterY - rect.getCenterY()) * percent;
+        
+        D3.d3().select(getSVGViewPort()).transition().duration(500).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY))).each("end", new AnonymousFunc() {
+
+            @Override
+            public void call() {
+                
+                double rectWidthPercent = svgWidth / rect.getWidth() ;
+                double rectHeightPercent = svgHeight / rect.getHeight() ;
+                        
+                if(rectWidthPercent < 1 && rectWidthPercent < rectHeightPercent) {
+                    setMapScaleNow( rectWidthPercent * scaleFactor );
+                }else if(rectHeightPercent < 1 && rectHeightPercent < rectWidthPercent) {
+                    setMapScaleNow( rectHeightPercent * scaleFactor );
+                }else if(scaleFactor < 1) {
+                    setMapScaleNow(1);
+                }
+            }
+        });
+        
+        
+        
+        
     }
 
-    protected final native void makeGlobal(String name, Object object) /*-{
-        try{
-        console.log(name + object);
-        $wnd[name] = object;
-        }catch(err){
-            console.log("error: " + err);
-        }
-    }-*/;
+    private void setMapScaleNow(double scale) {
+        m_client.updateVariable(m_paintableId, "mapScale", scale, true);
+    }
+    
+    private void setMapScale(double scale, boolean immediate) {
+        m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
+    }
 
 }
