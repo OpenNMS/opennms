@@ -29,6 +29,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
+import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -85,6 +86,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.setResolution(2);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
+		try {
+            slider.setValue(1.0);
+        } catch (ValueOutOfBoundsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		scale.setValue(1.0);
 
 		slider.addListener(new ValueChangeListener(){
