@@ -6,10 +6,9 @@ import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.VertexContainer;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer.GVertex;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.github.wolfie.refresher.Refresher;
@@ -174,9 +173,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
             @Override
             public void buttonClick(ClickEvent event) {
-                VertexContainer<Object, GVertex> container = (VertexContainer<Object, GVertex>) m_tree.getContainerDataSource();
+                FilterableHierarchicalContainer container =  (FilterableHierarchicalContainer) m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
-                container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                
+                String filterString = (String) filterField.getValue();
+                if(!filterString.equals("")) {
+                    container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                }
+                
                 
             }
         });
@@ -198,10 +202,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
 	private Tree createTree() {
-
+	    FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
+	    
 		final Tree tree = new Tree();
 		tree.setMultiSelect(true);
-		tree.setContainerDataSource(m_graphContainer.getVertexContainer());
+		tree.setContainerDataSource(container);
         
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(Vertex.LABEL_PROPERTY);
