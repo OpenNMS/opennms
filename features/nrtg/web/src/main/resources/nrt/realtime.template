@@ -51,7 +51,7 @@
         amq.init({
             uri: '/opennms/amq',
             logging: true,
-            timeout: 45,
+            timeout: 5,
             clientId:(new Date()).getTime().toString()
         });
     
