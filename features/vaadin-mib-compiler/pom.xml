@@ -37,11 +37,11 @@
             <bundle>mvn:org.opennms.features/vaadin-mib-compiler/${project.version}</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/customfield/1.0.0</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/messagebox/1.1.1</bundle>
+            <bundle>wrap:mvn:org.opennms.netmgt.mib2events/mib2events/${project.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.mibble/mibble/2.8</bundle>
             <bundle>wrap:mvn:net.percederberg.mibble/mibble-mibs/${mibble.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.grammatica/grammatica/${grammatica.version}</bundle>
             <bundle>wrap:mvn:ma.glasnost.orika/orika-core/1.1.7</bundle>
-            <bundle>wrap:mvn:org.opennms.netmgt.mib2events/mib2events/${project.version}</bundle>
           </bundles>
           <features>
             <feature>vaadin</feature>
@@ -124,10 +124,17 @@
 
   <dependencies>
 
+    <!-- OSGi Dependencies -->
+
     <dependency>
       <groupId>org.ops4j.pax.vaadin</groupId>
       <artifactId>service</artifactId>
       <version>${pax.vaadin.version}</version>
+    </dependency>
+    <dependency> <!-- Required by pax/vaadin -->
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Vaadin Dependencies -->
@@ -148,7 +155,7 @@
       <version>1.1.1</version>
     </dependency>
 
-    <!-- Compiler Dependencies -->
+    <!-- MIB Compiler Dependencies -->
 
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -167,7 +174,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-web-api</artifactId>
+      <artifactId>opennms-dao</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -216,7 +223,7 @@
       <artifactId>commons-cli</artifactId>
     </dependency>
 
-    <!-- Tests -->
+    <!-- Tests Dependencies -->
 
     <dependency>
       <groupId>junit</groupId>

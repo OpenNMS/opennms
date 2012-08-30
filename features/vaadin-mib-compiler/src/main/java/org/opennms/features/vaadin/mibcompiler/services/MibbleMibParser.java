@@ -48,7 +48,6 @@ import net.percederberg.mibble.snmp.SnmpObjectType;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
@@ -151,8 +150,14 @@ public class MibbleMibParser implements MibParser, Serializable {
             return null;
         }
         LogUtils.infof(this, "Generating events for %s using the following UEI Base: %s", mib.getName(), ueibase);
-        Mib2Events converter = new Mib2Events();
-        return converter.convertMibToEvents(mib, ueibase);
+        try {
+            Mib2Events converter = new Mib2Events();
+            return converter.convertMibToEvents(mib, ueibase);
+        } catch (Throwable e) {
+            errors = e.getMessage();
+            LogUtils.errorf(this, "MIB error: %s", e.getMessage());
+            return null;
+        }
     }
 
     // TODO This is an experimental implementation using Mibble
@@ -166,25 +171,31 @@ public class MibbleMibParser implements MibParser, Serializable {
         LogUtils.infof(this, "Generating data collection configuration for %s", mib.getName());
         DatacollectionGroup dcGroup = new DatacollectionGroup();
         dcGroup.setName(mib.getName());
-        for (Object o : mib.getAllSymbols()) {
-            if (o instanceof MibValueSymbol) {
-                MibValueSymbol node = (MibValueSymbol) o;
-                if (node.getType() instanceof SnmpObjectType && !node.isTable() && !node.isTableRow()) {
-                    SnmpObjectType type = (SnmpObjectType) node.getType();
-                    String groupName = node.isTableColumn() ? node.getParent().getParent().getName() : node.getParent().getName();
-                    String resourceType = node.isTableColumn() ? node.getParent().getName() : null;
-                    Group group = getGroup(dcGroup, groupName, resourceType);
-                    String typeName = getType(type.getSyntax());
-                    if (typeName != null) {
-                        MibObj mibObj = new MibObj();
-                        mibObj.setOid(node.getValue().toString());
-                        mibObj.setInstance(node.isTableColumn() ? resourceType : "0");
-                        mibObj.setAlias(node.getName());
-                        mibObj.setType(typeName);
-                        group.addMibObj(mibObj);
+        try {
+            for (Object o : mib.getAllSymbols()) {
+                if (o instanceof MibValueSymbol) {
+                    MibValueSymbol node = (MibValueSymbol) o;
+                    if (node.getType() instanceof SnmpObjectType && !node.isTable() && !node.isTableRow()) {
+                        SnmpObjectType type = (SnmpObjectType) node.getType();
+                        String groupName = node.isTableColumn() ? node.getParent().getParent().getName() : node.getParent().getName();
+                        String resourceType = node.isTableColumn() ? node.getParent().getName() : null;
+                        Group group = getGroup(dcGroup, groupName, resourceType);
+                        String typeName = getType(type.getSyntax());
+                        if (typeName != null) {
+                            MibObj mibObj = new MibObj();
+                            mibObj.setOid(node.getValue().toString());
+                            mibObj.setInstance(node.isTableColumn() ? resourceType : "0");
+                            mibObj.setAlias(node.getName());
+                            mibObj.setType(typeName);
+                            group.addMibObj(mibObj);
+                        }
                     }
                 }
             }
+        } catch (Throwable e) {
+            errors = e.getMessage();
+            LogUtils.errorf(this, "MIB error: %s", e.getMessage());
+            return null;
         }
         return dcGroup;
     }
@@ -211,7 +222,7 @@ public class MibbleMibParser implements MibParser, Serializable {
             type.setName(resourceType);
             type.setLabel(resourceType);
             type.setResourceLabel("${index}");
-            type.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy(PersistAllSelectorStrategy.class.getName()));
+            type.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy("org.opennms.netmgt.collectd.PersistAllSelectorStrategy")); // To avoid requires opennms-services
             type.setStorageStrategy(new StorageStrategy(IndexStorageStrategy.class.getName()));
             data.addResourceType(type);
         }

@@ -35,9 +35,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.web.api.Util;
 import org.springframework.core.io.FileSystemResource;
 
 import com.vaadin.ui.Window;
@@ -47,6 +45,9 @@ import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
+/*
+ * TODO A dependency to opennms-services is required in order to use an EventProxy or EventIpcManager
+ */
 /**
  * The Class Event Window.
  * 
@@ -177,9 +178,7 @@ public class EventWindow extends Window {
             eventsDao.getRootEvents().getEventFileCollection().add(0, "events/" + file.getName());
             eventsDao.saveCurrent();
             // Send eventsConfigChange event
-            logger.info("Sending an event to reload configuration.");
-            EventBuilder ebldr = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "MIB-Compiler");
-            Util.createEventProxy().send(ebldr.getEvent());
+            logger.warn("Remember to send a " + EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI + " to reload the events configuration.");
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

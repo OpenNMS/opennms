@@ -35,7 +35,6 @@ import org.opennms.features.vaadin.datacollection.model.PersistenceSelectorStrat
 import org.opennms.features.vaadin.datacollection.model.ResourceTypeDTO;
 import org.opennms.features.vaadin.datacollection.model.StorageStrategyDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
 import com.vaadin.data.util.BeanItem;
@@ -100,7 +99,7 @@ public class ResourceTypePanel extends VerticalLayout {
                 rt.setName("New Resource Type");
                 rt.setLabel("New Resource Type");
                 PersistenceSelectorStrategyDTO persistence = new PersistenceSelectorStrategyDTO();
-                persistence.setClazz(PersistAllSelectorStrategy.class.getName());
+                persistence.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
                 rt.setPersistenceSelectorStrategy(persistence);
                 StorageStrategyDTO storage = new StorageStrategyDTO();
                 storage.setClazz(IndexStorageStrategy.class.getName());
