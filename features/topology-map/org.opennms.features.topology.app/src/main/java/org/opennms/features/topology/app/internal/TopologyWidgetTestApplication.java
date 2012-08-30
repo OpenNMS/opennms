@@ -7,8 +7,8 @@ import java.util.List;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.github.wolfie.refresher.Refresher;
@@ -73,7 +73,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		refresher.setRefreshInterval(5000);
 		getMainWindow().addComponent(refresher);
 
-		m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
+		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
@@ -163,8 +163,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		menuBarUpdated(m_commandManager);
 		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
-
-		m_graphContainer.redoLayout();
 	}
 
 
