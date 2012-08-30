@@ -1,245 +1,258 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-        <!-- NRT JavaScript stuff -->        
+    <head>
+        <title>NRT graph window</title>
+
+        <!-- jquery include -->
         <script type="text/javascript" src="/opennms/js/jquery/jquery.js"></script>
-        
+
+        <!-- Amq includes -->
         <script type="text/javascript" src="/opennms/js/amq_jquery_adapter.js"></script>
         <script type="text/javascript" src="/opennms/js/amq.js"></script>
-        
+
+        <!-- d3js includes -->
         <script type="text/javascript" src="/opennms/js/d3.v2.js"></script>
         <script type="text/javascript" src="/opennms/js/rrdgraph.js"></script>
-        
+
+        <!-- CSS include -->
         <link rel="stylesheet" type="text/css" href="/opennms/css/styles.css" media="screen" />
     
-<script type="text/javascript">
+        <script type="text/javascript">
 
-var outerRefreshTimerJob;
-var outerJobPublishingInterval;
+// ************************************************
+// * Begin of NRT JavaScript
+// ************************************************
 
-var isPaused = 0;
+// On load function
 
-var pausePlayImages = new Array();
-
-pausePlayImages[0] = "/opennms/images/nrtg/pause.png";
-pausePlayImages[1] = "/opennms/images/nrtg/play.png";
-
-// Eingabe foo Zeug
-$(function() {
+    $(function() {
     
-    // Receive inbound JavaScript variables from the controller.
-    var collectionTaskId = "${nrtCollectionTaskId}";
-    var rrdGraphString = "${rrdGraphString}";
+        // Receive inbound JavaScript variables from the controller.
 
-    var metricsMapping = {
-        ${metricsMapping}
-    };
+        var collectionTaskId = "${nrtCollectionTaskId}";
+        var rrdGraphString = "${rrdGraphString}";
 
-    // Represents the frequency of data requests.
-    var jobPuplishingInterval = 1000;
+        var metricsMapping = {
+            ${metricsMapping}
+        };
+
+        // Represents the frequency of data requests.
+        var jobPublishingInterval = 1000;
     
-    // Create and initialize graph and real time wrapper
-    var graphs = RRDGraph.init('.rrdgraph', rrdGraphString);
-    var graph = graphs[0];
+        // Create and initialize graph and real time wrapper
+        var graphs = RRDGraph.init('.rrdgraph', rrdGraphString);
+        var graph = graphs[0];
+        var dataCollector = new RRDGraph.DataCollector(graph.config, graph.data, metricsMapping);
     
-    var dataCollector = new RRDGraph.DataCollector(graph.config, graph.data, metricsMapping);
+        // Create AMQ object
+        var amq = org.activemq.Amq;
+
+        // Initialize the ActiveMQ listener.
+        amq.init({
+            uri: '/opennms/amq',
+            logging: true,
+            timeout: 45,
+            clientId:(new Date()).getTime().toString()
+        });
     
-    // Create AMQ object.
-    var amq = org.activemq.Amq;
+        var firstDataSet = true;
+        var counterMetrics;
+        var counterMetricsValues;
+        var counterMetricsTimeStamps;
 
-    // Initialize the ActiveMQ listener.
-    amq.init({
-        uri: '/opennms/amq', 
-        logging: true, 
-        timeout: 45, 
-        clientId:(new Date()).getTime().toString() 
-    });
-    
-    var firstDataSet = true;
-    var counterMetrics;
-    var counterMetricsValues;
-    var counterMetricsTimeStamps;
+        amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
+            if (message != null) {
+                // TODO make the json valid to use parseJSON and not eval...
+                // var dataSet = $.parseJSON(message.textContent);
 
-    amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
-        if (message != null) {
-// TODO make the json valid to use parseJSON and not eval...
-//            var dataSet = $.parseJSON(message.textContent);
-            var dataSet = eval(message.textContent);
+                var dataSet = eval(message.textContent);
 
-            // Debug output
-            $("#debug_messages_received").html(parseInt($("#debug_messages_received").html()) + 1);
-            $("#debug_datasets_received").html(parseInt($("#debug_datasets_received").html()) + dataSet.length);
-            $("#debug_messages").html(message.textContent);
+                // Debug output
+                $("#debug_messages_received").html(parseInt($("#debug_messages_received").html()) + 1);
+                $("#debug_datasets_received").html(parseInt($("#debug_datasets_received").html()) + dataSet.length);
+                $("#debug_messages").html(message.textContent);
 
-            dataSet = $.map(dataSet, function(e, i) {
-                 temp = {
-                    'metricId': e['metricId'],
-                    'metricType': e['metricType'],
-                    'netInterface': e['netInterface'],
-                    'nodeId': e['nodeId'],
-                    'service': e['service'],
-                    'timeStamp': parseInt(e['timeStamp']),
-                    'value': parseInt(e['value'])
-                };
-                if (temp.metricType == "counter32" || temp.metricType == "counter64") {
-                    //first counterMetric ever? Build arrays for merticId and values
-                    if(counterMetrics == null) {
-                        counterMetrics = new Array();
-                        counterMetricsValues = new Array();
-                        counterMetricsTimeStamps = new Array();
-                        counterMetrics[0] = temp.metricId;
-                        counterMetricsValues[0] = temp.value;
-                        counterMetricsTimeStamps[0] = temp.timeStamp;
-                    } 
-                    //there was a counterMetric before, check it metricId is known
-                    else {
-                        var newMetric = -1;
-                        for (var i = 0; i < counterMetrics.length; i++) {
-                            if (counterMetrics[i] == temp.metricId) {
-                                newMetric = i;
+                dataSet = $.map(dataSet, function(e, i) {
+                    temp = {
+                        'metricId': e['metricId'],
+                        'metricType': e['metricType'],
+                        'netInterface': e['netInterface'],
+                        'nodeId': e['nodeId'],
+                        'service': e['service'],
+                        'timeStamp': parseInt(e['timeStamp']),
+                        'value': parseInt(e['value'])
+                    };
+                    if (temp.metricType == "counter32" || temp.metricType == "counter64") {
+                        //first counterMetric ever? Build arrays for merticId and values
+                        if(counterMetrics == null) {
+                            counterMetrics = new Array();
+                            counterMetricsValues = new Array();
+                            counterMetricsTimeStamps = new Array();
+                            counterMetrics[0] = temp.metricId;
+                            counterMetricsValues[0] = temp.value;
+                            counterMetricsTimeStamps[0] = temp.timeStamp;
+                        } else {
+                            // there was a counterMetric before, check it metricId is known
+                            var newMetric = -1;
+                            for (var i = 0; i < counterMetrics.length; i++) {
+                                if (counterMetrics[i] == temp.metricId) {
+                                    newMetric = i;
+                                }
+                            }
+                            if (newMetric == -1) {
+                                counterMetrics.push(temp.metricId);
+                                counterMetricsValues.push(temp.value);
+                                counterMetricsTimeStamps.push(temp.timeStamp);
+                            } else {
+                                // there is an old value for this counter metric
+                                var valueDiff = temp.value - counterMetricsValues[newMetric];
+                                counterMetricsValues[newMetric] = temp.value;
+
+                                timeDiff = temp.timeStamp - counterMetricsTimeStamps[newMetric];
+                                counterMetricsTimeStamps[newMetric] = temp.timeStamp;
+
+                                temp.value = valueDiff * (1000.0 / timeDiff);
                             }
                         }
-                        if (newMetric == -1) {
-                            counterMetrics.push(temp.metricId);
-                            counterMetricsValues.push(temp.value);
-                            counterMetricsTimeStamps.push(temp.timeStamp);
-                        }
-                        // there is an old value for this counter metric
-                        else {
-                            var valueDiff = temp.value - counterMetricsValues[newMetric];
-                            counterMetricsValues[newMetric] = temp.value;
-
-                            timeDiff = temp.timeStamp - counterMetricsTimeStamps[newMetric];
-                            counterMetricsTimeStamps[newMetric] = temp.timeStamp;
-
-                            temp.value = valueDiff * (1000.0 / timeDiff);
-                        }
+                    }
+                    return temp;
+                });
+                // skip pushing the data into the graph for the first dataset with counters
+                if (firstDataSet) {
+                    firstDataSet = false;
+                    if (counterMetrics != null) {
+                        return;
                     }
                 }
-                return temp;
-            });
-            //skip pushing the data into the graph for the first dataset with counters
-            if (firstDataSet) {
-                firstDataSet = false;
-                if (counterMetrics != null) {
-                    return;
+                dataCollector.push(dataSet);
+            }
+        });
+
+        var debug_jobrequest_sent=0;
+
+        // Timer for  AJAX nrtCollectionJobTrigger to republish the CollectionJobCollectionJob
+
+        var refreshTimerJob = {
+            // submits the AJAX collection job request and requeues the timer.
+            submitJob: function() {
+                $.get("/opennms/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+                this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPublishingInterval);
+                debug_jobrequest_sent++;
+                document.getElementById('debug_jobrequest_sent').innerHTML = debug_jobrequest_sent;
+            },
+
+            // Used for setting up and starting the refresh timer job.
+            setup: function(refreshTicks) {
+                this.stop();
+                this.jobPublishingInterval = refreshTicks;
+                this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPublishingInterval);
+            },
+
+            // Used for stopping the refresh timer.
+            stop: function() {
+                if(typeof this.timeoutID == "number") {
+                    clearTimeout(this.timeoutID);
+                    delete this.timeoutID;
                 }
             }
-            dataCollector.push(dataSet);   
-        }
-    });
-
-    var counter=0;
-
-    // Timer for  AJAX nrtCollectionJobTrigger to republish the CollectionJobCollectionJob
-    var refreshTimerJob = {
-        /// Submits the AJAX collection job request and requeues the timer.
-        submitJob: function() {
-            $.get("/opennms/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
-            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPuplishingInterval);
-            counter++;
-            document.getElementById('counterDiv').innerHTML = counter;
-        },
-
-        /// Used for setting up and starting the refresh timer job.
-        setup: function(refreshTicks) {
-            this.stop();
-            this.jobPuplishingInterval = refreshTicks;
-            this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPuplishingInterval);
-        },
-
-        /// Used for stopping the refresh timer.
-        stop: function() {
-            if(typeof this.timeoutID == "number") {
-                clearTimeout(this.timeoutID);
-                delete this.timeoutID;
+        };
+    
+        // Set up the input box that allows us to adjust the interval in which data points are graphed.
+        $('#jobPublishingInterval').val(jobPublishingInterval);
+        $('#jobPublishingInterval').bind('change', function() {
+            jobPublishingInterval = $(this).val();
+            if (isPaused == 0) {
+                refreshTimerJob.setup(jobPublishingInterval);
             }
-        }
-    };
+        });
     
-    // Set up the input box that allows us to adjust the interval in which data points are graphed.
-    $('#jobPuplishingInterval').val(jobPuplishingInterval);
-    $('#jobPuplishingInterval').bind('change', function() {
-        jobPuplishingInterval = $(this).val();
-        outerJobPublishingInterval = jobPuplishingInterval;
-        if (isPaused == 0) {
-            refreshTimerJob.setup(jobPuplishingInterval);
-        }
+        // Start the AJAX job timer.
+        refreshTimerJob.setup(jobPublishingInterval);
+
+        // define playback state
+        var isPaused = 0;
+
+        // define play/pause images
+        var pausePlayImages = new Array();
+        pausePlayImages[0] = "/opennms/images/nrtg/pause.png";
+        pausePlayImages[1] = "/opennms/images/nrtg/play.png";
+
+        // add play/pause handler
+        $('#playPause').bind('click', function() {
+            isPaused = 1 - isPaused;
+
+            document.images['playPause'].src = pausePlayImages[isPaused];
+
+            if (isPaused == 1) {
+                // stop code
+                refreshTimerJob.stop();
+            } else {
+                // start code
+                refreshTimerJob.setup(jobPublishingInterval);
+            }
+        });
+
+        // add debug-link handler
+        $('#debugLink').bind('click', function() {
+            if (document.getElementById('debug').style.display == 'none') {
+                document.getElementById('debug').style.display = 'block';
+            } else {
+                document.getElementById('debug').style.display = 'none';
+            }
+        });
     });
-    
-    // Start the AJAX job timer.
-    refreshTimerJob.setup(jobPuplishingInterval);
 
-    outerJobPublishingInterval = jobPuplishingInterval;
-    outerRefreshTimerjob = refreshTimerJob;
-});
+// ************************************************
+// * End of NRT JavaScript
+// ************************************************
 
-function togglePlay() {
-    isPaused = 1 - isPaused;
-
-    document.images['playPause'].src = pausePlayImages[isPaused];
-
-    if (isPaused == 1) {
-        // stop code
-        outerRefreshTimerjob.stop();
-    } else {
-        // start code
-        outerRefreshTimerjob.setup(outerJobPublishingInterval);
-    }
-}
-
-function toggleDebug(){
-    if (document.getElementById('debug').style.display == 'none') {
-        document.getElementById('debug').style.display = 'block';
-    } else {
-        document.getElementById('debug').style.display = 'none';
-    }
-}
-
-</script>
-
-</head>
+        </script>
+    </head>
        
-<body>        
-    <div id="main"></div>
-    <center>
-        <div class="rrdgraph" data-src="realtime=1"></div>
-        <div id="nrtControls">
-            <a href="javascript:togglePlay();"><img name="playPause" src="/opennms/images/nrtg/pause.png" width="64" border="0"/></a>
-            <form>
-                <select id="jobPuplishingInterval" type="select">
-                    <option value="250">0.25s</option>
-                    <option value="1000" selected>1.00s</option>
-                    <option value="5000">5.00s</option>
-                    <option value="10000">10.00s</option>
-                    <option value="30000">30.00s</option>
-                    <option value="60000">60.00s</option>
-                </select>
-            </form>
-            <font size="-1" ><a style="color:#dddddd;" href="javascript:toggleDebug();">Debug</a></font>
-        </div>
-    </center>
+    <body>
+        <div id="main"></div>
+        <center>
+            <div class="rrdgraph" data-src="realtime=1"></div>
+            <div id="nrtControls">
+                <img id="playPause" name="playPause" src="/opennms/images/nrtg/pause.png" width="64" border="0"/>
+                <form>
+                    <select id="jobPublishingInterval" type="select">
+                        <option value="250">0.25s</option>
+                        <option value="1000" selected>1.00s</option>
+                        <option value="5000">5.00s</option>
+                        <option value="10000">10.00s</option>
+                        <option value="30000">30.00s</option>
+                        <option value="60000">60.00s</option>
+                    </select>
+                </form>
+                <font size="-1" >
+                    <a id='debugLink' href="#">Debug</a>
+                </font>
+            </div>
+        </center>
 
-    <div align="center" id="debug" style="display:none;">
-        <table border="1" width="75%">
-            <tr>
-                <td><b>Error message(s)</b></td>
-                <td><div id="errorDiv"></div></td>
-            </tr><tr>
-                <td><b>JobRequest(s) sent</b></td>
-                <td><div id="counterDiv">0</div></td>
-            </tr><tr>
-                <td><b>Message(s) received<b></td>
-                <td><div id="debug_messages_received">0</div></td>
-            </tr><tr>
-                <td><b>Dataset(s) received<b></td>
-                <td><div id="debug_datasets_received">0</div></td>
-            </tr><tr>
-                <td><b>Last message received<b></td>
-                <td><div id="debug_messages"></div></td>
-            </tr><tr>
-                <td><b>RRD command<b></td>
-                <td><div id="debug_rrd_string">${rrdGraphString}</div></td>
-            </tr>
-    </div>
-</body>
+        <div align="center" id="debug" style="display:none;">
+            <table border="1" width="75%">
+                <tr>
+                    <td><b>Error message(s)</b></td>
+                    <td><div id="errorDiv"></div></td>
+                </tr><tr>
+                    <td><b>JobRequest(s) sent</b></td>
+                    <td><div id="debug_jobrequest_sent">0</div></td>
+                </tr><tr>
+                    <td><b>Message(s) received<b></td>
+                    <td><div id="debug_messages_received">0</div></td>
+                </tr><tr>
+                    <td><b>Dataset(s) received<b></td>
+                    <td><div id="debug_datasets_received">0</div></td>
+                </tr><tr>
+                    <td><b>Last message received<b></td>
+                    <td><div id="debug_messages"></div></td>
+                </tr><tr>
+                    <td><b>RRD command<b></td>
+                    <td><div id="debug_rrd_string">${rrdGraphString}</div></td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
