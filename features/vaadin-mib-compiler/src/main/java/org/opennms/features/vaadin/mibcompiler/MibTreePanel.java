@@ -289,7 +289,7 @@ public class MibTreePanel extends Panel {
                 getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
             }
         } else {
-            getApplication().getMainWindow().showNotification("This MIBs doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
+            getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
         }
     }
 
@@ -303,13 +303,13 @@ public class MibTreePanel extends Panel {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
             final DatacollectionGroup dcGroup = mibParser.getDataCollection();
             if (dcGroup == null) {
-                getApplication().getMainWindow().showNotification("The MIBs couldn't be processed.", Notification.TYPE_ERROR_MESSAGE);
+                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection.", Notification.TYPE_ERROR_MESSAGE);
             } else {
                 if (dcGroup.getGroupCount() > 0) {
                     final DataCollectionWindow w = new DataCollectionWindow(fileName, dcGroup, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } else {
-                    getApplication().getMainWindow().showNotification("This MIBs doesn't contain any metric for data collection.", Notification.TYPE_WARNING_MESSAGE);
+                    getApplication().getMainWindow().showNotification("The MIB doesn't contain any metric for data collection.", Notification.TYPE_WARNING_MESSAGE);
                 }
             }
         }
