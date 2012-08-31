@@ -98,7 +98,7 @@ public class EasyMockDataPopulator {
         
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
-        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").getNode());
+        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.setBuilding("HQ");
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface(1)
@@ -288,6 +288,7 @@ public class EasyMockDataPopulator {
     public void tearDown() {
         EasyMock.verify(m_dataLinkInterfaceDao);
         EasyMock.reset(m_dataLinkInterfaceDao);
+        EasyMock.reset(m_nodeDao);
     }
 
     public OnmsNode getNode1() {
@@ -419,5 +420,6 @@ public class EasyMockDataPopulator {
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("6").toArray(), edgeidsforvertex6);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("7").toArray(), edgeidsforvertex7);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("8").toArray(), edgeidsforvertex8);
+        
     }
 }
