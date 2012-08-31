@@ -61,7 +61,6 @@
                 $.get("/opennms/nrt/starter","poll=true&nrtCollectionTaskId="+collectionTaskId,function (messages) {
                     if (messages != null && messages != '') {
                         $("#debug_messages").html(messages);
-                        messages.trim();
                         var messagesArray = eval(messages);
 
                         for(var x=0;x<messagesArray.length;x++) {
