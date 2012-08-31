@@ -38,10 +38,13 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
+import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MessageConversionException;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,6 +52,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,6 +73,11 @@ public class NrtController {
     private GraphDao m_graphDao;
     private ResourceDao m_resourceDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
+
+    private final SimpleMessageConverter simpleMessageConverter = new SimpleMessageConverter();
+
+    HashMap<String, Vector<String>> m_messageStore = new HashMap<String, Vector<String>>();
+    HashMap<String, Date> m_lastMessagePolled = new HashMap<String, Date>();
 
     @RequestMapping(method = RequestMethod.GET, params = {"nrtCollectionTaskId"})
     @ResponseStatus(HttpStatus.OK)
@@ -89,6 +99,10 @@ public class NrtController {
         } else {
             logger.debug("No CollectionTasks map in session found.");
         }
+
+        receiveMessagesForDestination(nrtCollectionTaskId);
+
+        housekeeping();
     }
 
     @SuppressWarnings("unchecked")
@@ -163,7 +177,6 @@ public class NrtController {
         NrtRrdCommandFormatter rrdFormatter = new NrtRrdCommandFormatter(prefabGraph);
         modelAndView.addObject("rrdGraphString", rrdFormatter.getRrdGraphString());
         modelAndView.addObject("metricsMapping", rrdFormatter.getRrdMetricsMapping());
-
 
         return modelAndView;
     }
@@ -256,5 +269,100 @@ public class NrtController {
 
     public void setJmsTemplate(JmsTemplate jmsTemplate) {
         m_jmsTemplate = jmsTemplate;
+    }
+
+    public String getMessagesForDestination(String destination) {
+        StringBuffer buffer = new StringBuffer("");
+
+        synchronized (m_messageStore) {
+            if (m_messageStore.containsKey(destination)) {
+                Vector<String> vector = m_messageStore.get(destination);
+
+                for (String message : vector) {
+                    if (buffer.length() > 0)
+                        buffer.append(", ");
+
+                    buffer.append(message);
+                }
+
+                m_messageStore.put(destination, new Vector<String>());
+
+                return "[" + buffer.toString() + "]";
+            } else {
+                return "[]";
+            }
+        }
+    }
+
+    public void housekeeping() {
+        Date now = new Date();
+        for (String destination : m_messageStore.keySet()) {
+            if (!m_lastMessagePolled.containsKey(destination)) {
+                // this should not happen
+                m_lastMessagePolled.put(destination, new Date());
+            } else {
+                Date lastMessage = m_lastMessagePolled.get(destination);
+                long diff = now.getTime() - lastMessage.getTime();
+                if (diff > 600000) {
+                    synchronized (m_messageStore) {
+                        m_messageStore.remove(destination);
+                        m_lastMessagePolled.remove(destination);
+                    }
+                }
+            }
+        }
+    }
+
+    public void receiveMessagesForDestination(String destination) {
+        synchronized (m_messageStore) {
+            if (!m_messageStore.containsKey(destination)) {
+                m_messageStore.put(destination, new Vector<String>());
+                m_lastMessagePolled.put(destination, new Date());
+            }
+        }
+
+        m_jmsTemplate.setReceiveTimeout(125);
+
+        Message message = m_jmsTemplate.receive(destination);
+
+        while (message != null) {
+            addMessageForDestination(message, destination);
+            message = m_jmsTemplate.receive(destination);
+        }
+
+        m_lastMessagePolled.put(destination, new Date());
+
+        /*
+        for (String destination : m_destinationSet) {
+            Message message = m_jmsTemplate.receive(destination);
+
+            while (message != null) {
+                addMessageForDestination(message, destination);
+                message = m_jmsTemplate.receive(destination);
+            }
+        }
+        */
+    }
+
+    // @Override
+    public void addMessageForDestination(Message message, String destination) {
+        try {
+            MeasurementSet measurementSet = (MeasurementSet) simpleMessageConverter.fromMessage(message);
+
+            synchronized (m_messageStore) {
+                if (!m_messageStore.containsKey(destination))
+                    m_messageStore.put(destination, new Vector<String>());
+
+                Vector<String> vector = m_messageStore.get(destination);
+
+                vector.add(measurementSet.toString());
+            }
+        } catch (JMSException ex) {
+            logger.error(ex.getMessage());
+            // FIXME react, don't continue
+        } catch (MessageConversionException ex) {
+            logger.error(ex.getMessage());
+            // FIXME react, don't continue
+        }
     }
 }

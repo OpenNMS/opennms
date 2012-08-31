@@ -44,89 +44,12 @@
         var graph = graphs[0];
         var dataCollector = new RRDGraph.DataCollector(graph.config, graph.data, metricsMapping);
     
-        // Create AMQ object
-        var amq = org.activemq.Amq;
-
-        // Initialize the ActiveMQ listener.
-        amq.init({
-            uri: '/opennms/amq',
-            logging: true,
-            timeout: 5,
-            clientId:(new Date()).getTime().toString()
-        });
-    
         var firstDataSet = true;
         var counterMetrics;
         var counterMetricsValues;
         var counterMetricsTimeStamps;
 
-        amq.addListener('RealtimeHandler', collectionTaskId, function(message) {
-            if (message != null) {
-                // TODO make the json valid to use parseJSON and not eval...
-                // var dataSet = $.parseJSON(message.textContent);
 
-                var dataSet = eval(message.textContent);
-
-                // Debug output
-                $("#debug_messages_received").html(parseInt($("#debug_messages_received").html()) + 1);
-                $("#debug_datasets_received").html(parseInt($("#debug_datasets_received").html()) + dataSet.length);
-                $("#debug_messages").html(message.textContent);
-
-                dataSet = $.map(dataSet, function(e, i) {
-                    temp = {
-                        'metricId': e['metricId'],
-                        'metricType': e['metricType'],
-                        'netInterface': e['netInterface'],
-                        'nodeId': e['nodeId'],
-                        'service': e['service'],
-                        'timeStamp': parseInt(e['timeStamp']),
-                        'value': parseInt(e['value'])
-                    };
-                    if (temp.metricType == "counter32" || temp.metricType == "counter64") {
-                        //first counterMetric ever? Build arrays for merticId and values
-                        if(counterMetrics == null) {
-                            counterMetrics = new Array();
-                            counterMetricsValues = new Array();
-                            counterMetricsTimeStamps = new Array();
-                            counterMetrics[0] = temp.metricId;
-                            counterMetricsValues[0] = temp.value;
-                            counterMetricsTimeStamps[0] = temp.timeStamp;
-                        } else {
-                            // there was a counterMetric before, check it metricId is known
-                            var newMetric = -1;
-                            for (var i = 0; i < counterMetrics.length; i++) {
-                                if (counterMetrics[i] == temp.metricId) {
-                                    newMetric = i;
-                                }
-                            }
-                            if (newMetric == -1) {
-                                counterMetrics.push(temp.metricId);
-                                counterMetricsValues.push(temp.value);
-                                counterMetricsTimeStamps.push(temp.timeStamp);
-                            } else {
-                                // there is an old value for this counter metric
-                                var valueDiff = temp.value - counterMetricsValues[newMetric];
-                                counterMetricsValues[newMetric] = temp.value;
-
-                                timeDiff = temp.timeStamp - counterMetricsTimeStamps[newMetric];
-                                counterMetricsTimeStamps[newMetric] = temp.timeStamp;
-
-                                temp.value = valueDiff * (1000.0 / timeDiff);
-                            }
-                        }
-                    }
-                    return temp;
-                });
-                // skip pushing the data into the graph for the first dataset with counters
-                if (firstDataSet) {
-                    firstDataSet = false;
-                    if (counterMetrics != null) {
-                        return;
-                    }
-                }
-                dataCollector.push(dataSet);
-            }
-        });
 
         var debug_jobrequest_sent=0;
 
@@ -135,7 +58,82 @@
         var refreshTimerJob = {
             // submits the AJAX collection job request and requeues the timer.
             submitJob: function() {
-                $.get("/opennms/nrt/starter","nrtCollectionTaskId="+collectionTaskId,function(data) { $("#errorDiv").text(data); }, "html");
+                $.get("/opennms/nrt/starter","poll=true&nrtCollectionTaskId="+collectionTaskId,function (messages) {
+                    if (messages != null && messages != '') {
+                        $("#debug_messages").html(messages);
+                        messages.trim();
+                        var messagesArray = eval(messages);
+
+                        for(var x=0;x<messagesArray.length;x++) {
+                            var dataSet = messagesArray[x];
+
+                            if (!(dataSet instanceof Array)) {
+                                $("#errorDiv").html("Error in message '"+messages+"': element "+x+" ('"+dataSet+"') is not an array");
+                            }
+
+                            // Debug output
+                            $("#debug_messages_received").html(parseInt($("#debug_messages_received").html()) + 1);
+                            $("#debug_datasets_received").html(parseInt($("#debug_datasets_received").html()) + dataSet.length);
+
+                            dataSet = $.map(dataSet, function(e, i) {
+                                temp = {
+                                    'metricId': e['metricId'],
+                                    'metricType': e['metricType'],
+                                    'netInterface': e['netInterface'],
+                                    'nodeId': e['nodeId'],
+                                    'service': e['service'],
+                                    'timeStamp': parseInt(e['timeStamp']),
+                                    'value': parseInt(e['value'])
+                                };
+
+                                if (temp.metricType == "counter32" || temp.metricType == "counter64") {
+                                    // first counterMetric ever? Build arrays for merticId and values
+                                    if (counterMetrics == null) {
+                                        counterMetrics = new Array();
+                                        counterMetricsValues = new Array();
+                                        counterMetricsTimeStamps = new Array();
+                                        counterMetrics[0] = temp.metricId;
+                                        counterMetricsValues[0] = temp.value;
+                                        counterMetricsTimeStamps[0] = temp.timeStamp;
+                                    } else {
+                                        // there was a counterMetric before, check it metricId is known
+                                        var newMetric = -1;
+                                        for (var i = 0; i < counterMetrics.length; i++) {
+                                            if (counterMetrics[i] == temp.metricId) {
+                                                newMetric = i;
+                                            }
+                                        }
+                                        if (newMetric == -1) {
+                                            counterMetrics.push(temp.metricId);
+                                            counterMetricsValues.push(temp.value);
+                                            counterMetricsTimeStamps.push(temp.timeStamp);
+                                        } else {
+                                            // there is an old value for this counter metric
+                                            var valueDiff = temp.value - counterMetricsValues[newMetric];
+                                            counterMetricsValues[newMetric] = temp.value;
+
+                                            timeDiff = temp.timeStamp - counterMetricsTimeStamps[newMetric];
+                                            counterMetricsTimeStamps[newMetric] = temp.timeStamp;
+
+                                            temp.value = valueDiff * (1000.0 / timeDiff);
+                                        }
+                                    }
+                                }
+                                return temp;
+                            });
+
+                            // skip pushing the data into the graph for the first dataset with counters
+
+                            if (firstDataSet) {
+                                firstDataSet = false;
+                                if (counterMetrics != null) {
+                                    return;
+                                }
+                            }
+                            dataCollector.push(dataSet);
+                        }
+                    }
+                });
                 this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPublishingInterval);
                 debug_jobrequest_sent++;
                 document.getElementById('debug_jobrequest_sent').innerHTML = debug_jobrequest_sent;

@@ -57,6 +57,10 @@ public class NrtServlet extends HttpServlet {
 
         if (req.getParameter("nrtCollectionTaskId") != null) {
             m_controller.nrtCollectionJobTrigger(req.getParameter("nrtCollectionTaskId"), httpSession);
+
+            if ("true".equals(req.getParameter("poll"))) {
+                resp.getOutputStream().println(m_controller.getMessagesForDestination(req.getParameter("nrtCollectionTaskId")));
+            }
         } else if (req.getParameter("resourceId") != null && req.getParameter("report") != null) {
             ModelAndView modelAndView = m_controller.nrtStart(req.getParameter("resourceId"), req.getParameter("report"), httpSession);
 
@@ -66,9 +70,7 @@ public class NrtServlet extends HttpServlet {
                 template = template.replaceAll("\\$\\{" + entry.getKey() + "\\}", (entry.getValue() != null ? entry.getValue().toString() : "null"));
             }
 
-
             resp.getOutputStream().write(template.getBytes());
-
         } else {
             throw new ServletException("unrecognized servlet parameters");
         }
