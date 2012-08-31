@@ -16,29 +16,47 @@ AAAAA
 }
 ## start work
 syncOn
-/etc/rc.d/init.d/postgresql start
+/etc/rc.d/init.d/postgresql-9.1 start
 OPENNMS_DUMP=/var/opennms/rrd
-DB_NAME=opennms
+PGSQL_DATA_DIR=/var/lib/pgsql/9.1/data
+PGSQL_TRIGGER_FILE=$PGSQL_DATA_DIR/trigger.txt # This file triggers the recovery
+PGSQL_RECOVERY_FILE=$PGSQL_DATA_DIR/recovery.done # This file sinals recovery is done ( recovery.conf is renamed to recovery.done )
+LOG=/opt/opennms/logs/failover.log
 
-dropDb() {
+stopOpenNMS() {
         service jmp-watchdog stop
         service jmp-opennms stop
-        psql -U opennms postgres -c 'drop database opennms;'
-        psql -U opennms postgres -c "create database opennms encoding 'unicode'"
 }
 
-if [ -e $OPENNMS_DUMP/opennms.sql ]; then
-	dropDb
-       var1=$(stat -c%s $OPENNMS_DUMP/opennms.sql)
-       var2=$(stat -c%s $OPENNMS_DUMP/opennms.sql.bk)
-       if [[ "$var2" -gt "$var1" ]]; then
-               echo "bk is bigger than sql, using bk version"
-               /bin/cp $OPENNMS_DUMP/opennms.sql.bk $OPENNMS_DUMP/opennms.sql
-       fi
+checkForRecoveryDone() {
+ 	START_TIMEOUT=30
+        STATUS_WAIT=10
+        STATUS_ATTEMPTS=0
+        while [ $STATUS_ATTEMPTS -lt $START_TIMEOUT ]; do
+                if [ -e $PGSQL_RECOVERY_FILE ]; then
+                        echo "PGSQL recovery complete"  >> $LOG
+                        break
+                else
+                        echo "PGSQL recovery in process.."  >> $LOG
+                        echo "$PGSQL_DATA_DIR/recovery.conf will be renamed to $PGSQL_DATA_DIR/recovery.done when complete"  >> $LOG
+                        sleep $STATUS_WAIT
+                        STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
+                fi
+        done
 
-       psql -U opennms $DB_NAME < $OPENNMS_DUMP/opennms.sql
+	# Did we complete recovery?
+        if [ ! -e $PGSQL_RECOVERY_FILE ]; then
+        	echo "ERROR: PGSQL recovery FAILED, opennms will not be started"  >> $LOG
+		service jmp-watchdog start
+		exit;
+	fi
+}
 
-	service jmp-watchdog start
-fi
+# MAIN
+
+stopOpenNMS
+touch $PGSQL_TRIGGER_FILE
+checkForRecoveryDone
+service jmp-watchdog start
 /etc/rc.d/init.d/opennms start
 

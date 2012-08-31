@@ -1,7 +1,13 @@
 #!/usr/bin/perl
-
+# Copyright 2009-2012 Juniper Networks, Inc. All rights reserved.
+use strict;
+use warnings;
+use lib ("/usr/nma/lib");
+use PostgresReplication;
 use IO::Handle;
+
 my $log = '/opt/opennms/logs/failover.log';
+my $PGSQL_DATADIR = "/var/lib/pgsql/9.1/data";
 open MYLOG, '>>', $log;
 STDOUT->fdopen( \*MYLOG, 'w' );
 STDERR->fdopen( \*MYLOG, 'w' );
@@ -18,7 +24,7 @@ STDERR->fdopen( \*MYLOG, 'w' );
                         # count total time lapsed
                         my $start = `cat $vipTime`;
                         chomp $start;
-                        $delta = $time - $start;
+                        my $delta = $time - $start;
                         print "VIP has been owned $delta\n";
                         if ($delta >  180 && ! -e $snmpTargetReset) {
 				print "starting opennms services\n";
@@ -31,6 +37,14 @@ STDERR->fdopen( \*MYLOG, 'w' );
                                 	print "trigger snmp target reset\n";
                                 	system("touch $snmpTargetReset");
 				  }
+				  # send trap to opennms, triggering failover event, Opennms will then send a Space restarted trap out
+				  my $vip = `grep jmp-CLUSTER /etc/hosts| cut -f1`;
+				  my $ip = `hostname -i`;
+				  my $date = `date +%s`;
+				  system("snmptrap -v 2c -c public $vip $date 1.3.6.1.4.1.2636.1.3.1.1.1");
+				  # set min java process count to 2 in snmpd.conf
+				  system("sed -i 's/proc java 10 1/proc java 10 2/g' /etc/snmp/snmpd.conf");
+				  system("service snmpd reload");
 				}else {
 					print "ERROR: service opennms failed to run\n";
 				}
@@ -53,6 +67,18 @@ STDERR->fdopen( \*MYLOG, 'w' );
                         system("rm $snmpTargetReset");
                         print "remove timer\n";
                 }
+		# set min java process count to 1 in snmpd.conf
+		system("sed -i 's/proc java 10 2/proc java 10 1/g' /etc/snmp/snmpd.conf");
+                system("service snmpd reload");
+
+		# set this node as postgres slave if not already set
+		if ( not -e "$PGSQL_DATADIR/recovery.conf" ) {
+			my $err = PostgresReplication::setupSlave();
+ 			if ( $err == 1 ) {
+        			NmaUtil::ilog("Error with slave setup, PGSQL REPLICATION might be broken!");
+      			}
+		
+		}
         }
 
 sub isServiceRunning {
