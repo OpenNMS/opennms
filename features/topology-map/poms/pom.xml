@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>topology</artifactId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -103,7 +103,7 @@
         <type>pom</type>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>provision</artifactId>
-        <version>1.11.2-SNAPSHOT</version>
+        <version>1.11.3-SNAPSHOT</version>
         <scope>provided</scope>
         <optional>true</optional>
       </dependency>
