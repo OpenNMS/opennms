@@ -32,10 +32,8 @@ NRTG Web
 
 features:addurl mvn:org.apache.camel.karaf/apache-camel/2.9.2/xml/features
 
-features:install activemq-camel
-
 bundle:install mvn:org.apache.activemq/activemq-web/5.6.0
-bundle:install mvn:org.opennms.features.nrtg/nrtg-web/1.11.2-SNAPSHOT
+bundle:install mvn:org.opennms.features.nrtg/nrtg-web/1.11.3-SNAPSHOT
 
 bundle:start activemq-web (by id)
 bundle:start NRTG Web Interface (by id)
