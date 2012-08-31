@@ -6,10 +6,9 @@ import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.VertexContainer;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer.GVertex;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.github.wolfie.refresher.Refresher;
@@ -30,6 +29,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
+import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -73,7 +73,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		refresher.setRefreshInterval(5000);
 		getMainWindow().addComponent(refresher);
 
-		m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
+		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
@@ -86,6 +86,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.setResolution(2);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
+		try {
+            slider.setValue(1.0);
+        } catch (ValueOutOfBoundsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		scale.setValue(1.0);
 
 		slider.addListener(new ValueChangeListener(){
@@ -157,8 +163,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		menuBarUpdated(m_commandManager);
 		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
-
-		m_graphContainer.redoLayout();
 	}
 
 
@@ -174,9 +178,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
             @Override
             public void buttonClick(ClickEvent event) {
-                VertexContainer<Object, GVertex> container = (VertexContainer<Object, GVertex>) m_tree.getContainerDataSource();
+                FilterableHierarchicalContainer container =  (FilterableHierarchicalContainer) m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
-                container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                
+                String filterString = (String) filterField.getValue();
+                if(!filterString.equals("")) {
+                    container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                }
+                
                 
             }
         });
@@ -198,10 +207,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
 	private Tree createTree() {
-
+	    FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
+	    
 		final Tree tree = new Tree();
 		tree.setMultiSelect(true);
-		tree.setContainerDataSource(m_graphContainer.getVertexContainer());
+		tree.setContainerDataSource(container);
         
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(Vertex.LABEL_PROPERTY);

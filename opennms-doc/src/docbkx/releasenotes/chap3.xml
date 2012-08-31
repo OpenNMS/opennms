@@ -4,14 +4,14 @@
 
 	<para>Here is the list of known issues in this release of OpenNMS.</para>
 
-	<!--
 	<section id="issues-current-release">
 		<title>Current Release</title>
 		<para>
-			There are no known major issues in OpenNMS 1.9.
+			We are still investigating <ulink href="http://issues.opennms.org/browse/NMS-5469">a
+         socket issue</ulink> that appears like it may be related to certain uncommon
+         configurations of the IPv6 stack on Linux.
 		</para>
 	</section>
-	-->
 
 	<section id="issues-1.8.5">
 		<title>OpenNMS 1.8.5/1.9.2</title>

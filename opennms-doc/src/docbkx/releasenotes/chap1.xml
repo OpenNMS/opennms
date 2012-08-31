@@ -6,6 +6,19 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="introduction-1.11.2">
+		<title>Release 1.11.2</title>
+
+		<para>
+			Release 1.11.2 is the latest in the unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.2 is <emphasis>Damian Hess</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.11.1">
 		<title>Release 1.11.1</title>
 
@@ -34,6 +47,18 @@
 
 
 	<!-- Start 1.10 -->
+
+	<section id="introduction-1.10.5">
+		<title>Release 1.10.5</title>
+
+		<para>
+			Release 1.10.5 is the latest in the stable series of OpenNMS releases.
+			It contains a few minor bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.5 is <emphasis>Tromboon</emphasis>
+		</para>
+	</section>
 
 	<section id="introduction-1.10.4">
 		<title>Release 1.10.4</title>
