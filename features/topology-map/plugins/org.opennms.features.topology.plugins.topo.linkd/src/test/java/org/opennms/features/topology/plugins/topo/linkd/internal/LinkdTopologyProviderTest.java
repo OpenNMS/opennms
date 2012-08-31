@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,15 +39,6 @@ public class LinkdTopologyProviderTest {
     
     @Autowired
      private EasyMockDataPopulator m_databasePopulator;
-     public class TestVertex {
-
-    }
-
-    
-    @Before
-    public void setUp() {
-        m_databasePopulator.populateDatabase();
-    }
     
     @After
     public void tearDown() {
@@ -57,20 +47,21 @@ public class LinkdTopologyProviderTest {
     
 	@Test
 	public void testLoad() {		
+	        m_databasePopulator.populateDatabase(true);
 		m_topologyProvider.load(null);
 		m_databasePopulator.check(m_topologyProvider);
 	}
 	
-	@Test
+	@Test 
 	public void testSave() {
-	    m_topologyProvider.save("target/test-map.xml");	    
-            m_databasePopulator.check(m_topologyProvider);
-            
-
+            m_databasePopulator.populateDatabase(false);
+	        m_topologyProvider.save("target/test-map.xml");	    
+                m_databasePopulator.check(m_topologyProvider);
 	}
 	
 	@Test
 	public void testOperationOpen() {
+            m_databasePopulator.populateDatabase(true);
 	    m_openOperation.execute(null, m_operationContext);
             m_databasePopulator.check(m_topologyProvider);
 
@@ -78,6 +69,7 @@ public class LinkdTopologyProviderTest {
 
 	@Test
 	public void testOperationSave() {
+            m_databasePopulator.populateDatabase(false);
             List<Object> targets = new ArrayList<Object>(1);
             targets.add("target/test-graph.xml");
             m_saveOperation.execute(targets, m_operationContext);	            
@@ -85,6 +77,7 @@ public class LinkdTopologyProviderTest {
 
 	@Test
 	public void testOperationOpenExistingFile() {
+            m_databasePopulator.populateDatabase(false);
 	    List<Object> targets = new ArrayList<Object>(1);
             targets.add("target/test-map.xml");
             m_openOperation.execute(targets, m_operationContext);
