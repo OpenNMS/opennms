@@ -31,6 +31,16 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     NodeDao m_nodeDao;
     
+    boolean addNodeWithoutLink = true;
+    
+    public boolean isAddNodeWithoutLink() {
+        return addNodeWithoutLink;
+    }
+
+    public void setAddNodeWithoutLink(boolean addNodeWithoutLink) {
+        this.addNodeWithoutLink = addNodeWithoutLink;
+    }
+
     private LinkdVertexContainer m_vertexContainer;
     private BeanContainer<String, LinkdEdge> m_edgeContainer;
 
@@ -242,7 +252,19 @@ public class LinkdTopologyProvider implements TopologyProvider {
             }
             
             m_edgeContainer.addBean(new LinkdEdge(link.getId().toString(),source,target));
-        }        
+        }
+        
+        if (isAddNodeWithoutLink()) {
+            for (OnmsNode node: m_nodeDao.findAll()) {
+                String nodeId = node.getNodeId();
+                LinkdVertex linklessnode;
+                BeanItem<LinkdVertex> item = m_vertexContainer.getItem(nodeId);
+                if (item == null) {
+                    linklessnode = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
+                    m_vertexContainer.addBean(linklessnode);
+                }                
+            }
+        }
     }
 
     protected String getIconName(OnmsNode node) {
