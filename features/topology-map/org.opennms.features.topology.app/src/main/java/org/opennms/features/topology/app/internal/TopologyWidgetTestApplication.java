@@ -37,7 +37,7 @@ import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler{
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener{
 
 	private Window m_window;
 	private TopologyComponent m_topologyComponent;
@@ -48,6 +48,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private TopoContextMenu m_contextMenu;
 	private AbsoluteLayout m_layout;
 	private IconRepositoryManager m_iconRepositoryManager;
+	private WidgetManager m_widgetManager;
+	private Layout m_viewContribLayout;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
@@ -80,7 +82,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
-
+		
 		final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		final Slider slider = new Slider(0, 4);
 		slider.setResolution(2);
@@ -148,11 +150,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
 		bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
 
-		VerticalLayout zoomLayout = new VerticalLayout();
-//		zoomLayout.addComponent(zoomInBtn);
-//		zoomLayout.addComponent(zoomOutBtn);
+		m_viewContribLayout = new VerticalLayout();
 
-		bottomLayoutBar.setSecondComponent(zoomLayout);
+		bottomLayoutBar.setSecondComponent(m_viewContribLayout);
 		bottomLayoutBar.setSplitPosition(99, Sizeable.UNITS_PERCENTAGE);
 		bottomLayoutBar.setSizeFull();
 
@@ -162,6 +162,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 
 		menuBarUpdated(m_commandManager);
+		if(m_widgetManager != null) {
+		    widgetListUpdated(m_widgetManager);
+		}
+		
 		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
 	}
 
@@ -300,5 +304,26 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			item.getItem().setVisible(shouldDisplay);
 		}
 	}
+
+
+    public WidgetManager getWidgetManager() {
+        return m_widgetManager;
+    }
+
+
+    public void setWidgetManager(WidgetManager widgetManager) {
+        if(m_widgetManager != null) {
+            m_widgetManager.removeUpdateListener(this);
+        }
+        m_widgetManager = widgetManager;
+        m_widgetManager.addUpdateListener(this);
+    }
+
+
+    @Override
+    public void widgetListUpdated(WidgetManager widgetManager) {
+        m_viewContribLayout.removeAllComponents();
+        m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+    }
 
 }

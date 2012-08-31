@@ -6,8 +6,8 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.container</artifactId>
-        <version>1.11.2-SPACE-SNAPSHOT</version>
+        <artifactId>container</artifactId>
+        <version>1.11.3-SPACE-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>

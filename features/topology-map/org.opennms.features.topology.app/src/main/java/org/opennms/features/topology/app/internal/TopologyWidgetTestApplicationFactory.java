@@ -14,6 +14,7 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 	private TopologyProvider m_topologyProvider;
 	private CommandManager m_commandManager = new CommandManager();
 	private IconRepositoryManager m_iconRepositoryManager = new IconRepositoryManager();
+	private WidgetManager m_widgetManager;
     private String m_themeName = "reindeer";
 	
 	public CommandManager getCommandManager() {
@@ -29,6 +30,11 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
     	System.err.println("createApplication");
 		TopologyWidgetTestApplication application = new TopologyWidgetTestApplication(m_commandManager, m_topologyProvider, m_iconRepositoryManager);
 		application.setTheme(m_themeName);
+		
+		if(m_widgetManager != null) {
+		    application.setWidgetManager(m_widgetManager);
+		}
+		
 		System.err.println("application is " + application);
         return application;
 	}
@@ -57,5 +63,13 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
 	public void setTopologyProvider(TopologyProvider topologyProvider) {
 		m_topologyProvider = topologyProvider;
 	}
+
+    public WidgetManager getWidgetManager() {
+        return m_widgetManager;
+    }
+
+    public void setWidgetManager(WidgetManager widgetManager) {
+        m_widgetManager = widgetManager;
+    }
     
 }

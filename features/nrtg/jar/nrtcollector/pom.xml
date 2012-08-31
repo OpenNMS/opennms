@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms.features.nrtg</groupId>
+    <artifactId>jar</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <artifactId>nrtg-collector-standalone</artifactId>
+  <name>NRTG JAR NRTCollector</name>
+  <description>
+	Simple JAR to start a NRT collector
+  </description>
+  <url>http://www.OpenNMS.org</url>
+  <dependencies>
+    <!-- OpenNMS NRTCollector -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg</groupId>
+      <artifactId>nrtg-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.nrtg</groupId>
+      <artifactId>nrtg-collector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
+      <artifactId>nrtg-protocolcollector-snmp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>${activemq.version}</version>
+    </dependency>
+    
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <!--scope>provided</scope-->
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.4</version>
+      <!--<scope>provided</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>net.sf.flexjson</groupId>
+      <artifactId>flexjson</artifactId>
+    </dependency>
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg.dependencies</groupId>
+      <artifactId>spring</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
+      <version>${spring.version}</version>
+      <!-- <scope>provided</scope> -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.nrtg.jar.nrtcollector.NrtCollectorStarter</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

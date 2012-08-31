@@ -227,7 +227,7 @@ public class TcpRrdStrategyTest {
         // RRDs created by the test will have a realistic path
         File rrdDir = m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(tempDir, "rrd"), "snmp"), "1");
         Object def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
-        m_strategy.createFile(def);
+        m_strategy.createFile(def, null);
 
         return m_fileAnticipator.expecting(rrdDir, rrdFileBase + rrdExtension);
     }

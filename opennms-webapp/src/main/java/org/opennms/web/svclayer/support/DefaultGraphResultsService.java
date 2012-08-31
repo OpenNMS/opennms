@@ -1,42 +1,32 @@
-
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2011 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
+ * 1999-2011 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * You should have received a copy of the GNU General Public License along with
+ * OpenNMS(R). If not, see: http://www.gnu.org/licenses/
  *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/ http://www.opennms.com/
+ * *****************************************************************************
+ */
 package org.opennms.web.svclayer.support;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -56,6 +46,8 @@ import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.graph.GraphResults.GraphResultSet;
 import org.opennms.web.svclayer.GraphResultsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -67,14 +59,16 @@ import org.springframework.util.Assert;
  */
 public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
 
+    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + DefaultGraphResultsService.class);
+
     private ResourceDao m_resourceDao;
-    
+
     private GraphDao m_graphDao;
 
     private NodeDao m_nodeDao;
-    
+
     private RrdDao m_rrdDao;
-    
+
     private EventProxy m_eventProxy;
 
     private RelativeTimePeriod[] m_periods;
@@ -87,9 +81,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         m_periods = RelativeTimePeriod.getDefaultPeriods();
     }
 
-    /** {@inheritDoc} */
-    public GraphResults findResults(String[] resourceIds,
-            String[] reports, long start, long end, String relativeTime) {
+    @Override
+    public GraphResults findResults(String[] resourceIds, String[] reports, long start, long end, String relativeTime) {
         if (resourceIds == null) {
             throw new IllegalArgumentException("resourceIds argument cannot be null");
         }
@@ -108,7 +101,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setReports(reports);
 
         HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
-        
+
         for (String resourceId : resourceIds) {
             String[] values = parseResourceId(resourceId);
             if (values == null) {
@@ -143,19 +136,20 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                 continue;
             }
         }
-        
+
         graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
         graphResults.setGraphLeftOffset(m_rrdDao.getGraphLeftOffset());
         graphResults.setGraphRightOffset(m_rrdDao.getGraphRightOffset());
-        
+
         return graphResults;
     }
-    
+
     /**
      * <p>parseResourceId</p>
      *
      * @param resourceId a {@link java.lang.String} resource ID
-     * @return an array of {@link java.lang.String} objects or null if the string is unparsable.
+     * @return an array of {@link java.lang.String} objects or null if the
+     * string is unparsable.
      */
     public static String[] parseResourceId(String resourceId) {
         try {
@@ -163,13 +157,13 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String child = resourceId.substring(resourceId.indexOf("]") + 2);
             String childType = child.substring(0, child.indexOf("["));
             String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
-            return new String[] { parent, childType, childName };
+            return new String[]{parent, childType, childName};
         } catch (Throwable e) {
             log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);
             return null;
         }
     }
-    
+
     /**
      * <p>createGraphResultSet</p>
      *
@@ -177,7 +171,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
      * @param resource a {@link org.opennms.netmgt.model.OnmsResource} object.
      * @param reports an array of {@link java.lang.String} objects.
      * @param graphResults a {@link org.opennms.web.graph.GraphResults} object.
-     * @return a {@link org.opennms.web.graph.GraphResults.GraphResultSet} object.
+     * @return a {@link org.opennms.web.graph.GraphResults.GraphResultSet}
+     * object.
      */
     private GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) throws IllegalArgumentException {
         if (resource == null) {
@@ -188,7 +183,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         }
         GraphResultSet rs = graphResults.new GraphResultSet();
         rs.setResource(resource);
-        
+
         if (reports.length == 1 && "all".equals(reports[0])) {
             PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
             List<String> queryNames = new ArrayList<String>(queries.length);
@@ -209,19 +204,17 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             graphs.add(graph);
         }
 
-        
-        
         sendEvent(filesToPromote);
-        
-        
+
+
         /*
-         * Sort the graphs by their order in the properties file.
-         * PrefabGraph implements the Comparable interface.
+         * Sort the graphs by their order in the properties file. PrefabGraph
+         * implements the Comparable interface.
          */
         Collections.sort(graphs);
 
         rs.setGraphs(graphs);
-        
+
         return rs;
     }
 
@@ -235,7 +228,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         } catch (EventProxyException e) {
             log().warn("Unable to send promotion event to opennms daemon", e);
         }
-        
+
     }
 
     private static ThreadCategory log() {
@@ -243,8 +236,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     }
 
     private void getAttributeFiles(Graph graph, List<String> filesToPromote) {
-        
+
         Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
+
         for(RrdGraphAttribute rrdAttr : attrs) {
             log().debug("getAttributeFiles: ResourceType, ParentResourceType = "
                         + rrdAttr.getResource().getResourceType().getLabel() + ", "
@@ -255,7 +249,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                 filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+rrdAttr.getRrdRelativePath());
             }
         }
-        
+
     }
 
     /**
@@ -340,13 +334,15 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
-    
+
     /**
      * <p>setEventProxy</p>
      *
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy}
+     * object.
      */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
+    
 }

@@ -222,7 +222,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             LinkdVertex source;
             BeanItem<LinkdVertex> item = m_vertexContainer.getItem(sourceId);
             if (item == null) {
-                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, SERVER_ICON_KEY, node.getLabel(), getAddress(node));
+                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
                 m_vertexContainer.addBean( source);
             }
             else {
@@ -234,7 +234,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             LinkdVertex target;
             item = m_vertexContainer.getItem(targetId);
             if (item == null) {
-                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, SERVER_ICON_KEY, parentNode.getLabel(), getAddress(parentNode));
+                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
                 m_vertexContainer.addBean( target);                    
             }
             else {
@@ -245,9 +245,19 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }        
     }
 
-	private String getAddress(OnmsNode node) {
-		return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().toString();
-	}
+    protected String getIconName(OnmsNode node) {
+        String iconName = SERVER_ICON_KEY;
+        
+        if (node.getSysObjectId() != null)
+            iconName = "snmp:"+node.getSysObjectId();
+        return iconName;
+       
+    }
+    
+    private String getAddress(OnmsNode node) {
+	return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().toString();
+    }
+    
     @Override
     public void save(String filename) {
         List<LinkdVertex> vertices = getBeans(m_vertexContainer);

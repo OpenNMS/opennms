@@ -7,16 +7,22 @@
 		<constructor-arg value="org.opennms.netmgt.dao.DataLinkInterfaceDao"/>
 	</bean>        
 
+	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="nodeDao"> 
+		<constructor-arg value="org.opennms.netmgt.dao.NodeDao"/>
+	</bean>        
+
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="operationContext"> 
 		<constructor-arg value="org.opennms.features.topology.api.OperationContext"/>
 	</bean>        
     
    <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EasyMockDataPopulator">
+            <property name="nodeDao" ref="nodeDao" />
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
 	</bean>        
 
    <bean id="linkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+            <property name="nodeDao" ref="nodeDao" />
     </bean>
 
   <bean id ="openOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.OpenOperation">

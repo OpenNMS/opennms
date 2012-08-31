@@ -1,3 +1,7 @@
 @CHARSET "UTF-8";
 @import "../reindeer/styles.css";
 
+.vertex:hover{
+	opacity: 0.8;
+}
+
