@@ -1,15 +1,30 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-all">
-
+  <!-- karaf base features -->
   <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+
+  <!-- topology features -->
   <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
   <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
   <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
   <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
 
+  <!-- activemq -->
+  <repository>mvn:org.apache.activemq/activemq-karaf/5.6.0/xml/features</repository>
+
+  <!-- nrtg features -->
+  <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-api/${project.version}/xml/features</repository>
+  <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-nrtcollector/${project.version}/xml/features</repository>
+  <repository>mvn:org.opennms.osgi.features.nrtg.protocolcollector/osgi-nrtg-protocolcollector-snmp/${project.version}/xml/features</repository>
+  <feature name="nrtg">
+    <feature>osgi-nrtg-nrtcollector</feature>
+    <feature>osgi-nrtg-protocolcollector-snmp</feature>
+  </feature>
+
   <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
     <feature>opennms-topology-runtime-simple</feature>
     <feature>opennms-topology-runtime-linkd</feature>
     <feature>opennms-topology-dev</feature>
+    <feature>nrtg</feature>
   </feature>
 
 </features>
