@@ -187,13 +187,15 @@ public abstract class LinkdNetworkBuilder {
         System.out.println("nodelabel: " + m_nodeDao.get(nodeid).getLabel());       
         Integer ifIndex = datalinkinterface.getIfIndex();
         System.out.println("ifindex: " + ifIndex);
-        System.out.println("ifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,ifIndex).getIfName());
+        if (ifIndex > 0)
+            System.out.println("ifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,ifIndex).getIfName());
         Integer nodeparent = datalinkinterface.getNodeParentId();
         System.out.println("nodeparent: " + nodeparent);
         System.out.println("parentnodelabel: " + m_nodeDao.get(nodeparent).getLabel());
         Integer parentifindex = datalinkinterface.getParentIfIndex();
         System.out.println("parentifindex: " + parentifindex);        
-        System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
+        if (parentifindex > 0)
+            System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
         System.out.println("--------------------------------------");
         System.out.println("");
 

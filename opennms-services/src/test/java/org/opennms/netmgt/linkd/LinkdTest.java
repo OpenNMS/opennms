@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
@@ -60,6 +61,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -104,6 +106,9 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         // MockLogAppender.setupLogging(true);
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
 
         super.setNodeDao(m_nodeDao);
@@ -214,7 +219,10 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         assertTrue(m_linkd.runSingleCollection(cisco1700b.getId()));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        assertEquals("we should have found 2 data link", 2, ifaces.size());
+        assertEquals("we should have found 1 data link", 1, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
     }
 
     @Test
@@ -253,7 +261,11 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         assertTrue(m_linkd.runSingleCollection(cisco3600.getId()));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        assertEquals("we should have found 6 data links", 6, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 9 data links", 9, ifaces.size());
     }
     
     @Test
@@ -277,6 +289,7 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
     }
     
     @Test
+    @Transactional
     public void testDefaultConfiguration() throws Exception {
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
         assertEquals(true,m_linkdConfig.useOspfDiscovery());
@@ -347,6 +360,13 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         assertEquals(true, snmpCollcisco3600.getSaveStpNodeTable());
         assertEquals(true, snmpCollcisco3600.getSaveStpInterfaceTable());
 
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        assertEquals(true, example1.getForceIpRouteDiscoveryOnEthernet());
         
+        final Enumeration<Package> pkgs = m_linkdConfig.enumeratePackage();
+        example1 = pkgs.nextElement();
+        assertEquals("example1", example1.getName());
+        assertEquals(false, pkgs.hasMoreElements());
     }
 }
