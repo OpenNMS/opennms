@@ -87,7 +87,7 @@ public class OnmsSeverityUserType implements UserType {
             st.setInt(index,((OnmsSeverity)value).getId());
         } else if (value instanceof String) {
             try {
-                st.setInt(index, ((OnmsSeverity)value).getId());
+                st.setInt(index, Integer.parseInt((String)value));
             } catch (final IllegalArgumentException e) {
                 throw new HibernateException("unable to set severity " + value, e);
             }
