@@ -30,14 +30,11 @@ package org.openoss.opennms.spring.qosd;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.openoss.opennms.spring.qosdrx.QoSDrx;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -51,9 +48,9 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 /*
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
-		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:org/openoss/opennms/spring/qosd/qosd-spring-context.xml",
 		"classpath:org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml"
@@ -63,20 +60,8 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class QoSDTest {
-	//@Autowired
-	@SuppressWarnings("unused")
-    private QoSDrx m_qosdrx;
-
 	@Autowired
 	private QoSD m_qosd;
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	@Test
 	public final void testContext() {

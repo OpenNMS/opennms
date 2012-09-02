@@ -48,10 +48,11 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>AsyncBasicDetectorMinaImpl class.</p>
@@ -66,7 +67,31 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
     private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
     
     private final ConnectionFactory m_connectionFactory;
-    
+
+    private static class SlightlyMoreVerboseLoggingFilter extends LoggingFilter {
+        protected Logger m_logger;
+
+        public SlightlyMoreVerboseLoggingFilter() {
+            super();
+            m_logger = LoggerFactory.getLogger(LoggingFilter.class.getName());
+        }
+
+        /**
+         * Log the specific flavor of IDLE that is encountered.
+         */
+        @Override
+        public void sessionIdle(NextFilter nextFilter, IoSession session, IdleStatus status) throws Exception {
+            if (IdleStatus.BOTH_IDLE.equals(status)) {
+                m_logger.info("BOTH_IDLE");
+            } else if (IdleStatus.READER_IDLE.equals(status)) {
+                m_logger.info("READER_IDLE");
+            } else if (IdleStatus.WRITER_IDLE.equals(status)) {
+                m_logger.info("WRITER_IDLE");
+            }
+            nextFilter.sessionIdle(session, status);
+        }
+    }
+
     /**
      * <p>Constructor for AsyncBasicDetector.</p>
      *
@@ -127,17 +152,22 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                         filter.setUseClientMode(true);
                         session.getFilterChain().addFirst("SSL", filter);
                     }
-                    session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
+                    session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new SlightlyMoreVerboseLoggingFilter() );
                     session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
-                    session.getConfig().setIdleTime(IdleStatus.READER_IDLE, getIdleTime());
+
+                    // Make the minimum idle timeout 1 second
+                    int idleTimeInSeconds = Math.max(1, Math.round(getIdleTime() / 1000.0f));
+                    // Set all of the idle time limits. Make sure to specify values in
+                    // seconds!!!
+                    session.getConfig().setReaderIdleTime(idleTimeInSeconds);
+                    session.getConfig().setWriterIdleTime(idleTimeInSeconds);
+                    session.getConfig().setBothIdleTime(idleTimeInSeconds);
                 }
             };
 
             // Start communication
             final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-            // Get an ephemeral port on the localhost interface
-            final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, localAddress, init, createDetectorHandler(detectFuture));
+            final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init, createDetectorHandler(detectFuture));
             cf.addListener(retryAttemptListener(detectFuture, socketAddress, init, getRetries()));
         } catch (KeyManagementException e) {
             detectFuture.setException(e);
@@ -181,13 +211,11 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                
                 if (cause instanceof IOException) {
                     if(retryAttempt == 0) {
-                        LogUtils.infof(this, "Service %s detected false",getServiceName());
+                        LogUtils.infof(this, "Service %s detected false: %s: %s",getServiceName(), cause.getClass().getName(), cause.getMessage());
                         detectFuture.setServiceDetected(false);
                     }else {
-                        LogUtils.infof(this, "Connection exception occurred %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
-                        // Get an ephemeral port on the localhost interface
-                        final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-                        future = m_connectionFactory.reConnect(address, localAddress, init, createDetectorHandler(detectFuture));
+                        LogUtils.infof(this, "Connection exception occurred: %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
+                        future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
                         future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
                 }else if(cause instanceof Throwable) {

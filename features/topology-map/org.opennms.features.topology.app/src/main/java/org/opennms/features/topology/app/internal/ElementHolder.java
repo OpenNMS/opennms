@@ -11,20 +11,33 @@ import java.util.Set;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.terminal.KeyMapper;
 
 public abstract class ElementHolder<T> {
+	String m_prefix;
 	Container m_itemContainer;
 	List<T> m_graphElements = Collections.emptyList();
 	List<Object> m_itemIds = Collections.emptyList();
-	KeyMapper m_elementKey2ItemId = new KeyMapper();
+	KeyMapper m_elementKey2ItemId;
 	Map<String, T> m_keyToElementMap = new HashMap<String, T>();
 	
-	ElementHolder(Container container) {
+	ElementHolder(String prefix) {
+		m_prefix = prefix;
+		m_elementKey2ItemId  = new KeyMapper(m_prefix);	
+	}
+	
+	ElementHolder(Container container, String prefix) {
+		this(prefix);
+		setContainer(container);
+	}
+
+	public void setContainer(Container container) {
 		m_itemContainer = container;
+		
 		
 		update();
 	}
+	
+	
 	
 	public void update() {
 		List<Object> oldItemIds = m_itemIds;
@@ -56,9 +69,9 @@ public abstract class ElementHolder<T> {
 		    
 		    Item item = m_itemContainer.getItem(itemId);
             T v = make(key, itemId, item);
-		    System.err.println("make v: " + v);
+            // System.err.println("make v: " + v);
 		    m_graphElements.add(v);
-		    System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
+		    // System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
 		    m_keyToElementMap.put(key, v);
 		}
 	}

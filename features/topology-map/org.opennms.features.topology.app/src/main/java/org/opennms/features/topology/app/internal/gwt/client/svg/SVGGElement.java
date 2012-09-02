@@ -14,4 +14,9 @@ public class SVGGElement extends Element {
         return this.getBBox();
     }-*/;
 
+    public final native ClientRect getBoundingClientRect() /*-{
+        return this.getBoundingClientRect();
+    }-*/;
+
+
 }

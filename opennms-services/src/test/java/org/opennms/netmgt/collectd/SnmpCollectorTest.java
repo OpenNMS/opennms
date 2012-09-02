@@ -28,21 +28,15 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.net.InetAddress;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -51,16 +45,12 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabase;
-import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
-import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -68,6 +58,7 @@ import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,11 +68,19 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({
     JUnitCollectorExecutionListener.class
 })
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -101,8 +100,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-	@Autowired
-	private SnmpPeerFactory m_snmpPeerFactory;
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
 
     private TestContext m_context;
 
@@ -313,6 +312,9 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     public void testUsingFetch() throws Exception {
         File snmpDir = (File)m_context.getAttribute("rrdDirectory");
 
+        // We initialize an empty attribute map, key=e.g OID; value=e.g. datasource name
+        Map<String,String> attributeMappings = new HashMap<String, String>();
+
         int stepSize = 1;
         int numUpdates = 2;
 
@@ -324,7 +326,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        m_rrdStrategy.createFile(def);
+        m_rrdStrategy.createFile(def, attributeMappings);
 
         Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {

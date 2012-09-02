@@ -41,7 +41,7 @@ import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.drools.ConfigFileApplicationContext;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;

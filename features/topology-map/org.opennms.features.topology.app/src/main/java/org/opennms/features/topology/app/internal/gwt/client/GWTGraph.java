@@ -7,7 +7,6 @@ import java.util.Set;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.user.client.Window;
 
 public final class GWTGraph extends JavaScriptObject {
     
@@ -149,7 +148,7 @@ public final class GWTGraph extends JavaScriptObject {
 			}else if(displaySource == source && displayTarget == target) {
 				visible.push(edge);
 			}else {
-				GWTEdge displayEdge = GWTEdge.create(displaySource, displayTarget);
+				GWTEdge displayEdge = GWTEdge.create(edge.getId(), displaySource, displayTarget);
 				visible.push(displayEdge);
 			}
 		}

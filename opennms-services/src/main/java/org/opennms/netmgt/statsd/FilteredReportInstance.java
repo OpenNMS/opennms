@@ -31,14 +31,15 @@ package org.opennms.netmgt.statsd;
 import java.util.Date;
 import java.util.SortedSet;
 
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
-import org.opennms.netmgt.dao.support.FilterWalker;
+import org.opennms.netmgt.dao.support.FilterResourceWalker;
 import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.RrdStatisticAttributeVisitor;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
@@ -54,7 +55,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     private final RrdStatisticAttributeVisitor m_rrdVisitor = new RrdStatisticAttributeVisitor();
     private final AttributeMatchingResourceVisitor m_attributeVisitor = new AttributeMatchingResourceVisitor();
     private final ResourceTypeFilteringResourceVisitor m_resourceTypeVisitor = new ResourceTypeFilteringResourceVisitor();
-    private final FilterWalker m_walker = new FilterWalker();
+    private final FilterResourceWalker m_walker = new FilterResourceWalker();
     private String m_resourceAttributeKey;
     private String m_resourceAttributeValueMatch;
     private ResourceAttributeFilteringResourceVisitor m_resourceAttributeVisitor;
@@ -71,7 +72,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_walker.setFilterDao(filterDao);
@@ -86,6 +87,15 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
         m_walker.setFilter(filter);
     }
     
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
+    public void setNodeDao(NodeDao nodeDao) {
+        m_walker.setNodeDao(nodeDao);
+    }
+
     /**
      * <p>setResourceDao</p>
      *
@@ -107,6 +117,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>walk</p>
      */
+    @Override
     public void walk() {
         setJobStartedDate(new Date());
         m_walker.walk();
@@ -118,6 +129,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a {@link java.util.SortedSet} object.
      */
+    @Override
     public SortedSet<AttributeStatistic> getResults() {
         return m_attributeStatisticVisitor.getResults();
     }
@@ -130,6 +142,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeMatch() {
         return m_resourceTypeVisitor.getResourceTypeMatch();
     }
@@ -138,6 +151,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      * @see org.opennms.netmgt.topn.Report#setResourceTypeMatch(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setResourceTypeMatch(String resourceType) {
         m_resourceTypeVisitor.setResourceTypeMatch(resourceType);
     }
@@ -150,6 +164,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getAttributeMatch() {
         return m_attributeVisitor.getAttributeMatch();
     }
@@ -158,6 +173,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      * @see org.opennms.netmgt.topn.Report#setAttributeMatch(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setAttributeMatch(String attr) {
         m_attributeVisitor.setAttributeMatch(attr);
     }
@@ -170,6 +186,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a long.
      */
+    @Override
     public long getStartTime() {
         return m_rrdVisitor.getStartTime();
     }
@@ -178,6 +195,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      * @see org.opennms.netmgt.topn.Report#setStartTime(long)
      */
     /** {@inheritDoc} */
+    @Override
     public void setStartTime(long start) {
         m_rrdVisitor.setStartTime(start);
     }
@@ -190,6 +208,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a long.
      */
+    @Override
     public long getEndTime() {
         return m_rrdVisitor.getEndTime();
     }
@@ -198,6 +217,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      * @see org.opennms.netmgt.topn.Report#setEndTime(long)
      */
     /** {@inheritDoc} */
+    @Override
     public void setEndTime(long end) {
         m_rrdVisitor.setEndTime(end);
     }
@@ -210,6 +230,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getConsolidationFunction() {
         return m_rrdVisitor.getConsolidationFunction();
     }
@@ -218,6 +239,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      * @see org.opennms.netmgt.topn.Report#setConsolidationFunction(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setConsolidationFunction(String cf) {
         m_rrdVisitor.setConsolidationFunction(cf);
     }
@@ -230,6 +252,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a int.
      */
+    @Override
     public int getCount() {
         return m_attributeStatisticVisitor.getCount();
     }
@@ -238,6 +261,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      * @see org.opennms.netmgt.topn.Report#setCount(int)
      */
     /** {@inheritDoc} */
+    @Override
     public void setCount(int count) {
         m_attributeStatisticVisitor.setCount(count);
     }
@@ -276,11 +300,13 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     
 
     /** {@inheritDoc} */
+    @Override
     public void setResourceAttributeKey(String resourceAttributeKey) {
         m_resourceAttributeKey = resourceAttributeKey;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setResourceAttributeValueMatch(String resourceAttributeValueMatch) {
         m_resourceAttributeValueMatch = resourceAttributeValueMatch;
     }
@@ -290,6 +316,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceAttributeKey() {
         return m_resourceAttributeKey;
     }
@@ -299,6 +326,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceAttributeValueMatch() {
         return m_resourceAttributeValueMatch;
     }

@@ -1948,6 +1948,7 @@
   <event-file>events/AKCP.events.xml</event-file>
   <event-file>events/AlcatelLucent.OmniSwitch.events.xml</event-file>
   <event-file>events/AlcatelLucent.SMSBrick.events.xml</event-file>
+  <event-file>events/Allot.events.xml</event-file>
   <event-file>events/Allot.NetXplorer.events.xml</event-file>
   <event-file>events/Allot.SM.events.xml</event-file>
   <event-file>events/Alteon.events.xml</event-file>
@@ -1979,6 +1980,7 @@
   <event-file>events/BGP4.events.xml</event-file>
   <event-file>events/BlackBerryServer-SMIv2.events.xml</event-file>
   <event-file>events/BlackBerryServer.events.xml</event-file>
+  <event-file>events/BladeNetwork.events.xml</event-file>
   <event-file>events/Bluecat.events.xml</event-file>
   <event-file>events/BlueCoat.events.xml</event-file>
   <event-file>events/Brocade.events.xml</event-file>
@@ -2075,6 +2077,7 @@
   <event-file>events/Packeteer.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/PCube.events.xml</event-file>
+  <event-file>events/Pingtel.events.xml</event-file>
   <event-file>events/Pixelmetrix.events.xml</event-file>
   <event-file>events/Polycom.events.xml</event-file>
   <event-file>events/Powerware.events.xml</event-file>

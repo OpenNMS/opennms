@@ -43,12 +43,12 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.Querier;
+import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
-import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.utils.SingleResultQuerier;
-import org.opennms.netmgt.utils.Updater;
 
 /**
  * <p>DefaultQueryManager class.</p>

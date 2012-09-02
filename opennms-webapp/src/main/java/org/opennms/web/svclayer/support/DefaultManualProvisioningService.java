@@ -180,11 +180,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             // Assert.isTrue(node.getCategoryCount() == (catCount + 1), "Category was not added correctly");
     
             m_pendingForeignSourceRepository.save(group);
-    
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
-		  } finally {
-		      m_writeLock.unlock();
-		  }
+        } finally {
+            m_writeLock.unlock();
+        }
     }
     
     /** {@inheritDoc} */
@@ -202,10 +202,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             // Assert.isTrue(node.getCategoryCount() == (assetCount + 1), "Asset was not added correctly");
     
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
-		  }
+        }
     }
 
     /** {@inheritDoc} */
@@ -228,6 +229,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             // Assert.isTrue(node.getInterfaceCount() == (ifaceCount + 1), "Interface was not added correctly");
     
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
@@ -254,6 +256,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             group.insertNode(node);
             
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
@@ -280,6 +283,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             iface.insertMonitoredService(monSvc);
     
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
@@ -290,10 +294,16 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     public Requisition getProvisioningGroup(final String name) {
         m_readLock.lock();
         try {
-            final Requisition deployed = m_deployedForeignSourceRepository.getRequisition(name);
+            m_pendingForeignSourceRepository.flush();
             final Requisition pending  = m_pendingForeignSourceRepository.getRequisition(name);
-            
-            return (pending == null)? deployed : pending;
+
+            if (pending == null) {
+                m_deployedForeignSourceRepository.flush();
+                final Requisition deployed = m_deployedForeignSourceRepository.getRequisition(name);
+                return deployed;
+            }
+
+            return pending;
         } finally {
             m_readLock.unlock();
         }
@@ -305,6 +315,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         try {
             group.setForeignSource(groupName);
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
@@ -319,10 +330,12 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     public Collection<String> getProvisioningGroupNames() {
         m_readLock.lock();
         try {
+            m_deployedForeignSourceRepository.flush();
             final Set<String> names = new TreeSet<String>();
             for (final Requisition r : m_deployedForeignSourceRepository.getRequisitions()) {
                 names.add(r.getForeignSource());
             }
+            m_pendingForeignSourceRepository.flush();
             for (final Requisition r : m_pendingForeignSourceRepository.getRequisitions()) {
                 names.add(r.getForeignSource());
             }
@@ -340,6 +353,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             group.setForeignSource(name);
     
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(name);
         } finally {
             m_writeLock.unlock();
@@ -366,6 +380,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             // then we send an event to the importer
             final EventProxy proxy = Util.createEventProxy();
     
+            m_pendingForeignSourceRepository.flush();
             final String url = m_pendingForeignSourceRepository.getRequisitionURL(groupName).toString();
             Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
             
@@ -409,6 +424,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             }
             
             m_pendingForeignSourceRepository.save(group);
+            m_pendingForeignSourceRepository.flush();
             return m_pendingForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
@@ -443,8 +459,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         try {
             final Requisition r = getProvisioningGroup(groupName);
             if (r != null) {
-                m_pendingForeignSourceRepository.delete(r);
                 m_deployedForeignSourceRepository.delete(r);
+                m_deployedForeignSourceRepository.flush();
+                m_pendingForeignSourceRepository.delete(r);
+                m_pendingForeignSourceRepository.flush();
             }
         } finally {
             m_writeLock.unlock();
@@ -456,12 +474,14 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_writeLock.lock();
         
         try {
+            m_deployedForeignSourceRepository.flush();
             Requisition group = m_deployedForeignSourceRepository.getRequisition(groupName);
             if (group != null) {
                 group.setNodes(new ArrayList<RequisitionNode>());
                 m_deployedForeignSourceRepository.save(group);
             }
     
+            m_pendingForeignSourceRepository.flush();
             group = m_pendingForeignSourceRepository.getRequisition(groupName);
             if (group != null) {
                 group.setNodes(new ArrayList<RequisitionNode>());
@@ -522,11 +542,14 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
 
         m_readLock.lock();
         try {
-        	final ForeignSource pendingForeignSource = m_pendingForeignSourceRepository.getForeignSource(groupName);
-            final ForeignSource deployedForeignSource = m_deployedForeignSourceRepository.getForeignSource(groupName);
-
-            serviceNames.addAll(deployedForeignSource.getDetectorNames());
+            m_pendingForeignSourceRepository.flush();
+            final ForeignSource pendingForeignSource = m_pendingForeignSourceRepository.getForeignSource(groupName);
             serviceNames.addAll(pendingForeignSource.getDetectorNames());
+
+            m_deployedForeignSourceRepository.flush();
+            final ForeignSource deployedForeignSource = m_deployedForeignSourceRepository.getForeignSource(groupName);
+            serviceNames.addAll(deployedForeignSource.getDetectorNames());
+
             for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
                 serviceNames.add(type.getName());
             }

@@ -28,15 +28,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-
 import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -44,7 +39,6 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
@@ -52,6 +46,11 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * JUnit TestCase for PersistOperationBuilder.
@@ -129,6 +128,7 @@ public class PersistOperationBuilderTest extends TestCase {
     public void testCommitWithDeclaredAttribute() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
         
         RrdRepository repository = createRrdRepository();
 
@@ -161,6 +161,7 @@ public class PersistOperationBuilderTest extends TestCase {
     public void testCommitWithDeclaredAttributeAndValue() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
         
         RrdRepository repository = createRrdRepository();
 

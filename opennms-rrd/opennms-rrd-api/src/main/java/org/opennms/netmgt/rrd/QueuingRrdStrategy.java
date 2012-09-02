@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -108,7 +108,7 @@ import org.apache.log4j.Logger;
  * @author ranger
  * @version $Id: $
  */
-public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operation,String>, Runnable {
+public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.CreateOperation,String>, Runnable {
 
     private Properties m_configurationProperties;
 
@@ -458,10 +458,16 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      * This class represents an operation to create an rrd file
      */
     public class CreateOperation extends Operation {
+    	
+    	private Map<String, String> attributeMappings;
 
         CreateOperation(String fileName, Object rrdDef) {
             super(fileName, CREATE, rrdDef, true);
         }
+        
+        public void setAttributeMappings(Map<String, String> attributeMappings) {
+			this.attributeMappings = attributeMappings;
+		}
 
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
@@ -472,7 +478,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
             }
 
             // create the file
-            m_delegate.createFile(getData());
+            m_delegate.createFile(getData(), attributeMappings);
 
             // keep stats
             setCreatesCompleted(getCreatesCompleted() + 1);
@@ -638,7 +644,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      * @param rrdDef a {@link java.lang.Object} object.
      * @return a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
      */
-    public Operation makeCreateOperation(String fileName, Object rrdDef) {
+    public CreateOperation makeCreateOperation(String fileName, Object rrdDef) {
         return new CreateOperation(fileName, rrdDef);
     }
 
@@ -988,7 +994,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
     
     /** {@inheritDoc} */
-    public Operation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
+    public CreateOperation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
@@ -1006,11 +1012,12 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      * @param op a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
      * @throws java.lang.Exception if any.
      */
-    public void createFile(Operation op) throws Exception {
-        if (m_queueCreates)
+    public void createFile(CreateOperation op, Map<String, String> attributeMappings) throws Exception {
+        if (m_queueCreates) {
+        	op.setAttributeMappings(attributeMappings);
             addOperation(op);
-        else {
-            m_delegate.createFile(op.getData());
+        } else {
+            m_delegate.createFile(op.getData(), attributeMappings);
         }
     }
 
@@ -1129,7 +1136,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
         } catch (Throwable e) {
             setErrors(getErrors() + 1);
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
-            log().debug("Error upading file " + fileName + ": " + e.getMessage(), e);
+            log().debug("Error updating file " + fileName + ": " + e.getMessage(), e);
         } finally {
             processClose(rrd);
         }

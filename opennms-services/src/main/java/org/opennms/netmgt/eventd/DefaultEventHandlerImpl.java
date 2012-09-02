@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.eventd.processor.EventProcessor;
+import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;

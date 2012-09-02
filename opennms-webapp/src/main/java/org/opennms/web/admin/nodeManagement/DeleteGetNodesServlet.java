@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.core.db.DataSourceFactory;
 
 /**
  * A servlet that handles querying the database for node information

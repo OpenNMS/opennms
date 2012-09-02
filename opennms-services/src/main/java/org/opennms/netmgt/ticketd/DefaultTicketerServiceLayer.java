@@ -33,11 +33,11 @@ import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -244,7 +244,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	/**
 	 * <p>getEventIpcManager</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
@@ -253,7 +253,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param ipcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param ipcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager ipcManager) {
         m_eventIpcManager = ipcManager;

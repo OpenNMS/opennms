@@ -62,8 +62,8 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
@@ -201,7 +201,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 
 	/**
 	 * Used to register for opennms events
-	 * @see org.opennms.netmgt.eventd.EventIpcManager
+	 * @see org.opennms.netmgt.model.events.EventIpcManager
 	 */
 	private EventIpcManager eventIpcManager;
 

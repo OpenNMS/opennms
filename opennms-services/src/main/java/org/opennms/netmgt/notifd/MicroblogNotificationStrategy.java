@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.MicroblogConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 

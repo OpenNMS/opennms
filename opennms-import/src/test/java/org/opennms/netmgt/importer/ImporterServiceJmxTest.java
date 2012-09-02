@@ -30,12 +30,12 @@ package org.opennms.netmgt.importer;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;

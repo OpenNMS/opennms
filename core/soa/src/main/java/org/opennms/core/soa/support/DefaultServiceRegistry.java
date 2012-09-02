@@ -31,11 +31,14 @@ package org.opennms.core.soa.support;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.core.soa.Filter;
 import org.opennms.core.soa.Registration;
+import org.opennms.core.soa.RegistrationHook;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.soa.filter.FilterParser;
@@ -98,6 +101,10 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             
             throw new IllegalArgumentException("Provider not registered with interface " + serviceInterface);
         }
+        
+        public Object getProvider() {
+        	return m_provider;
+        }
 
         public ServiceRegistry getRegistry() {
             return DefaultServiceRegistry.this;
@@ -117,6 +124,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     private MultivaluedMap<Class<?>, ServiceRegistration> m_registrationMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
     private MultivaluedMap<Class<?>, RegistrationListener<?>> m_listenerMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
+    private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<RegistrationHook>();
     
     /** {@inheritDoc} */
     public <T> T findProvider(Class<T> serviceInterface) {
@@ -179,6 +187,8 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             m_registrationMap.add(serviceInterface, registration);
         }
         
+        fireRegistrationAdded(registration);
+        
         for(Class<?> serviceInterface : services) {
             fireProviderRegistered(serviceInterface, registration);
         }
@@ -188,7 +198,18 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 
     }
     
-    private <T> Set<ServiceRegistration> getRegistrations(Class<T> serviceInterface) {
+    private void fireRegistrationAdded(ServiceRegistration registration) {
+    	for(RegistrationHook hook : m_hooks) {
+    		hook.registrationAdded(registration);
+    	}
+	}
+
+    private void fireRegistrationRemoved(ServiceRegistration registration) {
+    	for(RegistrationHook hook : m_hooks) {
+    		hook.registrationRemoved(registration);
+    	}
+	}
+	private <T> Set<ServiceRegistration> getRegistrations(Class<T> serviceInterface) {
         Set<ServiceRegistration> copy = m_registrationMap.getCopy(serviceInterface);
         return (copy == null ? Collections.<ServiceRegistration>emptySet() : copy);
     }
@@ -198,6 +219,8 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         for(Class<?> serviceInterface : registration.getProvidedInterfaces()) {
             m_registrationMap.remove(serviceInterface, registration);
         }
+        
+        fireRegistrationRemoved(registration);
         
         for(Class<?> serviceInterface : registration.getProvidedInterfaces()) {
             fireProviderUnregistered(serviceInterface, registration);
@@ -260,5 +283,41 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         Set<RegistrationListener<?>> listeners = m_listenerMap.getCopy(serviceInterface);
         return (Set<RegistrationListener<T>>) (listeners == null ? Collections.emptySet() : listeners);
     }
+
+	@Override
+	public void addRegistrationHook(RegistrationHook hook, boolean notifyForExistingProviders) {
+        if (notifyForExistingProviders) {
+            
+            Set<ServiceRegistration> registrations = null;
+            
+            synchronized (m_registrationMap) {
+            	m_hooks.add(hook);
+                registrations = getAllRegistrations();
+            }
+            
+            for(ServiceRegistration registration : registrations) {
+            	hook.registrationAdded(registration);
+            }
+            
+        } else {
+            m_hooks.add(hook);
+        }
+	}
+
+	@Override
+	public void removeRegistrationHook(RegistrationHook hook) {
+		m_hooks.remove(hook);
+	}
+	
+	private Set<ServiceRegistration> getAllRegistrations() {
+		Set<ServiceRegistration> registrations = new LinkedHashSet<ServiceRegistration>();
+		
+		for(Set<ServiceRegistration> registrationSet: m_registrationMap.values()) {
+			registrations.addAll(registrationSet);
+		}
+		
+		return registrations;
+		
+	}
 
 }

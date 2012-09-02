@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal.gwt.client.d3;
 
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.XMLHandler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -24,6 +25,10 @@ public class D3 extends JavaScriptObject {
         }
         
         return null;
+    }-*/;
+    
+    public final native Element getElement(D3 selection, int index) /*-{
+        return selection[0][index];
     }-*/;
     
     public final native D3 select(Element elem) /*-{
@@ -111,6 +116,35 @@ public class D3 extends JavaScriptObject {
 
     public final native D3 text(JavaScriptObject textFunc) /*-{
         return this.text(textFunc);
+    }-*/;
+
+	public final native D3 text(Func<String, ?> func) /*-{
+	   var f = function(d, i){
+		   return func.@org.opennms.features.topology.app.internal.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
+	   }
+	   return this.text(f);
+	
+    }-*/;
+	
+	public final native void each(Handler<?> handler) /*-{
+	    var f = function(d, i){
+	        return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler::call(Ljava/lang/Object;I)(d,i);
+	    }
+	    return this.each(f);
+	}-*/;
+	
+	/**
+	 * Only used for transitions
+	 * 
+	 * @param type
+	 * @param handler
+	 */
+	public final native void each(String type, AnonymousFunc func) /*-{
+        var f = function(){
+            func.@org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc::call()();
+        }
+        
+        return this.each(type, f);
     }-*/;
 
 	public final native D3 on(String event, Handler<?> handler) /*-{
@@ -224,9 +258,20 @@ public class D3 extends JavaScriptObject {
         return this.svg.brush();
     }-*/;
 
+    public final native void xml(String iconUrl, String mimeType, XMLHandler<?> handler) /*-{
+        var f = function(d) {
+            return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.XMLHandler::call(Ljava/lang/Object;)(d);
+        }
+        this.xml(iconUrl, mimeType, f);
+    }-*/;
+
+    public final native int length() /*-{
+        return this.data().length;
+        
+    }-*/;
+
     
-	
-	
+
     
 
 }

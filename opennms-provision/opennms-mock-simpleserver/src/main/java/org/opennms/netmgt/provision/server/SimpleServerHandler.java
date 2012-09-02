@@ -78,7 +78,9 @@ public class SimpleServerHandler extends IoHandlerAdapter {
             if(m_conversation.getExpectedCloseResponse() != null) {
                 session.write(m_conversation.getExpectedCloseResponse());
             }
-            session.close(false);
+            if (!session.close(false).await(500)) { 
+                LogUtils.warnf(this, "Conversation did not complete promptly in 500ms");
+            }
             return;
         }
         

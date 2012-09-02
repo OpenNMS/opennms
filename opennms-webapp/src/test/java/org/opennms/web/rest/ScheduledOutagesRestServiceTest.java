@@ -38,6 +38,7 @@ import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -46,9 +47,8 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.FileSystemResource;
 
 public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTestCase {
@@ -185,25 +185,25 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
 
     @Test
     public void testUpdateCollectdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/collectd/example1", 200);
     }
 
     @Test
     public void testUpdatePollerdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/pollerd/example1", 200);
     }
 
     @Test
     public void testUpdateThreshdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/threshd/example1", 200);
     }
 
     @Test
     public void testUpdateNotifdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 200);
     }
 

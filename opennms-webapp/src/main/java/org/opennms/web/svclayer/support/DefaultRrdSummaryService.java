@@ -36,10 +36,12 @@ import java.util.Map;
 import org.opennms.netmgt.config.attrsummary.Attribute;
 import org.opennms.netmgt.config.attrsummary.Resource;
 import org.opennms.netmgt.config.attrsummary.Summary;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.support.FilterWalker;
 import org.opennms.netmgt.dao.support.NodeSnmpResourceType;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
@@ -53,8 +55,6 @@ import org.springframework.util.Assert;
  * <p>DefaultRrdSummaryService class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultRrdSummaryService implements RrdSummaryService, InitializingBean {
 
@@ -208,6 +208,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
     public FilterDao m_filterDao;
     public ResourceDao m_resourceDao;
     public RrdDao m_rrdDao;
+    public NodeDao m_nodeDao;
     public Stats m_stats = new Stats();
 
     static class OpStats {
@@ -281,7 +282,11 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
             final SummaryBuilder bldr = new SummaryBuilder();
 
 
-            m_filterDao.walkMatchingNodes(filterRule, new AbstractEntityVisitor() {
+            FilterWalker walker = new FilterWalker();
+            walker.setFilterDao(m_filterDao);
+            walker.setNodeDao(m_nodeDao);
+            walker.setFilter(filterRule);
+            walker.setVisitor(new AbstractEntityVisitor() {
                 public void visitNode(OnmsNode node) {
 
                     OnmsResource nodeResource = getResourceForNode(node);
@@ -380,6 +385,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
                 }
 
             });
+            walker.walk();
 
             return bldr.getSummary();
         } finally {
@@ -397,12 +403,13 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
         Assert.state(m_filterDao != null, "filterDao property must be set");
         Assert.state(m_resourceDao != null, "resourceDao property must be set");
         Assert.state(m_rrdDao != null, "rrdDao property must be set");
+        Assert.state(m_nodeDao != null, "nodeDao property must be set");
     }
 
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;
@@ -424,6 +431,20 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
+    }
+
+    /**
+     * @return the nodeDao
+     */
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    /**
+     * @param nodeDao the nodeDao to set
+     */
+    public void setNodeDao(NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
     }
 
     /** {@inheritDoc} */

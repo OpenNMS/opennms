@@ -90,4 +90,8 @@ public interface OnmsResourceType {
      * @return a {@link java.lang.String} object.
      */
     public String getLinkForResource(OnmsResource resource);
+    
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId);
+    
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId);
 }

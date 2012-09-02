@@ -65,9 +65,13 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
         } else {
             String filename = file.getPath();
             filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "?", "");
-            if ((!filename.contains(File.separator + "examples" + File.separator)) && file.length() > 0) {
-                map.put(filename, new FileSystemResource(file));
-            }
+
+            // skip examples, .git directories, and empty files
+            if (filename.contains(File.separator + "examples" + File.separator)) { return; }
+            if (filename.contains(File.separator + ".git" + File.separator)) { return; }
+            if (file.length() < 1) { return; }
+
+            map.put(filename, new FileSystemResource(file));
         }
     }
 }

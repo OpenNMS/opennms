@@ -35,7 +35,10 @@
         <group name="netsnmp"
         		rrdRepository = "${install.share.dir}/rrd/snmp/">
         		<threshold type="high" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2"/>
-        		<threshold type="high" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2"/>
+        		<threshold type="high" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2">
+        			<!-- Filter out special filesystems. See bug http://issues.opennms.org/browse/NMS-5116 -->
+        			<resource-filter field="ns-dskPath">^(?:(?!(/proc|/sys|/dev/pts)).)+$</resource-filter>
+        		</threshold>
         		<threshold type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
         		<threshold type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
         		<expression type="high" expression="loadavg5 / 100.0" ds-type="node" ds-label="" value="10.0" rearm="7.5" trigger="2"/>

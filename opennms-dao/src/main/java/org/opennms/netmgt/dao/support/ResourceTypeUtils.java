@@ -270,4 +270,14 @@ public abstract class ResourceTypeUtils {
             throw new DataAccessResourceFailureException(message, e);
         }
     }
+    
+    /**
+     * 
+     * @param nodeSource a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
+    public static File getRelativeNodeSourceDirectory(String nodeSource) {
+        String[] ident = nodeSource.split(":");
+        return new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, File.separator + ident[0] + File.separator + ident[1]);
+    }
 }

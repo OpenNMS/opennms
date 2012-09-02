@@ -114,7 +114,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(2000);
         m_server = createServer(serverOKResponse);
@@ -122,7 +122,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_detector.init();
         m_server = createServer(notAServerResponse);
@@ -131,7 +131,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotFoundResponseMaxRetCode399() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -144,7 +144,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessMaxRetCode399() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -157,7 +157,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailMaxRetCodeBelow200() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -170,7 +170,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorMaxRetCode600() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setMaxRetCode(600);
@@ -183,7 +183,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     }
     
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
@@ -195,7 +195,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessCheckCodeFalse() throws Exception {
         m_detector.setCheckRetCode(false);
         m_detector.init();
@@ -206,7 +206,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws Exception {
         m_server = createServer(serverOKResponse);
         

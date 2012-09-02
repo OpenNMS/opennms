@@ -32,8 +32,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.StringUtils;
 

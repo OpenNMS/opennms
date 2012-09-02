@@ -17,21 +17,18 @@ public class ShowMapOperation implements Operation {
     }
 
     @Override
-    public Undoer execute(List<Object> targets,
-            OperationContext operationContext) {
+    public Undoer execute(List<Object> targets, OperationContext operationContext) {
         doCommand(targets, operationContext);
         return null;
     }
 
     @Override
-    public boolean display(List<Object> targets,
-            OperationContext operationContext) {
-        return false;
+    public boolean display(List<Object> targets, OperationContext operationContext) {
+        return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets,
-            OperationContext operationContext) {
+    public boolean enabled(List<Object> targets, OperationContext operationContext) {
         return true;
     }
 

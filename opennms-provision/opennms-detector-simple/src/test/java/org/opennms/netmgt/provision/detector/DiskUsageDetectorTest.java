@@ -72,12 +72,12 @@ public class DiskUsageDetectorTest implements InitializingBean {
         m_detector.setDisk("/Volumes/iDisk");
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setDisk("No disk by this name");
        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

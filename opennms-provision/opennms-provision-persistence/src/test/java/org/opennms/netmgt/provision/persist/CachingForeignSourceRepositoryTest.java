@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,47 +39,29 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
 
-
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/testForeignSourceContext.xml"
-})
-@JUnitConfigurationEnvironment
-public class CachingForeignSourceRepositoryTest implements InitializingBean {
+public class CachingForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
 
     @Autowired
     @Qualifier("caching")
     private ForeignSourceRepository m_foreignSourceRepository;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging();
         m_defaultForeignSourceName = "imported:";
     }
 
     private Requisition createRequisition() throws Exception {
         Requisition r = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
+        m_foreignSourceRepository.flush();
         return r;
     }
 
@@ -88,6 +70,7 @@ public class CachingForeignSourceRepositoryTest implements InitializingBean {
         fs.addDetector(new PluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
+        m_foreignSourceRepository.flush();
         return fs;
     }
 
@@ -127,8 +110,8 @@ public class CachingForeignSourceRepositoryTest implements InitializingBean {
     public void testGetRequisition() throws Exception {
         Requisition requisition = createRequisition();
         ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        assertEquals("requisitions must match", m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName), m_foreignSourceRepository.getRequisition(foreignSource));
-        assertEquals("foreign source is the expected one", requisition, m_foreignSourceRepository.getRequisition(foreignSource));
+        assertRequisitionsMatch("requisitions must match", m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName), m_foreignSourceRepository.getRequisition(foreignSource));
+        assertRequisitionsMatch("foreign source is the expected one", requisition, m_foreignSourceRepository.getRequisition(foreignSource));
     }
 
     @Test

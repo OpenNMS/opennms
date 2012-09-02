@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
@@ -59,10 +60,13 @@ import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
+import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
+import org.opennms.netmgt.model.capsd.DbNodeEntry;
+import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
@@ -449,7 +453,7 @@ final class SuspectEventProcessor implements Runnable {
     }
 
     /**
-     * This method is responsble for inserting new entries into the
+     * This method is responsible for inserting new entries into the
      * ipInterface table for each interface found to be associated with the
      * suspect interface during the capabilities scan.
      * 

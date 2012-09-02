@@ -129,7 +129,8 @@ public class OnmsMapRestService extends OnmsRestService {
         try {
             LogUtils.debugf(this, "addMap: Adding map %s", map);
             m_mapDao.save(map);
-            return Response.ok(map).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getMap").build(map.getId())).build();
+            // return Response.ok(map).build();
         } finally {
             writeUnlock();
         }
@@ -179,14 +180,15 @@ public class OnmsMapRestService extends OnmsRestService {
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
-    				final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
                 }
             }
     
             LogUtils.debugf(this, "updateMap: map %s updated", map);
             m_mapDao.saveOrUpdate(map);
-            return Response.ok(map).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getMap").build(mapId)).build();
+            // return Response.ok(map).build();
         } finally {
             writeUnlock();
         }

@@ -1,5 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +29,7 @@ public class TestTopologyProvider implements TopologyProvider{
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
         v1.setIcon("icon.jpg");
+        
         Item beanItem = m_vertexContainer.addBean(v1);
         
         String vId2 = getNextVertexId();
@@ -58,6 +62,9 @@ public class TestTopologyProvider implements TopologyProvider{
 
     @Override
     public void setParent(Object vertexId, Object parentId) {
+        assertVertex(vertexId);
+        assertGroup(parentId);
+        
         m_vertexContainer.setParent(vertexId, parentId);
     }
 
@@ -119,12 +126,13 @@ public class TestTopologyProvider implements TopologyProvider{
     }
 
     @Override
-    public Item getVertexItem(Object vertexId) {
+    public BeanItem<TestVertex> getVertexItem(Object vertexId) {
         return m_vertexContainer.getItem(vertexId);
     }
 
     @Override
-    public Item getEdgeItem(Object edgeId) {
+    public BeanItem<TestEdge> getEdgeItem(Object edgeId) {
+        assertEdge(edgeId);
         return m_edgeContainer.getItem(edgeId);
     }
 
@@ -172,5 +180,21 @@ public class TestTopologyProvider implements TopologyProvider{
         }
         return item == null ? null : item.getBean();
     }
+    
+    private void assertGroup(Object parentId) {
+        assertTrue(m_vertexContainer.containsId(parentId));
+        TestVertex parentItem = m_vertexContainer.getItem(parentId).getBean();
+        assertFalse(parentItem.isLeaf());
+    }
+
+    private void assertVertex(Object vertexId) {
+        assertTrue(m_vertexContainer.containsId(vertexId));
+    }
+
+    private void assertEdge(Object edgeId) {
+        assertTrue(m_edgeContainer.containsId(edgeId));
+    }
+
+
 
 }

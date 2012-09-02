@@ -15,5 +15,5 @@ build.properties
 *.ipr
 .launch
 .*launch
-bin/
 nb-configuration.xml
+.idea

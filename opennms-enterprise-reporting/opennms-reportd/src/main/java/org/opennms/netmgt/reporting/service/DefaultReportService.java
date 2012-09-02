@@ -53,8 +53,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.reportd.Parameter;
 import org.opennms.netmgt.config.reportd.Report;
 

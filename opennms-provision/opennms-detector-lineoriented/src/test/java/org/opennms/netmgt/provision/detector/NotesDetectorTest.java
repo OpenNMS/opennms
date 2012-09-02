@@ -109,7 +109,7 @@ public class NotesDetectorTest implements InitializingBean {
        } 
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_detector.init();
         m_server = createServer(notAServerResponse);
@@ -118,7 +118,7 @@ public class NotesDetectorTest implements InitializingBean {
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotFoundResponseMaxRetCode399() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -131,7 +131,7 @@ public class NotesDetectorTest implements InitializingBean {
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessMaxRetCode399() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -144,7 +144,7 @@ public class NotesDetectorTest implements InitializingBean {
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailMaxRetCodeBelow200() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -157,7 +157,7 @@ public class NotesDetectorTest implements InitializingBean {
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorMaxRetCode600() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setMaxRetCode(600);
@@ -170,7 +170,7 @@ public class NotesDetectorTest implements InitializingBean {
     }
     
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
@@ -181,7 +181,7 @@ public class NotesDetectorTest implements InitializingBean {
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessCheckCodeFalse() throws Exception {
         m_detector.setCheckRetCode(false);
         m_detector.init();

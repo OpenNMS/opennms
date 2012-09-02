@@ -72,12 +72,12 @@ public class OmsaStorageDetectorTest implements InitializingBean {
         m_detector.setVirtualDiskNumber("1");
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setVirtualDiskNumber("2");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

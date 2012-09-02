@@ -53,6 +53,13 @@ public interface KscReportService {
      */
     public Report buildNodeReport(int nodeId);
     /**
+     * <p>buildNodeSourceReport</p>
+     *
+     * @param nodeSource a String.
+     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     */
+    public Report buildNodeSourceReport(String nodeSource);
+    /**
      * <p>buildDomainReport</p>
      *
      * @param domain a {@link java.lang.String} object.

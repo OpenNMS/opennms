@@ -88,19 +88,24 @@ public class AsyncTask<T> extends Task {
     private Callback<T> callback() {
         return new Callback<T>() {
             public void complete(T t) {
-                if (m_callback != null) {
-                    m_callback.complete(t);
-                }
-                markTaskAsCompleted();
+		try {
+		    if (m_callback != null) {
+			m_callback.complete(t);
+		    }
+		} finally {
+		    markTaskAsCompleted();
+		}
             }
             public void handleException(Throwable t) {
-                if (m_callback != null) {
-                    m_callback.handleException(t);
-                }
-                markTaskAsCompleted();
+		try {
+		    if (m_callback != null) {
+			m_callback.handleException(t);
+		    }
+		} finally {
+		    markTaskAsCompleted();
+		}
             }
         };
     }
-    
     
 }

@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -48,9 +50,6 @@ import org.springframework.remoting.RemoteAccessException;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 public class ServerUnreachableAdaptor implements PollerBackEnd {
     
@@ -71,6 +70,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     /**
      * <p>checkForDisconnectedMonitors</p>
      */
+    @Override
     public void checkForDisconnectedMonitors() {
         // this is a server side only method
     }
@@ -78,6 +78,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     /**
      * <p>configurationUpdated</p>
      */
+    @Override
     public void configurationUpdated() {
         // this is a server side only method
     }
@@ -87,12 +88,14 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         // leave this method as it is a 'before registration' method and we want errors to occur?
         return m_remoteBackEnd.getMonitoringLocations();
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         if (m_serverUnresponsive) {
             return new EmptyPollerConfiguration();
@@ -109,6 +112,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
         // if we check in and get a remote exception then we switch to the EmptyConfiguration
         try {
@@ -124,6 +128,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
         try {
             final boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
@@ -142,17 +147,20 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void pollerStopping(final int locationMonitorId) {
         m_remoteBackEnd.pollerStopping(locationMonitorId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int registerLocationMonitor(final String monitoringLocationId) {
         // leave this method as it is a 'before registration' method and we want errors to occur?
     	return m_remoteBackEnd.registerLocationMonitor(monitoringLocationId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportResult(final int locationMonitorID, final int serviceId, final PollStatus status) {
         if (!m_serverUnresponsive) {
             try {
@@ -166,6 +174,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
 
     /** {@inheritDoc} */
+    @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         try {
             return m_remoteBackEnd.getServiceMonitorLocators(context);
@@ -178,12 +187,24 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
 
     /** {@inheritDoc} */
+    @Override
     public String getMonitorName(int locationMonitorId) {
         try {
             return m_remoteBackEnd.getMonitorName(locationMonitorId);
         } catch (RemoteAccessException e) {
             LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             return (m_monitorName == null ? ""+locationMonitorId : m_monitorName);
+        }
+    }
+
+
+    @Override
+    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
+        try {
+            m_remoteBackEnd.saveResponseTimeData(locationMonitor, monSvc, responseTime, pkg);
+        } catch (RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
         }
     }
 

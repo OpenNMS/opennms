@@ -42,8 +42,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.monitors.DNSResolutionMonitor;
 
 /**

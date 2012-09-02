@@ -167,7 +167,8 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                 // TODO Add important events here
             }
             m_snmpInterfaceDao.save(snmpInterface);
-            return Response.ok(snmpInterface).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getSnmpInterface").build(nodeCriteria, snmpInterface.getIfIndex())).build();
+            // return Response.ok(snmpInterface).build();
         } finally {
             writeUnlock();
         }
@@ -260,7 +261,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
                 }
             }
-            return Response.ok().build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getSnmpInterface").build(nodeCriteria, ifIndex)).build();
         } finally {
             writeUnlock();
         }

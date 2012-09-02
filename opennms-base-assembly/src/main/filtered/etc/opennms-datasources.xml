@@ -6,7 +6,7 @@
 
   <!-- 
     Available implementations:
-	   org.opennms.netmgt.config.C3P0ConnectionFactory
+	   org.opennms.core.db.C3P0ConnectionFactory
 		  - Uses C3P0 (http://sourceforge.net/projects/c3p0/)  This is the default.
       org.opennms.netmgt.config.DBPoolConnectionFactory
 		  - Uses DBPool (http://www.snaq.net/java/DBPool/)  An alternate high-performance pool.
@@ -15,7 +15,7 @@
 		  - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
           highly concurrent pooling API.  Extremely experimental.
   -->
-  <connection-pool factory="org.opennms.netmgt.config.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="10"

@@ -77,6 +77,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private int m_threadSleepLength = 0;
     private Socket m_socket;
     private String m_banner;
+    private int m_bannerDelay = 0;
     protected volatile boolean m_stopped = false;
 
     /**
@@ -95,6 +96,13 @@ public class SimpleServer extends SimpleConversationEndPoint {
      */
     public String getBanner() {
         return m_banner;
+    }
+    
+    /**
+     * Slow down transmission of the banner by a specified number of milliseconds.
+     */
+    public void setBannerDelay(final int delay){
+        m_bannerDelay = delay;
     }
     
     /**
@@ -216,14 +224,14 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         long startTime = 0;
                         try {
                             setSocket(getServerSocket().accept());
-                            startTime = System.currentTimeMillis();
-                            if (m_threadSleepLength > 0) {
-                                Thread.sleep(m_threadSleepLength);
-                            }
                             if (getTimeout() > 0) {
                                 getSocket().setSoTimeout(getTimeout());
                             }
                             out = getSocket().getOutputStream();
+                            startTime = System.currentTimeMillis();
+                            if (m_threadSleepLength > 0) {
+                                Thread.sleep(m_threadSleepLength);
+                            }
                             if (getBanner() != null) {
                                 sendBanner(out);
                             }
@@ -280,7 +288,18 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @throws java.io.IOException if any.
      */
     protected void sendBanner(final OutputStream out) throws IOException {
-        out.write(String.format("%s\r\n", getBanner()).getBytes());        
+        byte[] bannerBytes = getBanner().getBytes();
+        if (m_bannerDelay > 0) {
+            int delayPerByte = (int)Math.ceil((float)m_bannerDelay / (float)bannerBytes.length);
+            System.out.println("DELAY PER BYTE: " + delayPerByte);
+            for (byte bannerByte : bannerBytes) {
+                out.write(bannerByte);
+                try { Thread.sleep(delayPerByte); } catch (InterruptedException e) {}
+            }
+        } else {
+            out.write(bannerBytes);
+        }
+        out.write("\r\n".getBytes());
     }
     
     /**

@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd;
 
 import static org.easymock.EasyMock.createMock;
 
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.test.ThrowableAnticipator;
 
 import junit.framework.TestCase;

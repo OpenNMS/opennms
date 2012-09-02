@@ -36,8 +36,8 @@ import org.opennms.netmgt.asterisk.agi.scripts.BaseOnmsAgiScript;
 import org.opennms.netmgt.asterisk.utils.AsteriskOriginator;
 import org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.opennms.netmgt.notifd.Notifd;
-import org.opennms.netmgt.notifd.NotificationStrategy;
 
 /**
  * <p>AsteriskOriginateNotificationStrategy class.</p>

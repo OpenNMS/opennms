@@ -141,4 +141,9 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         
         save(foreignSource);
     }
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in MockForeignSourceRepository
+    }
 }

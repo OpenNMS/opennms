@@ -115,7 +115,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     }
 
     public String getParent() {
-        return String.valueOf(getCollectionAgent().getNodeId());
+        return getCollectionAgent().getStorageDir().toString();
     }
 
     /*

@@ -35,9 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,9 +46,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 
 /**
@@ -237,8 +234,8 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     }
 
     private String getParametersAsString() {
-        StringBuilder sb = new StringBuilder();
-        for (PluginParameter p : getParameters()) {
+        final StringBuilder sb = new StringBuilder();
+        for (final PluginParameter p : getParameters()) {
             sb.append(p.getKey()).append('=').append(p.getValue()).append('/');
         }
         if (sb.length() > 0) {
@@ -247,52 +244,52 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
         return sb.toString();
     }
 
-    /**
-     * <p>compareTo</p>
-     *
-     * @param obj a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
-     * @return a int.
-     */
-    public int compareTo(PluginConfig obj) {
-        return new CompareToBuilder()
-            .append(getName(), obj.getName())
-            .append(getPluginClass(), obj.getPluginClass())
-            .append(getParametersAsString(), obj.getParametersAsString())
-            .toComparison();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("name", getName())
-            .append("plugin-class", getPluginClass())
-            .append("parameters", getParametersAsString())
-            .toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof PluginConfig) {
-            PluginConfig other = (PluginConfig) obj;
-            return new EqualsBuilder()
-                .append(getName(), other.getName())
-                .append(getPluginClass(), other.getPluginClass())
-                .append(getParametersAsString(), other.getParametersAsString())
-                .isEquals();
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(getName())
-            .append(getPluginClass())
-            .append(getParametersAsString())
-            .toHashCode();
-      }
+        final int prime = 107;
+        int result = 1;
+        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+        result = prime * result + ((m_pluginClass == null) ? 0 : m_pluginClass.hashCode());
+        result = prime * result + ((m_parameters == null) ? 0 : m_parameters.hashCode());
+        return result;
+    }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof PluginConfig)) return false;
+        final PluginConfig other = (PluginConfig) obj;
+        if (m_name == null) {
+            if (other.m_name != null) return false;
+        } else if (!m_name.equals(other.m_name)) {
+            return false;
+        }
+        if (m_pluginClass == null) {
+            if (other.m_pluginClass != null) return false;
+        } else if (!m_pluginClass.equals(other.m_pluginClass)) {
+            return false;
+        }
+        if (m_parameters == null) {
+            if (other.m_parameters != null) return false;
+        } else if (!m_parameters.equals(other.m_parameters)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PluginConfig [name=" + m_name + ", pluginClass="
+                + m_pluginClass + ", parameters=" + getParametersAsString() + "]";
+    }
+
+
+    @Override
+    public int compareTo(final PluginConfig other) {
+        return new CompareToBuilder()
+            .append(m_name, other.m_name)
+            .append(m_pluginClass, other.m_pluginClass)
+            .toComparison();
+    }
 }

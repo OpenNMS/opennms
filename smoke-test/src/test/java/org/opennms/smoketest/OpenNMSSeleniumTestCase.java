@@ -11,7 +11,7 @@ import com.thoughtworks.selenium.SeleneseTestBase;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
-    protected static final String LOAD_TIMEOUT = "30000";
+    protected static final String LOAD_TIMEOUT = "60000";
 
     @Before
     public void setUp() throws Exception {

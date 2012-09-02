@@ -35,18 +35,19 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.DefaultDataCollectionConfigDao;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
-import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
 
@@ -86,7 +87,7 @@ public class CollectorConfigDaoImplTest extends TestCase {
 
     private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, Exception {
         System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         InputStream stream = null;
 

@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>nrtg</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features.nrtg</groupId>
+  <artifactId>nrtg-commander</artifactId>
+  <packaging>bundle</packaging>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.nrtg.commander</bundle.symbolicName>
+    <!-- refactor code so namespace matches symbolic name -->
+    <bundle.namespace>org.opennms.nrtg.commander</bundle.namespace>
+  </properties>
+  <name>NRTG Commander</name>
+  <description>
+     The Commander is a dummy implementation to generate CollectionJobs
+     and publish them via JMS-Queues. It's able to run in parallel and 
+     in multiple instances. A appropriate implementation would be a schedule 
+     based system. That interpretes the datacollection configuration and 
+     generates corresponding CollectionJobs. The CollectionJobs would be 
+     published in the same way this dummy implementation does.
+  </description>
+
+  <dependencies>
+    <!-- OpenNMS NRTCollector -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg</groupId>
+      <artifactId>nrtg-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
+      <artifactId>nrtg-protocolcollector-snmp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- JMS -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>${activemq.version}</version>
+    </dependency>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <!--<scope>provided</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.4</version>
+      <!--<scope>test</scope>-->
+    </dependency>
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg.dependencies</groupId>
+      <artifactId>spring</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency> 
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
+      <version>${spring.version}</version>
+      <!--<scope>provided</scope>-->
+    </dependency>
+    
+    <!-- GCLIB -->
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+  
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+	      <mainClass>org.opennms.nrtg.commander.internal.CollectionCommanderStarter</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,3 +1,8 @@
 /* Widget specific CSS goes here */
 /* When renaming this directory, update the path in the widgetset GWT module (.gwt.xml) */
 
+.vertex-label {
+	alignment-base: text-before-edge;
+	text-anchor: middle;
+	font-size: 9px;
+}

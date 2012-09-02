@@ -31,6 +31,8 @@ package org.opennms.netmgt.provision.support;
 import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
+import org.apache.mina.core.session.IdleStatus;
+
 /**
  * <p>Abstract AsyncBasicDetector class.</p>
  *
@@ -40,7 +42,12 @@ import java.util.regex.Pattern;
 public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstractDetector {
     
     protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-    private int m_idleTime = 1;
+
+    /**
+     * Default value of 3000ms = 3s
+     */
+    private int m_idleTime = 3000;
+
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     private boolean useSSLFilter = false;
     
@@ -95,7 +102,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     
     
     /**
-     * <p>setIdleTime</p>
+     * Set the time limit in milliseconds that the connection can wait before
+     * transitioning to the {@link IdleStatus#BOTH_IDLE}, {@link IdleStatus#READER_IDLE}, 
+     * or {@link IdleStatus#WRITER_IDLE} states.
      *
      * @param idleTime a int.
      */

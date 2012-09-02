@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>nrtg</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features.nrtg</groupId>
+  <artifactId>nrtg-web</artifactId>
+  <packaging>bundle</packaging>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.nrtg.web</bundle.symbolicName>
+    <bundle.namespace>org.opennms.nrtg.web</bundle.namespace>
+  </properties>
+  <name>NRTG Web Interface</name>
+  <description>
+    The Web Interfaces for NRTG data collection.  This provides the
+    servlets used to generate the web ui.  This provides two
+    functionalities, a servlet to creating and publishing collection
+    jobs.  A second for receiving and visualizing the corresponding
+    measurments.
+  </description>
+
+  <dependencies>
+    <!-- OpenNMS NRTCollector -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg</groupId>
+      <artifactId>nrtg-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- OpenNMS dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- JMS -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>${activemq.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-web</artifactId>
+      <version>${activemq.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!--  Servlet API -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.4</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg.dependencies</groupId>
+      <artifactId>spring</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
+      <version>${spring.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>3.1</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

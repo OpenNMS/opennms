@@ -32,8 +32,8 @@ import java.io.File;
 import java.util.List;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
 

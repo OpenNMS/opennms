@@ -41,12 +41,12 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to check address to

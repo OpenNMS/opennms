@@ -60,7 +60,7 @@ public class JBossDetectorTest implements InitializingBean {
        MockLogAppender.setupLogging();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectoredWired(){
         assertNotNull(m_detector);
     }

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -129,4 +130,27 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+        File nodeSnmpDir = new File(m_resourceDao.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY + File.separator
+                       + ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
+        if (!nodeSnmpDir.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No directory exists for nodeSource " + nodeSource);
+        }
+        return nodeSnmpDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER).length > 0; 
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
+        File relPath = new File(DefaultResourceDao.SNMP_DIRECTORY, ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
+
+        Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), relPath.toString());
+
+        OnmsResource resource = new OnmsResource("", "Node-level Performance Data", this, attributes);
+        resources.add(resource);
+        return resources;
+    }
+
 }

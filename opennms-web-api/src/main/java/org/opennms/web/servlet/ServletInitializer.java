@@ -39,10 +39,10 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * Encapsulates all initialization and configuration needed by the OpenNMS

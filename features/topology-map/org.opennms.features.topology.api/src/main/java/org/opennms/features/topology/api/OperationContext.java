@@ -7,4 +7,5 @@ public interface OperationContext {
 
     public Window getMainWindow();
     public GraphContainer getGraphContainer();
+    public boolean isChecked();
 }

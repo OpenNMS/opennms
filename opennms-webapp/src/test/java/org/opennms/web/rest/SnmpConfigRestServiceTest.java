@@ -100,7 +100,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
         config.setTimeout(1000);
         config.setCommunity("new");
         
-        putXmlObject(m_jaxbContext, url, 200, config);
+        putXmlObject(m_jaxbContext, url, 303, config);
         
         
         SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);

@@ -48,9 +48,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

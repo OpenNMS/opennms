@@ -50,6 +50,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -1102,7 +1103,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 node.setType("A");
                 node.setLastCapsdPoll(now);
                 
-                final OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
+                final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), node);
                 iface.setIsManaged("M");
                 iface.setIpHostName(hostname);
                 iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);

@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
@@ -50,17 +52,17 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -70,7 +72,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-linkd.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/applicationContext-minimal-conf.xml",
         "classpath:/applicationContext-linkd-test.xml"
 })
 @JUnitConfigurationEnvironment
@@ -248,5 +249,25 @@ public class LinkdTest implements InitializingBean {
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         assertEquals("we should have found 6 data links", 6, ifaces.size());
+    }
+    
+    @Test
+    public void testDiscoveryOspfGetSubNetAddress() throws Exception {
+        DiscoveryLink discovery = m_linkd.getDiscoveryLink("example1");
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddress.getByName("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddress.getByName("192.168.15.45"));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.0"));        
+        assertEquals(InetAddress.getByName("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.0.0"));
+        assertEquals(InetAddress.getByName("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.252"));
+        assertEquals(InetAddress.getByName("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
+        assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
+
     }
 }

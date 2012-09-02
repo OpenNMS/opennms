@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -19,6 +20,7 @@ public class ResourcePathFileTraversalTest {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(m_baseDir + "/" + m_nodeId + "/" + m_resourceName));
         List<String> paths = traverser.traverseDirectory();
         
+        Collections.sort(paths);
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
         assertTrue(paths.get(1).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2"));
     }
@@ -40,6 +42,7 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         
+        Collections.sort(paths);
         assertEquals(2, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2"));
     }
@@ -51,6 +54,7 @@ public class ResourcePathFileTraversalTest {
         traverser.addDatasourceFilter("icmp");
         List<String> paths = traverser.traverseDirectory();
         
+        Collections.sort(paths);
         assertEquals(1, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3"));
     }
@@ -62,6 +66,7 @@ public class ResourcePathFileTraversalTest {
         traverser.addDatasourceFilter("icmp");
         List<String> paths = traverser.traverseDirectory();
         
+        Collections.sort(paths);
         assertEquals(1, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3"));
     }
@@ -73,6 +78,7 @@ public class ResourcePathFileTraversalTest {
         traverser.addDatasourceFilter("TotalMemory");
         List<String> paths = traverser.traverseDirectory();
         
+        Collections.sort(paths);
         assertEquals(1, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/storeby-group-jvm"));
         

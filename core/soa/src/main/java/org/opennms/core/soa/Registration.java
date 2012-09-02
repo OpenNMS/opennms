@@ -61,6 +61,8 @@ public interface Registration {
      */
     public <T> T getProvider(Class<T> service);
     
+    public Object getProvider();
+    
     /**
      * <p>getProperties</p>
      *

@@ -57,13 +57,51 @@ public class LinkableNode {
     private final InetAddress m_snmpprimaryaddr;
 	
     private final String m_sysoid;
+    
+    private String m_lldpSysname;
+    
+    private String m_lldpChassisId;
+    
+    private Integer m_lldpChassisIdSubtype;
+    
+    private InetAddress m_ospfRouterId;
+    
+    public InetAddress getOspfRouterId() {
+        return m_ospfRouterId;
+    }
+    public void setOspfRouterId(InetAddress ospfRouterId) {
+        m_ospfRouterId = ospfRouterId;
+    }
+    
+    public void setLldpSysname(String lldpSysname) {
+        m_lldpSysname = lldpSysname;
+    }
+    public void setLldpChassisId(String lldpChassisId) {
+        m_lldpChassisId = lldpChassisId;
+    }
+    public void setLldpChassisIdSubtype(Integer lldpChassisIdSubtype) {
+        m_lldpChassisIdSubtype = lldpChassisIdSubtype;
+    }
+    public String getLldpSysname() {
+        return m_lldpSysname;
+    }
+    public String getLldpChassisId() {
+        return m_lldpChassisId;
+    }
+    public Integer getLldpChassisIdSubtype() {
+        return m_lldpChassisIdSubtype;
+    }
 
     private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
-	
+
+    private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
+
     private boolean m_hascdpinterfaces = false;
 
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-	
+
+    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
+        
     private boolean m_hasrouteinterfaces = false;
 	
     private boolean m_isBridgeNode = false;
@@ -125,6 +163,22 @@ public class LinkableNode {
 		return m_snmpprimaryaddr;
 	}
 
+	    public List<LldpRemInterface> getLldpRemInterfaces() {
+	        return m_lldpreminterfaces;
+	    }
+	    
+	    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
+	        m_lldpreminterfaces = lldpreminterfaces;
+	    }
+	    
+	    public List<OspfNbrInterface> getOspfinterfaces() {
+	        return m_ospfinterfaces;
+	    }
+
+	    public void setOspfinterfaces(List<OspfNbrInterface> ospfinterfaces) {
+	        m_ospfinterfaces = ospfinterfaces;
+	    }
+	    
 	/**
 	 * <p>getCdpInterfaces</p>
 	 *

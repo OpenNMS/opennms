@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Date;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
-
-import java.util.Collection;
-import java.util.Date;
-import java.sql.SQLException;
 
 /**
  * <p>OnmsMapDaoHibernate class.</p>

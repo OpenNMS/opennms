@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.mock;
 
+import org.opennms.core.test.MockPlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**

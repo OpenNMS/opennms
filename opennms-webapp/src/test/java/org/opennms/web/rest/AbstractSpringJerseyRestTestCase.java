@@ -54,9 +54,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -221,8 +221,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param url
      * @param xml
      */
-    protected void sendPost(String url, String xml) throws Exception {
-        sendData(POST, MediaType.APPLICATION_XML, url, xml);
+    protected MockHttpServletResponse sendPost(String url, String xml) throws Exception {
+        return sendData(POST, MediaType.APPLICATION_XML, url, xml, /* POST/Redirect/GET */ 303);
     }
 
     /**
@@ -230,16 +230,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param xml
      * @param statusCode
      */
-    protected void sendPost(String url, String xml, int statusCode) throws Exception {
-        sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
+    protected MockHttpServletResponse sendPost(String url, String xml, int statusCode) throws Exception {
+        return sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
     }
 
     /**
      * @param url
      * @param formData
      */
-    protected void sendPut(String url, String formData) throws Exception {
-        sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData);
+    protected MockHttpServletResponse sendPut(String url, String formData) throws Exception {
+        return sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, /* PUT/Redirect/GET */ 303);
     }
     
     /**
@@ -247,8 +247,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param formData
      * @param statusCode
      */
-    protected void sendPut(String url, String formData, int statusCode) throws Exception {
-        sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
+    protected MockHttpServletResponse sendPut(String url, String formData, int statusCode) throws Exception {
+        return sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
     }
     
     /**
@@ -257,8 +257,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param url
      * @param data
      */
-    protected void sendData(String requestType, String contentType, String url, String data) throws Exception {
-    	sendData(requestType, contentType, url, data, 200);
+    protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data) throws Exception {
+    	return sendData(requestType, contentType, url, data, 200);
     }
     
     /**
@@ -268,7 +268,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param data
      * @param statusCode
      */
-    protected void sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
+    protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
         MockHttpServletRequest request = createRequest(requestType, url);
         request.setContentType(contentType);
 
@@ -284,9 +284,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         LogUtils.debugf(this, "Received response: %s", stringifyResponse(response));
         assertEquals(response.getErrorMessage(), statusCode, response.getStatus());
+        
+        return response;
     }
 
-    private String stringifyResponse(final MockHttpServletResponse response) {
+    protected String stringifyResponse(final MockHttpServletResponse response) {
     	final StringBuilder string = new StringBuilder();
     	try {
 			string.append("HttpServletResponse[")
@@ -362,14 +364,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return sendRequest(request, expectedStatus);
     }
 
-    protected String sendRequest(MockHttpServletRequest request, int spectedStatus) throws Exception, UnsupportedEncodingException {
+    protected String sendRequest(MockHttpServletRequest request, int expectedStatus) throws Exception, UnsupportedEncodingException {
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         String xml = response.getContentAsString();
         if (xml != null) {
             System.err.println(xml);
         }
-        assertEquals(spectedStatus, response.getStatus());
+        assertEquals(expectedStatus, response.getStatus());
         return xml;
     }
     

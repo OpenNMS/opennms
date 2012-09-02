@@ -22,7 +22,7 @@ public final class ExampleActivator
     {
         System.out.println( "STARTING org.opennms.features.topology.plugins.ui.tree" );
 
-        Dictionary props = new Properties();
+        Dictionary<Object,Object> props = new Properties();
         // add specific service properties here...
 
         System.out.println( "REGISTER org.opennms.features.topology.plugins.ui.tree.ExampleService" );

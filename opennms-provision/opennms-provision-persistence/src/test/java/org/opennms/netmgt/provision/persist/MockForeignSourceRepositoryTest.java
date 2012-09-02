@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,9 +36,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -47,22 +44,14 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class
-})
-public class MockForeignSourceRepositoryTest {
+public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
 
     private ForeignSourceRepository m_repository;
 
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging();
         m_repository = new MockForeignSourceRepository();
         m_defaultForeignSourceName = "imported:";
     }
@@ -76,6 +65,7 @@ public class MockForeignSourceRepositoryTest {
         fs.addDetector(new PluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_repository.save(fs);
+        m_repository.flush();
         return fs;
     }
 
@@ -131,8 +121,8 @@ public class MockForeignSourceRepositoryTest {
     public void testGetRequisition() throws Exception {
         Requisition requisition = createRequisition();
         ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        assertEquals("foreign sources match", m_repository.getRequisition(m_defaultForeignSourceName), m_repository.getRequisition(foreignSource));
-        assertEquals("foreign source is expected one", requisition, m_repository.getRequisition(foreignSource));
+        assertRequisitionsMatch("foreign sources must match", m_repository.getRequisition(m_defaultForeignSourceName), m_repository.getRequisition(foreignSource));
+        assertRequisitionsMatch("foreign source is expected one", requisition, m_repository.getRequisition(foreignSource));
     }
 
 }

@@ -39,9 +39,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -141,26 +141,26 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         // create an interface
         sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"172.20.1.254\" descr=\"Monkey\"><monitored-service service-name=\"ICMP\"/></interface>");
         sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"172.20.1.254\" descr=\"Blah\"><monitored-service service-name=\"ICMP\"/></interface>");
-        
+
         // get list of interfaces
         xml = sendRequest(GET, base, 200);
-        assertTrue(xml.contains("count=\"3\""));
-        assertTrue(xml.contains("<interface "));
-        assertTrue(xml.contains("Blah"));
-        assertFalse(xml.contains("Monkey"));
+        assertTrue(xml, xml.contains("count=\"3\""));
+        assertTrue(xml, xml.contains("<interface "));
+        assertTrue(xml, xml.contains("Blah"));
+        assertFalse(xml, xml.contains("Monkey"));
 
         // get individual interface
         String url = base + "/172.20.1.204";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<interface "));
-        assertTrue(xml.contains("VPN interface"));
-        assertFalse(xml.contains("172.20.1.201"));
+        assertTrue(xml, xml.contains("<interface "));
+        assertTrue(xml, xml.contains("VPN interface"));
+        assertFalse(xml, xml.contains("172.20.1.201"));
 
         // set attributes
         sendPut(url, "descr=Total+Crap&snmp-primary=P");
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("descr=\"Total Crap\""));
-        assertTrue(xml.contains("snmp-primary=\"P\""));
+        assertTrue(xml, xml.contains("descr=\"Total Crap\""));
+        assertTrue(xml, xml.contains("snmp-primary=\"P\""));
  
         // delete interface
         xml = sendRequest(DELETE, url, 200);
@@ -168,7 +168,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         // confirm there is one less interface
         xml = sendRequest(GET, base, 200);
-        assertTrue(xml.contains("count=\"2\""));
+        assertTrue(xml, xml.contains("count=\"2\""));
     }
 
     @Test
@@ -245,13 +245,13 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         // get list of asset parameters
         String url = base;
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("count=\"3\""));
-        assertTrue(xml.contains("Windows Pi"));
+        assertTrue(xml, xml.contains("count=\"3\""));
+        assertTrue(xml, xml.contains("Windows Pi"));
         
         // get individual asset parameter
         url = "/requisitions/test/nodes/4243/assets/operatingSystem";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("value=\"Windows Pi\""));
+        assertTrue(xml, xml.contains("value=\"Windows Pi\""));
         
         // delete asset parameter
         xml = sendRequest(DELETE, url, 200);
@@ -259,7 +259,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         
         // confirm there are less assets
         xml = sendRequest(GET, "/requisitions/test/nodes/4243/assets", 200);
-        assertTrue(xml.contains("count=\"2\""));
+        assertTrue(xml, xml.contains("count=\"2\""));
     }
 
     @Test
@@ -328,7 +328,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         final MockEventProxy eventProxy = getEventProxy();
         eventProxy.resetEvents();
 
-        sendRequest(PUT, "/requisitions/test/import", 200);
+        sendRequest(PUT, "/requisitions/test/import", 303);
 
         assertEquals(1, eventProxy.getEvents().size());
     }
@@ -340,7 +340,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         final MockEventProxy eventProxy = getEventProxy();
         eventProxy.resetEvents();
 
-        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 200);
+        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 303);
 
         assertEquals(1, eventProxy.getEvents().size());
         final Event event = eventProxy.getEvents().get(0);

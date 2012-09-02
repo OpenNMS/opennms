@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRDesignField;
@@ -15,7 +18,7 @@ import org.junit.Test;
 public class ResourceCommandTest {
     
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         System.setProperty("org.opennms.rrd.storeByGroup", "False");
     }
     
@@ -28,8 +31,8 @@ public class ResourceCommandTest {
         JRDesignField pathField = new JRDesignField();
         pathField.setName("path");
         String pathVal = (String) dataSource.getFieldValue(pathField);
-        assertNotNull("", pathVal);
-	assertTrue(pathVal.matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
+        assertNotNull(pathVal);
+        assertTrue(String.format("Path does not match: %s", pathVal), pathVal.matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
         
         JRDesignField filterField = new JRDesignField();
         filterField.setName("icmp");

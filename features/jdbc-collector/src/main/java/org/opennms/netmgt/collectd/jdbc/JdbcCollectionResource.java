@@ -63,7 +63,7 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
     public abstract String getInstance();
     
     public String getParent() {
-        return Integer.toString(m_agent.getNodeId());
+        return m_agent.getStorageDir().toString();
     }
 
     public TimeKeeper getTimeKeeper() {

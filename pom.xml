@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.11.1-SNAPSHOT</version>
+  <version>1.11.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -14,7 +14,7 @@
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.opennms.org/</url>
-  </issueManagement>
+ </issueManagement>
   <ciManagement>
     <system>Bamboo</system>
     <url>http://bamboo.internal.opennms.com:8085/</url>
@@ -49,7 +49,7 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
-  <mailingLists>
+ <mailingLists>
     <mailingList>
       <name>OpenNMS Discuss List</name>
       <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
@@ -88,6 +88,7 @@
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
+    <module>container</module>
     <module>features</module>
     <module>integrations</module>
     <module>protocols</module>
@@ -107,6 +108,7 @@
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
     <module>opennms-config</module>
+    <module>opennms-config-model</module>
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
@@ -151,6 +153,18 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>1.0.1</version>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals><goal>generate-features-xml</goal></goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -333,6 +347,11 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.0</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -670,6 +689,8 @@
   </reporting>
 
   <properties>
+
+    
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -695,10 +716,14 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+    <opennms.osgi.version>1.11.3.A</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
+
+    <!-- install.prefix: a prefix used for installation in or chroot -->
+    <install.prefix/>
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
     <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
@@ -712,9 +737,6 @@
     <install.controllerlogs.dir>${install.logs.dir}/controller</install.controllerlogs.dir>
     <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
-
-    <!-- install.prefix: a prefix used for installation in or chroot -->
-    <install.prefix/>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
@@ -759,6 +781,8 @@
     <!-- dependency versions -->
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
+    <karafVersion>2.2.7</karafVersion>
+    <jaxbVersion>2.1.7</jaxbVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.5.4.v20111024</jettyVersion>
@@ -940,6 +964,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.db</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.db.install</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.lib</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -994,6 +1028,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.db</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.dns</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
@@ -1001,6 +1041,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.services</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1358,7 +1404,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-config</artifactId>
+        <artifactId>opennms-config-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-model</artifactId>
         <version>${project.version}</version>
         <classifier>xsds</classifier>
       </dependency>
@@ -1393,7 +1444,6 @@
         <artifactId>opennms-dao</artifactId>
         <type>test-jar</type>
         <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1653,13 +1703,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <version>${project.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -2270,8 +2313,8 @@
       </dependency>
       <dependency>
         <groupId>org.tuckey</groupId>
-        <artifactId>urlrewrite</artifactId>
-        <version>2.5.2</version>
+        <artifactId>urlrewritefilter</artifactId>
+        <version>4.0.3</version>
       </dependency>
       <dependency>
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->

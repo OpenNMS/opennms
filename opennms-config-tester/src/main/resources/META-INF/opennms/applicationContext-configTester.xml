@@ -142,7 +142,7 @@
   
   2010-09-05 00:43:45,462 ERROR [main] org.opennms.netmgt.config.CollectdPackage: createPackageIpMap: failed to map package: example1 to an IP List: org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting IP List: java.sql.SQLException: Connections could not be acquired from the underlying database!
 org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting IP List: java.sql.SQLException: Connections could not be acquired from the underlying database!
-	at org.opennms.netmgt.dao.support.JdbcFilterDao.getIPList(JdbcFilterDao.java:326)
+	at org.opennms.netmgt.filter.JdbcFilterDao.getIPList(JdbcFilterDao.java:326)
 	at org.opennms.netmgt.config.CollectdPackage.createIpList(CollectdPackage.java:316)
 	at org.opennms.netmgt.config.CollectdConfig.createPackageIpListMap(CollectdConfig.java:130)
 	at org.opennms.netmgt.config.CollectdConfig.initialize(CollectdConfig.java:148)
@@ -170,7 +170,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
   
-  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.DefaultDataCollectionConfigDao">
+  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/datacollection-config.xml"/>
   </bean>
   
@@ -351,7 +351,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   -->
     
   <bean id="dataSourceTester" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ConnectionFactoryUtil.marshalDataSourceFromConfig</value></property>
+    <property name="staticMethod"><value>org.opennms.core.db.ConnectionFactoryUtil.marshalDataSourceFromConfig</value></property>
     <property name="arguments">
       <list>
         <bean class="java.io.FileInputStream">

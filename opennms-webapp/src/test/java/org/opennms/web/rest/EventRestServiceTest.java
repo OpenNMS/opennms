@@ -30,7 +30,6 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -49,7 +48,6 @@ public class EventRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	}
 
 	@Test
-	@Ignore
 	public void testBetween() throws Exception {
 		String xml;
 		xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z"), 200);

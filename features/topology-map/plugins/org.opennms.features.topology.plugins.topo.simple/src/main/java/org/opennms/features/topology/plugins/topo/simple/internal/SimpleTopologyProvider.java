@@ -1,6 +1,7 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.TopologyProvider;
 
 import com.vaadin.data.Item;
@@ -20,7 +22,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
-public class SimpleTopologyProvider implements TopologyProvider{
+public class SimpleTopologyProvider implements TopologyProvider, EditableTopologyProvider{
     
 
     private SimpleVertexContainer m_vertexContainer;
@@ -29,13 +31,36 @@ public class SimpleTopologyProvider implements TopologyProvider{
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
     
+    private URL m_topologyLocation = null;
+    
     public SimpleTopologyProvider() {
+    	System.err.println("Creating a new SimpleTopologyProvider");
         m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
-    }
+        
+        URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
 
-    public SimpleVertexContainer getVertexContainer() {
+        setTopologyLocation(defaultGraph);
+    }
+    
+    public URL getTopologyLocation() {
+		return m_topologyLocation;
+	}
+
+	public void setTopologyLocation(URL topologyLocation) {
+		m_topologyLocation = topologyLocation;
+		
+		if (m_topologyLocation != null) {
+			System.err.println("Loading Topology from " + m_topologyLocation);
+
+			load(m_topologyLocation);
+		} else {
+			System.err.println("Setting topology location to null!");
+		}
+	}
+
+	public SimpleVertexContainer getVertexContainer() {
         return m_vertexContainer;
     }
 
@@ -89,23 +114,27 @@ public class SimpleTopologyProvider implements TopologyProvider{
 
     }
     
-    private Item addVertex(String id, int x, int y, String icon) {
+    private Item addVertex(String id, int x, int y, String label, String ipAddr, int nodeID) {
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         System.err.println("Adding a vertex: " + id);
         SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
-        vertex.setIcon(icon);
+        vertex.setIconKey("server");
+        vertex.setLabel(label);
+        vertex.setIpAddr(ipAddr);
+        vertex.setNodeID(nodeID);
         return m_vertexContainer.addBean(vertex);
     }
     
-    private Item addGroup(String groupId, String icon) {
+    private Item addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         System.err.println("Adding a group: " + groupId);
         SimpleVertex vertex = new SimpleGroup(groupId);
-        vertex.setIcon(icon);
+        vertex.setLabel(label);
+        vertex.setIconKey(iconKey);
         return m_vertexContainer.addBean(vertex);
         
     }
@@ -119,7 +148,11 @@ public class SimpleTopologyProvider implements TopologyProvider{
         
     }
     
-    public void removeVertex(Object vertexId) {
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#removeVertex(java.lang.Object)
+	 */
+    @Override
+	public void removeVertex(Object vertexId) {
         
         SimpleVertex vertex = getVertex(vertexId, false);
         if (vertex == null) return;
@@ -183,7 +216,11 @@ public class SimpleTopologyProvider implements TopologyProvider{
 
     }
     
-    public void save(String filename) {
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#save(java.lang.String)
+	 */
+    @Override
+	public void save(String filename) {
         List<SimpleVertex> vertices = getBeans(m_vertexContainer);
         List<SimpleEdge> edges = getBeans(m_edgeContainer);
 
@@ -192,7 +229,21 @@ public class SimpleTopologyProvider implements TopologyProvider{
         JAXB.marshal(graph, new File(filename));
     }
     
-    public void load(String filename) {
+	public void load(URL url) {
+        SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
+        
+        m_vertexContainer.removeAllItems();
+        m_vertexContainer.addAll(graph.m_vertices);
+        
+        m_edgeContainer.removeAllItems();
+        m_edgeContainer.addAll(graph.m_edges);
+    }
+
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#load(java.lang.String)
+	 */
+    @Override
+	public void load(String filename) {
         SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
         
         m_vertexContainer.removeAllItems();
@@ -225,7 +276,11 @@ public class SimpleTopologyProvider implements TopologyProvider{
         return "g" + m_groupCounter++;
     }
 
-    public void resetContainer() {
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#resetContainer()
+	 */
+    @Override
+	public void resetContainer() {
         getVertexContainer().removeAllItems();
         getEdgeContainer().removeAllItems();
         
@@ -242,10 +297,18 @@ public class SimpleTopologyProvider implements TopologyProvider{
     }
     
     
-    public Object addVertex(int x, int y, String icon) {
-        System.err.println("Adding vertex in SimpleTopologyProvider with icon: " + icon);
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addVertex(int, int)
+	 */
+    @Override
+	public Object addVertex(int x, int y) {
         String nextVertexId = getNextVertexId();
-        addVertex(nextVertexId, x, y, icon);
+//        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1", -1);
+        /* 
+         * Passing a nodeID of -1 will disable the Events/Alarms, Node Info, and
+         * Resource Graphs windows in the context menus  
+         */
+        addVertex(nextVertexId, x, y, "Vertex " + nextVertexId, "64.146.64.214", -1);
         return nextVertexId;
     }
 
@@ -254,20 +317,32 @@ public class SimpleTopologyProvider implements TopologyProvider{
         m_vertexContainer.setParent(vertexId, parentId);
     }
 
-    public Object connectVertices(Object sourceVertextId, Object targetVertextId) {
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#connectVertices(java.lang.Object, java.lang.Object)
+	 */
+    @Override
+	public Object connectVertices(Object sourceVertextId, Object targetVertextId) {
         String nextEdgeId = getNextEdgeId();
         connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
         return nextEdgeId;
     }
 
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addGroup(java.lang.String)
+	 */
+
     @Override
-    public Object addGroup(String groupIcon) {
+    public Object addGroup(String groupIconKey) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIcon);
+        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
         return nextGroupId;
     }
 
-    @Override
+    /* (non-Javadoc)
+	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#containsVertexId(java.lang.Object)
+	 */
+
+	@Override
     public boolean containsVertexId(Object vertexId) {
         return m_vertexContainer.containsId(vertexId);
     }

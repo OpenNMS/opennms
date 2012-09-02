@@ -1,10 +1,15 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
@@ -18,70 +23,94 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
+import com.vaadin.ui.Slider.ValueOutOfBoundsException;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener{
-	
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener{
+
 	private Window m_window;
-    private TopologyComponent m_topologyComponent;
-    private Tree m_tree;
-    private SimpleGraphContainer m_graphContainer;
-    private CommandManager m_commandManager;
-    private MenuBar m_menuBar;
-    private AbsoluteLayout m_layout;
-    
-    public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider) {
-        m_commandManager = commandManager;
-        m_graphContainer = new SimpleGraphContainer(topologyProvider);
-    }
-    
-    
-    @Override
-    public void init() {
-       
-        m_layout = new AbsoluteLayout();
-        m_layout.setSizeFull();
-        
-        m_window = new Window("Topology Widget Test");
-        m_window.setContent(m_layout);
-        setMainWindow(m_window);
-        
-        Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(5000);
-        getMainWindow().addComponent(refresher);
-        
-        m_graphContainer.setLayoutAlgorithm(new KKLayoutAlgorithm());
-        
-        m_topologyComponent = new TopologyComponent(m_graphContainer);
-        m_topologyComponent.setSizeFull();
-        
-        final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
-        final Slider slider = new Slider(1, 4);
-        slider.setResolution(2);
-        slider.setHeight("300px");
-        slider.setOrientation(Slider.ORIENTATION_VERTICAL);
-        
-        slider.addListener(new ValueChangeListener(){
+	private TopologyComponent m_topologyComponent;
+	private Tree m_tree;
+	private SimpleGraphContainer m_graphContainer;
+	private CommandManager m_commandManager;
+	private MenuBar m_menuBar;
+	private TopoContextMenu m_contextMenu;
+	private AbsoluteLayout m_layout;
+	private IconRepositoryManager m_iconRepositoryManager;
+	private WidgetManager m_widgetManager;
+	private Layout m_viewContribLayout;
+
+	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
+		m_commandManager = commandManager;
+		m_commandManager.addMenuItemUpdateListener(this);
+		m_graphContainer = new SimpleGraphContainer();
+		m_graphContainer.setDataSource(topologyProvider);
+		m_iconRepositoryManager = iconRepoManager;
+	}
+
+
+	@Override
+	public void init() {
+	    setTheme("topo_default");
+	    
+		m_layout = new AbsoluteLayout();
+		m_layout.setSizeFull();
+
+		m_window = new Window("Topology Widget Test");
+		m_window.setContent(m_layout);
+		setMainWindow(m_window);
+
+		Refresher refresher = new Refresher();
+		refresher.setRefreshInterval(5000);
+		getMainWindow().addComponent(refresher);
+
+		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+
+		m_topologyComponent = new TopologyComponent(m_graphContainer);
+		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
+		m_topologyComponent.setSizeFull();
+		m_topologyComponent.addMenuItemStateListener(this);
+		m_topologyComponent.setContextMenuHandler(this);
+		
+		final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
+		final Slider slider = new Slider(0, 4);
+		slider.setResolution(2);
+		slider.setHeight("300px");
+		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
+		try {
+            slider.setValue(1.0);
+        } catch (ValueOutOfBoundsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		scale.setValue(1.0);
+
+		slider.addListener(new ValueChangeListener(){
 
 			public void valueChange(ValueChangeEvent event) {
 				scale.setValue((Double) slider.getValue());
 			}
 		});
-        
-        slider.setImmediate(true);
-        
-        m_tree = createTree();
-        Label semanticZoomLabel = new Label();
-        final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
+
+		slider.setImmediate(true);
+
+		Label semanticZoomLabel = new Label();
+		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
 		semanticZoomLabel.setPropertyDataSource(zoomLevel);
-        
-        Button zoomInBtn = new Button("Zoom In");
-        zoomInBtn.addListener(new ClickListener() {
+
+		NativeButton zoomInBtn = new NativeButton("+");
+		zoomInBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
 				int szl = (Integer) zoomLevel.getValue();
@@ -90,9 +119,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				m_graphContainer.redoLayout();
 			}
 		});
-        
-        Button zoomOutBtn = new Button("Zoom Out");
-        zoomOutBtn.addListener(new ClickListener() {
+
+		NativeButton zoomOutBtn = new NativeButton("-");
+		zoomOutBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
 				int szl = (Integer) zoomLevel.getValue();
@@ -101,71 +130,200 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				m_graphContainer.redoLayout();
 			}
 		});
+
+		AbsoluteLayout mapLayout = new AbsoluteLayout();
+
+		mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
+		mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
+		mapLayout.addComponent(semanticZoomLabel, "bottom: 10px; right: 10px; z-index: 2000;");
+		mapLayout.addComponent(zoomInBtn, "top: 0px; left: 0px;");
+		mapLayout.addComponent(zoomOutBtn, "top: 0px; left: 25px");
+		mapLayout.setSizeFull();
+
+		HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
+		treeMapSplitPanel.setFirstComponent(createWestLayout());
+		treeMapSplitPanel.setSecondComponent(mapLayout);
+		treeMapSplitPanel.setSplitPosition(200, Sizeable.UNITS_PIXELS);
+		treeMapSplitPanel.setSizeFull();
+
+
+		VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+		bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
+
+		m_viewContribLayout = new VerticalLayout();
+
+		bottomLayoutBar.setSecondComponent(m_viewContribLayout);
+		bottomLayoutBar.setSplitPosition(99, Sizeable.UNITS_PERCENTAGE);
+		bottomLayoutBar.setSizeFull();
+
+
+		m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
+		m_commandManager.addCommandUpdateListener(this);
+
+
+		menuBarUpdated(m_commandManager);
+		if(m_widgetManager != null) {
+		    widgetListUpdated(m_widgetManager);
+		}
+		
+		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
+	}
+
+
+    private Layout createWestLayout() {
+        m_tree = createTree();
         
+        final TextField filterField = new TextField("Filter");
+        filterField.setTextChangeTimeout(200);
         
-        VerticalLayout vLayout = new VerticalLayout();
-        vLayout.setWidth("100%");
-        vLayout.setHeight("100%");
-        vLayout.addComponent(m_tree);
+        Button filterBtn = new Button("Filter");
         
-        AbsoluteLayout mapLayout = new AbsoluteLayout();
+        filterBtn.addListener(new ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                FilterableHierarchicalContainer container =  (FilterableHierarchicalContainer) m_tree.getContainerDataSource();
+                container.removeAllContainerFilters();
+                
+                String filterString = (String) filterField.getValue();
+                if(!filterString.equals("")) {
+                    container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                }
+                
+                
+            }
+        });
         
-        mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-        mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
-        mapLayout.addComponent(semanticZoomLabel, "bottom: 10px; right: 10px; z-index: 2000;");
-        mapLayout.setSizeFull();
+        Panel scrollPanel = new Panel("Vertices");
+        scrollPanel.setHeight("100%");
+        scrollPanel.setWidth("100%");
+        scrollPanel.setStyleName(Reindeer.PANEL_LIGHT);
+        scrollPanel.addComponent(m_tree);
         
-        HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
-        treeMapSplitPanel.setFirstComponent(vLayout);
-        treeMapSplitPanel.setSecondComponent(mapLayout);
-        treeMapSplitPanel.setSplitPosition(100, Sizeable.UNITS_PIXELS);
-        treeMapSplitPanel.setSizeFull();
+        AbsoluteLayout absLayout = new AbsoluteLayout();
+        absLayout.setWidth("100%");
+        absLayout.setHeight("100%");
+        absLayout.addComponent(filterField, "top: 25px; left: 0px;");
+        absLayout.addComponent(filterBtn, "top: 25px; left: 135px;");
+        absLayout.addComponent(scrollPanel, "top: 75px; left: 0px; bottom:0px;"); 
         
-        
-        VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-        bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
-        
-        VerticalLayout zoomLayout = new VerticalLayout();
-        zoomLayout.addComponent(zoomInBtn);
-        zoomLayout.addComponent(zoomOutBtn);
-        
-		bottomLayoutBar.setSecondComponent(zoomLayout);
-        bottomLayoutBar.setSplitPosition(80, Sizeable.UNITS_PERCENTAGE);
-        bottomLayoutBar.setSizeFull();
-        
-        
-        m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
-        m_commandManager.addCommandUpdateListener(this);
-        
-        
-        menuBarUpdated(m_commandManager);
-        m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
-        
-        
+        return absLayout;
     }
 
-    private Tree createTree() {
+	private Tree createTree() {
+	    FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
+	    
+		final Tree tree = new Tree();
+		tree.setMultiSelect(true);
+		tree.setContainerDataSource(container);
         
-        Tree tree = new Tree("Vertices");
-        tree.setContainerDataSource(m_graphContainer.getVertexContainer());
-        
-        tree.setImmediate(true);
-        
-        for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-            tree.expandItemsRecursively(it.next());
-        }
-        return tree;
+		tree.setImmediate(true);
+		tree.setItemCaptionPropertyId(Vertex.LABEL_PROPERTY);
+		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
+			tree.expandItemsRecursively(it.next());
+		}
+		
+		tree.addListener(new ValueChangeListener() {
+            
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                m_topologyComponent.selectVerticesByItemId((Collection<Object>) event.getProperty().getValue());
+            }
+        });
+		
+		return tree;
+	}
+
+
+	public void updateMenuItems() {
+		updateMenuItems(m_menuBar.getItems());
+		m_menuBar.requestRepaint();
+	}
+
+	private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
+		for(TopoContextMenuItem contextItem : items) {
+			if(contextItem.hasChildren()) {
+				updateContextMenuItems(target, contextItem.getChildren());
+			} else {
+				m_commandManager.updateContextMenuItem(target, contextItem, m_graphContainer, getMainWindow());
+			}
+		}
+	}
+
+
+	private void updateMenuItems(List<MenuItem> menuItems) {
+		for(MenuItem menuItem : menuItems) {
+			if(menuItem.hasChildren()) {
+				updateMenuItems(menuItem.getChildren());
+			}else {
+				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow());
+			}
+		}
+	}
+
+	@Override
+	public void menuBarUpdated(CommandManager commandManager) {
+		if(m_menuBar != null) {
+			m_layout.removeComponent(m_menuBar);
+		}
+
+		if(m_contextMenu != null) {
+			getMainWindow().removeComponent(m_contextMenu);
+		}
+
+		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
+		m_menuBar.setWidth("100%");
+		m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+		//TODO: Finish implementing the context menu
+		m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
+		getMainWindow().addComponent(m_contextMenu);
+		updateMenuItems();
+	}
+
+
+	@Override
+	public void show(Object target, int left, int top) {
+		updateContextMenuItems(target, m_contextMenu.getItems());
+		updateSubMenuDisplay(m_contextMenu.getItems());
+		m_contextMenu.setTarget(target);
+		m_contextMenu.show(left, top);
+	}
+
+
+	private void updateSubMenuDisplay(List<TopoContextMenuItem> items) {
+		for (TopoContextMenuItem item : items) {
+			if (!item.hasChildren()) continue;
+			else updateSubMenuDisplay(item.getChildren());
+			boolean shouldDisplay = false;
+			for (TopoContextMenuItem child : item.getChildren()) {
+				if (child.getItem().isVisible()) {
+					shouldDisplay = true;
+					break;
+				}
+			}
+			item.getItem().setVisible(shouldDisplay);
+		}
+	}
+
+
+    public WidgetManager getWidgetManager() {
+        return m_widgetManager;
     }
+
+
+    public void setWidgetManager(WidgetManager widgetManager) {
+        if(m_widgetManager != null) {
+            m_widgetManager.removeUpdateListener(this);
+        }
+        m_widgetManager = widgetManager;
+        m_widgetManager.addUpdateListener(this);
+    }
+
 
     @Override
-    public void menuBarUpdated(CommandManager commandManager) {
-        if(m_menuBar != null) {
-            m_layout.removeComponent(m_menuBar);
-        }
-        
-        m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
-        m_menuBar.setWidth("100%");
-        m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+    public void widgetListUpdated(WidgetManager widgetManager) {
+        m_viewContribLayout.removeAllComponents();
+        m_viewContribLayout.addComponent(widgetManager.getTabSheet());
     }
 
 }

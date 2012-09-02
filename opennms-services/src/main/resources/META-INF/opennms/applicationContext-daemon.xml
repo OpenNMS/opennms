@@ -13,7 +13,7 @@
         here including all of its dependencies, we create a late-initializing proxy here
         and let eventd do the setup for the EventIpcManagerDefaultImpl and initialize
         the proxy with a pointer to the "real" eventIpcManager. -->
-  <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.eventd.EventIpcManagerProxy">
+  <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.model.events.EventIpcManagerProxy">
   	<qualifier value="standard" />
   </bean>
 

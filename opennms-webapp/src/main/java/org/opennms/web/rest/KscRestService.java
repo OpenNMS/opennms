@@ -73,21 +73,21 @@ import com.sun.jersey.spi.resource.PerRequest;
 public class KscRestService extends OnmsRestService {
     @Autowired
     private KscReportService m_kscReportService;
-    
+
     @Autowired
     private KSC_PerformanceReportFactory m_kscReportFactory;
 
-	@Context
-	UriInfo m_uriInfo;
+    @Context
+    UriInfo m_uriInfo;
 
-	@Context
-	HttpHeaders m_headers;
+    @Context
+    HttpHeaders m_headers;
 
-	@Context
-	SecurityContext m_securityContext;
+    @Context
+    SecurityContext m_securityContext;
 
     @GET
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public KscReportCollection getReports() throws ParseException {
         readLock();
@@ -101,143 +101,142 @@ public class KscRestService extends OnmsRestService {
         }
     }
 
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("{reportId}")
-	@Transactional
-	public KscReport getReport(@PathParam("reportId") final Integer reportId) {
-	    readLock();
-	    
-	    try {
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("{reportId}")
+    @Transactional
+    public KscReport getReport(@PathParam("reportId") final Integer reportId) {
+        readLock();
+
+        try {
             final Map<Integer, String> reportList = m_kscReportService.getReportList();
             final String label = reportList.get(reportId);
-            if (label == null) throw getException(Status.NOT_FOUND, "No such report id " + reportId);
+            if (label == null) {
+                throw getException(Status.NOT_FOUND, "No such report id " + reportId);
+            }
             return new KscReport(reportId, label);
-	    } finally {
-	        readUnlock();
-	    }
-	}
+        } finally {
+            readUnlock();
+        }
+    }
 
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("count")
-	@Transactional
-	public String getCount() {
-	    readLock();
-	    try {
-	        return Integer.toString(m_kscReportService.getReportList().size());
-	    } finally {
-	        readUnlock();
-	    }
-	}
-
-	@PUT
-	@Path("{kscReportId}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("count")
     @Transactional
-    public Response addGraph(
-        @PathParam("kscReportId") final Integer kscReportId,
-        @QueryParam("title") final String title,
-        @QueryParam("reportName") final String reportName,
-        @QueryParam("resourceId") final String resourceId,
-        @QueryParam("timespan") String timespan
-    ) {
-	    writeLock();
-	    
-	    try {
-    	    if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
-    	        throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
-    	    }
-    	    final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
-    	    final Graph graph = new Graph();
-    	    if (title != null) {
-    	        graph.setTitle(title);
-    	    }
-    
-    	    boolean found = false;
-    	    for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
-    	    	if (valid.equals(timespan)) {
-    	    		found = true;
-    	    		break;
-    	    	}
-    	    }
-    
-    	    if (!found) {
-    	    	LogUtils.debugf(this, "invalid timespan ('%s'), setting to '7_day' instead.", timespan);
-    	    	timespan = "7_day";
-    	    }
-    
-    	    graph.setGraphtype(reportName);
-    	    graph.setResourceId(resourceId);
-    	    graph.setTimespan(timespan);
-    	    report.addGraph(graph);
-    	    m_kscReportFactory.setReport(kscReportId, report);
-    	    try {
+    public String getCount() {
+        readLock();
+        try {
+            return Integer.toString(m_kscReportService.getReportList().size());
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{kscReportId}")
+    @Transactional
+    public Response addGraph(@PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
+        writeLock();
+
+        try {
+            if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
+                throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
+            }
+            final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
+            final Graph graph = new Graph();
+            if (title != null) {
+                graph.setTitle(title);
+            }
+
+            boolean found = false;
+            for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+                if (valid.equals(timespan)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                LogUtils.debugf(this, "invalid timespan ('%s'), setting to '7_day' instead.", timespan);
+                timespan = "7_day";
+            }
+
+            graph.setGraphtype(reportName);
+            graph.setResourceId(resourceId);
+            graph.setTimespan(timespan);
+            report.addGraph(graph);
+            m_kscReportFactory.setReport(kscReportId, report);
+            try {
                 m_kscReportFactory.saveCurrent();
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-    	    return Response.ok().build();
-	    } finally {
-	        writeUnlock();
-	    }
-	}
-	
-	@Entity
-	@XmlRootElement(name="kscReports")
-	@XmlAccessorType(XmlAccessType.NONE)
-	public static final class KscReportCollection extends LinkedList<KscReport> {
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getReport").build(kscReportId)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @Entity
+    @XmlRootElement(name = "kscReports")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static final class KscReportCollection extends LinkedList<KscReport> {
         private static final long serialVersionUID = -4169259948312457702L;
+
         private int m_totalCount;
 
-	    public KscReportCollection() {
-	        super();
-	    }
-
-	    public KscReportCollection(final Collection<? extends KscReport> c) {
-	        super(c);
-	    }
-
-	    public KscReportCollection(final Map<Integer, String> reportList) {
-	        for (final Integer key : reportList.keySet()) {
-	            add(new KscReport(key, reportList.get(key)));
-	        }
+        public KscReportCollection() {
+            super();
         }
 
-        @XmlElement(name="kscReport")
-	    public List<KscReport> getKscReports() {
-	        return this;
-	    }
+        public KscReportCollection(final Collection<? extends KscReport> c) {
+            super(c);
+        }
 
-	    public void setKscReports(final List<KscReport> reports) {
-	        clear();
-	        addAll(reports);
-	    }
-	    
-	    @XmlAttribute(name="count")
-	    public Integer getCount() {
-	        return this.size();
-	    }
-	    
-	    @XmlAttribute(name="totalCount")
-	    public int getTotalCount() {
-	        return m_totalCount;
-	    }
-	    
-	    public void setTotalCount(final int count) {
-	        m_totalCount = count;
-	    }
-	}
-	
+        public KscReportCollection(final Map<Integer, String> reportList) {
+            for (final Integer key : reportList.keySet()) {
+                add(new KscReport(key, reportList.get(key)));
+            }
+        }
+
+        @XmlElement(name = "kscReport")
+        public List<KscReport> getKscReports() {
+            return this;
+        }
+
+        public void setKscReports(final List<KscReport> reports) {
+            clear();
+            addAll(reports);
+        }
+
+        @XmlAttribute(name = "count")
+        public Integer getCount() {
+            return this.size();
+        }
+
+        @XmlAttribute(name = "totalCount")
+        public int getTotalCount() {
+            return m_totalCount;
+        }
+
+        public void setTotalCount(final int count) {
+            m_totalCount = count;
+        }
+    }
+
     @Entity
     @XmlRootElement(name = "kscReport")
     @XmlAccessorType(XmlAccessType.NONE)
     public static final class KscReport {
-        @XmlAttribute(name="id", required=true)
+        @XmlAttribute(name = "id", required = true)
         private Integer m_id;
-        @XmlAttribute(name="label", required=true)
+
+        @XmlAttribute(name = "label", required = true)
         private String m_label;
 
-        public KscReport() {}
+        public KscReport() {
+        }
 
         public KscReport(final Integer reportId, final String label) {
             m_id = reportId;
@@ -247,15 +246,15 @@ public class KscRestService extends OnmsRestService {
         public Integer getId() {
             return m_id;
         }
-        
+
         public void setId(final Integer id) {
             m_id = id;
         }
-        
+
         public String getLabel() {
             return m_label;
         }
-        
+
         public void setLabel(final String label) {
             m_label = label;
         }

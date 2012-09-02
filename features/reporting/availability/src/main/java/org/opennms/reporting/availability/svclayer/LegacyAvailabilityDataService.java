@@ -46,10 +46,10 @@ import java.util.ListIterator;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.reporting.availability.AvailabilityConstants;
 import org.opennms.reporting.datablock.Node;

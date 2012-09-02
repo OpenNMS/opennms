@@ -35,7 +35,6 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.dao.castor.SiteStatusViewsFactory;
 
 public class SiteStatusViewsFactoryTest extends TestCase {
 	

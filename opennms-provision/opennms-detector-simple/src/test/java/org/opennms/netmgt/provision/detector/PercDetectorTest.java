@@ -71,12 +71,12 @@ public class PercDetectorTest implements InitializingBean {
         m_detector.setTimeout(500);
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setArrayNumber("0.1");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

@@ -32,7 +32,7 @@ package org.opennms.netmgt.poller;
  * <P>
  * The NetworkInterface class is designed to be a well defined front for passing
  * interfaces to a service monitor. There are many different types of network in
- * use today including IPv4, IPv6, IPX, and others. To accomidate the possible
+ * use today including IPv4, IPv6, IPX, and others. To accommodate the possible
  * differences this class provides the basic information that a monitor can use
  * to determine the type of interface and its expected address type.
  * </P>

@@ -29,9 +29,9 @@
 package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,9 +40,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 
 /**
@@ -181,47 +178,44 @@ public class PluginParameter implements Serializable, Comparable<PluginParameter
         return keys;
     }
 
-    /**
-     * <p>compareTo</p>
-     *
-     * @param obj a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginParameter} object.
-     * @return a int.
-     */
-    public int compareTo(PluginParameter obj) {
-        return new CompareToBuilder()
-            .append(getKey(), obj.getKey())
-            .toComparison();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("key", getKey())
-            .append("value", getValue())
-            .toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof PluginParameter) {
-            PluginParameter other = (PluginParameter) obj;
-            return new EqualsBuilder()
-                .append(getKey(), other.getKey())
-                .append(getValue(), other.getValue())
-                .isEquals();
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(701, 1873)
-            .append(getKey())
-            .append(getValue())
-            .toHashCode();
-      }
+        final int prime = 421;
+        int result = 1;
+        result = prime * result + ((m_key == null) ? 0 : m_key.hashCode());
+        result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
+        return result;
+    }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof PluginParameter)) return false;
+        final PluginParameter other = (PluginParameter) obj;
+        if (m_key == null) {
+            if (other.m_key != null) return false;
+        } else if (!m_key.equals(other.m_key)) {
+            return false;
+        }
+        if (m_value == null) {
+            if (other.m_value != null) return false;
+        } else if (!m_value.equals(other.m_value)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PluginParameter [key=" + m_key + ", value=" + m_value + "]";
+    }
+
+    @Override
+    public int compareTo(final PluginParameter other) {
+        return new CompareToBuilder()
+            .append(m_key, other.m_key)
+            .append(m_value, other.m_value)
+            .toComparison();
+    }
 }

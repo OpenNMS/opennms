@@ -45,7 +45,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -66,7 +65,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
          MockLogAppender.setupLogging();
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorFail() throws UnknownHostException{
 	    m_detector.setTimeout(1);
 	    m_detector.setNasID("asdfjlaks;dfjklas;dfj");
@@ -78,7 +77,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 		assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
 	}
 
-	@Test
+	@Test(timeout=90000)
 	@Ignore
 	public void testRunDetectorInTempThread() throws InterruptedException {
 		for(int i = 0; i < 1000; i++) {
@@ -97,7 +96,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 		}
 	}
 
-	@Test
+	@Test(timeout=90000)
 	@Ignore("have to have a radius server set up")
 	public void testDetectorPass() throws UnknownHostException{
 	    m_detector.setTimeout(1);

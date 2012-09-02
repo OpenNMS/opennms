@@ -294,8 +294,9 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         m_anticipated.add(new XmlrpcCall(method, params));
     }
 
+    // Implements Apache XMLRPC API
     @SuppressWarnings("unchecked")
-    public Object execute(String method, @SuppressWarnings("rawtypes") Vector vector) {
+    public Object execute(String method, Vector vector) {
         if (m_webServer == null) {
             String message = "Hey!  We aren't initialized (anymore)!  "
                 + "We should not be receiving execute calls!";

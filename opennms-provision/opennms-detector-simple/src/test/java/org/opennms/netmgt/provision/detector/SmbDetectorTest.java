@@ -54,7 +54,7 @@ public class SmbDetectorTest {
     }
     
     //Tested against a Windows XP machine on local network. 
-    @Test
+    @Test(timeout=30000)
     public void testMyDetector() throws UnknownHostException {
         //m_detector.init();
         //FIXME: This needs to be fixed

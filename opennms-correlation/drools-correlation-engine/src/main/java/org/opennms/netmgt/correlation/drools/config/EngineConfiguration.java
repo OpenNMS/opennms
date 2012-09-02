@@ -35,7 +35,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.xml.sax.ContentHandler;

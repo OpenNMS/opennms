@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,30 +43,29 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImpl> {	
-    @Context private HttpServletRequest m_httpServletRequest;
-    
+public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImpl> {
+    @Context
+    private HttpServletRequest m_httpServletRequest;
+
     /** {@inheritDoc} */
     public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaTypes) {
         return type.isAssignableFrom(MultivaluedMapImpl.class);
     }
 
-	
     /** {@inheritDoc} */
-    public MultivaluedMapImpl readFrom(final Class<MultivaluedMapImpl> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType,
-            final MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException, WebApplicationException {
-	    
+    public MultivaluedMapImpl readFrom(final Class<MultivaluedMapImpl> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException, WebApplicationException {
+
         final MultivaluedMapImpl result = new MultivaluedMapImpl();
-		
-		@SuppressWarnings("unchecked")
-		final Enumeration<String> en = m_httpServletRequest.getParameterNames();
-		while(en.hasMoreElements()) {
-		    final String parmName = en.nextElement();
-		    final String[] parmValue = m_httpServletRequest.getParameterValues(parmName);
+
+        @SuppressWarnings("unchecked")
+        final Enumeration<String> en = m_httpServletRequest.getParameterNames();
+        while (en.hasMoreElements()) {
+            final String parmName = en.nextElement();
+            final String[] parmValue = m_httpServletRequest.getParameterValues(parmName);
             result.put(parmName, parmValue);
-		}
-		
-		return result;
-	}
+        }
+
+        return result;
+    }
 
 }

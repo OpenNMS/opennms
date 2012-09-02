@@ -127,8 +127,6 @@ final String baseHref = Util.calculateUrlBase( request );
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
-
-
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
 	</c:if>
@@ -136,7 +134,7 @@ final String baseHref = Util.calculateUrlBase( request );
 	<c:if test="${param.enableSpringDojo == 'true'}">	
 		<script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
    		<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-    	<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
+                <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">

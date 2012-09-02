@@ -35,35 +35,33 @@
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*
+		org.opennms.netmgt.config.notifications.*,
+		org.opennms.core.utils.ConfigFileConstants,
+		org.springframework.core.io.FileSystemResource
 	"
 %>
 
 <%!
-    EventConfDao m_eventconfFactory;
-    NotificationFactory m_notificationFactory;
+	private DefaultEventConfDao m_eventconfFactory;
+	private NotificationFactory m_notificationFactory;
 
-    public void init() throws ServletException {
-        try {
-            NotificationFactory.init();
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize "
-				       + "NotificationFactory: "
-				       + t.getMessage(), t);
-        }
+	public void init() throws ServletException {
+		try {
+			NotificationFactory.init();
+		} catch (Throwable t) {
+			throw new ServletException("Could not initialize NotificationFactory: " + t.getMessage(), t);
+		}
 
-        try {
-            EventconfFactory.init();
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize "
-				       + "EventconfFactory: "
-				       + t.getMessage(), t);
-        }
+		try {
+			m_eventconfFactory = new DefaultEventConfDao();
+			m_eventconfFactory.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
+			m_eventconfFactory.afterPropertiesSet();
+		} catch (Throwable e) {
+			throw new ServletException("Cannot load configuration file", e);
+		}
 
-        m_eventconfFactory = EventconfFactory.getInstance();
-        m_notificationFactory = NotificationFactory.getInstance();
-    }
-    
+		m_notificationFactory = NotificationFactory.getInstance();
+	}
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >

@@ -45,11 +45,11 @@ package org.opennms.acl.conf.dbunit;
 import java.io.FileInputStream;
 
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 public class DBAuthoritiesAuth extends DbUnit {
 
     public IDataSet getDataSet() throws Exception {
-        return new FlatXmlDataSet(new FileInputStream("src/test/resources/org/opennms/acl/conf/dbunit/authorities_auth-test.xml"));
+        return new FlatXmlDataSetBuilder().build(new FileInputStream("src/test/resources/org/opennms/acl/conf/dbunit/authorities_auth-test.xml"));
     }
 }

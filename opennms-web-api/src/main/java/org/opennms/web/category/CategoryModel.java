@@ -50,8 +50,8 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.config.categories.CatFactory;
 
 /**
  * <p>CategoryModel class.</p>

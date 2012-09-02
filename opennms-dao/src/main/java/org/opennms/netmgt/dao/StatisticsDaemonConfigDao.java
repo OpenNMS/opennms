@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.castor.statsd.Report;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.opennms.netmgt.model.ResourceReference;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

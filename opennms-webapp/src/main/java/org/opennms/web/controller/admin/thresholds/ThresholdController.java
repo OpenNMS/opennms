@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.EventconfFactory;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
@@ -85,13 +85,15 @@ public class ThresholdController extends AbstractController implements Initializ
     
     private ResourceDao m_resourceDao;
     
-    private boolean eventConfChanged=false; 
+    private EventConfDao m_eventConfDao; 
+    
+    private boolean eventConfChanged=false;
+    
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView;
         ThresholdingConfigFactory.init();
-        EventconfFactory.init();
         String editGroup = request.getParameter("editGroup");
         String deleteThreshold = request.getParameter("deleteThreshold");
         String editThreshold = request.getParameter("editThreshold");
@@ -466,7 +468,7 @@ public class ThresholdController extends AbstractController implements Initializ
         
         if(eventConfChanged) {
             try {
-                EventconfFactory.getInstance().saveCurrent();
+                m_eventConfDao.saveCurrent();
                 sendNotifEvent(createEventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI).getEvent());
             } catch (Throwable e) {
                 throw new ServletException("Could not save the changes to the event configuration because "+e.getMessage(),e);
@@ -558,7 +560,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
     
     private void ensureUEIInEventConf(String uei, String typeDesc) {
-        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI=EventconfFactory.getInstance().getEvents(uei);
+        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(uei);
         if(eventsForUEI==null || eventsForUEI.size()==0) {
             //UEI doesn't exist.  Add it
             org.opennms.netmgt.xml.eventconf.Event event=new org.opennms.netmgt.xml.eventconf.Event();
@@ -571,7 +573,7 @@ public class ThresholdController extends AbstractController implements Initializ
             logmsg.setContent("Threshold "+typeDesc+" for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
             event.setLogmsg(logmsg);
             event.setSeverity("Warning");
-            EventconfFactory.getInstance().addEventToProgrammaticStore(event);
+            m_eventConfDao.addEventToProgrammaticStore(event);
             eventConfChanged=true;
         }
     }
@@ -706,6 +708,16 @@ public class ThresholdController extends AbstractController implements Initializ
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
+    }
+
+
+    /**
+     * <p>setEventConfDao</p>
+     *
+     * @param eventConfDao a {@link EventConfDao} object.
+     */
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
     }
 
 }

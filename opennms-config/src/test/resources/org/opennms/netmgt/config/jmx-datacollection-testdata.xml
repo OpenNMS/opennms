@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config
+    rrdRepository = "${install.share.dir}/rrd/snmp/">
+    <jmx-collection name="jboss">
+        <rrd step = "300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+      
+        <mbeans>   
+          <mbean name="SystemInfo" objectname="jboss.system:type=ServerInfo">  
+              <attrib name="FreeMemory"   alias="FreeMemory"       type="gauge"/> 
+              <attrib name="TotalMemory"  alias="TotalMemory"      type="gauge"/>  
+          </mbean>  
+          
+          <mbean name="DefaultDSManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=DefaultDS">  
+              <attrib name="AvailableConnectionCount"   alias="DefDS_AvailConns"    type="gauge"/> 
+              <attrib name="ConnectionCount"            alias="DefDS_Conns"         type="gauge"/>  
+              <attrib name="InUseConnectionCount"       alias="DefDS_InUseConns"    type="gauge"/>  
+              <attrib name="ConnectionCreatedCount"     alias="DefDS_CreatedConns"  type="counter"/>  
+              <attrib name="ConnectionDestroyedCount"   alias="DefDS_DestroyConns"  type="counter"/>  
+          </mbean>  
+
+          <!-- JmsXA Connector Pool
+          <mbean name="JmsXAManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=JmsXA">  
+              <attrib name="AvailableConnectionCount"   alias="JmsXA_AvailConns"    type="gauge"/> 
+              <attrib name="ConnectionCount"            alias="JmsXA_Conns"         type="gauge"/>  
+              <attrib name="InUseConnectionCount"       alias="JmsXA_InUseConns"    type="gauge"/>  
+              <attrib name="ConnectionCreatedCount"     alias="JmsXA_CreatedConns"  type="gauge"/>  
+              <attrib name="ConnectionDestroyedCount"   alias="JmsXA_DestroyConns"  type="gauge"/>  
+          </mbean-->  
+ 
+          <!-- Destination Manager
+          <mbean name="MQ_DestinationManager" objectname="jboss.mq:service=DestinationManager">  
+              <attrib name="ClientCount"   alias="MQ_ClientCount"    type="gauge"/> 
+          </mbean-->  
+
+          <!-- an example of a Queue 
+          <mbean name="MQ_DestinationQueueA" objectname="jboss.mq.destination:service=Queue,name=A">  
+              <attrib name="QueueDepth"       alias="A_QueueDepth"       type="gauge"/> 
+              <attrib name="ReceiversCount"   alias="A_QueueRecv"        type="gauge"/> 
+              <attrib name="MaxDepth"         alias="A_QueueMaxDepth"    type="gauge"/> 
+          </mbean-->  
+
+          <!-- an example of a Topic
+          <mbean name="SecuredTopic" objectname="jboss.mq.destination:service=Topic,name=securedTopic">  
+              <attrib name="DurableMessageCount"         alias="ST_DurMsg"      type="gauge"/> 
+              <attrib name="NonDurableMessageCount"      alias="ST_NonDurMsg"   type="gauge"/> 
+              <attrib name="NonDurableSubscriptionCount" alias="ST_NonDurSub"   type="gauge"/> 
+              <attrib name="DurableSubscriptionCount"    alias="ST_DurSub"      type="gauge"/> 
+              <attrib name="AllMessageCount"             alias="ST_AllMsg"      type="gauge"/> 
+              <attrib name="MaxDepth"                    alias="ST_MaxDepth"    type="gauge"/> 
+              <attrib name="AllSubscriptionsCount"       alias="ST_AllSub"      type="gauge"/> 
+          </mbean-->  
+
+          <!-- Global Request Processor -->
+          <mbean name="GlobalRequestProcessor" 
+                 objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-8080">
+              <attrib name="requestCount"     alias="GRP_requests"     type="counter"/> 
+              <attrib name="maxTime"          alias="GRP_maxTime"      type="gauge"/> 
+              <attrib name="bytesSent"        alias="GRP_bytesSent"    type="counter"/> 
+              <attrib name="bytesReceived"    alias="GRP_bytesRec"     type="counter"/> 
+              <attrib name="processingTime"   alias="GRP_procTime"     type="counter"/> 
+              <attrib name="errorCount"       alias="GRP_errors"       type="counter"/> 
+          </mbean>  
+
+          <!-- Thread Pool -->
+          <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-8080">
+              <attrib name="currentThreadsBusy"   alias="BusyThreads"      type="gauge"/> 
+              <attrib name="currentThreadCount"   alias="Threads"          type="gauge"/> 
+              <attrib name="minSpareThreads"      alias="MinSpareThreads"  type="gauge"/> 
+              <attrib name="maxSpareThreads"      alias="MaxSpareThreads"  type="gauge"/> 
+              <attrib name="maxThreads"           alias="MaxThreads"       type="gauge"/> 
+          </mbean>
+ 
+       </mbeans>   
+    </jmx-collection>
+
+    <jmx-collection name="jsr160">
+        <rrd step = "300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+      
+        <mbeans>   
+          <mbean name="JMV Memory" objectname="java.lang:type=OperatingSystem">  
+              <attrib name="FreePhysicalMemorySize"   alias="FreeMemory"       type="gauge"/> 
+              <attrib name="TotalPhysicalMemorySize"  alias="TotalMemory"      type="gauge"/>  
+              <attrib name="FreeSwapSpaceSize"        alias="FreeSwapSpace"    type="gauge"/> 
+              <attrib name="TotalSwapSpaceSize"       alias="TotalSwapSpace"   type="gauge"/> 
+          </mbean>  
+          <mbean name="JMV Threading" objectname="java.lang:type=Threading">  
+              <attrib name="ThreadCount"           alias="ThreadCount"          type="gauge"/>  
+              <attrib name="PeakThreadCount"       alias="PeakThreadCount"      type="gauge"/>  
+              <attrib name="DaemonThreadCount"     alias="DaemonThreadCount"    type="gauge"/>  
+              <attrib name="CurrentThreadCpuTime"  alias="CurThreadCpuTime"     type="gauge"/>  
+          </mbean> 
+
+          <mbean name="JMV MemoryPool" objectname="java.lang:type=MemoryPool">  
+              <attrib name="CollectionUsageThresholdCount"  alias="CollectionUsage"       type="counter"/>  
+          </mbean> 
+
+          <mbean name="JMV ClassLoading" objectname="java.lang:type=ClassLoading">  
+              <attrib name="TotalLoadedClassCount"  alias="TotLoadedClasses"   type="gauge"/>  
+              <attrib name="LoadedClassCount"       alias="LoadedClasses"      type="gauge"/>  
+              <attrib name="UnloadedClassCount"     alias="UnloadedClass"      type="gauge"/>  
+          </mbean> 
+
+       </mbeans>   
+    </jmx-collection>
+
+</jmx-datacollection-config>

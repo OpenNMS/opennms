@@ -40,17 +40,6 @@
 	"
 %>
 
-<%!
-    public void init() throws ServletException {
-        try {
-            EventconfFactory.init();
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Cannot load configuration file", e );
-        }
-    }
-%>
-
 <%
     HttpSession user = request.getSession(true);
     Notification newNotice = (Notification)user.getAttribute("newNotice");

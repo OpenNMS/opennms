@@ -34,9 +34,10 @@ import java.util.List;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -61,6 +62,7 @@ import org.springframework.util.Assert;
  */
 @EventListener(name="OpenNMS:Statsd")
 public class Statsd implements SpringServiceDaemon {
+    private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
     private FilterDao m_filterDao;
@@ -208,7 +210,7 @@ public class Statsd implements SpringServiceDaemon {
     public void runReport(ReportDefinition reportDef) throws Throwable {
         final ReportInstance report;
         try {
-            report = reportDef.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+            report = reportDef.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
         } catch (Throwable t) {
             log().error("Could not create a report instance for report definition " + reportDef + ": " + t, t);
             throw t;
@@ -238,6 +240,7 @@ public class Statsd implements SpringServiceDaemon {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+        Assert.state(m_nodeDao != null, "property nodeDao must be set to a non-null value");
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
         Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
         Assert.state(m_filterDao != null, "property filterDao must be set to a non-null value");
@@ -247,7 +250,21 @@ public class Statsd implements SpringServiceDaemon {
         Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
         Assert.state(m_eventForwarder != null, "eventForwarder property must be set to a non-null value");
     }
-    
+
+    /**
+     * @return the nodeDao
+     */
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    /**
+     * @param nodeDao the nodeDao to set
+     */
+    public void setNodeDao(NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
+    }
+
     /**
      * <p>getResourceDao</p>
      *
@@ -359,7 +376,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getFilterDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
@@ -368,7 +385,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;

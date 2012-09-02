@@ -90,7 +90,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testUsers() throws Exception {
         createGroup("deleteMe");
 
-        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 200);
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 303);
 
         String xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertTrue(xml.contains("totallyUniqueUser"));

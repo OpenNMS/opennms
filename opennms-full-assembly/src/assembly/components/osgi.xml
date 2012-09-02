@@ -1,0 +1,18 @@
+<component>
+  <fileSets>
+    <fileSet>
+      <filtered>false</filtered>
+      <outputDirectory>/system</outputDirectory>
+      <directory>target/features-repo</directory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
+      <filtered>false</filtered>
+      <outputDirectory>/</outputDirectory>
+      <directory>target/resources</directory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+  </fileSets>
+</component>

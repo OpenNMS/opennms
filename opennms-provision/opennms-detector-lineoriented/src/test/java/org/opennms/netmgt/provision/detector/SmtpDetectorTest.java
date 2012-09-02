@@ -83,7 +83,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongCodeExpectedMultilineRequest() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
             
@@ -103,7 +103,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailIncompleteMultilineResponseFromServer() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
             
@@ -123,7 +123,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailBogusSecondLine() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
             
@@ -144,7 +144,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongTypeOfBanner() throws Exception {
         
         m_server.setBanner("bogus");
@@ -153,19 +153,19 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailServerStopped() throws Exception {
         m_server.stopServer();
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(1);
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucess() throws Exception {
         assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }

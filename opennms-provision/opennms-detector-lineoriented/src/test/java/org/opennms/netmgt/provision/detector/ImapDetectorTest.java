@@ -72,7 +72,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             
@@ -89,7 +89,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             
             //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
@@ -104,7 +104,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailUnexpectedBanner() throws Exception{
         m_server  = new SimpleServer() {
             
@@ -132,7 +132,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailUnexpectedLogoutResponse() throws Exception{
         m_server  = new SimpleServer() {
             

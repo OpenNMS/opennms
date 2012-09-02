@@ -91,7 +91,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 					// clear the foreign source cache
 					if (m_dirtyForeignSources.size() > 0) {
 						for (final String dirtyForeignSource : m_dirtyForeignSources) {
-							final ForeignSource fs = m_foreignSources.get(dirtyForeignSource);
+							final ForeignSource fs = getForeignSourceMap().get(dirtyForeignSource);
 							if (fs == null) {
 								m_foreignSourceRepository.delete(fs);
 							} else {
@@ -105,7 +105,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 					// clear the requisition cache
 					if (m_dirtyRequisitions.size() > 0) {
 						for (final String dirtyRequisition : m_dirtyRequisitions) {
-							final Requisition r = m_requisitions.get(dirtyRequisition);
+							final Requisition r = getRequisitionMap().get(dirtyRequisition);
 							if (r == null) {
 								m_foreignSourceRepository.delete(r);
 							} else {
@@ -386,4 +386,9 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		cleanCache();
 		super.finalize();
 	}
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        getRefreshRunnable().run();
+    }
 }

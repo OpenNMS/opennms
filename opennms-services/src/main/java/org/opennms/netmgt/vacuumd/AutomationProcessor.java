@@ -43,8 +43,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
@@ -652,7 +652,8 @@ public class AutomationProcessor implements ReadyRunnable {
      *
      * @param automation a {@link org.opennms.netmgt.config.vacuumd.Automation} object.
      */
-    public AutomationProcessor(Automation automation) {
+    @SuppressWarnings("deprecation")
+	public AutomationProcessor(Automation automation) {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()));

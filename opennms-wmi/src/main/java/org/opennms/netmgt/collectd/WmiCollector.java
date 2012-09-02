@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
@@ -47,7 +48,6 @@ import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
 import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.collector.AttributeGroupType;

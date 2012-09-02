@@ -190,28 +190,35 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	@Transactional
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
 		final Timestamp scanTime = new Timestamp(System.currentTimeMillis());
+	
+	LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
+	if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
+	    processOspf(node,snmpColl,null,scanTime);
+	}
+        
+	LogUtils.debugf(this, "storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: %b/%b/%b", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
+        if (snmpColl.hasLldpLocalGroup()) {
+	        processLldp(node,snmpColl,null,scanTime);
+	}
+        
+        LogUtils.debugf(this, "storeSnmpCollection: hasIpNetToMediaTable: %b", snmpColl.hasIpNetToMediaTable());
         if (snmpColl.hasIpNetToMediaTable()) {
             processIpNetToMediaTable(node, snmpColl, null, scanTime);
-        } else {
-            LogUtils.debugf(this, "storeSnmpCollection: hasIpNetToMediaTable = false");
         }
 
+        LogUtils.debugf(this, "storeSnmpCollection: hasCdpCacheTable: %b", snmpColl.hasCdpCacheTable());
         if (snmpColl.hasCdpCacheTable()) {
             processCdpCacheTable(node, snmpColl, null, scanTime);
-        } else {
-            LogUtils.debugf(this, "storeSnmpCollection: hasCdpCacheTable = false");
         }
 
+        LogUtils.debugf(this, "storeSnmpCollection: hasRouteTable: %b", snmpColl.hasRouteTable());
         if (snmpColl.hasRouteTable()) {
             processRouteTable(node, snmpColl, null, scanTime);
-        } else {
-            LogUtils.debugf(this, "storeSnmpCollection: hasRouteTable = false");
         }
 
+        LogUtils.debugf(this, "storeSnmpCollection: hasVlanTable: %b", snmpColl.hasVlanTable());
         if (snmpColl.hasVlanTable()) {
             processVlanTable(node, snmpColl, null, scanTime);
-        } else {
-            LogUtils.debugf(this, "storeSnmpCollection: hasVlanTable = false");
         }
 
         for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
@@ -335,23 +342,19 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
 	@Override
-	protected int getNodeidFromIp(final Connection dbConn, final InetAddress cdpTargetIpAddr) throws SQLException {
+	protected List<Integer> getNodeidFromIp(final Connection dbConn, final InetAddress cdpTargetIpAddr) throws SQLException {
+        List<Integer> nodeids = new ArrayList<Integer>();
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("ipAddress", cdpTargetIpAddr));
         criteria.add(Restrictions.eq("node.type", "A"));
         List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
         
-        if (interfaces.isEmpty()) {
-        	return -1;
-        } else {
-        	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "getNodeidFromIp: More than one node matches ipAddress %s", str(cdpTargetIpAddr));
-        	}
-        	final OnmsNode node = interfaces.get(0).getNode();
-        	if (node == null) return -1;
-			return node.getId();
+	LogUtils.debugf(this, "getNodeidFromIp: Found %d nodeids matching ipAddress %s", interfaces.size(),str(cdpTargetIpAddr));
+        for (final OnmsIpInterface ipinterface : interfaces) {
+            nodeids.add(ipinterface.getNode().getId());
         }
+        return nodeids;
 	}
 
 	// SELECT node.nodeid,snmpinterface.snmpifindex,snmpinterface.snmpipadentnetmask FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid LEFT JOIN snmpinterface ON ipinterface.snmpinterfaceid = snmpinterface.id WHERE node.nodetype = 'A' AND ipinterface.ipaddr = ?
@@ -704,6 +707,20 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
+    }
+    
+    @Transactional
+    public Integer getFromSysnameIpAddress(String lldpRemSysname,
+            InetAddress lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ipAddress",lldpRemPortid));
+        final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty()) {
+            return interfaces.get(0).getIfIndex();
+        }
+        return null;
     }
 
 }

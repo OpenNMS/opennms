@@ -95,25 +95,25 @@ public class MX4JDetectorTest implements InitializingBean {
         m_connectorServer.stop();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectoredWired(){
         assertNotNull(m_detector);
     }
    
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws IOException{
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongPort() throws UnknownHostException{
         m_detector.setPort(9000);
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongUrlPath() throws UnknownHostException{
         m_detector.setUrlPath("wrongpath");
         m_detector.init();

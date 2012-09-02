@@ -105,7 +105,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
     private final AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    public Jni6PingRequest(Jni6PingRequestId id, long timeout, int retries, int packetsize, ThreadCategory log, PingResponseCallback callback) {
+    public Jni6PingRequest(final Jni6PingRequestId id, final long timeout, final int retries, final int packetsize, final ThreadCategory log, final PingResponseCallback callback) {
         m_id = id;
         m_timeout = timeout;
         m_retries = retries;
@@ -114,15 +114,15 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
         m_callback = callback;
     }
     
-    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, ThreadCategory logger, PingResponseCallback cb) {
+    public Jni6PingRequest(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long timeout, final int retries, final int packetsize, final ThreadCategory logger, final PingResponseCallback cb) {
         this(new Jni6PingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, packetsize, logger, cb);
     }
     
-    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+    public Jni6PingRequest(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long timeout, final int retries, final int packetsize, final PingResponseCallback cb) {
         this(addr, identifier, sequenceNumber, threadId, timeout, retries, packetsize, ThreadCategory.getInstance(Jni6PingRequest.class), cb);
     }
 
-    public Jni6PingRequest(Inet6Address addr, int identifier, int sequenceNumber, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+    public Jni6PingRequest(final Inet6Address addr, final int identifier, final int sequenceNumber, final long timeout, final int retries, final int packetsize, final PingResponseCallback cb) {
         this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, packetsize, cb);
     }
 
@@ -133,7 +133,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      * @param reply a {@link org.opennms.netmgt.icmp.Jni6PingResponse.JniPingResponse.PingReply} object.
      * @return a boolean.
      */
-    public boolean processResponse(Jni6PingResponse reply) {
+    public boolean processResponse(final Jni6PingResponse reply) {
         try {
             m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
             m_callback.handleResponse(m_id.getAddress(), reply);
@@ -181,7 +181,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append('[');
         sb.append("ID=").append(m_id).append(',');
         sb.append("Retries=").append(m_retries).append(",");
@@ -194,7 +194,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
     }
 
     /** {@inheritDoc} */
-    public long getDelay(TimeUnit unit) {
+    public long getDelay(final TimeUnit unit) {
         return unit.convert(m_expiration - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
@@ -204,9 +204,9 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      * @param request a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
-    public int compareTo(Delayed request) {
-        long myDelay = getDelay(TimeUnit.MILLISECONDS);
-        long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
+    public int compareTo(final Delayed request) {
+        final long myDelay = getDelay(TimeUnit.MILLISECONDS);
+        final long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
         if (myDelay < otherDelay) return -1;
         if (myDelay == otherDelay) return 0;
         return 1;
@@ -221,7 +221,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
         return m_id;
     }
 
-    public void processError(Throwable t) {
+    public void processError(final Throwable t) {
         try {
             m_callback.handleError(m_id.getAddress(), this, t);
         } finally {
@@ -229,7 +229,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
         }
     }
     
-    private void setProcessed(boolean processed) {
+    private void setProcessed(final boolean processed) {
         m_processed.set(processed);
     }
 
@@ -247,24 +247,24 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      *
      * @param socket a {@link org.opennms.protocols.icmp.IcmpSocket} object.
      */
-    public void send(ICMPv6Socket socket) {
+    public void send(final ICMPv6Socket socket) {
         try {
             m_requestPacket = createRequestPacket();
     
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
-            byte[] data = m_requestPacket.toBytes();
+            final byte[] data = m_requestPacket.toBytes();
             m_expiration = System.currentTimeMillis() + m_timeout;
             send(socket, new DatagramPacket(data, data.length, m_id.getAddress(), 0));
 
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_callback.handleError(m_id.getAddress(), this, t);
         }
     }
 
-    private void send(ICMPv6Socket socket, DatagramPacket packet) throws IOException {
+    private void send(final ICMPv6Socket socket, final DatagramPacket packet) throws IOException {
         try {
             socket.send(packet);
-        } catch(IOException e) {
+        } catch(final IOException e) {
             if (e.getMessage().matches("sendto error \\(65, .*\\)")) {
                 throw new NoRouteToHostException("No Route to Host " + m_id.getAddress() + ": " + e.getMessage());
             } else if (e.getMessage().matches("sendto error \\(64, .*\\)")) {
@@ -313,9 +313,9 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
     }
 
     @Override
-    public double elapsedTime(TimeUnit timeUnit) {
+    public double elapsedTime(final TimeUnit timeUnit) {
         // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
-        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
+        final double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
         return (getRequestPacket().getRoundTripTime() * 1000) / nanosPerUnit;
     }
 

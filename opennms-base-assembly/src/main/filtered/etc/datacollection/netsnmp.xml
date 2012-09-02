@@ -26,6 +26,24 @@
       </storageStrategy>
     </resourceType>
 
+    <resourceType name="lmTempIndex" label="Hardware Sensors: Temperature (lmSensors MIB)" 
+                  resourceLabel="${lms-tempdevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="lmFanIndex" label="Hardware Sensors: Fan (lmSensors MIB)"
+                  resourceLabel="${lms-fandevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="lmVoltIndex" label="Hardware Sensors: Voltage (lmSensors MIB)"
+                  resourceLabel="${lms-voltdevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
       <!-- Net-SNMP MIBs -->
       <group name="net-snmp-disk" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="dskIndex" alias="ns-dskPath"    type="string" />
@@ -104,6 +122,22 @@
         <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.6" instance="diskIOIndex" alias="diskIOWrites"   type="counter" />
       </group>
 
+      <!-- lmsensors MIBs -->
+      <group name="lmsensors-temp" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.2.1.2" instance="lmTempIndex" alias="lms-tempdevice" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.2.1.3" instance="lmTempIndex" alias="lms-temp" type="gauge32"/>
+      </group>
+
+      <group name="lmsensors-fan" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.3.1.2" instance="lmFanIndex" alias="lms-fandevice" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.3.1.3" instance="lmFanIndex" alias="lms-fan" type="gauge32"/>
+      </group>
+
+      <group name="lmsensors-volt" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.4.1.2" instance="lmVoltIndex" alias="lms-voltdevice" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.4.1.3" instance="lmVoltIndex" alias="lms-volt" type="gauge32"/>
+      </group>
+
       <systemDef name="Net-SNMP (UCD)">
         <sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
         <collect>
@@ -111,13 +145,16 @@
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
-	  <includeGroup>net-snmp-disk-more</includeGroup>
-	  <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-	  <includeGroup>ucd-sysstat-raw</includeGroup>
-	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
         </collect>
       </systemDef>
 
@@ -128,16 +165,19 @@
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
-	  <includeGroup>net-snmp-disk-more</includeGroup>
-	  <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
           <includeGroup>openmanage-coolingdevices</includeGroup>
           <includeGroup>openmanage-temperatureprobe</includeGroup>
           <includeGroup>openmanage-powerusage</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-	  <includeGroup>ucd-sysstat-raw</includeGroup>
-	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
         </collect>
       </systemDef>
 
@@ -152,16 +192,19 @@
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
-	  <includeGroup>net-snmp-disk-more</includeGroup>
-	  <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
           <includeGroup>openmanage-coolingdevices</includeGroup>
           <includeGroup>openmanage-temperatureprobe</includeGroup>
           <includeGroup>openmanage-powerusage</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-	  <includeGroup>ucd-sysstat-raw</includeGroup>
-	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
         </collect>
       </systemDef>
 
@@ -176,16 +219,19 @@
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
-	  <includeGroup>net-snmp-disk-more</includeGroup>
-	  <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
           <includeGroup>openmanage-coolingdevices</includeGroup>
           <includeGroup>openmanage-temperatureprobe</includeGroup>
           <includeGroup>openmanage-powerusage</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-	  <includeGroup>ucd-sysstat-raw</includeGroup>
-	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
         </collect>
       </systemDef>
 </datacollection-group>

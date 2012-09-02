@@ -24,10 +24,17 @@
 
   <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
   	<qualifier value="fused" />
+  	<property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
+  	<property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
   </bean>
 
   <bean id="cachingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.CachingForeignSourceRepository">
   	<qualifier value="caching" />
+  	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
+  </bean>
+
+  <bean id="queueingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.QueueingForeignSourceRepository">
+  	<qualifier value="queueing" />
   	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
   </bean>
 </beans>

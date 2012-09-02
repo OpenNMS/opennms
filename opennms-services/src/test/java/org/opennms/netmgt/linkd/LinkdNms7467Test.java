@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
@@ -61,14 +62,13 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.StpInterfaceDao;
 import org.opennms.netmgt.dao.StpNodeDao;
 import org.opennms.netmgt.dao.VlanDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -76,6 +76,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -127,6 +128,12 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
+        
         MockLogAppender.setupLogging(p);
 
     }
@@ -141,7 +148,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testCiscoWsC2948Collection() throws Exception {
         
@@ -227,7 +234,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoC870Collection() throws Exception {
         m_nodeDao.save(getCiscoC870());
@@ -342,7 +349,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testNetGearSw108Collection() throws Exception {
         m_nodeDao.save(getNetGearSw108());
@@ -443,7 +450,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCollection() throws Exception {
         m_nodeDao.save(getLinuxUbuntu());
@@ -524,7 +531,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt")
     })
     public void testDarmin108Collection() throws Exception {
         m_nodeDao.save(getDarwin108());
@@ -617,7 +624,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkDarwinNetgear() throws Exception {
         m_nodeDao.save(getNetGearSw108());
@@ -662,7 +669,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkNetgearCiscoWs() throws Exception {
         m_nodeDao.save(getNetGearSw108());
@@ -707,7 +714,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCiscoWs() throws Exception {
         m_nodeDao.save(getLinuxUbuntu());
@@ -752,7 +759,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testWorkstationCiscoWs() throws Exception {
         m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
@@ -842,7 +849,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.flush();
         
-        m_linkdConfig.updatePackageIpListMap();
+        m_linkdConfig.update();
         assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
         
     }
@@ -854,7 +861,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP));
+        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP)).get(0);
         assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
     }
     
@@ -884,7 +891,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoRouterCiscoWsUsingCdp() throws Exception {
         m_nodeDao.save(getCiscoC870());
@@ -949,7 +956,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     */
    @Test
    @JUnitSnmpAgents(value={
-           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt"),
+           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/"+CISCO_WS_C2948_IP+"-walk.txt")
    })
    public void testCiscoAccessPointCiscoWsUsingCdp() throws Exception {
        m_nodeDao.save(getCiscoWsC2948());
@@ -1004,7 +1011,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/"+CISCO_C870_IP+"-walk.txt"),
            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt"),
            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/"+NETGEAR_SW_108_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt"),
+           @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/"+LINUX_UBUNTU_IP+"-walk.txt")
    })
    public void testAllTogether() throws Exception {
 
@@ -1098,10 +1105,5 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
        assertEquals(-1, ciscoaplinktociscows.getIfIndex().intValue());
        assertEquals(ciscows.getId(), ciscoaplinktociscows.getNodeParentId());
        assertEquals(47,ciscoaplinktociscows.getParentIfIndex().intValue());
-       
-
-       
-
    }
-   
 }

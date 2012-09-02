@@ -38,10 +38,10 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * 

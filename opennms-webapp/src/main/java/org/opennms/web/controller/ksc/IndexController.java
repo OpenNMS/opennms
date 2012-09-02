@@ -65,6 +65,7 @@ public class IndexController extends AbstractController implements InitializingB
         modelAndView.addObject("kscReadOnly", ( (!request.isUserInRole( Authentication.ROLE_ADMIN )) || request.isUserInRole(Authentication.ROLE_READONLY)) || (request.getRemoteUser() == null));
         modelAndView.addObject("reports", getKscReportService().getReportList());
         modelAndView.addObject("nodeResources", getResourceService().findNodeResources());
+        modelAndView.addObject("nodeSourceResources", getResourceService().findNodeSourceResources());
         modelAndView.addObject("domainResources", getResourceService().findDomainResources());
         
         return modelAndView;

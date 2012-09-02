@@ -80,4 +80,8 @@ public class EasyMockUtils {
             EasyMock.reset(o);
         }
     }
+
+    public void remove(Object o) {
+        m_mocks.remove(o);
+    }
 }

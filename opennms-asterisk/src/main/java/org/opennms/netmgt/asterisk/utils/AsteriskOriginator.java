@@ -48,7 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.AmiPeerFactory;
-import org.opennms.protocols.ami.AmiAgentConfig;
+import org.opennms.netmgt.config.ami.AmiAgentConfig;
 
 /**
  * Originates a call using the Asterisk Manager API

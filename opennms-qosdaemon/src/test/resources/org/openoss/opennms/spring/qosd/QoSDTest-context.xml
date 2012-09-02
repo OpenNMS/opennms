@@ -8,6 +8,7 @@
 		<!-- Installed from src/test/resources -->
 		<property name="location" value="classpath:qosdrx.properties"/>
 	</bean>
+	<import resource="classpath:META-INF/opennms/applicationContext-soa.xml"/>
 	<import resource="classpath:META-INF/opennms/applicationContext-dao.xml"/>
 	<import resource="classpath:META-INF/opennms/applicationContext-daemon.xml"/>
 	<import resource="classpath:META-INF/opennms/mockEventIpcManager.xml"/>

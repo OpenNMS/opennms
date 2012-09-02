@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -146,6 +147,7 @@ public class ResourceDataSource implements JRDataSource {
         ResourcePathFileTraversal traverser = new ResourcePathFileTraversal(new File(query.constructBasePath()));
         traverser.addDatasourceFilters(query.getFilters());
         m_paths = traverser.traverseDirectory();
+        Collections.sort(m_paths);
         System.err.println("paths: " + m_paths);
     }
 

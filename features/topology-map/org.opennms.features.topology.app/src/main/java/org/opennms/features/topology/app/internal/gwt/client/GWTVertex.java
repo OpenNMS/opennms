@@ -9,7 +9,13 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
 public class GWTVertex extends JavaScriptObject {
-
+    
+    /**
+     * CSS Class name for a vertex
+     */
+    public static final String VERTEX_CLASS_NAME = ".vertex";
+    public static final String SELECTED_VERTEX_CLASS_NAME = ".vertex.selected";
+    
     protected GWTVertex() {};
     
     public final native String getId()/*-{
@@ -31,6 +37,30 @@ public class GWTVertex extends JavaScriptObject {
     public final native boolean isSelected() /*-{
         return this.selected;
     }-*/;
+    
+    public final native void setLabel(String label) /*-{
+    	this.label = label;
+    }-*/;
+    
+    public final native String getLabel() /*-{
+    	return this.label;
+    }-*/;
+
+    public final native void setIpAddr(String ipAddr) /*-{
+        this.ipAddr = ipAddr;
+    }-*/;
+    
+    public final native void getIpAddr() /*-{
+        return this.ipAddr;
+    }-*/;
+    
+    public final native void setNodeID(int nodeID) /*-{
+    	this.nodeID = nodeID;
+	}-*/;
+
+    public final native void getNodeID() /*-{
+    	return this.nodeID;
+	}-*/;
     
     public static native GWTVertex create(String id, int x, int y) /*-{
         return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
@@ -108,6 +138,27 @@ public class GWTVertex extends JavaScriptObject {
             
         };
     }
+    
+    protected static Func<String, GWTVertex> getClassName() {
+        // TODO Auto-generated method stub
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "vertex selected" : "vertex";
+            }};
+    }
+    
+    protected static Func<String, GWTVertex> strokeFilter(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "blue" : "none";
+            }
+            
+        };
+    }
 
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
@@ -124,8 +175,9 @@ public class GWTVertex extends JavaScriptObject {
 
             public String call(GWTVertex datum, int index) {
                 if(datum.getIconUrl().equals("")) {
-                    return GWT.getModuleBaseURL() + "topologywidget/images/server.png";
+                    return GWT.getModuleBaseURL() + "topologywidget/images/test.svg";
                 }else {
+                    
                     return datum.getIconUrl();
                 }
                 
@@ -133,12 +185,23 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    static Func<String, GWTVertex> label() {
+    	return new Func<String, GWTVertex>() {
+
+			@Override
+			public String call(GWTVertex datum, int index) {
+				return datum.getLabel() == null ? "no label provided" : datum.getLabel();
+			}
+    		
+    	};
+    }
+    
     public static D3Behavior draw() {
         return new D3Behavior() {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).style("stroke", GWTVertex.strokeFilter()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
@@ -148,7 +211,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                D3 vertex = selection.append("g").attr("class", "little");
+                D3 vertex = selection.append("g").attr("class", "vertex");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
                 
@@ -160,6 +223,14 @@ public class GWTVertex extends JavaScriptObject {
                       .attr("width", "48px")
                       .attr("height", "48px");
                 
+                vertex.append("text")
+                      .attr("class", "vertex-label")
+                      .attr("x", "0px")
+                      .attr("y",  "28px")
+                      .attr("text-anchor", "middle")
+                      .attr("alignment-baseline", "text-before-edge")
+                      .text(label());
+                
                 vertex.call(draw());
                 
                 return vertex;
@@ -167,6 +238,10 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
+    public static final native void logDocument(Object doc)/*-{
+        $wnd.console.log(doc)
+    }-*/;
+    
 	public final native void setParent(GWTGroup group) /*-{
 		this.group = group;
 	}-*/;
@@ -188,5 +263,4 @@ public class GWTVertex extends JavaScriptObject {
 		}
 		
 	}
-
 }

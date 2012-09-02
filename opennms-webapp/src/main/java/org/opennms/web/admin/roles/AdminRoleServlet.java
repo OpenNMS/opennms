@@ -41,7 +41,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.BasicScheduleUtils;
+import org.opennms.netmgt.config.WebCalendar;
+import org.opennms.netmgt.config.WebGroupManager;
+import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleManager;
+import org.opennms.netmgt.config.WebSchedEntry;
+import org.opennms.netmgt.config.WebUserManager;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.groups.Time;
 
@@ -342,11 +349,11 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         super.init();
 
         try {
-            AppContext.init();
+            WebRoleContext.init();
             
-            getServletContext().setAttribute("roleManager", AppContext.getWebRoleManager());
-            getServletContext().setAttribute("userManager", AppContext.getWebUserManager());
-            getServletContext().setAttribute("groupManager", AppContext.getWebGroupManager());
+            getServletContext().setAttribute("roleManager", WebRoleContext.getWebRoleManager());
+            getServletContext().setAttribute("userManager", WebRoleContext.getWebUserManager());
+            getServletContext().setAttribute("groupManager", WebRoleContext.getWebGroupManager());
         } catch (Throwable e) {
             throw new ServletException("Error initializing RolesServlet", e);
         }
@@ -355,15 +362,15 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     }
 
     private WebRoleManager getRoleManager() {
-        return AppContext.getWebRoleManager();
+        return WebRoleContext.getWebRoleManager();
     }
     
     private WebUserManager getUserManager() {
-        return AppContext.getWebUserManager();
+        return WebRoleContext.getWebUserManager();
     }
 
     private WebGroupManager getGroupManager() {
-        return AppContext.getWebGroupManager();
+        return WebRoleContext.getWebGroupManager();
     }
 
 }

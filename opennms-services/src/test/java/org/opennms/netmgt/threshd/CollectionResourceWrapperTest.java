@@ -43,8 +43,10 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.collectd.IfResourceType;
@@ -56,13 +58,11 @@ import org.opennms.netmgt.collectd.SnmpAttribute;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -112,7 +112,27 @@ public class CollectionResourceWrapperTest {
         EasyMock.verify(agent);
     }
     
-     @Test
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadConstructorCall() throws Throwable {
+        try {
+            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null);
+        } catch (Throwable e) {
+            //e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadderConstructorCall() throws Throwable {
+        try {
+            new CollectionResourceWrapper(null, -1, null, null, null, null, null);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test
     public void testGetCounterValue() throws Exception {
         // Create Resource
         CollectionAgent agent = createCollectionAgent();

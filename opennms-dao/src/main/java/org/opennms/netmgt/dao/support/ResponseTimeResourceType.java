@@ -164,4 +164,14 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     public String getLinkForResource(final OnmsResource resource) {
         return "element/interface.jsp?node=" + resource.getParent().getName() + "&intf=" + resource.getName();
     }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+        return getResourcesForNodeSource(nodeSource, nodeId).size() > 0;
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        return getResourcesForNode(nodeId);
+    }
 }

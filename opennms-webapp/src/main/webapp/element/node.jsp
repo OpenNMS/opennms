@@ -182,6 +182,14 @@
     
     nodeModel.put("node", node_db);
     
+    if(!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
+        nodeModel.put("parentRes", node_db.getForeignSource() + ":" + node_db.getForeignId());
+        nodeModel.put("parentResType", "nodeSource");
+    } else {
+        nodeModel.put("parentRes", Integer.toString(nodeId));
+        nodeModel.put("parentResType", "node");
+    }
+    
     pageContext.setAttribute("model", nodeModel);
 %>
 
@@ -250,8 +258,8 @@
     
     <c:if test="${! empty model.resources}">
       <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-        <c:param name="parentResourceType" value="node"/>
-        <c:param name="parentResource" value="${model.id}"/>
+        <c:param name="parentResourceType" value="${model.parentResType}"/>
+        <c:param name="parentResource" value="${model.parentRes}"/>
         <c:param name="reports" value="all"/>
       </c:url>
       <li class="o-menuitem">

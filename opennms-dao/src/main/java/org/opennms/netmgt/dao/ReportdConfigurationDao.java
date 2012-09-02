@@ -30,8 +30,8 @@ package org.opennms.netmgt.dao;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reportd.Report;
+import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

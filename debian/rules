@@ -197,7 +197,12 @@ install: build
 	find debian/opennms-common/usr/share/opennms/bin -type f -execdir chmod 755 {} \;
 	mv debian/temp/etc/* debian/opennms-common/etc/opennms/
 	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
-
+	
+	# move karaf stuff to common
+	mv debian/temp/{data,deploy,system} debian/opennms-common/usr/share/opennms/
+	find debian/opennms-common/usr/share/opennms/{data,deploy,system} ! -type d -execdir chmod 644 {} \;
+	find debian/opennms-common/usr/share/opennms/{data,deploy,system}   -type d -execdir chmod 755 {} \;
+	
 	# Adjust permissions for config files containing sensitive information
 	install -m 644 debian/opennms-common.overrides debian/opennms-common/usr/share/lintian/overrides/opennms-common
 	chmod 640 \

@@ -125,4 +125,20 @@ public interface ServiceRegistry {
      */
     public <T> void removeListener(Class<T> service, RegistrationListener<T> listener);
     
+
+    /**
+     * <p>addRegistrationHook</p>
+     *
+     * @param hook a {@link org.opennms.core.soa.RegistrationHook} object.
+     * @param notifyForExistingProviders a boolean.
+     */
+    public void addRegistrationHook(RegistrationHook hook, boolean notifyForExistingProviders);
+    
+    /**
+     * <p>removeRegistrationHook</p>
+     *
+     * @param hook a {@link org.opennms.core.soa.RegistrationHook} object.
+     */
+    public void removeRegistrationHook(RegistrationHook hook);
+    
 }

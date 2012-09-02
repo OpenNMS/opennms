@@ -89,6 +89,7 @@ public class PersistenceSerializationTest {
 
         fsr = new MockForeignSourceRepository();
         fsr.save(new ForeignSource("cheese"));
+        fsr.flush();
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)

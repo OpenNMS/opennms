@@ -18,6 +18,7 @@ abstract public class TestVertex {
 	String m_icon;
 	TestGroup m_parent = null;
 	List<TestEdge> m_edges = new ArrayList<TestEdge>();
+	String m_iconKey = "";
 	
 	public TestVertex() {}
 	
@@ -83,6 +84,14 @@ abstract public class TestVertex {
 
 	public void setIcon(String icon) {
 		m_icon = icon;
+	}
+	
+	public void setIconKey(String key) {
+	    m_iconKey = key;
+	}
+	
+	public String getIconKey() {
+	    return m_iconKey;
 	}
 
 	@XmlTransient

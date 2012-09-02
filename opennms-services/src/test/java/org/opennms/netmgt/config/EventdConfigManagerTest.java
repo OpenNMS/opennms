@@ -36,7 +36,7 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.core.test.ConfigurationTestUtils;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>

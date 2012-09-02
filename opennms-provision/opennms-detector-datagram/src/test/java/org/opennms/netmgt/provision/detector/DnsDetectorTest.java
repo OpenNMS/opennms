@@ -82,7 +82,7 @@ public class DnsDetectorTest {
         //m_serverThread.stop();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setPort(9153);
         m_detector.setLookup("www.google.com");
@@ -91,7 +91,7 @@ public class DnsDetectorTest {
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(5000);
         m_detector.setLookup("www.google.com");
