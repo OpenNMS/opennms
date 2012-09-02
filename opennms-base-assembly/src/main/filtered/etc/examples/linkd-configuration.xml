@@ -3,6 +3,10 @@
                      snmp_poll_interval="18000000" discovery_link_interval="1800000">
     
 
+<!-- This section is really very interesting, actually the old IpRouteTable ".1.3.6.1.2.1.4.21.1"
+     has been deprecated and the ip route table information must be holded and then founded in the
+     ipCidrRoute Table at ".1.3.6.1.2.1.4.24.4" so if some old device has not switched 
+      to mantain the new IpCidrRouteTable you have to specify here to use the old IpRouteTable -->
     <iproutes>
         <vendor vendor_name="netscreen" sysoidRootMask=".1.3.6.1.4.1.3224"
                 class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
@@ -161,9 +165,72 @@
 
     </vlans>
 
+    <!--
+    It's possible in packages to overwrite all properties - (thread and initial_sleep_time) 
+    in the linkd-configuration
+    -->
+    
     <package name="example1">
 		<filter>IPADDR != '0.0.0.0'</filter>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
     </package>
     
+    <!-- Use more packages with huge network-->
+
+    <!-- here is a configuration that is valid on ethernet LANs -->
+    <!-- 
+    <package name="LAN" use-ip-route-discovery="false" 
+                        use-ospf-discovery="false"
+                        use-cdp-discovery="false">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+	-->
+
+	<!-- here is a configuration valid on WAN where linkd try to get
+	     links using cisco discovery protolol first and then routers ip route tables 
+	     this is used especially for a little wan network with small size routing table 
+	     and also with static routes, without routing protocols-->
+	 <!--
+    <package name="WAN" use-bridge-discovery="false" 
+    					use-ospf-discovery="false">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+	-->
+
+	<!-- here is a configuration in which you have to find links when using cross ethernet cables 
+		among router. Linkd by default finds links on LAN using bridge forwarding table becouse it 
+		guess that the node is linked to a switch port. By the way there are situations in which
+		you can have some routers connected via cross ethernet cables. So this is a way to find that links.
+		This configuration is also now usable in the case the connection beetween routes are ethernet connections.
+		The era of serial wan connection is finished. Now the Wan connection are either WAN or ATM.
+	-->
+	<!--
+    <package name="ETHERNET-ROUTERS" force-ip-route-discovery-on-ethernet="true">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+  	-->
+
+    <!-- do you want that linkd send a new suspect event for each ip address found on devices? -->
+    <!-- 
+    <package name="AUTODISCOVERY" auto-discovery="true">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+     -->    
+
+    <!-- do you want have a big wan with ospf enabled lots of routing table entries that you do not want to save and no bridges...? -->
+    <!-- 
+    <package name="bignetwork" use-ip-route-discovery="false" 
+                               save-route-table="false" 
+                               use-cdp-discovery="false" 
+                               use-bridge-discovery="false" 
+                               save-stp-node-table="false" 
+                               save-stp-interface-table="false">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+     -->    
 </linkd-configuration>

@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -76,13 +77,16 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdTest implements InitializingBean {
+public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -101,6 +105,9 @@ public class LinkdTest implements InitializingBean {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
         MockLogAppender.setupLogging(p);
+
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
 
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("test.example.com").setForeignSource("linkd").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.1724.81").setType("A");
@@ -179,7 +186,6 @@ public class LinkdTest implements InitializingBean {
     }
 
     @Test
-    @Ignore
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/cisco1700b.properties"),
         @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/cisco1700.properties")
@@ -212,7 +218,6 @@ public class LinkdTest implements InitializingBean {
     }
 
     @Test
-    @Ignore
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/cisco7200a.properties"),
         @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/laptop.properties"),
@@ -269,5 +274,79 @@ public class LinkdTest implements InitializingBean {
         ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
         assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
 
+    }
+    
+    @Test
+    public void testDefaultConfiguration() throws Exception {
+        assertEquals(true,m_linkdConfig.useBridgeDiscovery());
+        assertEquals(true,m_linkdConfig.useOspfDiscovery());
+        assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
+        assertEquals(true,m_linkdConfig.useLldpDiscovery());
+        assertEquals(true,m_linkdConfig.useCdpDiscovery());
+        
+        assertEquals(true,m_linkdConfig.saveRouteTable());
+        assertEquals(true,m_linkdConfig.saveStpNodeTable());
+        assertEquals(true,m_linkdConfig.saveStpInterfaceTable());
+        
+        assertEquals(true, m_linkdConfig.isVlanDiscoveryEnabled());
+
+
+        assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
+        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
+        assertEquals(false, m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
+
+        assertEquals(false, m_linkdConfig.hasClassName(".1.3.6.1.4.1.2636.1.1.1.1.9"));
+        
+        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.10.27.4.1.2.4"));
+        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.1"));
+        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.1.300"));
+        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.1.122"));
+
+
+        assertEquals("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable", m_linkdConfig.getDefaultIpRouteClassName());
+        assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", m_linkdConfig.getIpRouteClassName(".1.3.6.1.4.1.3224.1.51"));
+        
+        final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", "laptop");
+        final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", "cisco3600");
+        
+        assertTrue(m_linkd.scheduleNodeCollection(laptop.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
+
+        SnmpCollection snmpCollLaptop = m_linkd.getSnmpCollection(laptop.getId(), laptop.getPrimaryInterface().getIpAddress(), laptop.getSysObjectId(), "example1");
+        assertEquals(true, snmpCollLaptop.getCollectBridge());
+        assertEquals(true, snmpCollLaptop.getCollectStp());
+        assertEquals(true, snmpCollLaptop.getCollectCdp());
+        assertEquals(true, snmpCollLaptop.getCollectIpRoute());
+        assertEquals(true, snmpCollLaptop.getCollectOspfTable());
+        assertEquals(true, snmpCollLaptop.getCollectLldpTable());
+
+        assertEquals(false, snmpCollLaptop.collectVlanTable());
+        
+        assertEquals("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable", snmpCollLaptop.getIpRouteClass());
+        assertEquals("example1", snmpCollLaptop.getPackageName());
+        assertEquals(true, snmpCollLaptop.getSaveIpRouteTable());
+        assertEquals(true, snmpCollLaptop.getSaveStpNodeTable());
+        assertEquals(true, snmpCollLaptop.getSaveStpInterfaceTable());
+
+        SnmpCollection snmpCollcisco3600 = m_linkd.getSnmpCollection(cisco3600.getId(), cisco3600.getPrimaryInterface().getIpAddress(), cisco3600.getSysObjectId(), "example1");
+
+        assertEquals(true, snmpCollcisco3600.getCollectBridge());
+        assertEquals(true, snmpCollcisco3600.getCollectStp());
+        assertEquals(true, snmpCollcisco3600.getCollectCdp());
+        assertEquals(true, snmpCollcisco3600.getCollectIpRoute());
+        assertEquals(true, snmpCollcisco3600.getCollectOspfTable());
+        assertEquals(true, snmpCollcisco3600.getCollectLldpTable());
+
+        assertEquals(true, snmpCollcisco3600.collectVlanTable());
+        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", snmpCollcisco3600.getVlanClass());
+        
+        assertEquals("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable", snmpCollcisco3600.getIpRouteClass());
+        assertEquals("example1", snmpCollcisco3600.getPackageName());
+        
+        assertEquals(true, snmpCollcisco3600.getSaveIpRouteTable());
+        assertEquals(true, snmpCollcisco3600.getSaveStpNodeTable());
+        assertEquals(true, snmpCollcisco3600.getSaveStpInterfaceTable());
+
+        
     }
 }

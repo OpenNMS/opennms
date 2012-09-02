@@ -70,7 +70,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
     
-	public static final String DEFAULT_IP_ROUTE_CLASS_NAME = "org.opennms.netmgt.linkd.snmp.IpRouteTable";
+	public static final String DEFAULT_IP_ROUTE_CLASS_NAME = "org.opennms.netmgt.linkd.snmp.IpCidrRouteTable";
 
     /**
 	 * Object containing all Linkd-configuration objects parsed from the XML
@@ -447,7 +447,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      */
     public boolean useLldpDiscovery() {
         if (m_config.hasUseLldpDiscovery()) return m_config.getUseLldpDiscovery();
-        return false;
+        return true;
     }
 
     /**
@@ -457,7 +457,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      */
     public boolean useOspfDiscovery() {
         if (m_config.hasUseOspfDiscovery()) return m_config.getUseOspfDiscovery();
-        return false;
+        return true;
     }
 
     /**
