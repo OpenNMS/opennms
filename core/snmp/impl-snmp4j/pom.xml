@@ -22,6 +22,7 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.netmgt.snmp.snmp4j.*;version="${project.version}"</Export-Package>
+	    <Import-Package>org.apache.commons.lang.builder;version="[2.6,3)", org.opennms.core.utils;version="[1.11,3)", org.opennms.netmgt.snmp;version="${project.version}", org.snmp4j.smi, org.snmp4j.*"</Import-Package>
           </instructions>
         </configuration>
       </plugin>

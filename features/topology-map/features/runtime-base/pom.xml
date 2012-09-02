@@ -122,6 +122,11 @@
       <artifactId>default-theme</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.widget</groupId>
+      <artifactId>simple-widget</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
   </dependencies>
 

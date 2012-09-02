@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="MACROMAN"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <groupId>org.opennms.features</groupId>
@@ -26,7 +26,8 @@
     <module>org.opennms.features.topology.plugins.ui.tree</module>
     <module>org.opennms.features.topology.plugins.netutils</module>
     <module>org.opennms.features.topology.plugins.devutils</module>
-    <module>org.opennms.features.topology.plugins.ssh</module>	  
-</modules>
+    <module>org.opennms.features.topology.plugins.ssh</module>
+    <module>org.opennms.features.topology.plugins.widget.simple-widget</module>
+  </modules>
 
 </project>

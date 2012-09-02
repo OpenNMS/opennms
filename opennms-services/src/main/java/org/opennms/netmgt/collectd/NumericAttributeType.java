@@ -91,6 +91,7 @@ public class NumericAttributeType extends SnmpAttributeType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistNumericAttribute(attribute);
     }
@@ -101,6 +102,4 @@ public class NumericAttributeType extends SnmpAttributeType {
                 + getAlias()
                 + "' exceeds 19 char maximum for RRD data source names, truncating.");
    }
-
-
 }

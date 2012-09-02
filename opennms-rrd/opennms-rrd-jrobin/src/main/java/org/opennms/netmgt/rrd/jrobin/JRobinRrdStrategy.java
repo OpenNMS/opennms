@@ -50,12 +50,13 @@ import org.jrobin.data.DataProcessor;
 import org.jrobin.data.Plottable;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+
+import antlr.StringUtils;
 
 /**
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
@@ -144,13 +145,18 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /** {@inheritDoc} */
-    public RrdDef createDefinition(final String creator, final String directory, final String rrdName, int step, final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
+	public RrdDef createDefinition(final String creator,
+			final String directory, final String rrdName, int step,
+			final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
         if (new File(fileName).exists()) {
+			log().debug(
+					"createDefinition: filename [" + fileName
+							+ "] already exists returning null as definition");
             return null;
         }
 
@@ -178,19 +184,28 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
     /**
      * Creates the JRobin RrdDb from the def by opening the file and then
-     * closing. TODO: Change the interface here to create the file and return it
-     * opened.
+     * closing.
      *
      * @param rrdDef a {@link org.jrobin.core.RrdDef} object.
      * @throws java.lang.Exception if any.
      */
-    public void createFile(final RrdDef rrdDef) throws Exception {
+    public void createFile(final RrdDef rrdDef,  Map<String, String> attributeMappings) throws Exception {
         if (rrdDef == null) {
+        	log().debug("createRRD: skipping RRD file");
             return;
         }
+        log().info("createRRD: creating RRD file " + rrdDef.getPath());
         
         RrdDb rrd = new RrdDb(rrdDef);
         rrd.close();
+        
+        String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
+        int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
+        
+		RrdUtils.createMetaDataFile(
+				filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+				filenameWithoutExtension.substring(lastIndexOfSeparator),
+				attributeMappings);
     }
 
     /**

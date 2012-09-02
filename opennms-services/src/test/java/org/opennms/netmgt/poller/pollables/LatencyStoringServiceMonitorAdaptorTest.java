@@ -125,7 +125,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
-        m_rrdStrategy.createFile(isA(Object.class));
+        m_rrdStrategy.createFile(isA(Object.class), null);
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":1.5"));
         m_rrdStrategy.closeFile(isA(Object.class));
@@ -212,7 +212,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
-        m_rrdStrategy.createFile(isA(Object.class));
+        m_rrdStrategy.createFile(isA(Object.class), null);
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":100"));
         m_rrdStrategy.closeFile(isA(Object.class));
