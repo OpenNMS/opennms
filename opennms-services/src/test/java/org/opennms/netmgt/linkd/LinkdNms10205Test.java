@@ -45,9 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -163,25 +161,6 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         example1.setUseCdpDiscovery(false);
-        Iproutes iproutes = new Iproutes();
-        Vendor juniper = new Vendor();
-        juniper.setVendor_name("Juniper.junos");
-        juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
-        juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
-        juniper.addSpecific("2.9");
-        juniper.addSpecific("2.10");
-        juniper.addSpecific("2.11");
-        juniper.addSpecific("2.20");
-        juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.30");
-        juniper.addSpecific("2.31");
-        juniper.addSpecific("2.41");
-        juniper.addSpecific("2.57");
-
-        iproutes.addVendor(juniper);
-        m_linkdConfig.getConfiguration().setIproutes(iproutes);
-        m_linkdConfig.update();
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode chennai = m_nodeDao.findByForeignId("linkd", CHENNAI_NAME);

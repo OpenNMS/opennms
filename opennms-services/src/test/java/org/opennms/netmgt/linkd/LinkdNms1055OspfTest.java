@@ -142,9 +142,10 @@ public class LinkdNms1055OspfTest extends LinkdNms1055NetworkBuilder implements 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setUseBridgeDiscovery(false);
+        example1.setUseLldpDiscovery(false);
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
-        example1.setUseOspfDiscovery(true);
+
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);

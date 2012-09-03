@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -72,7 +74,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms4930Test implements InitializingBean {
+public class LinkdNms4930Test extends LinkdNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -82,6 +84,9 @@ public class LinkdNms4930Test implements InitializingBean {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -96,7 +101,13 @@ public class LinkdNms4930Test implements InitializingBean {
         // MockLogAppender.setupLogging(true);
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
+
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
 
         NetworkBuilder nb = new NetworkBuilder();
 
@@ -174,7 +185,12 @@ public class LinkdNms4930Test implements InitializingBean {
         assertTrue(m_linkd.runSingleCollection(cisco2.getId()));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        // Comment out this assertion until we can get it to work
-        //assertEquals("we should have found 3 data links", 3, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+        
+        // Note By AR: I've inspected the snmp file, only the bridge mib are there
+        //             and no link is found
+        assertEquals("we should have found no links", 0, ifaces.size());
     }
 }

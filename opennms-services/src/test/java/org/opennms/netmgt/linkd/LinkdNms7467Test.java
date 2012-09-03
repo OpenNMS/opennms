@@ -55,9 +55,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpRouteInterfaceDao;
@@ -162,18 +160,6 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
 
-        Iproutes configiproutes = new Iproutes();
-        Vendor cisco = new Vendor();
-        cisco.setVendor_name("cisco");
-        cisco.setSysoidRootMask(".1.3.6.1.4.1.9");
-        cisco.setClassName("org.opennms.netmgt.linkd.snmp.IpRouteTable");
-        cisco.addSpecific("5.42");
-
-        configiproutes.addVendor(cisco);
-        m_linkdConfig.getConfiguration().setIproutes(configiproutes);
-        m_linkdConfig.update();
-
-
         final OnmsNode ciscosw = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(ciscosw.getId()));
@@ -262,18 +248,6 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
-
-        Iproutes configiproutes = new Iproutes();
-        Vendor cisco = new Vendor();
-        cisco.setVendor_name("cisco");
-        cisco.setSysoidRootMask(".1.3.6.1.4.1.9");
-        cisco.setClassName("org.opennms.netmgt.linkd.snmp.IpRouteTable");
-        cisco.addSpecific("1.569");
-
-        configiproutes.addVendor(cisco);
-        m_linkdConfig.getConfiguration().setIproutes(configiproutes);
-        m_linkdConfig.update();
-
         
         final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
 
@@ -576,15 +550,6 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
 
-        Iproutes configiproutes = new Iproutes();
-        Vendor cisco = new Vendor();
-        cisco.setVendor_name("Osx10-8-0");
-        cisco.setSysoidRootMask(".1.3.6.1.4.1.8072.3");
-        cisco.setClassName("org.opennms.netmgt.linkd.snmp.IpRouteTable");
-        cisco.addSpecific("2.255");
-
-        configiproutes.addVendor(cisco);
-        m_linkdConfig.getConfiguration().setIproutes(configiproutes);
         m_linkdConfig.update();
 
         final OnmsNode mac = m_nodeDao.findByForeignId("linkd", DARWIN_10_8_NAME);

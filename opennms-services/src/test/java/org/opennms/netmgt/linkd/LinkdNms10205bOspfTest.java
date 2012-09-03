@@ -204,12 +204,11 @@ Address          Interface              State     ID               Pri  Dead
         example1.setUseCdpDiscovery(false);
         example1.setUseLldpDiscovery(false);
         example1.setUseBridgeDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);
-        example1.setUseIpRouteDiscovery(false);
         example1.setSaveRouteTable(false);
-        example1.setUseOspfDiscovery(true);
-        m_linkdConfig.update();
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);

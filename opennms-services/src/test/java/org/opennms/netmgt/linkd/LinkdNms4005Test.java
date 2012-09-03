@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -74,7 +75,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms4005Test implements InitializingBean {
+public class LinkdNms4005Test extends LinkdNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -84,6 +85,9 @@ public class LinkdNms4005Test implements InitializingBean {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -97,7 +101,13 @@ public class LinkdNms4005Test implements InitializingBean {
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
+
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
 
         NetworkBuilder nb = new NetworkBuilder();
 
@@ -180,6 +190,9 @@ public class LinkdNms4005Test implements InitializingBean {
         assertTrue(m_linkd.runSingleCollection(cisco3.getId()));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
         assertEquals("we should have found 3 data links", 3, ifaces.size());
     }
 
@@ -247,6 +260,9 @@ public class LinkdNms4005Test implements InitializingBean {
         waitForMe.clear();
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
         assertEquals("we should have found 3 data links", 3, ifaces.size());
     }
 }

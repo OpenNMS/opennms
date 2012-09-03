@@ -156,7 +156,7 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
-        example1.setUseLldpDiscovery(true);
+        example1.setUseOspfDiscovery(false);
         
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
@@ -176,32 +176,33 @@ public class LinkdNms17216LldpTest extends LinkdNms17216NetworkBuilder implement
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         assertEquals(6,m_dataLinkInterfaceDao.countAll());
-        final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
-                
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+
+        int startid = getStartPoint(links);
+        for (final DataLinkInterface link: links) {
 //            printLink(datalinkinterface);
-            Integer linkid = datalinkinterface.getId();
-            if ( linkid == 174) {
+            Integer linkid = link.getId();
+            if ( linkid == startid) {
                 // switch1 gi0/9 -> switch2 gi0/1 --lldp
-                checkLink(switch2, switch1, 10101, 10109, datalinkinterface);
-            } else if (linkid == 175 ) {
+                checkLink(switch2, switch1, 10101, 10109, link);
+            } else if (linkid == startid +1 ) {
                 // switch1 gi0/10 -> switch2 gi0/2 --lldp
-                checkLink(switch2, switch1, 10102, 10110, datalinkinterface);
-            } else if (linkid == 176) {
+                checkLink(switch2, switch1, 10102, 10110, link);
+            } else if (linkid == startid+2) {
                 // switch1 gi0/11 -> switch2 gi0/3 --lldp
-                checkLink(switch2, switch1, 10103, 10111, datalinkinterface);
-            } else if (linkid == 177) {
+                checkLink(switch2, switch1, 10103, 10111, link);
+            } else if (linkid == startid+3) {
                 // switch1 gi0/12 -> switch2 gi0/4 --lldp
-                checkLink(switch2, switch1, 10104, 10112, datalinkinterface);
-            } else if (linkid == 178) {
+                checkLink(switch2, switch1, 10104, 10112, link);
+            } else if (linkid == startid+4) {
                 // switch2 gi0/19 -> switch3 Fa0/19 --lldp
-                checkLink(switch3, switch2, 10019, 10119, datalinkinterface);
-            } else if (linkid == 179) {
+                checkLink(switch3, switch2, 10019, 10119, link);
+            } else if (linkid == startid+5) {
                 // switch2 gi0/20 -> switch3 Fa0/20 --lldp
-                checkLink(switch3, switch2, 10020, 10120, datalinkinterface);
+                checkLink(switch3, switch2, 10020, 10120, link);
             } else {
                 // error
-                checkLink(switch1,switch1,-1,-1,datalinkinterface);
+                checkLink(switch1,switch1,-1,-1,link);
             }   
         }
     }
