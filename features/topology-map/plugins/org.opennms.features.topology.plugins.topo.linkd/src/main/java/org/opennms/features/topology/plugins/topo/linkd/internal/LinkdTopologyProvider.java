@@ -183,17 +183,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     @Override
     public void load(String filename) {
-        reset();
         if (filename == null) {
             loadtopology();
         } else {
             loadfromfile(filename);
         }
-    }
-
-    private void reset() {
-        m_vertexContainer.removeAllItems();
-        m_edgeContainer.removeAllItems();        
     }
 
     @XmlRootElement(name="graph")
@@ -226,45 +220,57 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     private void loadtopology() {
+        log("loading topology");
+        LinkdVertexContainer vertexContainer = new LinkdVertexContainer();
+        BeanContainer<String, LinkdEdge> edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
+        edgeContainer.setBeanIdProperty("id");
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
+            log("parsing link: " + link);
             OnmsNode node = link.getNode();
+            log("found node: " + node);
             String sourceId = node.getNodeId();
             LinkdVertex source;
-            BeanItem<LinkdVertex> item = m_vertexContainer.getItem(sourceId);
+            BeanItem<LinkdVertex> item = vertexContainer.getItem(sourceId);
             if (item == null) {
                 source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-                m_vertexContainer.addBean( source);
+                vertexContainer.addBean( source);
             }
             else {
                 source = item.getBean();
             }
 
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
-            String targetId = parentNode.getNodeId();
+            log("found parentnode: " + parentNode);
+                       String targetId = parentNode.getNodeId();
             LinkdVertex target;
-            item = m_vertexContainer.getItem(targetId);
+            item = vertexContainer.getItem(targetId);
             if (item == null) {
                 target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
-                m_vertexContainer.addBean( target);                    
+                vertexContainer.addBean(target);                    
             }
             else {
                 target = item.getBean();
-            }
-            
-            m_edgeContainer.addBean(new LinkdEdge(link.getId().toString(),source,target));
+            }            
+            edgeContainer.addBean(new LinkdEdge(link.getId().toString(),source,target));
         }
         
         if (isAddNodeWithoutLink()) {
             for (OnmsNode node: m_nodeDao.findAll()) {
+                log("parsing node: " + node);
                 String nodeId = node.getNodeId();
                 LinkdVertex linklessnode;
-                BeanItem<LinkdVertex> item = m_vertexContainer.getItem(nodeId);
+                BeanItem<LinkdVertex> item = vertexContainer.getItem(nodeId);
                 if (item == null) {
+                    log("adding linklessnode: " + node);
                     linklessnode = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-                    m_vertexContainer.addBean(linklessnode);
+                    vertexContainer.addBean(linklessnode);
                 }                
             }
         }
+        m_vertexContainer.removeAllItems();
+        m_vertexContainer=vertexContainer;
+        m_edgeContainer.removeAllItems();
+        m_edgeContainer=edgeContainer;
     }
 
     protected String getIconName(OnmsNode node) {
@@ -277,7 +283,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     private String getAddress(OnmsNode node) {
-	return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().toString();
+	return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().getHostAddress();
     }
     
     @Override
@@ -304,6 +310,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
     @Override
     public void setParent(Object vertexId, Object parentId) {
         m_vertexContainer.setParent(vertexId, parentId);
+    }
+
+    
+    private void log(final String string) {
+        System.err.println("LinkdTopologyProvider: "+ string);
     }
 
 }

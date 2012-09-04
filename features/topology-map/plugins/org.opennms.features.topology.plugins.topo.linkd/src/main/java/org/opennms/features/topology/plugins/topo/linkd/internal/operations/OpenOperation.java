@@ -4,30 +4,27 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
+import org.opennms.features.topology.api.TopologyProvider;
 
 public class OpenOperation implements Operation {
 
-    LinkdTopologyProvider m_linkdTopologyProvider;
-    public OpenOperation(LinkdTopologyProvider topologyProveder) {
-        m_linkdTopologyProvider=topologyProveder;
+    TopologyProvider m_topologyProvider;
+    
+    public OpenOperation(TopologyProvider topologyProvider) {
+        m_topologyProvider=topologyProvider;
     }
 
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         if (targets == null || targets.isEmpty() ) {
-        	log("no target, loading null provider");
-            m_linkdTopologyProvider.load(null);
-        } else {
-        	log("loading " + targets.get(0));
-            m_linkdTopologyProvider.load((String) targets.get(0));
+            log("loading topology");
+            m_topologyProvider.load(null);
         }
-        log("finished loading");
         return null;
     }
 
     private void log(final String string) {
-		System.err.println(string);
+		System.err.println(getId()+": "+ string);
 	}
 
 	@Override
@@ -42,7 +39,7 @@ public class OpenOperation implements Operation {
 
     @Override
     public String getId() {
-    	return "LinkdFileOpen";
+    	return "LinkdTopologyProviderOpenOperation";
     }
 
 }
