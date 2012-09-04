@@ -28,7 +28,17 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 import junit.framework.TestCase;
+
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
@@ -45,13 +55,6 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 import org.opennms.test.mock.EasyMockUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-import static org.easymock.EasyMock.*;
 
 public class SnmpAttributeTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -100,11 +103,11 @@ public class SnmpAttributeTest extends TestCase {
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
 
-        m_rrdStrategy.createFile(isA(Object.class), null);
+        // m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) eq(null));
 
-        expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
-        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
-        m_rrdStrategy.closeFile(isA(Object.class));
+        // expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
+        // m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
+        // m_rrdStrategy.closeFile(isA(Object.class));
 
         m_mocks.replayAll();
 

@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.endsWith;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.opennms.core.utils.InetAddressUtils.addr;
@@ -107,6 +108,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
         Locale defaultLocale = Locale.getDefault();
@@ -125,7 +127,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
-        m_rrdStrategy.createFile(isA(Object.class), null);
+        m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) eq(null));
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":1.5"));
         m_rrdStrategy.closeFile(isA(Object.class));
@@ -176,6 +178,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         anticipator.verifyAnticipated();
     }
 
+    @SuppressWarnings("unchecked")
     private void executeThresholdTest(EventAnticipator anticipator) throws Exception {
         System.setProperty("opennms.home", "src/test/resources");
         
@@ -212,7 +215,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
-        m_rrdStrategy.createFile(isA(Object.class), null);
+        m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) eq(null));
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":100"));
         m_rrdStrategy.closeFile(isA(Object.class));
