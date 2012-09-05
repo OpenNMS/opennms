@@ -36,12 +36,11 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
-            <Embed-Dependency>customefield|messagebox|mib2events|mibbl*|grammatica|orika*</Embed-Dependency>
+            <Embed-Dependency>orika*</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>
       </plugin>
-<!--
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
@@ -54,7 +53,6 @@
             <bundle>wrap:mvn:net.percederberg.mibble/mibble/2.8</bundle>
             <bundle>wrap:mvn:net.percederberg.mibble/mibble-mibs/${mibble.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.grammatica/grammatica/${grammatica.version}</bundle>
-            <bundle>wrap:mvn:ma.glasnost.orika/orika-core/1.1.7</bundle>
           </bundles>
           <features>
             <feature>vaadin</feature>
@@ -62,7 +60,6 @@
           </features>
         </configuration>
       </plugin>
--->
       <!-- OSGi - End -->
 
       <plugin>
