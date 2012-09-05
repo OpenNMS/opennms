@@ -13,8 +13,6 @@ use Git;
 
 our $PRISTINE_BRANCH = 'opennms-git-config-pristine';
 our $CONFIG_BRANCH   = 'opennms-git-config-local';
-
-our $CLEAN_INSTALL = 0;
 our $OPENNMS_HOME;
 our $TEMPDIR;
 our $TOOLDIR;
@@ -28,8 +26,6 @@ sub usage();
 
 my $me = Cwd::abs_path($0);
 $TOOLDIR = dirname($me);
-
-debug($0, @ARGV);
 
 ### Create a temporary working directory
 $TEMPDIR = File::Temp::tempdir( CLEANUP => 1 );
@@ -58,6 +54,7 @@ if ($OPT_HELP) {
 
 if ($OPT_OPENNMS_HOME) {
 	$OPENNMS_HOME = $OPT_OPENNMS_HOME;
+	mkpath(File::Spec->catdir($OPENNMS_HOME, 'etc'));
 }
 
 ### Find $OPENNMS_HOME
@@ -73,11 +70,6 @@ if (not defined $OPENNMS_HOME) {
 if (not defined $OPENNMS_HOME) {
 	error 'Unable to locate $OPENNMS_HOME or $OPENNMS_HOME not set.';
 	exit 1;
-}
-
-if (! -d File::Spec->catdir($OPENNMS_HOME, 'etc')) {
-	$CLEAN_INSTALL = 1;
-	mkpath(File::Spec->catdir($OPENNMS_HOME, 'etc'));
 }
 
 ### Run command, if found in Commands::* namespace
@@ -420,7 +412,7 @@ sub _update_etc_pristine($$) {
 	# add and commit initial content
 	_git('_update_etc_pristine', $git, 'add', '.');
 
-	#_git_rm_files_in_tempdir();
+	_git_rm_files_in_tempdir();
 
 	my $clean = _is_branch_clean($git);
 	if ($clean) {
@@ -633,15 +625,8 @@ sub init(@) {
 	# now copy this back to the real tree
 	_recursive_copy($tempgitdir, $gitdir, 0);
 
-	if ($CLEAN_INSTALL) {
-		main::info('This is a clean install, no existing configuration to merge.');
-		my $git = Git->repository(Directory => $etcdir);
-		_git('_update_etc_pristine', $git, 'checkout', $CONFIG_BRANCH);
-		_git('_update_etc_pristine', $git, 'reset', '--hard');
-	} else {
-		# now commit the user's changes
-		_store_user_configs($version);
-	}
+	# now commit the user's changes
+	_store_user_configs($version);
 }
 
 sub storepristine(@) {
