@@ -28,16 +28,24 @@
 
 package org.opennms.nrtg.api.model;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+
 
 /**
  * User: chris
  * Date: 13.06.12
  * Time: 11:47
- * To change this template use File | Settings | File Templates.
  */
 public class DefaultCollectionJob implements CollectionJob {
     private static final long serialVersionUID = -857193182688356245L;
@@ -52,9 +60,9 @@ public class DefaultCollectionJob implements CollectionJob {
     private int m_nodeId;
     private String m_protocolConfiguration;
 
-    private HashMap<Set<String>, Set<String>> m_metricSets = new HashMap<Set<String>, Set<String>>();
-    private HashMap<String, ArrayList<String>> m_allMetrics = new HashMap<String, ArrayList<String>>();
-    private HashMap<String, Object> m_parameters = null;
+    private Map<Set<String>, Set<String>> m_metricSets = new HashMap<Set<String>, Set<String>>();
+    private Map<String, ArrayList<String>> m_allMetrics = new HashMap<String, ArrayList<String>>();
+    private Map<String, Object> m_parameters = null;
     private Date m_creationTimestamp = new Date();
     private Date m_finishedTimestamp = null;
 
@@ -120,12 +128,12 @@ public class DefaultCollectionJob implements CollectionJob {
 
 
     @Override
-    public void setParameters(HashMap<String, Object> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
         this.m_parameters = parameters;
     }
 
     @Override
-    public HashMap<String, Object> getParameters() {
+    public Map<String, Object> getParameters() {
         return m_parameters;
     }
 
@@ -190,8 +198,9 @@ public class DefaultCollectionJob implements CollectionJob {
             if (m_metricSets.get(alreadyDefinedDestinationSet).contains(metricId)) {
 
                 // if the destination set matches we're done
-                if (destinationSetToUse.equals(alreadyDefinedDestinationSet))
+                if (destinationSetToUse.equals(alreadyDefinedDestinationSet)) {
                     return;
+                }
 
                 // removing metric from already defined destination set
                 m_metricSets.get(alreadyDefinedDestinationSet).remove(metricId);
@@ -281,14 +290,13 @@ public class DefaultCollectionJob implements CollectionJob {
     }
 
     private String getDestinationString(Set<String> destinationSet) {
-        String destinationString = "";
+        StringBuilder destinationStringBuilder = new StringBuilder();
         for (String destination : destinationSet) {
-            if (!"".equals(destinationString))
-                destinationString += ", ";
-            destinationString += destination;
+            destinationStringBuilder.append(destination);
+            destinationStringBuilder.append(", ");
         }
-
-        return destinationString;
+        
+        return destinationStringBuilder.substring(0, destinationStringBuilder.toString().length() - 2);
     }
 
     /*
