@@ -79,9 +79,12 @@ if (not defined $OPENNMS_HOME) {
 	exit 1;
 }
 
-if (! -d File::Spec->catdir($OPENNMS_HOME, 'etc')) {
+our $DIR_OPENNMS_ETC = File::Spec->catdir($OPENNMS_HOME, 'etc');
+our $DIR_OPENNMS_GIT = File::Spec->catdir($DIR_OPENNMS_ETC, '.git');
+
+if (! -d $DIR_OPENNMS_ETC) {
 	$CLEAN_INSTALL = 1;
-	mkpath(File::Spec->catdir($OPENNMS_HOME, 'etc'));
+	mkpath($DIR_OPENNMS_ETC);
 }
 
 ### Run command, if found in Commands::* namespace
@@ -366,9 +369,8 @@ sub _unpack_pristine_tarballs() {
 		}
 	}
 
-	my $etcdir            = File::Spec->catdir($OPENNMS_HOME, 'etc');
 	my $pristinegitignore = File::Spec->catfile($pristinedir, '.gitignore');
-	my $realgitignore     = File::Spec->catfile($etcdir, '.gitignore');
+	my $realgitignore     = File::Spec->catfile($DIR_OPENNMS_ETC, '.gitignore');
 
 	if (-f $realgitignore and not -f $pristinegitignore) {
 		copy($realgitignore, $pristinegitignore);
@@ -384,16 +386,15 @@ sub _update_etc_pristine($$) {
 	my $pristinedir = shift;
 	my $tagname     = 'opennms-git-config-pristine-' . $version;
 
-	my $etcdir      = File::Spec->catdir($OPENNMS_HOME, 'etc');
-	my $gitdir      = File::Spec->catdir($etcdir, '.git');
-	my $tempgitdir  = File::Spec->catdir($TEMPDIR, '.git');
+	my $DIR_OPENNMS_GIT = $DIR_OPENNMS_GIT;
+	my $tempgitdir      = File::Spec->catdir($TEMPDIR, '.git');
 
-	if (! -d $gitdir) {
-		main::error '_update_etc_pristine:', "Attempting to update $PRISTINE_BRANCH with the latest etc-pristine, but $gitdir does not exist!";
+	if (! -d $DIR_OPENNMS_GIT) {
+		main::error '_update_etc_pristine:', "Attempting to update $PRISTINE_BRANCH with the latest etc-pristine, but $DIR_OPENNMS_GIT does not exist!";
 		exit 1;
 	}
-	if (! -d $etcdir) {
-		main::error '_update_etc_pristine:', "\$OPENNMS_HOME is $OPENNMS_HOME, but $etcdir does not exist!";
+	if (! -d $DIR_OPENNMS_ETC) {
+		main::error '_update_etc_pristine:', "\$OPENNMS_HOME is $OPENNMS_HOME, but $DIR_OPENNMS_ETC does not exist!";
 		exit 1;
 	}
 	if (! -d $pristinedir) {
@@ -403,7 +404,7 @@ sub _update_etc_pristine($$) {
 
 	# we only want to work with .git directories for now
 	_delete_tempdir();
-	_recursive_copy($gitdir, $tempgitdir, 0);
+	_recursive_copy($DIR_OPENNMS_GIT, $tempgitdir, 0);
 
 	my $git = Git->repository(Directory => $TEMPDIR);
 
@@ -415,7 +416,7 @@ sub _update_etc_pristine($$) {
 
 	_recursive_copy($pristinedir, $TEMPDIR, 1);
 
-	my $etcgitignore = File::Spec->catfile($etcdir, '.gitignore');
+	my $etcgitignore = File::Spec->catfile($DIR_OPENNMS_ETC, '.gitignore');
 	my $tempgitignore = File::Spec->catfile($TEMPDIR, '.gitignore');
 
 	if (! -f $tempgitignore and -f $etcgitignore) {
@@ -452,7 +453,7 @@ sub _update_etc_pristine($$) {
 	_git('_update_etc_pristine', $git, 'checkout', $CONFIG_BRANCH);
 
 	# copy the updated .git back to the live tree
-	_recursive_copy($tempgitdir, $gitdir, 0);
+	_recursive_copy($tempgitdir, $DIR_OPENNMS_GIT, 0);
 }
 
 sub _store_user_configs($) {
@@ -462,16 +463,14 @@ sub _store_user_configs($) {
 
 	### make sure expected paths exist
 
-	my $etcdir      = File::Spec->catdir($OPENNMS_HOME, 'etc');
-	my $gitdir      = File::Spec->catdir($etcdir, '.git');
 	my $tempgitdir  = File::Spec->catdir($TEMPDIR, '.git');
 
-	if (! -d $gitdir) {
-		main::error '_store_user_configs:', "$gitdir does not exist!";
+	if (! -d $DIR_OPENNMS_GIT) {
+		main::error '_store_user_configs:', "$DIR_OPENNMS_GIT does not exist!";
 		exit 1;
 	}
 
-	main::info "Storing config changes to Git in $etcdir.";
+	main::info "Storing config changes to Git in $DIR_OPENNMS_ETC.";
 
 	# make sure the temp directory is clean
 	_delete_tempdir();
@@ -482,14 +481,14 @@ sub _store_user_configs($) {
 	}
 
 	# set up a pristine copy of the git dir
-	_recursive_copy($gitdir, $tempgitdir, 0);
+	_recursive_copy($DIR_OPENNMS_GIT, $tempgitdir, 0);
 
 	my $git = Git->repository(Directory => $TEMPDIR);
 
 	_git('_store_user_configs', $git, 'reset', '--hard', $CONFIG_BRANCH);
 
 	# copy the existing configuration files from etc into the working tree, skipping the .git dir
-	_recursive_copy($etcdir, $TEMPDIR, 1);
+	_recursive_copy($DIR_OPENNMS_ETC, $TEMPDIR, 1);
 
 	# add all new and modified files
 	_git('_store_user_configs', $git, 'add', '.');
@@ -519,7 +518,7 @@ sub _store_user_configs($) {
 	_git('_store_user_configs', $git, 'tag', $tagname);
 
 	# copy the updated .git tree back
-	_recursive_copy($tempgitdir, $gitdir, 0);
+	_recursive_copy($tempgitdir, $DIR_OPENNMS_GIT, 0);
 }
 
 sub init(@) {
@@ -535,21 +534,19 @@ sub init(@) {
 
 	### make sure expected paths exist
 
-	my $etcdir      = File::Spec->catdir($OPENNMS_HOME, 'etc');
-	my $gitdir      = File::Spec->catdir($etcdir, '.git');
 	my $tempgitdir  = File::Spec->catdir($TEMPDIR, '.git');
 	my $pristinedir = File::Spec->catdir($OPENNMS_HOME, 'share', 'etc-pristine');
 
-	if (-d $gitdir) {
-		main::error "'init' called, but $gitdir already exists!";
+	if (-d $DIR_OPENNMS_GIT) {
+		main::error "'init' called, but $DIR_OPENNMS_GIT already exists!";
 		exit 1;
 	}
-	if (! -d $etcdir) {
-		main::error 'init:', "\$OPENNMS_HOME is $OPENNMS_HOME, but $etcdir does not exist!";
+	if (! -d $DIR_OPENNMS_ETC) {
+		main::error 'init:', "\$OPENNMS_HOME is $OPENNMS_HOME, but $DIR_OPENNMS_ETC does not exist!";
 		exit 1;
 	}
 
-	main::info "Initializing Git in $etcdir.";
+	main::info "Initializing Git in $DIR_OPENNMS_ETC.";
 
 	### initialize the (temporary) base git directory
 
@@ -587,10 +584,10 @@ sub init(@) {
 	_git('init', $git, 'checkout', '-b', $CONFIG_BRANCH);
 
 	# copy the .git repository back to the live etc directory
-	_recursive_copy($tempgitdir, $gitdir, 0);
+	_recursive_copy($tempgitdir, $DIR_OPENNMS_GIT, 0);
 
 	# and the .gitignore as well
-	copy(File::Spec->catfile($TEMPDIR, '.gitignore'), File::Spec->catfile($etcdir, '.gitignore'));
+	copy(File::Spec->catfile($TEMPDIR, '.gitignore'), File::Spec->catfile($DIR_OPENNMS_ETC, '.gitignore'));
 
 	### put an initial copy of etc-pristine in the pristine branch
 	if (-d $pristinedir) {
@@ -620,7 +617,7 @@ sub init(@) {
 	}
 
 	# copy .gitignore for this initial sync, so that it looks like it comes with a pristine etc
-	copy(File::Spec->catfile($etcdir, '.gitignore'), File::Spec->catfile($pristinedir, '.gitignore'));
+	copy(File::Spec->catfile($DIR_OPENNMS_ETC, '.gitignore'), File::Spec->catfile($pristinedir, '.gitignore'));
 
 	# now put the pristine files we just unpacked into the pristine branch
 	_update_etc_pristine($version, $pristinedir);
@@ -635,7 +632,7 @@ sub init(@) {
 	}
 
 	# make a fresh copy of the git files
-	_recursive_copy($gitdir, $tempgitdir, 0);
+	_recursive_copy($DIR_OPENNMS_GIT, $tempgitdir, 0);
 
 	_assert_branch($TEMPDIR, $CONFIG_BRANCH);
 
@@ -646,11 +643,11 @@ sub init(@) {
 	_git('init', $git, 'merge', $PRISTINE_BRANCH);
 
 	# now copy this back to the real tree
-	_recursive_copy($tempgitdir, $gitdir, 0);
+	_recursive_copy($tempgitdir, $DIR_OPENNMS_GIT, 0);
 
 	if ($CLEAN_INSTALL) {
 		main::info('This is a clean install, no existing configuration to merge.');
-		my $git = Git->repository(Directory => $etcdir);
+		my $git = Git->repository(Directory => $DIR_OPENNMS_ETC);
 		_git('_update_etc_pristine', $git, 'checkout', $CONFIG_BRANCH);
 		_git('_update_etc_pristine', $git, 'reset', '--hard');
 	} else {
@@ -701,23 +698,20 @@ sub upgrade(@) {
 
 	### make sure expected paths exist
 
-	my $etcdir      = File::Spec->catdir($OPENNMS_HOME, 'etc');
-	my $gitdir      = File::Spec->catdir($etcdir, '.git');
-
-	if (! -d $gitdir) {
-		main::error "'upgrade' called, but $gitdir does not exist!";
+	if (! -d $DIR_OPENNMS_GIT) {
+		main::error "'upgrade' called, but $DIR_OPENNMS_GIT does not exist!";
 		exit 1;
 	}
 
-	main::info "Merging latest configuration changes to Git in $etcdir.";
+	main::info "Merging latest configuration changes to Git in $DIR_OPENNMS_ETC.";
 
 	_delete_tempdir();
 
-	my $realgit = Git->repository(Directory => $etcdir);
+	my $realgit = Git->repository(Directory => $DIR_OPENNMS_ETC);
 	my $clean = _is_branch_clean($realgit);
 
 	if (not $clean) {
-		main::error "You have uncommitted changes in $etcdir, please run $0 store first!";
+		main::error "You have uncommitted changes in $DIR_OPENNMS_ETC, please run $0 store first!";
 		exit 1;
 	}
 
@@ -752,6 +746,6 @@ sub upgrade(@) {
 	_git('upgrade', $git, 'tag', $tagname);
 
 	# now copy this back to the real tree
-	_recursive_copy($TEMPDIR, $etcdir, 0);
+	_recursive_copy($TEMPDIR, $DIR_OPENNMS_ETC, 0);
 }
 
