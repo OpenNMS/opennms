@@ -37,22 +37,18 @@ $TEMPDIR = File::Temp::tempdir( CLEANUP => 1 );
 
 ### Process arguments
 
-our $OPT_HELP            = 0;
-
-our $OPT_CURRENT_PACKAGE = undef;
-our $OPT_OPENNMS_HOME    = undef;
-our $OPT_VERSION         = undef;
-our $OPT_FROM            = undef;
-our $OPT_TO              = undef;
+our $OPT_HELP         = 0;
+our $OPT_OPENNMS_HOME = undef;
+our $OPT_VERSION      = undef;
+our $OPT_FROM         = undef;
+our $OPT_TO           = undef;
 
 my $results = GetOptions(
-	'h|help'              => \$OPT_HELP,
-
-	'c|current-package=s' => \$OPT_CURRENT_PACKAGE,
-	'o|opennms-home=s'    => \$OPT_OPENNMS_HOME,
-	'v|version=s'         => \$OPT_VERSION,
-	'f|from=s'            => \$OPT_FROM,
-	't|to=s'              => \$OPT_TO,
+	'h|help'           => \$OPT_HELP,
+	'o|opennms-home=s' => \$OPT_OPENNMS_HOME,
+	'v|version=s'      => \$OPT_VERSION,
+	'f|from=s'         => \$OPT_FROM,
+	't|to=s'           => \$OPT_TO,
 );
 
 if ($OPT_HELP) {
@@ -147,23 +143,22 @@ sub usage() {
 	print <<END;
 usage: $0 [-h] <command>
 
-  -h, --help             This help.
-  -c, --current-package  The current package being processed.
-  -o, --opennms-home     The OpenNMS root directory.
+  -h, --help          This help.
+  -o, --opennms-home  The OpenNMS root directory.
 
 Valid commands:
-* init                   Initialize \$OPENNMS_HOME/etc as a Git repository.
-  * -v, --version        The version of the pristine configuration that is being initialized.
+* init                Initialize \$OPENNMS_HOME/etc as a Git repository.
+  * -v, --version     The version of the pristine configuration that is being initialized.
 
-* storepristine          Update the pristine branch with the changes in \$OPENNMS_HOME/bin/config-tools.
-  * -v, --version        The version of the pristine configuration that is being stored.
+* storepristine       Update the pristine branch with the changes in \$OPENNMS_HOME/bin/config-tools.
+  * -v, --version     The version of the pristine configuration that is being stored.
 
-* storecurrent           Store current configuration changes in \$OPENNMS_HOME/etc.
-  * -v, --version        The version of the user configuration that is being stored.
+* storecurrent        Store current configuration changes in \$OPENNMS_HOME/etc.
+  * -v, --version     The version of the user configuration that is being stored.
 
-* upgrade                Upgrade the user's configuration using the latest pristine configs.
-  * -f, --from           The version of the OpenNMS configuration that is being upgraded from.
-  * -t, --to             The version of the OpenNMS configuration that is being upgraded to.
+* upgrade             Upgrade the user's configuration using the latest pristine configs.
+  * -f, --from        The version of the OpenNMS configuration that is being upgraded from.
+  * -t, --to          The version of the OpenNMS configuration that is being upgraded to.
 
 END
 }
@@ -187,15 +182,14 @@ sub _assert_branch($$);
 sub _delete_tempdir();
 sub _git(@);
 sub _git_rm_files_in_tempdir();
-sub _get_enabled_opennms_rpms();
+sub _get_current_opennms_rpms();
 sub _is_branch_clean($);
 sub _recursive_copy($$$);
 sub _store_user_configs($);
 sub _unpack_pristine_tarballs();
 sub _update_etc_pristine($$);
 sub init(@);
-sub storepristine(@);
-sub storecurrent(@);
+sub store(@);
 sub upgrade(@);
 
 sub _assert_branch($$) {
@@ -226,13 +220,8 @@ sub _delete_tempdir() {
 	}
 }
 
-sub _get_enabled_opennms_rpms() {
-	main::debug '_get_enabled_opennms_rpms()';
-
+sub _get_current_opennms_rpms() {
 	my $rpms = { 'opennms-core' => 1 };
-	if (defined $OPT_CURRENT_PACKAGE) {
-		$rpms->{$OPT_CURRENT_PACKAGE} = 1;
-	}
 
 	my $rpmhandle = IO::Handle->new();
 	open($rpmhandle, 'rpm -qa --queryformat=\'%{name}\\n\' | grep -E \'^opennms-\' |') or croak "unable to run: rpm -qa | grep -E '^opennms': $!";
@@ -353,7 +342,7 @@ sub _unpack_pristine_tarballs() {
 	chomp($tar);
 	my $pristinedir = File::Temp::tempdir(CLEANUP => 1);
 
-	my $rpmnames = _get_enabled_opennms_rpms();
+	my $rpmnames = _get_current_opennms_rpms();
 
 	for my $rpmname (@$rpmnames) {
 		my $pristinefile = File::Spec->catfile($TOOLDIR, 'etc-pristine-' . $rpmname . '.tar.gz');
@@ -407,6 +396,12 @@ sub _update_etc_pristine($$) {
 
 	my $git = Git->repository(Directory => $TEMPDIR);
 
+	my $tag = _git('_update_etc_pristine', $git, 'tag', '-l', $tagname);
+	if ($tag =~ /opennms-git-config-pristine/) {
+		main::warning "_update_etc_pristine: tag $tagname already exists, skipping etc_pristine update.";
+		return;
+	}
+
 	_assert_branch($TEMPDIR, $CONFIG_BRANCH);
 
 	_git('_update_etc_pristine', $git, 'checkout', $PRISTINE_BRANCH);
@@ -432,21 +427,11 @@ sub _update_etc_pristine($$) {
 		main::debug '_update_etc_pristine:', "skipping commit, $version pristine files have not changed since last commit";
 	} else {
 		my $commit_message = 'initial commit, version: ' . $version;
-		if (defined $OPT_CURRENT_PACKAGE) {
-			$commit_message = 'initial commit (' . $OPT_CURRENT_PACKAGE . '), version: ' . $version;
-		}
 		_git('_update_etc_pristine', $git, 'commit', '-m', $commit_message);
 	}
 
 	# create a tag with the initial etc pristine
-	my $tag = _git('_update_etc_pristine', $git, 'tag', '-l', $tagname);
-	if ($tag =~ /opennms-git-config-pristine/) {
-		my $time = int(time);
-		main::warning "_update_etc_pristine: tag $tagname already exists, moving to $tagname-old-$time and overwriting.";
-		_git('_update_etc_pristine', $git, 'tag', $tagname . '-old-' . $time, $tagname);
-		_git('_update_etc_pristine', $git, 'tag', '-d', $tagname);
-	}
-	_git('_update_etc_pristine', $git, 'tag', $tagname);
+	_git('_update_etc_pristine', $git, 'tag', 'opennms-git-config-pristine-' . $version);
 
 	# switch back to the user config branch
 	_git('_update_etc_pristine', $git, 'checkout', $CONFIG_BRANCH);
@@ -597,7 +582,7 @@ sub init(@) {
 		main::info $pristinedir, 'exists, figuring out what to put into the pristine directory';
 		$pristinedir = File::Temp::tempdir(CLEANUP => 1);
 		my $rpmhandle = IO::Handle->new();
-		my $rpmnames = _get_enabled_opennms_rpms();
+		my $rpmnames = _get_current_opennms_rpms();
 		main::debug 'init:', 'found RPMs:', @$rpmnames;
 		for my $rpmname (@$rpmnames) {
 			my $rpmlist = IO::Handle->new();
