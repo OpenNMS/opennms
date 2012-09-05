@@ -30,6 +30,7 @@ package org.opennms.nrtg.api.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,9 +64,9 @@ public interface CollectionJob extends Serializable {
 
     public void addMetric(String metricId, Set<String> destinationSet) throws IllegalArgumentException;
 
-    public void setParameters(Map<String, Object> parameters);
+    public void setParameters(HashMap<String, Object> parameters);
 
-    public Map<String, Object> getParameters();
+    public HashMap<String, Object> getParameters();
 
     public MeasurementSet getMeasurementSet();
 
@@ -100,9 +101,9 @@ public interface CollectionJob extends Serializable {
 
     public Map<String, MeasurementSet> getMeasurementSetsByDestination();
 
-    public void setProtocolConfiguration(String configurationString);
+	public void setProtocolConfiguration(String configurationString);
 	
-    public String getProtocolConfiguration();
+	public String getProtocolConfiguration();
 
     public String getMetricType(String metricId) throws IllegalArgumentException;
 
