@@ -219,8 +219,6 @@ public class EasyMockDataPopulator {
         OnmsNode node8 = builder.getCurrentNode();
         setNode8(node8);
 
-<<<<<<< HEAD
-=======
         List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         nodes.add(node1);
         nodes.add(node2);
@@ -231,7 +229,6 @@ public class EasyMockDataPopulator {
         nodes.add(node7);
         nodes.add(node8);
         
->>>>>>> origin/master
         final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), 1, getNode1().getId(), 1, "A", new Date());
         final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), 2, getNode2().getId(), 1, "A", new Date());
         final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), 1, getNode3().getId(), 1, "A", new Date());
@@ -269,13 +266,9 @@ public class EasyMockDataPopulator {
             EasyMock.expect(m_nodeDao.get(id)).andReturn(getNode(id));
         }
 
-<<<<<<< HEAD
-        EasyMock.replay(m_nodeDao);
-=======
         EasyMock.expect(m_nodeDao.findAll()).andReturn(nodes);
         EasyMock.replay(m_nodeDao);
         
->>>>>>> origin/master
         }        
 
     }

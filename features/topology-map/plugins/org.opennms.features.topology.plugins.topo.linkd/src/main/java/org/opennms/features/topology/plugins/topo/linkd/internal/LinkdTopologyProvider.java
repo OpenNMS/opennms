@@ -261,11 +261,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             BeanItem<LinkdVertex> item = vertexContainer.getItem(sourceId);
             if (item == null) {
                 source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-<<<<<<< HEAD
                 m_vertexContainer.addBean( source);
-=======
-                vertexContainer.addBean( source);
->>>>>>> origin/master
             }
             else {
                 source = item.getBean();
@@ -278,11 +274,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             item = vertexContainer.getItem(targetId);
             if (item == null) {
                 target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
-<<<<<<< HEAD
                 m_vertexContainer.addBean( target);                    
-=======
-                vertexContainer.addBean(target);                    
->>>>>>> origin/master
             }
             else {
                 target = item.getBean();
@@ -319,11 +311,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     private String getAddress(OnmsNode node) {
-<<<<<<< HEAD
-	return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().toString();
-=======
 	return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().getHostAddress();
->>>>>>> origin/master
     }
     
     @Override
