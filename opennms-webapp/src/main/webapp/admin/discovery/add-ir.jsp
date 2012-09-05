@@ -1,5 +1,3 @@
-<%
-
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -30,8 +28,6 @@
  *******************************************************************************/
 
 --%>
-
-%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet,org.opennms.protocols.snmp.SnmpPeer" %>
 <% 
