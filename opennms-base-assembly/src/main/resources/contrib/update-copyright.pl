@@ -87,6 +87,9 @@ find({
 	wanted => sub {
 		process_file($File::Find::name);
 	},
+	preprocess => sub {
+		return sort { $a <=> $b } @_;
+	},
 	no_chdir => 1
 }, @directories) unless (@directories == 0);
 
