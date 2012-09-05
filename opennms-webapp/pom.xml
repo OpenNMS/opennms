@@ -227,33 +227,6 @@
   <dependencies>
     <!-- indirect dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
-
-    <dependency>
-	<groupId>org.apache.activemq</groupId>
-	<artifactId>activemq-web</artifactId>
-	<version>5.6.0</version>
-    </dependency>            
-            
-<!--    <dependency>
-        <groupId>activemq</groupId>
-        <artifactId>activemq-web</artifactId>
-        <version>4.1.1</version>
-        <exclusions>
-            <exclusion>
-                <artifactId>commons-logging</artifactId>
-                <groupId>commons-logging</groupId>
-            </exclusion>
-            <exclusion>
-                <artifactId>org.mortbay.jetty</artifactId>
-                <groupId>jetty-util</groupId>
-            </exclusion>
-            <exclusion>
-                <artifactId>mx4j</artifactId>
-                <groupId>mx4j</groupId>
-            </exclusion>
-        </exclusions>
-    </dependency>-->
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
@@ -277,7 +250,7 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
       <type>pom</type>
-      <scope>${onmsLibScope}</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -536,17 +509,7 @@
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-core</artifactId>
-      <version>5.6.0</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.api</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
-    </dependency>
+
+    
   </dependencies>
 </project>

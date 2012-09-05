@@ -58,7 +58,7 @@
 
     <feature name="spring-web" version="2.5.6.SEC02" resolver="(obr)">
     	<feature version="2.5.6.SEC02">spring</feature>
-    	<feature>http</feature>
+    	<feature version="2.2.7">http</feature>
     	<bundle start-level="30">mvn:org.springframework/spring-web/2.5.6.SEC02</bundle>
 		<bundle start-level="30">mvn:org.springframework/spring-webmvc/2.5.6.SEC02</bundle>
     </feature>
@@ -92,8 +92,8 @@
     <feature name="spring-dm-web" version="1.2.1" resolver="(obr)">
     	<feature version="1.2.1">spring-dm</feature>
     	<feature version="[2.5.6,4)">spring-web</feature>
-    	<feature>http</feature>
-	<bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-web/1.2.1</bundle>
+    	<feature version="2.2.7">http</feature>
+		<bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-web/1.2.1</bundle>
     </feature>
 
     <feature name="spring-instrument" version="3.0.7.RELEASE" resolver="(obr)">
@@ -142,7 +142,7 @@
 
     <feature name="spring-web" version="3.0.7.RELEASE" resolver="(obr)">
     	<feature version="3.0.7.RELEASE">spring</feature>
-    	<feature>http</feature>
+    	<feature version="2.2.7">http</feature>
     	<bundle start-level="30">mvn:org.springframework/spring-web/3.0.7.RELEASE</bundle>
 		<bundle start-level="30">mvn:org.springframework/spring-webmvc/3.0.7.RELEASE</bundle>
     </feature>

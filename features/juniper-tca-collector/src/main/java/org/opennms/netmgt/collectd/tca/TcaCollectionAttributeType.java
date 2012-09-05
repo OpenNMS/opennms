@@ -100,9 +100,4 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 		persister.persistNumericAttribute(attribute);
 	}
 
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "TCA_" + getName();
-    }
-
 }
