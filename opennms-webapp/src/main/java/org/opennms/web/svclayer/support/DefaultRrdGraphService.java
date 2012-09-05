@@ -75,7 +75,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     private RrdDao m_rrdDao;
 
     /** {@inheritDoc} */
-    @Override
     public InputStream getAdhocGraph(String resourceId, String title,
             String[] dataSources, String[] aggregateFunctions,
             String[] colors, String[] dataSourceTitles, String[] styles,
@@ -142,7 +141,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     }
 
     /** {@inheritDoc} */
-    @Override
     public InputStream getPrefabGraph(String resourceId, String report, long start, long end) {
         Assert.notNull(resourceId, "resourceId argument cannot be null");
         Assert.notNull(report, "report argument cannot be null");

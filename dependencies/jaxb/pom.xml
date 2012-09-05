@@ -11,8 +11,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS JAXB Dependencies</name>
   <properties>
-    <!-- this has been moved to master pom so the version can be used in the karaf system exports -->
-    <!-- <jaxbVersion>2.1.7</jaxbVersion> -->
+    <jaxbVersion>2.1.7</jaxbVersion>
     <fastInfosetVersion>1.2.2</fastInfosetVersion>
   </properties>
   <dependencies>

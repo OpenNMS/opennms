@@ -37,17 +37,6 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-/**
- * Bridges opennms services with osgi service registry and vice versa. {@link org.opennms.core.soa.ServiceRegistry}
- * 
- * It does this by listening to registrations from each service and publishing new services in the corresponding registry.
- * OSGI services are only published to the core.soa.ServiceRegistry if they are marked with the 'registration.export' attribute.
- * A 'registration.source' attribute indicating the source of the initial registration (either 'osgi' or 'onms').
- * This is added to each synchronized service in order to avoid registration looping.
- * 
- * @author brozow
- *
- */
 public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListener, BundleActivator {
 
 	private BundleContext m_bundleContext;
