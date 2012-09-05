@@ -103,7 +103,7 @@
         <type>pom</type>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>provision</artifactId>
-        <version>1.11.3-SPACE-SNAPSHOT</version>
+        <version>${project.version}</version>
         <scope>provided</scope>
         <optional>true</optional>
       </dependency>

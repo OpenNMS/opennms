@@ -157,7 +157,7 @@
 			</attribute>
 
 			<attribute name="use-lldp-discovery" type="boolean"
-				use="optional" default="false">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
 						Whether links discovery process should use
@@ -167,7 +167,7 @@
 			</attribute>
 
 			<attribute name="use-ospf-discovery" type="boolean"
-				use="optional" default="false">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
 						Whether links discovery process should use

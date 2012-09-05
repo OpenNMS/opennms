@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,9 +47,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -251,21 +249,7 @@ public class LinkdNms1055Test extends LinkdNms1055NetworkBuilder implements Init
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
-        example1.setUseLldpDiscovery(true);
         example1.setForceIpRouteDiscoveryOnEthernet(true);
-        Iproutes iproutes = new Iproutes();
-        Vendor juniper = new Vendor();
-        juniper.setVendor_name("Juniper.junos");
-        juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
-        juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
-        juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.57");
-        juniper.addSpecific("2.10");
-        iproutes.addVendor(juniper);
-        m_linkdConfig.getConfiguration().setIproutes(iproutes);
-        m_linkdConfig.update();
-
         
         final OnmsNode penrose = m_nodeDao.findByForeignId("linkd", PENROSE_NAME);
         final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);

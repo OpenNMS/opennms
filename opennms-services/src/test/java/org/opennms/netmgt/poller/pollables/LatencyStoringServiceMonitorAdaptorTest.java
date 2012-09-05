@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.endsWith;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.opennms.core.utils.InetAddressUtils.addr;
@@ -107,6 +108,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
         Locale defaultLocale = Locale.getDefault();
@@ -176,6 +178,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         anticipator.verifyAnticipated();
     }
 
+    @SuppressWarnings("unchecked")
     private void executeThresholdTest(EventAnticipator anticipator) throws Exception {
         System.setProperty("opennms.home", "src/test/resources");
         

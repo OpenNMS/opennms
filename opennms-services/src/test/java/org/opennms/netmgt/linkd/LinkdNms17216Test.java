@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -205,7 +205,7 @@ public class LinkdNms17216Test extends LinkdNms17216NetworkBuilder implements In
         example1.setUseBridgeDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
-        example1.setUseLldpDiscovery(true);
+        example1.setUseOspfDiscovery(false);
         
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);

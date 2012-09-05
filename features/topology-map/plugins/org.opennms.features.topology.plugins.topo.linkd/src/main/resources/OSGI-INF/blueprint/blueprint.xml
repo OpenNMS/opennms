@@ -8,12 +8,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
    <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
    
-    <bean id="linkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+    <bean id="topologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
     </bean>
     
-    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="linkdTopologyProvider">
+    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="topologyProvider">
       	<service-properties>
             <entry key="label" value="Linkd"/>
         </service-properties>
@@ -25,7 +25,17 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Open"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.OpenOperation">
-            <argument ref="linkdTopologyProvider"/>
+            <argument ref="topologyProvider"/>
+        </bean>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+      	<service-properties>
+            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.label" value="Hide Nodes Without Links"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.HideNodesWithoutLinksOperation">
+            <argument ref="topologyProvider"/>
         </bean>
     </service>
     
@@ -39,7 +49,5 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             </property>
         </bean>
     </service>
-    
-    
     
 </blueprint>
