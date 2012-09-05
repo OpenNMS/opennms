@@ -125,6 +125,10 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         if (config.anticipateRrds().length > 0) {
             for (String rrdFile : config.anticipateRrds()) {
                 m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + RrdUtils.getExtension());
+                
+                //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
+                //this .meta files are expected
+                m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + ".meta");
             }
         }
 

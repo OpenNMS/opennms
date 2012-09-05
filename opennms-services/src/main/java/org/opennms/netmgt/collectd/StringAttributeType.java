@@ -64,8 +64,8 @@ public class StringAttributeType extends SnmpAttributeType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistStringAttribute(attribute);
     }
-
 }

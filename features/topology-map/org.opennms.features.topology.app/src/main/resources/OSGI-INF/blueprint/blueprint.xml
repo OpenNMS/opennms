@@ -22,7 +22,15 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="iconRepositoryManager" ref="iconRepoManager"/>
         <property name="topologyProvider" ref="topologyProvider" />
         <property name="theme" value="${theme}"/>
+        <property name="widgetManager" ref="widgetManager"/>
     </bean>
+    
+    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
+        <service-properties>
+            <entry key="alias" value="${servletAlias}"/>
+            <entry key="widgetset" value="${widgetset}"/>
+        </service-properties>
+    </service>
     
     <bean id="topologySelector" class="org.opennms.features.topology.app.internal.operations.TopologySelector">
     	<property name="bundleContext" ref="blueprintBundleContext" />
@@ -64,6 +72,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
+    <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
+    
+    <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="widgetManager"/>
+    </reference-list>
+    
+    
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
@@ -75,13 +90,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager">
     </bean>
-    
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
-        <service-properties>
-            <entry key="alias" value="${servletAlias}"/>
-            <entry key="widgetset" value="${widgetset}"/>
-        </service-properties>
-    </service>
     
     <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
