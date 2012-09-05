@@ -38,6 +38,7 @@
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
             <Embed-Dependency>orika*|paranamer|javassist</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Import-Package>!com.sun.jdi*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
