@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>nrtg</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features.nrtg</groupId>
+  <artifactId>nrtg-api</artifactId>
+  <packaging>bundle</packaging>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.nrtg.api</bundle.symbolicName>
+    <!-- TODO refactor code so namespace matches symbolic name -->
+    <bundle.namespace>org.opennms.nrtg.api</bundle.namespace>
+  </properties>
+  <name>NRTG API</name>
+  <description>The API contains the models for the NRTG projects. It has models for collection jobs, measurements and protocol collectors.</description>
+  <dependencies>
+    <!-- Logging -->
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- <dependency> <groupId>ch.qos.logback</groupId> <artifactId>logback-classic</artifactId> 
+			<version>1.0.4</version> </dependency> -->
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

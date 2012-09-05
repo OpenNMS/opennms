@@ -49,19 +49,20 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * Represents an OID to be collected (it might be specific or an indexed object).
  * Also specific to a collection (e.g.: "default"), resource type (e.g.: node or
  * interface), and attribute group (data collection group name, e.g.: "mib2-interfaces").
- * This is extended to create concreate classes that represent specific types of data
+ * This is extended to create concrete classes that represent specific types of data
  * to be stored such as numeric data ({@link (NumericAttributeType)}) or string data
  * ({@link (StringAttributeType)}).
  *
  * @author ranger
  * @version $Id: $
  */
-public abstract class SnmpAttributeType implements AttributeDefinition,CollectionAttributeType {
+public abstract class SnmpAttributeType implements AttributeDefinition, CollectionAttributeType {
     
     private MibObject m_mibObj;
     private String m_collectionName;
     private ResourceType m_resourceType;
     private AttributeGroupType m_groupType;
+    private String m_attributeId;
 
     /**
      * <p>Constructor for SnmpAttributeType.</p>
@@ -151,6 +152,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      *
      * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
+    @Override
     public AttributeGroupType getGroupType() {
         return m_groupType;        
     }
@@ -208,6 +210,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getType() {
         return m_mibObj.getType();
     }
@@ -224,11 +227,13 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return getAlias();
     }
 
     /** {@inheritDoc} */
+    @Override
     public abstract void storeAttribute(CollectionAttribute attribute, Persister persister);
     
     /**
@@ -240,6 +245,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      */
     public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpResult res) {
         log().debug("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
+        this.m_attributeId = res.getAbsoluteInstance().toString();
         SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
             resource = m_resourceType.findAliasedResource(res.getInstance(), res.getValue().toString());
@@ -258,11 +264,13 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getAlias()+" ["+getOid()+"]";
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpAttributeType) {
             SnmpAttributeType attrType = (SnmpAttributeType) obj;
@@ -276,6 +284,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return getAlias().hashCode();
     }
@@ -317,6 +326,8 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         }
     }
 
-
-
+    @Override
+    public String getAttributeId() {
+        return this.m_attributeId;
+    }
 }

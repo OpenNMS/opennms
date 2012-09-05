@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+  <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://127.0.0.1:61616"/>
+  </bean>
+  <bean id="jmsExceptionListener" class="org.opennms.nrtg.nrtcollector.internal.jms.JmsExceptionListener"/>
+  <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <property name="targetConnectionFactory" ref="amqConnectionFactory"/>
+    <property name="sessionCacheSize" value="8"/>
+    <property name="exceptionListener" ref="jmsExceptionListener"/>
+  </bean>
+  <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="deliveryPersistent" value="false"/>
+    <property name="deliveryMode" value="1"/>
+    <property name="explicitQosEnabled" value="true"/>
+    <property name="timeToLive" value="120000"/>
+  </bean>
+  <bean id="protocolCollectorRegistry" class="org.opennms.nrtg.nrtcollector.internal.ProtocolCollectorRegistryImpl">
+    <property name="protocolCollectors" ref="protocolCollectors"/>
+  </bean>
+  <reference-list id="protocolCollectors" interface="org.opennms.nrtg.api.ProtocolCollector" availability="mandatory">
+	</reference-list>
+  <bean id="jobListener" class="org.opennms.nrtg.nrtcollector.internal.jms.CollectionJobListener">
+    <property name="jmsTemplate" ref="jmsTemplate"/>
+    <property name="protocolCollectorRegistry" ref="protocolCollectorRegistry"/>
+  </bean>
+  <bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer" init-method="initialize">
+    <!-- blueprint doesn't call initialize as the normal spring bean context 
+			http://static.springsource.org/osgi/docs/2.0.0.M1/reference/html/blueprint.html -->
+    <property name="concurrentConsumers" value="16"/>
+    <property name="maxConcurrentConsumers" value="16"/>
+    <property name="destinationName" value="NrtCollectMe"/>
+    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="messageListener" ref="jobListener"/>
+    <property name="sessionTransacted" value="true"/>
+  </bean>
+  <bean id="nrtCollector" class="org.opennms.nrtg.nrtcollector.internal.jms.NrtCollectorJMSDLMC" init-method="start" destroy-method="stop">
+    <property name="listenerContainer" ref="listenerContainer"/>
+  </bean>
+  <service interface="org.opennms.nrtg.nrtcollector.api.NrtCollector" ref="nrtCollector">
+	</service>
+</blueprint>
