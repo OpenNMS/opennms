@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -58,7 +59,7 @@ public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 		return null;
 	}
 
-	public void createFile(Object rrdDef) throws Exception {
+	public void createFile(Object rrdDef, Map<String, String> attrMapping) throws Exception {
 	}
 
     public InputStream createGraph(String command, File workDir)

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -59,38 +60,46 @@ public interface RrdStrategy<D extends Object,F extends Object> {
     public String getDefaultFileExtension();
 
     /**
-     * Create a round robin database definition from the supplied parameters.
-     * This definition is used in the createFile call to create the actual file.
-     *
-     * @param creator -
-     *            A string representing who is creating this file for use in log
-     *            msgs
-     * @param directory -
-     *            The directory to create the file in
-     * @param rrdName -
-     *            The name to use for the round robin database
-     * @param step -
-     *            the step for the database
-     * @param dataSources -
-     *            the data sources to use for round robin database
-     * @param rraList -
-     *            a List of the round robin archives to create in the database
-     * @return an object representing the definition of an round robin database
-     * @throws java.lang.Exception
-     *             If an error occurs while creating the definition
-     */
+	 * Create a round robin database definition from the supplied parameters.
+	 * This definition is used in the createFile call to create the actual file.
+	 * 
+	 * @param creator
+	 *            - A string representing who is creating this file for use in
+	 *            log msgs
+	 * @param directory
+	 *            - The directory to create the file in
+	 * @param rrdName
+	 *            - The name to use for the round robin database
+	 * @param step
+	 *            - the step for the database
+	 * @param dataSources
+	 *            - the data sources to use for round robin database
+	 * @param rraList
+	 *            - a List of the round robin archives to create in the
+	 *            database. defines after which time the data is condensed to a
+	 *            defined lower step
+	 * @return an object representing the definition of an round robin database. Can be null if the database exists already.
+	 * @throws java.lang.Exception
+	 *             If an error occurs while creating the definition
+	 */
     public D createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception;
 
     /**
-     * Creates the round robin database defined by the supplied definition.
-     *
-     * @param rrdDef
-     *            an round robin database definition created using the
-     *            createDefinition call.
-     * @throws java.lang.Exception
-     *             if an error occurs create the file
-     */
-    public void createFile(D rrdDef) throws Exception;
+	 * Creates the round robin database defined by the supplied definition.
+	 * Should be able to handle rrdDef being null.
+	 * 
+	 * @param rrdDef
+	 *            an round robin database definition created using the
+	 *            createDefinition call.
+	 * @param attributeMappings
+	 *            a {@link Map<String, String>} that represents the mapping of
+	 *            attributeId to rrd track names. default there is only one
+	 *            track per datasource, but it is possible to store multiple
+	 *            tracks in one datasource
+	 * @throws java.lang.Exception
+	 *             if an error occurs create the file
+	 */
+    public void createFile(D rrdDef, Map<String, String> attributeMappings) throws Exception;
 
     /**
      * Opens the round robin database with the supplied name. It is assumed the
