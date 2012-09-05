@@ -108,7 +108,7 @@ import org.apache.log4j.Logger;
  * @author ranger
  * @version $Id: $
  */
-public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.CreateOperation,String>, Runnable {
+public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operation,String>, Runnable {
 
     private Properties m_configurationProperties;
 
@@ -458,16 +458,10 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * This class represents an operation to create an rrd file
      */
     public class CreateOperation extends Operation {
-    	
-    	private Map<String, String> attributeMappings;
 
         CreateOperation(String fileName, Object rrdDef) {
             super(fileName, CREATE, rrdDef, true);
         }
-        
-        public void setAttributeMappings(Map<String, String> attributeMappings) {
-			this.attributeMappings = attributeMappings;
-		}
 
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
@@ -478,7 +472,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             }
 
             // create the file
-            m_delegate.createFile(getData(), attributeMappings);
+            m_delegate.createFile(getData());
 
             // keep stats
             setCreatesCompleted(getCreatesCompleted() + 1);
@@ -644,7 +638,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * @param rrdDef a {@link java.lang.Object} object.
      * @return a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
      */
-    public CreateOperation makeCreateOperation(String fileName, Object rrdDef) {
+    public Operation makeCreateOperation(String fileName, Object rrdDef) {
         return new CreateOperation(fileName, rrdDef);
     }
 
@@ -994,7 +988,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
     
     /** {@inheritDoc} */
-    public CreateOperation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
+    public Operation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
@@ -1012,12 +1006,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * @param op a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
      * @throws java.lang.Exception if any.
      */
-    public void createFile(CreateOperation op, Map<String, String> attributeMappings) throws Exception {
-        if (m_queueCreates) {
-        	op.setAttributeMappings(attributeMappings);
+    public void createFile(Operation op) throws Exception {
+        if (m_queueCreates)
             addOperation(op);
-        } else {
-            m_delegate.createFile(op.getData(), attributeMappings);
+        else {
+            m_delegate.createFile(op.getData());
         }
     }
 

@@ -31,7 +31,6 @@ package org.opennms.web.svclayer.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -71,16 +70,5 @@ public class DefaultGraphResultsServiceTest {
         assertEquals("nodeSource[foreignSource:foreignId]", values[0]);
         assertEquals("nodeSnmp", values[1]);
         assertEquals("", values[2]);
-    }
-    
-    /**
-     * Check if the lookup of metrics to columns for prefabGraphs is working.
-     * This lookup is performed by file handling of meta files.
-     */
-    @Test
-    public void testLookUpMetricsForColumnsOfPrefabGraphs() {
-        DefaultGraphResultsService defaultGraphResultsService = new DefaultGraphResultsService();
-        assertNotNull(defaultGraphResultsService);
-        //Sorry not now
     }
 }

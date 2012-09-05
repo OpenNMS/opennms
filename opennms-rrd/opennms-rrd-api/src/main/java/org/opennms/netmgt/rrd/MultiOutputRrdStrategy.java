@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -132,10 +131,15 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
         return retval;
     }
 
-    /** {@inheritDoc} */
-    public void createFile(List<Object> rrdDef, Map<String, String> attributeMappings) throws Exception {
+    /**
+     * <p>createFile</p>
+     *
+     * @param rrdDef a {@link java.util.List} object.
+     * @throws java.lang.Exception if any.
+     */
+    public void createFile(List<Object> rrdDef) throws Exception {
         for (int i = 0; i < rrdDef.size(); i++) {
-            m_strategies.get(i).createFile(rrdDef.get(i), attributeMappings);
+            m_strategies.get(i).createFile(rrdDef.get(i));
         }
     }
 

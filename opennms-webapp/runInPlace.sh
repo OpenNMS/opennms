@@ -83,7 +83,7 @@ function usage() {
     err "\t-h : print this help"
     err "\t-C : clean up completely"
     err "\t-b : build in place before running"
-	err "\t-t : start jetty with debug port 8002 open"
+		err "\t-t : start jetty with debug port 8002 open"
     err "\t-c : remove WEB-INF/lib, WEB-INF/classes and META_INF dirs"
     err "\t-g : remove gwt generated files"
     err "\t-n : no-run: this is useful if you want to only build in place"

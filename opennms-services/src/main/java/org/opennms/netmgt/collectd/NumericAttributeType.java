@@ -91,7 +91,6 @@ public class NumericAttributeType extends SnmpAttributeType {
     }
     
     /** {@inheritDoc} */
-    @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistNumericAttribute(attribute);
     }
