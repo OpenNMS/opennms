@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
  * This file is a derivative work, containing both original code, included code,

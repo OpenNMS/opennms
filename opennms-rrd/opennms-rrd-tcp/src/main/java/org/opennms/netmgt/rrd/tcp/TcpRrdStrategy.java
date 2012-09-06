@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -41,18 +40,13 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
 /**
- * Provides a TCP socket-based implementation of RrdStrategy that pushes update
- * commands out in a simple serialized format.
- * <p>
- * The receiver of this strategy is not defined in any way. This is just a fire
- * and forget strategy. There is no way to read data back into opennms.
- * </p>
- * 
+ * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
+ * out in a simple serialized format.
+ *
  * @author ranger
  * @version $Id: $
  */
 public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,TcpRrdStrategy.RrdOutputSocketWithFilename> {
-	
     public static class RrdDefinition {
         private final String m_directory, m_rrdName;
         public RrdDefinition(
@@ -151,8 +145,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
-	public void createFile(RrdDefinition rrdDef,
-			Map<String, String> attributeMappings) throws Exception {
+    public void createFile(RrdDefinition rrdDef) throws Exception {
         // Do nothing
     }
 

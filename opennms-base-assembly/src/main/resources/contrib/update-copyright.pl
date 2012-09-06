@@ -5,11 +5,13 @@ use File::Find;
 use File::Copy;
 
 my $debug = 0;
+my (undef,undef,undef,undef,undef,$current_year) = localtime(time);
+$current_year += 1900;
 
 my $header = "This file is part of OpenNMS(R).
 
 Copyright (C) ###datestring### The OpenNMS Group, Inc.
-OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+OpenNMS(R) is Copyright (C) 1999-$current_year The OpenNMS Group, Inc.
 
 OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
@@ -36,7 +38,7 @@ sub write_jsp {
 	my $dates = shift;
 	print FILEOUT "<%--\n";
 	write_java($dates);
-	print FILEOUT "--%>\n";
+	print FILEOUT "--%>\n\n";
 }
 
 sub write_java {
@@ -85,6 +87,9 @@ find({
 	wanted => sub {
 		process_file($File::Find::name);
 	},
+	preprocess => sub {
+		return sort { $a <=> $b } @_;
+	},
 	no_chdir => 1
 }, @directories) unless (@directories == 0);
 
@@ -100,8 +105,8 @@ sub process_file {
 
 	print "* $name\n";
 
-	my $begin_date = 2011;
-	my $end_date   = 2011;
+	my $begin_date = $current_year;
+	my $end_date   = $current_year;
 
 	open (GIT, "git log --date=short '$name' |") or die "unable to read from 'git log --date=short $name': $!\n";
 	while (my $line = <GIT>) {
@@ -131,12 +136,21 @@ sub process_file {
 	my $in_header = undef;
 	my $in_comment = undef;
 	my $comment_contents = "";
+	my $didit = 0;
 
 	LOOP: while (my $line = <FILEIN>) {
 		print "  $line" if ($debug);
 
 		print "1. in_comment = $in_comment\n" if ($debug);
 		print "2. in_header  = $in_header\n"  if ($debug);
+		if ($didit) {
+			# skip extra empty lines if we just wrote a header
+			if ($line =~ /^\s*$/) {
+				next LOOP;
+			}
+			$didit = 0;
+		}
+
 		if (defined $in_comment) {
 			my $doit = 0;
 			if ($in_comment eq "/*") {
@@ -170,11 +184,14 @@ sub process_file {
 							&{"write_$extension"}($datestring);
 						}
 						print FILEOUT $line;
+						$didit = 1;
 					} elsif ($in_comment eq "#" and $line !~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/) {
 						&{"write_$extension"}($datestring);
 						print FILEOUT $line;
+						$didit = 1;
 					} else {
 						&{"write_$extension"}($datestring);
+						$didit = 1;
 					}
 				} else {
 					$comment_contents .= $line;

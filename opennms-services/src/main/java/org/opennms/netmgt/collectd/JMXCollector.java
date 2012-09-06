@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -177,7 +177,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * During initialization the JMX collector: - Initializes various
      * configuration factories. - Verifies access to the database - Verifies
      * access to RRD file repository - Verifies access to JNI RRD shared
-     * library - Determines if JMX to be stored for only the node's primary
+     * library - Determines if JMX to be stored for only the node'sprimary
      * interface or for all interfaces.
      * </p>
      * @exception RuntimeException
@@ -714,16 +714,6 @@ public abstract class JMXCollector implements ServiceCollector {
         @Override
         public String getType() {
             return m_dataSource.getType();
-        }
-
-        @Override
-        public String getAttributeId() {
-            String attributeId = m_groupType.getName();
-            attributeId = attributeId.replace("_type_", ":type=");
-            attributeId = attributeId.replace("_", ".");
-            attributeId = attributeId.concat(".");
-            attributeId = attributeId.concat(m_name);
-            return "JMX_".concat(attributeId);
         }
     }
     

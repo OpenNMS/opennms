@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,7 +54,7 @@ import org.opennms.netmgt.rrd.RrdException;
  */
 public class BasePersister extends AbstractCollectionSetVisitor implements Persister {
 
-    private boolean m_ignorePersist = false;
+	private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
     private RrdRepository m_repository;
     private LinkedList<Boolean> m_stack = new LinkedList<Boolean>();

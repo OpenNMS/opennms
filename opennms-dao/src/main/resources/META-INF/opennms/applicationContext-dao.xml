@@ -354,8 +354,6 @@
     <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
-  
-  <onmsgi:service interface="org.opennms.netmgt.dao.ResourceDao" ref="resourceDao" />
 
   <bean id="rrdStrategy" class="org.opennms.netmgt.rrd.RrdUtils" factory-method="getStrategy"/>
 
@@ -406,8 +404,6 @@
   </bean>
 
   <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
-
-  <onmsgi:service interface="org.opennms.netmgt.config.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
   
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />

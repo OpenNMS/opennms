@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -75,7 +75,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     private RrdDao m_rrdDao;
 
     /** {@inheritDoc} */
-    @Override
     public InputStream getAdhocGraph(String resourceId, String title,
             String[] dataSources, String[] aggregateFunctions,
             String[] colors, String[] dataSourceTitles, String[] styles,
@@ -142,7 +141,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     }
 
     /** {@inheritDoc} */
-    @Override
     public InputStream getPrefabGraph(String resourceId, String report, long start, long end) {
         Assert.notNull(resourceId, "resourceId argument cannot be null");
         Assert.notNull(report, "report argument cannot be null");

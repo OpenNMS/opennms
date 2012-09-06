@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,15 +37,6 @@ package org.opennms.netmgt.config.collector;
 public interface AttributeDefinition {
 
     /**
-     * <p>getAttributeId</p>
-     * 
-     * Identifies the attribute itself.
-     * Like a SNMP-OID or the combination JMX-MBean and attribute.
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getAttributeId();
-    
-    /**
      * <p>getType</p>
      *
      * @return a {@link java.lang.String} object.
@@ -54,8 +45,7 @@ public interface AttributeDefinition {
 
     /**
      * <p>getName</p>
-     * 
-     * Human readable name for the attribute.
+     *
      * @return a {@link java.lang.String} object.
      */
     public abstract String getName();

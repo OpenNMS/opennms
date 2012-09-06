@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.collectd;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.matches;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,22 +64,22 @@ public class SnmpAttributeTest extends TestCase {
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
     @SuppressWarnings("unchecked")
-    private RrdStrategy<Object, Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        
         RrdUtils.setStrategy(m_rrdStrategy);
     }
 
     @Override
     protected void runTest() throws Throwable {
         super.runTest();
-
+        
         m_mocks.verifyAll();
     }
-
+    
     public void testNumericAttributeFloatValueInString() throws Exception {
         String stringValue = "7.69";
         testPersisting(stringValue, new Snmp4JValueFactory().getOctetString(stringValue.getBytes()));
@@ -92,48 +93,46 @@ public class SnmpAttributeTest extends TestCase {
     private void testPersisting(String matchValue, SnmpValue snmpValue) throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(3);
-
+        
         OnmsIpInterface ipInterface = new OnmsIpInterface();
         ipInterface.setId(1);
         ipInterface.setNode(node);
         ipInterface.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
-
+        
         expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
 
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
-
-        // m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) eq(null));
-
-        // expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
-        // m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
-        // m_rrdStrategy.closeFile(isA(Object.class));
-
+        m_rrdStrategy.createFile(isA(Object.class));
+        expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
+        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
+        m_rrdStrategy.closeFile(isA(Object.class));
+        
         m_mocks.replayAll();
-
+        
         CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = new NodeInfo(resourceType, agent);
-
+        
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.3.6.1.4.1.12238.55.9997.4.1.2.9.116.101.109.112.95.117.108.107.111");
         mibObject.setInstance("1");
         mibObject.setAlias("temp_ulko");
         mibObject.setType("gauge");
-
+        
         NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", "ignore"));
-
+        
         SnmpAttribute attr = new SnmpAttribute(nodeInfo, attributeType, snmpValue);
-
+        
         RrdRepository repository = new RrdRepository();
         repository.setRraList(new ArrayList<String>(Collections.singleton("RRA:AVERAGE:0.5:1:2016")));
-
+        
         BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
         persister.createBuilder(nodeInfo, "baz", attributeType);
-
+        
         attr.storeAttribute(persister);
-
+        
         persister.commitBuilder();
     }
 

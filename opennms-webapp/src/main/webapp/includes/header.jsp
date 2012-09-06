@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
  *******************************************************************************/
 
 --%>
+
 <%--
 
   Modifications:
@@ -127,6 +128,8 @@ final String baseHref = Util.calculateUrlBase( request );
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
+
+
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
 	</c:if>
@@ -134,7 +137,7 @@ final String baseHref = Util.calculateUrlBase( request );
 	<c:if test="${param.enableSpringDojo == 'true'}">	
 		<script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
    		<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-                <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
+    	<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">

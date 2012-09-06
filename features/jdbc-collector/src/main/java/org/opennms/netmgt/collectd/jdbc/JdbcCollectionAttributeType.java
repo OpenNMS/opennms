@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,12 +43,10 @@ public class JdbcCollectionAttributeType implements CollectionAttributeType {
         m_column=column;
     }
     
-    @Override
     public AttributeGroupType getGroupType() {
         return m_groupType;
     }
     
-    @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         if (m_column.getDataType().equalsIgnoreCase("string")) {
             persister.persistStringAttribute(attribute);
@@ -57,18 +55,11 @@ public class JdbcCollectionAttributeType implements CollectionAttributeType {
         }
     }
     
-    @Override
     public String getName() {
         return m_column.getAlias();
     }
     
-    @Override
     public String getType() {
         return m_column.getDataType();
-    }
-
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "JDBC_" + getName();
     }
 }

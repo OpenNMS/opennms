@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -222,7 +222,6 @@ public class HttpCollector implements ServiceCollector {
             m_parameters = parameters;
         }
 
-        @Override
         public int getStatus() {
             return m_status;
         }
@@ -231,7 +230,6 @@ public class HttpCollector implements ServiceCollector {
             collectionResource.storeResults(results);
         }
 
-        @Override
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitCollectionSet(this);
             for (HttpCollectionResource collectionResource : m_collectionResourceList) {
@@ -240,7 +238,6 @@ public class HttpCollector implements ServiceCollector {
             visitor.completeCollectionSet(this);
         }
 
-        @Override
 		public boolean ignorePersist() {
 			return false;
 		}       
@@ -357,12 +354,10 @@ public class HttpCollector implements ServiceCollector {
             m_value = value;
         }
 
-        @Override
         public String getName() {
             return m_alias;
         }
 
-        @Override
         public String getType() {
             return m_type;
         }
@@ -371,7 +366,6 @@ public class HttpCollector implements ServiceCollector {
             return m_value;
         }
 
-        @Override
         public String getNumericValue() {
             Object val = getValue();
             if (val instanceof Number) {
@@ -387,7 +381,6 @@ public class HttpCollector implements ServiceCollector {
             return null;
         }
 
-        @Override
         public String getStringValue() {
             return getValue().toString();
         }
@@ -408,17 +401,14 @@ public class HttpCollector implements ServiceCollector {
             }
             return false;
         }
-        @Override
         public CollectionAttributeType getAttributeType() {
             return m_attribType;
         }
 
-        @Override
         public CollectionResource getResource() {
             return m_resource;
         }
 
-        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
@@ -440,11 +430,6 @@ public class HttpCollector implements ServiceCollector {
             return buffer.toString();
         }
 
-        @Override
-        public String getAttributeId() {
-            return "Not supported yet._" + "HTTP_" + m_attribType.getName();
-        }
-
     }
 
     private List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
@@ -453,30 +438,22 @@ public class HttpCollector implements ServiceCollector {
         log().debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         int flags = 0;
-        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence()) {
+        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence())
             flags |= Pattern.CANON_EQ;
-        }
-        if (collectionSet.getUriDef().getUrl().getCaseInsensitive()) {
+        if (collectionSet.getUriDef().getUrl().getCaseInsensitive())
             flags |= Pattern.CASE_INSENSITIVE;
-        }
-        if (collectionSet.getUriDef().getUrl().getComments()) {
+        if (collectionSet.getUriDef().getUrl().getComments())
             flags |= Pattern.COMMENTS;
-        }
-        if (collectionSet.getUriDef().getUrl().getDotall()) {
+        if (collectionSet.getUriDef().getUrl().getDotall())
             flags |= Pattern.DOTALL;
-        }
-        if (collectionSet.getUriDef().getUrl().getLiteral()) {
+        if (collectionSet.getUriDef().getUrl().getLiteral())
             flags |= Pattern.LITERAL;
-        }
-        if (collectionSet.getUriDef().getUrl().getMultiline()) {
+        if (collectionSet.getUriDef().getUrl().getMultiline())
             flags |= Pattern.MULTILINE;
-        }
-        if (collectionSet.getUriDef().getUrl().getUnicodeCase()) {
+        if (collectionSet.getUriDef().getUrl().getUnicodeCase())
             flags |= Pattern.UNICODE_CASE;
-        }
-        if (collectionSet.getUriDef().getUrl().getUnixLines()) {
+        if (collectionSet.getUriDef().getUrl().getUnixLines())
             flags |= Pattern.UNIX_LINES;
-        }
         log().debug("flags = " + flags);
         Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches(), flags);
         Matcher m = p.matcher(responseBodyAsString);
@@ -680,9 +657,8 @@ public class HttpCollector implements ServiceCollector {
 
     private static List<NameValuePair> buildRequestParameters(final HttpCollectionSet collectionSet) {
         List<NameValuePair> retval = new ArrayList<NameValuePair>();
-        if (collectionSet.getUriDef().getUrl().getParameters() == null) {
+        if (collectionSet.getUriDef().getUrl().getParameters() == null)
             return retval;
-        }
         List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameterCollection();
         for (Parameter p : parameters) {
             retval.add(new BasicNameValuePair(p.getKey(), p.getValue()));
@@ -836,59 +812,48 @@ public class HttpCollector implements ServiceCollector {
         }
 
         //A rescan is never needed for the HttpCollector
-        @Override
         public boolean rescanNeeded() {
             return false;
         }
 
-        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
 
-        @Override
         public String getOwnerName() {
             return m_agent.getHostAddress();
         }
 
-        @Override
         public File getResourceDir(RrdRepository repository) {
             return new File(repository.getRrdBaseDir(), getParent());
         }
 
-        @Override
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitResource(this);
             m_attribGroup.visit(visitor);
             visitor.completeResource(this);
         }
 
-        @Override
         public int getType() {
             return -1; //Is this right?
         }
 
-        @Override
         public String getResourceTypeName() {
             return "node"; //All node resources for HTTP; nothing of interface or "indexed resource" type
         }
 
-        @Override
         public String getInstance() {
             return null;
         }
 
-        @Override
         public String getLabel() {
             return null;
         }
 
-        @Override
         public String getParent() {
             return m_agent.getStorageDir().toString();
         }
 
-        @Override
         public TimeKeeper getTimeKeeper() {
             return null;
         }
@@ -903,12 +868,10 @@ public class HttpCollector implements ServiceCollector {
             m_attribute=attribute;
         }
 
-        @Override
         public AttributeGroupType getGroupType() {
             return m_groupType;
         }
 
-        @Override
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
             if(m_attribute.getType().equals("string")) {
                 persister.persistStringAttribute(attribute);
@@ -917,25 +880,17 @@ public class HttpCollector implements ServiceCollector {
             }
         }
 
-        @Override
         public String getName() {
             return m_attribute.getAlias();
         }
 
-        @Override
         public String getType() {
             return m_attribute.getType();
-        }
-
-        @Override
-        public String getAttributeId() {
-            return "Not supported yet_" + "HTTP_" + getName();
         }
 
     }
 
     /** {@inheritDoc} */
-    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

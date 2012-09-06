@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -95,30 +95,21 @@ public class NSClientCollector implements ServiceCollector {
             m_attribute=attribute;
         }
 
-        @Override
         public AttributeGroupType getGroupType() {
             return m_groupType;
         }
 
-        @Override
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
             //Only numeric data comes back from NSClient in data collection
             persister.persistNumericAttribute(attribute);
         }
 
-        @Override
         public String getName() {
             return m_attribute.getAlias();
         }
 
-        @Override
         public String getType() {
             return m_attribute.getType();
-        }
-
-        @Override
-        public String getAttributeId() {
-            return "Not supported yet._" + "NSC_" + getName();
         }
     }
     
@@ -137,42 +128,34 @@ public class NSClientCollector implements ServiceCollector {
             m_value = value;
         }
 
-        @Override
         public CollectionAttributeType getAttributeType() {
             return m_attribType;
         }
 
-        @Override
         public String getName() {
             return m_alias;
         }
 
-        @Override
         public String getNumericValue() {
             return m_value;
         }
 
-        @Override
         public CollectionResource getResource() {
             return m_resource;
         }
 
-        @Override
         public String getStringValue() {
             return m_value; //Should this be null instead?
         }
 
-        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
 
-        @Override
         public String getType() {
             return m_attribType.getType();
         }
         
-        @Override
         public String toString() {
             return "NSClientCollectionAttribute " + m_alias+"=" + m_value;
         }
@@ -185,18 +168,15 @@ public class NSClientCollector implements ServiceCollector {
             super(agent);
         }
         
-        @Override
         public int getType() {
             return -1; //Is this right?
         }
 
         //A rescan is never needed for the NSClientCollector, at least on resources
-        @Override
         public boolean rescanNeeded() {
             return false;
         }
 
-        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
@@ -206,17 +186,14 @@ public class NSClientCollector implements ServiceCollector {
             addAttribute(attr);
         }
         
-        @Override
         public String getResourceTypeName() {
             return "node"; //All node resources for NSClient; nothing of interface or "indexed resource" type
         }
         
-        @Override
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
 
-        @Override
         public String getParent() {
             return m_agent.getStorageDir().toString();
         }
@@ -232,7 +209,6 @@ public class NSClientCollector implements ServiceCollector {
             m_collectionResource = new NSClientCollectionResource(agent);
         }
         
-        @Override
         public int getStatus() {
             return m_status;
         }
@@ -241,7 +217,6 @@ public class NSClientCollector implements ServiceCollector {
             m_status = status;
         }
 
-        @Override
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitCollectionSet(this);
             m_collectionResource.visit(visitor);
@@ -252,7 +227,6 @@ public class NSClientCollector implements ServiceCollector {
             return m_collectionResource;
         }
 
-        @Override
 		public boolean ignorePersist() {
 			return false;
 		}
@@ -264,7 +238,6 @@ public class NSClientCollector implements ServiceCollector {
     }
     
     /** {@inheritDoc} */
-    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
         int status = ServiceCollector.COLLECTION_FAILED;
         final ServiceParameters serviceParams = new ServiceParameters(parameters);
@@ -344,7 +317,6 @@ public class NSClientCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void initialize(Map<String, String> parameters) {
         log().debug("initialize: Initializing NSClientCollector.");
         m_scheduledNodes.clear();
@@ -432,7 +404,6 @@ public class NSClientCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: " + agent);
         Integer scheduledNodeKey = agent.getNodeId();
@@ -459,13 +430,11 @@ public class NSClientCollector implements ServiceCollector {
     /**
      * <p>release</p>
      */
-    @Override
     public void release() {
         m_scheduledNodes.clear();
     }
 
     /** {@inheritDoc} */
-    @Override
     public void release(final CollectionAgent agent) {
         final Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
@@ -572,7 +541,6 @@ public class NSClientCollector implements ServiceCollector {
     }
     
     /** {@inheritDoc} */
-    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return NSClientDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

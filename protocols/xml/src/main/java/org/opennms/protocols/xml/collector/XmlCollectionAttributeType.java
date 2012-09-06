@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,7 +61,6 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionAttributeType#getGroupType()
      */
-    @Override
     public AttributeGroupType getGroupType() {
         return m_groupType;
     }
@@ -69,7 +68,6 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionAttributeType#storeAttribute(org.opennms.netmgt.config.collector.CollectionAttribute, org.opennms.netmgt.config.collector.Persister)
      */
-    @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         if (m_object.getDataType().equalsIgnoreCase("string")) {
             persister.persistStringAttribute(attribute);
@@ -81,7 +79,6 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.AttributeDefinition#getName()
      */
-    @Override
     public String getName() {
         return m_object.getName();
     }
@@ -89,13 +86,7 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.AttributeDefinition#getType()
      */
-    @Override
     public String getType() {
         return m_object.getDataType();
-    }
-
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "XML_" + getName();
     }
 }

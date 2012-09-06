@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,6 @@ package org.opennms.web.svclayer.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -71,16 +70,5 @@ public class DefaultGraphResultsServiceTest {
         assertEquals("nodeSource[foreignSource:foreignId]", values[0]);
         assertEquals("nodeSnmp", values[1]);
         assertEquals("", values[2]);
-    }
-    
-    /**
-     * Check if the lookup of metrics to columns for prefabGraphs is working.
-     * This lookup is performed by file handling of meta files.
-     */
-    @Test
-    public void testLookUpMetricsForColumnsOfPrefabGraphs() {
-        DefaultGraphResultsService defaultGraphResultsService = new DefaultGraphResultsService();
-        assertNotNull(defaultGraphResultsService);
-        //Sorry not now
     }
 }

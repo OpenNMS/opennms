@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,12 +39,6 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private String m_title;
 
     private String[] m_columns;
-    
-    /**
-     * MetricIds matching the columns
-     * TODO put columns and metricIds in one structure
-     */
-    private String[] m_metricIds;
 
     private String m_command;
 
@@ -234,14 +228,6 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
         return m_suppress;
     }
 
-    public String[] getMetricIds() {
-        return m_metricIds;
-    }
-
-    public void setMetricIds(String[] m_metricIds) {
-        this.m_metricIds = m_metricIds;
-    }
-    
     /**
      * <p>compareTo</p>
      *
