@@ -172,6 +172,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(group.getIconKey()));
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
+        		target.addAttribute("tooltipText", group.getTooltipText());
 
         		List<String> groupActionList = new ArrayList<String>();
         		List<Action> groupSortedList = sortActionHandlers(m_actionHandlers, group.getGroupId(), null); 
@@ -201,6 +202,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         			target.addAttribute("groupKey", vert.getGroupKey());
         		}
         		target.addAttribute("label", vert.getLabel());
+        		target.addAttribute("tooltipText", vert.getTooltipText());
 
         		List<String> vertActionList = new ArrayList<String>();
         		List<Action> vertActionSortedList = sortActionHandlers(m_actionHandlers, vert.getItemId(), null);
@@ -220,6 +222,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("key", edge.getKey());
         	target.addAttribute("source", edge.getSource().getKey());
         	target.addAttribute("target", edge.getTarget().getKey());
+        	target.addAttribute("tooltipText", edge.getTooltipText());
 
     		List<String> edgeActionList = new ArrayList<String>();
     		List<Action> edgeSortedActionList = sortActionHandlers(m_actionHandlers, edge.getItemId(), null);

@@ -52,7 +52,7 @@ public final class GWTEdge extends JavaScriptObject {
     }-*/;
 
     public String getId() {
-        return getSource().getId() + "::" + getTarget().getId();
+        return getSource().getLabel() + " :: " + getTarget().getLabel();
     }
     
     private final native JsArrayString actionKeys() /*-{

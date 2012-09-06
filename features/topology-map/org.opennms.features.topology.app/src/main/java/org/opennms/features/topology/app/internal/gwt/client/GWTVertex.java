@@ -112,7 +112,7 @@ public class GWTVertex extends JavaScriptObject {
     }-*/;
     
     public final String getTooltipText() {
-        return "id: " + getId() + " SZL: " + getSemanticZoomLevel() + " Group: " + (getParent() == null ? "null" : getParent().getId());
+        return getLabel();
     }
     
     

@@ -160,4 +160,8 @@ public class Vertex implements Paintable {
         return (String) m_item.getItemProperty(ICON_KEY).getValue();
     }
 
+    public String getTooltipText() {
+        return getLabel();
+    }
+
 }
