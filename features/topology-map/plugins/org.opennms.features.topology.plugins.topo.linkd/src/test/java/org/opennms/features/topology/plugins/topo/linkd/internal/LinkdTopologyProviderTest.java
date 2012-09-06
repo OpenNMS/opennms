@@ -36,7 +36,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,7 +43,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.SaveOperation;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,13 +70,12 @@ public class LinkdTopologyProviderTest {
     @Autowired
      private EasyMockDataPopulator m_databasePopulator;
     
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-    
     @Before
     public void setUp() {
         m_databasePopulator.populateDatabase();
+        m_databasePopulator.setUpMock();
     }
+
     @After
     public void tearDown() {
         m_databasePopulator.tearDown();
@@ -97,29 +94,24 @@ public class LinkdTopologyProviderTest {
         }
     
 	@Test
-	@Ignore
 	public void testLoad() {
-	        m_databasePopulator.setUpMock();
 		m_topologyProvider.load(null);
 		m_databasePopulator.check(m_topologyProvider);
 	}
 
 	@Test
-	@Ignore
 	public void testSave() {
 	    m_topologyProvider.save("target/test-map.xml");	    
             m_databasePopulator.check(m_topologyProvider);
 	}
 	
 	@Test
-        @Ignore
 	public void testOperationRefresh() {
 	    m_refreshOperation.execute(null, m_operationContext);
             m_databasePopulator.check(m_topologyProvider);
 	}
 
 	@Test
-	@Ignore
 	public void testOperationSave() {
             List<Object> targets = new ArrayList<Object>(1);
             targets.add("target/test-graph.xml");

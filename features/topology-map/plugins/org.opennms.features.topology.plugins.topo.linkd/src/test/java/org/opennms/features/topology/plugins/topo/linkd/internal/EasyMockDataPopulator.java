@@ -273,16 +273,16 @@ public class EasyMockDataPopulator {
     public void setUpMock() {
         
         EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
+        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
+        
+        for (int i=1;i<9;i++) {
+            EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
+            EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
+        }
+
         EasyMock.replay(m_dataLinkInterfaceDao);
-
-        EasyMock.expect(m_nodeDao.get(2)).andReturn(getNode(2));
-        EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(2)).andReturn(getNode(2).getPrimaryInterface());
-
-        EasyMock.expect(m_nodeDao.get(1)).andReturn(getNode(1));
-        EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(1)).andReturn(getNode(1).getPrimaryInterface());
-
-        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes());
         EasyMock.replay(m_nodeDao);
+        EasyMock.replay(m_ipInterfaceDao);
     }
     
     public OnmsNode getNode(Integer id) {
@@ -310,9 +310,6 @@ public class EasyMockDataPopulator {
     }
 
     public void tearDown() {
-//        EasyMock.verify(m_dataLinkInterfaceDao);
-//        EasyMock.verify(m_ipInterfaceDao);
-//        EasyMock.verify(m_nodeDao);
         EasyMock.reset(m_dataLinkInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_nodeDao);
