@@ -69,6 +69,20 @@ public class VlanDaoHibernate extends AbstractDaoHibernate<OnmsVlan, Integer>  i
     }
 
     @Override
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsVlan.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsVlan item : findMatching(criteria)) {
+            delete(item);
+        }
+    }
+
+
+    @Override
     public void setStatusForNode(final Integer nodeId, final Character action) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsVlan.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);

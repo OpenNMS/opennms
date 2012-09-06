@@ -39,6 +39,8 @@ public interface StpInterfaceDao extends OnmsDao<OnmsStpInterface, Integer> {
 
     void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
 
+    void deleteForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+
     void setStatusForNode(Integer nodeid, Character action);
 
     void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);

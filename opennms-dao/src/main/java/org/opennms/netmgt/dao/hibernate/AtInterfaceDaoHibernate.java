@@ -88,6 +88,19 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
     }
 
     @Override
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsAtInterface iface : findMatching(criteria)) {
+            delete(iface);
+        }
+    }
+
+    @Override
     public Collection<OnmsAtInterface> findByMacAddress(final String macAddress) {
         // SELECT atinterface.nodeid, atinterface.ipaddr, ipinterface.ifindex from atinterface left JOIN ipinterface ON atinterface.nodeid = ipinterface.nodeid AND atinterface.ipaddr = ipinterface.ipaddr WHERE atphysaddr = ? AND atinterface.status <> 'D'
 
