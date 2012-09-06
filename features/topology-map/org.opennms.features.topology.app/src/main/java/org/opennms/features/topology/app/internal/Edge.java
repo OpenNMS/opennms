@@ -85,4 +85,8 @@ public class Edge{
 	public Object getItem() {
 		return m_item;
 	}
+
+    public String getTooltipText() {
+        return getSource().getLabel() + " :: " + getTarget().getLabel();
+    }
 }

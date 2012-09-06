@@ -782,7 +782,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				graphConverted.addGroup(group);
 
 				if(m_client != null) {
-					TooltipInfo ttInfo = new TooltipInfo(group.getTooltipText());
+					TooltipInfo ttInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
 					m_client.registerTooltip(this, group, ttInfo);
 				}
 
@@ -811,7 +811,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				graphConverted.addVertex(vertex);
 
 				if(m_client != null) {
-					TooltipInfo ttInfo = new TooltipInfo(vertex.getTooltipText());
+					TooltipInfo ttInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
 					m_client.registerTooltip(this, vertex, ttInfo);
 				}
 				
@@ -823,7 +823,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				graphConverted.addEdge(edge);
 
 				if(m_client != null) {
-					TooltipInfo edgeInfo = new TooltipInfo("Edge: " + edge.getId());
+					TooltipInfo edgeInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
 					m_client.registerTooltip(this, edge, edgeInfo);
 				}
 			}else if(child.getTag().equals("groupParent")) {
