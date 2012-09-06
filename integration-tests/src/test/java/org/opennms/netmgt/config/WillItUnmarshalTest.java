@@ -279,6 +279,10 @@ public class WillItUnmarshalTest {
         unmarshal("linkd-configuration.xml", LinkdConfiguration.class);
     }
     @Test
+    public void testExampleLinkdConfiguration() throws Exception {
+        unmarshalExample("linkd-configuration.xml", LinkdConfiguration.class);
+    }
+    @Test
     public void testExampleMailTransportTest() throws Exception {
         unmarshalExample("mail-transport-test.xml", MailTransportTest.class);
     }
