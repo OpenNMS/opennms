@@ -166,7 +166,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     protected void markOldDataInactive(final Connection dbConn, final Timestamp scanTime, final int nodeid) throws SQLException {
         // UPDATE atinterface set status = 'N'  WHERE sourcenodeid = ? AND lastpolltime < ? AND status = 'A'
-        m_atInterfaceDao.deactivateForNodeIdIfOlderThan(nodeid, scanTime);
+        m_atInterfaceDao.deactivateForSourceNodeIdIfOlderThan(nodeid, scanTime);
         m_atInterfaceDao.flush();
 
         // UPDATE vlan set status = 'N'  WHERE nodeid =? AND lastpolltime < ? AND status = 'A'
@@ -185,7 +185,25 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         m_stpInterfaceDao.deactivateForNodeIdIfOlderThan(nodeid, scanTime);
         m_stpInterfaceDao.flush();
     }
-    
+
+    @Override
+    protected void deleteOlderData(final Connection dbConn, final Timestamp scanTime, final int nodeid) throws SQLException {
+        m_atInterfaceDao.deleteForNodeSourceIdIfOlderThan(nodeid, scanTime);
+        m_atInterfaceDao.flush();
+
+        m_vlanDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_vlanDao.flush();
+
+        m_ipRouteInterfaceDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_ipRouteInterfaceDao.flush();
+
+        m_stpNodeDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_stpNodeDao.flush();
+
+        m_stpInterfaceDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_stpInterfaceDao.flush();
+    }
+
 	@Override
 	@Transactional
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
@@ -232,6 +250,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         }
 
         markOldDataInactive(null, scanTime, node.getNodeId());
+        deleteOlderData(null,new Timestamp(scanTime.getTime()-snmpColl.getPollInterval()*3),node.getNodeId());
         
         return node;
 	}
@@ -311,6 +330,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);
         }
         m_dataLinkInterfaceDao.deactivateIfOlderThan(now);
+        m_dataLinkInterfaceDao.deleteIfOlderThan(new Timestamp(now.getTime()-3*discoveryLink.getSnmpPollInterval()));
     }
 
 	@Override

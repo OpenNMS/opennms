@@ -88,15 +88,27 @@ public class DbEventWriter extends AbstractQueryManager {
 
     private static final String SQL_UPDATE_DATALINKINTERFACE = "UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'";
 
+    private static final String SQL_DELETE_DATALINKINTERFACE = "DELETE from datalinkinterface WHERE lastpolltime < ? AND status <> 'A'";
+
     private static final String SQL_UPDATE_ATINTERFACE = "UPDATE atinterface set status = 'N'  WHERE sourcenodeid = ? AND lastpolltime < ? AND status = 'A'";
+
+    private static final String SQL_DELETE_ATINTERFACE = "DELETE from atinterface WHERE sourcenodeid = ? AND lastpolltime < ? AND status <> 'A'";
 
     private static final String SQL_UPDATE_IPROUTEINTERFACE = "UPDATE iprouteinterface set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
 
+    private static final String SQL_DELETE_IPROUTEINTERFACE = "DELETE from iprouteinterface WHERE nodeid = ? AND lastpolltime < ? AND status <> 'A'";
+
     private static final String SQL_UPDATE_STPNODE = "UPDATE stpnode set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
+
+    private static final String SQL_DELETE_STPNODE = "DELETE from stpnode WHERE nodeid = ? AND lastpolltime < ? AND status <> 'A'";
 
     private static final String SQL_UPDATE_STPINTERFACE = "UPDATE stpinterface set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
 
+    private static final String SQL_DELETE_STPINTERFACE = "DELETE from stpinterface WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
+
     private static final String SQL_UPDATE_VLAN = "UPDATE vlan set status = 'N'  WHERE nodeid =? AND lastpolltime < ? AND status = 'A'";
+
+    private static final String SQL_DELETE_VLAN = "DELETE from vlan WHERE nodeid =? AND lastpolltime < ? AND status = 'A'";
 
     private static final String SQL_UPDATE_ATINTERFACE_STATUS = "UPDATE atinterface set status = ?  WHERE sourcenodeid = ? OR nodeid = ?";
 
@@ -271,6 +283,13 @@ public class DbEventWriter extends AbstractQueryManager {
     
             int i = stmt.executeUpdate();
             LogUtils.debugf(this, "storelink: datalinkinterface - updated to NOT ACTIVE status " + i + " rows ");
+            
+            stmt = dbConn.prepareStatement(SQL_DELETE_DATALINKINTERFACE);
+            d.watch(stmt);
+            stmt.setTimestamp(1, new Timestamp(now.getTime()-3*discovery.getSnmpPollInterval()));
+    
+            int j = stmt.executeUpdate();
+            LogUtils.debugf(this, "storelink: datalinkinterface - delete old db entries:" + j + " rows ");
         } finally {
             d.cleanUp();
         }
@@ -323,6 +342,7 @@ public class DbEventWriter extends AbstractQueryManager {
             }
 
             markOldDataInactive(dbConn, scanTime, node.getNodeId());
+            deleteOlderData(dbConn, new Timestamp(scanTime.getTime()-3*snmpcoll.getPollInterval()), node.getNodeId());
     
             return node;
         } catch (Throwable e) {
@@ -382,6 +402,59 @@ public class DbEventWriter extends AbstractQueryManager {
     
             i = stmt.executeUpdate();
             LogUtils.debugf(this, "store: SQL statement " + SQL_UPDATE_STPINTERFACE + ". " + i + " rows UPDATED for nodeid=" + nodeid + ".");
+        } finally {
+            d.cleanUp();
+        }
+    }
+
+    @Override
+    protected void deleteOlderData(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException {
+
+        final DBUtils d = new DBUtils(getClass());
+
+        try {
+            PreparedStatement stmt = null;
+    
+            int i = 0;
+            stmt = dbConn.prepareStatement(SQL_DELETE_ATINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_ATINTERFACE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_VLAN);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_VLAN + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_IPROUTEINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_IPROUTEINTERFACE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_STPNODE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_STPNODE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_STPINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_STPINTERFACE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
         } finally {
             d.cleanUp();
         }
@@ -1074,12 +1147,10 @@ public class DbEventWriter extends AbstractQueryManager {
             LogUtils.debugf(this, "getFromSysnameIpAddress: found ifindex=" + ifindex);
     
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             d.cleanUp();
         }
         return Integer.valueOf(ifindex);
     }
-
 }

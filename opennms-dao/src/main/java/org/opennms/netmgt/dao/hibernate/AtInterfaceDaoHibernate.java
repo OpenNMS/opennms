@@ -74,10 +74,9 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
 	}
 
     @Override
-    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deactivateForSourceNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.eq("sourceNodeId", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.eq("status", "A"));
         
@@ -88,10 +87,9 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
     }
 
     @Override
-    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deleteForNodeSourceIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.eq("sourceNodeId", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
         

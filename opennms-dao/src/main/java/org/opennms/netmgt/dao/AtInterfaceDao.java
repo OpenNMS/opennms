@@ -40,9 +40,9 @@ public interface AtInterfaceDao extends OnmsDao<OnmsAtInterface, Integer> {
 
 	void markDeletedIfNodeDeleted();
 
-    void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+    void deactivateForSourceNodeIdIfOlderThan(int sourceNodeid, Timestamp scanTime);
 
-    void deleteForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+    void deleteForNodeSourceIdIfOlderThan(int sourceNodeid, Timestamp scanTime);
 
     Collection<OnmsAtInterface> findByMacAddress(final String macAddress);
 

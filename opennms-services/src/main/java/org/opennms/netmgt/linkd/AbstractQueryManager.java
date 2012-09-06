@@ -121,6 +121,8 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract void markOldDataInactive(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException;
 
+    protected abstract void deleteOlderData(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException;
+
     protected OnmsNode getNode(Integer nodeId) throws SQLException {
         return getNodeDao().get(nodeId);
     }
