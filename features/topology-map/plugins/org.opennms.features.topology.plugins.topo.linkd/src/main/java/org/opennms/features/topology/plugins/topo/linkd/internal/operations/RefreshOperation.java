@@ -6,18 +6,18 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 
-public class OpenOperation implements Operation {
+public class RefreshOperation implements Operation {
 
     TopologyProvider m_topologyProvider;
     
-    public OpenOperation(TopologyProvider topologyProvider) {
+    public RefreshOperation(TopologyProvider topologyProvider) {
         m_topologyProvider=topologyProvider;
     }
 
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         if (targets == null || targets.isEmpty() ) {
-            log("loading topology");
+            log("refresh linkd topology");
             m_topologyProvider.load(null);
         }
         return null;
@@ -39,7 +39,7 @@ public class OpenOperation implements Operation {
 
     @Override
     public String getId() {
-    	return "LinkdTopologyProviderOpenOperation";
+    	return "LinkdTopologyProviderRefreshOperation";
     }
 
 }

@@ -15,8 +15,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.features.topology.api.TopologyProvider;
 
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.vaadin.data.Item;
@@ -31,6 +33,16 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     NodeDao m_nodeDao;
     
+    IpInterfaceDao m_ipInterfaceDao;
+    
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+
     boolean addNodeWithoutLink = true;
     
     public boolean isAddNodeWithoutLink() {
@@ -62,6 +74,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_nodeDao = nodeDao;
     }
 
+    public void onInit() {
+        log("init: loading topology");
+        loadtopology();
+    }
+    
     public LinkdTopologyProvider() {
         m_vertexContainer = new LinkdVertexContainer();
         m_edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
@@ -220,14 +237,13 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     private void loadtopology() {
-        log("loading topology");
+        log("loadtopology: loading topology");
         LinkdVertexContainer vertexContainer = new LinkdVertexContainer();
         BeanContainer<String, LinkdEdge> edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
         edgeContainer.setBeanIdProperty("id");
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
-            log("parsing link: " + link);
-            OnmsNode node = link.getNode();
-            log("found node: " + node);
+            OnmsNode node = m_nodeDao.get(link.getNode().getId());
+            log("found node: " + node.getLabel());
             String sourceId = node.getNodeId();
             LinkdVertex source;
             BeanItem<LinkdVertex> item = vertexContainer.getItem(sourceId);
@@ -240,28 +256,27 @@ public class LinkdTopologyProvider implements TopologyProvider {
             }
 
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
-            log("found parentnode: " + parentNode);
+            log("found parentnode: " + parentNode.getLabel());
                        String targetId = parentNode.getNodeId();
             LinkdVertex target;
             item = vertexContainer.getItem(targetId);
             if (item == null) {
                 target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
                 vertexContainer.addBean(target);                    
-            }
-            else {
+            } else {
                 target = item.getBean();
             }            
-            edgeContainer.addBean(new LinkdEdge(link.getId().toString(),source,target));
+            edgeContainer.addBean(new LinkdEdge(link.getDataLinkInterfaceId(),source,target));
         }
         
         if (isAddNodeWithoutLink()) {
             for (OnmsNode node: m_nodeDao.findAll()) {
-                log("parsing node: " + node);
+                log("parsing node: " + node.getLabel());
                 String nodeId = node.getNodeId();
                 LinkdVertex linklessnode;
                 BeanItem<LinkdVertex> item = vertexContainer.getItem(nodeId);
                 if (item == null) {
-                    log("adding linklessnode: " + node);
+                    log("adding linklessnode: " + node.getLabel());
                     linklessnode = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
                     vertexContainer.addBean(linklessnode);
                 }                
@@ -283,7 +298,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     private String getAddress(OnmsNode node) {
-	return node.getPrimaryInterface() == null ? null : node.getPrimaryInterface().getIpAddress().getHostAddress();
+        OnmsIpInterface primary = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
+	return primary == null ? null : primary.getIpAddress().getHostAddress();
     }
     
     @Override
