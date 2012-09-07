@@ -187,7 +187,7 @@ public class Graph{
 
 	public Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
 		int szl = vertex.getSemanticZoomLevel();
-        if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
+		if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
 			return vertex;
 		}else {
 			Vertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());
