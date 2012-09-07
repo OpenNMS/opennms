@@ -163,21 +163,33 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.7</version>
         <executions>
-            <execution>
-                <id>attach-artifacts</id>
-                <phase>package</phase>
-                <goals>
-                    <goal>attach-artifact</goal>
-                </goals>
-                <configuration>
-                    <artifacts>
-                        <artifact>
-                            <file>target/opennms-webapp-1.10.6-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.10.6-SNAPSHOT.jar</file>
-                            <type>jar</type>
-                        </artifact>
-                    </artifacts>
-                </configuration>
-            </execution>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/opennms-webapp-1.10.6-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.10.6-SNAPSHOT.jar</file>
+                  <type>jar</type>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/castor</source>
+              </sources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
