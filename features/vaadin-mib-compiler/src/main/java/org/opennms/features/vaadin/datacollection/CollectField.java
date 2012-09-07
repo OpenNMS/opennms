@@ -29,12 +29,13 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
-import org.opennms.features.vaadin.datacollection.model.CollectDTO;
-import org.opennms.features.vaadin.datacollection.model.GroupDTO;
+import org.opennms.netmgt.config.datacollection.Collect;
+import org.opennms.netmgt.config.datacollection.Group;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -70,10 +71,13 @@ public class CollectField extends CustomField implements Button.ClickListener {
      *
      * @param groups the groups
      */
-    public CollectField(List<GroupDTO> groups) {
+    public CollectField(List<Group> groups) {
         listField.setRows(10);
 
-        groupField.setContainerDataSource(new BeanItemContainer<GroupDTO>(GroupDTO.class, groups));
+        BeanContainer<String,Group> container = new BeanContainer<String,Group>(Group.class);
+        container.setBeanIdProperty("name");
+        container.addAll(groups);
+        groupField.setContainerDataSource(container);
         groupField.setItemCaptionMode(Select.ITEM_CAPTION_MODE_PROPERTY);
         groupField.setItemCaptionPropertyId("name");
 
@@ -98,7 +102,7 @@ public class CollectField extends CustomField implements Button.ClickListener {
      */
     @Override
     public Class<?> getType() {
-        return CollectDTO.class;
+        return Collect.class;
     }
 
     /* (non-Javadoc)
@@ -107,8 +111,8 @@ public class CollectField extends CustomField implements Button.ClickListener {
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
-        if (value instanceof CollectDTO) {
-            CollectDTO dto = (CollectDTO) value;
+        if (value instanceof Collect) {
+            Collect dto = (Collect) value;
             listField.removeAllItems();
             for (String group : dto.getIncludeGroupCollection()) {
                 listField.addItem(group);
@@ -124,7 +128,7 @@ public class CollectField extends CustomField implements Button.ClickListener {
      */
     @Override
     public Object getValue() {
-        CollectDTO dto = new CollectDTO();
+        Collect dto = new Collect();
         for (Object itemId: listField.getItemIds()) {
             dto.getIncludeGroupCollection().add((String) itemId);
         }
@@ -157,8 +161,9 @@ public class CollectField extends CustomField implements Button.ClickListener {
     /**
      * Adds the handler.
      */
+    @SuppressWarnings("unchecked")
     private void addHandler() {
-        GroupDTO dto = (GroupDTO) groupField.getValue();
+        Group dto = ((BeanItem<Group>) groupField.getContainerDataSource().getItem(groupField.getValue())).getBean();
         listField.addItem(dto.getName());
     }
 

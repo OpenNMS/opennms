@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import org.opennms.features.vaadin.events.model.AlarmDataDTO;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Buffered;
@@ -77,9 +77,9 @@ public class AlarmDataField extends CustomField {
      */
     @Override
     public void setInternalValue(Object newValue) throws ReadOnlyException, ConversionException {
-        AlarmDataDTO alarmData = (newValue instanceof AlarmDataDTO) ? (AlarmDataDTO) newValue : new AlarmDataDTO();
+        AlarmData alarmData = (newValue instanceof AlarmData) ? (AlarmData) newValue : new AlarmData();
         super.setInternalValue(alarmData);
-        alarmDataForm.setItemDataSource(new BeanItem<AlarmDataDTO>(alarmData));
+        alarmDataForm.setItemDataSource(new BeanItem<AlarmData>(alarmData));
     }
 
     /* (non-Javadoc)
@@ -114,7 +114,7 @@ public class AlarmDataField extends CustomField {
      */
     @Override
     public Class<?> getType() {
-        return AlarmDataDTO.class;
+        return AlarmData.class;
     }
 
 }

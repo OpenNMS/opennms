@@ -29,8 +29,7 @@ package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
 
-import org.opennms.features.vaadin.events.model.DecodeDTO;
-import org.opennms.features.vaadin.events.model.DecodeDTOList;
+import org.opennms.netmgt.xml.eventconf.Decode;
 import org.vaadin.addon.customfield.FieldWrapper;
 
 import com.vaadin.ui.TextField;
@@ -41,14 +40,14 @@ import com.vaadin.ui.TextField;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class DecodeListFieldWrapper extends FieldWrapper<ArrayList<DecodeDTO>> {
+public class DecodeListFieldWrapper extends FieldWrapper<ArrayList<Decode>> {
 
     /**
      * Instantiates a new decode list field wrapper.
      *
      */
     public DecodeListFieldWrapper() {
-        super(new TextField(),  new DecodeListConverter(), DecodeDTOList.class);
+        super(new TextField(),  new DecodeListConverter(), DecodeListConverter.DecodeList.class);
         TextField f = (TextField) getWrappedField();
         setCompositionRoot(f);
     }

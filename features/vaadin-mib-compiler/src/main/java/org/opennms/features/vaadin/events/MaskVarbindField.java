@@ -30,13 +30,13 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.vaadin.events.model.VarbindDTO;
+import org.opennms.netmgt.xml.eventconf.Varbind;
 
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -63,7 +63,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<VarbindDTO> container = new BeanItemContainer<VarbindDTO>(VarbindDTO.class);
+    private BeanContainer<Integer,Varbind> container = new BeanContainer<Integer,Varbind>(Varbind.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -78,6 +78,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      * Instantiates a new mask varbind table.
      */
     public MaskVarbindField() {
+        container.setBeanIdProperty("vbnumber");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
@@ -125,7 +126,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
-            List<VarbindDTO> beans = (List<VarbindDTO>) value;
+            List<Varbind> beans = (List<Varbind>) value;
             container.removeAllItems();
             container.addAll(beans);
             table.setPageLength(beans.size());
@@ -140,7 +141,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      */
     @Override
     public Object getValue() {
-        ArrayList<VarbindDTO> beans = new ArrayList<VarbindDTO>(); 
+        ArrayList<Varbind> beans = new ArrayList<Varbind>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -174,7 +175,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new VarbindDTO());
+        Object itemId = container.addBean(new Varbind());
         table.addItem(itemId);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }

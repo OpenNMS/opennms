@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.ResourceTypeDTO;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
@@ -53,10 +53,13 @@ public abstract class ResourceTypeTable extends Table {
     /**
      * Instantiates a new event table.
      *
-     * @param group the OpenNMS Data Collection Group DTO
+     * @param group the OpenNMS Data Collection Group
      */
-    public ResourceTypeTable(final DataCollectionGroupDTO group) {
-        setContainerDataSource(new BeanItemContainer<ResourceTypeDTO>(ResourceTypeDTO.class, group.getResourceTypeCollection()));
+    public ResourceTypeTable(final DatacollectionGroup group) {
+        BeanContainer<String,ResourceType> container = new BeanContainer<String,ResourceType>(ResourceType.class);
+        container.setBeanIdProperty("name");
+        container.addAll(group.getResourceTypeCollection());
+        setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
@@ -65,9 +68,10 @@ public abstract class ResourceTypeTable extends Table {
         setWidth("100%");
         setHeight("250px");
         addListener(new Property.ValueChangeListener() {
+            @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
-                    BeanItem<ResourceTypeDTO> item = new BeanItem<ResourceTypeDTO>((ResourceTypeDTO)getValue());
+                    BeanItem<ResourceType> item = (BeanItem<ResourceType>) getContainerDataSource().getItem(getValue());
                     updateExternalSource(item);
                 }
             }
@@ -79,6 +83,16 @@ public abstract class ResourceTypeTable extends Table {
      *
      * @param item the item
      */
-    public abstract void updateExternalSource(BeanItem<ResourceTypeDTO> item);
+    public abstract void updateExternalSource(BeanItem<ResourceType> item);
+
+    /**
+     * Adds a resource type.
+     *
+     * @param resourceType the resource type
+     */
+    @SuppressWarnings("unchecked")
+    public void addResourceType(ResourceType resourceType) {
+        ((BeanContainer<String,ResourceType>) getContainerDataSource()).addBean(resourceType);
+    }
 
 }

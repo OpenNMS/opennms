@@ -27,8 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.GroupDTO;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
@@ -72,9 +72,9 @@ public abstract class GroupForm extends Form implements ClickListener {
     /**
      * Instantiates a new event form.
      * 
-     * @param source the OpenNMS Data Collection Group DTO
+     * @param source the OpenNMS Data Collection Group
      */
-    public GroupForm(final DataCollectionGroupDTO source) {
+    public GroupForm(final DatacollectionGroup source) {
         setCaption("MIB Group Detail");
         setWriteThrough(false);
         setVisible(false);
@@ -107,9 +107,9 @@ public abstract class GroupForm extends Form implements ClickListener {
      * @return the group
      */
     @SuppressWarnings("unchecked")
-    private GroupDTO getGroup() {
+    private Group getGroup() {
         if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<GroupDTO> item = (BeanItem<GroupDTO>) getItemDataSource();
+            BeanItem<Group> item = (BeanItem<Group>) getItemDataSource();
             return item.getBean();
         }
         return null;
@@ -169,13 +169,13 @@ public abstract class GroupForm extends Form implements ClickListener {
      *
      * @param group the group
      */
-    public abstract void saveGroup(GroupDTO group);
+    public abstract void saveGroup(Group group);
 
     /**
      * Delete group.
      *
      * @param group the group
      */
-    public abstract void deleteGroup(GroupDTO group);
+    public abstract void deleteGroup(Group group);
 
 }

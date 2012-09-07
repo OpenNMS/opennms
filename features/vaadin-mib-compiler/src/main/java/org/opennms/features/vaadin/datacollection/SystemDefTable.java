@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.SystemDefDTO;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
@@ -53,10 +53,13 @@ public abstract class SystemDefTable extends Table {
     /**
      * Instantiates a new event table.
      *
-     * @param group the OpenNMS Data Collection Group DTO
+     * @param group the OpenNMS Data Collection Group
      */
-    public SystemDefTable(final DataCollectionGroupDTO group) {
-        setContainerDataSource(new BeanItemContainer<SystemDefDTO>(SystemDefDTO.class, group.getSystemDefCollection()));
+    public SystemDefTable(final DatacollectionGroup group) {
+        BeanContainer<String,SystemDef> container = new BeanContainer<String,SystemDef>(SystemDef.class);
+        container.setBeanIdProperty("name");
+        container.addAll(group.getSystemDefCollection());
+        setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
@@ -65,9 +68,10 @@ public abstract class SystemDefTable extends Table {
         setWidth("100%");
         setHeight("250px");
         addListener(new Property.ValueChangeListener() {
+            @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
-                    BeanItem<SystemDefDTO> item = new BeanItem<SystemDefDTO>((SystemDefDTO)getValue());
+                    BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(getValue());
                     updateExternalSource(item);
                 }
             }
@@ -79,6 +83,16 @@ public abstract class SystemDefTable extends Table {
      *
      * @param item the item
      */
-    public abstract void updateExternalSource(BeanItem<SystemDefDTO> item);
+    public abstract void updateExternalSource(BeanItem<SystemDef> item);
+
+    /**
+     * Adds a system definition.
+     *
+     * @param systemDef the system definition
+     */
+    @SuppressWarnings("unchecked")
+    public void addSystemDef(SystemDef systemDef) {
+        ((BeanContainer<String,SystemDef>) getContainerDataSource()).addBean(systemDef);
+    }
 
 }

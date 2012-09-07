@@ -28,10 +28,10 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.features.vaadin.events.model.DecodeDTO;
-import org.opennms.features.vaadin.events.model.DecodeDTOList;
+import org.opennms.netmgt.xml.eventconf.Decode;
 import org.vaadin.addon.customfield.PropertyConverter;
 
 /**
@@ -40,32 +40,39 @@ import org.vaadin.addon.customfield.PropertyConverter;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class DecodeListConverter extends PropertyConverter<ArrayList<DecodeDTO>, String> {
+public class DecodeListConverter extends PropertyConverter<ArrayList<Decode>, String> {
+
+    public class DecodeList extends ArrayList<Decode> {
+    }
 
     /**
      * Instantiates a new decode list converter.
      */
     public DecodeListConverter() {
-        super(DecodeDTOList.class);
+        super(DecodeList.class);
     }
 
     /* (non-Javadoc)
      * @see org.vaadin.addon.customfield.PropertyConverter#format(java.lang.Object)
      */
     @Override
-    public String format(ArrayList<DecodeDTO> propertyValue) {
-        return StringUtils.join(propertyValue, ',');
+    public String format(ArrayList<Decode> propertyValue) {
+        final List<String> values = new ArrayList<String>();
+        for (Decode d : propertyValue) {
+            values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());
+        }
+        return StringUtils.join(values, ',');
     }
 
     /* (non-Javadoc)
      * @see org.vaadin.addon.customfield.PropertyConverter#parse(java.lang.Object)
      */
     @Override
-    public ArrayList<DecodeDTO> parse(String fieldValue) {
-        ArrayList<DecodeDTO> list = new ArrayList<DecodeDTO>();
+    public ArrayList<Decode> parse(String fieldValue) {
+        ArrayList<Decode> list = new ArrayList<Decode>();
         for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
-            DecodeDTO d = new DecodeDTO();
+            Decode d = new Decode();
             d.setVarbindvalue(parts[0].trim());
             d.setVarbinddecodedstring(parts[1].trim());
             list.add(d);

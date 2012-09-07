@@ -27,14 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.ParameterDTO;
-import org.opennms.features.vaadin.datacollection.model.StorageStrategyDTO;
+import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -63,7 +63,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<ParameterDTO> container = new BeanItemContainer<ParameterDTO>(ParameterDTO.class);
+    private BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -93,6 +93,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
             }
         });
 
+        container.setBeanIdProperty("key");
         table.setCaption("Parameters");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
@@ -126,7 +127,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
      */
     @Override
     public Class<?> getType() {
-        return StorageStrategyDTO.class;
+        return StorageStrategy.class;
     }
 
     /* (non-Javadoc)
@@ -135,8 +136,8 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
-        if (value instanceof StorageStrategyDTO) {
-            StorageStrategyDTO dto = (StorageStrategyDTO) value;
+        if (value instanceof StorageStrategy) {
+            StorageStrategy dto = (StorageStrategy) value;
             combo.setValue(dto.getClazz());
             container.removeAllItems();
             container.addAll(dto.getParameterCollection());
@@ -152,7 +153,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
      */
     @Override
     public Object getValue() {
-        StorageStrategyDTO dto = new StorageStrategyDTO();
+        StorageStrategy dto = new StorageStrategy();
         dto.setClazz((String) combo.getValue());
         for (Object itemId: container.getItemIds()) {
             dto.getParameterCollection().add(container.getItem(itemId).getBean());
@@ -188,7 +189,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new ParameterDTO());
+        Object itemId = container.addBean(new Parameter());
         table.addItem(itemId);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }

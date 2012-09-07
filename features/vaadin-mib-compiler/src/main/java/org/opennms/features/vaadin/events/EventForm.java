@@ -27,8 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import org.opennms.features.vaadin.events.model.EventDTO;
-
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -57,7 +55,7 @@ public abstract class EventForm extends Form implements ClickListener {
         "logmsgContent",
         "logmsgDest",
         "severity",
-        "alarmData",
+//        "alarmData",
         "maskElements",
         "maskVarbinds",
         "varbindsdecodeCollection"
@@ -111,9 +109,9 @@ public abstract class EventForm extends Form implements ClickListener {
      * @return the event
      */
     @SuppressWarnings("unchecked")
-    private EventDTO getEvent() {
+    private org.opennms.netmgt.xml.eventconf.Event getEvent() {
         if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<EventDTO> item = (BeanItem<EventDTO>) getItemDataSource();
+            BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = (BeanItem<org.opennms.netmgt.xml.eventconf.Event>) getItemDataSource();
             return item.getBean();
         }
         return null;
@@ -172,13 +170,13 @@ public abstract class EventForm extends Form implements ClickListener {
      *
      * @param event the event
      */
-    public abstract void saveEvent(EventDTO event);
+    public abstract void saveEvent(org.opennms.netmgt.xml.eventconf.Event event);
 
     /**
      * Delete event.
      *
      * @param event the event
      */
-    public abstract void deleteEvent(EventDTO event);
+    public abstract void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event);
 
 }

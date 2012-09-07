@@ -27,18 +27,18 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.PersistenceSelectorStrategyDTO;
-import org.opennms.features.vaadin.datacollection.model.ResourceTypeDTO;
-import org.opennms.features.vaadin.datacollection.model.StorageStrategyDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -61,52 +61,62 @@ public class ResourceTypePanel extends VerticalLayout {
     /** The add button. */
     private final Button add;
 
+    /** The isNew flag. True, if the resource type is new. */
+    private boolean isNew;
+
     /**
      * Instantiates a new resource type panel.
      *
-     * @param source the data collection group DTO
+     * @param source the data collection group
      * @param logger the logger
      */
-    public ResourceTypePanel(final DataCollectionGroupDTO source, final Logger logger) {
+    public ResourceTypePanel(final DatacollectionGroup source, final Logger logger) {
         addStyleName(Runo.PANEL_LIGHT);
 
         form = new ResourceTypeForm() {
             @Override
-            public void saveResourceType(ResourceTypeDTO resourceType) {
-                logger.info("Resource type " + resourceType.getName() + " has been updated.");
+            public void saveResourceType(ResourceType resourceType) {
+                if (isNew) {
+                    table.addResourceType(resourceType);
+                    logger.info("Resource type " + resourceType.getName() + " has been created.");
+                } else {
+                    logger.info("Resource type " + resourceType.getName() + " has been updated.");
+                }
                 table.refreshRowCache();
             }
             @Override
-            public void deleteResourceType(ResourceTypeDTO resourceType) {
+            public void deleteResourceType(ResourceType resourceType) {
                 logger.info("Resource type " + resourceType.getName() + " has been removed.");
-                table.removeItem(resourceType);
+                table.removeItem(resourceType.getName());
                 table.refreshRowCache();
             }
         };
 
         table = new ResourceTypeTable(source) {
             @Override
-            public void updateExternalSource(BeanItem<ResourceTypeDTO> item) {
+            public void updateExternalSource(BeanItem<ResourceType> item) {
                 form.setItemDataSource(item, Arrays.asList(ResourceTypeForm.FORM_ITEMS));
                 form.setVisible(true);
                 form.setReadOnly(true);
+                setIsNew(false);
             }
         };
 
         add = new Button("Add Resource Type", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                ResourceTypeDTO rt = new ResourceTypeDTO();
+                ResourceType rt = new ResourceType();
                 rt.setName("New Resource Type");
                 rt.setLabel("New Resource Type");
-                PersistenceSelectorStrategyDTO persistence = new PersistenceSelectorStrategyDTO();
+                rt.setResourceLabel("{index}");
+                PersistenceSelectorStrategy persistence = new PersistenceSelectorStrategy();
                 persistence.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
                 rt.setPersistenceSelectorStrategy(persistence);
-                StorageStrategyDTO storage = new StorageStrategyDTO();
+                StorageStrategy storage = new StorageStrategy();
                 storage.setClazz(IndexStorageStrategy.class.getName());
                 rt.setStorageStrategy(storage);
-                table.addItem(rt);
-                table.select(rt);
+                table.updateExternalSource(new BeanItem<ResourceType>(rt));
                 form.setReadOnly(false);
+                setIsNew(true);
             }
         });
 
@@ -125,8 +135,21 @@ public class ResourceTypePanel extends VerticalLayout {
      * @return the resource types
      */
     @SuppressWarnings("unchecked")
-    public Collection<ResourceTypeDTO> getResourceTypes() {
-        return ((BeanItemContainer<ResourceTypeDTO>) table.getContainerDataSource()).getItemIds();
+    public Collection<ResourceType> getResourceTypes() {
+        final Collection<ResourceType> types = new ArrayList<ResourceType>();
+        for (Object itemId : table.getContainerDataSource().getItemIds()) {
+            types.add(((BeanItem<ResourceType>)table.getContainerDataSource().getItem(itemId)).getBean());
+        }
+        return types;
+    }
+
+    /**
+     * Sets the value of the ifNew flag
+     *
+     * @param isNew true, if the resource type is new.
+     */
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
     }
 
 }

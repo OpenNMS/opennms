@@ -30,13 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.vaadin.events.model.VarbindsDecodeDTO;
-
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -51,6 +50,9 @@ import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
+/*
+ * TODO How to change the rendering of a field.
+ */
 /**
  * The Event's VarbindsDecode Field.
  * 
@@ -63,7 +65,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<VarbindsDecodeDTO> container = new BeanItemContainer<VarbindsDecodeDTO>(VarbindsDecodeDTO.class);
+    private BeanContainer<String,Varbindsdecode> container = new BeanContainer<String,Varbindsdecode>(Varbindsdecode.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -78,6 +80,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
      * Instantiates a new varbinds decode field.
      */
     public VarbindsDecodeField() {
+        container.setBeanIdProperty("parmid");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
@@ -125,7 +128,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
             @SuppressWarnings("unchecked")
-            List<VarbindsDecodeDTO> beans = (List<VarbindsDecodeDTO>) value;
+            List<Varbindsdecode> beans = (List<Varbindsdecode>) value;
             container.removeAllItems();
             container.addAll(beans);
             table.setPageLength(beans.size());
@@ -140,7 +143,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
      */
     @Override
     public Object getValue() {
-        ArrayList<VarbindsDecodeDTO> beans = new ArrayList<VarbindsDecodeDTO>(); 
+        ArrayList<Varbindsdecode> beans = new ArrayList<Varbindsdecode>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -174,7 +177,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new VarbindsDecodeDTO());
+        Object itemId = container.addBean(new Varbindsdecode());
         table.addItem(itemId);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }
@@ -188,11 +191,11 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
             getApplication().getMainWindow().showNotification("Please select a Varbind Decode from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to continue?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {

@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.ResourceTypeDTO;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
@@ -106,9 +106,9 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
      * @return the resource type
      */
     @SuppressWarnings("unchecked")
-    private ResourceTypeDTO getResourceType() {
+    private ResourceType getResourceType() {
         if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<ResourceTypeDTO> item = (BeanItem<ResourceTypeDTO>) getItemDataSource();
+            BeanItem<ResourceType> item = (BeanItem<ResourceType>) getItemDataSource();
             return item.getBean();
         }
         return null;
@@ -168,13 +168,13 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
      *
      * @param resourceType the resource type
      */
-    public abstract void saveResourceType(ResourceTypeDTO resourceType);
+    public abstract void saveResourceType(ResourceType resourceType);
 
     /**
      * Delete resource type.
      *
      * @param resourceType the resource type
      */
-    public abstract void deleteResourceType(ResourceTypeDTO resourceType);
+    public abstract void deleteResourceType(ResourceType resourceType);
 
 }

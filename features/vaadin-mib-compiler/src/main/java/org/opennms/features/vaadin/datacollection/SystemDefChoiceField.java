@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.Arrays;
 import java.util.List;
 
-import org.opennms.features.vaadin.datacollection.model.SystemDefChoiceDTO;
+import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
@@ -90,7 +90,7 @@ public class SystemDefChoiceField extends CustomField {
      */
     @Override
     public Class<?> getType() {
-        return SystemDefChoiceDTO.class;
+        return SystemDefChoice.class;
     }
 
     /* (non-Javadoc)
@@ -99,8 +99,8 @@ public class SystemDefChoiceField extends CustomField {
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
-        if (value instanceof SystemDefChoiceDTO) {
-            SystemDefChoiceDTO dto = (SystemDefChoiceDTO) value;
+        if (value instanceof SystemDefChoice) {
+            SystemDefChoice dto = (SystemDefChoice) value;
             oidType.select(dto.getSysoid() == null ? MASK : SINGLE);
             oidValue.setValue(dto.getSysoid() == null ? dto.getSysoidMask() : dto.getSysoid());
         } else {
@@ -114,7 +114,7 @@ public class SystemDefChoiceField extends CustomField {
      */
     @Override
     public Object getValue() {
-        SystemDefChoiceDTO dto = new SystemDefChoiceDTO();
+        SystemDefChoice dto = new SystemDefChoice();
         String type = (String) oidType.getValue();
         if (type.equals(SINGLE)) {
             dto.setSysoid((String) oidValue.getValue());

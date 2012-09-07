@@ -27,10 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 
@@ -47,7 +43,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DataCollectionGroupPanel.
  * 
@@ -78,19 +73,15 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         setCaption("Data Collection");
         addStyleName(Runo.PANEL_LIGHT);
 
-        // Creating DTO Object
-
-        final DataCollectionGroupDTO dto = getDataCollectionGroupDTO(group);
-
         // Data Collection Group - Main Fields
 
         groupName = new TextField("Data Collection Group Name");
-        groupName.setPropertyDataSource(new ObjectProperty<String>(dto.getName()));
+        groupName.setPropertyDataSource(new ObjectProperty<String>(group.getName()));
         groupName.setNullSettingAllowed(false);
         groupName.setImmediate(true);
-        resourceTypes = new ResourceTypePanel(dto, logger);
-        groups = new GroupPanel(dto, logger);
-        systemDefs = new SystemDefPanel(dto, logger);
+        resourceTypes = new ResourceTypePanel(group, logger);
+        groups = new GroupPanel(group, logger);
+        systemDefs = new SystemDefPanel(group, logger);
 
         // Button Toolbar
 
@@ -146,25 +137,12 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      * @return the OpenNMS data collection group
      */
     public DatacollectionGroup getOnmsDataCollection() {
-        final DataCollectionGroupDTO dto = new DataCollectionGroupDTO();
+        final DatacollectionGroup dto = new DatacollectionGroup();
         dto.setName((String) groupName.getValue());
         dto.getGroupCollection().addAll(groups.getGroups());
         dto.getResourceTypeCollection().addAll(resourceTypes.getResourceTypes());
         dto.getSystemDefCollection().addAll(systemDefs.getSystemDefinitions());
-
-        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
-        return mapper.map(dto, DatacollectionGroup.class);
-    }
-
-    /**
-     * Gets the data collection group DTO.
-     *
-     * @param group the OpenNMS data collection group
-     * @return the data collection group DTO
-     */
-    public DataCollectionGroupDTO getDataCollectionGroupDTO(DatacollectionGroup group) {
-        MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
-        return mapper.map(group, DataCollectionGroupDTO.class);
+        return dto;
     }
 
     /**

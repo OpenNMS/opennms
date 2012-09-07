@@ -174,9 +174,12 @@ public class EventWindow extends Window {
             JaxbUtils.marshal(events, writer);
             writer.close();
             // Add a reference to the new file into eventconf.xml
-            logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
-            eventsDao.getRootEvents().getEventFileCollection().add(0, "events/" + file.getName());
-            eventsDao.saveCurrent();
+            String fileName = "events/" + file.getName();
+            if (!eventsDao.getRootEvents().getEventFileCollection().contains(fileName)) {
+                logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
+                eventsDao.getRootEvents().getEventFileCollection().add(0, fileName);
+                eventsDao.saveCurrent();
+            }
             // Send eventsConfigChange event
             logger.warn("Remember to send a " + EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI + " to reload the events configuration.");
         } catch (Exception e) {

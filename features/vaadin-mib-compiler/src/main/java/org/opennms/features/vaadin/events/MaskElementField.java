@@ -30,13 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.vaadin.events.model.MaskElementDTO;
-
+import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -63,7 +62,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<MaskElementDTO> container = new BeanItemContainer<MaskElementDTO>(MaskElementDTO.class);
+    private BeanContainer<String,Maskelement> container = new BeanContainer<String,Maskelement>(Maskelement.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -78,6 +77,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
      * Instantiates a new mask element table.
      */
     public MaskElementField() {
+        container.setBeanIdProperty("mename");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
@@ -125,7 +125,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
             @SuppressWarnings("unchecked")
-            List<MaskElementDTO> beans = (List<MaskElementDTO>) value;
+            List<Maskelement> beans = (List<Maskelement>) value;
             container.removeAllItems();
             container.addAll(beans);
             table.setPageLength(beans.size());
@@ -140,7 +140,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
      */
     @Override
     public Object getValue() {
-        ArrayList<MaskElementDTO> beans = new ArrayList<MaskElementDTO>(); 
+        ArrayList<Maskelement> beans = new ArrayList<Maskelement>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -174,7 +174,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new MaskElementDTO());
+        Object itemId = container.addBean(new Maskelement());
         table.addItem(itemId);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }

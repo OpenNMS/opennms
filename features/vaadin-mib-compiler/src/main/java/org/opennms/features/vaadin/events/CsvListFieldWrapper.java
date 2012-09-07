@@ -29,7 +29,6 @@ package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
 
-import org.opennms.features.vaadin.mibcompiler.model.StringList;
 import org.vaadin.addon.customfield.FieldWrapper;
 
 import com.vaadin.ui.TextField;
@@ -47,7 +46,7 @@ public class CsvListFieldWrapper extends FieldWrapper<ArrayList<String>> {
      *
      */
     public CsvListFieldWrapper() {
-        super(new TextField(),  new CsvListConverter(), StringList.class);
+        super(new TextField(),  new CsvListConverter(), CsvListConverter.StringList.class);
         TextField f = (TextField) getWrappedField();
         setCompositionRoot(f);
     }

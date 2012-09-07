@@ -27,15 +27,15 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.GroupDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -58,45 +58,54 @@ public class GroupPanel extends VerticalLayout {
     /** The add button. */
     private final Button add;
 
+    /** The isNew flag. True, if the group is new. */
+    private boolean isNew = false;
+
     /**
      * Instantiates a new group panel.
      *
-     * @param source the data collection group DTO
+     * @param source the data collection group
      * @param logger the logger
      */
-    public GroupPanel(final DataCollectionGroupDTO source, final Logger logger) {
+    public GroupPanel(final DatacollectionGroup source, final Logger logger) {
         addStyleName(Runo.PANEL_LIGHT);
 
         form = new GroupForm(source) {
             @Override
-            public void saveGroup(GroupDTO group) {
-                logger.info("MIB Group " + group.getName() + " has been updated.");
+            public void saveGroup(Group group) {
+                if (isNew) {
+                    table.addGroup(group);
+                    logger.info("MIB Group " + group.getName() + " has been created.");
+                } else {
+                    logger.info("MIB Group " + group.getName() + " has been updated.");
+                }
                 table.refreshRowCache();
             }
             @Override
-            public void deleteGroup(GroupDTO group) {
+            public void deleteGroup(Group group) {
                 logger.info("MIB Group " + group.getName() + " has been updated.");
-                table.removeItem(group);
+                table.removeItem(group.getName());
                 table.refreshRowCache();
             }
         };
 
         table = new GroupTable(source) {
             @Override
-            public void updateExternalSource(BeanItem<GroupDTO> item) {
+            public void updateExternalSource(BeanItem<Group> item) {
                 form.setItemDataSource(item, Arrays.asList(GroupForm.FORM_ITEMS));
                 form.setVisible(true);
                 form.setReadOnly(true);
+                setIsNew(false);
             }
         };
 
         add = new Button("Add Group", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                GroupDTO group = new GroupDTO();
+                Group group = new Group();
                 group.setName("New Group");
-                table.addItem(group);
-                table.select(group);
+                table.updateExternalSource(new BeanItem<Group>(group));
                 form.setReadOnly(false);
+                setIsNew(true);
             }
         });
 
@@ -115,7 +124,21 @@ public class GroupPanel extends VerticalLayout {
      * @return the groups
      */
     @SuppressWarnings("unchecked")
-    public Collection<GroupDTO> getGroups() {
-        return ((BeanItemContainer<GroupDTO>) table.getContainerDataSource()).getItemIds();
+    public Collection<Group> getGroups() {
+        final Collection<Group> groups = new ArrayList<Group>();
+        for (Object itemId : table.getContainerDataSource().getItemIds()) {
+            groups.add(((BeanItem<Group>)table.getContainerDataSource().getItem(itemId)).getBean());
+        }
+        return groups;
     }
+
+    /**
+     * Sets the value of the ifNew flag
+     *
+     * @param isNew true, if the group is new.
+     */
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
 }

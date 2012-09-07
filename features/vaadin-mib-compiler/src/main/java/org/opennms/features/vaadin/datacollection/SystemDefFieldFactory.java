@@ -29,8 +29,8 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.GroupDTO;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Component;
@@ -47,14 +47,14 @@ import com.vaadin.ui.TextField;
 public final class SystemDefFieldFactory implements FormFieldFactory {
 
     /** The groups. */
-    private final List<GroupDTO> groups;
+    private final List<Group> groups;
     
     /**
-     * Instantiates a new system def field factory.
+     * Instantiates a new system definition field factory.
      *
      * @param source the source
      */
-    public SystemDefFieldFactory(final DataCollectionGroupDTO source) {
+    public SystemDefFieldFactory(final DatacollectionGroup source) {
         groups = source.getGroupCollection();
     }
     

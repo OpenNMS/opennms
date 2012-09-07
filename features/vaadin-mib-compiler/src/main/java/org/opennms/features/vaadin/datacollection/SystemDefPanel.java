@@ -27,16 +27,16 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.opennms.features.vaadin.datacollection.model.CollectDTO;
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.SystemDefDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.datacollection.Collect;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -59,47 +59,56 @@ public class SystemDefPanel extends VerticalLayout {
     /** The add button. */
     private final Button add;
 
+    /** The isNew flag. True, if the system definition is new. */
+    private boolean isNew = false;
+
     /**
      * Instantiates a new system definition panel.
      *
-     * @param source the data collection group DTO
+     * @param source the data collection group
      * @param logger the logger
      */
-    public SystemDefPanel(final DataCollectionGroupDTO source, final Logger logger) {
+    public SystemDefPanel(final DatacollectionGroup source, final Logger logger) {
         addStyleName(Runo.PANEL_LIGHT);
 
         form = new SystemDefForm(source) {
             @Override
-            public void saveSystemDef(SystemDefDTO systemDef) {
-                logger.info("System Definition " + systemDef.getName() + " has been updated.");
+            public void saveSystemDef(SystemDef systemDef) {
+                if (isNew) {
+                    table.addSystemDef(systemDef);
+                    logger.info("System Definition " + systemDef.getName() + " has been added.");
+                } else {
+                    logger.info("System Definition " + systemDef.getName() + " has been updated.");
+                }
                 table.refreshRowCache();
             }
             @Override
-            public void deleteSystemDef(SystemDefDTO systemDef) {
+            public void deleteSystemDef(SystemDef systemDef) {
                 logger.info("System Definition " + systemDef.getName() + " has been removed.");
-                table.removeItem(systemDef);
+                table.removeItem(systemDef.getName());
                 table.refreshRowCache();
             }
         };
 
         table = new SystemDefTable(source) {
             @Override
-            public void updateExternalSource(BeanItem<SystemDefDTO> item) {
+            public void updateExternalSource(BeanItem<SystemDef> item) {
                 form.setItemDataSource(item, Arrays.asList(SystemDefForm.FORM_ITEMS));
                 form.setVisible(true);
                 form.setReadOnly(true);
+                setIsNew(false);
             }
         };
 
         add = new Button("Add System Definition", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                SystemDefDTO sysDef = new SystemDefDTO();
+                SystemDef sysDef = new SystemDef();
                 sysDef.setName("New System Definition");
                 sysDef.setSysoidMask(".1.3.4.1.4.1.");
-                sysDef.setCollect(new CollectDTO());
-                table.addItem(sysDef);
-                table.select(sysDef);
+                sysDef.setCollect(new Collect());
+                table.updateExternalSource(new BeanItem<SystemDef>(sysDef));
                 form.setReadOnly(false);
+                setIsNew(true);
             }
         });
 
@@ -118,7 +127,20 @@ public class SystemDefPanel extends VerticalLayout {
      * @return the system definitions
      */
     @SuppressWarnings("unchecked")
-    public Collection<SystemDefDTO> getSystemDefinitions() {
-        return ((BeanItemContainer<SystemDefDTO>) table.getContainerDataSource()).getItemIds();
+    public Collection<SystemDef> getSystemDefinitions() {
+        final Collection<SystemDef> groups = new ArrayList<SystemDef>();
+        for (Object itemId : table.getContainerDataSource().getItemIds()) {
+            groups.add(((BeanItem<SystemDef>)table.getContainerDataSource().getItem(itemId)).getBean());
+        }
+        return groups;
+    }
+
+    /**
+     * Sets the value of the ifNew flag
+     *
+     * @param isNew true, if the system definition is new.
+     */
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
     }
 }

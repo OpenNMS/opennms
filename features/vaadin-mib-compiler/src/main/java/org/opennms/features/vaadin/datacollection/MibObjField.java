@@ -30,13 +30,13 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.vaadin.datacollection.model.MibObjDTO;
-import org.opennms.features.vaadin.datacollection.model.ResourceTypeDTO;
+import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -70,7 +70,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<MibObjDTO> container = new BeanItemContainer<MibObjDTO>(MibObjDTO.class);
+    private BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -86,7 +86,8 @@ public class MibObjField extends CustomField implements Button.ClickListener {
      *
      * @param resourceTypes the resource types
      */
-    public MibObjField(final List<ResourceTypeDTO> resourceTypes) {
+    public MibObjField(final List<ResourceType> resourceTypes) {
+        container.setBeanIdProperty("oid");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"oid", "instance", "alias", "type"});
@@ -116,7 +117,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
                     });
                     field.addItem("0");
                     field.addItem("ifIndex");
-                    for (ResourceTypeDTO rt : resourceTypes) {
+                    for (ResourceType rt : resourceTypes) {
                         field.addItem(rt.getName());
                     }
                     return field;
@@ -156,7 +157,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
-            List<MibObjDTO> beans = (List<MibObjDTO>) value;
+            List<MibObj> beans = (List<MibObj>) value;
             container.removeAllItems();
             container.addAll(beans);
             table.setPageLength(beans.size());
@@ -171,7 +172,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
      */
     @Override
     public Object getValue() {
-        ArrayList<MibObjDTO> beans = new ArrayList<MibObjDTO>(); 
+        ArrayList<MibObj> beans = new ArrayList<MibObj>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -205,8 +206,9 @@ public class MibObjField extends CustomField implements Button.ClickListener {
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new MibObjDTO());
-        table.addItem(itemId);
+        MibObj obj = new MibObj();
+        obj.setOid("1.1.1.1");
+        container.addBean(obj);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }
 
@@ -219,11 +221,11 @@ public class MibObjField extends CustomField implements Button.ClickListener {
             getApplication().getMainWindow().showNotification("Please select a MIB Object from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to continue?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {

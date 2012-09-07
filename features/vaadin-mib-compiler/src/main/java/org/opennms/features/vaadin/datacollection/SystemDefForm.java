@@ -27,8 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.SystemDefDTO;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
@@ -74,7 +74,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
      *
      * @param source the source
      */
-    public SystemDefForm(final DataCollectionGroupDTO source) {
+    public SystemDefForm(final DatacollectionGroup source) {
         setCaption("System Definition Detail");
         setWriteThrough(false);
         setVisible(false);
@@ -102,14 +102,14 @@ public abstract class SystemDefForm extends Form implements ClickListener {
     }
 
     /**
-     * Gets the system def.
+     * Gets the system definition.
      *
-     * @return the system def
+     * @return the system definition
      */
     @SuppressWarnings("unchecked")
-    private SystemDefDTO getSystemDef() {
+    private SystemDef getSystemDef() {
         if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<SystemDefDTO> item = (BeanItem<SystemDefDTO>) getItemDataSource();
+            BeanItem<SystemDef> item = (BeanItem<SystemDef>) getItemDataSource();
             return item.getBean();
         }
         return null;
@@ -164,17 +164,17 @@ public abstract class SystemDefForm extends Form implements ClickListener {
     }
 
     /**
-     * Save system def.
+     * Save system definition.
      *
      * @param group the group
      */
-    public abstract void saveSystemDef(SystemDefDTO group);
+    public abstract void saveSystemDef(SystemDef group);
 
     /**
-     * Delete system def.
+     * Delete system definition.
      *
      * @param group the group
      */
-    public abstract void deleteSystemDef(SystemDefDTO group);
+    public abstract void deleteSystemDef(SystemDef group);
 
 }

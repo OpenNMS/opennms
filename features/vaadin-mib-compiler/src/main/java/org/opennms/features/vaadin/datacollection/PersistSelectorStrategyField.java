@@ -27,12 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.ParameterDTO;
-import org.opennms.features.vaadin.datacollection.model.PersistenceSelectorStrategyDTO;
-
+import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -61,7 +60,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<ParameterDTO> container = new BeanItemContainer<ParameterDTO>(ParameterDTO.class);
+    private BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -92,6 +91,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
             }
         });
 
+        container.setBeanIdProperty("key");
         table.setCaption("Parameters");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
@@ -124,7 +124,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      */
     @Override
     public Class<?> getType() {
-        return PersistenceSelectorStrategyDTO.class;
+        return PersistenceSelectorStrategy.class;
     }
 
     /* (non-Javadoc)
@@ -133,8 +133,8 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
-        if (value instanceof PersistenceSelectorStrategyDTO) {
-            PersistenceSelectorStrategyDTO dto = (PersistenceSelectorStrategyDTO) value;
+        if (value instanceof PersistenceSelectorStrategy) {
+            PersistenceSelectorStrategy dto = (PersistenceSelectorStrategy) value;
             combo.setValue(dto.getClazz());
             container.removeAllItems();
             container.addAll(dto.getParameterCollection());
@@ -150,7 +150,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      */
     @Override
     public Object getValue() {
-        PersistenceSelectorStrategyDTO dto = new PersistenceSelectorStrategyDTO();
+        PersistenceSelectorStrategy dto = new PersistenceSelectorStrategy();
         dto.setClazz((String) combo.getValue());
         for (Object itemId: container.getItemIds()) {
             dto.getParameterCollection().add(container.getItem(itemId).getBean());
@@ -186,7 +186,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new ParameterDTO());
+        Object itemId = container.addBean(new Parameter());
         table.addItem(itemId);
         table.setPageLength(container.size()); // TODO: Is this really necessary?
     }

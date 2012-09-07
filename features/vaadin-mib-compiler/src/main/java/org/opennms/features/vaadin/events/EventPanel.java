@@ -29,7 +29,6 @@ package org.opennms.features.vaadin.events;
 
 import java.util.Arrays;
 
-import org.opennms.features.vaadin.events.model.EventDTO;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -97,7 +96,7 @@ public abstract class EventPanel extends Panel {
         mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
         eventTable = new EventTable(events) {
-            public void updateExternalSource(BeanItem<EventDTO> item) {
+            public void updateExternalSource(BeanItem<org.opennms.netmgt.xml.eventconf.Event> item) {
                 eventForm.setItemDataSource(item, Arrays.asList(EventForm.FORM_ITEMS));
                 eventForm.setVisible(true);
                 eventForm.setReadOnly(true);
@@ -106,11 +105,11 @@ public abstract class EventPanel extends Panel {
         mainLayout.addComponent(eventTable);
 
         eventForm = new EventForm() {
-            public void saveEvent(EventDTO event) {
+            public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 logger.info("Event " + event.getUei() + " has been updated.");
                 eventTable.refreshRowCache();
             }
-            public void deleteEvent(EventDTO event) {
+            public void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 logger.info("Event " + event.getUei() + " has been removed.");
                 eventTable.removeItem(event);
                 eventTable.refreshRowCache();

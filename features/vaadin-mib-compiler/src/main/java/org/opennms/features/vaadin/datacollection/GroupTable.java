@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.features.vaadin.datacollection.model.DataCollectionGroupDTO;
-import org.opennms.features.vaadin.datacollection.model.GroupDTO;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
@@ -53,10 +53,13 @@ public abstract class GroupTable extends Table {
     /**
      * Instantiates a new event table.
      *
-     * @param source the OpenNMS Data Collection Group DTO
+     * @param source the OpenNMS Data Collection Group
      */
-    public GroupTable(final DataCollectionGroupDTO source) {
-        setContainerDataSource(new BeanItemContainer<GroupDTO>(GroupDTO.class, source.getGroupCollection()));
+    public GroupTable(final DatacollectionGroup source) {
+        BeanContainer<String,Group> container = new BeanContainer<String,Group>(Group.class);
+        container.setBeanIdProperty("name");
+        container.addAll(source.getGroupCollection());
+        setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
@@ -65,9 +68,10 @@ public abstract class GroupTable extends Table {
         setWidth("100%");
         setHeight("250px");
         addListener(new Property.ValueChangeListener() {
+            @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
-                    BeanItem<GroupDTO> item = new BeanItem<GroupDTO>((GroupDTO)getValue());
+                    BeanItem<Group> item = (BeanItem<Group>) getContainerDataSource().getItem(getValue());
                     updateExternalSource(item);
                 }
             }
@@ -79,6 +83,16 @@ public abstract class GroupTable extends Table {
      *
      * @param item the item
      */
-    public abstract void updateExternalSource(BeanItem<GroupDTO> item);
+    public abstract void updateExternalSource(BeanItem<Group> item);
+
+    /**
+     * Adds a group.
+     *
+     * @param group the group
+     */
+    @SuppressWarnings("unchecked")
+    public void addGroup(Group group) {
+        ((BeanContainer<String,Group>) getContainerDataSource()).addBean(group);
+    }
 
 }

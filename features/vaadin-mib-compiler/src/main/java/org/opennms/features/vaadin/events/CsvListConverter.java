@@ -30,7 +30,6 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.features.vaadin.mibcompiler.model.StringList;
 import org.vaadin.addon.customfield.PropertyConverter;
 
 /**
@@ -40,6 +39,9 @@ import org.vaadin.addon.customfield.PropertyConverter;
  */
 @SuppressWarnings("serial")
 public class CsvListConverter extends PropertyConverter<ArrayList<String>, String> {
+
+    public class StringList extends ArrayList<String> {
+    }
 
     /**
      * Instantiates a new CSV list converter.
