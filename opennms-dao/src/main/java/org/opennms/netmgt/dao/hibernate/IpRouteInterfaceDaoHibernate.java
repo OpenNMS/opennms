@@ -69,6 +69,20 @@ public class IpRouteInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpRou
     }
 
     @Override
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsIpRouteInterface item : findMatching(criteria)) {
+            delete(item);
+        }
+    }
+
+
+    @Override
     public void setStatusForNode(final Integer nodeid, final Character action) {
         // UPDATE iprouteinterface set status = ? WHERE nodeid = ?
 

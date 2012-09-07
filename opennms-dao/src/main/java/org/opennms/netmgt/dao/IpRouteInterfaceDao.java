@@ -38,6 +38,8 @@ public interface IpRouteInterfaceDao extends OnmsDao<OnmsIpRouteInterface, Integ
 
     void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
 
+    void deleteForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+
     void setStatusForNode(Integer nodeid, Character action);
 
     void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);

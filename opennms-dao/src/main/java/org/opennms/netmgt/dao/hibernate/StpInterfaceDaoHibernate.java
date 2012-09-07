@@ -54,6 +54,7 @@ public class StpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsStpInterf
         }
 	}
 
+	
     @Override
     public void deactivateForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
@@ -65,6 +66,19 @@ public class StpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsStpInterf
         for (final OnmsStpInterface item : findMatching(criteria)) {
             item.setStatus('N');
             saveOrUpdate(item);
+        }
+    }
+
+    @Override
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsStpInterface item : findMatching(criteria)) {
+            delete(item);
         }
     }
 

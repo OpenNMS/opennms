@@ -39,12 +39,14 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.VertexContainer;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.HierarchicalContainer;
 
-public class FilterableHierarchicalContainer extends HierarchicalContainer {
+public class FilterableHierarchicalContainer extends HierarchicalContainer implements ItemSetChangeListener {
 
     VertexContainer<?, ?> m_container;
     List<Object> m_filteredItems;
@@ -58,6 +60,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer {
    public FilterableHierarchicalContainer(VertexContainer<?, ?> container) {
         super();
         m_container = container;
+        m_container.addListener(this);
     }
 
  @Override
@@ -318,6 +321,11 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer {
     @Override
     protected BeanItem<?> getUnfilteredItem(Object itemId) {
         return m_container.getItem(itemId);
+    }
+
+    @Override
+    public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+        fireItemSetChange();
     }
     
 

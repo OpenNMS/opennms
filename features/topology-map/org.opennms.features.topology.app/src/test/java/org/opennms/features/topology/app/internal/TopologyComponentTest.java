@@ -288,6 +288,7 @@ public class TopologyComponentTest {
         target.addAttribute(EasyMock.eq("iconUrl"), EasyMock.notNull(String.class));
         target.addAttribute("semanticZoomLevel", 0);
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
+        target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(EasyMock.eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         
         
@@ -301,6 +302,7 @@ public class TopologyComponentTest {
         target.addAttribute("clientY", 0);
         target.addAttribute("semanticZoomLevel", 0);
         target.addAttribute("panToSelection", false);
+        target.addAttribute("fitToView", true);
         target.addAttribute(EasyMock.eq("backgroundActions"), EasyMock.aryEq(new Object[0]));
     }
 
@@ -333,6 +335,7 @@ public class TopologyComponentTest {
         target.addAttribute(eq("key"), EasyMock.notNull(String.class));
         target.addAttribute(eq("source"), EasyMock.notNull(String.class));
         target.addAttribute(eq("target"), EasyMock.notNull(String.class));
+        target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         target.endTag("edge");
     }
@@ -342,6 +345,7 @@ public class TopologyComponentTest {
         target.addAttribute("key", edgeKey);
         target.addAttribute("source", sourceId);
         target.addAttribute("target", targetId);
+        target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         target.endTag("edge");
     }
@@ -362,6 +366,7 @@ public class TopologyComponentTest {
             target.addAttribute(EasyMock.eq("groupKey"), EasyMock.notNull(String.class));
         }
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
+        target.addAttribute(EasyMock.eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         
         target.endTag("vertex");
@@ -376,6 +381,7 @@ public class TopologyComponentTest {
         target.addAttribute(eq("iconUrl"), EasyMock.notNull(String.class));
         target.addAttribute("semanticZoomLevel", 1);
         target.addAttribute(EasyMock.eq("groupKey"), EasyMock.notNull(String.class));
+        target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(eq("label"), EasyMock.notNull(String.class));
         target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         

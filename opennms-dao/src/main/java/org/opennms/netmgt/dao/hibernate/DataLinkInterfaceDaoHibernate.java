@@ -119,6 +119,20 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     @Override
+    public void deleteIfOlderThan(final Timestamp scanTime) {
+        // DELETE datalinkinterface WHERE lastpolltime < ? AND status <> 'A'
+
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            delete(iface);
+        }
+    }
+
+
+    @Override
     public void setStatusForNode(final Integer nodeid, final Character action) {
         // UPDATE datalinkinterface set status = ? WHERE nodeid = ? OR nodeparentid = ?
         

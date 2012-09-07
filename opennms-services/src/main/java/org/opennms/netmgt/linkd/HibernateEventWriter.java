@@ -166,7 +166,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     protected void markOldDataInactive(final Connection dbConn, final Timestamp scanTime, final int nodeid) throws SQLException {
         // UPDATE atinterface set status = 'N'  WHERE sourcenodeid = ? AND lastpolltime < ? AND status = 'A'
-        m_atInterfaceDao.deactivateForNodeIdIfOlderThan(nodeid, scanTime);
+        m_atInterfaceDao.deactivateForSourceNodeIdIfOlderThan(nodeid, scanTime);
         m_atInterfaceDao.flush();
 
         // UPDATE vlan set status = 'N'  WHERE nodeid =? AND lastpolltime < ? AND status = 'A'
@@ -185,7 +185,25 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         m_stpInterfaceDao.deactivateForNodeIdIfOlderThan(nodeid, scanTime);
         m_stpInterfaceDao.flush();
     }
-    
+
+    @Override
+    protected void deleteOlderData(final Connection dbConn, final Timestamp scanTime, final int nodeid) throws SQLException {
+        m_atInterfaceDao.deleteForNodeSourceIdIfOlderThan(nodeid, scanTime);
+        m_atInterfaceDao.flush();
+
+        m_vlanDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_vlanDao.flush();
+
+        m_ipRouteInterfaceDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_ipRouteInterfaceDao.flush();
+
+        m_stpNodeDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_stpNodeDao.flush();
+
+        m_stpInterfaceDao.deleteForNodeIdIfOlderThan(nodeid, scanTime);
+        m_stpInterfaceDao.flush();
+    }
+
 	@Override
 	@Transactional
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) throws SQLException {
@@ -232,71 +250,88 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         }
 
         markOldDataInactive(null, scanTime, node.getNodeId());
+        deleteOlderData(null,new Timestamp(scanTime.getTime()-snmpColl.getPollInterval()*3),node.getNodeId());
         
         return node;
 	}
 
 	@Override
-	public void storeDiscoveryLink(final DiscoveryLink discoveryLink) throws SQLException {
-	    final Timestamp now = new Timestamp(System.currentTimeMillis());
+    public void storeDiscoveryLink(final DiscoveryLink discoveryLink)
+            throws SQLException {
+        final Timestamp now = new Timestamp(System.currentTimeMillis());
 
-	    for (final NodeToNodeLink lk : discoveryLink.getLinks()) {
-
-	        DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeId(), lk.getIfindex());
-	        if (iface == null) {
-	            final OnmsNode onmsNode = m_nodeDao.get(lk.getNodeId());
-	            iface = new DataLinkInterface(onmsNode, lk.getIfindex(), lk.getNodeparentid(), lk.getParentifindex(), String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE), now);
-	        }
-	        iface.setNodeParentId(lk.getNodeparentid());
-	        iface.setParentIfIndex(lk.getParentifindex());
-	        iface.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
-	        iface.setLastPollTime(now);
-
-	        m_dataLinkInterfaceDao.saveOrUpdate(iface);
-
-	        final DataLinkInterface parent = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeparentid(), lk.getParentifindex());
-	        if (parent != null) {
-	            if (parent.getNodeParentId() == lk.getNodeId() && parent.getParentIfIndex() == lk.getIfindex()
-	                    && parent.getStatus().equals(String.valueOf(DbDataLinkInterfaceEntry.STATUS_DELETED))) {
-	                parent.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_DELETED));
-	                m_dataLinkInterfaceDao.saveOrUpdate(parent);
-	            }
+        for (final NodeToNodeLink lk : discoveryLink.getLinks()) {
+            DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeId(),
+                                                                                    lk.getIfindex());
+            if (iface == null) {
+                final OnmsNode onmsNode = m_nodeDao.get(lk.getNodeId());
+                iface = new DataLinkInterface(
+                                              onmsNode,
+                                              lk.getIfindex(),
+                                              lk.getNodeparentid(),
+                                              lk.getParentifindex(),
+                                              String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE),
+                                              now);
             }
-	    }
+            iface.setNodeParentId(lk.getNodeparentid());
+            iface.setParentIfIndex(lk.getParentifindex());
+            iface.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
+            iface.setLastPollTime(now);
+            m_dataLinkInterfaceDao.saveOrUpdate(iface);
+            final DataLinkInterface parent = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeparentid(),
+                                                                                           lk.getParentifindex());
+            if (parent != null) {
+                if (parent.getNodeParentId() == lk.getNodeId()
+                        && parent.getParentIfIndex() == lk.getIfindex()
+                        && parent.getStatus().equals(String.valueOf(DbDataLinkInterfaceEntry.STATUS_DELETED))) {
+                    m_dataLinkInterfaceDao.delete(parent);
+                }
+            }
+        }
 
-	    for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
-	        final Collection<OnmsAtInterface> atInterfaces = m_atInterfaceDao.findByMacAddress(lkm.getMacAddress());
-	        if (atInterfaces.size() == 0) {
-                LogUtils.debugf(this, "storeDiscoveryLink: No nodeid found on DB for mac address %s on link. Skipping.", lkm.getMacAddress());
+        for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
+            final Collection<OnmsAtInterface> atInterfaces = m_atInterfaceDao.findByMacAddress(lkm.getMacAddress());
+            if (atInterfaces.size() == 0) {
+                LogUtils.debugf(this,
+                                "storeDiscoveryLink: No nodeid found on DB for mac address %s on link. Skipping.",
+                                lkm.getMacAddress());
                 continue;
-	        }
-	        
-	        if (atInterfaces.size() > 1) {
-	            LogUtils.debugf(this, "storeDiscoveryLink: More than one atInterface returned for the mac address %s. Returning the first.", lkm.getMacAddress());
-	        }
-
-	        final OnmsAtInterface atInterface = atInterfaces.iterator().next();
-	        
-	        if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(), discoveryLink.getPackageName())) {
-	            LogUtils.debugf(this, "storeDiscoveryLink: IP address %s not found on link.  Skipping.", atInterface.getIpAddress());
-	            continue;
-	        }
-	        
-	        final OnmsNode atInterfaceNode = atInterface.getNode();
-	        DataLinkInterface dli = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(atInterfaceNode.getId(), atInterface.getIfIndex());
+            }
+            if (atInterfaces.size() > 1) {
+                LogUtils.debugf(this,
+                                "storeDiscoveryLink: More than one atInterface returned for the mac address %s. Returning the first.",
+                                lkm.getMacAddress());
+            }
+            final OnmsAtInterface atInterface = atInterfaces.iterator().next();
+            if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(),
+                                              discoveryLink.getPackageName())) {
+                LogUtils.debugf(this,
+                                "storeDiscoveryLink: IP address %s not found on link.  Skipping.",
+                                atInterface.getIpAddress());
+                continue;
+            }
+            final OnmsNode atInterfaceNode = atInterface.getNode();
+            DataLinkInterface dli = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(atInterfaceNode.getId(),
+                                                                                  atInterface.getIfIndex());
             if (dli == null) {
-                dli = new DataLinkInterface(atInterfaceNode, atInterface.getIfIndex(), lkm.getNodeparentid(), lkm.getParentifindex(), String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE), now);
+                dli = new DataLinkInterface(
+                                            atInterfaceNode,
+                                            atInterface.getIfIndex(),
+                                            lkm.getNodeparentid(),
+                                            lkm.getParentifindex(),
+                                            String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE),
+                                            now);
             }
             dli.setNodeParentId(lkm.getNodeparentid());
             dli.setParentIfIndex(lkm.getParentifindex());
             dli.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
             dli.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(dli);
-
             LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);
-            m_dataLinkInterfaceDao.deactivateIfOlderThan(now);
-	    }
-	}
+        }
+        m_dataLinkInterfaceDao.deactivateIfOlderThan(now);
+        m_dataLinkInterfaceDao.deleteIfOlderThan(new Timestamp(now.getTime()-3*discoveryLink.getSnmpPollInterval()));
+    }
 
 	@Override
 	public void update(final int nodeid, final char action) throws SQLException {

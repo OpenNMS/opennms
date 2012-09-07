@@ -36,6 +36,7 @@ import org.junit.Assert;
 
 import org.easymock.EasyMock;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
@@ -74,11 +75,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EasyMockDataPopulator {
+    
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
     @Autowired 
     private NodeDao m_nodeDao;
+    
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
     
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -89,7 +94,10 @@ public class EasyMockDataPopulator {
     private OnmsNode m_node7;
     private OnmsNode m_node8;
     
-    public void populateDatabase(boolean withNodeDao) {
+    private List<OnmsNode> m_nodes;
+    private List<DataLinkInterface> m_links;
+
+    public void populateDatabase() {
         final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
         final OnmsServiceType icmp = new OnmsServiceType("ICMP");
@@ -228,6 +236,7 @@ public class EasyMockDataPopulator {
         nodes.add(node6);
         nodes.add(node7);
         nodes.add(node8);
+        setNodes(nodes);
         
         final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), 1, getNode1().getId(), 1, "A", new Date());
         final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), 2, getNode2().getId(), 1, "A", new Date());
@@ -257,20 +266,23 @@ public class EasyMockDataPopulator {
         links.add(dli67);
         links.add(dli78);
         links.add(dli81);
-        
-        EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(links).anyTimes();
-        EasyMock.replay(m_dataLinkInterfaceDao);
+        setLinks(links);
 
-        if (withNodeDao) {
-        for (int id=1;id<9;id++) {
-            EasyMock.expect(m_nodeDao.get(id)).andReturn(getNode(id));
+    }
+    
+    public void setUpMock() {
+        
+        EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
+        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
+        
+        for (int i=1;i<9;i++) {
+            EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
+            EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
         }
 
-        EasyMock.expect(m_nodeDao.findAll()).andReturn(nodes);
+        EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_nodeDao);
-        
-        }        
-
+        EasyMock.replay(m_ipInterfaceDao);
     }
     
     public OnmsNode getNode(Integer id) {
@@ -298,8 +310,8 @@ public class EasyMockDataPopulator {
     }
 
     public void tearDown() {
-        EasyMock.verify(m_dataLinkInterfaceDao);
         EasyMock.reset(m_dataLinkInterfaceDao);
+        EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_nodeDao);
     }
 
@@ -375,6 +387,14 @@ public class EasyMockDataPopulator {
         m_node8 = node8;
     }
 
+    private void setLinks(final List<DataLinkInterface> links) {
+        m_links=links;
+    }
+    
+    public List<DataLinkInterface> getLinks() {
+        return m_links;
+    }
+
     public DataLinkInterfaceDao getDataLinkInterfaceDao() {
         return m_dataLinkInterfaceDao;
     }
@@ -389,6 +409,14 @@ public class EasyMockDataPopulator {
 
     public void setNodeDao(final NodeDao nodeDao) {
         this.m_nodeDao = nodeDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     public void check(LinkdTopologyProvider topologyProvider) {
@@ -433,5 +461,13 @@ public class EasyMockDataPopulator {
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("7").toArray(), edgeidsforvertex7);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("8").toArray(), edgeidsforvertex8);
         
+    }
+
+    public List<OnmsNode> getNodes() {
+        return m_nodes;
+    }
+
+    public void setNodes(List<OnmsNode> nodes) {
+        m_nodes = nodes;
     }
 }
