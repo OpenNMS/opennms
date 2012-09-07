@@ -143,6 +143,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.GetInfoOperation"/>
     </service>
     
+    <!--
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -152,6 +153,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <argument ref="commandManager"/>
         </bean>
     </service>
+    -->
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
