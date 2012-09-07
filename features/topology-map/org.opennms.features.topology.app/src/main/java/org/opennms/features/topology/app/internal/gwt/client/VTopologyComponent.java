@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -1103,9 +1102,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         centerD3Selection(jsArray, false);
         
     }
-
-    private void centerD3Selection(JsArray<GWTVertex> vertices, boolean fitToView) {
-        SVGMatrix viewportMatrix = getSVGElement().createSVGMatrix();
+    
+    private void zoomToFit(final BoundingRect rect) {
         
         SVGElement svg = getSVGElement();
         final int svgWidth = svg.getParentElement().getOffsetWidth(); 
@@ -1113,6 +1111,24 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         
         double svgCenterX = svgWidth/2;
         double svgCenterY = svgHeight/2;
+        
+        double translateX = (svgCenterX - rect.getCenterX());
+        double translateY = (svgCenterY - rect.getCenterY());
+        
+      //transform="translate( -centerX*(factor-1), -centerY*(factor-1) ) scale(factor)
+        double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
+        SVGMatrix transform = svg.createSVGMatrix()
+            .translate(translateX, translateY)
+            .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
+            .scale(scale)
+            ;
+                   
+        String transformVal = matrixTransform(transform);
+        
+        D3.d3().select(getSVGViewPort()).transition().duration(3000).attr("transform", transformVal);
+    }
+    
+    private void centerD3Selection(JsArray<GWTVertex> vertices, boolean fitToView) {
         
         final BoundingRect rect = new BoundingRect();
 
@@ -1127,29 +1143,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             }
         }
         
-        double translateX = (svgCenterX - rect.getCenterX());
-        double translateY = (svgCenterY - rect.getCenterY());
-        
-        D3.d3().select(getSVGViewPort()).transition().duration(500).attr("transform", matrixTransform(viewportMatrix.translate(translateX, translateY))).each("end", new AnonymousFunc() {
-
-            @Override
-            public void call() {
-                
-                double rectWidthPercent = svgWidth / rect.getWidth() ;
-                double rectHeightPercent = svgHeight / rect.getHeight() ;
-                consoleLog("rect.getWidth: " + rect.getWidth() + " rect.getHeight: " + rect.getHeight() + " rect.getCenterY: " + rect.getCenterY() + " rect.getCenterX: " + rect.getCenterX());
-                consoleLog("setting scale: " + (1 * Math.min( rectWidthPercent, rectHeightPercent )));
-                setMapScaleNow( 1 * Math.min( rectWidthPercent, rectHeightPercent ) );
-                        
-//                if(rectWidthPercent < 1 && rectWidthPercent < rectHeightPercent) {
-//                    setMapScaleNow( rectWidthPercent * scaleFactor );
-//                }else if(rectHeightPercent < 1 && rectHeightPercent < rectWidthPercent) {
-//                    setMapScaleNow( rectHeightPercent * scaleFactor );
-//                }else if(scaleFactor < 1) {
-//                    setMapScaleNow(1);
-//                }
-            }
-        });
+        zoomToFit(rect);
     }
     
     private int getSVGLengthInPixels(SVGElement svg, SVGLength svgLength) {
