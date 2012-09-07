@@ -11,32 +11,6 @@
   <packaging>bundle</packaging>
   <build>
     <plugins>
-      <!-- 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-process-maven-plugin</artifactId>
-      </plugin>
-      -->
-      <!--
-      <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb21-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <schemaDirectory>src/main/castor</schemaDirectory>
-        </configuration>
-      </plugin>
-      -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
