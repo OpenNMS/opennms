@@ -40,8 +40,10 @@ import org.vaadin.addon.customfield.PropertyConverter;
 @SuppressWarnings("serial")
 public class CsvListConverter extends PropertyConverter<ArrayList<String>, String> {
 
-    public class StringList extends ArrayList<String> {
-    }
+    /**
+     * The Class StringList.
+     */
+    public class StringList extends ArrayList<String> {}
 
     /**
      * Instantiates a new CSV list converter.

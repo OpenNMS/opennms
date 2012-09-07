@@ -42,8 +42,10 @@ import org.vaadin.addon.customfield.PropertyConverter;
 @SuppressWarnings("serial")
 public class DecodeListConverter extends PropertyConverter<ArrayList<Decode>, String> {
 
-    public class DecodeList extends ArrayList<Decode> {
-    }
+    /**
+     * The Class DecodeList.
+     */
+    public class DecodeList extends ArrayList<Decode> {}
 
     /**
      * Instantiates a new decode list converter.
