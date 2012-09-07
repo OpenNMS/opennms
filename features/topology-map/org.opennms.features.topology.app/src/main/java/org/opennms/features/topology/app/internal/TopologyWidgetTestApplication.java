@@ -115,6 +115,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		
 		final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		final Slider slider = new Slider(0, 4);
+		slider.setPropertyDataSource(scale);
 		slider.setResolution(2);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
@@ -129,7 +130,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.addListener(new ValueChangeListener(){
 
 			public void valueChange(ValueChangeEvent event) {
-				scale.setValue((Double) slider.getValue());
+				//m_topologyComponent.requestRepaint();
 			}
 		});
 
