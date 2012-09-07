@@ -105,6 +105,10 @@ public class Graph{
 
 				List<Object> endPoints = new ArrayList<Object>(m_dataSource.getEndPointIdsForEdge(itemId));
 
+				if (endPoints.size() < 2) {
+				    return null;
+				}
+
 				Object sourceId = endPoints.get(0);
 				Object targetId = endPoints.get(1);
 				
