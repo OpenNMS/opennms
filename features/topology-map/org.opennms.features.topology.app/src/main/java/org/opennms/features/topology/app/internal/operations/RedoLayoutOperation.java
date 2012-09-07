@@ -38,8 +38,7 @@ import org.opennms.features.topology.api.OperationContext;
 public class RedoLayoutOperation implements Operation {
 
 	@Override
-    public Undoer execute(List<Object> targets,
-            OperationContext operationContext) {
+    public Undoer execute(List<Object> targets, OperationContext operationContext) {
         DisplayState graphContainer = operationContext.getGraphContainer();
         
         graphContainer.redoLayout();
@@ -53,12 +52,11 @@ public class RedoLayoutOperation implements Operation {
 
     @Override
     public boolean enabled(List<Object> targets, OperationContext operationContext) {
-        //Applies to background as a whole
-        return targets == null || targets.isEmpty();
+        return true;
     }
 
     @Override
     public String getId() {
-        return null;
+        return "RedoLayout";
     }
 }
