@@ -38,6 +38,8 @@ public interface StpNodeDao extends OnmsDao<OnmsStpNode, Integer> {
 
     void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
 
+    void deleteForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+
     void setStatusForNode(Integer nodeid, Character action);
 
     OnmsStpNode findByNodeAndVlan(Integer nodeId, Integer baseVlan);

@@ -7,10 +7,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
    <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.DataLinkInterfaceDao" availability="mandatory" />
 
    <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+
+   <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.IpInterfaceDao" availability="mandatory" />
    
-    <bean id="topologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+    <bean id="topologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
+            <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean>
     
     <service interface="org.opennms.features.topology.api.TopologyProvider" ref="topologyProvider">
@@ -22,9 +25,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
             <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Open"/>
+            <entry key="operation.label" value="Refresh"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.OpenOperation">
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation">
             <argument ref="topologyProvider"/>
         </bean>
     </service>

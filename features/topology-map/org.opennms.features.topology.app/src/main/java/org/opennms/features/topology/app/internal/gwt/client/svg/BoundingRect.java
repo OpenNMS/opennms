@@ -44,26 +44,26 @@ public class BoundingRect {
     }
     
     public double getWidth() {
-        double width = m_bottomRight.getX() - m_topLeft.getX();
+        double width = m_bottomRight.getX() - m_topLeft.getX() + 100;
         
         return width;
     }
     
     public double getHeight() {
-        return m_bottomRight.getY() - m_topLeft.getY();
+        return m_bottomRight.getY() - m_topLeft.getY() + 100;
     }
 
     public void addPoint(Point point) {
         if(m_topLeft == null) {
             m_topLeft = point;
         }else {
-            m_topLeft = new Point(Math.min(m_topLeft.getX(), point.getX()) - 50, Math.min(m_topLeft.getY(), point.getY()) - 50);
+            m_topLeft = new Point(Math.min(m_topLeft.getX(), point.getX()), Math.min(m_topLeft.getY(), point.getY()));
         }
         
         if(m_bottomRight == null) {
             m_bottomRight = point;
         }else {
-            m_bottomRight = new Point(Math.max(m_bottomRight.getX(), point.getX() + 50), Math.max(m_bottomRight.getY(), point.getY()) + 50);
+            m_bottomRight = new Point(Math.max(m_bottomRight.getX(), point.getX()), Math.max(m_bottomRight.getY(), point.getY()));
         }
     }
 

@@ -70,5 +70,17 @@ public class SVGElement extends Element{
         return this.inverse();
     }-*/;
 
+    public final native SVGAnimatedLength getWidth() /*-{
+        return this.width;
+    }-*/;
+
+    public final native SVGAnimatedLength getHeight() /*-{
+        return this.height;
+    }-*/;
+
+    public final native SVGLength createSVGLength() /*-{
+        return this.createSVGLength();
+    }-*/;
+
 
 }

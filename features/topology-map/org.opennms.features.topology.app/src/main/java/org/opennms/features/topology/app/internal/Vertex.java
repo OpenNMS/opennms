@@ -52,8 +52,6 @@ public class Vertex implements Paintable {
 	private Item m_item;
 	private Object m_groupId;
 	private String m_groupKey;
-	private String m_label;
-	private String m_ipAddr;
 	
 	public Vertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
 		m_key = key;
@@ -158,6 +156,10 @@ public class Vertex implements Paintable {
 
     public String getIconKey() {
         return (String) m_item.getItemProperty(ICON_KEY).getValue();
+    }
+
+    public String getTooltipText() {
+        return getLabel();
     }
 
 }

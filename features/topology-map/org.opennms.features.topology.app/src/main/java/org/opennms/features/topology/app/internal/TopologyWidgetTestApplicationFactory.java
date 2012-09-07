@@ -28,16 +28,23 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.ops4j.pax.vaadin.ApplicationFactory;
+import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.ops4j.pax.vaadin.ScriptTag;
 
 import com.vaadin.Application;
 
-public class TopologyWidgetTestApplicationFactory implements ApplicationFactory {
+public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFactory {
     
 	private TopologyProvider m_topologyProvider;
 	private CommandManager m_commandManager = new CommandManager();
@@ -99,5 +106,19 @@ public class TopologyWidgetTestApplicationFactory implements ApplicationFactory 
     public void setWidgetManager(WidgetManager widgetManager) {
         m_widgetManager = widgetManager;
     }
-    
+
+    @Override
+    public Map<String, String> getAdditionalHeaders() {
+        final Map<String,String> headers = new HashMap<String,String>();
+        headers.put("X-UA-Compatible", "chrome=1");
+        return headers;
+    }
+
+    @Override
+    public List<ScriptTag> getAdditionalScripts() {
+        final List<ScriptTag> tags = new ArrayList<ScriptTag>();
+        tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
+        tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
+        return tags;
+    }
 }

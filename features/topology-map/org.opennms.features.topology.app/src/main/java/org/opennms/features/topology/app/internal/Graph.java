@@ -105,6 +105,10 @@ public class Graph{
 
 				List<Object> endPoints = new ArrayList<Object>(m_dataSource.getEndPointIdsForEdge(itemId));
 
+				if (endPoints.size() < 2) {
+				    return null;
+				}
+
 				Object sourceId = endPoints.get(0);
 				Object targetId = endPoints.get(1);
 				
@@ -187,7 +191,7 @@ public class Graph{
 
 	public Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
 		int szl = vertex.getSemanticZoomLevel();
-        if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
+		if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
 			return vertex;
 		}else {
 			Vertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());

@@ -11,6 +11,10 @@
 		<constructor-arg value="org.opennms.netmgt.dao.NodeDao"/>
 	</bean>        
 
+	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ipInterfaceDao"> 
+		<constructor-arg value="org.opennms.netmgt.dao.IpInterfaceDao"/>
+	</bean>        
+
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="operationContext"> 
 		<constructor-arg value="org.opennms.features.topology.api.OperationContext"/>
 	</bean>        
@@ -18,14 +22,16 @@
    <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EasyMockDataPopulator">
             <property name="nodeDao" ref="nodeDao" />
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+            <property name="ipInterfaceDao" ref="ipInterfaceDao" />
 	</bean>        
 
    <bean id="linkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
+            <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean>
 
-  <bean id ="openOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.OpenOperation">
+  <bean id ="refreshOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation">
 	  <constructor-arg ref="linkdTopologyProvider"/>
   </bean>
 

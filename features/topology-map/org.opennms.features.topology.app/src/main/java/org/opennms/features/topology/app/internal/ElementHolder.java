@@ -96,11 +96,16 @@ public abstract class ElementHolder<T> {
 		    String key = m_elementKey2ItemId.key(itemId);
 		    
 		    Item item = m_itemContainer.getItem(itemId);
-            T v = make(key, itemId, item);
-            // System.err.println("make v: " + v);
-		    m_graphElements.add(v);
-		    // System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
-		    m_keyToElementMap.put(key, v);
+		    T v = make(key, itemId, item);
+            
+		    if (v == null) {
+		        System.err.println("Warning: unable to make element for key=" + key + ", itemId=" + itemId + ", item=" + item);
+		    } else {
+		        // System.err.println("make v: " + v);
+		        m_graphElements.add(v);
+		        // System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
+		        m_keyToElementMap.put(key, v);
+		    }
 		}
 	}
 	

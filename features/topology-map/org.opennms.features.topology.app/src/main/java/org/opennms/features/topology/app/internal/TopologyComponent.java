@@ -95,6 +95,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
     private boolean m_panToSelection = false;
+    private boolean m_fitToView = true;
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -143,6 +144,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
         setPanToSelection(false);
         
+        target.addAttribute("fitToView", isFitToView());
+        setFitToView(false);
         
         Set<Action> actions = new HashSet<Action>();
 		m_actionMapper = new KeyMapper();
@@ -172,6 +175,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(group.getIconKey()));
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
+        		target.addAttribute("tooltipText", group.getTooltipText());
 
         		List<String> groupActionList = new ArrayList<String>();
         		List<Action> groupSortedList = sortActionHandlers(m_actionHandlers, group.getGroupId(), null); 
@@ -201,6 +205,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         			target.addAttribute("groupKey", vert.getGroupKey());
         		}
         		target.addAttribute("label", vert.getLabel());
+        		target.addAttribute("tooltipText", vert.getTooltipText());
 
         		List<String> vertActionList = new ArrayList<String>();
         		List<Action> vertActionSortedList = sortActionHandlers(m_actionHandlers, vert.getItemId(), null);
@@ -220,6 +225,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("key", edge.getKey());
         	target.addAttribute("source", edge.getSource().getKey());
         	target.addAttribute("target", edge.getTarget().getKey());
+        	target.addAttribute("tooltipText", edge.getTooltipText());
 
     		List<String> edgeActionList = new ArrayList<String>();
     		List<Action> edgeSortedActionList = sortActionHandlers(m_actionHandlers, edge.getItemId(), null);
@@ -269,6 +275,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		target.endTag("actions");
 
         
+    }
+
+    public boolean isFitToView() {
+        return m_fitToView;
+    }
+    
+    public void setFitToView(boolean fitToView) {
+        m_fitToView  = fitToView;
     }
 
     private void setPanToSelection(boolean b) {
@@ -514,6 +528,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	public void containerItemSetChange(ItemSetChangeEvent event) {
 		m_graph.update();
+		setFitToView(true);
 		requestRepaint();
 	}
 

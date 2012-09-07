@@ -38,6 +38,8 @@ public interface VlanDao extends OnmsDao<OnmsVlan, Integer> {
 
     void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
 
+    void deleteForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+
     void setStatusForNode(Integer nodeId, Character action);
 
     OnmsVlan findByNodeAndVlan(Integer nodeId, Integer vlanId);
