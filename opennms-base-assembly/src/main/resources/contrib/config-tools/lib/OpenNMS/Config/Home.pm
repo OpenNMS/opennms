@@ -1,4 +1,4 @@
-package OpenNMS::Home;
+package OpenNMS::Config::Home;
 
 use 5.008008;
 use strict;
