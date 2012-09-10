@@ -55,7 +55,7 @@ public class D3 extends JavaScriptObject {
         return null;
     }-*/;
     
-    public final native Element getElement(D3 selection, int index) /*-{
+    public static final native Element getElement(D3 selection, int index) /*-{
         return selection[0][index];
     }-*/;
     
