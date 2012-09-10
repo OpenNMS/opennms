@@ -554,6 +554,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
     public void valueChange(ValueChangeEvent event) {
+        double scale = (Double) m_scale.getValue();
+        if(scale == 0) {
+            m_scale.setValue(0.01);
+        }
+        
         if(!isScaleUpdateFromUI()) {
             requestRepaint();
             setScaleUpdateFromUI(false);

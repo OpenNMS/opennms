@@ -125,14 +125,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             e.printStackTrace();
         }
 		scale.setValue(1.0);
-
-		slider.addListener(new ValueChangeListener(){
-
-			public void valueChange(ValueChangeEvent event) {
-				//m_topologyComponent.requestRepaint();
-			}
-		});
-
 		slider.setImmediate(true);
 
 		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
