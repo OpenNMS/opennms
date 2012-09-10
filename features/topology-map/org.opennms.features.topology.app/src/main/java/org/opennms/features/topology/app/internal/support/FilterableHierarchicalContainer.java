@@ -212,9 +212,13 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
             m_filteredChildren = null;
             m_filteredParent = null;
             
-            boolean changed = m_container.getItemIds().size() != getFilteredItemIds().size();
-            setFilteredItemIds(null);
-            return changed;
+            if(getFilteredItemIds() != null) {
+                boolean changed = m_container.getItemIds().size() != getFilteredItemIds().size();
+                setFilteredItemIds(null);
+                return changed;
+            }else {
+                return false;
+            }
             
         }
 

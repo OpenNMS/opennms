@@ -447,7 +447,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             vertex.setSelected(false);
         }
         
-        toggleSelectedVertex(vertexId);
+        if(vertexId.isEmpty()) {
+            requestRepaint();
+        } else {
+            toggleSelectedVertex(vertexId);
+        }
     }
     
     public void selectVerticesByItemId(Collection<Object> itemIds) {
@@ -479,7 +483,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
     private void toggleSelectedVertex(String vertexId) {
 		Vertex vertex = getGraph().getVertexByKey(vertexId);
-		vertex.setSelected(!vertex.isSelected());
+		if(vertex != null) {
+		    vertex.setSelected(!vertex.isSelected());
+		}
 		
 		requestRepaint();
 	}

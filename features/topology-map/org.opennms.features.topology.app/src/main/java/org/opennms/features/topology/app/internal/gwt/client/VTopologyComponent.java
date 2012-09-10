@@ -878,7 +878,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	}
 
 	private void setScale(double scale, int clientX, int clientY) {
-		if(m_scale != scale) {
+		consoleLog("oldScale: " + m_scale + " newScale: " + scale);
+	    if(m_scale != scale) {
 			double oldScale = m_scale;
 			m_scale = scale;
 			repaintScale(oldScale, clientX, clientY);
@@ -1102,9 +1103,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             
             @Override
             public void call() {
-                //TODO: uncomment the line below and when you change the layout the first click on the backgroun will scale again.
-                
-                //setMapScaleNow(scale);
+                setMapScaleNow(scale);
                 
             }
         });
@@ -1130,10 +1129,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     }
     
     private void setMapScaleNow(double scale) {
-        m_client.updateVariable(m_paintableId, "mapScale", scale, true);
+        setMapScale(scale, true);
     }
     
     private void setMapScale(double scale, boolean immediate) {
+        m_scale = scale;
         m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
     }
 

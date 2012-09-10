@@ -52,7 +52,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -136,9 +135,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		slider.setImmediate(true);
 
-		Label semanticZoomLabel = new Label();
 		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
-		semanticZoomLabel.setPropertyDataSource(zoomLevel);
 
 		NativeButton zoomInBtn = new NativeButton("+");
 		zoomInBtn.addListener(new ClickListener() {
@@ -166,7 +163,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
 		mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
-		mapLayout.addComponent(semanticZoomLabel, "bottom: 10px; right: 10px; z-index: 2000;");
 		mapLayout.addComponent(zoomInBtn, "top: 0px; left: 0px;");
 		mapLayout.addComponent(zoomOutBtn, "top: 0px; left: 25px");
 		mapLayout.setSizeFull();
