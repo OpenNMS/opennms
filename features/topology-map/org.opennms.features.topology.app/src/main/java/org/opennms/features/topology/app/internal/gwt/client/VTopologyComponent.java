@@ -61,14 +61,13 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -375,9 +374,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	@UiField
 	Element m_marquee;
 	
-	@UiField
-	HorizontalPanel m_toolBarPanel;
-	
 	/**
 	 * This map contains captions and icon urls for actions like: * "33_c" ->
 	 * "Edit" * "33_i" -> "http://dom.com/edit.png"
@@ -414,11 +410,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_svg, m_svgDragHandlerManager);
-		
-		for(ToggleButton btn : m_svgDragHandlerManager.getDragControlsButtons()) {
-		    m_toolBarPanel.add(btn);
-		}
-		
 		
 		D3Behavior dragBehavior = new D3Behavior() {
 
@@ -743,6 +734,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		setActionKeys(uidl.getStringArrayAttribute("backgroundActions"));
 		setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
 		setFitToView(uidl.getBooleanAttribute("fitToView"));
+		setActiveTool(uidl.getStringAttribute("activeTool"));
 
 		UIDL graph = uidl.getChildByTagName("graph");
 		Iterator<?> children = graph.getChildIterator();
@@ -832,7 +824,17 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 
-	private void setFitToView(boolean fitToView) {
+	private void setActiveTool(String toolname) {
+	    if(toolname.equals("pan")) {
+	        m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
+	        getSVGElement().getStyle().setCursor(Cursor.MOVE);
+	    }else if(toolname.equals("select")) {
+	        m_svgDragHandlerManager.setCurrentDragHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY);
+	        getSVGElement().getStyle().setCursor(Cursor.CROSSHAIR);
+	    }
+    }
+
+    private void setFitToView(boolean fitToView) {
 	    m_fitToView  = fitToView;
     }
 	

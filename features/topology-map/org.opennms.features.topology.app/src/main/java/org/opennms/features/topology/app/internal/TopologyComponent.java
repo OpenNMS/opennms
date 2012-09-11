@@ -97,6 +97,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private boolean m_panToSelection = false;
     private boolean m_fitToView = true;
     private boolean m_scaleUpdateFromUI = false;
+    private String m_activeTool = "pan";
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -138,6 +139,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.addAttribute("clientX", m_mapManager.getClientX());
         target.addAttribute("clientY", m_mapManager.getClientY());
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
+        target.addAttribute("activeTool", m_activeTool);
         
         target.addAttribute("panToSelection", getPanToSelection());
         if (getPanToSelection()) {
@@ -581,6 +583,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
     public void setIconRepoManager(IconRepositoryManager iconRepoManager) {
         m_iconRepoManager = iconRepoManager;
+    }
+
+    public void setActiveTool(String toolname) {
+        if(!m_activeTool.equals(toolname)) {
+            m_activeTool = toolname;
+            requestRepaint();
+        }
     }
    
 

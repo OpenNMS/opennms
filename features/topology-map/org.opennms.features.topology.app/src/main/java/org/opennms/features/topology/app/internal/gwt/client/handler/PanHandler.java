@@ -58,13 +58,5 @@ public class PanHandler implements DragBehaviorHandler{
         m_panObject = null;
     }
 
-    @Override
-    public ToggleButton getToggleBtn() {
-        if(m_toggle == null) {
-            m_toggle = new ToggleButton("Pan");
-        }
-        return m_toggle;
-    }
-
     
 }

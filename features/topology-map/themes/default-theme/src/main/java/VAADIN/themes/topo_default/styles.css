@@ -5,3 +5,29 @@
 	opacity: 0.8;
 }
 
+.toolbar-button{
+	
+}
+
+.v-toolbar-button .v-button-wrap{
+    padding: 4px 4px 0 1px;
+}
+
+div.v-button.v-button-toolbar-button.toolbar-button > span {
+	padding: 4px 4px 0 1px;
+}
+
+div.v-button-down{
+	background-image: url(../reindeer/button/img/button-sprites.png);
+	background-position: left -208px;
+}
+
+div.v-button-down .v-button-wrap{
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 100% -234px;
+    background-image: url(../reindeer/button/img/button-sprites.png);
+}
+
+
+
