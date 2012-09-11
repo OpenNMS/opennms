@@ -82,8 +82,9 @@
 	font-family: "Lucida Grande", Verdana, sans-serif;  */
         margin: 0px;
         padding: 0px;
-        background: #3a6d88;
-        color: white; /*#000;*/
+        //background: #3a6d88;
+        //color: white; /*#000;*/
+        background-color: #e7e7e7;
         font-family: Verdana, arial, sans-serif;
     }
     
@@ -200,6 +201,7 @@
         width: 100%;
         margin-top: 0;
         margin-bottom: 10px;
+	word-break: break-all;
     }
 
     node_table {
@@ -362,7 +364,8 @@
 	    position: relative;
 	    background-image: none;
 	    background-repeat: repeat-x;
-	    background-color: transparent;
+	    //background-color: transparent;
+		background-color:#737373;
 	    margin: 0;
 	    padding: 15px 20px 30px 20px;
 	}
@@ -641,6 +644,7 @@
     	    background-repeat: no-repeat;
 	    background-position: 100% 25%;
 	    background-repeat: no-repeat;
+		background-color: #737373;
 	    background-size: 90px auto;
 	    line-height: 2.5em;
 	}
@@ -1017,10 +1021,10 @@ tr.CellStatus td.divider nobr a, tr.CellStatus td.Indeterminate a, tr.CellStatus
         color: black;
 }
 
-tr.Indeterminate td, tr.Normal td , tr.Warning td , tr.Minor td , tr.Major td, tr.Critical td  {
+tr.Indeterminate td, tr.Normal td , tr.Warning td , tr.Minor td , tr.Major td, tr.Critical td, tr.Cleared td  {
         color: black;
 }
-tr.Indeterminate td a, tr.Normal td a, tr.Warning td a, tr.Minor td a, tr.Major td a , tr.Critical td a, tr.Cleared td a {
+tr.Indeterminate td a, tr.Normal td a, tr.Warning td a, tr.Minor td a, tr.Major td a, tr.Critical td a, tr.Cleared td a{
         color: black;
 }
 
