@@ -120,7 +120,7 @@ public class CollectionResourceWrapperTest {
 
         // Add Counter Attribute
         String attributeName = "myCounter";
-        String attributeId = "node[1]." + attributeName;
+        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", 1000);
         attributes.put(attribute.getName(), attribute);
@@ -190,7 +190,7 @@ public class CollectionResourceWrapperTest {
 
 		// Add Counter Attribute
 		String attributeName = "myCounter";
-		String attributeId = "node[1]." + attributeName;
+	        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
 		Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
 		SnmpAttribute attribute = addAttributeToCollectionResource(resource,
 				attributeName, "counter", "0", 1000);
@@ -288,7 +288,7 @@ public class CollectionResourceWrapperTest {
 
         // Add Counter Attribute
         String attributeName = "myCounter";
-        String attributeId = "node[1]." + attributeName;
+        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         BigInteger initialValue = new BigDecimal(Math.pow(2, 32) - 20000).toBigInteger();
         SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", initialValue);
