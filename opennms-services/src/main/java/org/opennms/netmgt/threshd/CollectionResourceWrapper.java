@@ -311,11 +311,8 @@ public class CollectionResourceWrapper {
             log().warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
             return null;
         }
-        // TODO Is this ID unique ? Here is a suggestion:
-        // String id = "node[" + m_nodeId + '].resourceType[' + m_resource.getResourceTypeName()
-        //   + '].instance[' + m_resource.getInstance() + "].label[" + m_resource.getLabel()
-        //   + "].metric[" + ds + "]"
-        String id = m_resource.toString() + "." + ds;
+        // Generating a unique ID for the node/resourceType/resource/metric combination.
+        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getLabel() + "].metric[" + ds + "]";
         Double current = Double.parseDouble(numValue);
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
             if (log().isDebugEnabled()) {
