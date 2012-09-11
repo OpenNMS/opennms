@@ -1,0 +1,72 @@
+$|++;
+
+use strict;
+use warnings;
+
+use Error qw(:try);
+use File::Path;
+use File::Slurp;
+
+#use Test::More tests => 8;
+use Test::More qw(no_plan);
+
+BEGIN {
+	use_ok('OpenNMS::Config::Git');
+};
+
+rmtree("target");
+
+my $git = OpenNMS::Config::Git->new("target/git-test/repo");
+$git->init(branch_name => 'pristine');
+ok(-d "target/git-test/repo/.git");
+is($git->get_branch_name(), 'pristine');
+
+$git->author('git.t <t/git.t>');
+is($git->author(), 'git.t <t/git.t>');
+
+write_file('target/git-test/repo/new.txt', 'This file is new!');
+
+$git->add("new.txt");
+# new, modified, untracked, committed, deleted
+is($git->get_index_status("new.txt"), 'new');
+
+write_file('target/git-test/repo/untracked.txt', 'This file is untracked.');
+is($git->get_index_status('untracked.txt'), 'untracked');
+
+my @files = $git->get_modified_files();
+is(scalar(@files), 2, "files = (" . join(', ', @files) . ")");
+is($files[0], "new.txt");
+is($files[1], "untracked.txt");
+
+eval {
+	$git->commit();
+	fail("commit should have failed");
+};
+ok($@);
+
+$git->commit("adding new.txt");
+is($git->get_index_status("new.txt"), 'unchanged');
+@files = $git->get_modified_files();
+is(scalar(@files), 1);
+is($files[0], 'untracked.txt');
+
+$git->create_branch('master', 'pristine');
+is($git->get_branch_name(), 'pristine');
+
+$git->add('untracked.txt');
+$git->commit('add previously untracked file');
+
+$git->checkout('master');
+is($git->get_branch_name(), 'master');
+ok(! -e 'target/git-test/repo/untracked.txt');
+
+$git->merge('pristine');
+ok(-e 'target/git-test/repo/untracked.txt');
+is($git->get_index_status('untracked.txt'), 'unchanged');
+
+$git->tag('bogus-tag');
+eval {
+	$git->tag('bogus-tag');
+	fail("yo dude, that tag should have existed");
+};
+ok($@);

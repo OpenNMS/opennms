@@ -1,4 +1,5 @@
 %define OPENNMS_HOME /opt/opennms
+%define TOOLDIR %{OPENNMS_HOME}/bin/config-tools
 
 Name: o-test-feature-init
 Summary: Feature Initialization
@@ -11,27 +12,31 @@ BuildRoot: /var/tmp/%{name}-buildroot
 
 Requires(post): git >= 1.7
 
-Source: git-setup.pl
-Source1: opennms-preinstall.pl
-Source2: opennms-postinstall.pl
+Source: perlfiles.tar.gz
 
 %description
 Tools for manipulating Git configuration directories.
 
 Creates a Git environment in $OPENNMS_HOME/etc on first installation.
 
+%prep
+%setup -c
+
+%build
+perl Makefile.PL PREFIX="%{_prefix}" INSTALLDIRS="perl"
+make
+
 %install
-echo "SOURCE0 = %{SOURCE0}"
-install -d "$RPM_BUILD_ROOT%{OPENNMS_HOME}/bin/config-tools"
-install -c -m 755 "%{SOURCE0}" "$RPM_BUILD_ROOT%{OPENNMS_HOME}/bin/config-tools/"
-install -c -m 755 "%{SOURCE1}" "$RPM_BUILD_ROOT%{OPENNMS_HOME}/bin/config-tools/"
-install -c -m 755 "%{SOURCE2}" "$RPM_BUILD_ROOT%{OPENNMS_HOME}/bin/config-tools/"
+make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="perl"
+install -d -m 755 "$RPM_BUILD_ROOT%{TOOLDIR}"
+mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT%{TOOLDIR}/"
 
 %clean
 rm -rf "$RPM_BUILD_ROOT"
 
 %post
-"%{OPENNMS_HOME}/bin/config-tools/git-setup.pl" "%{OPENNMS_HOME}"
+"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}"
 
 %files
-%attr(755,root,root) %{OPENNMS_HOME}/bin/config-tools/*.pl
+%{_prefix}
+%attr(755,root,root) %{TOOLDIR}/*.pl

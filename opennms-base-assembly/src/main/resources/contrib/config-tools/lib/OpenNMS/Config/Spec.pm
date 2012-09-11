@@ -152,7 +152,7 @@ sub build {
 	}
 
 	my @rpms;
-	if (system('rpmbuild', @args, '-bb', $self->spec) != 0) {
+	if (system('rpmbuild', '-v', @args, '-bb', $self->spec) != 0) {
 		croak("RPM build failed");
 	}
 	

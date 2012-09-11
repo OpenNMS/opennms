@@ -6,6 +6,7 @@ use warnings;
 #use Test::More tests => 8;
 use Test::More qw(no_plan);
 
+use Carp;
 use Cwd qw(abs_path);
 use File::Copy;
 use File::Path;
@@ -22,9 +23,12 @@ sub build_rpm {
 	my $specfile = shift;
 	my $topdir   = shift || "target/rpm";
 	my $spec = OpenNMS::Config::Spec->new($specfile);
-	$spec->add_source("opennms-preinstall.pl"  => "script/opennms-preinstall.pl");
-	$spec->add_source("opennms-postinstall.pl" => "script/opennms-postinstall.pl");
-	$spec->add_source("git-setup.pl"           => "script/git-setup.pl");
+
+	chomp(my $contents = read_file('MANIFEST'));
+	my @files = split(/\n/, $contents);
+	print STDERR "\nfiles = " . join(', ', @files) . "\n";
+	system('tar', '-cvzf', 'target/perlfiles.tar.gz', @files) == 0 or croak "unable to build tarball: $!";
+	$spec->add_source("perlfiles.tar.gz", 'target/perlfiles.tar.gz');
 	return $spec->build(_topdir => $topdir);
 }
 
