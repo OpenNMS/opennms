@@ -44,7 +44,7 @@
                 <contents>
                     toplevelMenuOrder=File,Edit,View,Additions,Help
                     submenu.File.groups=start,new,close,save,print,open,import,additions,end
-                    submenu.Edit.groups=start,undo,cut,find,add,end,additions
+                    submenu.Edit.groups=start,undo,cut,find,add,layout,end,additions
                     submenu.View.groups=start,additions,end
 		    submenu.Help.groups=start,main,tools,updates,end,additions
                     submenu.Default.groups=start,main,end,additions
@@ -120,11 +120,6 @@
     <dependency>
       <groupId>org.opennms.features.topology.themes</groupId>
       <artifactId>default-theme</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.widget</groupId>
-      <artifactId>simple-widget</artifactId>
       <version>${project.version}</version>
     </dependency>
 

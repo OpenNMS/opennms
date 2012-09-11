@@ -141,16 +141,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
-            <entry key="operation.label" value="Circle Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Circle Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.CircleLayoutOperation"/>
     </service>
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
-            <entry key="operation.label" value="FR Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="FR Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
     </service>
@@ -158,7 +158,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.label" value="Get Info"/>
+            <entry key="operation.label" value="Get Info?group=additions"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.GetInfoOperation"/>
     </service>
@@ -177,39 +177,39 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout"/>
-            <entry key="operation.label" value="Real Ultimate Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Real Ultimate Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RealUltimateLayoutOperation"/>
     </service>
 
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
-            <entry key="operation.label" value="ISOM Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="ISOM Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.ISOMLayoutOperation"/>
     </service>
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
-            <entry key="operation.label" value="KK Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="KK Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.KKLayoutOperation"/>
     </service>
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout"/>
-            <entry key="operation.label" value="Manual Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Manual Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation"/>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Redo Layout"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
@@ -238,8 +238,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit|Layout|JUNG"/>
-            <entry key="operation.label" value="Spring Layout"/>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Spring Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.SpringLayoutOperation"/>
     </service>
