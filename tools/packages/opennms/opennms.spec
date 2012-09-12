@@ -591,9 +591,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
+#%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
-%config %{jettydir}/opennms-remoting/WEB-INF/*.properties
+#%config %{jettydir}/opennms-remoting/WEB-INF/*.properties
 
 %files plugins
 

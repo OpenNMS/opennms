@@ -157,6 +157,7 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
+<!--
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
@@ -166,6 +167,7 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
+-->
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>

@@ -296,6 +296,7 @@
       <classifier>lib</classifier>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
@@ -303,6 +304,7 @@
       <classifier>jnlp</classifier>
       <version>${project.version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-doc</artifactId>
