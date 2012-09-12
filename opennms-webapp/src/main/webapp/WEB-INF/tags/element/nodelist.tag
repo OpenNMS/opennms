@@ -10,7 +10,7 @@
       <c:param name="node" value="${nodeModel.node.id}"/>
     </c:url>
     <li>
-      <a href="${nodeLink}">${nodeModel.node.label}</a>
+      <a href="${nodeLink}">${nodeModel.node.label}</a> (id: ${nodeModel.node.id}<c:if test="${!empty nodeModel.node.foreignSource}">, ${nodeModel.node.foreignSource}</c:if>)
       <ul>
         <c:if test="${!empty nodeModel.interfaces}">
           <c:forEach var="interface" items="${nodeModel.interfaces}">
