@@ -179,13 +179,4 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
                marqueeY.contains(vertexY.getHi());
     }
 
-    @Override
-    public ToggleButton getToggleBtn() {
-        if(m_toggle == null) {
-            m_toggle = new ToggleButton("Select", "Select");
-        }
-        return m_toggle;
-    }
-
-    
 }

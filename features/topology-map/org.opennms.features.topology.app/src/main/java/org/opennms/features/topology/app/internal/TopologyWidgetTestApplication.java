@@ -45,6 +45,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -52,7 +53,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -126,19 +126,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             e.printStackTrace();
         }
 		scale.setValue(1.0);
-
-		slider.addListener(new ValueChangeListener(){
-
-			public void valueChange(ValueChangeEvent event) {
-				//m_topologyComponent.requestRepaint();
-			}
-		});
-
 		slider.setImmediate(true);
 
-		Label semanticZoomLabel = new Label();
 		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
-		semanticZoomLabel.setPropertyDataSource(zoomLevel);
 
 		NativeButton zoomInBtn = new NativeButton("+");
 		zoomInBtn.addListener(new ClickListener() {
@@ -161,12 +151,47 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				m_graphContainer.redoLayout();
 			}
 		});
+		
+		
+		final Button panBtn = new Button();
+		panBtn.setIcon(new ThemeResource("images/cursor_drag_arrow.png"));
+		panBtn.setDescription("Pan Tool");
+		panBtn.setStyleName("toolbar-button down");
+		
+		final Button selectBtn = new Button();
+		selectBtn.setIcon(new ThemeResource("images/selection.png"));
+		selectBtn.setDescription("Selection Tool");
+		selectBtn.setStyleName("toolbar-button");
+		selectBtn.addListener(new ClickListener() {
 
+            @Override
+            public void buttonClick(ClickEvent event) {
+                selectBtn.setStyleName("toolbar-button down");
+                panBtn.setStyleName("toolbar-button");
+                m_topologyComponent.setActiveTool("select");
+            }
+        });
+		
+		panBtn.addListener(new ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                panBtn.setStyleName("toolbar-button down");
+                selectBtn.setStyleName("toolbar-button");
+                m_topologyComponent.setActiveTool("pan");
+            }
+        });
+		
+		VerticalLayout toolbar = new VerticalLayout();
+		toolbar.setWidth("31px");
+		toolbar.addComponent(panBtn);
+		toolbar.addComponent(selectBtn);
+		
 		AbsoluteLayout mapLayout = new AbsoluteLayout();
 
 		mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
 		mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
-		mapLayout.addComponent(semanticZoomLabel, "bottom: 10px; right: 10px; z-index: 2000;");
+		mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
 		mapLayout.addComponent(zoomInBtn, "top: 0px; left: 0px;");
 		mapLayout.addComponent(zoomOutBtn, "top: 0px; left: 25px");
 		mapLayout.setSizeFull();

@@ -61,14 +61,13 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -375,9 +374,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	@UiField
 	Element m_marquee;
 	
-	@UiField
-	HorizontalPanel m_toolBarPanel;
-	
 	/**
 	 * This map contains captions and icon urls for actions like: * "33_c" ->
 	 * "Edit" * "33_i" -> "http://dom.com/edit.png"
@@ -414,11 +410,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_svg, m_svgDragHandlerManager);
-		
-		for(ToggleButton btn : m_svgDragHandlerManager.getDragControlsButtons()) {
-		    m_toolBarPanel.add(btn);
-		}
-		
 		
 		D3Behavior dragBehavior = new D3Behavior() {
 
@@ -743,6 +734,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		setActionKeys(uidl.getStringArrayAttribute("backgroundActions"));
 		setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
 		setFitToView(uidl.getBooleanAttribute("fitToView"));
+		setActiveTool(uidl.getStringAttribute("activeTool"));
 
 		UIDL graph = uidl.getChildByTagName("graph");
 		Iterator<?> children = graph.getChildIterator();
@@ -832,7 +824,17 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 
-	private void setFitToView(boolean fitToView) {
+	private void setActiveTool(String toolname) {
+	    if(toolname.equals("pan")) {
+	        m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
+	        getSVGElement().getStyle().setCursor(Cursor.MOVE);
+	    }else if(toolname.equals("select")) {
+	        m_svgDragHandlerManager.setCurrentDragHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY);
+	        getSVGElement().getStyle().setCursor(Cursor.CROSSHAIR);
+	    }
+    }
+
+    private void setFitToView(boolean fitToView) {
 	    m_fitToView  = fitToView;
     }
 	
@@ -878,7 +880,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 	}
 
 	private void setScale(double scale, int clientX, int clientY) {
-		if(m_scale != scale) {
+	    if(m_scale != scale) {
 			double oldScale = m_scale;
 			m_scale = scale;
 			repaintScale(oldScale, clientX, clientY);
@@ -935,16 +937,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		p.setX(cx);
 		p.setY(cy);
 		p = p.matrixTransform(g.getCTM().inverse());
-		//consoleLog(g.getCTM());
-		//consoleLog(g.getCTM().inverse());
 		SVGMatrix m = svg.createSVGMatrix()
 				.translate(p.getX(),p.getY())
 				 .scale(zoomFactor)
 				.translate(-p.getX(), -p.getY());
 		SVGMatrix ctm = g.getCTM().multiply(m);
-		consoleLog("getCTM");
-		consoleLog(ctm);
-		consoleLog(g.getCTM().multiply(m));
 		D3.d3().select(m_svgViewPort).transition().duration(1000).attr("transform", matrixTransform(ctm));
 
 	}
@@ -1098,13 +1095,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                    
         String transformVal = matrixTransform(transform);
         
+        double strokeWidth = 2 * (1/scale);
+        D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
+        
         D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
             
             @Override
             public void call() {
-                //TODO: uncomment the line below and when you change the layout the first click on the backgroun will scale again.
-                
-                //setMapScaleNow(scale);
+                setMapScaleNow(scale);
                 
             }
         });
@@ -1119,9 +1117,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
             GWTVertex vertex = vertices.get(i);
             
             if(fitToView || vertex.isSelected()) {
-                double vertexX = vertex.getX();//vertexCTM.getE();
-                double vertexY = vertex.getY(); //vertexCTM.getF();
-                consoleLog("(" + vertexX + "," + vertexY+")");
+                double vertexX = vertex.getX();
+                double vertexY = vertex.getY();
                 rect.addPoint(new Point(vertexX, vertexY));
             }
         }
@@ -1130,10 +1127,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     }
     
     private void setMapScaleNow(double scale) {
-        m_client.updateVariable(m_paintableId, "mapScale", scale, true);
+        setMapScale(scale, true);
     }
     
     private void setMapScale(double scale, boolean immediate) {
+        m_scale = scale;
         m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
     }
 

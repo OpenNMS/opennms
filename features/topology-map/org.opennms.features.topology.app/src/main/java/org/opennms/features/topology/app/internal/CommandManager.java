@@ -149,16 +149,14 @@ public class CommandManager {
 	}
 
 	MenuBar getMenuBar(SimpleGraphContainer graphContainer, Window mainWindow) {
-		OperationContext opContext = new DefaultOperationContext(mainWindow,
-				graphContainer);
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
 		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
 
 		for (Command command : getCommandList()) {
 			String menuPosition = command.getMenuPosition();
-			MenuBar.Command menuCommand = menuCommand(command, graphContainer,
-					mainWindow, opContext);
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
 			updateCommandToOperationMap(command, menuCommand);
 			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
 		}
@@ -283,8 +281,7 @@ public class CommandManager {
 	}
 
 	public void onBind(Operation operation, Map<String, String> props) {
-		OperationCommand operCommand = new OperationCommand(null, operation,
-				props);
+		OperationCommand operCommand = new OperationCommand(null, operation, props);
 		addCommand(operCommand);
 	}
 
@@ -363,18 +360,21 @@ public class CommandManager {
 	public void updateMenuItem(MenuItem menuItem, SimpleGraphContainer graphContainer, Window mainWindow) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
-
-		boolean visibility = operation.display(graphContainer.getSelectedVertices(), operationContext);
-		menuItem.setVisible(visibility);
-		boolean enabled = operation.enabled(graphContainer.getSelectedVertices(), operationContext);
-		menuItem.setEnabled(enabled);
-
-		if (operation instanceof CheckedOperation) {
-			if (!menuItem.isCheckable()) {
-				menuItem.setCheckable(true);
-			}
-
-			menuItem.setChecked(((CheckedOperation) operation).isChecked(graphContainer.getSelectedVertices(), operationContext));
+		
+		//Check for null because separators have no Operation
+		if(operation != null) {
+    		boolean visibility = operation.display(graphContainer.getSelectedVertices(), operationContext);
+    		menuItem.setVisible(visibility);
+    		boolean enabled = operation.enabled(graphContainer.getSelectedVertices(), operationContext);
+    		menuItem.setEnabled(enabled);
+    
+    		if (operation instanceof CheckedOperation) {
+    			if (!menuItem.isCheckable()) {
+    				menuItem.setCheckable(true);
+    			}
+    
+    			menuItem.setChecked(((CheckedOperation) operation).isChecked(graphContainer.getSelectedVertices(), operationContext));
+    		}
 		}
 	}
 
