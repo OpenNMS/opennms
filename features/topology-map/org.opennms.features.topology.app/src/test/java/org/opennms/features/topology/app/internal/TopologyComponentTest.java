@@ -301,6 +301,7 @@ public class TopologyComponentTest {
         target.addAttribute("clientX", 0);
         target.addAttribute("clientY", 0);
         target.addAttribute("semanticZoomLevel", 0);
+        target.addAttribute("activeTool", "pan");
         target.addAttribute("panToSelection", false);
         target.addAttribute("fitToView", true);
         target.addAttribute(EasyMock.eq("backgroundActions"), EasyMock.aryEq(new Object[0]));
