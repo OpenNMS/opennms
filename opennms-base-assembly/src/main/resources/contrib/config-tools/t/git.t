@@ -82,3 +82,12 @@ for my $change (@changes) {
 $git->commit('add a file, remove a file');
 @changes = $git->get_modifications();
 is(scalar(@changes), 0);
+
+unlink('target/git-test/repo/added.txt');
+write_file('target/git-test/repo/monkey.txt');
+write_file('target/git-test/repo/new.txt', {append => 1}, "/nsomething else\n");
+@changes = $git->get_modifications();
+is(scalar(@changes), 3);
+$git->commit_modifications('added a file, removed a file, modified a file');
+@changes = $git->get_modifications();
+is(scalar(@changes), 0);

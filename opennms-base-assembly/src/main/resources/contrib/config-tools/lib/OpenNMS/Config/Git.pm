@@ -342,6 +342,28 @@ sub commit {
 	return $self;
 }
 
+=head2 * commit_modifications($commit_message)
+
+Given a commit message, add any new or modified files, remove any deleted files,
+and then commit the changes to the git repository.
+
+=cut
+
+sub commit_modifications {
+	my $self = shift;
+	my $message = shift;
+	if (not defined $message) {
+		croak "You must specify a commit message!";
+	}	
+
+	for my $change ($self->get_modifications()) {
+		$change->exec();
+	}
+	$self->commit($message);
+
+	return $self;
+}
+
 =head2 * create_branch($new_branch_name, $existing_branch)
 
 Given a new branch name, and an existing branch name, create a new branch
