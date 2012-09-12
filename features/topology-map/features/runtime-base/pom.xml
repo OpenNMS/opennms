@@ -50,6 +50,17 @@
                     submenu.Default.groups=start,main,end,additions
                 </contents>
             </config>
+            <config>
+                <name>org.opennms.features.topology.app.icons</name>
+                <contents>
+                    # The following properties are mappings of vertex types to icons,
+		    # the icon must be a url.
+                    #
+                    # Prefix your url with theme:// to designate that url to the image is in the theme bundle
+		    # 
+                    server=theme://images/server.png 
+                </contents>
+            </config>
           </configs>
         </configuration>
       </plugin>
