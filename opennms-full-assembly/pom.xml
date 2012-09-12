@@ -283,6 +283,7 @@
       <classifier>web-inf</classifier>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.http-remoting</artifactId>
@@ -296,7 +297,6 @@
       <classifier>lib</classifier>
       <version>${project.version}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>

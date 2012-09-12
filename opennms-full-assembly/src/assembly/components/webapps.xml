@@ -98,6 +98,7 @@
     </dependencySet>
 
     <!-- Remoting webapp -->
+    <!--
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions>
@@ -113,7 +114,6 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
-      <!-- for jetty, just a few dependencies should go in WEB-INF/lib -->
       <unpack>true</unpack>
       <unpackOptions>
         <includes>
@@ -136,7 +136,6 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
-      <!-- for jetty, all other webapp dependencies should go in normal lib/ -->
       <unpack>true</unpack>
       <unpackOptions>
         <excludes>
@@ -157,7 +156,6 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
-<!--
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
@@ -167,7 +165,6 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
--->
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
@@ -179,5 +176,6 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
+    -->
   </dependencySets>
 </component>
