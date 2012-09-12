@@ -43,6 +43,7 @@ import java.util.Set;
 
 public abstract class MenuBuilder<T, K>{
 
+    private static final String TOP_LEVEL_ADDITIONS = "Additions";
 	protected LinkedHashMap<String, Object> m_menuBar = new LinkedHashMap<String, Object>();
 	private List<String> m_menuOrder = new ArrayList<String>();
 	private Map<String, List<String>> m_submenuOrderMap = new HashMap<String, List<String>>();
@@ -108,8 +109,8 @@ public abstract class MenuBuilder<T, K>{
 	            if(m_menuOrder.contains(menuName1)) {
 	                index1 = m_menuOrder.indexOf(menuName1);
 	            }else {
-	                if(m_menuOrder.contains("additions")) {
-	                    index1 = m_menuOrder.indexOf("additions");
+	                if(m_menuOrder.contains(TOP_LEVEL_ADDITIONS)) {
+	                    index1 = m_menuOrder.indexOf(TOP_LEVEL_ADDITIONS);
 	                }else {
 	                    index1 = m_menuOrder.size();
 	                }
@@ -118,8 +119,8 @@ public abstract class MenuBuilder<T, K>{
 	            if(m_menuOrder.contains(menuName2)) {
 	                index2 = m_menuOrder.indexOf(menuName2);
 	            }else {
-	                if(m_menuOrder.contains("additions")) {
-	                    index2 = m_menuOrder.indexOf("additions");
+	                if(m_menuOrder.contains(TOP_LEVEL_ADDITIONS)) {
+	                    index2 = m_menuOrder.indexOf(TOP_LEVEL_ADDITIONS);
 	                }else {
 	                    index2 = m_menuOrder.size();
 	                }
