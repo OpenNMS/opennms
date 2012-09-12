@@ -298,6 +298,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
+            System.err.println("containerItemSetChange called in GEdgeContainer");
             m_edgeHolder.update();
             removeAllItems();
             addAll(m_edgeHolder.getElements());
@@ -637,6 +638,7 @@ public class SimpleGraphContainer implements GraphContainer {
     }
     @Override
     public void redoLayout() {
+        System.err.println("redoLayout for simpleGraphContainer");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
             getVertexContainer().fireItemSetChange();

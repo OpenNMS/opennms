@@ -31,7 +31,9 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -266,54 +268,61 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     private void loadtopology() {
         log("loadtopology: loading topology");
-        LinkdVertexContainer vertexContainer = new LinkdVertexContainer();
-        BeanContainer<String, LinkdEdge> edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
-        edgeContainer.setBeanIdProperty("id");
+        Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
+        Collection<LinkdEdge> edges = new ArrayList<LinkdEdge>();
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
+            log("parsing link: " + link.getDataLinkInterfaceId());
+
             OnmsNode node = m_nodeDao.get(link.getNode().getId());
             log("found node: " + node.getLabel());
             String sourceId = node.getNodeId();
             LinkdVertex source;
-            BeanItem<LinkdVertex> item = vertexContainer.getItem(sourceId);
-            if (item == null) {
+            if ( vertexes.containsKey(sourceId)) {
+                source = vertexes.get(sourceId);
+            } else {
+                log("adding source as vertex: " + node.getLabel());
                 source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-                vertexContainer.addBean( source);
-            }
-            else {
-                source = item.getBean();
+                vertexes.put(sourceId, source);
             }
 
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
             log("found parentnode: " + parentNode.getLabel());
                        String targetId = parentNode.getNodeId();
             LinkdVertex target;
-            item = vertexContainer.getItem(targetId);
-            if (item == null) {
-                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
-                vertexContainer.addBean(target);                    
+            if (vertexes.containsKey(targetId)) {
+                target = vertexes.get(targetId);
             } else {
-                target = item.getBean();
+                log("adding target as vertex: " + parentNode.getLabel());
+                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
+                vertexes.put(targetId, target);
             }            
-            edgeContainer.addBean(new LinkdEdge(link.getDataLinkInterfaceId(),source,target));
+            edges.add(new LinkdEdge(link.getDataLinkInterfaceId(),source,target));
         }
         
         if (isAddNodeWithoutLink()) {
-            for (OnmsNode node: m_nodeDao.findAll()) {
-                log("parsing node: " + node.getLabel());
-                String nodeId = node.getNodeId();
+            log("isAddNodeWithoutLink: " + isAddNodeWithoutLink() + ". Parsing all the nodes...");
+            for (OnmsNode onmsnode: m_nodeDao.findAll()) {
+                log("parsing node: " + onmsnode.getLabel());
+                String nodeId = onmsnode.getNodeId();
                 LinkdVertex linklessnode;
-                BeanItem<LinkdVertex> item = vertexContainer.getItem(nodeId);
-                if (item == null) {
-                    log("adding linklessnode: " + node.getLabel());
-                    linklessnode = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-                    vertexContainer.addBean(linklessnode);
+                if (!vertexes.containsKey(nodeId)) {
+                    log("adding linklessnode: " + onmsnode.getLabel());
+                    linklessnode = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), getAddress(onmsnode));
+                    vertexes.put(nodeId,linklessnode);
                 }                
             }
         }
-        m_vertexContainer.removeAllItems();
-        m_vertexContainer=vertexContainer;
+        
+        log("Clean EdgeContainer");
         m_edgeContainer.removeAllItems();
-        m_edgeContainer=edgeContainer;
+        log("Clean Vertexcontainer");
+        m_vertexContainer.removeAllItems();
+
+        log("Found Vertexes: #" + vertexes.size());
+        m_vertexContainer.addAll(vertexes.values());
+        
+        log("Found Edges: #" + edges.size());
+        m_edgeContainer.addAll(edges);        
     }
 
     protected String getIconName(OnmsNode node) {

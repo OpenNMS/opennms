@@ -44,8 +44,10 @@ public class RefreshOperation implements Operation {
 
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
-            log("refresh linkd topology");
+            log("executing linkd topology refresh operation");
             m_topologyProvider.load(null);
+            if (operationContext != null && operationContext.getGraphContainer() != null)
+                operationContext.getGraphContainer().setDataSource(m_topologyProvider);
             return null;
     }
 

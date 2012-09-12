@@ -35,6 +35,8 @@ import java.util.List;
 import org.junit.Assert;
 
 import org.easymock.EasyMock;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -44,6 +46,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.xml.event.Operaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -84,6 +87,12 @@ public class EasyMockDataPopulator {
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
+    
+    @Autowired
+    private OperationContext m_operationContext;
+    
+    @Autowired
+    private GraphContainer m_graphContainer;
     
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -280,9 +289,13 @@ public class EasyMockDataPopulator {
             EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
         }
 
+//        EasyMock.expect(m_operationContext.getGraphContainer()).andReturn(m_graphContainer).anyTimes();
+//        EasyMock.expectLastCall().anyTimes();
         EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_ipInterfaceDao);
+//        EasyMock.replay(m_operationContext);
+//        EasyMock.replay(m_graphContainer);
     }
     
     public OnmsNode getNode(Integer id) {
@@ -469,5 +482,21 @@ public class EasyMockDataPopulator {
 
     public void setNodes(List<OnmsNode> nodes) {
         m_nodes = nodes;
+    }
+
+    public OperationContext getOperationContext() {
+        return m_operationContext;
+    }
+
+    public void setOperationContext(OperationContext operationContext) {
+        m_operationContext = operationContext;
+    }
+
+    public GraphContainer getGraphContainer() {
+        return m_graphContainer;
+    }
+
+    public void setGraphContainer(GraphContainer graphContainer) {
+        m_graphContainer = graphContainer;
     }
 }
