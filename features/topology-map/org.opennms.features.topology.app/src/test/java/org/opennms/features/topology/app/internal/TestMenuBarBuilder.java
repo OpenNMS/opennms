@@ -138,6 +138,7 @@ public class TestMenuBarBuilder {
     @Test
     public void submenuAlphabeticalOrderTest() {
         CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("File", Arrays.asList("new", "additions"));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation1?group=new", ""));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation3", ""));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation4", ""));
