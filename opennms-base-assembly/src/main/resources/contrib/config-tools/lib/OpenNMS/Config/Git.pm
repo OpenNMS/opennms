@@ -1,3 +1,62 @@
+package OpenNMS::Config::Git::Change;
+
+use strict;
+use warnings;
+use Carp;
+
+sub new {
+	my $proto = shift;
+	my $class = ref($proto) || $proto;
+
+	my $self = {
+		FILE => shift,
+		GIT  => shift,
+	};
+
+	if (not defined $self->{GIT}) {
+		croak "You must specify a file and Git object when creating a $class object!";
+	}
+
+	bless($self, $class);
+	return $self;
+}
+
+sub _git {
+	my $self = shift;
+	return $self->{GIT};
+}
+
+sub file {
+	my $self = shift;
+	return $self->{FILE};
+}
+
+sub exec {
+	croak "You must implement the exec method in your subclass!"
+}
+
+package OpenNMS::Config::Git::Add;
+
+use strict;
+use warnings;
+use base qw(OpenNMS::Config::Git::Change);
+
+sub exec {
+	my $self = shift;
+	$self->_git()->add($self->file());
+}
+
+package OpenNMS::Config::Git::Remove;
+
+use strict;
+use warnings;
+use base qw(OpenNMS::Config::Git::Change);
+
+sub exec {
+	my $self = shift;
+	$self->_git()->rm($self->file());
+}
+
 package OpenNMS::Config::Git;
 
 use 5.008008;
@@ -187,13 +246,14 @@ sub get_index_status {
 	return $STATES->{$status};
 }
 
-=head2 * get_modified_files()
+=head2 * get_modifications()
 
-Get a list of all modified files in the working tree.
+Get a list of OpenNMS::Config::Git::Change objects representing all
+modified files in the working tree.
 
 =cut
 
-sub get_modified_files {
+sub get_modifications {
 	my $self = shift;
 	
 	my @entries;
@@ -201,8 +261,20 @@ sub get_modified_files {
 		@entries = $self->_git()->command('status', '--porcelain');
 	} "Error \%d while running git status on the working tree: \%s";
 
-	@entries = List::MoreUtils::apply { s/^.. // } @entries;
-	return sort(@entries);
+	my @results;
+	for my $entry (@entries) {
+		if ($entry =~ /^(.)(.) (.*)$/) {
+			my ($index, $working, $filename) = ($1, $2, $3);
+			if ($working eq 'D') {
+				push(@results, OpenNMS::Config::Git::Remove->new($filename, $self));
+			} else {
+				push(@results, OpenNMS::Config::Git::Add->new($filename, $self));
+			}
+		} else {
+			print STDERR "unable to parse $entry\n";
+		}
+	}
+	return sort { $a->file() cmp $b->file() } @results;
 }
 
 =head2 * add(@files_and_directories)
@@ -219,6 +291,27 @@ sub add {
 	git_cmd_try {
 		$self->_git()->command('add', @files);
 	} "Error \%d while adding " . scalar(@files) . " files or directories: \%s";
+
+	return $self;
+}
+
+=head2 * rm($file)
+
+Given a file, remove it from the git index.
+
+=cut
+
+sub rm {
+	my $self = shift;
+	my $file = shift;
+	
+	if (not defined $file) {
+		croak "You must specify a file to remove!";
+	}
+	
+	git_cmd_try {
+		$self->_git()->command('rm', $file);
+	} "Error \%d while removing $file from the git index: \%s";
 
 	return $self;
 }

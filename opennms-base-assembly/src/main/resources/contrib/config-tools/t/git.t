@@ -33,10 +33,10 @@ is($git->get_index_status("new.txt"), 'new');
 write_file('target/git-test/repo/untracked.txt', 'This file is untracked.');
 is($git->get_index_status('untracked.txt'), 'untracked');
 
-my @files = $git->get_modified_files();
-is(scalar(@files), 2, "files = (" . join(', ', @files) . ")");
-is($files[0], "new.txt");
-is($files[1], "untracked.txt");
+my @changes = $git->get_modifications();
+is(scalar(@changes), 2);
+is($changes[0]->file(), "new.txt");
+is($changes[1]->file(), "untracked.txt");
 
 eval {
 	$git->commit();
@@ -46,9 +46,10 @@ ok($@);
 
 $git->commit("adding new.txt");
 is($git->get_index_status("new.txt"), 'unchanged');
-@files = $git->get_modified_files();
-is(scalar(@files), 1);
-is($files[0], 'untracked.txt');
+@changes = $git->get_modifications();
+is(scalar(@changes), 1);
+is($changes[0]->file(), 'untracked.txt');
+ok($changes[0]->isa('OpenNMS::Config::Git::Add'));
 
 $git->create_branch('master', 'pristine');
 is($git->get_branch_name(), 'pristine');
@@ -70,3 +71,14 @@ eval {
 	fail("yo dude, that tag should have existed");
 };
 ok($@);
+
+write_file('target/git-test/repo/added.txt');
+unlink('target/git-test/repo/untracked.txt');
+@changes = $git->get_modifications();
+is(scalar(@changes), 2);
+for my $change (@changes) {
+	$change->exec();
+}
+$git->commit('add a file, remove a file');
+@changes = $git->get_modifications();
+is(scalar(@changes), 0);
