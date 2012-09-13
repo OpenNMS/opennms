@@ -26,6 +26,21 @@ my $git = OpenNMS::Config::Git->new($etcdir);
 $git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
 
 my $current_branch = $git->get_branch_name();
+
+if ($current_branch eq $config->pristine_branch()) {
+	my @modifications = $git->get_modifications();
+	if (@modifications > 0) {
+		print STDERR "We are on the " . $config->pristine_branch() . " branch, but there are unexpected modifications! Something went wrong.";
+		for my $mod (@modifications) {
+			print STDERR "  modified: ", $mod->file(), "\n";
+		}
+		print STDERR "\n";
+		exit 1;
+	}
+	print "Already on pristine branch. Assuming it is safe to exit.";
+	exit 0;
+}
+
 if ($current_branch ne $config->runtime_branch()) {
 	croak "Expected " . $config->runtime_branch() . ' branch, but current branch is ' . $current_branch . '. Bailing.';
 }

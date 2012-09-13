@@ -3,7 +3,7 @@
 Name: o-test-feature-a
 Summary: Feature A
 Version: 1.0
-Release: 3
+Release: 4
 License: GPL
 Group: Applications/System
 BuildArch: noarch

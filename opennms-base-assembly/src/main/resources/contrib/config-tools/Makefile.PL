@@ -10,8 +10,9 @@ test_requires  'Test::More'         => undef;
 
 install_script 'script/git-metadata.pl';
 install_script 'script/git-setup.pl';
-install_script 'script/opennms-preinstall.pl';
-install_script 'script/opennms-postinstall.pl';
+install_script 'script/opennms-pretrans.pl';
+install_script 'script/opennms-post.pl';
+install_script 'script/opennms-posttrans.pl';
 
 #install_share 'share';
 

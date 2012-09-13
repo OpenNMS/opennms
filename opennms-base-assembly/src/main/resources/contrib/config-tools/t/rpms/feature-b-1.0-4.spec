@@ -1,9 +1,9 @@
 %define OPENNMS_HOME /opt/opennms
 
-Name: o-test-feature-a
-Summary: Feature A
+Name: o-test-feature-b
+Summary: Feature B
 Version: 1.0
-Release: 3
+Release: 4
 License: GPL
 Group: Applications/System
 BuildArch: noarch
@@ -11,14 +11,14 @@ BuildRoot: /var/tmp/%{name}-buildroot
 
 Requires(pretrans): /bin/sh
 Requires(pre): o-test-feature-init >= 1.0-1
+Requires(pre): o-test-feature-a >= %{version}-%{release}
 
 %description
 This is a test feature.
 
 %install
 install -d $RPM_BUILD_ROOT/opt/opennms/etc
-echo -e "%{name}-%{version}-%{release}\n\n" > $RPM_BUILD_ROOT/opt/opennms/etc/testfile.conf
-touch "$RPM_BUILD_ROOT%{OPENNMS_HOME}/etc/postinstall-%{version}-%{release}"
+echo -e "%{name}-%{version}-%{release}\n\n" > $RPM_BUILD_ROOT/opt/opennms/etc/b.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT

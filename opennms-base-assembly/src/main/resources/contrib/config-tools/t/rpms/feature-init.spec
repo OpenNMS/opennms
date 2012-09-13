@@ -30,6 +30,8 @@ make
 make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="perl"
 install -d -m 755 "$RPM_BUILD_ROOT%{TOOLDIR}"
 mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT%{TOOLDIR}/"
+cd "$RPM_BUILD_ROOT%{TOOLDIR}"
+ln -s opennms-pretrans.pl opennms-pre.pl
 
 %clean
 rm -rf "$RPM_BUILD_ROOT"
