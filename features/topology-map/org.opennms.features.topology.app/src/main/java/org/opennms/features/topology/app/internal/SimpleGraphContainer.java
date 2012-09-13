@@ -268,15 +268,15 @@ public class SimpleGraphContainer implements GraphContainer {
         
 		public void setTopologyProvider(TopologyProvider provider) {
 			if (topologyProvider != null) {
-				topologyProvider.getVertexContainer().removeListener((ItemSetChangeListener)this);
-	            topologyProvider.getVertexContainer().removeListener((PropertySetChangeListener)this);
+				topologyProvider.getEdgeContainer().removeListener((ItemSetChangeListener)this);
+	            topologyProvider.getEdgeContainer().removeListener((PropertySetChangeListener)this);
 			}
 			
 			topologyProvider = provider;
 			
 			if (topologyProvider != null) {
-				topologyProvider.getVertexContainer().addListener((ItemSetChangeListener)this);
-				topologyProvider.getVertexContainer().addListener((PropertySetChangeListener)this);
+				topologyProvider.getEdgeContainer().addListener((ItemSetChangeListener)this);
+				topologyProvider.getEdgeContainer().addListener((PropertySetChangeListener)this);
 			}
 			
 			removeAllItems();
@@ -421,7 +421,7 @@ public class SimpleGraphContainer implements GraphContainer {
             removedContainerVertices.removeAll(newVertices);
             
             for(GVertex v : removedContainerVertices) {
-                removeItem(v.getItemId());
+                removeItem(v.getKey());
             }
             updateAll(newVertices);
             addAll(newContainerVertices);
