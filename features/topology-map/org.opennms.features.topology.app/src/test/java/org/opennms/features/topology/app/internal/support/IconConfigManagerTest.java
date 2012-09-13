@@ -38,11 +38,6 @@ import org.junit.Test;
 public class IconConfigManagerTest {
 
     @Test
-    public void test() {
-        fail("Not yet implemented");
-    }
-    
-    @Test
     public void testParseConfig() {
         Dictionary<Object,Object> props = new Properties();
         props.put("type1", "file1.png");
