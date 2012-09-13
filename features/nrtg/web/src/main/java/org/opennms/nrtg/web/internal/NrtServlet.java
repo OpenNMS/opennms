@@ -59,7 +59,7 @@ public class NrtServlet extends HttpServlet {
             m_controller.nrtCollectionJobTrigger(req.getParameter("nrtCollectionTaskId"), httpSession);
 
             if ("true".equals(req.getParameter("poll"))) {
-                resp.getOutputStream().println(m_controller.getMessagesForDestination(req.getParameter("nrtCollectionTaskId")));
+                resp.getOutputStream().println(m_controller.getMeasurementSetsForDestination(req.getParameter("nrtCollectionTaskId")));
             }
         } else if (req.getParameter("resourceId") != null && req.getParameter("report") != null) {
             ModelAndView modelAndView = m_controller.nrtStart(req.getParameter("resourceId"), req.getParameter("report"), httpSession);

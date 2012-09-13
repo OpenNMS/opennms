@@ -1,31 +1,23 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * You should have received a copy of the GNU General Public License along with OpenNMS(R). If not, see:
+ * http://www.gnu.org/licenses/
  *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * For more information contact: OpenNMS(R) Licensing <license@opennms.org> http://www.opennms.org/ http://www.opennms.com/
+ ******************************************************************************
+ */
 package org.opennms.nrtg.web.internal;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
@@ -42,9 +34,6 @@ import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MessageConversionException;
-import org.springframework.jms.support.converter.SimpleMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,8 +41,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,21 +50,17 @@ import java.util.*;
 
 /**
  * @author Markus Neumann
+ * @author Christian Pape
  */
 @Controller
 @RequestMapping("/nrt/starter.htm")
 public class NrtController {
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
-    private JmsTemplate m_jmsTemplate;
     private GraphDao m_graphDao;
     private ResourceDao m_resourceDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
-
-    private final SimpleMessageConverter simpleMessageConverter = new SimpleMessageConverter();
-
-    HashMap<String, Vector<String>> m_messageStore = new HashMap<String, Vector<String>>();
-    HashMap<String, Date> m_lastMessagePolled = new HashMap<String, Date>();
+    private NrtBroker m_nrtBroker = new NrtBrokerJms();
 
     @RequestMapping(method = RequestMethod.GET, params = {"nrtCollectionTaskId"})
     @ResponseStatus(HttpStatus.OK)
@@ -91,7 +74,7 @@ public class NrtController {
             CollectionJob collectionJob = nrtCollectionTasks.get(nrtCollectionTaskId);
             logger.debug("CollectionJob is '{}'", collectionJob);
             if (collectionJob != null) {
-                publishCollectionJobViaJms(collectionJob);
+                m_nrtBroker.publishCollectionJob(collectionJob);
                 logger.debug("collectionJob was sent!");
             } else {
                 logger.debug("collectionJob for collectionTask not found in session '{}'", nrtCollectionTaskId);
@@ -99,10 +82,21 @@ public class NrtController {
         } else {
             logger.debug("No CollectionTasks map in session found.");
         }
+    }
+    
+    public String getMeasurementSetsForDestination(String nrtCollectionTaskId) {
+        List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
 
-        receiveMessagesForDestination(nrtCollectionTaskId);
-
-        housekeeping();
+        StringBuffer buffer = new StringBuffer();
+        
+        for(MeasurementSet measurementSet : measurementSets) {
+            if (buffer.length() > 0) {
+                buffer.append(", ");
+            }
+            buffer.append(measurementSet.toString());
+        }
+        
+        return "[" + buffer.toString() + "]";
     }
 
     @SuppressWarnings("unchecked")
@@ -120,8 +114,6 @@ public class NrtController {
 
     @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
-
-        logger.debug("JmsTemplate '{}'", m_jmsTemplate);
 
         assert (resourceId != null);
         logger.debug("resourceId: '{}'", resourceId);
@@ -162,7 +154,7 @@ public class NrtController {
             collectionJob.addMetric(prefabGraph.getMetricIds()[i], resultDestinations);
         }
         logger.debug("CollectionJob '{}'", collectionJob.toString());
-        this.publishCollectionJobViaJms(collectionJob);
+        m_nrtBroker.publishCollectionJob(collectionJob);
 
         //Check if there is a NrtCollectionTasks map in the session already 
         getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
@@ -248,12 +240,6 @@ public class NrtController {
         prefabGraph.setMetricIds(metrics);
     }
 
-    private void publishCollectionJobViaJms(CollectionJob collectionJob) {
-        logger.debug("JmsTemplate '{}'", m_jmsTemplate);
-        m_jmsTemplate.convertAndSend("NrtCollectMe", collectionJob);
-//        logger.error("Jms publishing of CollectionJobs not implemented yet: '{}'", collectionJob);
-    }
-
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
@@ -267,102 +253,11 @@ public class NrtController {
         m_snmpAgentConfigFactory = snmpAgentConfigFactory;
     }
 
-    public void setJmsTemplate(JmsTemplate jmsTemplate) {
-        m_jmsTemplate = jmsTemplate;
+    public NrtBroker getNrtBroker() {
+        return m_nrtBroker;
     }
 
-    public String getMessagesForDestination(String destination) {
-        StringBuffer buffer = new StringBuffer("");
-
-        synchronized (m_messageStore) {
-            if (m_messageStore.containsKey(destination)) {
-                Vector<String> vector = m_messageStore.get(destination);
-
-                for (String message : vector) {
-                    if (buffer.length() > 0)
-                        buffer.append(", ");
-
-                    buffer.append(message);
-                }
-
-                m_messageStore.put(destination, new Vector<String>());
-
-                return "[" + buffer.toString() + "]";
-            } else {
-                return "[]";
-            }
-        }
-    }
-
-    public void housekeeping() {
-        Date now = new Date();
-        for (String destination : m_messageStore.keySet()) {
-            if (!m_lastMessagePolled.containsKey(destination)) {
-                // this should not happen
-                m_lastMessagePolled.put(destination, new Date());
-            } else {
-                Date lastMessage = m_lastMessagePolled.get(destination);
-                long diff = now.getTime() - lastMessage.getTime();
-                if (diff > 600000) {
-                    synchronized (m_messageStore) {
-                        m_messageStore.remove(destination);
-                        m_lastMessagePolled.remove(destination);
-                    }
-                }
-            }
-        }
-    }
-
-    public void receiveMessagesForDestination(String destination) {
-        synchronized (m_messageStore) {
-            if (!m_messageStore.containsKey(destination)) {
-                m_messageStore.put(destination, new Vector<String>());
-                m_lastMessagePolled.put(destination, new Date());
-            }
-        }
-
-        m_jmsTemplate.setReceiveTimeout(125);
-
-        Message message = m_jmsTemplate.receive(destination);
-
-        while (message != null) {
-            addMessageForDestination(message, destination);
-            message = m_jmsTemplate.receive(destination);
-        }
-
-        m_lastMessagePolled.put(destination, new Date());
-
-        /*
-        for (String destination : m_destinationSet) {
-            Message message = m_jmsTemplate.receive(destination);
-
-            while (message != null) {
-                addMessageForDestination(message, destination);
-                message = m_jmsTemplate.receive(destination);
-            }
-        }
-        */
-    }
-
-    // @Override
-    public void addMessageForDestination(Message message, String destination) {
-        try {
-            MeasurementSet measurementSet = (MeasurementSet) simpleMessageConverter.fromMessage(message);
-
-            synchronized (m_messageStore) {
-                if (!m_messageStore.containsKey(destination))
-                    m_messageStore.put(destination, new Vector<String>());
-
-                Vector<String> vector = m_messageStore.get(destination);
-
-                vector.add(measurementSet.toString());
-            }
-        } catch (JMSException ex) {
-            logger.error(ex.getMessage());
-            // FIXME react, don't continue
-        } catch (MessageConversionException ex) {
-            logger.error(ex.getMessage());
-            // FIXME react, don't continue
-        }
+    public void setNrtBroker(NrtBroker nrtBroker) {
+        this.m_nrtBroker = nrtBroker;
     }
 }
