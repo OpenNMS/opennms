@@ -115,7 +115,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     public void onInit() {
-        log("init: loading topology v0.4");
+        log("init: loading topology v1.0");
         loadtopology();
     }
     
@@ -287,9 +287,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
         log("Clean Vertexcontainer");
-        m_vertexContainer.removeAllItems();
+        getVertexContainer().removeAllItems();
         log("Clean EdgeContainer");
-        m_edgeContainer.removeAllItems();
+        getEdgeContainer().removeAllItems();
 
         
         Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
@@ -343,6 +343,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             SimpleGraph graph = getGraphFromFile(configFile);
             for (LinkdVertex vertex: graph.m_vertices) {
                 if (!vertex.isLeaf()) {
+                    m_groupCounter++;
                     LinkdGroup group = (LinkdGroup) vertex;
                     for (LinkdVertex vx: group.getMembers()) {
                         if (vx.isLeaf() && !vertexes.containsKey(vx.getId()))
@@ -353,10 +354,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
             }
         }
         
-        log("Found Vertexes: #" + vertexes.size());
-        m_vertexContainer.addAll(vertexes.values());
-        
+        log("Found Vertexes: #" + vertexes.size());        
         log("Found Edges: #" + edges.size());
+        log("Found Groups: #" + m_groupCounter);
+        
+        m_vertexContainer.addAll(vertexes.values());
         m_edgeContainer.addAll(edges);        
     }
 

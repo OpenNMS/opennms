@@ -28,45 +28,59 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
+import static org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.GROUP_ICON_KEY;
 import java.util.List;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
+import org.opennms.features.topology.api.TopologyProvider;
 
-public class SaveOperation implements Operation {
+public class CreateGroupOperation implements Operation {
 
-    LinkdTopologyProvider m_linkdTopologyProvider;
-    public SaveOperation(LinkdTopologyProvider topologyProveder) {
-        m_linkdTopologyProvider=topologyProveder;
+    TopologyProvider m_topologyProvider;
+    public CreateGroupOperation(TopologyProvider topologyProveder) {
+        m_topologyProvider=topologyProveder;
     }
 
     @Override
     public Undoer execute(List<Object> targets,
             OperationContext operationContext) {
-        if (targets != null && !targets.isEmpty() )
-            m_linkdTopologyProvider.save((String) targets.get(0));
+        if (targets != null && !targets.isEmpty() ) {
+            
+            // First add the Group
+            Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
+            
+            GraphContainer graphContainer = operationContext.getGraphContainer();
+
+            // Second add the beans to the group
+            for(Object key : targets) {
+                Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
+                m_topologyProvider.setParent(vertexId, groupId);
+            }
+            // Do layout
+            operationContext.getGraphContainer().redoLayout();
+            // save the topology for persisting the change
+            m_topologyProvider.save(null);
+        }
         return null;
     }
 
     @Override
     public boolean display(List<Object> targets,
             OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public boolean enabled(List<Object> targets,
             OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return "LinkdCreateGroupOperation";
     }
 
 }
