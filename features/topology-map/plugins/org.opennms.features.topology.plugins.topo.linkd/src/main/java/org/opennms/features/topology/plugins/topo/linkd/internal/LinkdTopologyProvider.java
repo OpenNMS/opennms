@@ -59,12 +59,24 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd-group";
     public static final String SERVER_ICON_KEY = "linkd-server";
 
+    boolean addNodeWithoutLink = true;
+    
     DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
     NodeDao m_nodeDao;
     
     IpInterfaceDao m_ipInterfaceDao;
     
+    String m_configurationFile;
+    
+    public String getConfigurationFile() {
+        return m_configurationFile;
+    }
+
+    public void setConfigurationFile(String configurationFile) {
+        m_configurationFile = configurationFile;
+    }
+
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
@@ -73,7 +85,13 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
-    boolean addNodeWithoutLink = true;
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
     
     public boolean isAddNodeWithoutLink() {
         return addNodeWithoutLink;
@@ -96,16 +114,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
     public void onInit() {
-        log("init: loading topology");
+        log("init: loading topology v0.4");
         loadtopology();
     }
     
@@ -259,15 +269,29 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
 
     }
+
+    private SimpleGraph getGraphFromFile(File file) {
+        return JAXB.unmarshal(file, SimpleGraph.class);
+    }
+
     private void loadfromfile(String filename) {
-        SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
-        
-        m_vertexContainer.addAll(graph.m_vertices);        
-        m_edgeContainer.addAll(graph.m_edges);
+        File file = new File(filename);
+        if (file.exists() && file.canRead()) {
+            SimpleGraph graph = getGraphFromFile(file);        
+            m_vertexContainer.addAll(graph.m_vertices);        
+            m_edgeContainer.addAll(graph.m_edges);
+        }
     }
     
     private void loadtopology() {
-        log("loadtopology: loading topology");
+        log("loadtopology: loading topology: configFile:" + m_configurationFile);
+        
+        log("Clean Vertexcontainer");
+        m_vertexContainer.removeAllItems();
+        log("Clean EdgeContainer");
+        m_edgeContainer.removeAllItems();
+
+        
         Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
         Collection<LinkdEdge> edges = new ArrayList<LinkdEdge>();
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
@@ -313,11 +337,22 @@ public class LinkdTopologyProvider implements TopologyProvider {
             }
         }
         
-        log("Clean EdgeContainer");
-        m_edgeContainer.removeAllItems();
-        log("Clean Vertexcontainer");
-        m_vertexContainer.removeAllItems();
+        File configFile = new File(m_configurationFile);
 
+        if (configFile.exists() && configFile.canRead()) {
+            SimpleGraph graph = getGraphFromFile(configFile);
+            for (LinkdVertex vertex: graph.m_vertices) {
+                if (!vertex.isLeaf()) {
+                    LinkdGroup group = (LinkdGroup) vertex;
+                    for (LinkdVertex vx: group.getMembers()) {
+                        if (vx.isLeaf() && !vertexes.containsKey(vx.getId()))
+                            group.removeMember(vx);
+                    }
+                    vertexes.put(group.getId(), group);
+                }
+            }
+        }
+        
         log("Found Vertexes: #" + vertexes.size());
         m_vertexContainer.addAll(vertexes.values());
         
@@ -341,6 +376,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     @Override
     public void save(String filename) {
+        if (filename == null) 
+            filename=m_configurationFile;
         List<LinkdVertex> vertices = getBeans(m_vertexContainer);
         List<LinkdEdge> edges = getBeans(m_edgeContainer);
 
