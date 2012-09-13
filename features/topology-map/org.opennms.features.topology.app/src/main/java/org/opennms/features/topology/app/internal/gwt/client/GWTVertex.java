@@ -231,31 +231,38 @@ public class GWTVertex extends JavaScriptObject {
                     @Override
                     public void onBrowserEvent(Event event) {
                         if(Event.ONLOAD == event.getTypeInt()) {
-                            String width = img.getWidth() + "px";
-                            String height = img.getHeight() + "px";
-                            String x = "-" + img.getWidth()/2 + "px";
-                            String y = "-" + img.getHeight()/2 + "px";
+                            
+                            double widthRatio = 50.0/img.getWidth();
+                            double heightRatio = 50.0/img.getHeight();
+                            double scaleFactor = Math.min(widthRatio, heightRatio);
+                            int width = (int) (img.getWidth() * scaleFactor);
+                            int height = (int) (img.getHeight() * scaleFactor);
+                            
+                            String strWidth = width + "px";
+                            String strHeight = height + "px";
+                            String x = "-" + width/2 + "px";
+                            String y = "-" + height/2 + "px";
                             
                             Element imgElem = D3.getElement(imageSelection, index);
-                            imgElem.setAttribute("width", width);
-                            imgElem.setAttribute("height", height);
+                            imgElem.setAttribute("width", strWidth);
+                            imgElem.setAttribute("height", strHeight);
                             imgElem.setAttribute("x", x);
                             imgElem.setAttribute("y", y);
                             
                             Element rectElem = D3.getElement(rectSelection, index);
                             rectElem.setAttribute("class", "highlight");
                             rectElem.setAttribute("fill", "yellow");
-                            rectElem.setAttribute("x", -(img.getWidth()/2 + 5) + "px");
-                            rectElem.setAttribute("y", -(img.getHeight()/2 + 5) + "px");
-                            rectElem.setAttribute("width", (img.getWidth() + 10) + "px" );
-                            rectElem.setAttribute("height", (img.getHeight() + 10) + "px");
+                            rectElem.setAttribute("x", -(width/2 + 5) + "px");
+                            rectElem.setAttribute("y", -(height/2 + 5) + "px");
+                            rectElem.setAttribute("width", (width + 10) + "px" );
+                            rectElem.setAttribute("height", (height + 10) + "px");
                             rectElem.setAttribute("opacity", "0");
                             
                             textSelection.text(label());
                             Element textElem = D3.getElement(textSelection, index);
                             textElem.setAttribute("class", "vertex-label");
                             textElem.setAttribute("x", "0px");
-                            textElem.setAttribute("y",  "" + (img.getHeight()/2 + 5) + "px");
+                            textElem.setAttribute("y",  "" + (height/2 + 5) + "px");
                             textElem.setAttribute("text-anchor", "middle");
                             textElem.setAttribute("alignment-baseline", "text-before-edge");
                             
