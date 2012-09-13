@@ -35,7 +35,8 @@ mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT%{TOOLDIR}/"
 rm -rf "$RPM_BUILD_ROOT"
 
 %post
-"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}"
+echo "%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2
+"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2
 
 %files
 %{_prefix}

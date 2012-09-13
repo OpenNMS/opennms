@@ -356,7 +356,10 @@ sub commit_modifications {
 		croak "You must specify a commit message!";
 	}	
 
-	for my $change ($self->get_modifications()) {
+	my @modifications = $self->get_modifications();
+	if (@modifications == 0) { return $self; }
+
+	for my $change (@modifications) {
 		$change->exec();
 	}
 	$self->commit($message);

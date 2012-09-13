@@ -67,12 +67,9 @@ failovermethod=priority
 gpgcheck=0
 END
 
-#copy("/etc/redhat-release", "target/rpmroot/etc/redhat-release");
-#copy("/etc/yum.repos.d/CentOS-Base.repo", "target/rpmroot/etc/yum.repos.d/CentOS-Base.repo");
-#mkpath("target/rpmroot/var/cache/yum");
-#ok(system('rsync', '-avr', '/var/cache/yum/', 'target/rpmroot/var/cache/yum/') == 0);
-#write_file('target/rpmroot/etc/yum.conf', {append => 1}, "\nreleasever=5\n", "arch=x86_64\n", "basearch=x86_64\n");
-#ok(system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', "install", "perl", "bash") == 0);
+#system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', '--downloadonly', "install", "perl", "bash", 'git');
+
+my $config = OpenNMS::Config->new(File::Spec->catdir($rpmroot, 'opt', 'opennms'));
 
 # create the init RPM first
 build_rpm("t/rpms/feature-init.spec", "target/rpm");
@@ -81,31 +78,39 @@ build_rpm("t/rpms/feature-init.spec", "target/rpm");
 my $rpms = build_rpm("t/rpms/feature-a-1.0-1.spec", "target/rpm");
 is(@$rpms, 2);
 
+for my $rpm (@$rpms) {
+	next unless $rpm->file() =~ /feature-init/;
+	OpenNMS::Config::RPM->install(rpms => [$rpm], root => 'target/rpmroot');
+	last;
+}
+
 # install a feature RPM with a config on a clean system
 OpenNMS::Config::RPM->install(rpms => $rpms, root => "target/rpmroot");
 ok(-e "target/rpmroot/opt/opennms/etc/testfile.conf", "clean install - testfile.conf must exist");
 ok(-e "target/rpmroot/opt/opennms/bin/config-tools/opennms-postinstall.pl", "clean install - check for opennms-postinstall.pl");
-is(read_file("target/rpmroot/opt/opennms/etc/testfile.conf"), "o-test-feature-a-1.0-1\n", "clean install - testfile.conf must contain package name");
+is(read_file("target/rpmroot/opt/opennms/etc/testfile.conf"), "o-test-feature-a-1.0-1\n\n\n", "clean install - testfile.conf must contain package name");
 ok(-d "target/rpmroot/opt/opennms/etc/.git", "clean install - .git directory must exist");
 
-my $git = Git->repository(Directory => 'target/rpmroot/opt/opennms/etc');
+my $git = Git->repository(Directory => $config->etc_dir());
 my @retval = grep { !/^#/ } $git->command('status', 'testfile.conf');
 is($retval[0], "nothing to commit (working directory clean)");
 
-my $output = $git->command_oneline('diff', 'pristine');
+my $output = $git->command_oneline('diff', $config->pristine_branch());
 is($output, undef);
 
 # upgrade an RPM with a config and no user changes
 $rpms = build_rpm("t/rpms/feature-a-1.0-2.spec", "target/rpm2");
 OpenNMS::Config::RPM->install(rpms => $rpms, root => "target/rpmroot");
-ok(-e "target/rpmroot/opt/opennms/etc/testfile.conf");
-assert_no_rpmnew("target/rpmroot/opt/opennms/etc");
-is(read_file("target/rpmroot/opt/opennms/etc/testfile.conf"), "o-test-feature-a-1.0-2\n");
+ok(-e File::Spec->catfile($config->etc_dir(), "testfile.conf"));
+assert_no_rpmnew($config->etc_dir());
+is(read_file(File::Spec->catfile($config->etc_dir(), "testfile.conf")), "o-test-feature-a-1.0-2\n\n\n");
+
+#exit 0;
 
 # upgrade an RPM with a config and user changes
 $rpms = build_rpm("t/rpms/feature-a-1.0-3.spec", "target/rpm3");
-write_file("target/rpmroot/opt/opennms/etc/testfile.conf", {append => 1}, "blah");
+write_file(File::Spec->catfile($config->etc_dir(), "testfile.conf"), {append => 1}, "blah\n");
 OpenNMS::Config::RPM->install(rpms => $rpms, root => "target/rpmroot");
-ok(-e "target/rpmroot/opt/opennms/etc/testfile.conf");
-#assert_no_rpmnew("target/rpmroot/opt/opennms/etc");
-#is(read_file("target/rpmroot/opt/opennms/etc/testfile.conf"), "o-test-feature-a-1.0-3\nblah");
+ok(-e File::Spec->catfile($config->etc_dir(), "testfile.conf"));
+assert_no_rpmnew($config->etc_dir());
+is(read_file(File::Spec->catfile($config->etc_dir(), "testfile.conf")), "o-test-feature-a-1.0-3\n\n\nblah\n");

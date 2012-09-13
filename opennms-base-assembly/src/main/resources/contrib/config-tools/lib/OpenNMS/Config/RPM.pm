@@ -90,7 +90,8 @@ sub install {
 		push(@args, '--installroot', abs_path($root));
 	}
 
-	return system('yum', '--nogpgcheck', '-y', 'localinstall', @args, map { $_->file } @$rpms) == 0;
+	# return system('yum', '--nogpgcheck', '-y', 'localinstall', @args, map { $_->file } @$rpms) == 0;
+	return system("yum --nogpgcheck -y localinstall @args " . join(' ', map { $_->file } @$rpms) . " 1>\&2") == 0;
 }
 
 =head1 METHODS

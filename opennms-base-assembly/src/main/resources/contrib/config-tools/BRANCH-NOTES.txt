@@ -19,7 +19,7 @@ cd /opt/opennms/etc
 cp /opt/opennms/share/etc-pristine/.gitignore .
 mv /opt/opennms/share/etc-pristine/.git/ .git/
 
-# upgrading
+# preinstall
 cd /opt/opennms/etc
 assert(master)
 get_list_of_deleted()->rm()
@@ -27,7 +27,10 @@ git->add(.)
 git->commit("user modifications opennms-core 1.10.5-1 -> 1.11.3-1")
 git tag pre-opennms-core-1.11.3-1
 git checkout pristine
-unpack etc (rpm unpack stage)
+
+# rpm unpack stage
+
+# postinstall
 get_list_of_deleted()->rm()
 git->add(.)
 git commit -a -m 'pristine configuration opennms-core 1.11.3-1'
