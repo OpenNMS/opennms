@@ -220,7 +220,7 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
-    static Func<String, GWTVertex> loadIconAndSize(final D3 selection){
+    static Func<String, GWTVertex> loadIconAndSize(final D3 imageSelection, final D3 rectSelection, final D3 textSelection){
         return new Func<String, GWTVertex>(){
 
             public String call(GWTVertex datum, final int index) {
@@ -231,13 +231,35 @@ public class GWTVertex extends JavaScriptObject {
                     @Override
                     public void onBrowserEvent(Event event) {
                         if(Event.ONLOAD == event.getTypeInt()) {
-
-                            Element elem = D3.getElement(selection, index);
-                            elem.setAttribute("width", "" + img.getWidth());
-                            elem.setAttribute("height", "" + img.getHeight());
-                            elem.setAttribute("x", "-" + img.getWidth()/2);
-                            elem.setAttribute("y", "-" + img.getHeight()/2);
+                            String width = img.getWidth() + "px";
+                            String height = img.getHeight() + "px";
+                            String x = "-" + img.getWidth()/2 + "px";
+                            String y = "-" + img.getHeight()/2 + "px";
                             
+                            Element imgElem = D3.getElement(imageSelection, index);
+                            imgElem.setAttribute("width", width);
+                            imgElem.setAttribute("height", height);
+                            imgElem.setAttribute("x", x);
+                            imgElem.setAttribute("y", y);
+                            
+                            Element rectElem = D3.getElement(rectSelection, index);
+                            rectElem.setAttribute("class", "highlight");
+                            rectElem.setAttribute("fill", "yellow");
+                            rectElem.setAttribute("x", -(img.getWidth()/2 + 5) + "px");
+                            rectElem.setAttribute("y", -(img.getHeight()/2 + 5) + "px");
+                            rectElem.setAttribute("width", (img.getWidth() + 10) + "px" );
+                            rectElem.setAttribute("height", (img.getHeight() + 10) + "px");
+                            rectElem.setAttribute("opacity", "0");
+                            
+                            textSelection.text(label());
+                            Element textElem = D3.getElement(textSelection, index);
+                            textElem.setAttribute("class", "vertex-label");
+                            textElem.setAttribute("x", "0px");
+                            textElem.setAttribute("y",  "" + (img.getHeight()/2 + 5) + "px");
+                            textElem.setAttribute("text-anchor", "middle");
+                            textElem.setAttribute("alignment-baseline", "text-before-edge");
+                            
+                            Document.get().getBody().removeChild(img.getElement());
                         }
                         
                     }
@@ -283,23 +305,15 @@ public class GWTVertex extends JavaScriptObject {
                 
                 ImageElement img = DOM.createImg().cast();
                 
-                vertex.append("rect").attr("class", "highlight").attr("fill", "yellow").attr("x", "-26px").attr("y", "-26px").attr("width", "52px").attr("height", "52px").attr("opacity", 0);
+                D3 rectSelection = vertex.append("rect");
+                D3 imageSelection = vertex.append("svg:image");
+                D3 textSelection = vertex.append("text");
                 
-                
-                D3 image = vertex.append("svg:image");
-                image.attr("xlink:href", loadIconAndSize(image));
+                imageSelection.attr("xlink:href", loadIconAndSize(imageSelection, rectSelection, textSelection));
 //                      .attr("x", "-24px")
 //                      .attr("y", "-24px")
 //                      .attr("width", "48px")
 //                      .attr("height", "48px");
-                
-                vertex.append("text")
-                      .attr("class", "vertex-label")
-                      .attr("x", "0px")
-                      .attr("y",  "28px")
-                      .attr("text-anchor", "middle")
-                      .attr("alignment-baseline", "text-before-edge")
-                      .text(label());
                 
                 vertex.call(draw());
                 
