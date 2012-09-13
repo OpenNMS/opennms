@@ -35,6 +35,13 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
+import com.google.gwt.user.client.ui.Image;
 
 public class GWTVertex extends JavaScriptObject {
     
@@ -213,6 +220,37 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    static Func<String, GWTVertex> loadIconAndSize(final D3 selection){
+        return new Func<String, GWTVertex>(){
+
+            public String call(GWTVertex datum, final int index) {
+                final Image img = new Image();
+                img.setAltText("datum index: " + index);
+                Event.setEventListener(img.getElement(), new EventListener() {
+
+                    @Override
+                    public void onBrowserEvent(Event event) {
+                        if(Event.ONLOAD == event.getTypeInt()) {
+
+                            Element elem = D3.getElement(selection, index);
+                            elem.setAttribute("width", "" + img.getWidth());
+                            elem.setAttribute("height", "" + img.getHeight());
+                            elem.setAttribute("x", "-" + img.getWidth()/2);
+                            elem.setAttribute("y", "-" + img.getHeight()/2);
+                            
+                        }
+                        
+                    }
+                    
+                });
+                img.setUrl(datum.getIconUrl());
+                
+                Document.get().getBody().appendChild(img.getElement());
+                return datum.getIconUrl();
+            }
+        };
+    }
+    
     static Func<String, GWTVertex> label() {
     	return new Func<String, GWTVertex>() {
 
@@ -243,13 +281,17 @@ public class GWTVertex extends JavaScriptObject {
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
                 
+                ImageElement img = DOM.createImg().cast();
+                
                 vertex.append("rect").attr("class", "highlight").attr("fill", "yellow").attr("x", "-26px").attr("y", "-26px").attr("width", "52px").attr("height", "52px").attr("opacity", 0);
                 
-                vertex.append("svg:image").attr("xlink:href", getIconPath())
-                      .attr("x", "-24px")
-                      .attr("y", "-24px")
-                      .attr("width", "48px")
-                      .attr("height", "48px");
+                
+                D3 image = vertex.append("svg:image");
+                image.attr("xlink:href", loadIconAndSize(image));
+//                      .attr("x", "-24px")
+//                      .attr("y", "-24px")
+//                      .attr("width", "48px")
+//                      .attr("height", "48px");
                 
                 vertex.append("text")
                       .attr("class", "vertex-label")
