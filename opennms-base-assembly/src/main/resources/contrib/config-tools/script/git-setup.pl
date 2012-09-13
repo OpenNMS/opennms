@@ -52,7 +52,7 @@ print $gitignore "configured\n";
 print $gitignore "libraries.properties\n";
 close($gitignore) or croak "unable to close filehandle for .gitignore: $!";
 
-$git->add('.gitignore')->commit(".gitignore for " . $config->pristine_branch() . " branch");
+$git->add('.gitignore')->commit("initial commit for " . $config->pristine_branch() . " branch");
 $git->commit_modifications("pristine configuration for OpenNMS $version");
 $git->create_branch($config->runtime_branch(), $config->pristine_branch());
 $git->tag($config->get_tag_name("pristine-$version"));
