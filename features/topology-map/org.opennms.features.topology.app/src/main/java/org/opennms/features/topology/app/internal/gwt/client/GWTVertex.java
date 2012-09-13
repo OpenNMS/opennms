@@ -252,10 +252,10 @@ public class GWTVertex extends JavaScriptObject {
                             Element rectElem = D3.getElement(rectSelection, index);
                             rectElem.setAttribute("class", "highlight");
                             rectElem.setAttribute("fill", "yellow");
-                            rectElem.setAttribute("x", -(width/2 + 5) + "px");
-                            rectElem.setAttribute("y", -(height/2 + 5) + "px");
-                            rectElem.setAttribute("width", (width + 10) + "px" );
-                            rectElem.setAttribute("height", (height + 10) + "px");
+                            rectElem.setAttribute("x", -(width/2 + 2) + "px");
+                            rectElem.setAttribute("y", -(height/2 + 2) + "px");
+                            rectElem.setAttribute("width", (width + 4) + "px" );
+                            rectElem.setAttribute("height", (height + 4) + "px");
                             rectElem.setAttribute("opacity", "0");
                             
                             textSelection.text(label());
