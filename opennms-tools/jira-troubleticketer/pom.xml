@@ -12,15 +12,9 @@
 
     <repositories>
         <repository>
-            <id>su-mvn</id>
-            <name>SU Maven2</name>
-            <url>http://maven.opennms.org/content/groups/su.se-release2</url>
-        </repository>
-        <repository>
-            <id>su-maven</id>
-            <name>SU Maven</name>
-            <url>http://maven.opennms.org/content/groups/su.se-release1</url>
-            <layout>legacy</layout>
+            <id>atlassian-public</id>
+            <name>Atlassian public repo</name>
+            <url>https://maven.atlassian.com/content/groups/public</url>
         </repository>
     </repositories>
 
@@ -81,7 +75,7 @@
         </dependency>
     </dependencies>
 
-  <!-- we add the ws-client as a dependency in a profile only while we are not tagging
+  <!-- we add the jira-soapclient as a dependency in a profile only while we are not tagging
        since we cannot release with a SNAPSHOT dependency.  When there is a released
        wersion can make it a regular dependency -->
   <profiles>
@@ -95,9 +89,9 @@
       <dependencies>
         <!-- Cutting edge ++ -->
         <dependency>
-            <groupId>com.atlassian.jira.rpc.soap.client</groupId>
-            <artifactId>jira-ws-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.atlassian.jira.plugins</groupId>
+            <artifactId>jira-soapclient</artifactId>
+            <version>5.1.2-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
