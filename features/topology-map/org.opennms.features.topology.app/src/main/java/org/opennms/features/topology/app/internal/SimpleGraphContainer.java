@@ -254,6 +254,13 @@ public class SimpleGraphContainer implements GraphContainer {
             m_target = target;
         }
         
+        public String getTooltipText() {
+            if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
+                return (String) m_item.getItemProperty("tooltipText").getValue();
+            }else {
+                return null;
+            }
+        }
     }
     
     private class GEdgeContainer extends BeanContainer<String, GEdge> implements ItemSetChangeListener, PropertySetChangeListener{
