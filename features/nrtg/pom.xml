@@ -33,6 +33,7 @@
     <module>system-exports</module>
     <module>commander</module>
     <module>api</module>
+    <module>broker</module>
     <module>nrtcollector</module>
     <module>protocolcollector</module>
     <module>web</module>

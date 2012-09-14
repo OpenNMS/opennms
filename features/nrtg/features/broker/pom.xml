@@ -7,9 +7,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
-  <artifactId>osgi-nrtg-nrtcollector</artifactId>
-  <name>NRTG Karaf NRTCollector Feature</name>
-  <description>OSGI Runtime for the NRTCollector.</description>
+  <artifactId>osgi-nrtg-broker</artifactId>
+  <name>NRTG Karaf NRTG Broker Feature</name>
+  <description>ActiveMQ Broker for NRTG</description>
   <packaging>pom</packaging>
   <build>
     <plugins>
@@ -18,13 +18,11 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <repositories>
-            <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-api/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-broker/${project.version}/xml/features</repository>
+            <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
           </repositories>
           <features>
-            <feature>osgi-nrtg-api</feature>
-            <feature>osgi-nrtg-broker</feature>
-            <feature>spring-jms</feature>
+            <feature>activemq</feature>
+            <feature>activemq-blueprint</feature>
           </features>
         </configuration>
       </plugin>
@@ -33,18 +31,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.opennms.osgi.features.nrtg</groupId>
-      <artifactId>osgi-nrtg-api</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opennms.osgi.features.nrtg</groupId>
-      <artifactId>osgi-nrtg-broker</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-karaf</artifactId>
+      <version>${activemqVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>provided</scope>
@@ -53,7 +42,7 @@
     <!-- main app -->
     <dependency>
       <groupId>org.opennms.features.nrtg</groupId>
-      <artifactId>nrtg-collector</artifactId>
+      <artifactId>nrtg-broker</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

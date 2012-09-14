@@ -8,17 +8,9 @@
   <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
   <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
 
-  <!-- activemq -->
-  <repository>mvn:org.apache.activemq/activemq-karaf/5.6.0/xml/features</repository>
 
   <!-- nrtg features -->
-  <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-api/${project.version}/xml/features</repository>
-  <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-nrtcollector/${project.version}/xml/features</repository>
-  <repository>mvn:org.opennms.osgi.features.nrtg.protocolcollector/osgi-nrtg-protocolcollector-snmp/${project.version}/xml/features</repository>
-  <feature name="nrtg">
-    <feature>osgi-nrtg-nrtcollector</feature>
-    <feature>osgi-nrtg-protocolcollector-snmp</feature>
-  </feature>
+  <repository>mvn:org.opennms.osgi.features.nrtg/nrtg/${project.version}/xml/features</repository>
 
   <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
     <feature>opennms-topology-runtime-simple</feature>

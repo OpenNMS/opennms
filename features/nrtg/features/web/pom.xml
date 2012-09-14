@@ -7,9 +7,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
-  <artifactId>osgi-nrtg-nrtcollector</artifactId>
-  <name>NRTG Karaf NRTCollector Feature</name>
-  <description>OSGI Runtime for the NRTCollector.</description>
+  <artifactId>osgi-nrtg-web</artifactId>
+  <name>NRTG Karaf Web Features</name>
+  <description>NRTG Web Runtime Feature</description>
   <packaging>pom</packaging>
   <build>
     <plugins>
@@ -49,12 +49,21 @@
       <type>xml</type>
       <scope>provided</scope>
     </dependency>
-
+    
     <!-- main app -->
     <dependency>
       <groupId>org.opennms.features.nrtg</groupId>
-      <artifactId>nrtg-collector</artifactId>
+      <artifactId>nrtg-web</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- active mq web bundle -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-web</artifactId>
+      <version>${activemqVersion}</version>
+    </dependency>
+
   </dependencies>
+
 </project>
