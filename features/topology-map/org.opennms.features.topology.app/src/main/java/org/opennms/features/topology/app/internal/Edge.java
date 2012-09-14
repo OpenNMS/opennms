@@ -87,6 +87,10 @@ public class Edge{
 	}
 
     public String getTooltipText() {
-        return getSource().getLabel() + " :: " + getTarget().getLabel();
+        if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
+            return (String) m_item.getItemProperty("tooltiptext").getValue();
+        }else {
+            return getSource().getLabel() + " :: " + getTarget().getLabel();
+        }
     }
 }

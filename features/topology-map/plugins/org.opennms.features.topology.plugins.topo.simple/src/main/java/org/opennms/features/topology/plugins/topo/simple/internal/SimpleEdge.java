@@ -37,6 +37,7 @@ public class SimpleEdge {
 	String m_id;
 	SimpleVertex m_source;
 	SimpleVertex m_target;
+    private String m_tooltipText;
 	
 	public SimpleEdge() {}
 	
@@ -77,6 +78,14 @@ public class SimpleEdge {
 	public void setTarget(SimpleVertex target) {
 		m_target = target;
 		m_target.addEdge(this);
+	}
+	
+	public void setTooltipText(String tooltipText) {
+	    m_tooltipText = tooltipText;
+	}
+	
+	public String getTooltipText() {
+	    return m_tooltipText;
 	}
 
 	@Override
