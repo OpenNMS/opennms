@@ -10,6 +10,8 @@
   <packaging>pom</packaging>
   <name>OpenNMS Complex Dependencies</name>
   <modules>
+    <module>activemq</module>
+    <module>activemq-web</module>
     <module>asterisk</module>
     <module>castor</module>
     <module>dbpool</module>
@@ -53,12 +55,4 @@
     <module>tracker</module>
     <module>twitter4j</module>
   </modules>
-  <properties>
-    <springVersion>3.0.7.RELEASE</springVersion>
-    <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
-    <aspectjVersion>1.6.8</aspectjVersion>
-    <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
-  </properties>
 </project>

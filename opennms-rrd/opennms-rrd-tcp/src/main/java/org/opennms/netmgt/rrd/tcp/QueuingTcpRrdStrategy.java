@@ -34,21 +34,26 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 
 /**
- * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
- * out in a simple serialized format.
- *
+ * Provides a TCP socket-based implementation of RrdStrategy that pushes update
+ * commands out in a simple serialized format.
+ * <p>
+ * The receiver of this strategy is not defined in any way. This is just a fire
+ * and forget strategy. There is no way to read data back into opennms.
+ * </p>
+ * 
  * @author ranger
  * @version $Id: $
  */
@@ -146,8 +151,9 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
-    public void createFile(TcpRrdStrategy.RrdDefinition rrdDef) throws Exception {
-        // Do nothing
+	public void createFile(RrdDefinition rrdDef,
+			Map<String, String> attributeMappings) throws Exception {
+		// done nothing
     }
 
     /** {@inheritDoc} */
@@ -242,4 +248,5 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         m_delegate.promoteEnqueuedFiles(rrdFiles);
     }
+    
 }

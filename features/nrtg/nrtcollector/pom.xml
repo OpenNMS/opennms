@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>nrtg</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features.nrtg</groupId>
+  <artifactId>nrtg-collector</artifactId>
+  <packaging>bundle</packaging>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.nrtg.collector</bundle.symbolicName>
+    <bundle.namespace>org.opennms.nrtg.nrtcollector</bundle.namespace>
+  </properties>
+  <name>NRTG NRTCollector</name>
+  <description>
+    The Collector module represents a system that will consume
+    CollectionJobs and handles them by running ProtocolCollectors. A
+    Collector is meant to run and listen permanently on a JMS-Queue for
+    CollectionJobs and handle / run them. Many CollectionJobs can be
+    handled in parallel by one Collector by using massive multithreading
+    of ProtocolCollectors. It is possible to run many Collectors in
+    parallel to handle a massive amount of CollectionJobs in a parallel
+    and distributed manner. The Collected data from the ProtocolCollectors
+    is published to a set of JMS-Queues for results.
+  </description>
+  <url>http://www.OpenNMS.org</url>
+  <dependencies>
+    <!-- OpenNMS NRTCollector -->
+    <dependency>
+      <groupId>org.opennms.features.nrtg</groupId>
+      <artifactId>nrtg-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- JMS -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>activemq-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.4</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

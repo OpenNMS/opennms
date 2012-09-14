@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"> 
+    
+    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <property name="targetConnectionFactory" ref="amqConnectionFactory"/>
+        <property name="sessionCacheSize" value="8"/>
+        <property name="exceptionListener" ref="jmsExceptionListener"/>
+    </bean>
+    
+    <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <constructor-arg value="tcp://127.0.0.1:61616"/>
+    </bean>
+    
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="deliveryPersistent" value="false"/>
+        <property name="deliveryMode" value="1"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <property name="timeToLive" value="120000"/>
+    </bean>
+    
+    <bean id="jmsExceptionListener" class="org.opennms.web.jms.JmsExceptionListener"/>
+    
+</beans>

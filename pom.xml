@@ -14,7 +14,7 @@
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.opennms.org/</url>
-  </issueManagement>
+ </issueManagement>
   <ciManagement>
     <system>Bamboo</system>
     <url>http://bamboo.internal.opennms.com:8085/</url>
@@ -49,7 +49,7 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
-  <mailingLists>
+ <mailingLists>
     <mailingList>
       <name>OpenNMS Discuss List</name>
       <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
@@ -689,6 +689,8 @@
   </reporting>
 
   <properties>
+
+    
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -777,12 +779,14 @@
    <updatePolicy>daily</updatePolicy>
 
     <!-- dependency versions -->
+    <activemqVersion>5.6.0</activemqVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-    <karafVersion>2.2.7</karafVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jaxbVersion>2.1.7</jaxbVersion>
     <jettyVersion>7.5.4.v20111024</jettyVersion>
+    <karafVersion>2.2.7</karafVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
     <log4jVersion>1.2.16</log4jVersion>
     <minaVersion>2.0.4</minaVersion>
@@ -792,6 +796,13 @@
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
+
+    <springVersion>3.0.7.RELEASE</springVersion>
+    <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
+    <aspectjVersion>1.6.8</aspectjVersion>
+    <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
+    <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
+    <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
   </properties>
 
   <profiles>
