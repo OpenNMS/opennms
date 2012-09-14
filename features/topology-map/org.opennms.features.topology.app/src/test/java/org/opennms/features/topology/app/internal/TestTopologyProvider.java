@@ -129,8 +129,33 @@ public class TestTopologyProvider implements TopologyProvider{
 
     @Override
     public void load(String filename) {
-        // TODO Auto-generated method stub
+
+        m_edgeContainer.removeAllItems();
+        m_vertexContainer.removeAllItems();
         
+        List<TestVertex> vertices = new ArrayList<TestVertex>();
+        List<TestEdge> edges = new ArrayList<TestEdge>();
+        
+        String vId1 = getNextVertexId();
+        TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
+        v1.setIcon("icon.jpg");
+        
+        vertices.add(v1);
+        //Item beanItem = m_vertexContainer.addBean(v1);
+        
+        String vId2 = getNextVertexId();
+        TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
+        v2.setIcon("icon.jpg");
+        vertices.add(v2);
+        //Item beanItem2 = m_vertexContainer.addBean(v2);
+        
+        String edgeId = getNextEdgeId();
+        TestEdge edge = new TestEdge(edgeId, v1, v2);
+        edges.add(edge);
+        //m_edgeContainer.addBean(edge);
+                 
+        m_vertexContainer.addAll(vertices);
+        m_edgeContainer.addAll(edges);
     }
 
     @Override

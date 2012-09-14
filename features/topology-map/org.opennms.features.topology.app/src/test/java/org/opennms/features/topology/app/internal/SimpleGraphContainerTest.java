@@ -36,15 +36,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GEdge;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GVertex;
 
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class SimpleGraphContainerTest {
@@ -454,6 +451,37 @@ public class SimpleGraphContainerTest {
         assertEquals(targetVertex.getItemId(), edge.getTarget().getItemId());
         assertEquals(sourceVertex.getKey(), edge.getSource().getKey());
         assertEquals(targetVertex.getKey(), edge.getTarget().getKey());
+        
+    }
+    
+    @Test
+    public void testRemoveAllItemsUpdateCorrectly() {
+        TestTopologyProvider topologyProvider = new TestTopologyProvider();
+     
+        //Setup the graphcontainer
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
+        graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
+        graphContainer.setSemanticZoomLevel(0);
+        
+        Graph graph = new Graph(graphContainer);
+        List<Vertex> vertices = graph.getVertices();
+        
+        assertEquals(2, vertices.size());
+        assertEquals(2, topologyProvider.getVertexIds().size());
+        assertEquals(1, topologyProvider.getEdgeIds().size());
+        assertEquals(2, graphContainer.getVertexIds().size());
+        assertEquals(1, graphContainer.getEdgeIds().size());
+        assertEquals(2, graph.getVertices().size());
+        
+        topologyProvider.load(null);
+        
+        assertEquals(2, topologyProvider.getVertexIds().size());
+        assertEquals(1, topologyProvider.getEdgeIds().size());
+        assertEquals(2, graphContainer.getVertexIds().size());
+        assertEquals(1, graphContainer.getEdgeIds().size());
+        assertEquals(2, graph.getVertices().size());
+        
         
     }
 
