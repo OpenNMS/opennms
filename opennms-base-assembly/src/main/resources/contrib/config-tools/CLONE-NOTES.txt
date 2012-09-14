@@ -1,0 +1,45 @@
+cd /opt/opennms/share/etc-pristine
+git init .
+cat <<END >.gitignore
+*.jasper
+*.rpmnew
+*.rpmorig
+*.rpmsave
+examples
+configured
+libraries.properties
+END
+git add .gitignore
+git commit -m 'initial .gitignore file'
+git add .
+git commit -m 'pristine configuration for OpenNMS 1.10.5'
+git tag opennms-1.10.5-1
+cd /opt/opennms/etc
+cp /opt/opennms/share/etc-pristine/.gitignore .
+rsync -avr /opt/opennms/share/etc-pristine/.git/ .git/
+git remote add origin /opt/opennms/share/etc-pristine
+git fetch origin
+git branch --set-upstream master origin/master
+git branch local-changes master
+git checkout local-changes
+git tag local-changes-created
+
+# upgrading
+cd /opt/opennms/etc
+assert(local-changes)
+get_list_of_deleted()->rm()
+git->add(.)
+git->commit("user modifications")
+git tag pre-opennms-core-1.11.3
+git checkout master
+cd /opt/opennms/share/etc-pristine
+git reset --hard HEAD
+unpack etc (rpm unpack stage)
+git commit -a -m 'pristine configuration for OpenNMS 1.11.3-1'
+git tag post-opennms-1.11.3-1
+cd /opt/opennms/etc
+git reset --hard HEAD
+git pull
+git checkout local-changes
+git merge master
+git tag local-changes-1.11.3-0.20120911.1

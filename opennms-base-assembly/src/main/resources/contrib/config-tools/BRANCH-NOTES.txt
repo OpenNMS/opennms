@@ -1,0 +1,46 @@
+cd /opt/opennms/share/etc-pristine
+git init .
+cat <<END >.gitignore
+*.jasper
+*.rpmnew
+*.rpmorig
+*.rpmsave
+examples
+configured
+libraries.properties
+END
+git add .gitignore
+git commit -m 'initial .gitignore file'
+git add .
+git commit -m 'pristine configuration for OpenNMS 1.10.5-1'
+git branch pristine master
+git tag pristine-1.10.5-1
+cd /opt/opennms/etc
+cp /opt/opennms/share/etc-pristine/.gitignore .
+mv /opt/opennms/share/etc-pristine/.git/ .git/
+
+# pretrans
+cd /opt/opennms/etc
+assert(master)
+git->commit_modifications("user modifications opennms-core 1.10.5-1 -> 1.11.3-1")
+git tag pre-opennms-core-1.11.3-1
+git checkout pristine
+
+#pre
+if (runtime) same as pretrans
+
+# rpm unpack stage
+
+# post
+git->commit_modifications('pristine configuration opennms-core 1.11.3-1')
+git tag pristine-opennms-core-1.11.3-1
+git checkout master
+git merge pristine
+git tag merged-opennms-core-1.11.3-1
+
+#posttrans
+if (deletes) {
+	git checkout pristine
+	git->commit_modifications
+	git checkout runtime
+}

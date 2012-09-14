@@ -1,0 +1,57 @@
+* packages are split up into, eg:
+  * opennms-core (base OpenNMS install)
+  * opennms-webapp-jetty (Web UI)
+  * opennms-plugin-protocol-xml
+  * etc.
+
+* each package (feature) may have it's own set of configuration files
+* 5 major installation scenarios
+  * installing a feature on a system that has no OpenNMS
+  * upgrading a feature on a system that has OpenNMS, but no .git
+  * upgrading a feature on a system that has OpenNMS, and has .git
+  * removing a feature on a system that has OpenNMS, and has .git
+
+* Strategy:
+  * opennms-config-data
+    * install .pl
+    * have a copy of known-good pristine etc files
+  * opennms-upgrade
+    * only acts if .git does not exist
+    * if .git does not exist, create it. The .git directory should be initialized containing an
+      empty branch, containing only the default .gitignore file that is appropriate for OpenNMS
+  * opennms-core
+
+
+
+"opennms-upgrade"
+"opennms"
+
+
+opennms-config-data:
+* perl script
+* tar.gz of pristine configs
+  * opennms-core-pristine.tgz
+  * opennms-webapp-jetty-pristine.tgz
+
+example RPM transaction:
+
+  For packages opennms-core (depends java), and opennms-webapp-jetty (depends opennms-core)
+  rpm -Uvh opennms-core-*.rpm opennms-webapp-jetty-*.rpm
+  
+  1. Run "preinst" for opennms-core
+  2. Run "preinst" for opennms-webapp-jetty
+  3. Unpack opennms-core
+  4. Unpack opennms-webapp-jetty
+  5. Run "postinst" for opennms-core
+  6. Run "postinst" for opennms-webapp-jetty
+  
+  For packages opennms-core (depends java), and opennms-webapp-jett (depends(pre) opennms-core)
+  rpm -Uvh opennms-core-*.rpm opennms-webapp-jetty-*.rpm
+  
+  1. Run "preinst" for opennms-core
+  2. Unpack opennms-core
+  3. Run "postinst" for opennms-core
+  4. Run "preinst" for opennms-webapp-jetty
+  5. Unpack opennms-webapp-jetty
+  6. Run "postinst" for opennms-webapp-jetty
+
