@@ -50,6 +50,7 @@ abstract public class SimpleVertex {
     private int m_nodeID = -1;
 //	private int m_semanticZoomLevel = -1;
     private String m_iconKey;
+    private String m_tooltipText;
 	
 	public SimpleVertex() {}
 	
@@ -201,6 +202,14 @@ abstract public class SimpleVertex {
     
     public String getIconKey() {
         return m_iconKey;
+    }
+    
+    public void setTooltiptext(String tooltipText) {
+        m_tooltipText = tooltipText;
+    }
+    
+    public String getTooltipText() {
+        return m_tooltipText;
     }
 	
 //	public int getSemanticZoomLevel() {
