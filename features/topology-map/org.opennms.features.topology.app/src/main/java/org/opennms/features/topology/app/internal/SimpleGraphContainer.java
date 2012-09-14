@@ -268,15 +268,15 @@ public class SimpleGraphContainer implements GraphContainer {
         
 		public void setTopologyProvider(TopologyProvider provider) {
 			if (topologyProvider != null) {
-				topologyProvider.getVertexContainer().removeListener((ItemSetChangeListener)this);
-	            topologyProvider.getVertexContainer().removeListener((PropertySetChangeListener)this);
+				topologyProvider.getEdgeContainer().removeListener((ItemSetChangeListener)this);
+	            topologyProvider.getEdgeContainer().removeListener((PropertySetChangeListener)this);
 			}
 			
 			topologyProvider = provider;
 			
 			if (topologyProvider != null) {
-				topologyProvider.getVertexContainer().addListener((ItemSetChangeListener)this);
-				topologyProvider.getVertexContainer().addListener((PropertySetChangeListener)this);
+				topologyProvider.getEdgeContainer().addListener((ItemSetChangeListener)this);
+				topologyProvider.getEdgeContainer().addListener((PropertySetChangeListener)this);
 			}
 			
 			removeAllItems();
@@ -298,6 +298,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
+            System.err.println("containerItemSetChange called in GEdgeContainer");
             m_edgeHolder.update();
             removeAllItems();
             addAll(m_edgeHolder.getElements());
@@ -421,7 +422,7 @@ public class SimpleGraphContainer implements GraphContainer {
             removedContainerVertices.removeAll(newVertices);
             
             for(GVertex v : removedContainerVertices) {
-                removeItem(v.getItemId());
+                removeItem(v.getKey());
             }
             updateAll(newVertices);
             addAll(newContainerVertices);
@@ -637,6 +638,7 @@ public class SimpleGraphContainer implements GraphContainer {
     }
     @Override
     public void redoLayout() {
+        System.err.println("redoLayout for simpleGraphContainer");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
             getVertexContainer().fireItemSetChange();

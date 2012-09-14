@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>nrtg</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features.nrtg</groupId>
+  <artifactId>nrtg-broker</artifactId>
+  <packaging>bundle</packaging>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.nrtg.broker</bundle.symbolicName>
+    <bundle.namespace>org.opennms.nrtg.nrtcollector.broker</bundle.namespace>
+  </properties>
+  <name>NRTG ActiveMQ Broker</name>
+  <description>
+    This bundle creates an activemq broker for use by NRTG
+  </description>
+</project>

@@ -60,11 +60,13 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          *
          * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
          */
+    @Override
         public AttributeGroupType getGroupType() {
             return m_groupType;
         }
 
         /** {@inheritDoc} */
+    @Override
         public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
             if ("string".equalsIgnoreCase(m_attribute.getType())) {
                 persister.persistStringAttribute(attribute);
@@ -78,6 +80,7 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String getName() {
             return m_attribute.getAlias();
         }
@@ -87,7 +90,13 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String getType() {
             return m_attribute.getType();
         }
+
+    @Override
+    public String getAttributeId() {
+        return "Not supported yet._" + "WMI_" + getName();
+    }
 }

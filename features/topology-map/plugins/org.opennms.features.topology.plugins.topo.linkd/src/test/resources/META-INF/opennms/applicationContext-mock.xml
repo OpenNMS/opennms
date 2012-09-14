@@ -18,6 +18,10 @@
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="operationContext"> 
 		<constructor-arg value="org.opennms.features.topology.api.OperationContext"/>
 	</bean>        
+
+	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="graphContainer"> 
+		<constructor-arg value="org.opennms.features.topology.api.GraphContainer"/>
+	</bean>        
     
    <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EasyMockDataPopulator">
             <property name="nodeDao" ref="nodeDao" />
@@ -29,16 +33,11 @@
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
             <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+            <property name="configurationFile" value="target/saved-linkd-graph.xml"/>
     </bean>
 
   <bean id ="refreshOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation">
 	  <constructor-arg ref="linkdTopologyProvider"/>
   </bean>
-
-  <bean id ="saveOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.SaveOperation">
-	  <constructor-arg ref="linkdTopologyProvider"/>
-  </bean>
-	
-
 </beans>
 

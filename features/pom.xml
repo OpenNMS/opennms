@@ -27,6 +27,9 @@
     <module>system-report</module>
     <module>ticketing</module>
 
+    <!-- Near Real Time Graphing -->
+    <module>nrtg</module>
+
     <!-- Topoology Map -->
     <module>topology-map</module>
 

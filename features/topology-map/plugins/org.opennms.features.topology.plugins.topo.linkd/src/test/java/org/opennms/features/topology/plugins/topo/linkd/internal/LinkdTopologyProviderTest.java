@@ -29,10 +29,6 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
-import org.opennms.features.topology.plugins.topo.linkd.internal.operations.SaveOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,9 +52,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class LinkdTopologyProviderTest {
     @Autowired
     private RefreshOperation m_refreshOperation;
-    
-    @Autowired
-    private SaveOperation m_saveOperation;
     
     @Autowired
     private OperationContext m_operationContext;
@@ -111,10 +103,4 @@ public class LinkdTopologyProviderTest {
             m_databasePopulator.check(m_topologyProvider);
 	}
 
-	@Test
-	public void testOperationSave() {
-            List<Object> targets = new ArrayList<Object>(1);
-            targets.add("target/test-graph.xml");
-            m_saveOperation.execute(targets, m_operationContext);	            
-	}	
 }

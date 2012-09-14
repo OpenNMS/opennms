@@ -97,7 +97,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 
-		m_window = new Window("Topology Widget Test");
+		m_window = new Window("OpenNMS Topology");
 		m_window.setContent(m_layout);
 		setMainWindow(m_window);
 

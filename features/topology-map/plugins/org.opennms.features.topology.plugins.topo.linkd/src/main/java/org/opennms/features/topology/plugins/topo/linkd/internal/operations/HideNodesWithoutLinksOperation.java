@@ -44,11 +44,16 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
     @Override
     public Undoer execute(List<Object> targets,
             OperationContext operationContext) {
+        log("executing Hide Nodes Without Link Checked Operation");
         log("found addNodeWithoutLinks: " + m_topologyProvider.isAddNodeWithoutLink());
         m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
         log("switched addNodeWithoutLinks to: " + m_topologyProvider.isAddNodeWithoutLink());
-        log("loading topology");
         m_topologyProvider.load(null);
+        if (operationContext != null && operationContext.getGraphContainer() != null) {
+            log("operationcontext and GraphContainer not null: executing redoLayout");
+        //operationContext.getGraphContainer().setDataSource(m_topologyProvider);
+            operationContext.getGraphContainer().redoLayout();
+        }
         return null;
     }
 

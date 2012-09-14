@@ -29,13 +29,45 @@
 package org.opennms.features.topology.app.internal.support;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.topology.api.IconRepository;
 
 public class IconRepositoryManager {
     
+    private class ConfigIconRepository implements IconRepository{
+
+        private Map<String, String> m_iconMap = new HashMap<String, String>();
+
+        @Override
+        public boolean contains(String type) {
+            return m_iconMap.containsKey(type);
+        }
+        
+        @Override
+        public String getIconUrl(String type) {
+            return m_iconMap.get(type);
+        }
+        
+        public void addIconConfig(String key, String url) {
+            if(m_iconMap.containsKey(key)) {
+                m_iconMap.remove(key);
+            }
+            m_iconMap.put(key, url);
+        }
+        
+    }
+    
     private List<IconRepository> m_iconRepos = new ArrayList<IconRepository>();
+    private ConfigIconRepository m_configRepo = new ConfigIconRepository();
+    
+    public IconRepositoryManager() {
+        m_iconRepos.add(m_configRepo);
+    }
     
     public void addRepository(IconRepository iconRepo) {
         m_iconRepos.add(iconRepo);
@@ -57,5 +89,15 @@ public class IconRepositoryManager {
         }
         
         return "VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png";
+    }
+
+    public void updateIconConfig(Dictionary<Object, Object> properties) {
+        Enumeration<Object> keys = properties.keys();
+        
+        while(keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            String url = (String)properties.get(key);
+            m_configRepo.addIconConfig(key, url);
+        }
     }
 }

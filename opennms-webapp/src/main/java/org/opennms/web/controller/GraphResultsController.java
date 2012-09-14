@@ -28,23 +28,25 @@
 
 package org.opennms.web.controller;
 
-import java.util.Calendar;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
+
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.GraphResultsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
 
 
 /**
@@ -55,6 +57,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class GraphResultsController extends AbstractController implements InitializingBean {
+    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + GraphResultsController.class);
+    
     private GraphResultsService m_graphResultsService;
     
     private static RelativeTimePeriod[] s_periods = RelativeTimePeriod.getDefaultPeriods();
@@ -205,25 +209,19 @@ public class GraphResultsController extends AbstractController implements Initia
                 relativeTime = s_periods[0].getId();
             }
 
-            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(
-                                                                                  s_periods,
-                                                                                  relativeTime,
-                                                                                  s_periods[0]);
+            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(s_periods, relativeTime, s_periods[0]);
 
             long[] times = period.getStartAndEndTimes();
             startLong = times[0];
             endLong = times[1];
         }
         
-        GraphResults model =
-            m_graphResultsService.findResults(resourceIds,
-                                              reports, startLong,
-                                              endLong, relativeTime);
-
+        GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
+        
         ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
 
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
-        
+
         return modelAndView;
     }
 

@@ -42,6 +42,15 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     
     <!-- Icon Repository Manager -->
+    <service interface="org.osgi.service.cm.ManagedService" >
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.support.IconConfigManager">
+            <property name="iconRepositoryManager" ref="iconRepoManager"/>
+        </bean>
+    </service>
+    
     <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
     
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
@@ -52,7 +61,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
                 <map>
-                    <entry key="server" value="theme://images/server.png"/>
                     <entry key="group" value="theme://images/cloud.png"/>
                     <entry key="NETWORK_ICON" value="theme://images/vmware-network.png"/>
                     <entry key="HOSTSYSTEM_ICON_ON" value="theme://images/vmware-hostsystem-on.png"/>

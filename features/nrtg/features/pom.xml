@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>nrtg</artifactId>
+    <version>1.11.3-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.nrtg</groupId>
+  <artifactId>features</artifactId>
+  <name>NRTG Karaf Features</name>
+
+  <packaging>pom</packaging>
+  <modules>
+    <module>commander</module>
+    <module>nrtcollector</module>
+    <module>api</module>
+    <module>broker</module>
+    <module>protocolcollector</module>
+    <module>web</module>
+    <module>all</module>
+  </modules>
+
+</project>

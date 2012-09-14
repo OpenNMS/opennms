@@ -46,8 +46,8 @@ public class D3 extends JavaScriptObject {
         return this.select(elementId);
     }-*/;
     
-    public final native Element selectElement(String elementId) /*-{
-        var retElement = this.select(elementId);
+    public final native Element selectElement(String selector) /*-{
+        var retElement = this.select(selector);
         if(retElement.length > 0){
             return retElement[0][0];
         }
@@ -298,8 +298,5 @@ public class D3 extends JavaScriptObject {
         
     }-*/;
 
-    
-
-    
 
 }

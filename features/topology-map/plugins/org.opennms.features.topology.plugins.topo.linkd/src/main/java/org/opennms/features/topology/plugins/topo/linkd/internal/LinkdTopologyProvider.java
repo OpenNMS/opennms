@@ -31,7 +31,9 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -57,12 +59,24 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd-group";
     public static final String SERVER_ICON_KEY = "linkd-server";
 
+    boolean addNodeWithoutLink = true;
+    
     DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
     NodeDao m_nodeDao;
     
     IpInterfaceDao m_ipInterfaceDao;
     
+    String m_configurationFile;
+    
+    public String getConfigurationFile() {
+        return m_configurationFile;
+    }
+
+    public void setConfigurationFile(String configurationFile) {
+        m_configurationFile = configurationFile;
+    }
+
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
@@ -71,7 +85,13 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
-    boolean addNodeWithoutLink = true;
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
     
     public boolean isAddNodeWithoutLink() {
         return addNodeWithoutLink;
@@ -94,16 +114,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
     public void onInit() {
-        log("init: loading topology");
+        log("init: loading topology v1.1");
         loadtopology();
     }
     
@@ -257,63 +269,101 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
 
     }
+
+    private SimpleGraph getGraphFromFile(File file) {
+        return JAXB.unmarshal(file, SimpleGraph.class);
+    }
+
     private void loadfromfile(String filename) {
-        SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
-        
-        m_vertexContainer.addAll(graph.m_vertices);        
-        m_edgeContainer.addAll(graph.m_edges);
+        File file = new File(filename);
+        if (file.exists() && file.canRead()) {
+            SimpleGraph graph = getGraphFromFile(file);        
+            m_vertexContainer.addAll(graph.m_vertices);        
+            m_edgeContainer.addAll(graph.m_edges);
+        }
     }
     
     private void loadtopology() {
-        log("loadtopology: loading topology");
-        LinkdVertexContainer vertexContainer = new LinkdVertexContainer();
-        BeanContainer<String, LinkdEdge> edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
-        edgeContainer.setBeanIdProperty("id");
+        log("loadtopology: loading topology: configFile:" + m_configurationFile);
+        
+        log("loadtopology: Clean Vertexcontainer");
+        getVertexContainer().removeAllItems();
+        log("loadtopology: Clean EdgeContainer");
+        getEdgeContainer().removeAllItems();
+
+        
+        Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
+        Collection<LinkdEdge> edges = new ArrayList<LinkdEdge>();
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
+            log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
+
             OnmsNode node = m_nodeDao.get(link.getNode().getId());
-            log("found node: " + node.getLabel());
+            log("loadtopology: found node: " + node.getLabel());
             String sourceId = node.getNodeId();
             LinkdVertex source;
-            BeanItem<LinkdVertex> item = vertexContainer.getItem(sourceId);
-            if (item == null) {
+            if ( vertexes.containsKey(sourceId)) {
+                source = vertexes.get(sourceId);
+            } else {
+                log("loadtopology: adding source as vertex: " + node.getLabel());
                 source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-                m_vertexContainer.addBean( source);
-            }
-            else {
-                source = item.getBean();
+                vertexes.put(sourceId, source);
             }
 
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
-            log("found parentnode: " + parentNode.getLabel());
+            log("loadtopology: found parentnode: " + parentNode.getLabel());
                        String targetId = parentNode.getNodeId();
             LinkdVertex target;
-            item = vertexContainer.getItem(targetId);
-            if (item == null) {
-                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
-                m_vertexContainer.addBean( target);                    
+            if (vertexes.containsKey(targetId)) {
+                target = vertexes.get(targetId);
             } else {
-                target = item.getBean();
+                log("loadtopology: adding target as vertex: " + parentNode.getLabel());
+                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
+                vertexes.put(targetId, target);
             }            
-            edgeContainer.addBean(new LinkdEdge(link.getDataLinkInterfaceId(),source,target));
+            edges.add(new LinkdEdge(link.getDataLinkInterfaceId(),source,target));
         }
         
+        log("loadtopology: isAddNodeWithoutLink: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
-            for (OnmsNode node: m_nodeDao.findAll()) {
-                log("parsing node: " + node.getLabel());
-                String nodeId = node.getNodeId();
+            for (OnmsNode onmsnode: m_nodeDao.findAll()) {
+                log("loadtopology: parsing link less node: " + onmsnode.getLabel());
+                String nodeId = onmsnode.getNodeId();
                 LinkdVertex linklessnode;
-                BeanItem<LinkdVertex> item = vertexContainer.getItem(nodeId);
-                if (item == null) {
-                    log("adding linklessnode: " + node.getLabel());
-                    linklessnode = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
-                    vertexContainer.addBean(linklessnode);
+                if (!vertexes.containsKey(nodeId)) {
+                    log("loadtopology: adding link less node: " + onmsnode.getLabel());
+                    linklessnode = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), getAddress(onmsnode));
+                    vertexes.put(nodeId,linklessnode);
                 }                
             }
         }
-        m_vertexContainer.removeAllItems();
-        m_vertexContainer=vertexContainer;
-        m_edgeContainer.removeAllItems();
-        m_edgeContainer=edgeContainer;
+        
+        File configFile = new File(m_configurationFile);
+
+        if (configFile.exists() && configFile.canRead()) {
+            log("loadtopology: loading topology from configuration file: " + m_configurationFile);
+            m_groupCounter=0;
+            SimpleGraph graph = getGraphFromFile(configFile);
+            for (LinkdVertex vertex: graph.m_vertices) {
+                if (!vertex.isLeaf()) {
+                    m_groupCounter++;
+                    LinkdGroup group = (LinkdGroup) vertex;
+                    log("loadtopology: found group: " + group.getId());
+                    for (LinkdVertex vx: group.getMembers()) {
+                        log("loadtopology: found group/member: " + group.getId()+"/"+ vx.getId());
+                        if (vx.isLeaf() && !vertexes.containsKey(vx.getId()))
+                            group.removeMember(vx);
+                    }
+                    vertexes.put(group.getId(), group);
+                }
+            }
+        }
+        
+        log("Found Vertexes: #" + vertexes.size());        
+        log("Found Edges: #" + edges.size());
+        log("Found Groups: #" + m_groupCounter);
+        
+        m_vertexContainer.addAll(vertexes.values());
+        m_edgeContainer.addAll(edges);        
     }
 
     protected String getIconName(OnmsNode node) {
@@ -332,6 +382,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     @Override
     public void save(String filename) {
+        if (filename == null) 
+            filename=m_configurationFile;
         List<LinkdVertex> vertices = getBeans(m_vertexContainer);
         List<LinkdEdge> edges = getBeans(m_edgeContainer);
 
