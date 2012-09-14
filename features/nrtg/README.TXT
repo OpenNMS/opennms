@@ -1,3 +1,11 @@
+# All you should need to do now is start opennms
+
+
+# The below is now obsolete
+
+
+
+
 # To run the nrtg feature follow this steps
 # All commands marked as osgi> are for the karaf console.
 # To connect to the karaf console ssh in like this
