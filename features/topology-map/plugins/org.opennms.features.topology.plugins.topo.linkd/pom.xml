@@ -37,11 +37,6 @@
       <scope>compile</scope>
      </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-webapp</artifactId>
-      <scope>compile</scope>
-     </dependency>
-    <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>api</artifactId>
       <version>${project.version}</version>

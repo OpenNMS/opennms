@@ -19,17 +19,11 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
    <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.IpInterfaceDao" availability="mandatory" />
-
-   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.SnmpInterfaceDao" availability="mandatory" />
-
-   <reference id="alarmDao" interface="org.opennms.netmgt.dao.alarmDao" availability="mandatory" />
    
     <bean id="topologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
             <property name="ipInterfaceDao" ref="ipInterfaceDao" />
-            <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
-            <property name="alarmDao" ref="alarmDao" />
             <property name="configurationFile" value="${configurationFile}"/>
     </bean>
     

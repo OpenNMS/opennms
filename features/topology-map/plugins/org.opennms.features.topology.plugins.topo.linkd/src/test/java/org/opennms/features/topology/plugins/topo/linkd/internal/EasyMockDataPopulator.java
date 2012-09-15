@@ -32,23 +32,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
 import org.junit.Assert;
 
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -93,13 +87,7 @@ public class EasyMockDataPopulator {
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private AlarmDao m_alarmDao;
-
+    
     @Autowired
     private OperationContext m_operationContext;
     
@@ -259,14 +247,14 @@ public class EasyMockDataPopulator {
         nodes.add(node8);
         setNodes(nodes);
         
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1, "A", new Date());
-        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, "A", new Date());
-        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, "A", new Date());
-        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, "A", new Date());
-        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, "A", new Date());
-        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, "A", new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, "A", new Date());
-        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, "A", new Date());
+        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), 1, getNode1().getId(), 1, "A", new Date());
+        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), 2, getNode2().getId(), 1, "A", new Date());
+        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), 1, getNode3().getId(), 1, "A", new Date());
+        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), 1, getNode4().getId(), 1, "A", new Date());
+        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), 1, getNode5().getId(), 1, "A", new Date());
+        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), 1, getNode6().getId(), 1, "A", new Date());
+        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), 2, getNode7().getId(), 1, "A", new Date());
+        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), 1, getNode8().getId(), 1, "A", new Date());
         
         dli12.setId(10012);
         dli23.setId(10023);
@@ -295,24 +283,21 @@ public class EasyMockDataPopulator {
         
         EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
-        EasyMock.expect(m_alarmDao.findAll()).andReturn(getAlarms()).anyTimes();
         
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
             EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
-            EasyMock.expect(m_snmpInterfaceDao.findByNodeIdAndIfIndex(i, -1)).andReturn(null).anyTimes();
         }
 
+//        EasyMock.expect(m_operationContext.getGraphContainer()).andReturn(m_graphContainer).anyTimes();
+//        EasyMock.expectLastCall().anyTimes();
         EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_ipInterfaceDao);
-        EasyMock.replay(m_snmpInterfaceDao);
-        EasyMock.replay(m_alarmDao);
+//        EasyMock.replay(m_operationContext);
+//        EasyMock.replay(m_graphContainer);
     }
     
-    public List<OnmsAlarm> getAlarms() {
-        return new ArrayList<OnmsAlarm>(0);
-    }
     public OnmsNode getNode(Integer id) {
         OnmsNode node= null;
         switch (id) {
@@ -341,8 +326,6 @@ public class EasyMockDataPopulator {
         EasyMock.reset(m_dataLinkInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_nodeDao);
-        EasyMock.reset(m_snmpInterfaceDao);
-        EasyMock.reset(m_alarmDao);
     }
 
     public OnmsNode getNode1() {
@@ -515,21 +498,5 @@ public class EasyMockDataPopulator {
 
     public void setGraphContainer(GraphContainer graphContainer) {
         m_graphContainer = graphContainer;
-    }
-
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
-
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    public AlarmDao getAlarmDao() {
-        return m_alarmDao;
-    }
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
     }
 }
