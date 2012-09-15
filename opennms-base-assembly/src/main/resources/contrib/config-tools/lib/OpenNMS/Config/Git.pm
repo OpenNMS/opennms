@@ -67,7 +67,6 @@ use Carp;
 use File::Path;
 use File::Spec;
 use Git;
-use List::MoreUtils qw(apply);
 
 require Exporter;
 

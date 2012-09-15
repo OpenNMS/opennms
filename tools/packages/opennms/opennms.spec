@@ -333,7 +333,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %package auto-upgrade
 Summary:       OpenNMS Upgrade Package
 Group:         Applications/System
-Requires(post): git >= 1.7, perl(Carp), perl(Cwd), perl(Data::Dumper), perl(File::Basename), perl(File::Copy), perl(File::Path), perl(File::Spec), perl(File::Temp), perl(Getopt::Long), perl(Git), perl(IO::Handle)
+Requires(post): git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
 
 %description auto-upgrade
 Tools to deal with upgrading from a previous OpenNMS release.
