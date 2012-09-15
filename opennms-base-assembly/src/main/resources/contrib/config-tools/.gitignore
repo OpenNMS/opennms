@@ -7,5 +7,4 @@
 OpenNMS-Contrib-*.tar.gz
 Makefile
 blib
-inc
 pm_to_blib
