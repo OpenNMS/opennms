@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="edge")
 public class LinkdEdge {
 	String m_id;
+	String m_tooltipText;
 	LinkdVertex m_source;
 	LinkdVertex m_target;
 	
@@ -103,5 +104,15 @@ public class LinkdEdge {
 			return false;
 		return true;
 	}
+
+
+    public String getTooltipText() {
+        return m_tooltipText;
+    }
+
+
+    public void setTooltipText(String tooltipText) {
+        m_tooltipText = tooltipText;
+    }
 		
 }
