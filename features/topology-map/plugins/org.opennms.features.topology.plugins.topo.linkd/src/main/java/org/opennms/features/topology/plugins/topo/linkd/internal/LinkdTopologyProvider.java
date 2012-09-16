@@ -56,7 +56,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.springframework.util.Assert;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -65,6 +64,41 @@ import com.vaadin.data.util.BeanItem;
 public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd-group";
     public static final String SERVER_ICON_KEY = "linkd-server";
+
+    /**
+     * Always print at least one digit after the decimal point,
+     * and at most three digits after the decimal point.
+     */
+    private static final DecimalFormat s_oneDigitAfterDecimal = new DecimalFormat("0.0##");
+    
+    /**
+     * Print no digits after the decimal point (heh, nor a decimal point).
+     */
+    private static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
+
+    /**
+     * Do not use directly. Call {@link #getNodeStatusMap 
+     * getInterfaceStatusMap} instead.
+     */
+    private static final Map<Character, String> m_nodeStatusMap;
+
+    static {
+        m_nodeStatusMap = new HashMap<Character, String>();
+        m_nodeStatusMap.put('A', "Active");
+        m_nodeStatusMap.put(' ', "Unknown");
+        m_nodeStatusMap.put('D', "Deleted");                        
+    }
+    
+     static final String[] OPER_ADMIN_STATUS = new String[] {
+        "&nbsp;",          //0 (not supported)
+        "Up",              //1
+        "Down",            //2
+        "Testing",         //3
+        "Unknown",         //4
+        "Dormant",         //5
+        "NotPresent",      //6
+        "LowerLayerDown"   //7
+      };
 
     private boolean addNodeWithoutLink = true;
     
@@ -486,7 +520,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         tooltipText += "Alarm Status: " + severity.getLabel();
         tooltipText +="\n";
         
-        tooltipText += getNodeStatusString(node);
+        tooltipText += getNodeStatusString(node.getType().charAt(0));
         if (ip.isManaged()) {
             tooltipText += "/Managed";
         } else {
@@ -540,50 +574,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public void setParent(Object vertexId, Object parentId) {
         m_vertexContainer.setParent(vertexId, parentId);
     }
-
     
-    private void log(final String string) {
-        System.err.println("LinkdTopologyProvider: "+ string);
-    }
-    
-    /**
-     * Do not use directly. Call {@link #getNodeStatusMap 
-     * getInterfaceStatusMap} instead.
-     */
-    private static final Map<Character, String> m_nodeStatusMap;
-
-    /**
-     * Do not use directly. Call {@link #getInterfaceStatusMap 
-     * getInterfaceStatusMap} instead.
-     */
-    private static final Map<Character, String> m_interfaceStatusMap;
-
-    static {
-        m_nodeStatusMap = new HashMap<Character, String>();
-        m_nodeStatusMap.put('A', "Active");
-        m_nodeStatusMap.put(' ', "Unknown");
-        m_nodeStatusMap.put('D', "Deleted");
-        
-        m_interfaceStatusMap = new HashMap<Character, String>();
-        m_interfaceStatusMap.put('M', "Managed");
-        m_interfaceStatusMap.put('U', "Unmanaged");
-        m_interfaceStatusMap.put('D', "Deleted");
-        m_interfaceStatusMap.put('F', "Forced Unmanaged");
-        m_interfaceStatusMap.put('N', "Not Monitored");
-                
-    }
-    
-     static final String[] OPER_ADMIN_STATUS = new String[] {
-        "&nbsp;",          //0 (not supported)
-        "Up",              //1
-        "Down",            //2
-        "Testing",         //3
-        "Unknown",         //4
-        "Dormant",         //5
-        "NotPresent",      //6
-        "LowerLayerDown"   //7
-      };
-      
       private String getIfStatusString(int ifStatusNum) {
           if (ifStatusNum < OPER_ADMIN_STATUS.length) {
               return OPER_ADMIN_STATUS[ifStatusNum];
@@ -592,18 +583,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
           }
       }
       
-    /**
-     * Return the human-readable name for a node's status, may be null.
-     *
-     * @param node a {@link OnmsNode} object.
-     * @return a {@link java.lang.String} object.
-     */
-    private String getNodeStatusString(OnmsNode node) {
-        Assert.notNull(node, "node argument cannot be null");
-
-        return getNodeStatusString(node.getType().charAt(0));
-    }
-
     /**
      * Return the human-readable name for a interface status character, may be
      * null.
@@ -614,17 +593,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
     private String getNodeStatusString(char c) {
         return m_nodeStatusMap.get(c);
     }
-    
-    /**
-     * Always print at least one digit after the decimal point,
-     * and at most three digits after the decimal point.
-     */
-    private static final DecimalFormat s_oneDigitAfterDecimal = new DecimalFormat("0.0##");
-    
-    /**
-     * Print no digits after the decimal point (heh, nor a decimal point).
-     */
-    private static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
     
     /**
      * Method used to convert an integer bits-per-second value to a more
@@ -674,6 +642,10 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
         
         return formatter.format(displaySpeed) + " " + units;
+    }
+
+    private void log(final String string) {
+        System.err.println("LinkdTopologyProvider: "+ string);
     }
 
 }
