@@ -45,20 +45,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.TopologyProvider;
 
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
-<<<<<<< HEAD
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-=======
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
->>>>>>> features/linkd-lldp
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -68,9 +65,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd-group";
     public static final String SERVER_ICON_KEY = "linkd-server";
 
-<<<<<<< HEAD
-    boolean addNodeWithoutLink = true;
-=======
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
@@ -107,15 +101,21 @@ public class LinkdTopologyProvider implements TopologyProvider {
       };
 
     private boolean addNodeWithoutLink = true;
->>>>>>> features/linkd-lldp
     
-    DataLinkInterfaceDao m_dataLinkInterfaceDao;
+    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
     
-    IpInterfaceDao m_ipInterfaceDao;
+    private IpInterfaceDao m_ipInterfaceDao;
     
-    String m_configurationFile;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    private AlarmDao m_alarmDao;
+
+    private String m_configurationFile;
+    
+    
+    private Map<Integer, OnmsSeverity> m_nodeToSeveritymap;
     
     public String getConfigurationFile() {
         return m_configurationFile;
@@ -123,6 +123,22 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     public void setConfigurationFile(String configurationFile) {
         m_configurationFile = configurationFile;
+    }
+
+    public AlarmDao getAlarmDao() {
+        return m_alarmDao;
+    }
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
+    }
+
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
     public IpInterfaceDao getIpInterfaceDao() {
@@ -171,6 +187,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_vertexContainer = new LinkdVertexContainer();
         m_edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
+        m_nodeToSeveritymap = new HashMap<Integer, OnmsSeverity>();
     }
 
     @Override
@@ -330,7 +347,17 @@ public class LinkdTopologyProvider implements TopologyProvider {
             m_edgeContainer.addAll(graph.m_edges);
         }
     }
-    
+
+    private void loadseveritymap() {
+        m_nodeToSeveritymap.clear();
+        for (OnmsAlarm alarm: m_alarmDao.findAll()) {
+            if (m_nodeToSeveritymap.containsKey(alarm.getNodeId())
+                    && alarm.getSeverity().isLessThan(m_nodeToSeveritymap.get(alarm.getNodeId())))
+                return;
+            m_nodeToSeveritymap.put(alarm.getNodeId(), alarm.getSeverity());
+        }
+    }
+
     private void loadtopology() {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
@@ -339,6 +366,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
         log("loadtopology: Clean EdgeContainer");
         getEdgeContainer().removeAllItems();
 
+        log("loadtopology: loading node to severity map");
+        loadseveritymap();
         
         Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
         Collection<LinkdEdge> edges = new ArrayList<LinkdEdge>();
@@ -353,7 +382,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 source = vertexes.get(sourceId);
             } else {
                 log("loadtopology: adding source as vertex: " + node.getLabel());
-                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), getAddress(node));
+                OnmsIpInterface ip = getAddress(node);
+                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+                source.setTooltipText(getNodeTooltipText(node, source, ip));
                 vertexes.put(sourceId, source);
             }
 
@@ -365,10 +396,14 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 target = vertexes.get(targetId);
             } else {
                 log("loadtopology: adding target as vertex: " + parentNode.getLabel());
-                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), getAddress(parentNode));
+                OnmsIpInterface ip = getAddress(parentNode);
+                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+                target.setTooltipText(getNodeTooltipText(parentNode, target, ip));                
                 vertexes.put(targetId, target);
-            }            
-            edges.add(new LinkdEdge(link.getDataLinkInterfaceId(),source,target));
+            }
+            LinkdEdge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
+            edge.setTooltipText(getEdgeTooltipText(link,source,target));
+            edges.add(edge);
         }
         
         log("loadtopology: isAddNodeWithoutLink: " + isAddNodeWithoutLink());
@@ -379,7 +414,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 LinkdVertex linklessnode;
                 if (!vertexes.containsKey(nodeId)) {
                     log("loadtopology: adding link less node: " + onmsnode.getLabel());
-                    linklessnode = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), getAddress(onmsnode));
+                    OnmsIpInterface ip = getAddress(onmsnode);
+                    linklessnode = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+                    linklessnode.setTooltipText(getNodeTooltipText(onmsnode, linklessnode, ip));
                     vertexes.put(nodeId,linklessnode);
                 }                
             }
@@ -414,8 +451,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_edgeContainer.addAll(edges);        
     }
 
-<<<<<<< HEAD
-=======
     private String getEdgeTooltipText(DataLinkInterface link,
             LinkdVertex source, LinkdVertex target) {
         String tooltipText="";
@@ -499,7 +534,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     }
     
->>>>>>> features/linkd-lldp
     protected String getIconName(OnmsNode node) {
         String iconName = SERVER_ICON_KEY;
         
@@ -509,9 +543,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
        
     }
     
-    private String getAddress(OnmsNode node) {
-        OnmsIpInterface primary = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
-	return primary == null ? null : primary.getIpAddress().getHostAddress();
+    private OnmsIpInterface getAddress(OnmsNode node) {
+        return m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
     }
     
     @Override
