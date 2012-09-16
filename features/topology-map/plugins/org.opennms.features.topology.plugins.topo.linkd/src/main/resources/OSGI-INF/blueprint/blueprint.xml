@@ -24,7 +24,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
    <reference id="alarmDao" interface="org.opennms.netmgt.dao.alarmDao" availability="mandatory" />
    
-    <bean id="topologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+   <bean id="topologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
             <property name="ipInterfaceDao" ref="ipInterfaceDao" />
