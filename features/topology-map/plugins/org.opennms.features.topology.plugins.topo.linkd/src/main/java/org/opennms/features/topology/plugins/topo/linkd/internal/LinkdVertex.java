@@ -44,6 +44,7 @@ abstract public class LinkdVertex {
 	String m_iconKey;
 	String m_label;
 	String m_ipAddr;
+        String m_tooltipText;
 	LinkdGroup m_parent = null;
 	List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
 	private int m_semanticZoomLevel = -1;
@@ -214,6 +215,14 @@ abstract public class LinkdVertex {
 		}
 
 	}
+
+    public String getTooltipText() {
+        return m_tooltipText;
+    }
+
+    public void setTooltipText(String tooltipText) {
+        m_tooltipText = tooltipText;
+    }
 	
 	
 }
