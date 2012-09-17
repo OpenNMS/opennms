@@ -61,7 +61,8 @@ import com.vaadin.data.util.BeanItem;
 public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
-
+    public static final String ROOT_GROUP_ID = "Network";
+    
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
@@ -174,20 +175,22 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     @Override
-    public Object addGroup(String groupIcon) {
-        return addGroup(getNextGroupId(), groupIcon);
+    public Object addGroup(String groupIconKey) {
+        String nextGroupId = getNextGroupId();
+        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
+        return nextGroupId;
     }
 
-    private Item addGroup(String groupId, String icon) {
+    private Item addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
-        System.err.println("Adding a group: " + groupId);
-        LinkdVertex vertex = new LinkdGroup(groupId, "Group " + groupId);
-        vertex.setIconKey(icon);
+        log("Adding a group: " + groupId);
+        LinkdVertex vertex = new LinkdGroup(groupId, label);
+        vertex.setIconKey(iconKey);
         return m_vertexContainer.addBean(vertex);        
     }
-
+    
     public String getNextGroupId() {
         return "linkdg" + m_groupCounter++;
     }

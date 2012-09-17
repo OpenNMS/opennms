@@ -32,14 +32,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
 import org.junit.Assert;
 
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -47,12 +44,9 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.xml.event.Operaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -96,9 +90,6 @@ public class EasyMockDataPopulator {
 
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private AlarmDao m_alarmDao;
 
     @Autowired
     private OperationContext m_operationContext;
@@ -295,7 +286,6 @@ public class EasyMockDataPopulator {
         
         EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
-        EasyMock.expect(m_alarmDao.findAll()).andReturn(getAlarms()).anyTimes();
         
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
@@ -307,12 +297,8 @@ public class EasyMockDataPopulator {
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_ipInterfaceDao);
         EasyMock.replay(m_snmpInterfaceDao);
-        EasyMock.replay(m_alarmDao);
     }
     
-    public List<OnmsAlarm> getAlarms() {
-        return new ArrayList<OnmsAlarm>(0);
-    }
     public OnmsNode getNode(Integer id) {
         OnmsNode node= null;
         switch (id) {
@@ -342,7 +328,6 @@ public class EasyMockDataPopulator {
         EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_nodeDao);
         EasyMock.reset(m_snmpInterfaceDao);
-        EasyMock.reset(m_alarmDao);
     }
 
     public OnmsNode getNode1() {
@@ -525,11 +510,4 @@ public class EasyMockDataPopulator {
         m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
-    public AlarmDao getAlarmDao() {
-        return m_alarmDao;
-    }
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
 }
