@@ -61,7 +61,9 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 	
-    public class MapManager {
+	private static final long serialVersionUID = 1L;
+
+	public class MapManager {
 
         private int m_clientX = 0;
         private int m_clientY = 0;
@@ -157,7 +159,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		Object t = null;
 		Object s = null;
 		List<Handler> actionHandlers = m_actionHandlers;
-		List<Action> bgSortingList = sortActionHandlers(m_actionHandlers, t, s);
+		List<Action> bgSortingList = sortActionHandlers(actionHandlers, t, s);
 		for(Action action : bgSortingList) {
 		    bgActionList.add(m_actionMapper.key(action));
 		    actions.add(action);
@@ -175,7 +177,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", group.getX());
         		target.addAttribute("y", group.getY());
         		target.addAttribute("selected", group.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(group.getIconKey()));
+        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(group.getIconKey()));
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
         		target.addAttribute("tooltipText", group.getTooltipText());
@@ -202,7 +204,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", vert.getX());
         		target.addAttribute("y", vert.getY());
         		target.addAttribute("selected", vert.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(vert.getIconKey()));
+        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vert.getIconKey()));
         		target.addAttribute("semanticZoomLevel", vert.getSemanticZoomLevel());
         		if (vert.getGroupId() != null) {
         			target.addAttribute("groupKey", vert.getGroupKey());

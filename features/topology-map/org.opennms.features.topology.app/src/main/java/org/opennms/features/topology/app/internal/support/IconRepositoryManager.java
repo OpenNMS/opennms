@@ -81,14 +81,40 @@ public class IconRepositoryManager {
         m_iconRepos.remove(iconRepo);
     }
     
-    public String lookupIconUrlByType(String type) {
+    public String lookupIconUrlForExactKey(String key) {
         for(IconRepository iconRepo : m_iconRepos) {
-            if(iconRepo.contains(type)) {
-                return iconRepo.getIconUrl(type);
+            if(iconRepo.contains(key)) {
+                return iconRepo.getIconUrl(key);
             }
         }
+        return null;
+    }
+    
+    public String findIconUrlByKey(String key) {
+    	
+    	// if the exact key is configured then use it
+    	String iconUrl = lookupIconUrlForExactKey(key);
+    	if (iconUrl != null) {
+    		return iconUrl;
+    	}
         
-        return "VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png";
+    	// 
+        int lastColon = key.lastIndexOf(':');
+        if ("default".equals(key)) {
+        	// we got here an no default icon was registered!!
+        	return "theme://images/server.png";
+        } else if (lastColon == -1) {
+        	// no colons in key so just return 'default' icon
+        	return findIconUrlByKey("default");
+        } else {
+        	// remove the segment following the last colon
+        	String newPrefix = key.substring(0, lastColon);
+        	// see if there an icon registered as <prefix>:default
+			String icon = findIconUrlByKey(newPrefix+":default");
+			// if ':default' icon exists return it otherwise recurse with just the prefix
+			return icon != null ? icon : findIconUrlByKey(newPrefix);
+        }
+        
     }
 
     public void updateIconConfig(Dictionary<Object, Object> properties) {

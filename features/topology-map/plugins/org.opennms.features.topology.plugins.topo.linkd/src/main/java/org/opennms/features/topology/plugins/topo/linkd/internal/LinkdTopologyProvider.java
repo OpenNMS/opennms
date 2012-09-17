@@ -62,8 +62,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class LinkdTopologyProvider implements TopologyProvider {
-    public static final String GROUP_ICON_KEY = "linkd-group";
-    public static final String SERVER_ICON_KEY = "linkd-server";
+    public static final String GROUP_ICON_KEY = "linkd:group";
+    public static final String SERVER_ICON_KEY = "linkd:system";
 
     /**
      * Always print at least one digit after the decimal point,
@@ -535,12 +535,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     protected String getIconName(OnmsNode node) {
-        String iconName = SERVER_ICON_KEY;
-        
-        if (node.getSysObjectId() != null)
-            iconName = "snmp:"+node.getSysObjectId();
-        return iconName;
-       
+        return node.getSysObjectId() == null ? "linkd:system" : "linkd:system:snmp:"+node.getSysObjectId();
     }
     
     private OnmsIpInterface getAddress(OnmsNode node) {

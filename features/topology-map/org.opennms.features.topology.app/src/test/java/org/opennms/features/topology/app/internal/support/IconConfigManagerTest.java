@@ -45,7 +45,7 @@ public class IconConfigManagerTest {
         IconRepositoryManager iconManager = new IconRepositoryManager();
         iconManager.updateIconConfig(props);
         
-        assertEquals("file1.png", iconManager.lookupIconUrlByType("type1"));
+        assertEquals("file1.png", iconManager.findIconUrlByKey("type1"));
     }
     
 

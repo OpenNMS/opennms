@@ -74,7 +74,7 @@ public class LinkdTopologyProviderTest {
     }
         @Test 
         public void testGetIcon() {
-            Assert.assertTrue("snmp:1.3.6.1.4.1.5813.1.25".equals(m_topologyProvider.getIconName(m_databasePopulator.getNode1())));
+            Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(m_topologyProvider.getIconName(m_databasePopulator.getNode1())));
             Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode2())));
             Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode3())));
             Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode4())));
