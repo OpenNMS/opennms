@@ -109,10 +109,14 @@ public class IconRepositoryManager {
         } else {
         	// remove the segment following the last colon
         	String newPrefix = key.substring(0, lastColon);
-        	// see if there an icon registered as <prefix>:default
-			String icon = findIconUrlByKey(newPrefix+":default");
-			// if ':default' icon exists return it otherwise recurse with just the prefix
-			return icon != null ? icon : findIconUrlByKey(newPrefix);
+        	String suffix = key.substring(lastColon+1);
+        	if (!"default".equals(suffix)) {
+        		// see if there an icon registered as <prefix>:default
+        		return findIconUrlByKey(newPrefix+":default");
+        	} else {
+        		// if we have tried the :default and got all the way here just try the prefix
+        		return findIconUrlByKey(newPrefix);
+        	}
         }
         
     }
