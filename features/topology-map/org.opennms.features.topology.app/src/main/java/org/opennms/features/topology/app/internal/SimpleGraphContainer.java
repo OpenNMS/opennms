@@ -195,6 +195,14 @@ public class SimpleGraphContainer implements GraphContainer {
             GVertex parent = getParent();
             return parent == null ? 0 : parent.getSemanticZoomLevel() + 1;
         }
+        
+        public String getTooltipText() {
+            if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
+                return (String) m_item.getItemProperty("tooltipText").getValue();
+            }else {
+                return null;
+            }
+        }
 
     }
     

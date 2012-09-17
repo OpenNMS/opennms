@@ -159,7 +159,12 @@ public class Vertex implements Paintable {
     }
 
     public String getTooltipText() {
-        return getLabel();
+        if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
+            return (String) m_item.getItemProperty("tooltipText").getValue();
+        }else {
+            return getLabel();
+        }
+        
     }
 
 }
