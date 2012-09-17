@@ -226,5 +226,13 @@ public class Graph{
 	public Vertex getVertexByItemId(Object itemId) {
 		return m_vertexHolder.getElementByItemId(itemId);
 	}
+
+    public Edge getEdgeByItemId(String edgeItemId) {
+        return m_edgeHolder.getElementByItemId(edgeItemId);
+    }
+
+    public Edge getEdgeByKey(String edgeKey) {
+        return m_edgeHolder.getElementByKey(edgeKey);
+    }
 	
 }

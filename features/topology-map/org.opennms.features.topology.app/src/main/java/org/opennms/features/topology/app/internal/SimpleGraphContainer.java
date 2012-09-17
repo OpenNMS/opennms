@@ -213,6 +213,7 @@ public class SimpleGraphContainer implements GraphContainer {
         private Item m_item;
         private GVertex m_source;
         private GVertex m_target;
+        private boolean m_selected = false;
 
         public GEdge(String key, Object itemId, Item item, GVertex source, GVertex target) {
             m_key = key;
@@ -260,6 +261,14 @@ public class SimpleGraphContainer implements GraphContainer {
 
         private void setTarget(GVertex target) {
             m_target = target;
+        }
+        
+        public boolean isSelected() {
+            return m_selected;
+        }
+
+        public void setSelected(boolean selected) {
+            m_selected  = selected;
         }
         
         public String getTooltipText() {

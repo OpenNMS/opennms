@@ -51,9 +51,9 @@ public final class GWTEdge extends JavaScriptObject {
         return {"id":id, "source":source, "target":target, "actions":[]};
     }-*/;
 
-    public String getId() {
-        return getSource().getLabel() + " :: " + getTarget().getLabel();
-    }
+    public final native String getId() /*-{
+        return this.id;
+    }-*/;
     
     private final native JsArrayString actionKeys() /*-{
 		return this.actions;
@@ -63,6 +63,14 @@ public final class GWTEdge extends JavaScriptObject {
 		this.actions = keys;
 		return this.actions;
 	}-*/;
+    
+    private final native boolean isSelected() /*-{
+        return this.selected;
+    }-*/;
+    
+    public final native void setSelected(boolean selected) /*-{
+        this.selected = selected;
+    }-*/;
 
 
 	public void setActionKeys(String[] keys) {
@@ -131,7 +139,7 @@ public final class GWTEdge extends JavaScriptObject {
             @Override
             public D3 run(D3 selection) {
                 
-                return selection
+                return selection.style("stroke", GWTEdge.selectionFilter())
                         .attr("x1", GWTEdge.getSourceX())
                         .attr("x2", GWTEdge.getTargetX())
                         .attr("y1", GWTEdge.getSourceY())
@@ -140,6 +148,17 @@ public final class GWTEdge extends JavaScriptObject {
         };
     }
     
+    protected static Func<String, GWTEdge> selectionFilter() {
+        // TODO Auto-generated method stub
+        return new Func<String, GWTEdge>(){
+
+            public String call(GWTEdge edge, int index) {
+                return edge.isSelected() ? "yellow" : "#ccc";
+            }
+            
+        };
+    }
+
     public static D3Behavior create() {
         return new D3Behavior() {
 
@@ -150,6 +169,5 @@ public final class GWTEdge extends JavaScriptObject {
             }
         };
     }
-
 
 }

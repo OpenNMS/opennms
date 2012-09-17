@@ -294,6 +294,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             }
         });
 		
+		
 		return tree;
 	}
 

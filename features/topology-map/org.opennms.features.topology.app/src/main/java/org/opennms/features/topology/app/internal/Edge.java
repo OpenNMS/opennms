@@ -31,6 +31,8 @@ package org.opennms.features.topology.app.internal;
 import com.vaadin.data.Item;
 
 public class Edge{
+    
+    public static final String SELECTED_PROPERTY = "selected";
 	private String m_key;
 	private Object m_itemId;
 	private Item m_item;
@@ -92,5 +94,13 @@ public class Edge{
         }else {
             return getSource().getLabel() + " :: " + getTarget().getLabel();
         }
+    }
+
+    public void setSelected(boolean selected) {
+        m_item.getItemProperty(SELECTED_PROPERTY).setValue(selected);
+    }
+
+    public boolean isSelected() {
+        return (Boolean) m_item.getItemProperty(SELECTED_PROPERTY).getValue();
     }
 }

@@ -81,8 +81,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     
 	public class GraphDrawerNoTransition extends GraphDrawer{
 
-		public GraphDrawerNoTransition(GWTGraph graph, Element vertexGroup,Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler, Handler<GWTVertex> tooltipHandler, Handler<GWTEdge> edgeContextHandler, Handler<GWTEdge> edgeToolTipHandler) {
-			super(graph, vertexGroup, edgeGroup, dragBehavior, clickHandler,contextMenuHandler, tooltipHandler, edgeContextHandler, edgeToolTipHandler);
+		public GraphDrawerNoTransition(GWTGraph graph, Element vertexGroup,Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler, Handler<GWTVertex> tooltipHandler, Handler<GWTEdge> edgeContextHandler, Handler<GWTEdge> edgeToolTipHandler, Handler<GWTEdge> edgeClickHandler) {
+			super(graph, vertexGroup, edgeGroup, dragBehavior, clickHandler,contextMenuHandler, tooltipHandler, edgeContextHandler, edgeToolTipHandler, edgeClickHandler);
 		}
 
 		@Override
@@ -129,18 +129,20 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		Element m_edgeGroup;
 		D3Behavior m_dragBehavior;
 		Handler<GWTVertex> m_clickHandler;
-		Handler<GWTVertex> m_contextMenuHandler;
+		Handler<GWTEdge> m_edgeClickHandler;
+        Handler<GWTVertex> m_contextMenuHandler;
 		private Handler<GWTVertex> m_vertexMouseOverHandler;
 		private Handler<GWTEdge> m_edgeContextHandler;
 		private Handler<GWTEdge> m_edgeToolTipHandler;
 
 
-		public GraphDrawer(GWTGraph graph, Element vertexGroup, Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler, Handler<GWTVertex> tooltipHandler, Handler<GWTEdge> edgeContextHandler, Handler<GWTEdge> edgeToolTipHandler) {
+		public GraphDrawer(GWTGraph graph, Element vertexGroup, Element edgeGroup, D3Behavior dragBehavior, Handler<GWTVertex> clickHandler, Handler<GWTVertex> contextMenuHandler, Handler<GWTVertex> tooltipHandler, Handler<GWTEdge> edgeContextHandler, Handler<GWTEdge> edgeToolTipHandler, Handler<GWTEdge> edgeClickHandler) {
 			m_graph = graph;
 			m_vertexGroup = vertexGroup;
 			m_edgeGroup = edgeGroup;
 			m_dragBehavior = dragBehavior;
 			setClickHandler(clickHandler);
+			m_edgeClickHandler = edgeClickHandler;
 			setContextMenuHandler(contextMenuHandler);
 			m_vertexMouseOverHandler = tooltipHandler;
 			setEdgeContextHandler(edgeContextHandler);
@@ -155,6 +157,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		public Handler<GWTVertex> getClickHandler() {
 			return m_clickHandler;
 		}
+		
+		public Handler<GWTEdge> getEdgeClickHandler() {
+            return m_edgeClickHandler;
+        }
+
+        public void setEdgeClickHandler(Handler<GWTEdge> edgeClickHandler) {
+            m_edgeClickHandler = edgeClickHandler;
+        }
 
 		public void setClickHandler(Handler<GWTVertex> clickHandler) {
 			m_clickHandler = clickHandler;
@@ -266,7 +276,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 				@Override
 				public D3 run(D3 selection) {
-					return selection.on(D3Events.CONTEXT_MENU.event(), getEdgeContextHandler())
+					return selection.on(D3Events.CLICK.event(), getEdgeClickHandler())
+					        .on(D3Events.CONTEXT_MENU.event(), getEdgeContextHandler())
 							.on(D3Events.MOUSE_OVER.event(), getEdgeToolTipHandler())
 							.on(D3Events.MOUSE_OUT.event(), getEdgeToolTipHandler());
 				}
@@ -426,8 +437,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 		};
 
-		m_graphDrawer = new GraphDrawer(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler());
-		m_graphDrawerNoTransition = new GraphDrawerNoTransition(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler());
+		m_graphDrawer = new GraphDrawer(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler(), edgeClickHandler());
+		m_graphDrawerNoTransition = new GraphDrawerNoTransition(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler(), edgeClickHandler());
 	}
 
 
@@ -630,6 +641,17 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 		};
 	}
+	
+	private Handler<GWTEdge> edgeClickHandler(){
+	    return new Handler<GWTEdge>() {
+
+            @Override
+            public void call(GWTEdge edge, int index) {
+                m_client.updateVariable(m_paintableId, "clickedEdge", edge.getId(), true);
+            }
+	        
+	    };
+	}
 
 
 	private final ActionOwner getActionOwner() {
@@ -667,9 +689,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                     }
                 });
 			    
-			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), true);
-			    
-				//m_client.updateVariable(m_paintableId, "updatedVertex", "id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected(), true);
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
 			}
@@ -767,7 +786,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			}else if(child.getTag().equals("vertex")) {
 
 				GWTVertex vertex = GWTVertex.create(child.getStringAttribute("key"), child.getIntAttribute("x"), child.getIntAttribute("y"));
-				boolean booleanAttribute = child.getBooleanAttribute("selected");
+				boolean selected = child.getBooleanAttribute("selected");
 				String[] actionKeys = child.getStringArrayAttribute("actionKeys");
 				vertex.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
 
@@ -779,7 +798,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 					vertex.setParent(group);
 				}
 
-				vertex.setSelected(booleanAttribute);
+				vertex.setSelected(selected);
 				vertex.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
 
 				if (child.hasAttribute("label")) {
@@ -796,8 +815,10 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			}else if(child.getTag().equals("edge")) {
 				GWTVertex source = graphConverted.findVertexById(child.getStringAttribute("source"));
 				GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), source, graphConverted.findVertexById( child.getStringAttribute("target") ));
+				boolean selected = child.getBooleanAttribute("selected");
 				String[] actionKeys = child.getStringArrayAttribute("actionKeys");
 				edge.setActionKeys(actionKeys);
+				edge.setSelected(selected);
 				graphConverted.addEdge(edge);
 
 				if(m_client != null) {
