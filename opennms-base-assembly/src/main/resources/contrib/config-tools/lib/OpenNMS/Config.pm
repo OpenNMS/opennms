@@ -8,6 +8,7 @@ use Carp;
 use File::Spec;
 
 our $VERSION = '0.1.0';
+our $_OPENNMS_HOME = undef;
 
 =head1 NAME
 
@@ -42,6 +43,9 @@ sub new {
 	my $self = {
 		DIR => $dir,
 	};
+
+	# used when exiting to write a file upon failure, if possible
+	$_OPENNMS_HOME = $dir;
 
 	bless($self, $class);
 	return $self;
@@ -102,6 +106,45 @@ sub etc_dir {
 	my $self = shift;
 	return File::Spec->catdir($self->home(), 'etc');
 }
+
+sub setup {
+	my $class = shift;
+
+	my $dollar_zero  = shift;
+	my $opennms_home = shift;
+	my $rpm_name     = shift;
+	my $rpm_version  = shift;
+
+	$_OPENNMS_HOME = $opennms_home;
+
+	if (not defined $rpm_version) {
+		croak "usage: $dollar_zero <\$opennms_home> <rpm_package_name> <rpm_package_rpm_version>\n";
+	}
+
+	my $config      = $class->new($opennms_home);
+	my $version     = $config->existing_version($rpm_name);
+	my $pristinedir = $config->pristine_dir();
+	my $etcdir      = $config->etc_dir();
+
+	print STDERR "=" x 80, "\n";
+	print STDERR "$dollar_zero $opennms_home $rpm_name $rpm_version\n";
+	system("rpm --verify $rpm_name | grep $etcdir");
+	print STDERR "=" x 80, "\n";
+
+	my $conflicted = File::Spec->catfile($etcdir, 'conflicted');
+	if (-f $conflicted) {
+		croak "\nERROR: found a $conflicted file, bailing.\n\n";
+	}
+
+	return ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version);
+}
+
+END {
+	if ($? != 0) {
+		my $conflicted = File::Spec->catfile($_OPENNMS_HOME, 'etc', 'conflicted');
+		print STDERR "ERROR: exiting non-zero. Creating '$conflicted' file.\n";
+	}
+};
 
 1;
 __END__

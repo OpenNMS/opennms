@@ -13,23 +13,7 @@ use IO::Handle;
 use OpenNMS::Config;
 use OpenNMS::Config::Git;
 
-our $OPENNMS_HOME = shift @ARGV;
-our $PACKAGE      = shift @ARGV;
-our $VERSION      = shift @ARGV;
-
-if (not defined $VERSION) {
-	croak "usage: $0 <\$OPENNMS_HOME> <rpm_package_name> <rpm_package_version>\n";
-}
-
-my $config      = OpenNMS::Config->new($OPENNMS_HOME);
-my $version     = $config->existing_version($PACKAGE);
-my $pristinedir = $config->pristine_dir();
-my $etcdir      = $config->etc_dir();
-
-print STDERR "=" x 80, "\n";
-print STDERR "$0 $OPENNMS_HOME $PACKAGE $VERSION\n";
-system('rpm', '--verify', $PACKAGE);
-print STDERR "=" x 80, "\n";
+our ($config, $version, $pristinedir, $etcdir) = OpenNMS::Config->setup($0, @ARGV);
 
 # add other checks to be sure we really made this
 # TODO: this should do more detailed validation of existing .git directories

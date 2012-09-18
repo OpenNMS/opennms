@@ -9,23 +9,7 @@ use Carp;
 use OpenNMS::Config;
 use OpenNMS::Config::Git;
 
-our $OPENNMS_HOME = shift @ARGV;
-our $PACKAGE      = shift @ARGV;
-our $VERSION      = shift @ARGV;
-
-if (not defined $PACKAGE) {
-	croak "usage: $0 <\$OPENNMS_HOME> <rpm_package_name> <rpm_package_version>\n";
-}
-
-my $config      = OpenNMS::Config->new($OPENNMS_HOME);
-my $version     = $config->existing_version($PACKAGE);
-my $pristinedir = $config->pristine_dir();
-my $etcdir      = $config->etc_dir();
-
-print STDERR "=" x 80, "\n";
-print STDERR "$0 $OPENNMS_HOME $PACKAGE $VERSION\n";
-system('rpm', '--verify', $PACKAGE);
-print STDERR "=" x 80, "\n";
+our ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version) = OpenNMS::Config->setup($0, @ARGV);
 
 my $git = OpenNMS::Config::Git->new($etcdir);
 $git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
@@ -48,10 +32,10 @@ for my $modification (@modifications) {
 	}
 }
 if ($do_commit) {
-	$git->commit("Pristine deletes for $PACKAGE $VERSION");
+	$git->commit("Pristine deletes for $rpm_name $rpm_version");
 }
 
-$git->tag($config->get_tag_name("pristine-$PACKAGE-$VERSION"));
+$git->tag($config->get_tag_name("pristine-$rpm_name-$rpm_version"));
 $git->checkout($config->runtime_branch());
 
 for my $runmod (@runtime_modifications) {
@@ -60,10 +44,10 @@ for my $runmod (@runtime_modifications) {
 	}
 }
 
-$git->commit_modifications("Post-transaction runtime changes for $PACKAGE-$VERSION");
+$git->commit_modifications("Post-transaction runtime changes for $rpm_name-$rpm_version");
 
 $git->merge($config->pristine_branch());
 
-$git->tag($config->get_tag_name("merged-$PACKAGE-$VERSION"));
+$git->tag($config->get_tag_name("merged-$rpm_name-$rpm_version"));
 
 exit 0;
