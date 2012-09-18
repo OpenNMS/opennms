@@ -87,7 +87,7 @@ sub existing_version {
 	if (not defined $package) {
 		croak "You must specify a package name to query!\n";
 	}
-	my $version = `rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null`;
+	my $version = `rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1`;
 	chomp($version);
 	$version = "0.0-0" if ($version eq '');
 	return $version;
