@@ -232,7 +232,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>activemq-web-dependencies</artifactId>
       <type>pom</type>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
