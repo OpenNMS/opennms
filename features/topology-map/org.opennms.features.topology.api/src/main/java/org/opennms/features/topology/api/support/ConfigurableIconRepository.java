@@ -65,7 +65,7 @@ public class ConfigurableIconRepository implements IconRepository, ManagedServic
     
 	@Override
 	@SuppressWarnings("unchecked")
-	public void updated(@SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
+	public void updated(Dictionary properties) throws ConfigurationException {
 		
 		while(true) {
 			Map<String, String> oldMap = m_iconMap.get();
