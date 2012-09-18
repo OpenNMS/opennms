@@ -53,8 +53,8 @@ public class CreateGroupOperation implements Operation {
             
             Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
             Object parentGroup = null;
-            for(Object key : targets) {
-                Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
+            for(Object target : targets) {
+                Object vertexId = graphContainer.getVertexItemIdForVertexKey(target);
                 Object parent = m_topologyProvider.getVertexContainer().getParent(vertexId);
                 if (parentGroup == null) {
                     parentGroup = parent;

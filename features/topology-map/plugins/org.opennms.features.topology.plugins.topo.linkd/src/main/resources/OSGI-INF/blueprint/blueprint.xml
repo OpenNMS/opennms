@@ -14,7 +14,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         </cm:default-properties>
     </cm:property-placeholder>
 
-   <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionTemplate" timeout="1000" />
+   <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
    <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.DataLinkInterfaceDao" availability="mandatory" />
 

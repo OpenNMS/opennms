@@ -53,7 +53,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -109,7 +109,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     private String m_configurationFile;
 
-    private TransactionTemplate m_transactionTemplate;
+    private TransactionOperations m_transactionTemplate;
     
     public String getConfigurationFile() {
         return m_configurationFile;
@@ -536,7 +536,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     @Override
     public void setParent(Object vertexId, Object parentId) {
-        m_vertexContainer.setParent(vertexId, parentId);
+        boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
+        log("setParent for vertex:" + vertexId + " parent: " + parentId + ": "+ addedparent);
     }
     
       private String getIfStatusString(int ifStatusNum) {
@@ -612,11 +613,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
         System.err.println("LinkdTopologyProvider: "+ string);
     }
 
-    public TransactionTemplate getTransactionTemplate() {
+    public TransactionOperations getTransactionTemplate() {
         return m_transactionTemplate;
     }
 
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         m_transactionTemplate = transactionTemplate;
     }
 
