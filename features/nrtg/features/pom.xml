@@ -13,11 +13,12 @@
   <packaging>pom</packaging>
   <modules>
     <module>commander</module>
-    <module>nrtcollector</module>
     <module>api</module>
-    <module>broker</module>
-    <module>protocolcollector</module>
     <module>web</module>
+    <module>protocolcollector</module>
+    <module>nrtg-base</module>
+    <module>nrtg-jms</module>
+    <module>nrtg-local</module>
     <module>all</module>
   </modules>
 

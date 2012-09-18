@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.web.internal;
+package org.opennms.nrtg.nrtbroker.jms.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

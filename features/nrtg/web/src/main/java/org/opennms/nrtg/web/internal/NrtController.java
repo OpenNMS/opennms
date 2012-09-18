@@ -28,6 +28,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
@@ -60,7 +61,7 @@ public class NrtController {
     private GraphDao m_graphDao;
     private ResourceDao m_resourceDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
-    private NrtBroker m_nrtBroker = new NrtBrokerJms();
+    private NrtBroker m_nrtBroker;
 
     @RequestMapping(method = RequestMethod.GET, params = {"nrtCollectionTaskId"})
     @ResponseStatus(HttpStatus.OK)

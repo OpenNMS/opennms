@@ -34,6 +34,8 @@
     <module>commander</module>
     <module>api</module>
     <module>broker</module>
+    <module>nrtbroker-jms</module>
+    <module>nrtbroker-local</module>
     <module>nrtcollector</module>
     <module>protocolcollector</module>
     <module>web</module>
