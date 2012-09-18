@@ -86,9 +86,6 @@ public class EasyMockDataPopulator {
     private NodeDao m_nodeDao;
     
     @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
     @Autowired
@@ -289,13 +286,11 @@ public class EasyMockDataPopulator {
         
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
-            EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
             EasyMock.expect(m_snmpInterfaceDao.findByNodeIdAndIfIndex(i, -1)).andReturn(null).anyTimes();
         }
 
         EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_nodeDao);
-        EasyMock.replay(m_ipInterfaceDao);
         EasyMock.replay(m_snmpInterfaceDao);
     }
     
@@ -325,7 +320,6 @@ public class EasyMockDataPopulator {
 
     public void tearDown() {
         EasyMock.reset(m_dataLinkInterfaceDao);
-        EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_nodeDao);
         EasyMock.reset(m_snmpInterfaceDao);
     }
@@ -424,14 +418,6 @@ public class EasyMockDataPopulator {
 
     public void setNodeDao(final NodeDao nodeDao) {
         this.m_nodeDao = nodeDao;
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     public void check(LinkdTopologyProvider topologyProvider) {

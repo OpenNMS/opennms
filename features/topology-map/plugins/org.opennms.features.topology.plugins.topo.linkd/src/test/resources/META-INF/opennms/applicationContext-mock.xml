@@ -11,10 +11,6 @@
 		<constructor-arg value="org.opennms.netmgt.dao.NodeDao"/>
 	</bean>        
 
-	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ipInterfaceDao"> 
-		<constructor-arg value="org.opennms.netmgt.dao.IpInterfaceDao"/>
-	</bean>        
-
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="snmpInterfaceDao"> 
 		<constructor-arg value="org.opennms.netmgt.dao.SnmpInterfaceDao"/>
 	</bean>        
@@ -30,14 +26,12 @@
    <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EasyMockDataPopulator">
             <property name="nodeDao" ref="nodeDao" />
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
-            <property name="ipInterfaceDao" ref="ipInterfaceDao" />
             <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
 	</bean>        
 
    <bean id="linkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
             <property name="nodeDao" ref="nodeDao" />
-            <property name="ipInterfaceDao" ref="ipInterfaceDao" />
             <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
             <property name="configurationFile" value="target/saved-linkd-graph.xml"/>
     </bean>
