@@ -689,6 +689,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                     }
                 });
 			    
+			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), true);
+			    
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
 			}
