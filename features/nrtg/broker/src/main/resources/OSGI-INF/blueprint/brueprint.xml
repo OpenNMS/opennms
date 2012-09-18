@@ -22,7 +22,7 @@
     <!-- Allows us to use system properties as variables in this configuration file -->
     <ext:property-placeholder />
 
-    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${karaf.data}/activemq/localhost" useShutdownHook="false">
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${karaf.data}/activemq/localhost" useShutdownHook="false" persistent="false" useJmx="true" schedulePeriodForDestinationPurge="300000">
 
        <!--
             For better performances use VM cursor and small memory limit.
@@ -38,12 +38,16 @@
         <destinationPolicy>
             <policyMap>
               <policyEntries>
-                <policyEntry topic=">" producerFlowControl="true" memoryLimit="1mb">
+                <!-- remove inactive queues -->
+                <policyEntry queue=">" gcInactiveDestinations="true" inactiveTimoutBeforeGC="180000"/> 
+                <!-- no flow control for topics -->  
+                <policyEntry topic=">" producerFlowControl="false" memoryLimit="1mb">
                   <pendingSubscriberPolicy>
                     <vmCursor />
                   </pendingSubscriberPolicy>
                 </policyEntry>
-                <policyEntry queue=">" producerFlowControl="true" memoryLimit="1mb">
+                <!-- no flow control for topics --> 
+                <policyEntry queue=">" producerFlowControl="false" memoryLimit="1mb">
                   <!-- Use VM cursor for better latency
                        For more information, see:
                        
@@ -70,10 +74,15 @@
             
             http://activemq.apache.org/persistence.html 
         -->
+        <!-- 
+        no persistence please. 
+        There is a issue with the persistence=false flag at the broker element. 
+        To be sure to avoid persistence the persistenceAdaper is commented out.
         <persistenceAdapter>
             <kahaDB directory="${karaf.data}/activemq/localhost/kahadb"/>
         </persistenceAdapter>
-
+        -->
+        
        <!--
             The systemUsage controls the maximum amount of space the broker will 
             use before slowing down producers. For more information, see:
@@ -98,13 +107,12 @@
         <!-- The transport connectors ActiveMQ will listen to -->
         <transportConnectors>
             <transportConnector name="openwire" uri="tcp://localhost:61616"/>
-            <transportConnector name="stomp" uri="stomp://localhost:61613"/>
+            <!-- transportConnector name="stomp" uri="stomp://localhost:61613"/ -->
         </transportConnectors>
 
     </broker>
-
+    
     <bean id="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-
         <property name="brokerURL" value="tcp://localhost:61616" />
     </bean>
 
@@ -114,9 +122,9 @@
     </bean>
 
     <bean id="resourceManager" class="org.apache.activemq.pool.ActiveMQResourceManager" init-method="recoverResource">
-          <property name="transactionManager" ref="transactionManager" />
-          <property name="connectionFactory" ref="activemqConnectionFactory" />
-          <property name="resourceName" value="activemq.localhost" />
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="connectionFactory" ref="activemqConnectionFactory" />
+        <property name="resourceName" value="activemq.localhost" />
     </bean>
 
     <reference id="transactionManager" interface="javax.transaction.TransactionManager" />

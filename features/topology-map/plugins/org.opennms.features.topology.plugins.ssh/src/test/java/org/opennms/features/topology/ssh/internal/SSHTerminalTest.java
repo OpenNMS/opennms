@@ -88,8 +88,8 @@ public class SSHTerminalTest {
 		} 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testChangeVariables() {
 		Map map = new LinkedHashMap();
 
