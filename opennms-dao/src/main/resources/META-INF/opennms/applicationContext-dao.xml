@@ -66,7 +66,7 @@
     <property name="transactionManager" ref="transactionManager" />
   </bean>
   
-  <onmsgi:service interface="org.springframework.transaction.support.TransactionTemplate" ref="transactionTemplate" />
+  <onmsgi:service interface="org.springframework.transaction.support.TransactionOperations" ref="transactionTemplate" />
     
   <bean id="filterManager" class="org.opennms.netmgt.dao.hibernate.HibernateFilterManager">
     <property name="sessionFactory" ref="sessionFactory" />
