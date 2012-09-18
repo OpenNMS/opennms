@@ -6,7 +6,6 @@ lib/OpenNMS/Config/RPM.pm
 lib/OpenNMS/Config.pm
 Makefile.PL
 MANIFEST
-META.yml
 script/git-metadata.pl
 script/git-setup.pl
 script/opennms-pretrans.pl

@@ -22,6 +22,11 @@ my $version     = $config->existing_version($PACKAGE);
 my $pristinedir = $config->pristine_dir();
 my $etcdir      = $config->etc_dir();
 
+print STDERR "=" x 80, "\n";
+print STDERR "$0 $OPENNMS_HOME $PACKAGE $VERSION\n";
+system('rpm', '--verify', $PACKAGE);
+print STDERR "=" x 80, "\n";
+
 my $git = OpenNMS::Config::Git->new($etcdir);
 $git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
 

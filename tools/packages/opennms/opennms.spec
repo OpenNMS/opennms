@@ -751,7 +751,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/OpenNMS::Config*
 
 %post auto-upgrade
-echo "$RPM_INSTALL_PREFIX0/bin/config-tools/git-setup.pl" "$RPM_INSTALL_PREFIX0" "opennms-auto-upgrade" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/git-setup.pl" "$RPM_INSTALL_PREFIX0" "opennms-auto-upgrade" "%{version}-%{release}" 1>&2
 
 %post docs
@@ -777,12 +776,9 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-core: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 %pre core
-echo -e "\nPhase: pre opennms-core\n"
-echo "pre opennms-core: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 # clean out old jasper files
@@ -871,8 +867,6 @@ for LIBNAME in jicmp jicmp6 jrrd; do
 	fi
 done
 
-echo -e "\nPhase: post opennms-core\n"
-echo "post opennms-core: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 echo ""
@@ -885,8 +879,6 @@ echo ""
 
 %posttrans core
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-core\n"
-echo "posttrans opennms-core: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 %postun core
@@ -905,23 +897,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-remote-poller: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
 
 %pre remote-poller
-echo -e "\nPhase: pre opennms-remote-poller\n"
-echo "pre opennms-remote-poller: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
 
 %post remote-poller
-echo -e "\nPhase: post remote-poller\n"
-echo "post remote-poller: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "remote-poller" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "remote-poller" "%{version}-%{release}" 1>&2
 
 %posttrans remote-poller
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-remote-poller\n"
-echo "posttrans opennms-remote-poller: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
 
 %pretrans webapp-jetty
@@ -930,23 +915,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-webapp-jetty: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
 
 %pre webapp-jetty
-echo -e "\nPhase: pre opennms-webapp-jetty\n"
-echo "pre opennms-webapp-jetty: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
 
 %post webapp-jetty
-echo -e "\nPhase: post webapp-jetty\n"
-echo "post webapp-jetty: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "webapp-jetty" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "webapp-jetty" "%{version}-%{release}" 1>&2
 
 %posttrans webapp-jetty
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-webapp-jetty\n"
-echo "posttrans opennms-webapp-jetty: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
 
 %pretrans ncs
@@ -955,23 +933,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-ncs: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
 
 %pre ncs
-echo -e "\nPhase: pre opennms-ncs\n"
-echo "pre opennms-ncs: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
 
 %post ncs
-echo -e "\nPhase: post ncs\n"
-echo "post ncs: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "ncs" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "ncs" "%{version}-%{release}" 1>&2
 
 %posttrans ncs
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-ncs\n"
-echo "posttrans opennms-ncs: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-provisioning-dns
@@ -980,23 +951,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-provisioning-dns: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 
 %pre plugin-provisioning-dns
-echo -e "\nPhase: pre opennms-plugin-provisioning-dns\n"
-echo "pre opennms-plugin-provisioning-dns: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-dns
-echo -e "\nPhase: post plugin-provisioning-dns\n"
-echo "post plugin-provisioning-dns: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-dns
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-provisioning-dns\n"
-echo "posttrans opennms-plugin-provisioning-dns: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-provisioning-link
@@ -1005,23 +969,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-provisioning-link: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 
 %pre plugin-provisioning-link
-echo -e "\nPhase: pre opennms-plugin-provisioning-link\n"
-echo "pre opennms-plugin-provisioning-link: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-link
-echo -e "\nPhase: post plugin-provisioning-link\n"
-echo "post plugin-provisioning-link: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-link" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-link" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-link
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-provisioning-link\n"
-echo "posttrans opennms-plugin-provisioning-link: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-provisioning-map
@@ -1030,23 +987,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-provisioning-map: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 
 %pre plugin-provisioning-map
-echo -e "\nPhase: pre opennms-plugin-provisioning-map\n"
-echo "pre opennms-plugin-provisioning-map: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-map
-echo -e "\nPhase: post plugin-provisioning-map\n"
-echo "post plugin-provisioning-map: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-map" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-map" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-map
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-provisioning-map\n"
-echo "posttrans opennms-plugin-provisioning-map: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-provisioning-rancid
@@ -1055,23 +1005,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-provisioning-rancid: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 
 %pre plugin-provisioning-rancid
-echo -e "\nPhase: pre opennms-plugin-provisioning-rancid\n"
-echo "pre opennms-plugin-provisioning-rancid: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-rancid
-echo -e "\nPhase: post plugin-provisioning-rancid\n"
-echo "post plugin-provisioning-rancid: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-rancid
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-provisioning-rancid\n"
-echo "posttrans opennms-plugin-provisioning-rancid: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-provisioning-snmp-asset
@@ -1080,23 +1023,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-provisioning-snmp-asset: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 
 %pre plugin-provisioning-snmp-asset
-echo -e "\nPhase: pre opennms-plugin-provisioning-snmp-asset\n"
-echo "pre opennms-plugin-provisioning-snmp-asset: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-snmp-asset
-echo -e "\nPhase: post plugin-provisioning-snmp-asset\n"
-echo "post plugin-provisioning-snmp-asset: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-snmp-asset
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-provisioning-snmp-asset\n"
-echo "posttrans opennms-plugin-provisioning-snmp-asset: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-protocol-dhcp
@@ -1105,23 +1041,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-protocol-dhcp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 
 %pre plugin-protocol-dhcp
-echo -e "\nPhase: pre opennms-plugin-protocol-dhcp\n"
-echo "pre opennms-plugin-protocol-dhcp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-dhcp
-echo -e "\nPhase: post plugin-protocol-dhcp\n"
-echo "post plugin-protocol-dhcp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-dhcp
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-protocol-dhcp\n"
-echo "posttrans opennms-plugin-protocol-dhcp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-protocol-nsclient
@@ -1130,23 +1059,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-protocol-nsclient: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 
 %pre plugin-protocol-nsclient
-echo -e "\nPhase: pre opennms-plugin-protocol-nsclient\n"
-echo "pre opennms-plugin-protocol-nsclient: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-nsclient
-echo -e "\nPhase: post plugin-protocol-nsclient\n"
-echo "post plugin-protocol-nsclient: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-nsclient
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-protocol-nsclient\n"
-echo "posttrans opennms-plugin-protocol-nsclient: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-protocol-radius
@@ -1155,23 +1077,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-protocol-radius: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 
 %pre plugin-protocol-radius
-echo -e "\nPhase: pre opennms-plugin-protocol-radius\n"
-echo "pre opennms-plugin-protocol-radius: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-radius
-echo -e "\nPhase: post plugin-protocol-radius\n"
-echo "post plugin-protocol-radius: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-radius" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-radius" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-radius
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-protocol-radius\n"
-echo "posttrans opennms-plugin-protocol-radius: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-protocol-xml
@@ -1180,23 +1095,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-protocol-xml: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 
 %pre plugin-protocol-xml
-echo -e "\nPhase: pre opennms-plugin-protocol-xml\n"
-echo "pre opennms-plugin-protocol-xml: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-xml
-echo -e "\nPhase: post plugin-protocol-xml\n"
-echo "post plugin-protocol-xml: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-xml" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-xml" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-xml
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-protocol-xml\n"
-echo "posttrans opennms-plugin-protocol-xml: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-protocol-xmp
@@ -1205,23 +1113,16 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-protocol-xmp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 
 %pre plugin-protocol-xmp
-echo -e "\nPhase: pre opennms-plugin-protocol-xmp\n"
-echo "pre opennms-plugin-protocol-xmp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-xmp
-echo -e "\nPhase: post plugin-protocol-xmp\n"
-echo "post plugin-protocol-xmp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-xmp
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-protocol-xmp\n"
-echo "posttrans opennms-plugin-protocol-xmp: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-collector-juniper-tca
@@ -1230,22 +1131,15 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
         # on a first install, it doesn't matter if it runs, because everything is pristine
         exit 0;
 fi
-echo "pretrans opennms-plugin-collector-juniper-tca: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 
 %pre plugin-collector-juniper-tca
-echo -e "\nPhase: pre opennms-plugin-collector-juniper-tca\n"
-echo "pre opennms-plugin-collector-juniper-tca: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 
 %post plugin-collector-juniper-tca
-echo -e "\nPhase: post plugin-collector-juniper-tca\n"
-echo "post plugin-collector-juniper-tca: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-collector-juniper-tca
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-echo -e "\nPhase: posttrans opennms-plugin-collector-juniper-tca\n"
-echo "posttrans opennms-plugin-collector-juniper-tca: $RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 

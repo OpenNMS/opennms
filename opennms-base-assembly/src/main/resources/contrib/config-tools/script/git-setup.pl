@@ -26,6 +26,11 @@ my $version     = $config->existing_version($PACKAGE);
 my $pristinedir = $config->pristine_dir();
 my $etcdir      = $config->etc_dir();
 
+print STDERR "=" x 80, "\n";
+print STDERR "$0 $OPENNMS_HOME $PACKAGE $VERSION\n";
+system('rpm', '--verify', $PACKAGE);
+print STDERR "=" x 80, "\n";
+
 # add other checks to be sure we really made this
 # TODO: this should do more detailed validation of existing .git directories
 if (-d File::Spec->catdir($etcdir, '.git')) {
