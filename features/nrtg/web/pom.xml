@@ -46,21 +46,6 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- JMS -->
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>activemq-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>activemq-web-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
     <!--  Servlet API -->
     <dependency>
       <groupId>javax.servlet</groupId>

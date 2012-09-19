@@ -19,8 +19,10 @@
   <bean id="protocolCollectorRegistry" class="org.opennms.nrtg.nrtcollector.internal.ProtocolCollectorRegistryImpl">
     <property name="protocolCollectors" ref="protocolCollectors"/>
   </bean>
+
   <reference-list id="protocolCollectors" interface="org.opennms.nrtg.api.ProtocolCollector" availability="mandatory">
-	</reference-list>
+  </reference-list>
+
   <bean id="jobListener" class="org.opennms.nrtg.nrtcollector.internal.jms.CollectionJobListener">
     <property name="jmsTemplate" ref="jmsTemplate"/>
     <property name="protocolCollectorRegistry" ref="protocolCollectorRegistry"/>
