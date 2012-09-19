@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 
@@ -45,6 +46,7 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 
@@ -87,6 +89,9 @@ public class EasyMockDataPopulator {
     
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
     private OperationContext m_operationContext;
@@ -279,6 +284,14 @@ public class EasyMockDataPopulator {
 
     }
     
+    private List<OnmsIpInterface> getList(Set<OnmsIpInterface> ipset) {
+        List<OnmsIpInterface> ips = new ArrayList<OnmsIpInterface>();
+        for (OnmsIpInterface ip: ipset) {
+            ips.add(ip);
+        }
+        return ips;
+        
+    }
     public void setUpMock() {
         
         EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
@@ -287,11 +300,14 @@ public class EasyMockDataPopulator {
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
             EasyMock.expect(m_snmpInterfaceDao.findByNodeIdAndIfIndex(i, -1)).andReturn(null).anyTimes();
+            EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
+            EasyMock.expect(m_ipInterfaceDao.findByNodeId(i)).andReturn(getList(getNode(i).getIpInterfaces())).anyTimes();
         }
 
         EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_snmpInterfaceDao);
+        EasyMock.replay(m_ipInterfaceDao);
     }
     
     public OnmsNode getNode(Integer id) {
@@ -322,6 +338,7 @@ public class EasyMockDataPopulator {
         EasyMock.reset(m_dataLinkInterfaceDao);
         EasyMock.reset(m_nodeDao);
         EasyMock.reset(m_snmpInterfaceDao);
+        EasyMock.reset(m_ipInterfaceDao);
     }
 
     public OnmsNode getNode1() {
@@ -494,6 +511,14 @@ public class EasyMockDataPopulator {
 
     public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
     }
 
 }

@@ -46,14 +46,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.features.topology.api.TopologyProvider;
 
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionOperations;
+//import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -107,9 +108,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
+    private IpInterfaceDao m_ipInterfaceDao;
+
     private String m_configurationFile;
 
-    private TransactionOperations m_transactionTemplate;
+//    private TransactionOperations m_transactionTemplate;
     
     public String getConfigurationFile() {
         return m_configurationFile;
@@ -327,7 +330,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
     }
 
-    @Transactional
+    //@Transactional
     private void loadtopology() {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
@@ -341,8 +344,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 
-            //OnmsNode node = m_nodeDao.get(link.getNode().getId());
-            OnmsNode node = link.getNode();
+            OnmsNode node = m_nodeDao.get(link.getNode().getId());
+            //OnmsNode node = link.getNode();
             log("loadtopology: found node: " + node.getLabel());
             String sourceId = node.getNodeId();
             LinkdVertex source;
@@ -419,9 +422,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     private OnmsIpInterface getAddress(OnmsNode node) {
-        OnmsIpInterface ip = node.getPrimaryInterface();
+        //OnmsIpInterface ip = node.getPrimaryInterface();
+        OnmsIpInterface ip = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
         if ( ip == null) {
-            for (OnmsIpInterface iterip: node.getIpInterfaces()) {
+//            for (OnmsIpInterface iterip: node.getIpInterfaces()) {
+            for (OnmsIpInterface iterip: m_ipInterfaceDao.findByNodeId(node.getId())) {
                 ip = iterip;
                 break;
             }
@@ -612,7 +617,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     private void log(final String string) {
         System.err.println("LinkdTopologyProvider: "+ string);
     }
-
+/*
     public TransactionOperations getTransactionTemplate() {
         return m_transactionTemplate;
     }
@@ -620,5 +625,15 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         m_transactionTemplate = transactionTemplate;
     }
+*/
 
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+    
+    
 }
