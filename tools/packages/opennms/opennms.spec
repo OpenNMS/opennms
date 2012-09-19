@@ -56,9 +56,9 @@ Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires:		opennms-webui      >= %{version}-%{release}
-Requires:		opennms-core        = %{version}-%{release}
-Requires:		postgresql-server  >= 8.1
+Requires(pre):		opennms-webui      >= %{version}-%{release}
+Requires(pre):		opennms-core        = %{version}-%{release}
+Requires(pre):		postgresql-server  >= 8.1
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 BuildRequires:		%{jdk}
@@ -83,9 +83,9 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires:	jicmp
-Requires:	jicmp6
-Requires:	%{jdk}
+Requires(pre):	jicmp
+Requires(pre):	jicmp6
+Requires(pre):	%{jdk}
 Obsoletes:	opennms < 1.3.11
 
 %description core
@@ -127,7 +127,7 @@ for OpenNMS.
 %package remote-poller
 Summary:	Remote (Distributed) Poller for OpenNMS
 Group:		Applications/System
-Requires:	%{jdk}
+Requires(pre):	%{jdk}
 
 %description remote-poller
 The OpenNMS distributed monitor.  For details, see:
@@ -140,7 +140,7 @@ The OpenNMS distributed monitor.  For details, see:
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	opennms-core = %{version}-%{release}
 Provides:	opennms-webui = %{version}-%{release}
 Obsoletes:	opennms-webapp < 1.3.11
 
@@ -155,17 +155,17 @@ embedded in the main OpenNMS core process.
 %package plugins
 Summary:	All Plugins for OpenNMS
 Group:		Applications/System
-Requires:	opennms-plugin-provisioning-dns
-Requires:	opennms-plugin-provisioning-link
-Requires:	opennms-plugin-provisioning-map
-Requires:	opennms-plugin-provisioning-rancid
-Requires:   opennms-plugin-provisioning-snmp-asset
-Requires:	opennms-plugin-ticketer-centric
-Requires:	opennms-plugin-protocol-dhcp
-Requires:	opennms-plugin-protocol-nsclient
-Requires:	opennms-plugin-protocol-radius
-Requires:	opennms-plugin-protocol-xml
-Requires:	opennms-plugin-protocol-xmp
+Requires(pre):	opennms-plugin-provisioning-dns
+Requires(pre):	opennms-plugin-provisioning-link
+Requires(pre):	opennms-plugin-provisioning-map
+Requires(pre):	opennms-plugin-provisioning-rancid
+Requires(pre):	opennms-plugin-provisioning-snmp-asset
+Requires(pre):	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-protocol-dhcp
+Requires(pre):	opennms-plugin-protocol-nsclient
+Requires(pre):	opennms-plugin-protocol-radius
+Requires(pre):	opennms-plugin-protocol-xml
+Requires(pre):	opennms-plugin-protocol-xmp
 
 %description plugins
 This installs all optional plugins for OpenNMS.
@@ -177,7 +177,7 @@ This installs all optional plugins for OpenNMS.
 %package plugin-provisioning-dns
 Summary:	DNS Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	opennms-core = %{version}-%{release}
 
 %description plugin-provisioning-dns
 The DNS provisioning adapter allows for updating dynamic DNS records based on
@@ -190,7 +190,7 @@ provisioned nodes.
 %package plugin-provisioning-link
 Summary:	Link Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	opennms-core = %{version}-%{release}
 
 %description plugin-provisioning-link
 The link provisioning adapter creates links between provisioned nodes based on naming
@@ -204,7 +204,7 @@ status of the map links based on data link events.
 %package plugin-provisioning-map
 Summary:	Map Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	opennms-core = %{version}-%{release}
 
 %description plugin-provisioning-map
 The map provisioning adapter will automatically create maps when nodes are provisioned
@@ -217,7 +217,7 @@ in OpenNMS.
 %package plugin-provisioning-rancid
 Summary:	RANCID Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	opennms-core = %{version}-%{release}
 
 %description plugin-provisioning-rancid
 The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
@@ -230,7 +230,7 @@ RANCID's device database when OpenNMS provisions nodes.
 %package plugin-provisioning-snmp-asset
 Summary:    SNMP Asset Provisioning Adapter for OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
@@ -243,7 +243,7 @@ fields with data fetched from SNMP GET requests.
 %package plugin-protocol-dhcp
 Summary:    DHCP Poller and Detector Plugin for OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-protocol-dhcp
 The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
@@ -256,7 +256,7 @@ poller monitor for DHCP.
 %package plugin-protocol-nsclient
 Summary:    NSCLIENT Plugin Support for OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-protocol-nsclient
 The NSClient protocol plugin provides a capsd plugin and poller monitor for NSClient
@@ -269,7 +269,7 @@ and NSClient++.
 %package plugin-protocol-radius
 Summary:    RADIUS Plugin Support for OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
@@ -282,7 +282,7 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %package plugin-protocol-xml
 Summary:    XML Collector for OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-protocol-xml
 The XML protocol plugin provides a collector for XML data.
@@ -294,7 +294,7 @@ The XML protocol plugin provides a collector for XML data.
 %package plugin-protocol-xmp
 Summary:    XMP Poller for OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-protocol-xmp
 The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
@@ -306,7 +306,7 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 %package plugin-collector-juniper-tca
 Summary:    Juniper TCA Collectorf or OpenNMS
 Group:      Applications/System
-Requires:   opennms-core = %{version}-%{release}
+Requires(pre):   opennms-core = %{version}-%{release}
 
 %description plugin-collector-juniper-tca
 The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
