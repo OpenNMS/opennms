@@ -80,6 +80,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
 	private Layout m_viewContribLayout;
+    private HorizontalSplitPanel m_treeMapSplitPanel;
+    private VerticalSplitPanel m_bottomLayoutBar;
+    private boolean m_widgetViewShowing = false;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
@@ -196,34 +199,58 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		mapLayout.addComponent(zoomOutBtn, "top: 0px; left: 25px");
 		mapLayout.setSizeFull();
 
-		HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
-		treeMapSplitPanel.setFirstComponent(createWestLayout());
-		treeMapSplitPanel.setSecondComponent(mapLayout);
-		treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
-		treeMapSplitPanel.setSizeFull();
-
-
-		VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-		bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
-
-		m_viewContribLayout = new VerticalLayout();
-
-		bottomLayoutBar.setSecondComponent(m_viewContribLayout);
-		bottomLayoutBar.setSplitPosition(99, Sizeable.UNITS_PERCENTAGE);
-		bottomLayoutBar.setSizeFull();
-
+		m_treeMapSplitPanel = new HorizontalSplitPanel();
+		m_treeMapSplitPanel.setFirstComponent(createWestLayout());
+		m_treeMapSplitPanel.setSecondComponent(mapLayout);
+		m_treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
+		m_treeMapSplitPanel.setSizeFull();
 
 		m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
 		m_commandManager.addCommandUpdateListener(this);
 
 
 		menuBarUpdated(m_commandManager);
-		if(m_widgetManager != null) {
-		    widgetListUpdated(m_widgetManager);
+		if(m_widgetManager.widgetCount() != 0) {
+		    updateWidgetView(m_widgetManager);
+		}else {
+		    m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
 		}
 		
-		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
 	}
+
+
+    private void updateWidgetView(WidgetManager widgetManager) {
+        if(m_bottomLayoutBar == null && m_viewContribLayout == null && widgetManager.widgetCount() > 0) {
+            
+            m_bottomLayoutBar = new VerticalSplitPanel();
+            m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+    
+            m_viewContribLayout = new VerticalLayout();
+            m_viewContribLayout.addComponent(m_widgetManager.getTabSheet());
+    
+            m_bottomLayoutBar.setSecondComponent(m_viewContribLayout);
+            m_bottomLayoutBar.setSplitPosition(99, Sizeable.UNITS_PERCENTAGE);
+            m_bottomLayoutBar.setSizeFull();
+    		m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
+    		m_layout.requestRepaint();
+    		
+        }else if(widgetManager.widgetCount() > 0) {
+            m_viewContribLayout.removeAllComponents();
+            m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+            m_viewContribLayout.requestRepaint();
+            
+        }else if(widgetManager.widgetCount() == 0) {
+            m_viewContribLayout.removeAllComponents();
+            
+            m_layout.removeComponent(m_bottomLayoutBar);
+            m_bottomLayoutBar = null;
+            m_viewContribLayout = null;
+            
+            m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
+            m_layout.requestRepaint();
+        }
+		
+    }
 
 
     private Layout createWestLayout() {
@@ -386,8 +413,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     @Override
     public void widgetListUpdated(WidgetManager widgetManager) {
-        m_viewContribLayout.removeAllComponents();
-        m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+        if(isRunning()) {
+            updateWidgetView(widgetManager);
+        }
     }
 
 }
