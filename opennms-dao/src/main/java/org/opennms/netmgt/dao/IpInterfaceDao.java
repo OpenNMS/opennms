@@ -82,6 +82,14 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
     List<OnmsIpInterface> findByIpAddress(String ipAddress);
 
     /**
+     * <p>findByNodeId</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
+    List<OnmsIpInterface> findByNodeId(Integer nodeId);
+
+    /**
      * <p>findByServiceType</p>
      *
      * @param svcName a {@link java.lang.String} object.
