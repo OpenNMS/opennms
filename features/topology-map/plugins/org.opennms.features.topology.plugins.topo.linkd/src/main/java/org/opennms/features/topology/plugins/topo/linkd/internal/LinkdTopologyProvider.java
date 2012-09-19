@@ -160,7 +160,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     public void onInit() {
-        log("init: loading topology v1.2");
+        log("init: loading topology v1.3");
         loadtopology();
     }
     
@@ -458,18 +458,25 @@ public class LinkdTopologyProvider implements TopologyProvider {
         if (targetInterface != null) 
             tooltipText += ":"+targetInterface.getIfName();
         tooltipText +=">\n";
-
         
-        if (targetInterface != null) {
-            tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed());
-            tooltipText +="\n";
-            tooltipText += "Link status: " + getIfStatusString(targetInterface.getIfAdminStatus()) + "/" + getIfStatusString(targetInterface.getIfOperStatus());
-            tooltipText +="\n";
+        if ( targetInterface != null) {
+            if (targetInterface.getIfSpeed() != null) {
+                tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed());
+                tooltipText +="\n";
+            }
+            if (targetInterface.getIfOperStatus() != null) {
+                tooltipText += "Link status: " + getIfStatusString(targetInterface.getIfOperStatus());
+                tooltipText +="\n";
+            }
         } else if (sourceInterface != null) {
-            tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed());
-            tooltipText +="\n";
-            tooltipText += "Link status: " + getIfStatusString(sourceInterface.getIfAdminStatus()) + "/" + getIfStatusString(sourceInterface.getIfOperStatus());
-            tooltipText +="\n";
+            if (sourceInterface.getIfSpeed() != null) {
+                tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed());
+                tooltipText +="\n";
+            }
+            if (sourceInterface.getIfOperStatus() != null) {
+                tooltipText += "Link status: " + getIfStatusString(sourceInterface.getIfOperStatus());
+                tooltipText +="\n";
+            }
         }
 
         tooltipText += "EndPoint1: " + source.getLabel() + ", " + source.getIpAddr();
