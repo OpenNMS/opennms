@@ -166,6 +166,7 @@ embedded in the main OpenNMS core process.
 Summary:	Network Component Services for OpenNMS
 Group:		Applications/System
 Requires(pre):	opennms-webapp-jetty = %{version}-%{release}
+Requires:	opennms-webapp-jetty = %{version}-%{release}
 
 %description ncs
 NCS provides a framework for doing correlation of service events across
@@ -361,9 +362,10 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 
 
 %package auto-upgrade
-Summary:       OpenNMS Upgrade Package
-Group:         Applications/System
-Requires(post): git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
+Summary:	OpenNMS Upgrade Package
+Group:		Applications/System
+Requires:	git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
+Requires(post):	git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
 
 %description auto-upgrade
 Tools to deal with upgrading from a previous OpenNMS release.
@@ -987,7 +989,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-dns
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-dns" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-dns
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1005,7 +1007,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-link
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-link" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-link
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1023,7 +1025,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-map
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-map" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-map
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1041,7 +1043,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-rancid
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-rancid
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1059,7 +1061,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 
 %post plugin-provisioning-snmp-asset
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-provisioning-snmp-asset
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1077,7 +1079,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-dhcp
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-dhcp
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1095,7 +1097,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-nsclient
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-nsclient
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1113,7 +1115,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-radius
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-radius" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-radius
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1131,7 +1133,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-xml
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-xml" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-xml
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1149,7 +1151,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 
 %post plugin-protocol-xmp
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-protocol-xmp" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-protocol-xmp
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
@@ -1167,7 +1169,7 @@ fi
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 
 %post plugin-collector-juniper-tca
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
 
 %posttrans plugin-collector-juniper-tca
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`

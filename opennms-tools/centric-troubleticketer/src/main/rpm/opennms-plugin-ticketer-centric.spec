@@ -58,3 +58,21 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %{instprefix}/etc/*.properties
 %{instprefix}/lib/*.jar
+
+%pretrans
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+        # on a first install, it doesn't matter if it runs, because everything is pristine
+        exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "plugin-ticketer-centric" "%{version}-%{release}" 1>&2
+
+%pre
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "plugin-ticketer-centric" "%{version}-%{release}" 1>&2
+
+%post
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-centric" "%{version}-%{release}" 1>&2
+
+%posttrans
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "plugin-ticketer-centric" "%{version}-%{release}" 1>&2
