@@ -92,31 +92,35 @@ public class IconRepositoryManager {
     
     public String findIconUrlByKey(String key) {
     	
-    	// if the exact key is configured then use it
-    	String iconUrl = lookupIconUrlForExactKey(key);
-    	if (iconUrl != null) {
-    		return iconUrl;
-    	}
-        
-    	// 
-        int lastColon = key.lastIndexOf(':');
-        if ("default".equals(key)) {
-        	// we got here an no default icon was registered!!
-        	return "theme://images/server.png";
-        } else if (lastColon == -1) {
-        	// no colons in key so just return 'default' icon
-        	return findIconUrlByKey("default");
-        } else {
-        	// remove the segment following the last colon
-        	String newPrefix = key.substring(0, lastColon);
-        	String suffix = key.substring(lastColon+1);
-        	if (!"default".equals(suffix)) {
-        		// see if there an icon registered as <prefix>:default
-        		return findIconUrlByKey(newPrefix+":default");
-        	} else {
-        		// if we have tried the :default and got all the way here just try the prefix
-        		return findIconUrlByKey(newPrefix);
+        if(key != null) {
+        	// if the exact key is configured then use it
+        	String iconUrl = lookupIconUrlForExactKey(key);
+        	if (iconUrl != null) {
+        		return iconUrl;
         	}
+            
+        	// 
+            int lastColon = key.lastIndexOf(':');
+            if ("default".equals(key)) {
+            	// we got here an no default icon was registered!!
+            	return "theme://images/server.png";
+            } else if (lastColon == -1) {
+            	// no colons in key so just return 'default' icon
+            	return findIconUrlByKey("default");
+            } else {
+            	// remove the segment following the last colon
+            	String newPrefix = key.substring(0, lastColon);
+            	String suffix = key.substring(lastColon+1);
+            	if (!"default".equals(suffix)) {
+            		// see if there an icon registered as <prefix>:default
+            		return findIconUrlByKey(newPrefix+":default");
+            	} else {
+            		// if we have tried the :default and got all the way here just try the prefix
+            		return findIconUrlByKey(newPrefix);
+            	}
+            }
+        }else {
+            return findIconUrlByKey("default");
         }
         
     }
