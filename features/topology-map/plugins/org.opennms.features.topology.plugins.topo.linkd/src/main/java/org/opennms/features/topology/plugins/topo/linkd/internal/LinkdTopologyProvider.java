@@ -53,6 +53,8 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+//import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -61,7 +63,8 @@ import com.vaadin.data.util.BeanItem;
 public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
-
+    public static final String ROOT_GROUP_ID = "Network";
+    
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
@@ -103,11 +106,13 @@ public class LinkdTopologyProvider implements TopologyProvider {
     
     private NodeDao m_nodeDao;
     
-    private IpInterfaceDao m_ipInterfaceDao;
-    
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
+    private IpInterfaceDao m_ipInterfaceDao;
+
     private String m_configurationFile;
+
+//    private TransactionOperations m_transactionTemplate;
     
     public String getConfigurationFile() {
         return m_configurationFile;
@@ -123,14 +128,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     public NodeDao getNodeDao() {
@@ -163,7 +160,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     public void onInit() {
-        log("init: loading topology v1.2");
+        log("init: loading topology v1.3");
         loadtopology();
     }
     
@@ -174,20 +171,22 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     @Override
-    public Object addGroup(String groupIcon) {
-        return addGroup(getNextGroupId(), groupIcon);
+    public Object addGroup(String groupIconKey) {
+        String nextGroupId = getNextGroupId();
+        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
+        return nextGroupId;
     }
 
-    private Item addGroup(String groupId, String icon) {
+    private Item addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
-        System.err.println("Adding a group: " + groupId);
-        LinkdVertex vertex = new LinkdGroup(groupId, "Group " + groupId);
-        vertex.setIconKey(icon);
+        log("Adding a group: " + groupId);
+        LinkdVertex vertex = new LinkdGroup(groupId, label);
+        vertex.setIconKey(iconKey);
         return m_vertexContainer.addBean(vertex);        
     }
-
+    
     public String getNextGroupId() {
         return "linkdg" + m_groupCounter++;
     }
@@ -331,6 +330,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
     }
 
+    //@Transactional
     private void loadtopology() {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
@@ -345,6 +345,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 
             OnmsNode node = m_nodeDao.get(link.getNode().getId());
+            //OnmsNode node = link.getNode();
             log("loadtopology: found node: " + node.getLabel());
             String sourceId = node.getNodeId();
             LinkdVertex source;
@@ -352,9 +353,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 source = vertexes.get(sourceId);
             } else {
                 log("loadtopology: adding source as vertex: " + node.getLabel());
-                OnmsIpInterface ip = getAddress(node);
-                source = new LinkdNodeVertex(node.getNodeId(), 0, 0, getIconName(node), node.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
-                source.setTooltipText(getNodeTooltipText(node, source, ip));
+                source = getVertex(node);
                 vertexes.put(sourceId, source);
             }
 
@@ -366,9 +365,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 target = vertexes.get(targetId);
             } else {
                 log("loadtopology: adding target as vertex: " + parentNode.getLabel());
-                OnmsIpInterface ip = getAddress(parentNode);
-                target = new LinkdNodeVertex(parentNode.getNodeId(), 0, 0, getIconName(parentNode), parentNode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
-                target.setTooltipText(getNodeTooltipText(parentNode, target, ip));                
+                target = getVertex(parentNode);
                 vertexes.put(targetId, target);
             }
             LinkdEdge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
@@ -381,13 +378,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
             for (OnmsNode onmsnode: m_nodeDao.findAll()) {
                 log("loadtopology: parsing link less node: " + onmsnode.getLabel());
                 String nodeId = onmsnode.getNodeId();
-                LinkdVertex linklessnode;
                 if (!vertexes.containsKey(nodeId)) {
                     log("loadtopology: adding link less node: " + onmsnode.getLabel());
-                    OnmsIpInterface ip = getAddress(onmsnode);
-                    linklessnode = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
-                    linklessnode.setTooltipText(getNodeTooltipText(onmsnode, linklessnode, ip));
-                    vertexes.put(nodeId,linklessnode);
+                    vertexes.put(nodeId,getVertex(onmsnode));
                 }                
             }
         }
@@ -421,6 +414,27 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_edgeContainer.addAll(edges);        
     }
 
+    private LinkdVertex getVertex(OnmsNode onmsnode) {
+        OnmsIpInterface ip = getAddress(onmsnode);
+        LinkdVertex vertex = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+        vertex.setTooltipText(getNodeTooltipText(onmsnode, vertex, ip));
+        return vertex;
+    }
+
+    private OnmsIpInterface getAddress(OnmsNode node) {
+        //OnmsIpInterface ip = node.getPrimaryInterface();
+        OnmsIpInterface ip = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
+        if ( ip == null) {
+//            for (OnmsIpInterface iterip: node.getIpInterfaces()) {
+            for (OnmsIpInterface iterip: m_ipInterfaceDao.findByNodeId(node.getId())) {
+                ip = iterip;
+                break;
+            }
+        }
+        return ip;
+    }
+    
+
     private String getEdgeTooltipText(DataLinkInterface link,
             LinkdVertex source, LinkdVertex target) {
         String tooltipText="";
@@ -444,18 +458,25 @@ public class LinkdTopologyProvider implements TopologyProvider {
         if (targetInterface != null) 
             tooltipText += ":"+targetInterface.getIfName();
         tooltipText +=">\n";
-
         
-        if (targetInterface != null) {
-            tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed());
-            tooltipText +="\n";
-            tooltipText += "Link status: " + getIfStatusString(targetInterface.getIfAdminStatus()) + "/" + getIfStatusString(targetInterface.getIfOperStatus());
-            tooltipText +="\n";
+        if ( targetInterface != null) {
+            if (targetInterface.getIfSpeed() != null) {
+                tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed());
+                tooltipText +="\n";
+            }
+            if (targetInterface.getIfOperStatus() != null) {
+                tooltipText += "Link status: " + getIfStatusString(targetInterface.getIfOperStatus());
+                tooltipText +="\n";
+            }
         } else if (sourceInterface != null) {
-            tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed());
-            tooltipText +="\n";
-            tooltipText += "Link status: " + getIfStatusString(sourceInterface.getIfAdminStatus()) + "/" + getIfStatusString(sourceInterface.getIfOperStatus());
-            tooltipText +="\n";
+            if (sourceInterface.getIfSpeed() != null) {
+                tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed());
+                tooltipText +="\n";
+            }
+            if (sourceInterface.getIfOperStatus() != null) {
+                tooltipText += "Link status: " + getIfStatusString(sourceInterface.getIfOperStatus());
+                tooltipText +="\n";
+            }
         }
 
         tooltipText += "EndPoint1: " + source.getLabel() + ", " + source.getIpAddr();
@@ -502,10 +523,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
         return node.getSysObjectId() == null ? "linkd:system" : "linkd:system:snmp:"+node.getSysObjectId();
     }
     
-    private OnmsIpInterface getAddress(OnmsNode node) {
-        return m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
-    }
-    
     @Override
     public void save(String filename) {
         if (filename == null) 
@@ -531,7 +548,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     @Override
     public void setParent(Object vertexId, Object parentId) {
-        m_vertexContainer.setParent(vertexId, parentId);
+        boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
+        log("setParent for vertex:" + vertexId + " parent: " + parentId + ": "+ addedparent);
     }
     
       private String getIfStatusString(int ifStatusNum) {
@@ -606,5 +624,23 @@ public class LinkdTopologyProvider implements TopologyProvider {
     private void log(final String string) {
         System.err.println("LinkdTopologyProvider: "+ string);
     }
+/*
+    public TransactionOperations getTransactionTemplate() {
+        return m_transactionTemplate;
+    }
 
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        m_transactionTemplate = transactionTemplate;
+    }
+*/
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+    
+    
 }

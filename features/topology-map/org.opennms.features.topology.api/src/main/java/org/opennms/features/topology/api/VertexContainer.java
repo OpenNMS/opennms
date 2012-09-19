@@ -32,6 +32,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanContainer;
 
 public abstract class VertexContainer<K, T> extends BeanContainer<K,T> implements Container.Hierarchical {
+    private static final long serialVersionUID = 1801742257915036973L;
 
     public VertexContainer(Class<? super T> type) {
         super(type);

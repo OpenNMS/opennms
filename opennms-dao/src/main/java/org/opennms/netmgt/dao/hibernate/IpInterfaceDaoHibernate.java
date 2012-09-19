@@ -69,6 +69,12 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
     
     /** {@inheritDoc} */
+    public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
+    }
+
+    /** {@inheritDoc} */
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
         return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ?", 
                           nodeId, 
