@@ -63,9 +63,8 @@ public class CreateGroupOperation implements Operation {
                 }
                 m_topologyProvider.setParent(vertexId, groupId);
             }
-            //graphContainer.redoLayout();
             m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
-            // save the topology for persisting the change
+            // save the topology for persisting the GROUP
             m_topologyProvider.save(null);
         }
         return null;
