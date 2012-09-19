@@ -506,7 +506,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
         
         tooltipText += getNodeStatusString(node.getType().charAt(0));
-        if (ip.isManaged()) {
+        if (ip != null && ip.isManaged()) {
             tooltipText += "/Managed";
         } else {
             tooltipText += "/UnManaged";
