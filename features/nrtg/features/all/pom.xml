@@ -18,14 +18,12 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <repositories>
-            <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-nrtcollector/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.nrtg.protocolcollector/osgi-nrtg-protocolcollector-snmp/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-web/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-jms/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-local/${project.version}/xml/features</repository>
           </repositories>
           <features>
-            <feature>osgi-nrtg-nrtcollector</feature>
-            <feature>osgi-nrtg-protocolcollector-snmp</feature>
-            <feature>osgi-nrtg-web</feature>
+            <feature>osgi-nrtg-jms</feature>
+            <feature>osgi-nrtg-local</feature>
           </features>
         </configuration>
       </plugin>
@@ -35,16 +33,7 @@
 
     <dependency>
       <groupId>org.opennms.osgi.features.nrtg</groupId>
-      <artifactId>osgi-nrtg-nrtcollector</artifactId>
-      <version>${project.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opennms.osgi.features.nrtg.protocolcollector</groupId>
-      <artifactId>osgi-nrtg-protocolcollector-snmp</artifactId>
+      <artifactId>osgi-nrtg-jms</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
@@ -53,7 +42,7 @@
 
     <dependency>
       <groupId>org.opennms.osgi.features.nrtg</groupId>
-      <artifactId>osgi-nrtg-web</artifactId>
+      <artifactId>osgi-nrtg-local</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
@@ -61,5 +50,5 @@
     </dependency>
 
   </dependencies>
-
 </project>
+

@@ -28,13 +28,14 @@
 
 package org.opennms.features.topology.api.support;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.features.topology.api.IconRepository;
 
 public class DefaultIconRepository implements IconRepository {
 
-    private Map<String, String> m_iconMap;
+    private Map<String, String> m_iconMap = Collections.emptyMap();;
 
     @Override
     public boolean contains(String type) {

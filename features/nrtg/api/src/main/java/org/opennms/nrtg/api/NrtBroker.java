@@ -26,19 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.web.internal;
+package org.opennms.nrtg.api;
 
 import java.util.List;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 
 /**
+ * Abstraction for communication of the nrt feature.
+ * Implementations could be message brokers or simple forwarding queues.
+ * 
  * @author Christian Pape
  * @author Markus Neumann
  */
 public interface NrtBroker {
     
     public void publishCollectionJob(CollectionJob collectionJob);
-    public List<MeasurementSet> receiveMeasurementSets(String nrtCollectionTaskId);
+    public List<MeasurementSet> receiveMeasurementSets(String destination);
     
 }

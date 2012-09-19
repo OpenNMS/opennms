@@ -4,6 +4,7 @@
     <reference id="graphDao" interface="org.opennms.netmgt.dao.GraphDao" />
     <reference id="resourceDao" interface="org.opennms.netmgt.dao.ResourceDao" />
     <reference id="snmpAgentConfigFactory" interface="org.opennms.netmgt.config.SnmpAgentConfigFactory" />
+    <reference id="nrtBroker" interface="org.opennms.nrtg.api.NrtBroker" />
     
     <bean id="nrtController" class="org.opennms.nrtg.web.internal.NrtController">
         <property name="graphDao" ref="graphDao" />
@@ -12,30 +13,6 @@
         <property name="nrtBroker" ref="nrtBroker" />
     </bean>
 
-    <bean id="nrtBroker" class="org.opennms.nrtg.web.internal.NrtBrokerJms" >
-        <property name="jmsTemplate" ref="jmsTemplate" />
-    </bean>
-
-    <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://127.0.0.1:61616"/>
-    </bean>
-
-    <bean id="jmsExceptionListener" class="org.opennms.nrtg.web.internal.JmsExceptionListener"/>
-
-    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-        <property name="targetConnectionFactory" ref="amqConnectionFactory"/>
-        <property name="sessionCacheSize" value="8"/>
-        <property name="exceptionListener" ref="jmsExceptionListener"/>
-    </bean>
-
-    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-        <property name="connectionFactory" ref="connectionFactory"/>
-        <property name="deliveryPersistent" value="false"/>
-        <property name="deliveryMode" value="1"/>
-        <property name="explicitQosEnabled" value="true"/>
-        <property name="timeToLive" value="120000"/>
-    </bean>
-  
     <bean id="nrtServlet" class="org.opennms.nrtg.web.internal.NrtServlet">
         <property name="controller" ref="nrtController" />
     </bean>
@@ -46,11 +23,4 @@
         </service-properties>
     </service>
     
-    <bean id="amqAjaxServlet" class="org.opennms.nrtg.web.internal.NrtAmqAjaxServlet" />
-    <service interface="javax.servlet.Servlet" ref="amqAjaxServlet">
-        <service-properties>
-            <entry key="alias" value="/amq" />
-            <entry key="org.apache.activemq.brokerURL" value="tcp://127.0.0.1:61616" />
-        </service-properties>
-    </service>    
 </blueprint>

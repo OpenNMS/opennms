@@ -336,6 +336,7 @@ public class TopologyComponentTest {
         target.addAttribute(eq("key"), EasyMock.notNull(String.class));
         target.addAttribute(eq("source"), EasyMock.notNull(String.class));
         target.addAttribute(eq("target"), EasyMock.notNull(String.class));
+        target.addAttribute("selected", false);
         target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         target.endTag("edge");

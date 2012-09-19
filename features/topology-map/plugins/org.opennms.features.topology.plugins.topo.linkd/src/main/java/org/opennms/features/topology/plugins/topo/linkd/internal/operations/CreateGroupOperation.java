@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
 import static org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.GROUP_ICON_KEY;
+import static org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ROOT_GROUP_ID;
 import java.util.List;
 
 import org.opennms.features.topology.api.GraphContainer;
@@ -48,18 +49,22 @@ public class CreateGroupOperation implements Operation {
             OperationContext operationContext) {
         if (targets != null && !targets.isEmpty() ) {
             
-            // First add the Group
-            Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
-            
             GraphContainer graphContainer = operationContext.getGraphContainer();
-
-            // Second add the beans to the group
-            for(Object key : targets) {
-                Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
+            
+            Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
+            Object parentGroup = null;
+            for(Object target : targets) {
+                Object vertexId = graphContainer.getVertexItemIdForVertexKey(target);
+                Object parent = m_topologyProvider.getVertexContainer().getParent(vertexId);
+                if (parentGroup == null) {
+                    parentGroup = parent;
+                } else if (parentGroup != parent) {
+                    parentGroup = ROOT_GROUP_ID;
+                }
                 m_topologyProvider.setParent(vertexId, groupId);
             }
-            // Do layout
-            operationContext.getGraphContainer().redoLayout();
+            //graphContainer.redoLayout();
+            m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
             // save the topology for persisting the change
             m_topologyProvider.save(null);
         }

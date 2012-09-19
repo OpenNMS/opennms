@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-mock.xml"
@@ -72,9 +71,10 @@ public class LinkdTopologyProviderTest {
     public void tearDown() {
         m_databasePopulator.tearDown();
     }
+        
         @Test 
         public void testGetIcon() {
-            Assert.assertTrue("snmp:1.3.6.1.4.1.5813.1.25".equals(m_topologyProvider.getIconName(m_databasePopulator.getNode1())));
+            Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(m_topologyProvider.getIconName(m_databasePopulator.getNode1())));
             Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode2())));
             Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode3())));
             Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode4())));
@@ -103,4 +103,9 @@ public class LinkdTopologyProviderTest {
             m_databasePopulator.check(m_topologyProvider);
 	}
 
+	@Test 
+	public void testAddGroup() {
+	    Object parentId = m_topologyProvider.addGroup(LinkdTopologyProvider.GROUP_ICON_KEY);
+	    Assert.assertEquals(true, m_topologyProvider.getVertexContainer().containsId(parentId));
+	}
 }

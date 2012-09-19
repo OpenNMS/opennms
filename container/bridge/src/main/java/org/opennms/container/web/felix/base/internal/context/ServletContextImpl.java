@@ -59,26 +59,31 @@ public final class ServletContextImpl
         this.attributes = sharedAttributes ? null : new ConcurrentHashMap<String, Object>();
     }
 
+    @Override
     public String getContextPath()
     {
         return this.context.getContextPath();
     }
 
+    @Override
     public ServletContext getContext(String uri)
     {
         return this.context.getContext(uri);
     }
 
+    @Override
     public int getMajorVersion()
     {
         return this.context.getMajorVersion();
     }
 
+    @Override
     public int getMinorVersion()
     {
         return this.context.getMinorVersion();
     }
 
+    @Override
     public Set getResourcePaths(String path)
     {
         Enumeration paths = this.bundle.getEntryPaths(normalizePath(path));
@@ -94,11 +99,13 @@ public final class ServletContextImpl
         return set;
     }
 
+    @Override
     public URL getResource(String path)
     {
         return this.httpContext.getResource(normalizePath(path));
     }
 
+    @Override
     public InputStream getResourceAsStream(String path)
     {
         URL res = getResource(path);
@@ -113,7 +120,7 @@ public final class ServletContextImpl
         return null;
     }
 
-    private String normalizePath(String path)
+    private static String normalizePath(String path)
     {
         if (path == null) {
             return null;
@@ -127,37 +134,44 @@ public final class ServletContextImpl
         return normalizedPath;
     }
 
+    @Override
     public RequestDispatcher getRequestDispatcher(String uri)
     {
         return null;
     }
 
+    @Override
     public RequestDispatcher getNamedDispatcher(String name)
     {
         return null;
     }
 
+    @Override
     public String getInitParameter(String name)
     {
         return this.context.getInitParameter(name);
     }
 
+    @Override
     public Enumeration getInitParameterNames()
     {
         return this.context.getInitParameterNames();
     }
 
+    @Override
     public Object getAttribute(String name)
     {
         return (this.attributes != null) ? this.attributes.get(name) : this.context.getAttribute(name);
     }
 
+    @Override
     public Enumeration getAttributeNames()
     {
         return (this.attributes != null) ? Collections.enumeration(this.attributes.keySet()) : this.context
             .getAttributeNames();
     }
 
+    @Override
     public void setAttribute(String name, Object value)
     {
         if (value == null)
@@ -188,6 +202,7 @@ public final class ServletContextImpl
         }
     }
 
+    @Override
     public void removeAttribute(String name)
     {
         Object oldValue;
@@ -207,55 +222,62 @@ public final class ServletContextImpl
         }
     }
 
-    @SuppressWarnings("deprecation")
+    @Override
     public Servlet getServlet(String name)
         throws ServletException
     {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
+    @Override
     public Enumeration getServlets()
     {
         return Collections.enumeration(Collections.emptyList());
     }
 
-    @SuppressWarnings("deprecation")
+    @Override
     public Enumeration getServletNames()
     {
         return Collections.enumeration(Collections.emptyList());
     }
 
+    @Override
     public void log(String message)
     {
         SystemLogger.info(message);
     }
 
+    @Override
     public void log(Exception cause, String message)
     {
         SystemLogger.error(message, cause);
     }
 
+    @Override
     public void log(String message, Throwable cause)
     {
         SystemLogger.error(message, cause);
     }
 
+    @Override
     public String getServletContextName()
     {
         return this.context.getServletContextName();
     }
 
+    @Override
     public String getRealPath(String name)
     {
         return null;
     }
 
+    @Override
     public String getServerInfo()
     {
         return this.context.getServerInfo();
     }
 
+    @Override
     public String getMimeType(String file)
     {
         String type = this.httpContext.getMimeType(file);
@@ -266,6 +288,7 @@ public final class ServletContextImpl
         return MimeTypes.get().getByFile(file);
     }
 
+    @Override
     public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res)
         throws IOException
     {

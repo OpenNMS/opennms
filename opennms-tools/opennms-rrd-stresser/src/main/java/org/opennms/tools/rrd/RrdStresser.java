@@ -291,7 +291,7 @@ public class RrdStresser {
     }
 
     private static void rrdCreateFile(Object rrdDef) throws Exception {
-        rrd.createFile(rrdDef);
+        rrd.createFile(rrdDef, null);
     }
 
     private static void rrdInitialize() throws Exception {

@@ -63,18 +63,16 @@
       <type>pom</type>
     </dependency>
     
-    <!-- GCLIB -->
+    <!-- CGLIB -->
     <dependency>
       <groupId>cglib</groupId>
-      <artifactId>cglib</artifactId>
-      <version>2.2.2</version>
+      <artifactId>cglib-nodep</artifactId>
     </dependency>
   
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

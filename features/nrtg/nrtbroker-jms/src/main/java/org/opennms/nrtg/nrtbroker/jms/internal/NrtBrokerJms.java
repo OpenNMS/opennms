@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.web.internal;
+package org.opennms.nrtg.nrtbroker.jms.internal;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 

@@ -61,7 +61,9 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 	
-    public class MapManager {
+	private static final long serialVersionUID = 1L;
+
+	public class MapManager {
 
         private int m_clientX = 0;
         private int m_clientY = 0;
@@ -157,7 +159,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		Object t = null;
 		Object s = null;
 		List<Handler> actionHandlers = m_actionHandlers;
-		List<Action> bgSortingList = sortActionHandlers(m_actionHandlers, t, s);
+		List<Action> bgSortingList = sortActionHandlers(actionHandlers, t, s);
 		for(Action action : bgSortingList) {
 		    bgActionList.add(m_actionMapper.key(action));
 		    actions.add(action);
@@ -175,7 +177,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", group.getX());
         		target.addAttribute("y", group.getY());
         		target.addAttribute("selected", group.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(group.getIconKey()));
+        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(group.getIconKey()));
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
         		target.addAttribute("tooltipText", group.getTooltipText());
@@ -202,7 +204,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", vert.getX());
         		target.addAttribute("y", vert.getY());
         		target.addAttribute("selected", vert.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(vert.getIconKey()));
+        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vert.getIconKey()));
         		target.addAttribute("semanticZoomLevel", vert.getSemanticZoomLevel());
         		if (vert.getGroupId() != null) {
         			target.addAttribute("groupKey", vert.getGroupKey());
@@ -228,6 +230,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("key", edge.getKey());
         	target.addAttribute("source", edge.getSource().getKey());
         	target.addAttribute("target", edge.getTarget().getKey());
+        	target.addAttribute("selected", edge.isSelected());
         	target.addAttribute("tooltipText", edge.getTooltipText());
 
     		List<String> edgeActionList = new ArrayList<String>();
@@ -325,6 +328,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             String graph = (String) variables.get("graph");
             getApplication().getMainWindow().showNotification("" + graph);
             
+        }
+        
+        if(variables.containsKey("clickedEdge")) {
+            String edgeId = (String) variables.get("clickedEdge");
+            singleSelectEdge(edgeId);
         }
         
         if(variables.containsKey("clickedVertex")) {
@@ -430,7 +438,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         String id = vertexProps[0].split(",")[1];
         int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
         int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
-        boolean selected = vertexProps[3].split(",")[1] == "true" ;
+        boolean selected = vertexProps[3].split(",")[1].equals("true");
         
         Vertex vertex = getGraph().getVertexByKey(id);
         vertex.setX(x);
@@ -444,10 +452,26 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	    }
 	}
 	
+	private void singleSelectEdge(String edgeId) {
+	    deselectAllVertices();
+	    deselectAllEdges();
+	    
+	    if(edgeId.isEmpty()) {
+	        requestRepaint();
+	    }else {
+	        toggleSelectedEdge(edgeId);
+	    }
+	}
+
+    private void deselectAllEdges() {
+        for(Edge edge : getGraph().getEdges()) {
+	        edge.setSelected(false);
+	    }
+    }
+	
     private void singleSelectVertex(String vertexId) {
-        for(Vertex vertex : getGraph().getVertices()) {
-            vertex.setSelected(false);
-        }
+        deselectAllEdges();
+        deselectAllVertices();
         
         if(vertexId.isEmpty()) {
             requestRepaint();
@@ -455,11 +479,15 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             toggleSelectedVertex(vertexId);
         }
     }
-    
-    public void selectVerticesByItemId(Collection<Object> itemIds) {
+
+    private void deselectAllVertices() {
         for(Vertex vertex : getGraph().getVertices()) {
             vertex.setSelected(false);
         }
+    }
+    
+    public void selectVerticesByItemId(Collection<Object> itemIds) {
+        deselectAllVertices();
         
         for(Object itemId : itemIds) {
             toggleSelectVertexByItemId(itemId);
@@ -488,6 +516,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		if(vertex != null) {
 		    vertex.setSelected(!vertex.isSelected());
 		}
+		m_graphContainer.getVertexContainer().fireItemSetChange();
 		
 		requestRepaint();
 	}
@@ -495,6 +524,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private void toggleSelectVertexByItemId(Object itemId) {
         Vertex vertex = getGraph().getVertexByItemId(itemId);
         vertex.setSelected(!vertex.isSelected());
+        
+        requestRepaint();
+    }
+    
+    private void toggleSelectedEdge(String edgeItemId) {
+        Edge edge = getGraph().getEdgeByKey(edgeItemId);
+        edge.setSelected(!edge.isSelected());
         
         requestRepaint();
     }

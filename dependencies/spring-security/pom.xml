@@ -42,6 +42,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
         <exclusion>
@@ -55,6 +59,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -93,6 +101,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
         <exclusion>
@@ -106,6 +118,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -144,6 +160,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
         <exclusion>
@@ -157,6 +177,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -195,6 +219,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
         <exclusion>
@@ -208,6 +236,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -246,6 +278,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
         <exclusion>
@@ -259,6 +295,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -297,6 +337,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
         <exclusion>
@@ -310,6 +354,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
