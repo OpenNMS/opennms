@@ -45,7 +45,7 @@ $XML = XML::Twig->new();
 # set defaults
 $url_root = 'http://localhost:8980/opennms/rest';
 $username = 'admin';
-$password = 'x3y2z1';
+$password = 'juniper123';
 
 =head1 OPTIONS
 
