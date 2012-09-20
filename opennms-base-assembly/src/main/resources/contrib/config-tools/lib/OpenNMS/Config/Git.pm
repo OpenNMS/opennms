@@ -1,62 +1,3 @@
-package OpenNMS::Config::Git::Change;
-
-use strict;
-use warnings;
-use Carp;
-
-sub new {
-	my $proto = shift;
-	my $class = ref($proto) || $proto;
-
-	my $self = {
-		FILE => shift,
-		GIT  => shift,
-	};
-
-	if (not defined $self->{GIT}) {
-		croak "You must specify a file and Git object when creating a $class object!";
-	}
-
-	bless($self, $class);
-	return $self;
-}
-
-sub _git {
-	my $self = shift;
-	return $self->{GIT};
-}
-
-sub file {
-	my $self = shift;
-	return $self->{FILE};
-}
-
-sub exec {
-	croak "You must implement the exec method in your subclass!"
-}
-
-package OpenNMS::Config::Git::Add;
-
-use strict;
-use warnings;
-use base qw(OpenNMS::Config::Git::Change);
-
-sub exec {
-	my $self = shift;
-	$self->_git()->add($self->file());
-}
-
-package OpenNMS::Config::Git::Remove;
-
-use strict;
-use warnings;
-use base qw(OpenNMS::Config::Git::Change);
-
-sub exec {
-	my $self = shift;
-	$self->_git()->rm($self->file());
-}
-
 package OpenNMS::Config::Git;
 
 use 5.008008;
@@ -128,7 +69,7 @@ sub _git {
 		return $self->{GIT};
 	}
 
-	return undef;
+	return;
 }
 
 =head2 * dir
@@ -356,14 +297,16 @@ sub commit_modifications {
 	}	
 
 	my @modifications = $self->get_modifications();
-	if (@modifications == 0) { return $self; }
+	if (@modifications == 0) { return 0; }
 
+	my $count = 0;
 	for my $change (@modifications) {
 		$change->exec();
+		$count++;
 	}
 	$self->commit($message);
 
-	return $self;
+	return $count;
 }
 
 =head2 * create_branch($new_branch_name, $existing_branch)
@@ -454,6 +397,72 @@ sub tag {
 
 
 1;
+
+package OpenNMS::Config::Git::Change;
+
+use strict;
+use warnings;
+use Carp;
+
+sub new {
+	my $proto = shift;
+	my $class = ref($proto) || $proto;
+
+	my $self = {
+		FILE => shift,
+		GIT  => shift,
+	};
+
+	if (not defined $self->{GIT}) {
+		croak "You must specify a file and Git object when creating a $class object!";
+	}
+
+	bless($self, $class);
+	return $self;
+}
+
+sub _git {
+	my $self = shift;
+	return $self->{GIT};
+}
+
+sub file {
+	my $self = shift;
+	return $self->{FILE};
+}
+
+sub exec {
+	croak "You must implement the exec method in your subclass!"
+}
+
+1;
+
+package OpenNMS::Config::Git::Add;
+
+use strict;
+use warnings;
+use base qw(OpenNMS::Config::Git::Change);
+
+sub exec {
+	my $self = shift;
+	$self->_git()->add($self->file());
+}
+
+1;
+
+package OpenNMS::Config::Git::Remove;
+
+use strict;
+use warnings;
+use base qw(OpenNMS::Config::Git::Change);
+
+sub exec {
+	my $self = shift;
+	$self->_git()->rm($self->file());
+}
+
+1;
+
 __END__
 
 =head1 AUTHOR

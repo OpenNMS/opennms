@@ -11,14 +11,18 @@ BuildRoot: /var/tmp/%{name}-buildroot
 
 Requires(pretrans): /bin/sh
 Requires(pre): o-test-feature-init >= 1.0-1
+Requires: o-test-feature-init >= 1.0-1
 Requires(pre): o-test-feature-a >= %{version}-%{release}
+Requires: o-test-feature-a >= %{version}-%{release}
 
 %description
 This is a test feature.
 
 %install
-install -d $RPM_BUILD_ROOT/opt/opennms/etc
-echo -e "%{name}-%{version}-%{release}\n\n" > $RPM_BUILD_ROOT/opt/opennms/etc/b.conf
+install -d "$RPM_BUILD_ROOT%{OPENNMS_HOME}/etc" "$RPM_BUILD_ROOT%{OPENNMS_HOME}/share/etc-pristine/"
+echo -e "%{name}-%{version}-%{release}\n\n" > $RPM_BUILD_ROOT%{OPENNMS_HOME}/etc/b.conf
+
+rsync -avr "$RPM_BUILD_ROOT%{OPENNMS_HOME}/etc/" "$RPM_BUILD_ROOT%{OPENNMS_HOME}/share/etc-pristine/"
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -48,4 +52,5 @@ echo "posttrans %{name}: %{OPENNMS_HOME}/bin/config-tools/opennms-posttrans.pl" 
 "%{OPENNMS_HOME}/bin/config-tools/opennms-posttrans.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2
 
 %files
-%config(noreplace) /opt/opennms/etc/*
+%config(noreplace) %{OPENNMS_HOME}/etc/*
+%{OPENNMS_HOME}/share/etc-pristine/*

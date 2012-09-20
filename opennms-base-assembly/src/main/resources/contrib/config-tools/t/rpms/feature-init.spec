@@ -10,7 +10,8 @@ Group: Applications/System
 BuildArch: noarch
 BuildRoot: /var/tmp/%{name}-buildroot
 
-Requires(post): git >= 1.7
+Requires: git >= 1.7, rpm
+Requires(post): git >= 1.7, rpm
 
 Source: perlfiles.tar.gz
 
@@ -36,9 +37,12 @@ ln -s opennms-pretrans.pl opennms-pre.pl
 %clean
 rm -rf "$RPM_BUILD_ROOT"
 
+%pre
+rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1 > /tmp/git-setup.$package
+
 %post
-echo "%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2
-"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2
+#"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2
+"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "o-test-feature-a" "%{version}-%{release}" 1>&2
 
 %files
 %{_prefix}

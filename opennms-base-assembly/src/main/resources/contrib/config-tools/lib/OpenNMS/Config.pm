@@ -5,6 +5,8 @@ use strict;
 use warnings;
 
 use Carp;
+use File::Basename;
+use File::Slurp;
 use File::Spec;
 
 our $VERSION = '0.1.0';
@@ -107,6 +109,15 @@ sub etc_dir {
 	return File::Spec->catdir($self->home(), 'etc');
 }
 
+sub log {
+	my $self = shift;
+	my @args = @_;
+	my ($file, $line) = (caller)[1,2];
+
+	print STDERR basename($file), sprintf(' % 4d: ', $line), @args, "\n";
+	return $self;
+}
+
 sub setup {
 	my $class = shift;
 
@@ -132,7 +143,7 @@ sub setup {
 	print STDERR "=" x 80, "\n";
 
 	my $conflicted = File::Spec->catfile($etcdir, 'conflicted');
-	if (-f $conflicted) {
+	if (-e $conflicted) {
 		croak "\nERROR: found a $conflicted file, bailing.\n\n";
 	}
 
@@ -142,6 +153,7 @@ sub setup {
 END {
 	if ($? != 0) {
 		my $conflicted = File::Spec->catfile($_OPENNMS_HOME, 'etc', 'conflicted');
+		write_file($conflicted, "Failed in $_OPENNMS_HOME\n");
 		print STDERR "ERROR: exiting non-zero. Creating '$conflicted' file.\n";
 	}
 };

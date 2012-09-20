@@ -115,7 +115,7 @@ sub build {
 	
 	my $topdir = $options{_topdir};
 	if (not defined $topdir) {
-		open($rpmrc, "rpm --showrc |") or croak "Unable to run rpm --showrc: $!";
+		open($rpmrc, '-|', "rpm --showrc") or croak "Unable to run rpm --showrc: $!";
 		while (<$rpmrc>) {
 			chomp;
 			if (/[0-9\-]:\s+_topdir\s+(.*)\s*$/) {

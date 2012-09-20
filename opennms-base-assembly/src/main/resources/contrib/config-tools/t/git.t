@@ -1,7 +1,7 @@
-$|++;
-
 use strict;
 use warnings;
+
+$|++;
 
 use Error qw(:try);
 use File::Path;
