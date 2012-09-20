@@ -50,8 +50,8 @@ failovermethod=priority
 gpgcheck=0
 END
 
-	system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', '--downloadonly', "install", "perl", "bash", 'git');
-	system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', "install", "bash");
+	system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', '--downloadonly', 'install', 'perl', 'bash', 'coreutils', 'git');
+	system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', 'install', 'bash', 'coreutils');
 
     return ($rpmroot);
 }

@@ -38,7 +38,7 @@ ln -s opennms-pretrans.pl opennms-pre.pl
 rm -rf "$RPM_BUILD_ROOT"
 
 %pre
-rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | grep -v 'is not installed' | sort -u | head -n 1 > /tmp/git-setup.$package
+rpm -q --queryformat='\%{version}-\%{release}' o-test-feature-a 2>/dev/null | grep -v 'is not installed' | sort -u | head -n 1 > /tmp/git-setup.o-test-feature-a
 exit 0
 
 %post

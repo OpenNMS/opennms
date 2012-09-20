@@ -5,8 +5,11 @@ use strict;
 use warnings;
 
 use Carp;
+use File::Basename;
 use File::Copy;
+use File::Find;
 use File::Path;
+use File::Slurp;
 use File::Spec;
 use IO::Handle;
 
@@ -14,6 +17,32 @@ use OpenNMS::Config;
 use OpenNMS::Config::Git;
 
 our ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version) = OpenNMS::Config->setup($0, @ARGV);
+
+our $etc_pretrans = File::Spec->catdir($config->home(), '.etc-pretrans');
+
+if (-d $etc_pretrans) {
+	$config->log('Found an ', $etc_pretrans, ' directory.  Moving its contents back to ', $etcdir);
+	mkpath($etcdir);
+	find({
+		wanted => sub {
+			return unless (-e $File::Find::name);
+			my $relative = File::Spec->abs2rel($File::Find::name, $etc_pretrans);
+			return unless (defined $relative and $relative ne "");
+			my $targetdir = dirname($relative);
+			my $target;
+			mkpath(File::Spec->catdir($etcdir, $targetdir));
+			if (-d $File::Find::name) {
+				$target = File::Spec->catdir($etcdir, $relative);
+			} else {
+				$target = File::Spec->catfile($etcdir, $relative);
+			}
+			$config->log("moving ", $File::Find::name, " -> ", $target);
+			move($File::Find::name, $target);
+		}
+	}, $etc_pretrans);
+	rmtree($etc_pretrans);
+}
+
 
 my $version_override_file = File::Spec->catfile('/tmp', 'git-setup.' . $rpm_name);
 if (-f $version_override_file and -s $version_override_file) {
@@ -70,13 +99,15 @@ $config->log('moving pristine files to ', $etcdir);
 move(File::Spec->catfile($pristinedir, '.gitignore'), File::Spec->catfile($etcdir, '.gitignore'));
 move(File::Spec->catdir($pristinedir, '.git'), File::Spec->catdir($etcdir, '.git'));
 
-#$git = OpenNMS::Config::Git->new($etcdir);
-#$git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
-#
-#$config->log('committing any initial user changes (if necessary)');
-#my $mods = $git->commit_modifications("user modifications to $rpm_name, version $version");
-#if ($mods == 0) {
-#	$config->log('(no changes to commit)');
-#}
+$git = OpenNMS::Config::Git->new($etcdir);
+$git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
+
+$config->log('committing any initial user changes (if necessary)');
+my $mods = $git->commit_modifications("user modifications to $rpm_name, version $version");
+if ($mods == 0) {
+	$config->log('(no changes to commit)');
+}
+$config->log('tagging setup-user-', $version);
+$git->tag($config->get_tag_name("setup-user-$version"));
 
 exit 0;
