@@ -831,7 +831,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -963,7 +963,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -992,7 +992,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1021,7 +1021,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1050,7 +1050,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1079,7 +1079,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1108,7 +1108,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1137,7 +1137,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1166,7 +1166,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1195,7 +1195,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1224,7 +1224,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1253,7 +1253,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1282,7 +1282,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1311,7 +1311,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
@@ -1340,7 +1340,7 @@ if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
 	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
 		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
 		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ]; then
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
 			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
 			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
 			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
