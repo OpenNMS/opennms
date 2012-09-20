@@ -59,6 +59,12 @@ if (-d File::Spec->catdir($etcdir, '.git')) {
 }
 $config->log("(it's not)");
 
+my $temporary_pristine = 0;
+if (not -d $pristinedir) {
+	$pristinedir = File::Spec->catdir($config->home(), '.etc-pristine');
+	$temporary_pristine++;
+}
+
 $config->log('creating directories if necessary');
 mkpath($pristinedir);
 mkpath($etcdir);
@@ -109,5 +115,9 @@ if ($mods == 0) {
 }
 $config->log('tagging setup-user-', $version);
 $git->tag($config->get_tag_name("setup-user-$version"));
+
+if ($temporary_pristine) {
+	rmtree($pristinedir);
+}
 
 exit 0;
