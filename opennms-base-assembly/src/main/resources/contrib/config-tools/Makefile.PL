@@ -1,5 +1,8 @@
 use inc::Module::Install;
 
+use strict;
+use warnings;
+
 # Define metadata
 name           'OpenNMS-Config';
 all_from       'lib/OpenNMS/Config.pm';

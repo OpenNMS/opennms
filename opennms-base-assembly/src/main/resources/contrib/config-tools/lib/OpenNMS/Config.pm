@@ -5,6 +5,8 @@ use strict;
 use warnings;
 
 use Carp;
+use File::Basename;
+use File::Slurp;
 use File::Spec;
 
 our $VERSION = '0.1.0';
@@ -87,14 +89,22 @@ sub runtime_branch {
 sub existing_version {
 	my $self = shift;
 	my $package = shift;
+	my $version_string = shift;
 	
 	if (not defined $package) {
 		croak "You must specify a package name to query!\n";
 	}
-	my $version = `rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1`;
-	chomp($version);
-	$version = "0.0-0" if ($version eq '');
-	return $version;
+
+	if (defined $version_string) {
+		chomp($version_string);
+	}
+
+	if (not defined $version_string or $version_string !~ /^[\d\.]+\-[[:alnum:]\.]+$/) {
+		$version_string = `rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1`;
+		chomp($version_string);
+	}
+	$version_string = "0.0-0" unless ($version_string =~ /^[\d\.]+\-[[:alnum:]\.]+$/);
+	return $version_string;
 }
 
 sub pristine_dir {
@@ -105,6 +115,15 @@ sub pristine_dir {
 sub etc_dir {
 	my $self = shift;
 	return File::Spec->catdir($self->home(), 'etc');
+}
+
+sub log {
+	my $self = shift;
+	my @args = @_;
+	my ($file, $line) = (caller)[1,2];
+
+	print STDERR basename($file), sprintf(' % 4d: ', $line), @args, "\n";
+	return $self;
 }
 
 sub setup {
@@ -132,7 +151,7 @@ sub setup {
 	print STDERR "=" x 80, "\n";
 
 	my $conflicted = File::Spec->catfile($etcdir, 'conflicted');
-	if (-f $conflicted) {
+	if (-e $conflicted) {
 		croak "\nERROR: found a $conflicted file, bailing.\n\n";
 	}
 
@@ -142,6 +161,7 @@ sub setup {
 END {
 	if ($? != 0) {
 		my $conflicted = File::Spec->catfile($_OPENNMS_HOME, 'etc', 'conflicted');
+		write_file($conflicted, "Failed in $_OPENNMS_HOME\n");
 		print STDERR "ERROR: exiting non-zero. Creating '$conflicted' file.\n";
 	}
 };
