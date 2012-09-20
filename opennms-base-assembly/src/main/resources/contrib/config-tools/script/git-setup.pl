@@ -17,8 +17,7 @@ our ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version) = OpenNM
 
 my $version_override_file = File::Spec->catfile('/tmp', 'git-setup.' . $rpm_name);
 if (-f $version_override_file and -s $version_override_file) {
-	$version = read_file($version_override_file);
-	chomp($version);
+	$version = $config->existing_version($rpm_name, read_file($version_override_file));
 	unlink($version_override_file);
 }
 
@@ -70,5 +69,14 @@ $git->checkout($config->runtime_branch());
 $config->log('moving pristine files to ', $etcdir);
 move(File::Spec->catfile($pristinedir, '.gitignore'), File::Spec->catfile($etcdir, '.gitignore'));
 move(File::Spec->catdir($pristinedir, '.git'), File::Spec->catdir($etcdir, '.git'));
+
+#$git = OpenNMS::Config::Git->new($etcdir);
+#$git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
+#
+#$config->log('committing any initial user changes (if necessary)');
+#my $mods = $git->commit_modifications("user modifications to $rpm_name, version $version");
+#if ($mods == 0) {
+#	$config->log('(no changes to commit)');
+#}
 
 exit 0;

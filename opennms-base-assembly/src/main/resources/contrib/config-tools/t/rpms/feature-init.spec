@@ -38,7 +38,8 @@ ln -s opennms-pretrans.pl opennms-pre.pl
 rm -rf "$RPM_BUILD_ROOT"
 
 %pre
-rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1 > /tmp/git-setup.$package
+rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | grep -v 'is not installed' | sort -u | head -n 1 > /tmp/git-setup.$package
+exit 0
 
 %post
 #"%{TOOLDIR}/git-setup.pl" "%{OPENNMS_HOME}" "%{name}" "%{version}-%{release}" 1>&2

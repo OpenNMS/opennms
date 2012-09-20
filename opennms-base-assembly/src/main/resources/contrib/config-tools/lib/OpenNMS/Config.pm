@@ -89,14 +89,22 @@ sub runtime_branch {
 sub existing_version {
 	my $self = shift;
 	my $package = shift;
+	my $version_string = shift;
 	
 	if (not defined $package) {
 		croak "You must specify a package name to query!\n";
 	}
-	my $version = `rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1`;
-	chomp($version);
-	$version = "0.0-0" if ($version eq '');
-	return $version;
+
+	if (defined $version_string) {
+		chomp($version_string);
+	}
+
+	if (not defined $version_string or $version_string !~ /^[\d\.]+\-[[:alnum:]\.]+$/) {
+		$version_string = `rpm -q --queryformat='\%{version}-\%{release}' $package 2>/dev/null | sort -u | head -n 1`;
+		chomp($version_string);
+	}
+	$version_string = "0.0-0" unless ($version_string =~ /^[\d\.]+\-[[:alnum:]\.]+$/);
+	return $version_string;
 }
 
 sub pristine_dir {
