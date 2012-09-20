@@ -59,6 +59,10 @@ if (-d File::Spec->catdir($etcdir, '.git')) {
 }
 $config->log("(it's not)");
 
+if (not -d $pristinedir) {
+	$pristinedir = File::Spec->catdir('/tmp', 'git-setup-empty-pristine');
+}
+
 $config->log('creating directories if necessary');
 mkpath($pristinedir);
 mkpath($etcdir);
