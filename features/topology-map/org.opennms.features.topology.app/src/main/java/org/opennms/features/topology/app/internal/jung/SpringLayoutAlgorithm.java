@@ -28,14 +28,12 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.Edge;
 import org.opennms.features.topology.app.internal.Graph;
 import org.opennms.features.topology.app.internal.Vertex;
@@ -43,7 +41,7 @@ import org.opennms.features.topology.app.internal.Vertex;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class SpringLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
+public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(GraphContainer graph) {
 		
@@ -75,7 +73,7 @@ public class SpringLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
 				return new Point(v.getX(), v.getY());
 			}
 		});
-		layout.setSize(new Dimension(LAYOUT_WIDTH,LAYOUT_HEIGHT));
+		layout.setSize(selectLayoutSize(g));
 		layout.setRepulsionRange(LAYOUT_REPULSION);
 		
 		int count = 0;

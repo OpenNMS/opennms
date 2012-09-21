@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.Edge;
 import org.opennms.features.topology.app.internal.Graph;
 import org.opennms.features.topology.app.internal.Vertex;
@@ -43,7 +42,7 @@ import org.opennms.features.topology.app.internal.Vertex;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class CircleLayoutAlgorithm implements LayoutAlgorithm {
+public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(GraphContainer graph) {
 		
@@ -74,7 +73,7 @@ public class CircleLayoutAlgorithm implements LayoutAlgorithm {
 				return new Point(v.getX(), v.getY());
 			}
 		});
-		layout.setSize(new Dimension(750,750));
+		layout.setSize(selectLayoutSize(g));
 		
 		for(Vertex v : vertices) {
 			v.setX((int)layout.getX(v));
@@ -85,5 +84,19 @@ public class CircleLayoutAlgorithm implements LayoutAlgorithm {
 		
 		
 	}
+
+	@Override
+	protected Dimension selectLayoutSize(Graph g) {
+		int vertexCount = g.getVertices(g.getSemanticZoomLevel()).size();
+		
+		int spacing = ELBOW_ROOM/5;
+
+		int diameter = (int)(vertexCount*spacing/Math.PI);
+
+		 return new Dimension(diameter+ELBOW_ROOM, diameter+ELBOW_ROOM);
+
+	}
+	
+	
 
 }
