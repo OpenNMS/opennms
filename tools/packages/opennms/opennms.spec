@@ -932,6 +932,10 @@ done
 
 #"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
+printf -- "- cleaning up \$OPENNMS_HOME/data... "
+rm -rf "$RPM_INSTALL_PREFIX0/data"
+echo "done"
+
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
