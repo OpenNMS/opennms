@@ -517,7 +517,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		    vertex.setSelected(!vertex.isSelected());
 		}
 		m_graphContainer.getVertexContainer().fireItemSetChange();
-		
+		setFitToView(false);
 		requestRepaint();
 	}
     
