@@ -775,6 +775,12 @@ for LIBNAME in jicmp jicmp6 jrrd; do
 	fi
 done
 
+printf -- "- cleaning up \$OPENNMS_HOME/data... "
+if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
+	rm -rf "$RPM_INSTALL_PREFIX0/data"
+fi
+echo "done"
+
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
