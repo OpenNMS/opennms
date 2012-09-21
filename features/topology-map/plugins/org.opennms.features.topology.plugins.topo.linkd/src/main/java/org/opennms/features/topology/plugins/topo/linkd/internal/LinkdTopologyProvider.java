@@ -385,6 +385,13 @@ public class LinkdTopologyProvider implements TopologyProvider {
             }
         }
         
+        log("Found Vertexes: #" + vertexes.size());        
+        log("Found Edges: #" + edges.size());
+
+                
+        m_vertexContainer.addAll(vertexes.values());
+        m_edgeContainer.addAll(edges);        
+ 
         File configFile = new File(m_configurationFile);
 
         if (configFile.exists() && configFile.canRead()) {
@@ -393,25 +400,26 @@ public class LinkdTopologyProvider implements TopologyProvider {
             SimpleGraph graph = getGraphFromFile(configFile);
             for (LinkdVertex vertex: graph.m_vertices) {
                 if (!vertex.isLeaf()) {
+                    log("loadtopology: adding group to topology: " + vertex.getId());
                     m_groupCounter++;
-                    LinkdGroup group = (LinkdGroup) vertex;
-                    log("loadtopology: found group: " + group.getId());
-                    for (LinkdVertex vx: group.getMembers()) {
-                        log("loadtopology: found group/member: " + group.getId()+"/"+ vx.getId());
-                        if (vx.isLeaf() && !vertexes.containsKey(vx.getId()))
-                            group.removeMember(vx);
-                    }
-                    vertexes.put(group.getId(), group);
+                    addGroup(vertex.getId(), vertex.getIconKey(), vertex.getLabel());
                 }
             }
+            
+            for (LinkdVertex vertex: graph.m_vertices) {
+                log("loadtopology: found vertex: " + vertex.getId());
+                if (vertex.isRoot()) {
+                    if (!vertex.isLeaf())
+                        setParent(vertex.getId(), ROOT_GROUP_ID);
+                } else {
+                    setParent(vertex.getId(), vertex.getParent().getId());
+                }
+            }
+
         }
-        
-        log("Found Vertexes: #" + vertexes.size());        
-        log("Found Edges: #" + edges.size());
         log("Found Groups: #" + m_groupCounter);
-        
-        m_vertexContainer.addAll(vertexes.values());
-        m_edgeContainer.addAll(edges);        
+
+
     }
 
     private LinkdVertex getVertex(OnmsNode onmsnode) {
