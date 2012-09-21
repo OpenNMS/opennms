@@ -63,7 +63,7 @@ public class NodeInfoOperation extends AbstractOperation {
 
             final URL nodeURL;
             if (node.getNodeID() >= 0) {
-                nodeURL = new URL(baseURL, getNodePageURL() + "[" + node.getNodeID() + "]");
+                nodeURL = new URL(baseURL, getNodePageURL() + "" + node.getNodeID());
             } else {
                 nodeURL = new URL(baseURL, getNodeListURL());
             }
