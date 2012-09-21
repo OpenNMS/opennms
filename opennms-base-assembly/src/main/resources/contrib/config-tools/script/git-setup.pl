@@ -71,7 +71,8 @@ mkpath($etcdir);
 
 $config->log('initializing git');
 our $git = OpenNMS::Config::Git->new($pristinedir);
-$git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
+$git->author_name('OpenNMS Git Auto-Upgrade');
+$git->author_email($0);
 $git->init(branch_name => $config->pristine_branch());
 
 # create .gitignore and commit to the pristine branch
@@ -106,7 +107,8 @@ move(File::Spec->catfile($pristinedir, '.gitignore'), File::Spec->catfile($etcdi
 move(File::Spec->catdir($pristinedir, '.git'), File::Spec->catdir($etcdir, '.git'));
 
 $git = OpenNMS::Config::Git->new($etcdir);
-$git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
+$git->author_name('OpenNMS Git Auto-Upgrade');
+$git->author_email($0);
 
 $config->log('committing any initial user changes (if necessary)');
 my $mods = $git->commit_modifications("user modifications to $rpm_name, version $version");

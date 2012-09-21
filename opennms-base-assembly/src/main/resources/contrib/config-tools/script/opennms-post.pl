@@ -12,7 +12,8 @@ use OpenNMS::Config::Git;
 our ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version) = OpenNMS::Config->setup($0, @ARGV);
 
 my $git = OpenNMS::Config::Git->new($etcdir);
-$git->author('OpenNMS Git Auto-Upgrade <' . $0 . '>');
+$git->author_name('OpenNMS Git Auto-Upgrade');
+$git->author_email($0);
 
 my $current_branch = $git->get_branch_name();
 $config->log('checking current branch (', $current_branch, ')');

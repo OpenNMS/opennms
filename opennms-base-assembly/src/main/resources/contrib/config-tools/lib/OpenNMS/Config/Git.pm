@@ -117,23 +117,53 @@ sub init {
 		} "Error \%d while setting initial branch name to $options{'branch_name'}: \%s";
 	}
 
+	if (defined $self->author_name()) {
+		git_cmd_try {
+			$self->_git()->command_oneline('config', 'user.name', $self->author_name());
+		} "Error \%d while setting user.name to " . $self->author_name() . ": \%s";
+	}
+
+	git_cmd_try {
+		my $email = $0;
+		if (defined $self->author_email()) {
+			$email = $self->author_email();
+		}
+		$self->_git()->command_oneline('config', 'user.email', $self->author_email());
+	} "Error \%d while setting user.email to " . $self->author_email() . ": \%s";
+
 	return $self;
 }
 
-=head2 * author([$author_field])
+=head2 * author_name([$author_name])
 
-Returns the author used when committing changes to the git repository.
-If an argument is specified, the author is set.
+Returns the author name used when committing changes to the git repository.
+If an argument is specified, the author name is set.
 
 =cut
 
-sub author {
+sub author_name {
 	my $self = shift;
-	my $author = shift;
-	if (defined $author) {
-		$self->{AUTHOR} = $author;
+	my $author_name = shift;
+	if (defined $author_name) {
+		$self->{AUTHOR_NAME} = $author_name;
 	}
-	return $self->{AUTHOR};
+	return $self->{AUTHOR_NAME};
+}
+
+=head2 * author_email([$author_email])
+
+Returns the author email used when committing changes to the git repository.
+If an argument is specified, the author email is set.
+
+=cut
+
+sub author_email {
+	my $self = shift;
+	my $author_email = shift;
+	if (defined $author_email) {
+		$self->{AUTHOR_EMAIL} = $author_email;
+	}
+	return $self->{AUTHOR_EMAIL};
 }
 
 =head2 * get_branch_name()
@@ -271,8 +301,13 @@ sub commit {
 	}
 
 	my @extra_args;
-	if (defined $self->author()) {
-		push(@extra_args, '--author=' . $self->author());
+	if (defined $self->author_name()) {
+		my $name = $self->author_name();
+		my $email = $0;
+		if (defined $self->author_email()) {
+			$email = $self->author_email();
+		}
+		push(@extra_args, '--author=' . "$name <$email>");
 	}
 
 	git_cmd_try {

@@ -21,8 +21,10 @@ $git->init(branch_name => 'pristine');
 ok(-d "target/git-test/repo/.git");
 is($git->get_branch_name(), 'pristine');
 
-$git->author('git.t <t/git.t>');
-is($git->author(), 'git.t <t/git.t>');
+$git->author_name('git.t');
+$git->author_email('t/git.t');
+is($git->author_name(), 'git.t');
+is($git->author_email(), 't/git.t');
 
 write_file('target/git-test/repo/new.txt', 'This file is new!');
 
