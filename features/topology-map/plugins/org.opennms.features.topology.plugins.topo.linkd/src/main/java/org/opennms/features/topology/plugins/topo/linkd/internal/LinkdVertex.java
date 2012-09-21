@@ -223,6 +223,9 @@ abstract public class LinkdVertex {
     public void setTooltipText(String tooltipText) {
         m_tooltipText = tooltipText;
     }
-	
+    
+    public int getNodeID() {
+        return 0;
+    }
 	
 }
