@@ -776,7 +776,9 @@ for LIBNAME in jicmp jicmp6 jrrd; do
 done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
-rm -rf "$RPM_INSTALL_PREFIX0/data"
+if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
+	rm -rf "$RPM_INSTALL_PREFIX0/data"
+fi
 echo "done"
 
 echo ""
