@@ -454,14 +454,14 @@ pushd opennms-tools
 popd
 
 TOOLDIR="%{bindir}/config-tools"
-pushd opennms-base-assembly/src/main/resources/contrib/config-tools
-	make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="vendor"
-	find "$RPM_BUILD_ROOT%{_prefix}" -name perllocal.pod -exec rm -rf {} \;
-	install -d -m 755 "$RPM_BUILD_ROOT$TOOLDIR"
-	mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT$TOOLDIR"/
-	cd "$RPM_BUILD_ROOT$TOOLDIR"
-	ln -s opennms-pretrans.pl opennms-pre.pl
-popd
+#pushd opennms-base-assembly/src/main/resources/contrib/config-tools
+#	make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="vendor"
+#	find "$RPM_BUILD_ROOT%{_prefix}" -name perllocal.pod -exec rm -rf {} \;
+#	install -d -m 755 "$RPM_BUILD_ROOT$TOOLDIR"
+#	mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT$TOOLDIR"/
+#	cd "$RPM_BUILD_ROOT$TOOLDIR"
+#	ln -s opennms-pretrans.pl opennms-pre.pl
+#popd
 
 echo "=== INSTALL COMPLETED ==="
 
