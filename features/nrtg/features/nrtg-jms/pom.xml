@@ -19,9 +19,13 @@
         <configuration>
           <repositories>
             <repository>mvn:org.opennms.osgi.features.nrtg/osgi-nrtg-base/${project.version}/xml/features</repository>
+            <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
           </repositories>
           <features>
             <feature>osgi-nrtg-base</feature>
+            <feature>activemq</feature>
+            <feature>activemq-blueprint</feature>
+            <feature>spring-jms</feature>
           </features>
         </configuration>
       </plugin>

@@ -229,11 +229,6 @@
     <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
 
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>activemq-web-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
