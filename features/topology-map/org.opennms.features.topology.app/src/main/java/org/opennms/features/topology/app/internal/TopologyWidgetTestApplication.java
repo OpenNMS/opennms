@@ -220,36 +220,38 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 
     private void updateWidgetView(WidgetManager widgetManager) {
-        if(m_bottomLayoutBar == null && m_viewContribLayout == null && widgetManager.widgetCount() > 0) {
+        if(widgetManager.widgetCount() == 0) {
+            if(m_viewContribLayout != null) {
+                m_viewContribLayout.removeAllComponents();
+            }
             
-            m_bottomLayoutBar = new VerticalSplitPanel();
-            m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
-    
-            m_viewContribLayout = new VerticalLayout();
-            m_viewContribLayout.addComponent(m_widgetManager.getTabSheet());
-    
-            m_bottomLayoutBar.setSecondComponent(m_viewContribLayout);
-            m_bottomLayoutBar.setSplitPosition(99, Sizeable.UNITS_PERCENTAGE);
-            m_bottomLayoutBar.setSizeFull();
-    		m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
-    		m_layout.requestRepaint();
-    		
-        }else if(widgetManager.widgetCount() > 0) {
-            m_viewContribLayout.removeAllComponents();
-            m_viewContribLayout.addComponent(widgetManager.getTabSheet());
-            m_viewContribLayout.requestRepaint();
-            
-        }else if(widgetManager.widgetCount() == 0) {
-            m_viewContribLayout.removeAllComponents();
-            
-            m_layout.removeComponent(m_bottomLayoutBar);
-            m_bottomLayoutBar = null;
-            m_viewContribLayout = null;
-            
+            m_layout.removeAllComponents();
+            m_layout.addComponent(m_menuBar);
             m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
             m_layout.requestRepaint();
+        } else {
+            if(m_bottomLayoutBar == null) {
+                m_bottomLayoutBar = new VerticalSplitPanel();
+                m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                
+                if(m_viewContribLayout == null) {
+                    m_viewContribLayout = new VerticalLayout();
+                    m_bottomLayoutBar.setSecondComponent(m_viewContribLayout);
+                }
+                
+                m_bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
+                m_bottomLayoutBar.setSizeFull();
+                
+            }
+            m_viewContribLayout.removeAllComponents();
+            m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+            
+            m_layout.removeAllComponents();
+            m_layout.addComponent(m_menuBar);
+            m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
+            m_layout.requestRepaint();
+            
         }
-		
     }
 
 
