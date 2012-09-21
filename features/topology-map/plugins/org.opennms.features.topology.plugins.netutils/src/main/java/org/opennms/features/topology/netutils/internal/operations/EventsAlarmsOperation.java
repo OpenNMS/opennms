@@ -68,7 +68,7 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
             final URL alarmsURL;
             if (node.getNodeID() >= 0) {
                 eventsURL = new URL(baseURL, getEventsURL() + "?filter=node%3D" + node.getNodeID());
-                alarmsURL = new URL(baseURL, getAlarmsURL() + "?sortby=id&amp;acktype=unacklimit=20&amp;filter=node%3D" + node.getNodeID());
+                alarmsURL = new URL(baseURL, getAlarmsURL() + "?sortby=id&acktype=unacklimit=20&filter=node%3D" + node.getNodeID());
             } else {
                 eventsURL = new URL(baseURL, getEventsURL());
                 alarmsURL = new URL(baseURL, getAlarmsURL());

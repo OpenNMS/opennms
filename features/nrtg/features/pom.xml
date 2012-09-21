@@ -12,7 +12,9 @@
 
   <packaging>pom</packaging>
   <modules>
+<!--
     <module>commander</module>
+-->
     <module>api</module>
     <module>web</module>
     <module>protocolcollector</module>
