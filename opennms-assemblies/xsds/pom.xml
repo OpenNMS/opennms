@@ -38,6 +38,60 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-model</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ncs</groupId>
+      <artifactId>ncs-model</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.availability</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>sms-monitor</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>jasper-extensions</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-link-provisioning-adapter</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>drools-correlation-engine</artifactId>
       <version>${project.version}</version>
@@ -45,7 +99,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-model</artifactId>
+      <artifactId>opennms-dao</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
@@ -64,36 +118,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-link-provisioning-adapter</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.dhcp</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xml</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xmp</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
@@ -122,20 +146,26 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-model</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-monitor</artifactId>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xml</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xmp</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

@@ -10,9 +10,6 @@
     <fileSet>
       <directory>target/xsds</directory>
       <outputDirectory>xsds</outputDirectory>
-      <excludes>
-        <exclude>schema*.xsd</exclude>
-      </excludes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
