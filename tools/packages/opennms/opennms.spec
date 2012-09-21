@@ -933,7 +933,9 @@ done
 #"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
-rm -rf "$RPM_INSTALL_PREFIX0/data"
+if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
+	rm -rf "$RPM_INSTALL_PREFIX0/data"
+fi
 echo "done"
 
 echo ""
