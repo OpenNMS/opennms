@@ -44,13 +44,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation">
-        <service-properties>
-            <entry key="operation.label" value="Traceroute?group=additions"/>
-            <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="Utils"/>
-        </service-properties>
-    </service>
+<!--     <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation"> -->
+<!--         <service-properties> -->
+<!--             <entry key="operation.label" value="Traceroute?group=additions"/> -->
+<!--             <entry key="operation.menuLocation" value="Device"/> -->
+<!--             <entry key="operation.contextMenuLocation" value="Utils"/> -->
+<!--         </service-properties> -->
+<!--     </service> -->
     
     <service interface="org.opennms.features.topology.api.Operation" ref="eventsAlarmsOperation">
         <service-properties>
