@@ -36,10 +36,12 @@ import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -365,6 +367,11 @@ public final class DataSourceFactory implements DataSource {
      */
     public int getLoginTimeout(final String dsName) throws SQLException {
         return getDataSource(dsName).getLoginTimeout();
+    }
+
+    /** {@inheritDoc} */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     /**
