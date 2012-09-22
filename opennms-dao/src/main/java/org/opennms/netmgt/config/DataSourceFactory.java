@@ -36,10 +36,12 @@ import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -373,6 +375,11 @@ public final class DataSourceFactory implements DataSource {
     public void initialize() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
 
+    }
+
+    /** {@inheritDoc} */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     /**

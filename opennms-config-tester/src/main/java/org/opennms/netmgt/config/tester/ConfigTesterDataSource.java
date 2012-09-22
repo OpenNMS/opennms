@@ -31,8 +31,10 @@ package org.opennms.netmgt.config.tester;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -52,6 +54,10 @@ class ConfigTesterDataSource implements DataSource {
 	}
 
 	public void setLoginTimeout(int arg0) throws SQLException {
+	}
+
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new SQLFeatureNotSupportedException("getParentLogger not supported");
 	}
 
 	public boolean isWrapperFor(Class<?> arg0) throws SQLException {

@@ -32,8 +32,10 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -130,6 +132,11 @@ public class SimpleDataSource implements DataSource {
     /** {@inheritDoc} */
     public void setLoginTimeout(int seconds) throws SQLException {
         m_timeout = seconds;
+    }
+
+    /** {@inheritDoc} */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     /**

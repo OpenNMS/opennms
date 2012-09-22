@@ -34,7 +34,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -118,6 +120,11 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
 
     public int getLoginTimeout() throws SQLException {
         return m_dataSource.getLoginTimeout();
+    }
+
+    /** {@inheritDoc} */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     public void close() throws SQLException {

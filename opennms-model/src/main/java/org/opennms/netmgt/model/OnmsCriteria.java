@@ -338,11 +338,11 @@ public class OnmsCriteria {
             return new OnmsDetachedCriteria(entityName, alias);
         }
         
-        public static OnmsDetachedCriteria forClass(Class<?> clazz) {
+        public static OnmsDetachedCriteria forClass(Class clazz) {
             return new OnmsDetachedCriteria(clazz.getName());
         }
         
-        public static OnmsDetachedCriteria forClass(Class<?> clazz, String alias) {
+        public static OnmsDetachedCriteria forClass(Class clazz, String alias) {
             return new OnmsDetachedCriteria(clazz.getName() , alias);
         }
         
