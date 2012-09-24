@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.Edge;
 import org.opennms.features.topology.app.internal.Graph;
 import org.opennms.features.topology.app.internal.Vertex;
@@ -45,7 +44,7 @@ import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class RealUltimateLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
+public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(GraphContainer graph) {
 		
@@ -69,16 +68,18 @@ public class RealUltimateLayoutAlgorithm implements LayoutAlgorithm, LayoutConst
 			jungGraph.addEdge(e, e.getSource(), e.getTarget());
 		}
 		
+		Dimension size = selectLayoutSize(g);
+		Dimension paddedSize = new Dimension((int)(size.getWidth()*.75), (int)(size.getHeight()*75));
 		
-		doISOMLayout(jungGraph, LAYOUT_WIDTH, LAYOUT_HEIGHT);
-		doSpringLayout(jungGraph, LAYOUT_WIDTH, LAYOUT_HEIGHT, LAYOUT_REPULSION);
-		doFRLayout(jungGraph, LAYOUT_WIDTH*3/4, LAYOUT_HEIGHT*3/4, LAYOUT_WIDTH/8, LAYOUT_HEIGHT/8);
-		doSpringLayout(jungGraph, LAYOUT_WIDTH, LAYOUT_HEIGHT, LAYOUT_REPULSION);
+		doISOMLayout(jungGraph, size);
+		doSpringLayout(jungGraph, size, LAYOUT_REPULSION);
+		doFRLayout(jungGraph, paddedSize, (int)(size.getWidth()/8), (int)(size.getHeight()/8));
+		doSpringLayout(jungGraph, size, LAYOUT_REPULSION);
 
 		
 	}
 
-	private void doSpringLayout(SparseGraph<Vertex, Edge> jungGraph, int width, int height, int repulsion) {
+	private void doSpringLayout(SparseGraph<Vertex, Edge> jungGraph, Dimension size, int repulsion) {
 		SpringLayout<Vertex, Edge> layout = new SpringLayout<Vertex, Edge>(jungGraph);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
 			public Point2D transform(Vertex v) {
@@ -86,7 +87,7 @@ public class RealUltimateLayoutAlgorithm implements LayoutAlgorithm, LayoutConst
 			}
 		});
 		
-		layout.setSize(new Dimension(width, height));
+		layout.setSize(size);
 		layout.setRepulsionRange(repulsion);
 
 		int count = 0;
@@ -101,14 +102,14 @@ public class RealUltimateLayoutAlgorithm implements LayoutAlgorithm, LayoutConst
 		}
 	}
 	
-	private void doFRLayout(SparseGraph<Vertex, Edge> jungGraph, int width, int height, final int xOffset, final int yOffset) {
+	private void doFRLayout(SparseGraph<Vertex, Edge> jungGraph, Dimension size, final int xOffset, final int yOffset) {
 		FRLayout<Vertex, Edge> layout = new FRLayout<Vertex, Edge>(jungGraph);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
 			public Point2D transform(Vertex v) {
 				return new Point(v.getX()-xOffset, v.getY()-yOffset);
 			}
 		});
-		layout.setSize(new Dimension(width,height));
+		layout.setSize(size);
 		
 		while(!layout.done()) {
 			layout.step();
@@ -122,14 +123,14 @@ public class RealUltimateLayoutAlgorithm implements LayoutAlgorithm, LayoutConst
 		
 	}
 
-	private void doISOMLayout(SparseGraph<Vertex, Edge> jungGraph, int width, int height) {
+	private void doISOMLayout(SparseGraph<Vertex, Edge> jungGraph, Dimension size) {
 		ISOMLayout<Vertex, Edge> layout = new ISOMLayout<Vertex, Edge>(jungGraph);
 		layout.setInitializer(new Transformer<Vertex, Point2D>() {
 			public Point2D transform(Vertex v) {
 				return new Point(v.getX(), v.getY());
 			}
 		});
-		layout.setSize(new Dimension(width,height));
+		layout.setSize(size);
 		
 		while(!layout.done()) {
 			layout.step();
