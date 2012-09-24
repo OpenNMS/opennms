@@ -102,7 +102,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         "LowerLayerDown"   //7
       };
 
-    private boolean addNodeWithoutLink = true;
+    private boolean addNodeWithoutLink = false;
     
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
