@@ -56,7 +56,6 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
@@ -133,7 +132,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
 
-		NativeButton zoomInBtn = new NativeButton("+");
+		Button zoomInBtn = new Button();
+		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
+		zoomInBtn.setDescription("Expand Semantic Zoom Level");
+		zoomInBtn.setStyleName("semantic-zoom-button");
 		zoomInBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
@@ -144,7 +146,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			}
 		});
 
-		NativeButton zoomOutBtn = new NativeButton("-");
+		Button zoomOutBtn = new Button();
+		zoomOutBtn.setIcon(new ThemeResource("images/minus.png"));
+		zoomOutBtn.setDescription("Collapse Semantic Zoom Level");
+		zoomOutBtn.setStyleName("semantic-zoom-button");
 		zoomOutBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
@@ -193,10 +198,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		AbsoluteLayout mapLayout = new AbsoluteLayout();
 
 		mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-		mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
+		mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
 		mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
-		mapLayout.addComponent(zoomInBtn, "top: 0px; left: 0px;");
-		mapLayout.addComponent(zoomOutBtn, "top: 0px; left: 25px");
+		mapLayout.addComponent(zoomInBtn, "top: 380px; left: 2px;");
+		mapLayout.addComponent(zoomOutBtn, "top: 380px; left: 27px");
 		mapLayout.setSizeFull();
 
 		m_treeMapSplitPanel = new HorizontalSplitPanel();
