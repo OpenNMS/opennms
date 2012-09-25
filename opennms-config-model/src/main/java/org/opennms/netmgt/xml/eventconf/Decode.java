@@ -136,4 +136,9 @@ public class Decode implements Serializable {
 		return true;
 	}
 
+    @Override
+    public String toString() {
+        return m_varbindvalue + '=' + m_varbinddecodedstring;
+    }
+
 }
