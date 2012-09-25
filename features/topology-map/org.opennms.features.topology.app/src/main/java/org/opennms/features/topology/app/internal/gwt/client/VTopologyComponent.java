@@ -578,7 +578,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				};
 
 				showContextMenu(vertex.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "vertex");
-				//m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
 				D3.eventPreventDefault();
 			}
 		};
@@ -606,7 +605,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				};
 
 				showContextMenu(edge.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "edge");
-				//m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
 				D3.eventPreventDefault();
 
 			}
@@ -919,10 +917,10 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_graph = graph;
 		
 		if(isPanToSelection()) {
-		    repaintGraphNow();
+		    repaintGraph();
 		    centerSelection(m_graph.getVertices(m_semanticZoomLevel));
 		} else if(isFitToView()) {
-		    repaintGraphNow();
+		    repaintGraph();
 		    fitMapToView(m_graph.getVertices(m_semanticZoomLevel));
 		}else {
 		    repaintGraph();
@@ -1118,15 +1116,15 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                    
         String transformVal = matrixTransform(transform);
         
-        double strokeWidth = 2 * (1/scale);
-        D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
+        final double strokeWidth = 2 * (1/scale);
+        //D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
         
         D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
             
             @Override
             public void call() {
                 setMapScaleNow(scale);
-                
+                D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
             }
         });
         
