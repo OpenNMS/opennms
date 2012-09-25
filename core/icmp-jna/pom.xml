@@ -29,6 +29,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.jicmp.ip.*;org.opennms.jicmp.ipv6.*;org.opennms.jicmp.jna.*;org.opennms.jicmp.standalone.*;version="${project.version}"</Export-Package>
