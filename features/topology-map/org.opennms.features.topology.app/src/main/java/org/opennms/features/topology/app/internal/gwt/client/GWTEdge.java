@@ -65,7 +65,7 @@ public final class GWTEdge extends JavaScriptObject {
 	}-*/;
     
     private final native boolean isSelected() /*-{
-        return this.selected;
+        return this.selected === undefined ? false : this.selected;
     }-*/;
     
     public final native void setSelected(boolean selected) /*-{
