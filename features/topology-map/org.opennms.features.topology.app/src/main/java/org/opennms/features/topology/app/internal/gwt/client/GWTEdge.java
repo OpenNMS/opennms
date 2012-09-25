@@ -133,6 +133,10 @@ public final class GWTEdge extends JavaScriptObject {
         };
     }
     
+    public static final native void consoleLog(Object obj)/*-{
+        $wnd.console.log(obj);
+    }-*/;
+    
     public static D3Behavior draw() {
         return new D3Behavior() {
 
