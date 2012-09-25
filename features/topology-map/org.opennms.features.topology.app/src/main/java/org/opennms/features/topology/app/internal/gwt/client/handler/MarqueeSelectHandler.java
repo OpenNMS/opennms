@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal.gwt.client.handler;
 
 import java.util.ArrayList;
@@ -9,11 +37,11 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler
 import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.ToggleButton;
 
 public class MarqueeSelectHandler implements DragBehaviorHandler{
 
@@ -46,7 +74,6 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     private int m_y1;
     private int m_offsetX;
     private int m_offsetY;
-    private ToggleButton m_toggle;
     private SVGTopologyMap m_svgTopologyMap;
     
     public MarqueeSelectHandler(SVGTopologyMap topologyMap) {
@@ -59,10 +86,12 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             m_dragging = true;
             
             SVGElement svg = m_svgTopologyMap.getSVGElement();
-            ClientRect rect = svg.getBoundingClientRect();
-            m_offsetX = rect.getLeft();
-            m_offsetY = rect.getTop();
+            SVGMatrix rect = svg.getScreenCTM();
             
+            m_offsetX = (int) rect.getE();
+            m_offsetY = (int) rect.getF();
+            consoleLog(rect);
+            consoleLog("m_offsetX: " + m_offsetX + " m_offsetY: " + m_offsetY);
             m_x1 = D3.getEvent().getClientX() - m_offsetX;
             m_y1 = D3.getEvent().getClientY() - m_offsetY;
             
@@ -70,6 +99,10 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             D3.d3().select(m_svgTopologyMap.getMarqueeElement()).attr("display", "inline");
         }
     }
+    
+    public final native void consoleLog(Object log)/*-{
+        $wnd.console.log(log);
+    }-*/;
 
     @Override
     public void onDrag(Element elem) {
@@ -151,13 +184,4 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
                marqueeY.contains(vertexY.getHi());
     }
 
-    @Override
-    public ToggleButton getToggleBtn() {
-        if(m_toggle == null) {
-            m_toggle = new ToggleButton("Select", "Select");
-        }
-        return m_toggle;
-    }
-
-    
 }

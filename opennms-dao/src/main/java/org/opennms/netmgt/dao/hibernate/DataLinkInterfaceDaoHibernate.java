@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -117,6 +117,20 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
             saveOrUpdate(iface);
         }
     }
+
+    @Override
+    public void deleteIfOlderThan(final Timestamp scanTime) {
+        // DELETE datalinkinterface WHERE lastpolltime < ? AND status <> 'A'
+
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            delete(iface);
+        }
+    }
+
 
     @Override
     public void setStatusForNode(final Integer nodeid, final Character action) {

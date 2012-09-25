@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -311,11 +311,8 @@ public class CollectionResourceWrapper {
             log().warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
             return null;
         }
-        // TODO Is this ID unique ? Here is a suggestion:
-        // String id = "node[" + m_nodeId + '].resourceType[' + m_resource.getResourceTypeName()
-        //   + '].instance[' + m_resource.getInstance() + "].label[" + m_resource.getLabel()
-        //   + "].metric[" + ds + "]"
-        String id = m_resource.toString() + "." + ds;
+        // Generating a unique ID for the node/resourceType/resource/metric combination.
+        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getLabel() + "].metric[" + ds + "]";
         Double current = Double.parseDouble(numValue);
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
             if (log().isDebugEnabled()) {

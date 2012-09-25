@@ -61,6 +61,11 @@
     
     <intercept-url pattern="/**" access="ROLE_USER" />
     
+    
+    
+    <!-- NrtCollection -->
+    <intercept-url pattern="/amq/*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    
     <form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />
     <http-basic />
     <logout logout-success-url="/logoff.jsp" />

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,6 +27,8 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.model;
+
+import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -141,6 +143,18 @@ public class SnmpInterfaceBuilder {
      */
     public SnmpInterfaceBuilder setPhysAddr(String physAddr) {
         m_snmpIf.setPhysAddr(physAddr);
+        return this;
+    }
+
+    /**
+     * <p>setPhysAddr</p>
+     *
+     * @param physAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
+    public SnmpInterfaceBuilder setNetMask(InetAddress netmask) {
+        if (netmask != null )
+            m_snmpIf.setNetMask(netmask);
         return this;
     }
 

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.netutils.internal;
 
 import java.net.MalformedURLException;
@@ -22,8 +50,6 @@ public class EventsAlarmsWindow extends Window {
 	private final double sizePercentage = 0.80; // Window size ratio to the main window
 	private final int widthCushion = 50; //Border cushion for width of window;
 	private final int heightCushion = 110; //Border cushion for height of window
-	private URL eventsURL = null; //Web address for the events page of the selected node
-	private URL alarmsURL = null; //Web address for the alarms page of the selected node
 	private Embedded eventsBrowser = null; //Browser component which is directed at the events page
 	private Embedded alarmsBrowser = null; //Browser component which is directed at the alarms page
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
@@ -37,27 +63,17 @@ public class EventsAlarmsWindow extends Window {
 	 * @param height Height of main window
 	 * @throws MalformedURLException
 	 */
-	public EventsAlarmsWindow(Node n, String eventsURL, String alarmsURL) throws MalformedURLException {
+	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) throws MalformedURLException {
+		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
+		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
 		
-		Node node = n;
-		if (node == null) {
-			node = new Node(-1, "", "");
-		}
-		/*Sets the URLs to the currently selected node that is passed in and initializes the browsers*/
-		if (node.getNodeID() >= 0) {
-			eventsURL += node.getNodeID();
-			alarmsURL += node.getNodeID();
-		}
-		this.eventsURL = new URL(eventsURL);
-		this.alarmsURL = new URL(alarmsURL);
-		eventsBrowser = new Embedded("", new ExternalResource(this.eventsURL));
-		alarmsBrowser = new Embedded("", new ExternalResource(this.alarmsURL));
-		
-		String label = node.getLabel();
+		String label = node == null? "" : node.getLabel();
 		/*Sets up window settings*/
 		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
 			label = "";
-		} else label = " - " + label;
+		} else {
+		    label = " - " + label;
+		}
 		
 		setCaption("Events & Alarms" + label);
 		setImmediate(true);

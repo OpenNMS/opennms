@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -44,10 +44,21 @@
                 <contents>
                     toplevelMenuOrder=File,Edit,View,Additions,Help
                     submenu.File.groups=start,new,close,save,print,open,import,additions,end
-                    submenu.Edit.groups=start,undo,cut,find,add,end,additions
+                    submenu.Edit.groups=start,undo,cut,find,add,layout,end,additions
                     submenu.View.groups=start,additions,end
 		    submenu.Help.groups=start,main,tools,updates,end,additions
                     submenu.Default.groups=start,main,end,additions
+                </contents>
+            </config>
+            <config>
+                <name>org.opennms.features.topology.app.icons</name>
+                <contents>
+                    # The following properties are mappings of vertex types to icons,
+		    # the icon must be a url.
+                    #
+                    # Prefix your url with theme:// to designate that url to the image is in the theme bundle
+		    # 
+                    server=theme://images/server.png 
                 </contents>
             </config>
           </configs>

@@ -1,72 +1,95 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.netutils.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.TracerouteWindow;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
+public class TracerouteOperation extends AbstractOperation {
 
-public class TracerouteOperation implements Operation {
+    private String tracerouteURL;
 
-	private String tracerouteURL;
+    public boolean display(final List<Object> targets, final  OperationContext operationContext) {
+        String ipAddr = "";
 
-	public boolean display(List<Object> targets, OperationContext operationContext) {
-		String ipAddr = "";
+        if (targets != null) {
+            for (final Object target : targets) {
+                final String addrValue = getIpAddrValue(operationContext, target);
+                if (addrValue != null) {
+                    ipAddr = addrValue;
+                }
+            }
+        }
+        if ("".equals(ipAddr)) {
+            return false;
+        }
+        return super.display(targets, operationContext);
+    }
 
-		if (targets != null) {
-			List<Object> selectedVertices = operationContext.getGraphContainer().getSelectedVertices();
-			if (selectedVertices.size() > 0) return false;
-			for(Object target : targets) {
-				Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
-				if (vertexItem != null) {
-					Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
-					ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
-				}
-			}
-		}
-		if ("".equals(ipAddr)) return false;
-		return true;
-	}
+    public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+        String ipAddr = "";
+        String label = "";
+        int nodeID = -1;
 
-	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		return true;
-	}
+        if (targets != null) {
+            for (final Object target : targets) {
+                
+                final String addrValue = getIpAddrValue(operationContext, target);
+                final String labelValue = getLabelValue(operationContext, target);
+                final Integer nodeValue = getNodeIdValue(operationContext, target);
+                
+                if (addrValue != null && nodeValue != null && nodeValue > 0) {
+                    ipAddr = addrValue;
+                    label = labelValue == null ? "" : labelValue;
+                    nodeID = nodeValue.intValue();
+                }
+            }
+        }
+        final Node node = new Node(nodeID, ipAddr, label);
+        operationContext.getMainWindow().addWindow(new TracerouteWindow(node, getTracerouteURL()));
+        return null;
+    }
 
-	public Undoer execute(List<Object> targets, OperationContext operationContext) {
-		String ipAddr = "";
-		String label = "";
-		int nodeID = -1;
+    public String getId() {
+        return "traceroute";
+    }
 
-		if (targets != null) {
-			for(Object target : targets) {
-				Property ipAddrProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr");
-				ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
-				Property labelProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label");
-				label = labelProperty == null ? "" : (String) labelProperty.getValue();
-				Property nodeIDProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID");
-				nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
-			}
-		}
-		Node node = new Node(nodeID, ipAddr, label);
-		operationContext.getMainWindow().addWindow(new TracerouteWindow(node, getTracerouteURL()));
-		return null;
-	}
+    public void setTracerouteURL(final String url) {
+        tracerouteURL = url;
+    }
 
-	public String getId() {
-		// TODO Auto-generated method stub
-		return "traceroute";
-	}
-
-	public void setTracerouteURL(String url) {
-		tracerouteURL = url;
-	}
-
-	public String getTracerouteURL() {
-		return tracerouteURL;
-	}
+    public String getTracerouteURL() {
+        return tracerouteURL;
+    }
 
 }

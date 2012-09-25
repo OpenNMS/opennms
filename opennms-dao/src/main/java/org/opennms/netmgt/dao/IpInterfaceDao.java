@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -80,6 +80,14 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
      * @return a {@link java.util.Collection} object.
      */
     List<OnmsIpInterface> findByIpAddress(String ipAddress);
+
+    /**
+     * <p>findByNodeId</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
+    List<OnmsIpInterface> findByNodeId(Integer nodeId);
 
     /**
      * <p>findByServiceType</p>

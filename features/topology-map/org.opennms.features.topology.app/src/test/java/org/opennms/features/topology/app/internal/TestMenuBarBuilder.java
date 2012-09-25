@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
@@ -110,6 +138,7 @@ public class TestMenuBarBuilder {
     @Test
     public void submenuAlphabeticalOrderTest() {
         CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("File", Arrays.asList("new", "additions"));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation1?group=new", ""));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation3", ""));
         cmdManager.onBind(getTestOperation(), getProps("File", "Operation4", ""));
@@ -130,6 +159,91 @@ public class TestMenuBarBuilder {
         assertEquals("Operation2", subMenuItems.get(3).getText());
         assertEquals("Operation3", subMenuItems.get(4).getText());
         assertEquals("Operation4", subMenuItems.get(5).getText());
+        
+    }
+    
+    @Test
+    public void groupingSeparatorTest() {
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("Default", Arrays.asList("new", "help", "additions"));
+        
+        cmdManager.onBind(getTestOperation(), getProps("Device", "Operation1?group=additions", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Device", "Operation3?group=additions", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Device", "Operation4?group=additions", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Device", "Operation2?group=additions", ""));
+        cmdManager.onBind(getTestOperation(), getProps(null, "Get Info?group=new", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Device", "NewOperation?group=additions", ""));
+        
+        
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(1, menuItems.size());
+        
+        List<MenuItem> subMenuItems = menuItems.get(0).getChildren();
+        assertEquals(5, subMenuItems.size());
+        assertEquals("NewOperation", subMenuItems.get(0).getText());
+        assertEquals("Operation1", subMenuItems.get(1).getText());
+        assertEquals("Operation2", subMenuItems.get(2).getText());
+        assertEquals("Operation3", subMenuItems.get(3).getText());
+        assertEquals("Operation4", subMenuItems.get(4).getText());
+    }
+    
+    @Test
+    public void layoutEditMenuGroupingTest() {
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("Edit", Arrays.asList("new", "layout", "additions"));
+        
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "Circle Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "FR Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "ISOM Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "KK Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "Redo Layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "Spring Layout?group=layout", ""));
+        
+        
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(1, menuItems.size());
+        
+        List<MenuItem> subMenuItems = menuItems.get(0).getChildren();
+        assertEquals(7, subMenuItems.size());
+        assertEquals("Circle Layout", subMenuItems.get(0).getText());
+        assertEquals("FR Layout", subMenuItems.get(1).getText());
+        assertEquals("ISOM Layout", subMenuItems.get(2).getText());
+        assertEquals("KK Layout", subMenuItems.get(3).getText());
+        assertEquals("Spring Layout", subMenuItems.get(4).getText());
+        assertEquals("", subMenuItems.get(5).getText());
+        assertEquals("Redo Layout", subMenuItems.get(6).getText());
+    }
+    
+    @Test
+    public void layoutEditMenuGroupingNoGroupTest() {
+        CommandManager cmdManager = new CommandManager();
+        cmdManager.addOrUpdateGroupOrder("Edit", Arrays.asList("new", "middle", "additions"));
+        
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "Circle Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "FR Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "ISOM Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "KK Layout?group=layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "Redo Layout", ""));
+        cmdManager.onBind(getTestOperation(), getProps("Edit", "Spring Layout?group=layout", ""));
+        
+        
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        
+        List<MenuItem> menuItems = menuBar.getItems();
+        assertEquals(1, menuItems.size());
+        
+        List<MenuItem> subMenuItems = menuItems.get(0).getChildren();
+        assertEquals(6, subMenuItems.size());
+        assertEquals("Circle Layout", subMenuItems.get(0).getText());
+        assertEquals("FR Layout", subMenuItems.get(1).getText());
+        assertEquals("ISOM Layout", subMenuItems.get(2).getText());
+        assertEquals("KK Layout", subMenuItems.get(3).getText());
+        assertEquals("Redo Layout", subMenuItems.get(4).getText());
+        assertEquals("Spring Layout", subMenuItems.get(5).getText());
         
     }
     

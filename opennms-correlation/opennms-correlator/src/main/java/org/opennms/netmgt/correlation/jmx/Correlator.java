@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,72 +28,68 @@
 
 package org.opennms.netmgt.correlation.jmx;
 
+import org.opennms.core.fiber.Fiber;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.access.DefaultLocatorFactory;
 
-
-/**
- * <p>Correlator class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class Correlator implements CorrelatorMBean {
-    
+
     org.opennms.netmgt.correlation.Correlator m_correlator;
 
-	/**
-	 * <p>init</p>
-	 */
-	public void init() {
-		final BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
+    /**
+     * Initialization.
+     * 
+     * Retrieves the Spring context for the correlator.
+     */
+    public void init() {
+        final BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
         final BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
         m_correlator = (org.opennms.netmgt.correlation.Correlator) bf.getFactory().getBean("correlator");
     }
-    
+
     private org.opennms.netmgt.correlation.Correlator getBean() {
-		return m_correlator;
-	}
+        return m_correlator;
+    }
 
     /**
-     * <p>start</p>
+     * Start the correlator daemon.
      */
     public void start() {
-        getBean().start();
+        if (getBean() != null) getBean().start();
     }
 
     /**
-     * <p>stop</p>
+     * Stop the correlator daemon.
      */
     public void stop() {
-        getBean().stop();
+        if (getBean() != null) getBean().stop();
     }
 
     /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
+     * Get the current status of the correlator daemon.
+     * 
+     * @return The integer constant from {@link Fiber} that represents the daemon's status.
      */
     public int getStatus() {
-        return getBean().getStatus();
+        return getBean() == null? Fiber.STOPPED : getBean().getStatus();
     }
 
     /**
-     * <p>getStatusText</p>
-     *
-     * @return a {@link java.lang.String} object.
+     * Get the current status of the correlator.
+     * 
+     * @return The status, as text.
      */
     public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+        return Fiber.STATUS_NAMES[getStatus()];
     }
 
     /**
-     * <p>status</p>
-     *
-     * @return a {@link java.lang.String} object.
+     * Get the current status of the correlator.
+     * 
+     * @return The status, as text.
      */
     public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+        return Fiber.STATUS_NAMES[getStatus()];
     }
 }

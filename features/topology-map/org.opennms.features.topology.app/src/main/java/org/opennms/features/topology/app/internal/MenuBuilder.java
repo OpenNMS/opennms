@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
@@ -12,11 +40,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.vaadin.ui.MenuBar.MenuItem;
-
 
 public abstract class MenuBuilder<T, K>{
 
+    private static final String TOP_LEVEL_ADDITIONS = "Additions";
 	protected LinkedHashMap<String, Object> m_menuBar = new LinkedHashMap<String, Object>();
 	private List<String> m_menuOrder = new ArrayList<String>();
 	private Map<String, List<String>> m_submenuOrderMap = new HashMap<String, List<String>>();
@@ -82,8 +109,8 @@ public abstract class MenuBuilder<T, K>{
 	            if(m_menuOrder.contains(menuName1)) {
 	                index1 = m_menuOrder.indexOf(menuName1);
 	            }else {
-	                if(m_menuOrder.contains("Additions")) {
-	                    index1 = m_menuOrder.indexOf("Additions");
+	                if(m_menuOrder.contains(TOP_LEVEL_ADDITIONS)) {
+	                    index1 = m_menuOrder.indexOf(TOP_LEVEL_ADDITIONS);
 	                }else {
 	                    index1 = m_menuOrder.size();
 	                }
@@ -92,8 +119,8 @@ public abstract class MenuBuilder<T, K>{
 	            if(m_menuOrder.contains(menuName2)) {
 	                index2 = m_menuOrder.indexOf(menuName2);
 	            }else {
-	                if(m_menuOrder.contains("Additions")) {
-	                    index2 = m_menuOrder.indexOf("Additions");
+	                if(m_menuOrder.contains(TOP_LEVEL_ADDITIONS)) {
+	                    index2 = m_menuOrder.indexOf(TOP_LEVEL_ADDITIONS);
 	                }else {
 	                    index2 = m_menuOrder.size();
 	                }
@@ -144,21 +171,21 @@ public abstract class MenuBuilder<T, K>{
 	        LinkedHashMap<String, Object> sortedList = new LinkedHashMap<String, Object>();
 	        
 	        List<String> keys = new ArrayList<String>(value.keySet());
+	        final List<String> submenuOrder = m_submenuOrderMap.get(parentMenuName) != null ? m_submenuOrderMap.get(parentMenuName) :  m_submenuOrderMap.containsKey("default") ? m_submenuOrderMap.get("default") : new ArrayList<String>();
 	        Collections.sort(keys, new Comparator<String>() {
 	
 	            @Override
 	            public int compare(String menuName1, String menuName2) {
-	                final List<String> submenuOrder = m_submenuOrderMap.get(parentMenuName) == null && m_submenuOrderMap.containsKey("default") ? m_submenuOrderMap.get("default") : new ArrayList<String>();
 	                
 	                int index1 = -1;
 	                int index2 = -1;
 	                
-	                String group1 = getGroupForLabel(menuName1);
+	                String group1 = getGroupForLabel(menuName1, submenuOrder);
 	                if(submenuOrder.contains(menuName1.toLowerCase()) && group1 == null) {
 	                    group1 = menuName1.toLowerCase();
 	                }
 	                
-	                String group2 = getGroupForLabel(menuName2);
+	                String group2 = getGroupForLabel(menuName2, submenuOrder);
 	                if(submenuOrder.contains(menuName2.toLowerCase()) && group2 == null) {
 	                    group2 = menuName2.toLowerCase();
 	                }
@@ -189,7 +216,7 @@ public abstract class MenuBuilder<T, K>{
 	        
 	        String prevGroup = null;
 	        for(String key : keys) {
-	            if(prevGroup != null && !prevGroup.equals(getGroupForLabel(key))) {
+	            if(prevGroup != null && !prevGroup.equals(getGroupForLabel(key, submenuOrder))) {
 	                sortedList.put("separator", null);
 	            }
 	           
@@ -201,7 +228,7 @@ public abstract class MenuBuilder<T, K>{
 	//            }
 	            sortedList.put(key, command);
 	            
-	            prevGroup = getGroupForLabel(key);
+	            prevGroup = getGroupForLabel(key, submenuOrder);
 	        }
 	        
 	        return sortedList.entrySet();
@@ -215,7 +242,7 @@ public abstract class MenuBuilder<T, K>{
 	    m_submenuOrderMap = submenOrderMap;
 	}
 
-	private String getGroupForLabel(String label) {
+	private String getGroupForLabel(String label, List<String> submenuOrder) {
 	    String group = null;
 	    String[] groupParams = label.split("\\?");
 	    
@@ -223,10 +250,12 @@ public abstract class MenuBuilder<T, K>{
 	        if(param.contains("group")) {
 	            String[] keyValue = param.split("=");
 	            group = keyValue[1];
+	            return submenuOrder.contains(group) ? group : null;
+	            
 	        }
 	    }
 	    
-	    return group;
+	    return null;
 	}
 
 }

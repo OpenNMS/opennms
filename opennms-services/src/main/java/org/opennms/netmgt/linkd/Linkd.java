@@ -1,17 +1,29 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2006-2011 The OpenNMS Group,
- * Inc. OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc. OpenNMS(R)
- * is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version. OpenNMS(R) is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details. You should have received a copy of the GNU General Public
- * License along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/ http://www.opennms.com/
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.linkd;
@@ -226,6 +238,8 @@ public class Linkd extends AbstractServiceDaemon {
                                                                                                  : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
         discoveryLink.setDiscoveryUsingLldp(pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
                                                                      : m_linkdConfig.useLldpDiscovery());
+        discoveryLink.setDiscoveryUsingOspf(pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
+                                                                     : m_linkdConfig.useOspfDiscovery());
         return discoveryLink;
     }
 
@@ -282,31 +296,56 @@ public class Linkd extends AbstractServiceDaemon {
     private void populateSnmpCollection(final SnmpCollection coll,
             final Package pkg, final String sysoid) {
         coll.setPackageName(pkg.getName());
-        coll.setInitialSleepTime(m_linkdConfig.getInitialSleepTime());
-        coll.setPollInterval(pkg.hasSnmp_poll_interval() ? pkg.getSnmp_poll_interval()
-                                                        : m_linkdConfig.getSnmpPollInterval());
-        // TODO: Put this logic inside LinkdConfigManager
+        
+        String ipRouteClassName =  m_linkdConfig.getDefaultIpRouteClassName();
         if (m_linkdConfig.hasIpRouteClassName(sysoid)) {
-            coll.setIpRouteClass(m_linkdConfig.getIpRouteClassName(sysoid));
+            ipRouteClassName = m_linkdConfig.getIpRouteClassName(sysoid);
             LogUtils.debugf(this,
                             "populateSnmpCollection: found class to get ipRoute: %s",
-                            coll.getIpRouteClass());
+                            ipRouteClassName);
         } else {
-            coll.setIpRouteClass(m_linkdConfig.getDefaultIpRouteClassName());
             LogUtils.debugf(this,
                             "populateSnmpCollection: Using default class to get ipRoute: %s",
-                            coll.getIpRouteClass());
+                            ipRouteClassName);
         }
 
-        if (pkg.hasEnableVlanDiscovery() && pkg.getEnableVlanDiscovery()
-                && m_linkdConfig.hasClassName(sysoid)) {
-            coll.setVlanClass(m_linkdConfig.getVlanClassName(sysoid));
-            LogUtils.debugf(this,
-                            "populateSnmpCollection: found class to get Vlans: %s",
-                            coll.getVlanClass());
-        } else if (!pkg.hasEnableVlanDiscovery()
-                && m_linkdConfig.isVlanDiscoveryEnabled()
-                && m_linkdConfig.hasClassName(sysoid)) {
+        final long initialSleepTime = m_linkdConfig.getInitialSleepTime();
+        final long snmpPollInterval =(pkg.hasSnmp_poll_interval() ? pkg.getSnmp_poll_interval()
+                                                             : m_linkdConfig.getSnmpPollInterval()); 
+        final boolean useCdpDiscovery = (pkg.hasUseCdpDiscovery() ? pkg.getUseCdpDiscovery()
+                                                                 : m_linkdConfig.useCdpDiscovery());
+        final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
+                                                                         : m_linkdConfig.useIpRouteDiscovery());
+        final boolean saveRouteTable = (pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
+                                                               : m_linkdConfig.saveRouteTable());
+        final boolean useLldpDiscovery = (pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
+                                                                   : m_linkdConfig.useLldpDiscovery());
+        final boolean useOspfDiscovery = (pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
+                                                                    : m_linkdConfig.useOspfDiscovery());
+        final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
+                                                                       : m_linkdConfig.useBridgeDiscovery());
+        final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
+                                                                   : m_linkdConfig.saveStpNodeTable());
+        final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
+                                                                             : m_linkdConfig.saveStpInterfaceTable());
+
+        coll.setIpRouteClass(ipRouteClassName);
+        coll.setInitialSleepTime(initialSleepTime);
+        coll.setPollInterval(snmpPollInterval);
+        coll.collectCdp(useCdpDiscovery);
+        coll.SaveIpRouteTable(saveRouteTable);
+        coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable);
+        coll.collectLldp(useLldpDiscovery);
+        coll.collectOspf(useOspfDiscovery);
+        coll.collectBridge(useBridgeDiscovery);
+        coll.saveStpNodeTable(saveStpNodeTable);
+        coll.collectStp(useBridgeDiscovery || saveStpNodeTable || saveStpInterfaceTable);
+        coll.saveStpInterfaceTable(saveStpInterfaceTable);
+ 
+        if ( (pkg.hasEnableVlanDiscovery()  && pkg.getEnableVlanDiscovery()) 
+                || 
+             (!pkg.hasEnableVlanDiscovery() && m_linkdConfig.isVlanDiscoveryEnabled())
+           && m_linkdConfig.hasClassName(sysoid)) {
             coll.setVlanClass(m_linkdConfig.getVlanClassName(sysoid));
             LogUtils.debugf(this,
                             "populateSnmpCollection: found class to get Vlans: %s",
@@ -317,33 +356,7 @@ public class Linkd extends AbstractServiceDaemon {
                             pkg.getName());
         }
 
-        coll.collectCdpTable(pkg.hasUseCdpDiscovery() ? pkg.getUseCdpDiscovery()
-                                                     : m_linkdConfig.useCdpDiscovery());
 
-        final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
-                                                                         : m_linkdConfig.useIpRouteDiscovery());
-        final boolean saveRouteTable = (pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
-                                                               : m_linkdConfig.saveRouteTable());
-
-        coll.SaveIpRouteTable(saveRouteTable);
-        coll.collectIpRouteTable(useIpRouteDiscovery || saveRouteTable);
-
-        final boolean useLldpDiscovery = (pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
-                                                                   : m_linkdConfig.useLldpDiscovery());
-        coll.collectLldpTable(useLldpDiscovery);
-
-        final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
-                                                                       : m_linkdConfig.useBridgeDiscovery());
-        final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
-                                                                   : m_linkdConfig.saveStpNodeTable());
-        final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
-                                                                             : m_linkdConfig.saveStpInterfaceTable());
-
-        coll.collectBridgeForwardingTable(useBridgeDiscovery);
-        coll.saveStpNodeTable(saveStpNodeTable);
-        coll.collectStpNode(useBridgeDiscovery || saveStpNodeTable);
-        coll.saveStpInterfaceTable(saveStpInterfaceTable);
-        coll.collectStpTable(useBridgeDiscovery || saveStpInterfaceTable);
     }
 
     /**

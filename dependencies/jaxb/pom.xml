@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -11,7 +11,8 @@
   <packaging>pom</packaging>
   <name>OpenNMS JAXB Dependencies</name>
   <properties>
-    <jaxbVersion>2.1.7</jaxbVersion>
+    <!-- this has been moved to master pom so the version can be used in the karaf system exports -->
+    <!-- <jaxbVersion>2.1.7</jaxbVersion> -->
     <fastInfosetVersion>1.2.2</fastInfosetVersion>
   </properties>
   <dependencies>

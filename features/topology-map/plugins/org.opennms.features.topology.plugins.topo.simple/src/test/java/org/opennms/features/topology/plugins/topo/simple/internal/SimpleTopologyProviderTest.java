@@ -1,10 +1,38 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.GROUP_ICON;
-import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.SERVER_ICON;
+import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.GROUP_ICON_KEY;
+import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.SERVER_ICON_KEY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +48,7 @@ import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
@@ -141,6 +170,16 @@ public class SimpleTopologyProviderTest {
 	    // TODO Auto-generated method stub
 	    return null;
 	}
+
+	@Override
+	public TopologyProvider getDataSource() {
+		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
+	}
+
+	@Override
+	public void setDataSource(TopologyProvider topologyProvider) {
+		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
+	}
         
     }
     
@@ -177,6 +216,10 @@ public class SimpleTopologyProviderTest {
         if(m_topologyProvider == null) {
             m_topologyProvider = new SimpleTopologyProvider();
         }
+        
+		m_topologyProvider.resetContainer();
+		
+
     }
     
     @After
@@ -189,14 +232,15 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void test() {
 		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		topologyProvider.resetContainer();
 		
 		String vertexA = (String) topologyProvider.addVertex(50, 100);
 		String vertexB = (String) topologyProvider.addVertex(100, 50);
 		String vertexC = (String) topologyProvider.addVertex(100, 150);
 		String vertexD = (String) topologyProvider.addVertex(150, 100);
 		String vertexE = (String) topologyProvider.addVertex(200, 200);
-		String group1 = (String) topologyProvider.addGroup(GROUP_ICON);
-		String group2 = (String) topologyProvider.addGroup(GROUP_ICON);
+		String group1 = (String) topologyProvider.addGroup(GROUP_ICON_KEY);
+		String group2 = (String) topologyProvider.addGroup(GROUP_ICON_KEY);
 		topologyProvider.getVertexContainer().setParent(vertexA, group1);
 		topologyProvider.getVertexContainer().setParent(vertexB, group1);
 		topologyProvider.getVertexContainer().setParent(vertexC, group2);
@@ -219,7 +263,7 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void loadSampleGraph() {
 		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
-		topologyProvider.load("saved-graph.xml");
+		topologyProvider.load("saved-vmware-graph.xml");
 		
 		System.err.println("Vertex Count: " + topologyProvider.getVertexIds().size());
 		System.err.println("Edge Count: " + topologyProvider.getEdgeIds().size());
@@ -231,7 +275,7 @@ public class SimpleTopologyProviderTest {
 	    List<Object> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
-	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON_KEY, m_topologyProvider);
 	    addOperation.execute(targets, operationContext);
 	    
 	    Collection<?> vertIds =  m_topologyProvider.getVertexIds();
@@ -241,7 +285,10 @@ public class SimpleTopologyProviderTest {
 
 	@Test
 	public void testAddVertexToAnotherVertexOperation() {
-	  //Add existing vertex
+
+		m_topologyProvider.resetContainer();
+
+		//Add existing vertex
         Object vertexId = addVertexToTopr();
 	    
 	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
@@ -256,7 +303,7 @@ public class SimpleTopologyProviderTest {
 	    targets.add("1");
 	    
 	    OperationContext operationContext = getOperationContext(graphContainer);
-	    AddVertexOperation addOperation = new AddVertexOperation(SERVER_ICON, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(SERVER_ICON_KEY, m_topologyProvider);
         addOperation.execute(targets, operationContext);
 	    
         Collection<?> vertIds = m_topologyProvider.getVertexIds();
@@ -271,7 +318,9 @@ public class SimpleTopologyProviderTest {
 	
     @Test
 	public void testConnectVertices() {
-        Object vertexId = m_topologyProvider.addVertex(0, 0);
+		m_topologyProvider.resetContainer();
+
+		Object vertexId = m_topologyProvider.addVertex(0, 0);
         
         assertEquals(1, m_topologyProvider.getVertexIds().size());
         Object vertId = m_topologyProvider.getVertexIds().iterator().next();
@@ -296,6 +345,9 @@ public class SimpleTopologyProviderTest {
     
     @Test
     public void testRemoveVertexOperation() {
+		m_topologyProvider.resetContainer();
+
+    	
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
         Object vertexId = addVertexToTopr();
@@ -327,7 +379,7 @@ public class SimpleTopologyProviderTest {
         SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
         assertEquals(2, parent.getMembers().size());
         
-        m_topologyProvider.addGroup(GROUP_ICON);
+        m_topologyProvider.addGroup(GROUP_ICON_KEY);
         
         EasyMock.verify(graphContainer);
     }
@@ -359,6 +411,9 @@ public class SimpleTopologyProviderTest {
     
     @Test
     public void testConnectVerticesOperation() {
+    	
+		m_topologyProvider.resetContainer();
+
         Object vertexId1 = addVertexToTopr();
         Object vertexId2 = addVertexToTopr();
         

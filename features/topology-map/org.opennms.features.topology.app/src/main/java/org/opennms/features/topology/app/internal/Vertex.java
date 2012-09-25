@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import com.google.gwt.user.client.Window;
@@ -24,8 +52,6 @@ public class Vertex implements Paintable {
 	private Item m_item;
 	private Object m_groupId;
 	private String m_groupKey;
-	private String m_label;
-	private String m_ipAddr;
 	
 	public Vertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
 		m_key = key;
@@ -130,6 +156,15 @@ public class Vertex implements Paintable {
 
     public String getIconKey() {
         return (String) m_item.getItemProperty(ICON_KEY).getValue();
+    }
+
+    public String getTooltipText() {
+        if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
+            return (String) m_item.getItemProperty("tooltipText").getValue();
+        }else {
+            return getLabel();
+        }
+        
     }
 
 }

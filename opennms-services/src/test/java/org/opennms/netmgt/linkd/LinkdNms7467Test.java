@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpRouteInterfaceDao;
@@ -128,6 +129,12 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
+        
         MockLogAppender.setupLogging(p);
 
     }
@@ -149,6 +156,10 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         m_nodeDao.save(getCiscoWsC2948());
         m_nodeDao.flush();
         
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+
         final OnmsNode ciscosw = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(ciscosw.getId()));
@@ -233,6 +244,10 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     public void testCiscoC870Collection() throws Exception {
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.flush();
+        
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
         
         final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
 
@@ -527,9 +542,16 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/"+DARWIN_10_8_IP+"-walk.txt")
     })
-    public void testDarmin108Collection() throws Exception {
+    public void testDarwin108Collection() throws Exception {
         m_nodeDao.save(getDarwin108());
         m_nodeDao.flush();
+        
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+
+        m_linkdConfig.update();
+
         final OnmsNode mac = m_nodeDao.findByForeignId("linkd", DARWIN_10_8_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(mac.getId()));
@@ -805,7 +827,7 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         assertEquals(5, m_linkdConfig.getThreads());
         assertEquals(3600000, m_linkdConfig.getInitialSleepTime());
         assertEquals(18000000, m_linkdConfig.getSnmpPollInterval());
-        assertEquals(300000, m_linkdConfig.getDiscoveryLinkInterval());
+        assertEquals(1800000, m_linkdConfig.getDiscoveryLinkInterval());
         
 
         
@@ -815,6 +837,9 @@ public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements Init
         assertEquals(true,m_linkdConfig.useCdpDiscovery());
         assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
+        assertEquals(true,m_linkdConfig.useOspfDiscovery());
+        assertEquals(true,m_linkdConfig.useLldpDiscovery());
+
         assertEquals(true,m_linkdConfig.saveRouteTable());
         assertEquals(true,m_linkdConfig.saveStpNodeTable());
         assertEquals(true,m_linkdConfig.saveStpInterfaceTable());

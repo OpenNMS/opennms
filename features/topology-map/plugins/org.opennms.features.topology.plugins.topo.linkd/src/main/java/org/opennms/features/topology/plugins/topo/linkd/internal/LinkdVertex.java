@@ -1,6 +1,31 @@
-/**
- * 
- */
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
@@ -16,27 +41,28 @@ abstract public class LinkdVertex {
 	int m_y;
 	boolean m_selected;
 	boolean m_locked = false;
-	String m_icon;
+	String m_iconKey;
 	String m_label;
 	String m_ipAddr;
+        String m_tooltipText;
 	LinkdGroup m_parent = null;
 	List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
 	private int m_semanticZoomLevel = -1;
 	
 	public LinkdVertex() {}
 
-	public LinkdVertex(String id, String icon, String label, String ipAddr) {
+	public LinkdVertex(String id, String iconKey, String label, String ipAddr) {
 	    m_id=id;
-	    m_icon=icon;
+	    m_iconKey=iconKey;
 	    m_label = label;
 	    m_ipAddr = ipAddr;
 	}
 	
-	public LinkdVertex(String id, int x, int y, String icon, String label, String ipAddr) {
+	public LinkdVertex(String id, int x, int y, String iconKey, String label, String ipAddr) {
 		m_id=id;
 		m_x=x;
 		m_y=y;
-		m_icon=icon;
+		m_iconKey=iconKey;
 		m_label=label;
 		m_ipAddr = ipAddr;
 	}
@@ -103,12 +129,20 @@ abstract public class LinkdVertex {
 		m_selected = selected;
 	}
 
+	public String getIconKey() {
+		return m_iconKey;
+	}
+
+	public void setIconKey(String icon) {
+		m_iconKey = icon;
+	}
+
 	public String getIcon() {
-		return m_icon;
+		return null;
 	}
 
 	public void setIcon(String icon) {
-		m_icon = icon;
+	
 	}
 
 	public String getLabel() {
@@ -181,6 +215,17 @@ abstract public class LinkdVertex {
 		}
 
 	}
-	
+
+    public String getTooltipText() {
+        return m_tooltipText;
+    }
+
+    public void setTooltipText(String tooltipText) {
+        m_tooltipText = tooltipText;
+    }
+    
+    public int getNodeID() {
+        return 0;
+    }
 	
 }

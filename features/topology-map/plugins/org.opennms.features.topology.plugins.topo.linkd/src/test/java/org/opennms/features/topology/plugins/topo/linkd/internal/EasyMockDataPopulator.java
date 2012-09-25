@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,17 +31,22 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 
 import org.easymock.EasyMock;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsMap;
-import org.opennms.netmgt.model.OnmsMapElement;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 
@@ -75,8 +80,24 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EasyMockDataPopulator {
+    
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
+    
+    @Autowired 
+    private NodeDao m_nodeDao;
+    
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private OperationContext m_operationContext;
+    
+    @Autowired
+    private GraphContainer m_graphContainer;
     
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -87,6 +108,9 @@ public class EasyMockDataPopulator {
     private OnmsNode m_node7;
     private OnmsNode m_node8;
     
+    private List<OnmsNode> m_nodes;
+    private List<DataLinkInterface> m_links;
+
     public void populateDatabase() {
         final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
@@ -96,7 +120,7 @@ public class EasyMockDataPopulator {
         
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
-        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").getNode());
+        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.setBuilding("HQ");
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface(1)
@@ -217,153 +241,104 @@ public class EasyMockDataPopulator {
         OnmsNode node8 = builder.getCurrentNode();
         setNode8(node8);
 
-        final OnmsMap map1 = new OnmsMap("DB_Top_Test_Map", "admin");
-        map1.setBackground("fake_background.jpg");
-        map1.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map1.setType(OnmsMap.USER_GENERATED_MAP);
-        map1.setMapGroup("admin");
-        map1.setId(1);
-
-        final OnmsMap map2 = new OnmsMap("DB_Pop_Test_Map1", "admin");
-        map2.setBackground("fake_background.jpg");
-        map2.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map2.setType(OnmsMap.USER_GENERATED_MAP);
-        map2.setMapGroup("admin");
-        map2.setId(2);
-
-        final OnmsMap map3 = new OnmsMap("DB_Pop_Test_Map2", "admin");
-        map3.setBackground("fake_background.jpg");
-        map3.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map3.setType(OnmsMap.USER_GENERATED_MAP);
-        map3.setMapGroup("admin");
-        map3.setId(3);
-
-        final OnmsMap map4 = new OnmsMap("DB_Pop_Test_Map3", "admin");
-        map4.setBackground("fake_background.jpg");
-        map4.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map4.setType(OnmsMap.USER_GENERATED_MAP);
-        map4.setMapGroup("admin");
-        map4.setId(4);
-
-
+        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        nodes.add(node1);
+        nodes.add(node2);
+        nodes.add(node3);
+        nodes.add(node4);
+        nodes.add(node5);
+        nodes.add(node6);
+        nodes.add(node7);
+        nodes.add(node8);
+        setNodes(nodes);
         
-        final OnmsMapElement element1 = new OnmsMapElement(map1, getNode1().getId(),
-                OnmsMapElement.NODE_TYPE,
-                "Test Node",
-                OnmsMapElement.defaultNodeIcon,
-                0,
-                10);
-        element1.setId(1001);
-        map1.addMapElement(element1);
-
-        final OnmsMapElement element2 = new OnmsMapElement(map1, getNode2().getId(),
-                                                              OnmsMapElement.NODE_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultNodeIcon,
-                                                              0,
-                                                              10);
-        element2.setId(1002);
-        map1.addMapElement(element2);
-
-        final OnmsMapElement element3 = new OnmsMapElement(map2, getNode3().getId(),
-                                                              OnmsMapElement.NODE_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultNodeIcon,
-                                                              0,
-                                                              10);
-        element3.setId(1003);
-        map2.addMapElement(element3);
-
-        final OnmsMapElement element4 = new OnmsMapElement(map2, getNode4().getId(),
-                                                              OnmsMapElement.NODE_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultNodeIcon,
-                                                              0,
-                                                              10);
-        element4.setId(1004);
-        map2.addMapElement(element4);
-
-        final OnmsMapElement element5 = new OnmsMapElement(map3, getNode5().getId(),
-                                                              OnmsMapElement.NODE_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultNodeIcon,
-                                                              0,
-                                                              10);
-        element5.setId(1005);
-        map3.addMapElement(element5);
-
-        final OnmsMapElement element6 = new OnmsMapElement(map3, getNode6().getId(),
-                                                              OnmsMapElement.NODE_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultNodeIcon,
-                                                              0,
-                                                              10);
-        element6.setId(1006);
-        map3.addMapElement(element6);
-
-        final OnmsMapElement element7 = new OnmsMapElement(map1, map2.getId(),
-                                                              OnmsMapElement.MAP_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultMapIcon,
-                                                              0,
-                                                              10);
-        element7.setId(1007);
-        map1.addMapElement(element7);
-
-        final OnmsMapElement element8 = new OnmsMapElement(map1, map3.getId(),
-                                                              OnmsMapElement.MAP_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultMapIcon,
-                                                              0,
-                                                              10);
-        element8.setId(1009);
-        map1.addMapElement(element8);
-
-        final OnmsMapElement element9 = new OnmsMapElement(map4, getNode7().getId(),
-                                                              OnmsMapElement.NODE_TYPE,
-                                                              "Test Node",
-                                                              OnmsMapElement.defaultNodeIcon,
-                                                              0,
-                                                              10);
-        element9.setId(1009);
-        map4.addMapElement(element9);
-
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), 1, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli13 = new DataLinkInterface(getNode3(), 2, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli14 = new DataLinkInterface(getNode4(), 1, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli15 = new DataLinkInterface(getNode5(), 1, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli68 = new DataLinkInterface(getNode8(), 1, getNode6().getId(), 1, "A", new Date());
-        final DataLinkInterface dli76 = new DataLinkInterface(getNode6(), 2, getNode7().getId(), 1, "A", new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), 1, getNode7().getId(), 1, "A", new Date());
+        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1, "A", new Date());
+        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, "A", new Date());
+        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, "A", new Date());
+        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, "A", new Date());
+        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, "A", new Date());
+        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, "A", new Date());
+        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, "A", new Date());
+        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, "A", new Date());
         
         dli12.setId(10012);
-        dli13.setId(10013);
-        dli14.setId(10014);
-        dli15.setId(10015);
-        dli68.setId(10068);
-        dli76.setId(10076);
+        dli23.setId(10023);
+        dli34.setId(10034);
+        dli45.setId(10045);
+        dli56.setId(10056);
+        dli67.setId(10067);
         dli78.setId(10078);
+        dli81.setId(10081);
 
         List<DataLinkInterface> links = new ArrayList<DataLinkInterface>();
         
         links.add(dli12);
-        links.add(dli13);
-        links.add(dli14);
-        links.add(dli15);
-        links.add(dli68);
-        links.add(dli76);
+        links.add(dli23);
+        links.add(dli34);
+        links.add(dli45);
+        links.add(dli56);
+        links.add(dli67);
         links.add(dli78);
-        
-        EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(links).anyTimes();
+        links.add(dli81);
+        setLinks(links);
 
-        EasyMock.replay(m_dataLinkInterfaceDao);
-         
     }
     
+    private List<OnmsIpInterface> getList(Set<OnmsIpInterface> ipset) {
+        List<OnmsIpInterface> ips = new ArrayList<OnmsIpInterface>();
+        for (OnmsIpInterface ip: ipset) {
+            ips.add(ip);
+        }
+        return ips;
+        
+    }
+    public void setUpMock() {
+        
+        EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
+        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
+        
+        for (int i=1;i<9;i++) {
+            EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
+            EasyMock.expect(m_snmpInterfaceDao.findByNodeIdAndIfIndex(i, -1)).andReturn(null).anyTimes();
+            EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
+            EasyMock.expect(m_ipInterfaceDao.findByNodeId(i)).andReturn(getList(getNode(i).getIpInterfaces())).anyTimes();
+        }
+
+        EasyMock.replay(m_dataLinkInterfaceDao);
+        EasyMock.replay(m_nodeDao);
+        EasyMock.replay(m_snmpInterfaceDao);
+        EasyMock.replay(m_ipInterfaceDao);
+    }
+    
+    public OnmsNode getNode(Integer id) {
+        OnmsNode node= null;
+        switch (id) {
+        case 1: node = getNode1();
+        break;
+        case 2: node = getNode2();
+        break;
+        case 3: node = getNode3();
+        break;
+        case 4: node = getNode4();
+        break;
+        case 5: node = getNode5();
+        break;
+        case 6: node = getNode6();
+        break;
+        case 7: node = getNode7();
+        break;
+        case 8: node = getNode8();
+        break;        
+        }
+        
+        return node;
+    }
 
     public void tearDown() {
-        EasyMock.verify(m_dataLinkInterfaceDao);
         EasyMock.reset(m_dataLinkInterfaceDao);
+        EasyMock.reset(m_nodeDao);
+        EasyMock.reset(m_snmpInterfaceDao);
+        EasyMock.reset(m_ipInterfaceDao);
     }
 
     public OnmsNode getNode1() {
@@ -438,6 +413,14 @@ public class EasyMockDataPopulator {
         m_node8 = node8;
     }
 
+    private void setLinks(final List<DataLinkInterface> links) {
+        m_links=links;
+    }
+    
+    public List<DataLinkInterface> getLinks() {
+        return m_links;
+    }
+
     public DataLinkInterfaceDao getDataLinkInterfaceDao() {
         return m_dataLinkInterfaceDao;
     }
@@ -445,11 +428,19 @@ public class EasyMockDataPopulator {
     public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
         this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
-    
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(final NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
+    }
+
     public void check(LinkdTopologyProvider topologyProvider) {
         Assert.assertTrue(topologyProvider.getVertexIds().size()==8);
         
-        Assert.assertTrue(topologyProvider.getEdgeIds().size()==7);
+        Assert.assertTrue(topologyProvider.getEdgeIds().size()==8);
 
         Assert.assertTrue(topologyProvider.containsVertexId("1"));
         Assert.assertTrue(topologyProvider.containsVertexId("2"));
@@ -461,23 +452,23 @@ public class EasyMockDataPopulator {
         Assert.assertTrue(topologyProvider.containsVertexId("8"));
         Assert.assertTrue(!topologyProvider.containsVertexId("15"));
         
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("1").size() == 4);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("2").size() == 1);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("3").size() == 1);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("4").size() == 1);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("5").size() == 1);
+        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("1").size() == 2);
+        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("2").size() == 2);
+        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("3").size() == 2);
+        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("4").size() == 2);
+        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("5").size() == 2);
         Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("6").size() == 2);
         Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("7").size() == 2);
         Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("8").size() == 2);
         
-        String[] edgeidsforvertex1 = { "10012","10013","10014","10015" };
-        String[] edgeidsforvertex2 = { "10012" };
-        String[] edgeidsforvertex3 = { "10013" };
-        String[] edgeidsforvertex4 = { "10014" };
-        String[] edgeidsforvertex5 = { "10015" };
-        String[] edgeidsforvertex6 = { "10068","10076" };
-        String[] edgeidsforvertex7 = { "10076","10078" };
-        String[] edgeidsforvertex8 = { "10068","10078" };
+        String[] edgeidsforvertex1 = { "10012","10081" };
+        String[] edgeidsforvertex2 = { "10012","10023" };
+        String[] edgeidsforvertex3 = { "10023", "10034"};
+        String[] edgeidsforvertex4 = { "10034", "10045" };
+        String[] edgeidsforvertex5 = { "10045", "10056" };
+        String[] edgeidsforvertex6 = { "10056","10067" };
+        String[] edgeidsforvertex7 = { "10067","10078" };
+        String[] edgeidsforvertex8 = { "10078","10081" };
 
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("1").toArray(), edgeidsforvertex1);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("2").toArray(), edgeidsforvertex2);
@@ -487,5 +478,47 @@ public class EasyMockDataPopulator {
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("6").toArray(), edgeidsforvertex6);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("7").toArray(), edgeidsforvertex7);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("8").toArray(), edgeidsforvertex8);
+        
     }
+
+    public List<OnmsNode> getNodes() {
+        return m_nodes;
+    }
+
+    public void setNodes(List<OnmsNode> nodes) {
+        m_nodes = nodes;
+    }
+
+    public OperationContext getOperationContext() {
+        return m_operationContext;
+    }
+
+    public void setOperationContext(OperationContext operationContext) {
+        m_operationContext = operationContext;
+    }
+
+    public GraphContainer getGraphContainer() {
+        return m_graphContainer;
+    }
+
+    public void setGraphContainer(GraphContainer graphContainer) {
+        m_graphContainer = graphContainer;
+    }
+
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+
 }

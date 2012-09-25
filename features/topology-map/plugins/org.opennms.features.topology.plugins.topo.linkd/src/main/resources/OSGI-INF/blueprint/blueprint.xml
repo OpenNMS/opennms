@@ -1,24 +1,101 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-xsi:schemaLocation="
-http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
+					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+					http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 
+					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
+					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+   
+    <cm:property-placeholder id="linkdConfig" persistent-id="org.opennms.features.topology.plugins.topo.linkd" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="configurationFile" value="/opt/opennms/etc/saved-linkd-graph.xml"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+   <!--reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" /-->
 
    <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.DataLinkInterfaceDao" availability="mandatory" />
+
+   <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+
+   <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.IpInterfaceDao" availability="mandatory" />
+
+   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.SnmpInterfaceDao" availability="mandatory" />
+
+   <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
    
-    <bean id="linkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+   <bean id="topologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+            <!--property name="transactionTemplate" ref="transactionTemplate" /-->
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+            <property name="nodeDao" ref="nodeDao" />
+            <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+            <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+            <property name="configurationFile" value="${configurationFile}"/>
     </bean>
     
-    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="linkdTopologyProvider"/>
+    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="topologyProvider">
+      	<service-properties>
+            <entry key="label" value="Linkd"/>
+        </service-properties>
+    </service>
         
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
             <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Open"/>
+            <entry key="operation.label" value="Refresh"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.OpenOperation">
-            <argument ref="linkdTopologyProvider"/>
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation">
+            <argument ref="topologyProvider"/>
+        </bean>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+      	<service-properties>
+            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.label" value="Hide Nodes Without Links"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.HideNodesWithoutLinksOperation">
+            <argument ref="topologyProvider"/>
+        </bean>
+    </service>
+    
+        <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Create Group"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.CreateGroupOperation">
+            <argument ref="topologyProvider"/>
+        </bean>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.IconRepository">
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
+            <property name="iconMap">
+                <map>
+                    <entry key="linkd:group" value="theme://images/cloud.png"/>
+                    <entry key="linkd:system" value="theme://images/generic-device.png"/>
+                    <!-- 
+                    set this for icons that are snmp enabled but whose oid we don't recognize
+                    defaults 'link:system'
+                    <entry key="linkd:system:snmp" value="theme://images/generic-device.png"/>
+                     -->
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.21" value="theme://images/MX960.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.25" value="theme://images/MX480.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.29" value="theme://images/MX240.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.30" value="theme://images/ex3200-24c-24.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.31" value="theme://images/ex4200-24.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.32" value="theme://images/ex8208.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.33" value="theme://images/ex8216.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.43" value="theme://images/ex2200-24.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.44" value="theme://images/ex4500.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.57" value="theme://images/mx80.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.76" value="theme://images/ex3300-vc.png"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.92" value="theme://images/ex4550.png"/>
+                </map>
+            </property>
         </bean>
     </service>
     

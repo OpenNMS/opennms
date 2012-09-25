@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,9 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -195,7 +193,7 @@ Address          Interface              State     ID               Pri  Dead
 172.16.10.1      ge-0/0/0.0             Full      10.205.56.1      128    35 ----> Space_ex_sw1
 172.16.9.1       ge-0/0/3.0             Full      192.168.9.1      128    32 ----> Bangalore
 
-     */
+*/
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
@@ -224,28 +222,7 @@ Address          Interface              State     ID               Pri  Dead
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         example1.setUseCdpDiscovery(false);
-        example1.setUseLldpDiscovery(true);
-        
-        Iproutes iproutes = new Iproutes();
-        Vendor juniper = new Vendor();
-        juniper.setVendor_name("Juniper.junos");
-        juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
-        juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
-        juniper.addSpecific("2.9");
-        juniper.addSpecific("2.10");
-        juniper.addSpecific("2.11");
-        juniper.addSpecific("2.20");
-        juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.30");
-        juniper.addSpecific("2.31");
-        juniper.addSpecific("2.41");
-        juniper.addSpecific("2.57");
-
-        iproutes.addVendor(juniper);
-        m_linkdConfig.getConfiguration().setIproutes(iproutes);
-        m_linkdConfig.update();
-        
+                
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode delhi = m_nodeDao.findByForeignId("linkd", DELHI_NAME);
         final OnmsNode bangalore = m_nodeDao.findByForeignId("linkd", BANGALORE_NAME);
@@ -284,42 +261,77 @@ Address          Interface              State     ID               Pri  Dead
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         assertEquals(12, links.size());
         
-        // Linkd is able to find partially the topology using the next hop router
-        // and lldp among the core nodes:
-        // mumbai, delhi, mysore,bangalore and bagmane
+        /*
+
+                The topology layout:
+
+Parentnode     ParentInterface                  Node            Interface               LinkdStrategy           id
+
+Mumbai          ge-0/1/2.0      (519)  ----> Delhi             ge-1/0/2.0      (28503)  next hop router         800
+Mumbai          ge-0/0/1.0      (507)  ----> Bangalore         ge-0/0/0.0      (2401)   next hop router         801
+Mumbai          ge-0/0/2.0      (977)  ----> Bagmane           ge-1/0/0.0      (534)    next hop router         802
+Mumbai          ge-0/1/1.0      (978)  ----> Mysore            ge-0/0/1.0      (508)    next hop router         803
+
+Delhi           ge-1/0/1.0     (3674)  ----> Bangalore         ge-0/0/1.0      (2397)   next hop router         804
+Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   not saved
+Delhi           ge-1/1/6       (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)    lldp            ****1   805
+Delhi           ge-1/1/5       (28519) ----> Bagmane           ge-1/0/1        (513)    lldp                    811
+
+Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (551)    next hop router         806
+Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router         807
+
+Bagmane         ge-1/0/5.0      (654)  ----> Mysore            ge-0/1/1.0      (520)    next hop router         808
+Bagmane         ge-1/0/2        (514)  ----> J6350-2           ge-0/0/2.0      (549)    lldp            ****2   809
+Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   not saved
+
+Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3   810
+Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3   810
+
+        Here you clearly see 15 links but globally linkd saves only 12 nodes.
+        The problem is that somewhere is stated that nodeid,ifindex must be unique.
+        This means that the links with * are overwritten. because the iproute strategy follows the 
+        lldp strategy then the route link is saved.
         
-        // The bridge and RSTP topology information are
-        // unusuful, the devices supporting RSTP
-        // have themselves as designated bridge.
+        Linkd is able to find the topology using the next hop router
+        and lldp among the core nodes:
+        mumbai, delhi, mysore,bangalore and bagmane
         
-        // The link between Mysore and SRX-100 is lost
+        Also is able to find the topology among the core nodes and the peripherals:
+        space_ex_sw1, space_ex_sw2, j6350_42
+
+        The bridge and RSTP topology information are
+        unusuful, the devices supporting RSTP
+        have themselves as designated bridge.
+        
+        But The link between Mysore and SRX-100 is lost        
+
+         */
         
         for (final DataLinkInterface datalinkinterface: links) {
-            //printLink(datalinkinterface);
             switch(datalinkinterface.getId().intValue()) {
-                case 800: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+                case 800: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
                 break;
-                case 801: checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
+                case 801: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
                 break;
-                case 802: checkLink(j635042, bagmane, 549, 540, datalinkinterface);
+                case 802: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
                 break;
-                case 803: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                case 803: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
                 break;
-                case 804: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                case 804: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
                 break;
-                case 805: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                case 805: checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
                 break;
-                case 806: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                case 806: checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
                 break;
-                case 807: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                case 807: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
                 break;
-                case 808: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                case 808: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
                 break;
-                case 809: checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                case 809: checkLink(j635042, bagmane, 549, 514, datalinkinterface);
                 break;
-                case 810: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                case 810: checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
                 break;
-                case 811: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                case 811: checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
                 break;
                 default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
                 break;                

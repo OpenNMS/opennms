@@ -1,72 +1,78 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.netutils.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.PingWindow;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-
-public class PingOperation implements Operation {
+public class PingOperation extends AbstractOperation {
 
 	private String pingURL;
 
-	public boolean display(List<Object> targets, OperationContext operationContext) {
-		String ipAddr = "";
+	public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+	    String ipAddr = "";
+	    String label = "";
+	    int nodeID = -1;
 
-		if (targets != null) {
-			List<Object> selectedVertices = operationContext.getGraphContainer().getSelectedVertices();
-			if (selectedVertices.size() > 0) return false;
-			for(Object target : targets) {
-				Item vertexItem = operationContext.getGraphContainer().getVertexItem(target);
-				if (vertexItem != null) {
-					Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
-					ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
-				}
-			}
-		}
-		if ("".equals(ipAddr)) return false;
-		return true;
-	}
+            if (targets != null) {
+                for (final Object target : targets) {
+                    final String addrValue = getIpAddrValue(operationContext, target);
+                    final String labelValue = getLabelValue(operationContext, target);
+                    final Integer nodeValue = getNodeIdValue(operationContext, target);
+                    
+                    if (addrValue != null && nodeValue != null && nodeValue > 0) {
+                        ipAddr = addrValue;
+                        label  = labelValue == null? "" : labelValue;
+                        nodeID = nodeValue.intValue();
+                    }
+                }
+            }
 
-	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		return true;
-	}
-
-	public Undoer execute(List<Object> targets, OperationContext operationContext) {
-		String ipAddr = "";
-		String label = "";
-		int nodeID = -1;
-
-		if (targets != null) {
-			for(Object target : targets) {
-				Property ipAddrProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("ipAddr");
-				ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
-				Property labelProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("label");
-				label = labelProperty == null ? "" : (String) labelProperty.getValue();
-				Property nodeIDProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("nodeID");
-				nodeID = nodeIDProperty == null ? -1 : (Integer) nodeIDProperty.getValue();
-			}
-		}
-		Node node = new Node(nodeID, ipAddr, label);
-		operationContext.getMainWindow().addWindow(new PingWindow(node, getPingURL()));
-		return null;
+            final Node node = new Node(nodeID, ipAddr, label);
+            operationContext.getMainWindow().addWindow(new PingWindow(node, getPingURL()));
+            return null;
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
-		return "ping";
+	    return "ping";
 	}
 
-	public void setPingURL(String url) {
-		pingURL = url;
+	public void setPingURL(final String url) {
+	    pingURL = url;
 	}
 
 	public String getPingURL() {
-		return pingURL;
+	    return pingURL;
 	}
 
 }

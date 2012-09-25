@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,16 +74,27 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
 	}
 
     @Override
-    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deactivateForSourceNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.eq("sourceNodeId", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.eq("status", "A"));
         
         for (final OnmsAtInterface iface : findMatching(criteria)) {
             iface.setStatus('N');
             saveOrUpdate(iface);
+        }
+    }
+
+    @Override
+    public void deleteForNodeSourceIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+        criteria.add(Restrictions.eq("sourceNodeId", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsAtInterface iface : findMatching(criteria)) {
+            delete(iface);
         }
     }
 

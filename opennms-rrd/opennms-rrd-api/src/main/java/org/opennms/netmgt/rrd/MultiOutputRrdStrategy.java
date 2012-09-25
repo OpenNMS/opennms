@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -131,15 +132,10 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
         return retval;
     }
 
-    /**
-     * <p>createFile</p>
-     *
-     * @param rrdDef a {@link java.util.List} object.
-     * @throws java.lang.Exception if any.
-     */
-    public void createFile(List<Object> rrdDef) throws Exception {
+    /** {@inheritDoc} */
+    public void createFile(List<Object> rrdDef, Map<String, String> attributeMappings) throws Exception {
         for (int i = 0; i < rrdDef.size(); i++) {
-            m_strategies.get(i).createFile(rrdDef.get(i));
+            m_strategies.get(i).createFile(rrdDef.get(i), attributeMappings);
         }
     }
 

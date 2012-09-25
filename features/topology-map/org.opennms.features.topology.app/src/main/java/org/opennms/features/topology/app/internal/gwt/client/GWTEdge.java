@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal.gwt.client;
 
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
@@ -23,9 +51,9 @@ public final class GWTEdge extends JavaScriptObject {
         return {"id":id, "source":source, "target":target, "actions":[]};
     }-*/;
 
-    public String getId() {
-        return getSource().getId() + "::" + getTarget().getId();
-    }
+    public final native String getId() /*-{
+        return this.id;
+    }-*/;
     
     private final native JsArrayString actionKeys() /*-{
 		return this.actions;
@@ -35,6 +63,14 @@ public final class GWTEdge extends JavaScriptObject {
 		this.actions = keys;
 		return this.actions;
 	}-*/;
+    
+    private final native boolean isSelected() /*-{
+        return this.selected === undefined ? false : this.selected;
+    }-*/;
+    
+    public final native void setSelected(boolean selected) /*-{
+        this.selected = selected;
+    }-*/;
 
 
 	public void setActionKeys(String[] keys) {
@@ -103,7 +139,7 @@ public final class GWTEdge extends JavaScriptObject {
             @Override
             public D3 run(D3 selection) {
                 
-                return selection
+                return selection.style("stroke", GWTEdge.selectionFilter())
                         .attr("x1", GWTEdge.getSourceX())
                         .attr("x2", GWTEdge.getTargetX())
                         .attr("y1", GWTEdge.getSourceY())
@@ -112,16 +148,26 @@ public final class GWTEdge extends JavaScriptObject {
         };
     }
     
+    protected static Func<String, GWTEdge> selectionFilter() {
+        // TODO Auto-generated method stub
+        return new Func<String, GWTEdge>(){
+
+            public String call(GWTEdge edge, int index) {
+                return edge.isSelected() ? "yellow" : "#ccc";
+            }
+            
+        };
+    }
+
     public static D3Behavior create() {
         return new D3Behavior() {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.append("line").attr("opacity", 0).style("stroke", "#ccc").style("cursor", "pointer")
+                return selection.append("line").attr("opacity", 0).style("stroke", "#ccc").style("stroke-width", "2").style("cursor", "pointer")
                         .call(draw());
             }
         };
     }
-
 
 }

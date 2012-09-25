@@ -157,11 +157,21 @@
 			</attribute>
 
 			<attribute name="use-lldp-discovery" type="boolean"
-				use="optional" default="false">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
 						Whether links discovery process should use
 						link layer discovery protocol mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-ospf-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						ospf mib data.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -481,6 +491,14 @@
 			</attribute>
 
 			<attribute name="use-lldp-discovery" type="boolean">
+				<annotation>
+					<documentation>
+						OverWrite default value of link-configuration corresponding attribute	
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-ospf-discovery" type="boolean">
 				<annotation>
 					<documentation>
 						OverWrite default value of link-configuration corresponding attribute	

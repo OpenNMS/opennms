@@ -6,7 +6,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>ssh</artifactId>
@@ -89,7 +89,6 @@
 	<dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.4</version>
         <scope>provided</scope>
     </dependency>
 

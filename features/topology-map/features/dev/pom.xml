@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -26,9 +26,6 @@
           <repositories>
             <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
-          <bundles>
-            <bundle>wrap:mvn:junit/junit/${junit.version}</bundle>
-          </bundles>
         </configuration>
       </plugin>
     </plugins>
@@ -50,6 +47,11 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins</groupId>
+      <artifactId>devutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 </project>

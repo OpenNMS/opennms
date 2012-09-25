@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 
 package org.opennms.netmgt.linkd;
 
@@ -64,7 +63,15 @@ public class LinkableNode {
     
     private Integer m_lldpChassisIdSubtype;
     
-
+    private InetAddress m_ospfRouterId;
+    
+    public InetAddress getOspfRouterId() {
+        return m_ospfRouterId;
+    }
+    public void setOspfRouterId(InetAddress ospfRouterId) {
+        m_ospfRouterId = ospfRouterId;
+    }
+    
     public void setLldpSysname(String lldpSysname) {
         m_lldpSysname = lldpSysname;
     }
@@ -88,17 +95,12 @@ public class LinkableNode {
 
     private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
 
-    public List<LldpRemInterface> getLldpRemInterfaces() {
-        return m_lldpreminterfaces;
-    }
-    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
-        m_lldpreminterfaces = lldpreminterfaces;
-    }
-
     private boolean m_hascdpinterfaces = false;
 
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-	
+
+    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
+        
     private boolean m_hasrouteinterfaces = false;
 	
     private boolean m_isBridgeNode = false;
@@ -160,6 +162,22 @@ public class LinkableNode {
 		return m_snmpprimaryaddr;
 	}
 
+	    public List<LldpRemInterface> getLldpRemInterfaces() {
+	        return m_lldpreminterfaces;
+	    }
+	    
+	    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
+	        m_lldpreminterfaces = lldpreminterfaces;
+	    }
+	    
+	    public List<OspfNbrInterface> getOspfinterfaces() {
+	        return m_ospfinterfaces;
+	    }
+
+	    public void setOspfinterfaces(List<OspfNbrInterface> ospfinterfaces) {
+	        m_ospfinterfaces = ospfinterfaces;
+	    }
+	    
 	/**
 	 * <p>getCdpInterfaces</p>
 	 *

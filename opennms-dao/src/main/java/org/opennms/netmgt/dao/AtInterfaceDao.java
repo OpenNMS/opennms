@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,9 @@ public interface AtInterfaceDao extends OnmsDao<OnmsAtInterface, Integer> {
 
 	void markDeletedIfNodeDeleted();
 
-    void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+    void deactivateForSourceNodeIdIfOlderThan(int sourceNodeid, Timestamp scanTime);
+
+    void deleteForNodeSourceIdIfOlderThan(int sourceNodeid, Timestamp scanTime);
 
     Collection<OnmsAtInterface> findByMacAddress(final String macAddress);
 

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
@@ -33,7 +61,9 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 	
-    public class MapManager {
+	private static final long serialVersionUID = 1L;
+
+	public class MapManager {
 
         private int m_clientX = 0;
         private int m_clientY = 0;
@@ -66,6 +96,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
+    private boolean m_panToSelection = false;
+    private boolean m_fitToView = true;
+    private boolean m_scaleUpdateFromUI = false;
+    private String m_activeTool = "pan";
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -107,6 +141,16 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.addAttribute("clientX", m_mapManager.getClientX());
         target.addAttribute("clientY", m_mapManager.getClientY());
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
+        target.addAttribute("activeTool", m_activeTool);
+        
+        target.addAttribute("panToSelection", getPanToSelection());
+        if (getPanToSelection()) {
+            
+        }
+        setPanToSelection(false);
+        
+        target.addAttribute("fitToView", isFitToView());
+        setFitToView(false);
         
         Set<Action> actions = new HashSet<Action>();
 		m_actionMapper = new KeyMapper();
@@ -115,7 +159,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		Object t = null;
 		Object s = null;
 		List<Handler> actionHandlers = m_actionHandlers;
-		List<Action> bgSortingList = sortActionHandlers(m_actionHandlers, t, s);
+		List<Action> bgSortingList = sortActionHandlers(actionHandlers, t, s);
 		for(Action action : bgSortingList) {
 		    bgActionList.add(m_actionMapper.key(action));
 		    actions.add(action);
@@ -133,9 +177,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", group.getX());
         		target.addAttribute("y", group.getY());
         		target.addAttribute("selected", group.isSelected());
-        		target.addAttribute("iconUrl", group.getIconUrl());
+        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(group.getIconKey()));
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
+        		target.addAttribute("tooltipText", group.getTooltipText());
 
         		List<String> groupActionList = new ArrayList<String>();
         		List<Action> groupSortedList = sortActionHandlers(m_actionHandlers, group.getGroupId(), null); 
@@ -159,12 +204,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("x", vert.getX());
         		target.addAttribute("y", vert.getY());
         		target.addAttribute("selected", vert.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.lookupIconUrlByType(vert.getIconKey()));
+        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vert.getIconKey()));
         		target.addAttribute("semanticZoomLevel", vert.getSemanticZoomLevel());
         		if (vert.getGroupId() != null) {
         			target.addAttribute("groupKey", vert.getGroupKey());
         		}
         		target.addAttribute("label", vert.getLabel());
+        		target.addAttribute("tooltipText", vert.getTooltipText());
 
         		List<String> vertActionList = new ArrayList<String>();
         		List<Action> vertActionSortedList = sortActionHandlers(m_actionHandlers, vert.getItemId(), null);
@@ -184,6 +230,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("key", edge.getKey());
         	target.addAttribute("source", edge.getSource().getKey());
         	target.addAttribute("target", edge.getTarget().getKey());
+        	target.addAttribute("selected", edge.isSelected());
+        	target.addAttribute("tooltipText", edge.getTooltipText());
 
     		List<String> edgeActionList = new ArrayList<String>();
     		List<Action> edgeSortedActionList = sortActionHandlers(m_actionHandlers, edge.getItemId(), null);
@@ -235,6 +283,22 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
     }
 
+    public boolean isFitToView() {
+        return m_fitToView;
+    }
+    
+    public void setFitToView(boolean fitToView) {
+        m_fitToView  = fitToView;
+    }
+
+    private void setPanToSelection(boolean b) {
+        m_panToSelection  = b;
+    }
+
+    private boolean getPanToSelection() {
+        return m_panToSelection;
+    }
+
     private List<Action> sortActionHandlers(List<Handler> actionHandlers, Object target, Object sender) {
         List<Action> sortingList = new ArrayList<Action>();
         for(Action.Handler handler : actionHandlers) {
@@ -264,6 +328,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             String graph = (String) variables.get("graph");
             getApplication().getMainWindow().showNotification("" + graph);
             
+        }
+        
+        if(variables.containsKey("clickedEdge")) {
+            String edgeId = (String) variables.get("clickedEdge");
+            singleSelectEdge(edgeId);
         }
         
         if(variables.containsKey("clickedVertex")) {
@@ -302,23 +371,26 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         if(variables.containsKey("updatedVertex")) {
             String vertexUpdate = (String) variables.get("updatedVertex");
-            String[] vertexProps = vertexUpdate.split("\\|");
-            
-            String id = vertexProps[0].split(",")[1];
-            int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
-            int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
-            boolean selected = vertexProps[3].split(",")[1] == "true" ;
-            
-            Vertex vertex = getGraph().getVertexByKey(id);
-            vertex.setX(x);
-            vertex.setY(y);
-            vertex.setSelected(selected);
+            updateVertex(vertexUpdate);
             
             requestRepaint();
         }
         
+        if(variables.containsKey("updateVertices")) {
+            String[] vertices = (String[]) variables.get("updateVertices");
+            for(String vUpdate : vertices) {
+                updateVertex(vUpdate);
+            }
+            
+            if(vertices.length > 0) {
+                requestRepaint();
+            }
+            
+        }
+        
         if(variables.containsKey("mapScale")) {
             double newScale = (Double)variables.get("mapScale");
+            setScaleUpdateFromUI(true);
             setScale(newScale);
         }
         
@@ -351,6 +423,28 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         updateMenuItems();
     }
+
+    private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
+        m_scaleUpdateFromUI  = scaleUpdateFromUI;
+    }
+    
+    private boolean isScaleUpdateFromUI() {
+        return m_scaleUpdateFromUI;
+    }
+
+    private void updateVertex(String vertexUpdate) {
+        String[] vertexProps = vertexUpdate.split("\\|");
+        
+        String id = vertexProps[0].split(",")[1];
+        int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
+        int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
+        boolean selected = vertexProps[3].split(",")[1].equals("true");
+        
+        Vertex vertex = getGraph().getVertexByKey(id);
+        vertex.setX(x);
+        vertex.setY(y);
+        vertex.setSelected(selected);
+    }
     
 	private void clearAllVertexSelections() {
 	    for(Vertex vertex : getGraph().getVertices()) {
@@ -358,24 +452,49 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	    }
 	}
 	
+	private void singleSelectEdge(String edgeId) {
+	    deselectAllVertices();
+	    deselectAllEdges();
+	    
+	    if(edgeId.isEmpty()) {
+	        requestRepaint();
+	    }else {
+	        toggleSelectedEdge(edgeId);
+	    }
+	}
+
+    private void deselectAllEdges() {
+        for(Edge edge : getGraph().getEdges()) {
+	        edge.setSelected(false);
+	    }
+    }
+	
     private void singleSelectVertex(String vertexId) {
+        deselectAllEdges();
+        deselectAllVertices();
+        
+        if(vertexId.isEmpty()) {
+            requestRepaint();
+        } else {
+            toggleSelectedVertex(vertexId);
+        }
+    }
+
+    private void deselectAllVertices() {
         for(Vertex vertex : getGraph().getVertices()) {
             vertex.setSelected(false);
         }
-        
-        toggleSelectedVertex(vertexId);
     }
     
     public void selectVerticesByItemId(Collection<Object> itemIds) {
-        for(Vertex vertex : getGraph().getVertices()) {
-            vertex.setSelected(false);
-        }
+        deselectAllVertices();
         
         for(Object itemId : itemIds) {
             toggleSelectVertexByItemId(itemId);
         }
         
-        if(itemIds.size() == 0) {
+        if(itemIds.size() > 0) {
+            setPanToSelection(true);
             requestRepaint();
         }
     }
@@ -394,14 +513,24 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
     private void toggleSelectedVertex(String vertexId) {
 		Vertex vertex = getGraph().getVertexByKey(vertexId);
-		vertex.setSelected(!vertex.isSelected());
-		
+		if(vertex != null) {
+		    vertex.setSelected(!vertex.isSelected());
+		}
+		m_graphContainer.getVertexContainer().fireItemSetChange();
+		setFitToView(false);
 		requestRepaint();
 	}
     
     private void toggleSelectVertexByItemId(Object itemId) {
         Vertex vertex = getGraph().getVertexByItemId(itemId);
         vertex.setSelected(!vertex.isSelected());
+        
+        requestRepaint();
+    }
+    
+    private void toggleSelectedEdge(String edgeItemId) {
+        Edge edge = getGraph().getEdgeByKey(edgeItemId);
+        edge.setSelected(!edge.isSelected());
         
         requestRepaint();
     }
@@ -453,6 +582,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	public void containerItemSetChange(ItemSetChangeEvent event) {
 		m_graph.update();
+		setFitToView(true);
 		requestRepaint();
 	}
 
@@ -462,9 +592,17 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
     public void valueChange(ValueChangeEvent event) {
+        double scale = (Double) m_scale.getValue();
+        if(scale == 0) {
+            m_scale.setValue(0.01);
+        }
         
-        //Request repaint when a value changes, currently we are only listening to the scale property
-        requestRepaint();
+        if(!isScaleUpdateFromUI()) {
+            requestRepaint();
+            setScaleUpdateFromUI(false);
+        }else {
+            setScaleUpdateFromUI(false);
+        }
     }
 
     public ContextMenuHandler getContextMenuHandler() {
@@ -481,6 +619,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
     public void setIconRepoManager(IconRepositoryManager iconRepoManager) {
         m_iconRepoManager = iconRepoManager;
+    }
+
+    public void setActiveTool(String toolname) {
+        if(!m_activeTool.equals(toolname)) {
+            m_activeTool = toolname;
+            requestRepaint();
+        }
     }
    
 

@@ -40,7 +40,8 @@ function usage()
 {
     tell "makedeb [-h] [-a] [-s <password>] [-g <gpg-id>] [-M <major>] [-m <minor>] [-u <micro>]"
     tell "\t-h : print this help"
-    tell "\t-a : assembly only (skip the compile step)"
+    tell "\t-a : assembly-only (skip the compile step)"
+    tell "\t-d : disable downloading snapshots when doing an assembly-only build"
     tell "\t-s <password> : sign the deb using this password for the gpg key"
     tell "\t-g <gpg_id> : signing using this gpg_id (default: opennms@opennms.org)"
     tell "\t-M <major> : default 0 (0 means a snapshot release)"
@@ -127,11 +128,17 @@ function skipCompile()
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
 }
 
+function enableSnapshots()
+{
+    if $ENABLE_SNAPSHOTS; then echo 1; else echo 0; fi
+}
+
 
 function main()
 {
 
     ASSEMBLY_ONLY=false
+    ENABLE_SNAPSHOTS=true
     SIGN=false
     SIGN_PASSWORD=
     SIGN_ID=opennms@opennms.org
@@ -142,9 +149,11 @@ function main()
     local RELEASE_MICRO=1
 
 
-    while getopts ahrs:g:M:m:u: OPT; do
+    while getopts adhrs:g:M:m:u: OPT; do
 	case $OPT in
 	    a)  ASSEMBLY_ONLY=true
+		;;
+	    d)  ENABLE_SNAPSHOTS=false
 		;;
 	    s)  SIGN=true
 		SIGN_PASSWORD="$OPTARG"
@@ -200,6 +209,7 @@ function main()
 		export OPENNMS_SETTINGS_XML="${HOME}/.m2/settings.xml"
 	fi
 	export OPENNMS_SKIP_COMPILE=$(skipCompile)
+	export OPENNMS_ENABLE_SNAPSHOTS=$(enableSnapshots)
 
 	dpkg-buildpackage -p/bin/true -us -uc
     fi

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal.gwt.client;
 
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
@@ -7,6 +35,13 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
+import com.google.gwt.user.client.ui.Image;
 
 public class GWTVertex extends JavaScriptObject {
     
@@ -14,6 +49,7 @@ public class GWTVertex extends JavaScriptObject {
      * CSS Class name for a vertex
      */
     public static final String VERTEX_CLASS_NAME = ".vertex";
+    public static final String SELECTED_VERTEX_CLASS_NAME = ".vertex.selected";
     
     protected GWTVertex() {};
     
@@ -83,7 +119,7 @@ public class GWTVertex extends JavaScriptObject {
     }-*/;
     
     public final String getTooltipText() {
-        return "id: " + getId() + " SZL: " + getSemanticZoomLevel() + " Group: " + (getParent() == null ? "null" : getParent().getId());
+        return getLabel();
     }
     
     
@@ -137,6 +173,27 @@ public class GWTVertex extends JavaScriptObject {
             
         };
     }
+    
+    protected static Func<String, GWTVertex> getClassName() {
+        // TODO Auto-generated method stub
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "vertex selected" : "vertex";
+            }};
+    }
+    
+    protected static Func<String, GWTVertex> strokeFilter(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex datum, int index) {
+                return datum.isSelected() ? "blue" : "none";
+            }
+            
+        };
+    }
 
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
@@ -163,6 +220,66 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    static Func<String, GWTVertex> loadIconAndSize(final D3 imageSelection, final D3 rectSelection, final D3 textSelection){
+        return new Func<String, GWTVertex>(){
+
+            public String call(GWTVertex datum, final int index) {
+                final Image img = new Image();
+                img.setAltText("datum index: " + index);
+                Event.setEventListener(img.getElement(), new EventListener() {
+
+                    @Override
+                    public void onBrowserEvent(Event event) {
+                        if(Event.ONLOAD == event.getTypeInt()) {
+                            
+                            double widthRatio = 50.0/img.getWidth();
+                            double heightRatio = 50.0/img.getHeight();
+                            double scaleFactor = Math.min(widthRatio, heightRatio);
+                            int width = (int) (img.getWidth() * scaleFactor);
+                            int height = (int) (img.getHeight() * scaleFactor);
+                            
+                            String strWidth = width + "px";
+                            String strHeight = height + "px";
+                            String x = "-" + width/2 + "px";
+                            String y = "-" + height/2 + "px";
+                            
+                            Element imgElem = D3.getElement(imageSelection, index);
+                            imgElem.setAttribute("width", strWidth);
+                            imgElem.setAttribute("height", strHeight);
+                            imgElem.setAttribute("x", x);
+                            imgElem.setAttribute("y", y);
+                            
+                            Element rectElem = D3.getElement(rectSelection, index);
+                            rectElem.setAttribute("class", "highlight");
+                            rectElem.setAttribute("fill", "yellow");
+                            rectElem.setAttribute("x", -(width/2 + 2) + "px");
+                            rectElem.setAttribute("y", -(height/2 + 2) + "px");
+                            rectElem.setAttribute("width", (width + 4) + "px" );
+                            rectElem.setAttribute("height", (height + 4) + "px");
+                            rectElem.setAttribute("opacity", "0");
+                            
+                            textSelection.text(label());
+                            Element textElem = D3.getElement(textSelection, index);
+                            textElem.setAttribute("class", "vertex-label");
+                            textElem.setAttribute("x", "0px");
+                            textElem.setAttribute("y",  "" + (height/2 + 5) + "px");
+                            textElem.setAttribute("text-anchor", "middle");
+                            textElem.setAttribute("alignment-baseline", "text-before-edge");
+                            
+                            Document.get().getBody().removeChild(img.getElement());
+                        }
+                        
+                    }
+                    
+                });
+                img.setUrl(datum.getIconUrl());
+                
+                Document.get().getBody().appendChild(img.getElement());
+                return datum.getIconUrl();
+            }
+        };
+    }
+    
     static Func<String, GWTVertex> label() {
     	return new Func<String, GWTVertex>() {
 
@@ -179,7 +296,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).style("stroke", GWTVertex.strokeFilter()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
@@ -193,21 +310,17 @@ public class GWTVertex extends JavaScriptObject {
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
                 
-                vertex.append("rect").attr("class", "highlight").attr("fill", "yellow").attr("x", "-26px").attr("y", "-26px").attr("width", "52px").attr("height", "52px").attr("opacity", 0);
+                ImageElement img = DOM.createImg().cast();
                 
-                vertex.append("svg:image").attr("xlink:href", getIconPath())
-                      .attr("x", "-24px")
-                      .attr("y", "-24px")
-                      .attr("width", "48px")
-                      .attr("height", "48px");
+                D3 rectSelection = vertex.append("rect");
+                D3 imageSelection = vertex.append("svg:image");
+                D3 textSelection = vertex.append("text");
                 
-                vertex.append("text")
-                      .attr("class", "vertex-label")
-                      .attr("x", "0px")
-                      .attr("y",  "28px")
-                      .attr("text-anchor", "middle")
-                      .attr("alignment-baseline", "text-before-edge")
-                      .text(label());
+                imageSelection.attr("xlink:href", loadIconAndSize(imageSelection, rectSelection, textSelection));
+//                      .attr("x", "-24px")
+//                      .attr("y", "-24px")
+//                      .attr("width", "48px")
+//                      .attr("height", "48px");
                 
                 vertex.call(draw());
                 

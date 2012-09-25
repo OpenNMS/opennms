@@ -25,8 +25,18 @@
   </statement>
 
   <statement>
+    <!-- this deletes all entries in vlan that have been marked as deleted -->
+    DELETE FROM vLan WHERE vLan.status = 'D';
+  </statement>
+
+  <statement>
     <!-- this deletes all entries in stpInterface that have been marked as deleted -->
     DELETE FROM stpInterface WHERE stpInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
+    DELETE FROM stpNode WHERE stpNode.status = 'D';
   </statement>
    
   <statement>

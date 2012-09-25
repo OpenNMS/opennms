@@ -260,6 +260,13 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <!-- NrtCollection -->
+    <context-param>
+        <param-name>org.apache.activemq.brokerURL</param-name>
+        <param-value>tcp://localhost:61616</param-value>
+        <description>The URL of the Message Broker to connect to</description>
+    </context-param>
+  
   <!-- WARMERGE: insert listener -->
 
   <!-- ==================================================================== -->

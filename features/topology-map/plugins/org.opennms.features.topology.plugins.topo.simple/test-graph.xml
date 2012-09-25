@@ -60,7 +60,7 @@
         <y>200</y>
     </vertex>
     <group>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png</icon>
+        <iconKey>group</iconKey>
         <id>g0</id>
         <ipAddr>127.0.0.1</ipAddr>
         <label>Group g0</label>
@@ -73,7 +73,7 @@
         <members>v1</members>
     </group>
     <group>
-        <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png</icon>
+        <iconKey>group</iconKey>
         <id>g1</id>
         <ipAddr>127.0.0.1</ipAddr>
         <label>Group g1</label>

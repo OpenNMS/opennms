@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +48,8 @@ public class SimpleGraphContainerTest {
 
     @Test
     public void testSimpleGraphContainer() {
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(new TestTopologyProvider());
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(new TestTopologyProvider());
         Collection<Object> vertexIds = graphContainer.getVertexIds();
         Collection<String> edgeIds = graphContainer.getEdgeIds();
         
@@ -38,8 +67,9 @@ public class SimpleGraphContainerTest {
     
     @Test
     public void testGraph() {
-        SimpleGraphContainer graphContaier = new SimpleGraphContainer(new TestTopologyProvider());
-        Graph graph = new Graph(graphContaier);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(new TestTopologyProvider());
+        Graph graph = new Graph(graphContainer);
         
         List<Vertex> vertices = graph.getVertices();
         assertEquals(2, vertices.size());
@@ -57,7 +87,8 @@ public class SimpleGraphContainerTest {
         topologyProvider.setParent("v0", groupId);
         topologyProvider.setParent("v1", groupId);
         
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -105,7 +136,8 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = new TestTopologyProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -143,7 +175,8 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = new TestTopologyProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -203,7 +236,8 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = new TestTopologyProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -276,7 +310,8 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = new TestTopologyProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -314,7 +349,8 @@ public class SimpleGraphContainerTest {
         TestVertex targetVertex = testEdge.getTarget();
         
         
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         
         GVertex sourceGVertex = findGVertexWithToprId(graphContainer, sourceVertex.getId());
         GVertex targetGVertex = findGVertexWithToprId(graphContainer, targetVertex.getId());
@@ -375,7 +411,8 @@ public class SimpleGraphContainerTest {
         TestVertex targetTestVertex = testEdge.getTarget();
         
         
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
         Graph graph = new Graph(graphContainer);
         
         Vertex sourceVertex = findVertexWithToprId(graph, graphContainer, sourceTestVertex.getId());
@@ -414,6 +451,37 @@ public class SimpleGraphContainerTest {
         assertEquals(targetVertex.getItemId(), edge.getTarget().getItemId());
         assertEquals(sourceVertex.getKey(), edge.getSource().getKey());
         assertEquals(targetVertex.getKey(), edge.getTarget().getKey());
+        
+    }
+    
+    @Test
+    public void testRemoveAllItemsUpdateCorrectly() {
+        TestTopologyProvider topologyProvider = new TestTopologyProvider();
+     
+        //Setup the graphcontainer
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
+        graphContainer.setDataSource(topologyProvider);
+        graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
+        graphContainer.setSemanticZoomLevel(0);
+        
+        Graph graph = new Graph(graphContainer);
+        List<Vertex> vertices = graph.getVertices();
+        
+        assertEquals(2, vertices.size());
+        assertEquals(2, topologyProvider.getVertexIds().size());
+        assertEquals(1, topologyProvider.getEdgeIds().size());
+        assertEquals(2, graphContainer.getVertexIds().size());
+        assertEquals(1, graphContainer.getEdgeIds().size());
+        assertEquals(2, graph.getVertices().size());
+        
+        topologyProvider.load(null);
+        
+        assertEquals(2, topologyProvider.getVertexIds().size());
+        assertEquals(1, topologyProvider.getEdgeIds().size());
+        assertEquals(2, graphContainer.getVertexIds().size());
+        assertEquals(1, graphContainer.getEdgeIds().size());
+        assertEquals(2, graph.getVertices().size());
+        
         
     }
 

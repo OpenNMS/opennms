@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
@@ -121,16 +149,14 @@ public class CommandManager {
 	}
 
 	MenuBar getMenuBar(SimpleGraphContainer graphContainer, Window mainWindow) {
-		OperationContext opContext = new DefaultOperationContext(mainWindow,
-				graphContainer);
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
 		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
 
 		for (Command command : getCommandList()) {
 			String menuPosition = command.getMenuPosition();
-			MenuBar.Command menuCommand = menuCommand(command, graphContainer,
-					mainWindow, opContext);
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
 			updateCommandToOperationMap(command, menuCommand);
 			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
 		}
@@ -255,8 +281,7 @@ public class CommandManager {
 	}
 
 	public void onBind(Operation operation, Map<String, String> props) {
-		OperationCommand operCommand = new OperationCommand(null, operation,
-				props);
+		OperationCommand operCommand = new OperationCommand(null, operation, props);
 		addCommand(operCommand);
 	}
 
@@ -335,18 +360,21 @@ public class CommandManager {
 	public void updateMenuItem(MenuItem menuItem, SimpleGraphContainer graphContainer, Window mainWindow) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
-
-		boolean visibility = operation.display(graphContainer.getSelectedVertices(), operationContext);
-		menuItem.setVisible(visibility);
-		boolean enabled = operation.enabled(graphContainer.getSelectedVertices(), operationContext);
-		menuItem.setEnabled(enabled);
-
-		if (operation instanceof CheckedOperation) {
-			if (!menuItem.isCheckable()) {
-				menuItem.setCheckable(true);
-			}
-
-			menuItem.setChecked(((CheckedOperation) operation).isChecked(graphContainer.getSelectedVertices(), operationContext));
+		
+		//Check for null because separators have no Operation
+		if(operation != null) {
+    		boolean visibility = operation.display(graphContainer.getSelectedVertices(), operationContext);
+    		menuItem.setVisible(visibility);
+    		boolean enabled = operation.enabled(graphContainer.getSelectedVertices(), operationContext);
+    		menuItem.setEnabled(enabled);
+    
+    		if (operation instanceof CheckedOperation) {
+    			if (!menuItem.isCheckable()) {
+    				menuItem.setCheckable(true);
+    			}
+    
+    			menuItem.setChecked(((CheckedOperation) operation).isChecked(graphContainer.getSelectedVertices(), operationContext));
+    		}
 		}
 	}
 

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.11.2-SNAPSHOT</version>
+  <version>1.11.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -14,7 +14,7 @@
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.opennms.org/</url>
-  </issueManagement>
+ </issueManagement>
   <ciManagement>
     <system>Bamboo</system>
     <url>http://bamboo.internal.opennms.com:8085/</url>
@@ -49,7 +49,7 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
-  <mailingLists>
+ <mailingLists>
     <mailingList>
       <name>OpenNMS Discuss List</name>
       <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
@@ -689,6 +689,8 @@
   </reporting>
 
   <properties>
+
+    
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -714,7 +716,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.11.2.A</opennms.osgi.version>
+    <opennms.osgi.version>1.11.3.A</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -777,12 +779,14 @@
    <updatePolicy>daily</updatePolicy>
 
     <!-- dependency versions -->
+    <activemqVersion>5.6.0</activemqVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-    <karafVersion>2.2.7</karafVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jaxbVersion>2.1.7</jaxbVersion>
     <jettyVersion>7.5.4.v20111024</jettyVersion>
+    <karafVersion>2.2.7</karafVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
     <log4jVersion>1.2.16</log4jVersion>
     <minaVersion>2.0.4</minaVersion>
@@ -792,6 +796,13 @@
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
+
+    <springVersion>3.0.7.RELEASE</springVersion>
+    <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
+    <aspectjVersion>1.6.8</aspectjVersion>
+    <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
+    <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
+    <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
   </properties>
 
   <profiles>
@@ -1262,6 +1273,12 @@
         <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>activemq-web-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -1882,6 +1899,11 @@
       </dependency>
       <dependency>
         <groupId>asm</groupId>
+        <artifactId>asm-commons</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
         <artifactId>asm-tree</artifactId>
         <version>3.1</version>
       </dependency>
@@ -1993,7 +2015,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
@@ -2081,7 +2103,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>3.0</version>
+        <version>3.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -2141,7 +2163,7 @@
       <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
-        <version>1.1</version>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>javax.jnlp</groupId>
@@ -2190,17 +2212,42 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-ajp</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-continuation</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-http</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-io</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jsp-2.1</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-webapp</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-ajp</artifactId>
+        <artifactId>jetty-servlet</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -2210,7 +2257,22 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-jsp-2.1</artifactId>
+        <artifactId>jetty-webapp</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-websocket</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-xml</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.aggregate</groupId>
+        <artifactId>jetty-all-server</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -2342,7 +2404,7 @@
       <dependency>
         <groupId>rome</groupId>
         <artifactId>rome</artifactId>
-        <version>0.9</version>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>struts</groupId>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,6 +68,12 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress = ?", ipAddress);
     }
     
+    /** {@inheritDoc} */
+    public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
+    }
+
     /** {@inheritDoc} */
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
         return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ?", 

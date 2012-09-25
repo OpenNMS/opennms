@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -176,11 +176,23 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.11.2-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.2-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-1.11.3-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.3-SNAPSHOT.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>
                 </configuration>
+            </execution>
+            <execution>
+              <id>add-source</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>add-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>${project.build.directory}/generated-sources/castor</source>
+                </sources>
+              </configuration>
             </execution>
         </executions>
       </plugin>
@@ -215,6 +227,7 @@
   <dependencies>
     <!-- indirect dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
+
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
@@ -238,7 +251,7 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
       <type>pom</type>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -497,7 +510,11 @@
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-
-    
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.api</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

@@ -1,6 +1,35 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.TopologyProvider;
 
 import com.vaadin.data.Item;
@@ -29,20 +59,24 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
     
-    private String m_topologyLocation = null;
+    private URL m_topologyLocation = null;
     
     public SimpleTopologyProvider() {
     	System.err.println("Creating a new SimpleTopologyProvider");
         m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
+        
+        URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
+
+        setTopologyLocation(defaultGraph);
     }
     
-    public String getTopologyLocation() {
+    public URL getTopologyLocation() {
 		return m_topologyLocation;
 	}
 
-	public void setTopologyLocation(String topologyLocation) {
+	public void setTopologyLocation(URL topologyLocation) {
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null) {
@@ -121,14 +155,14 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return m_vertexContainer.addBean(vertex);
     }
     
-    private Item addGroup(String groupId, String icon, String label) {
+    private Item addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         System.err.println("Adding a group: " + groupId);
         SimpleVertex vertex = new SimpleGroup(groupId);
-        vertex.setIcon(icon);
         vertex.setLabel(label);
+        vertex.setIconKey(iconKey);
         return m_vertexContainer.addBean(vertex);
         
     }
@@ -223,6 +257,16 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         JAXB.marshal(graph, new File(filename));
     }
     
+	public void load(URL url) {
+        SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
+        
+        m_vertexContainer.removeAllItems();
+        m_vertexContainer.addAll(graph.m_vertices);
+        
+        m_edgeContainer.removeAllItems();
+        m_edgeContainer.addAll(graph.m_edges);
+    }
+
     /* (non-Javadoc)
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#load(java.lang.String)
 	 */
@@ -315,10 +359,10 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addGroup(java.lang.String)
 	 */
 
-	@Override
-    public Object addGroup(String groupIcon) {
+    @Override
+    public Object addGroup(String groupIconKey) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIcon, "Group " + nextGroupId);
+        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
         return nextGroupId;
     }
 

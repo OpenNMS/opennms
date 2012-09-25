@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 
@@ -64,7 +92,7 @@ public class Graph{
 			protected Vertex make(String key, Object itemId, Item item) {
 				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
-				System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
+				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
 				return new Vertex(key, itemId, item, groupKey, groupId);
 			}
 
@@ -76,6 +104,10 @@ public class Graph{
 			protected Edge make(String key, Object itemId, Item item) {
 
 				List<Object> endPoints = new ArrayList<Object>(m_dataSource.getEndPointIdsForEdge(itemId));
+
+				if (endPoints.size() < 2) {
+				    return null;
+				}
 
 				Object sourceId = endPoints.get(0);
 				Object targetId = endPoints.get(1);
@@ -159,7 +191,7 @@ public class Graph{
 
 	public Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
 		int szl = vertex.getSemanticZoomLevel();
-        if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
+		if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
 			return vertex;
 		}else {
 			Vertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());
@@ -194,5 +226,13 @@ public class Graph{
 	public Vertex getVertexByItemId(Object itemId) {
 		return m_vertexHolder.getElementByItemId(itemId);
 	}
+
+    public Edge getEdgeByItemId(String edgeItemId) {
+        return m_edgeHolder.getElementByItemId(edgeItemId);
+    }
+
+    public Edge getEdgeByKey(String edgeKey) {
+        return m_edgeHolder.getElementByKey(edgeKey);
+    }
 	
 }

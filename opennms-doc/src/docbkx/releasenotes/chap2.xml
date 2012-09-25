@@ -6,6 +6,48 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.2">
+		<title>Changes in OpenNMS 1.11.2</title>
+
+		<section id="opennms-1.11.2-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Get release artifact for com.atlassian.jira.rpc.soap.client:jira-ws-client (Issue <ulink url='http://issues.opennms.org/browse/NMS-2181'>NMS-2181</ulink>)</para></listitem>
+				<listitem><para>Memcached graph definitions left out of default configuration (Issue <ulink url='http://issues.opennms.org/browse/NMS-4208'>NMS-4208</ulink>)</para></listitem>
+				<listitem><para>System Report tool should ignore .git/index and other binary files (Issue <ulink url='http://issues.opennms.org/browse/NMS-4441'>NMS-4441</ulink>)</para></listitem>
+				<listitem><para>linkd needs to &quot;upsert&quot; entries in the ipRouteInterface, atinterface, vlan tables (Issue <ulink url='http://issues.opennms.org/browse/NMS-5029'>NMS-5029</ulink>)</para></listitem>
+				<listitem><para>Null Pointer Exception after session timeout and then editing a path target (Issue <ulink url='http://issues.opennms.org/browse/NMS-5269'>NMS-5269</ulink>)</para></listitem>
+				<listitem><para>Duplicate Links (Issue <ulink url='http://issues.opennms.org/browse/NMS-5270'>NMS-5270</ulink>)</para></listitem>
+				<listitem><para>Extremely intermittent failure to detect services with TcpDetector in unit tests (Issue <ulink url='http://issues.opennms.org/browse/NMS-5311'>NMS-5311</ulink>)</para></listitem>
+				<listitem><para>opening web map fails with java.lang.NumberFormatException (Issue <ulink url='http://issues.opennms.org/browse/NMS-5327'>NMS-5327</ulink>)</para></listitem>
+				<listitem><para>Problems using &quot;offset&quot; parameter on events REST Service (Issue <ulink url='http://issues.opennms.org/browse/NMS-5381'>NMS-5381</ulink>)</para></listitem>
+				<listitem><para>Exception in Linkd (Issue <ulink url='http://issues.opennms.org/browse/NMS-5440'>NMS-5440</ulink>)</para></listitem>
+				<listitem><para>build modifies versioned file in src (Issue <ulink url='http://issues.opennms.org/browse/NMS-5460'>NMS-5460</ulink>)</para></listitem>
+				<listitem><para>Problem creating notifications for syslogd events (Issue <ulink url='http://issues.opennms.org/browse/NMS-5475'>NMS-5475</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.2-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Linkd Refactoring (Issue <ulink url='http://issues.opennms.org/browse/NMS-4524'>NMS-4524</ulink>)</para></listitem>
+				<listitem><para>Alphabetize group names in the Users/Groups list (Issue <ulink url='http://issues.opennms.org/browse/NMS-4776'>NMS-4776</ulink>)</para></listitem>
+				<listitem><para>Default netsnmp group ns-dskPercentNode high threshold raises alerts for devices that are not real physical devices that always report 100% inode utilization (Issue <ulink url='http://issues.opennms.org/browse/NMS-5116'>NMS-5116</ulink>)</para></listitem>
+				<listitem><para>Datacollection Config for Isilon Storage Arrays (Issue <ulink url='http://issues.opennms.org/browse/NMS-5330'>NMS-5330</ulink>)</para></listitem>
+				<listitem><para>varbind based notification filtering doesn&#39;t support regular expression (Issue <ulink url='http://issues.opennms.org/browse/NMS-5399'>NMS-5399</ulink>)</para></listitem>
+				<listitem><para>Greater flexibility in RelativeTime for Statistics Reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-5422'>NMS-5422</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.2-sub-task">
+			<title>Sub-task</title>
+
+			<itemizedlist>
+				<listitem><para>OSPF nbr discovery  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5503'>NMS-5503</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.1">
 		<title>Changes in OpenNMS 1.11.1</title>
 
@@ -110,6 +152,31 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.5">
+		<title>Changes in OpenNMS 1.10.5</title>
+
+		<section id="opennms-1.10.5-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Arithmetic Exception in QueuedStrategy (Issue <ulink url='http://issues.opennms.org/browse/NMS-4437'>NMS-4437</ulink>)</para></listitem>
+				<listitem><para>Installer fails when using the &quot;EnterpriseDB&quot; PostgreSQL database. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5431'>NMS-5431</ulink>)</para></listitem>
+				<listitem><para>WebStart (JNLP) remote poller is missing ConfigurationGui and other Groovy bits (Issue <ulink url='http://issues.opennms.org/browse/NMS-5447'>NMS-5447</ulink>)</para></listitem>
+				<listitem><para>Include/Exclude range (Issue <ulink url='http://issues.opennms.org/browse/NMS-5465'>NMS-5465</ulink>)</para></listitem>
+				<listitem><para>Fix ReST &quot;count&quot; requests, refactor PUT/POST to use Post/Redirect/Get pattern (Issue <ulink url='http://issues.opennms.org/browse/NMS-5489'>NMS-5489</ulink>)</para></listitem>
+				<listitem><para>Debian package misses postgresql requirement for dependency-based booting (Issue <ulink url='http://issues.opennms.org/browse/NMS-5490'>NMS-5490</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.5-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>No packaging for mib2events, mibparser, and Provisioning Adapters (Issue <ulink url='http://issues.opennms.org/browse/NMS-3183'>NMS-3183</ulink>)</para></listitem>
+				<listitem><para>Greater flexibility in RelativeTime for Statistics Reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-5422'>NMS-5422</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.4">
 		<title>Changes in OpenNMS 1.10.4</title>

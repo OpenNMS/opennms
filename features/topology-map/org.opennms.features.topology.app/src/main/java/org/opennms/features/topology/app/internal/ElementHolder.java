@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
@@ -13,19 +41,31 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 
 public abstract class ElementHolder<T> {
+	String m_prefix;
 	Container m_itemContainer;
 	List<T> m_graphElements = Collections.emptyList();
 	List<Object> m_itemIds = Collections.emptyList();
 	KeyMapper m_elementKey2ItemId;
 	Map<String, T> m_keyToElementMap = new HashMap<String, T>();
 	
+	ElementHolder(String prefix) {
+		m_prefix = prefix;
+		m_elementKey2ItemId  = new KeyMapper(m_prefix);	
+	}
+	
 	ElementHolder(Container container, String prefix) {
+		this(prefix);
+		setContainer(container);
+	}
+
+	public void setContainer(Container container) {
 		m_itemContainer = container;
 		
-		m_elementKey2ItemId  = new KeyMapper(prefix);
 		
 		update();
 	}
+	
+	
 	
 	public void update() {
 		List<Object> oldItemIds = m_itemIds;
@@ -56,11 +96,16 @@ public abstract class ElementHolder<T> {
 		    String key = m_elementKey2ItemId.key(itemId);
 		    
 		    Item item = m_itemContainer.getItem(itemId);
-            T v = make(key, itemId, item);
-            // System.err.println("make v: " + v);
-		    m_graphElements.add(v);
-		    // System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
-		    m_keyToElementMap.put(key, v);
+		    T v = make(key, itemId, item);
+            
+		    if (v == null) {
+		        System.err.println("Warning: unable to make element for key=" + key + ", itemId=" + itemId + ", item=" + item);
+		    } else {
+		        // System.err.println("make v: " + v);
+		        m_graphElements.add(v);
+		        // System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
+		        m_keyToElementMap.put(key, v);
+		    }
 		}
 	}
 	

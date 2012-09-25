@@ -532,6 +532,12 @@
                     <property name="locationMatch" value="RemotePollerMap"/>
                 </bean>
 
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Topology Map"/>
+                    <property name="url" value="topology"/>
+                    <property name="locationMatch" value="topology"/>
+                </bean>
+
                 <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
                     <property name="name" value="Vulnerabilities"/>
                     <property name="url" value="vulnerability/index.jsp"/>

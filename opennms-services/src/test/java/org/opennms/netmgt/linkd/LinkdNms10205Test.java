@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,9 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.linkd.Iproutes;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -163,25 +161,6 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         example1.setUseCdpDiscovery(false);
-        Iproutes iproutes = new Iproutes();
-        Vendor juniper = new Vendor();
-        juniper.setVendor_name("Juniper.junos");
-        juniper.setSysoidRootMask(".1.3.6.1.4.1.2636.1.1.1");
-        juniper.setClassName("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable");
-        juniper.addSpecific("2.9");
-        juniper.addSpecific("2.10");
-        juniper.addSpecific("2.11");
-        juniper.addSpecific("2.20");
-        juniper.addSpecific("2.25");
-        juniper.addSpecific("2.29");
-        juniper.addSpecific("2.30");
-        juniper.addSpecific("2.31");
-        juniper.addSpecific("2.41");
-        juniper.addSpecific("2.57");
-
-        iproutes.addVendor(juniper);
-        m_linkdConfig.getConfiguration().setIproutes(iproutes);
-        m_linkdConfig.update();
         
         final OnmsNode mumbai = m_nodeDao.findByForeignId("linkd", MUMBAI_NAME);
         final OnmsNode chennai = m_nodeDao.findByForeignId("linkd", CHENNAI_NAME);
@@ -249,28 +228,29 @@ public class LinkdNms10205Test extends LinkdNms10205NetworkBuilder implements In
         // no routing entry and no bridge 
         // forwarding
         
+        int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
-            switch(datalinkinterface.getId().intValue()) {
-                case 915: checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
-                break;
-                case 916: checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
-                break;
-                case 917: checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
-                break;
-                case 918: checkLink(mysore, mumbai, 508, 978, datalinkinterface);
-                break;
-                case 919: checkLink(chennai, mumbai, 528, 520, datalinkinterface);
-                break;
-                case 920: checkLink(mysore, chennai, 505, 517, datalinkinterface);
-                break;
-                case 921: checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
-                break;
-                case 922: checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
-                break;
-                case 923: checkLink(mysore, bagmane, 520, 654, datalinkinterface);
-                break;
-                default: checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
-                break;                
+            int id = datalinkinterface.getId().intValue();
+            if (start == id ) {
+                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+            } else if (start+1 == id ) {
+                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+            } else if (start+2 == id ) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+            } else if (start+3 == id ) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+            } else if (start+4 == id ) {
+                checkLink(chennai, mumbai, 528, 520, datalinkinterface);
+            } else if (start+5 == id ) {
+                checkLink(mysore, chennai, 505, 517, datalinkinterface);
+            } else if (start+6 == id ) {
+               checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+            } else if (start+7 == id ) {
+                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+            } else if (start+8 == id ) {
+                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+            } else {
+                checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
         }
     }
