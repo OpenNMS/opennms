@@ -37,15 +37,13 @@
     <!-- OSGi Stuff -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <version>1.0</version>
+      <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <version>1.0</version>
+      <artifactId>org.osgi.compendium</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

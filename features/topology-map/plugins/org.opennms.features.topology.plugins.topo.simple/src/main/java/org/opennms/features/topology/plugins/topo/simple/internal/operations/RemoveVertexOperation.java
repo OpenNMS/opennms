@@ -34,6 +34,7 @@ import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.slf4j.LoggerFactory;
 
 
 public class RemoveVertexOperation implements Operation {
@@ -49,7 +50,7 @@ public class RemoveVertexOperation implements Operation {
         DisplayState graphContainer = operationContext.getGraphContainer();
         
         if (targets == null) {
-        	System.err.println("need to handle selection!!!");
+            LoggerFactory.getLogger(getClass()).debug("need to handle selection!!!");
         } else {
             for(Object target : targets) {
                 m_topologyProvider.removeVertex(target);

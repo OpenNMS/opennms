@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
+import org.slf4j.LoggerFactory;
 
 public class HideNodesWithoutLinksOperation implements CheckedOperation {
 
@@ -80,7 +81,6 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
     }
 
     private void log(final String string) {
-        System.err.println(getId()+": "+ string);
+        LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
     }
-
 }

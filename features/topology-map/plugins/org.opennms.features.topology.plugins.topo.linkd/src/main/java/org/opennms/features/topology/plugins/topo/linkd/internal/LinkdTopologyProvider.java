@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.slf4j.LoggerFactory;
 //import org.springframework.transaction.annotation.Transactional;
 //import org.springframework.transaction.support.TransactionOperations;
 
@@ -148,8 +149,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
         this.addNodeWithoutLink = addNodeWithoutLink;
     }
 
-    private LinkdVertexContainer m_vertexContainer;
-    private BeanContainer<String, LinkdEdge> m_edgeContainer;
+    private final LinkdVertexContainer m_vertexContainer;
+    private final BeanContainer<String, LinkdEdge> m_edgeContainer;
 
     private int m_groupCounter = 0;
     
@@ -560,7 +561,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         JAXB.marshal(graph, new File(filename));
     }
 
-    private <T> List<T> getBeans(BeanContainer<?, T> container) {
+    private static <T> List<T> getBeans(BeanContainer<?, T> container) {
         Collection<?> itemIds = container.getItemIds();
         List<T> beans = new ArrayList<T>(itemIds.size());
         
@@ -577,7 +578,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         log("setParent for vertex:" + vertexId + " parent: " + parentId + ": "+ addedparent);
     }
     
-      private String getIfStatusString(int ifStatusNum) {
+      private static String getIfStatusString(int ifStatusNum) {
           if (ifStatusNum < OPER_ADMIN_STATUS.length) {
               return OPER_ADMIN_STATUS[ifStatusNum];
           } else {
@@ -608,7 +609,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
      * @return A string representation of the speed (&quot;100 Mbps&quot; for
      *         example)
      */
-    private String getHumanReadableIfSpeed(long ifSpeed) {
+    private static String getHumanReadableIfSpeed(long ifSpeed) {
         DecimalFormat formatter;
         double displaySpeed;
         String units;
@@ -647,7 +648,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     private void log(final String string) {
-        System.err.println("LinkdTopologyProvider: "+ string);
+        LoggerFactory.getLogger(getClass()).debug(string);
     }
 /*
     public TransactionOperations getTransactionTemplate() {

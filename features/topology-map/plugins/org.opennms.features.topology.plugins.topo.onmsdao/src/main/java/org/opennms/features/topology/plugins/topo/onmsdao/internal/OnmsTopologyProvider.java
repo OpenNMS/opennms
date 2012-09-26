@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.OnmsMapElementDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -148,7 +149,7 @@ public class OnmsTopologyProvider implements TopologyProvider{
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
-        System.err.println("Adding a vertex: " + id);
+        LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
         SimpleVertex vertex = new SimpleLeafVertex(-1,id, x, y);
         vertex.setIcon(icon);
         return m_vertexContainer.addBean(vertex);
@@ -158,7 +159,7 @@ public class OnmsTopologyProvider implements TopologyProvider{
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
-        System.err.println("Adding a group: " + groupId);
+        LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupId);
         SimpleVertex vertex = new SimpleGroup(-1,groupId);
         vertex.setIcon(icon);
         return m_vertexContainer.addBean(vertex);
@@ -354,7 +355,7 @@ public class OnmsTopologyProvider implements TopologyProvider{
     
     
     public Object addVertex(int nodeid, int x, int y, String icon) {
-        System.err.println("Adding vertex in SimpleTopologyProvider with icon: " + icon);
+        LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with icon: {}", getClass().getSimpleName(), icon);
         String nextVertexId = getNextVertexId();
         addVertex(nextVertexId, x, y, icon);
         return nextVertexId;

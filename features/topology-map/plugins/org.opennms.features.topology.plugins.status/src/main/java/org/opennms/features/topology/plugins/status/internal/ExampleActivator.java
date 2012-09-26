@@ -31,10 +31,10 @@ package org.opennms.features.topology.plugins.status.internal;
 import java.util.Dictionary;
 import java.util.Properties;
 
+import org.opennms.features.topology.plugins.status.ExampleService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-
-import org.opennms.features.topology.plugins.status.ExampleService;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extension of the default OSGi bundle activator
@@ -48,12 +48,12 @@ public final class ExampleActivator
     public void start( BundleContext bc )
         throws Exception
     {
-        System.out.println( "STARTING org.opennms.features.topology.plugins.status" );
+        LoggerFactory.getLogger(getClass()).debug("STARTING {}", ExampleService.class.getName());
 
         Dictionary<Object,Object> props = new Properties();
         // add specific service properties here...
 
-        System.out.println( "REGISTER org.opennms.features.topology.plugins.status.ExampleService" );
+        LoggerFactory.getLogger(getClass()).debug("REGISTER {}", ExampleService.class.getName());
 
         // Register our example service implementation in the OSGi service registry
         bc.registerService( ExampleService.class.getName(), new ExampleServiceImpl(), props );
@@ -65,7 +65,7 @@ public final class ExampleActivator
     public void stop( BundleContext bc )
         throws Exception
     {
-        System.out.println( "STOPPING org.opennms.features.topology.plugins.status" );
+        LoggerFactory.getLogger(getClass()).debug("STOPPING {}", ExampleService.class.getName());
 
         // no need to unregister our service - the OSGi framework handles it for us
     }
