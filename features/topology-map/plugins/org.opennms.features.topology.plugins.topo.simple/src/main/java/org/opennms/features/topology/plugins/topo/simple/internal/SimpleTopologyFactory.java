@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.HashMap;

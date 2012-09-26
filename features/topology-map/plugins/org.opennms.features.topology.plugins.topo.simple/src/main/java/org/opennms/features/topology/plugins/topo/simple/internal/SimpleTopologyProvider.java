@@ -44,6 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -51,10 +52,9 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class SimpleTopologyProvider implements TopologyProvider, EditableTopologyProvider{
-    
 
-    private SimpleVertexContainer m_vertexContainer;
-    private BeanContainer<String, SimpleEdge> m_edgeContainer;
+    private final SimpleVertexContainer m_vertexContainer;
+    private final BeanContainer<String, SimpleEdge> m_edgeContainer;
     private int m_counter = 0;
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
@@ -62,7 +62,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
     private URL m_topologyLocation = null;
     
     public SimpleTopologyProvider() {
-    	System.err.println("Creating a new SimpleTopologyProvider");
+        LoggerFactory.getLogger(getClass()).debug("Creating a new SimpleTopologyProvider");
         m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
@@ -80,11 +80,12 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null) {
-			System.err.println("Loading Topology from " + m_topologyLocation);
-
+			LoggerFactory.getLogger(getClass()).debug("Loading topology from " + m_topologyLocation);
 			load(m_topologyLocation);
 		} else {
-			System.err.println("Setting topology location to null!");
+			LoggerFactory.getLogger(getClass()).debug("Setting topology location to null");
+			m_vertexContainer.removeAllItems();
+			m_edgeContainer.removeAllItems();
 		}
 	}
 
@@ -100,6 +101,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return m_vertexContainer.getItemIds();
     }
 
+    @Override
     public Collection<?> getEdgeIds() {
         return m_edgeContainer.getItemIds();
     }
@@ -108,6 +110,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return m_vertexContainer.getItem(vertexId);
     }
 
+    @Override
     public Item getEdgeItem(Object edgeId) {
         return m_edgeContainer.getItem(edgeId);
     }
@@ -124,6 +127,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return endPoints;
     }
 
+    @Override
     public Collection<?> getEdgeIdsForVertex(Object vertexId) {
         
         SimpleVertex vertex = getRequiredVertex(vertexId);
@@ -146,7 +150,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
-        System.err.println("Adding a vertex: " + id);
+        LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
         SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
         vertex.setIconKey("server");
         vertex.setLabel(label);
@@ -159,7 +163,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
-        System.err.println("Adding a group: " + groupId);
+        LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupId);
         SimpleVertex vertex = new SimpleGroup(groupId);
         vertex.setLabel(label);
         vertex.setIconKey(iconKey);
@@ -281,7 +285,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         m_edgeContainer.addAll(graph.m_edges);
     }
     
-    private <T> List<T> getBeans(BeanContainer<?, T> container) {
+    private static <T> List<T> getBeans(BeanContainer<?, T> container) {
         Collection<?> itemIds = container.getItemIds();
         List<T> beans = new ArrayList<T>(itemIds.size());
         

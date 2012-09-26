@@ -25,6 +25,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.netmgt.rrd.tcp.*;version="${project.version}"</Export-Package>

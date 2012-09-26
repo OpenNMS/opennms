@@ -36,18 +36,23 @@
        <groupId>org.opennms.features.topology</groupId>
        <artifactId>api</artifactId>
        <version>${project.version}</version>
-       <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <optional>true</optional>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <optional>true</optional>
+      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

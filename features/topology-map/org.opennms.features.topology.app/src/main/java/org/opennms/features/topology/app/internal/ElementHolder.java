@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 
@@ -97,13 +99,13 @@ public abstract class ElementHolder<T> {
 		    
 		    Item item = m_itemContainer.getItem(itemId);
 		    T v = make(key, itemId, item);
-            
+		    
 		    if (v == null) {
-		        System.err.println("Warning: unable to make element for key=" + key + ", itemId=" + itemId + ", item=" + item);
+		        LoggerFactory.getLogger(getClass()).warn("Unable to make element for key=" + key + ", itemId=" + itemId + ", item=" + item);
 		    } else {
-		        // System.err.println("make v: " + v);
+		        // LoggerFactory.getLogger(getClass()).debug("Make v: " + v);
 		        m_graphElements.add(v);
-		        // System.err.println("Added v: " + v + " to m_graphElements: " + m_graphElements);
+		        // LoggerFactory.getLogger(getClass()).debug("Added v: " + v + " to m_graphElements: " + m_graphElements);
 		        m_keyToElementMap.put(key, v);
 		    }
 		}

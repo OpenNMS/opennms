@@ -28,6 +28,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>manual</Bundle-SymbolicName>
                         <Import-Package>*</Import-Package>
                         <Private-Package>!*</Private-Package>
