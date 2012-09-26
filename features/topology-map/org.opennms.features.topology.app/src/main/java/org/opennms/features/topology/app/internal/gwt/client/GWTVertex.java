@@ -31,16 +31,15 @@ package org.opennms.features.topology.app.internal.gwt.client;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
+import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker;
+import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker.LoadTrackerHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.Image;
 
 public class GWTVertex extends JavaScriptObject {
@@ -224,57 +223,49 @@ public class GWTVertex extends JavaScriptObject {
         return new Func<String, GWTVertex>(){
 
             public String call(GWTVertex datum, final int index) {
-                final Image img = new Image();
-                img.setAltText("datum index: " + index);
-                Event.setEventListener(img.getElement(), new EventListener() {
+                LoadTracker tracker = LoadTracker.get();
+                tracker.trackImageLoad(datum.getIconUrl(), new LoadTrackerHandler() {
 
                     @Override
-                    public void onBrowserEvent(Event event) {
-                        if(Event.ONLOAD == event.getTypeInt()) {
-                            
-                            double widthRatio = 50.0/img.getWidth();
-                            double heightRatio = 50.0/img.getHeight();
-                            double scaleFactor = Math.min(widthRatio, heightRatio);
-                            int width = (int) (img.getWidth() * scaleFactor);
-                            int height = (int) (img.getHeight() * scaleFactor);
-                            
-                            String strWidth = width + "px";
-                            String strHeight = height + "px";
-                            String x = "-" + width/2 + "px";
-                            String y = "-" + height/2 + "px";
-                            
-                            Element imgElem = D3.getElement(imageSelection, index);
-                            imgElem.setAttribute("width", strWidth);
-                            imgElem.setAttribute("height", strHeight);
-                            imgElem.setAttribute("x", x);
-                            imgElem.setAttribute("y", y);
-                            
-                            Element rectElem = D3.getElement(rectSelection, index);
-                            rectElem.setAttribute("class", "highlight");
-                            rectElem.setAttribute("fill", "yellow");
-                            rectElem.setAttribute("x", -(width/2 + 2) + "px");
-                            rectElem.setAttribute("y", -(height/2 + 2) + "px");
-                            rectElem.setAttribute("width", (width + 4) + "px" );
-                            rectElem.setAttribute("height", (height + 4) + "px");
-                            rectElem.setAttribute("opacity", "0");
-                            
-                            textSelection.text(label());
-                            Element textElem = D3.getElement(textSelection, index);
-                            textElem.setAttribute("class", "vertex-label");
-                            textElem.setAttribute("x", "0px");
-                            textElem.setAttribute("y",  "" + (height/2 + 5) + "px");
-                            textElem.setAttribute("text-anchor", "middle");
-                            textElem.setAttribute("alignment-baseline", "text-before-edge");
-                            
-                            Document.get().getBody().removeChild(img.getElement());
-                        }
+                    public void onImageLoad(Image img) {
+                        double widthRatio = 50.0/img.getWidth();
+                        double heightRatio = 50.0/img.getHeight();
+                        double scaleFactor = Math.min(widthRatio, heightRatio);
+                        int width = (int) (img.getWidth() * scaleFactor);
+                        int height = (int) (img.getHeight() * scaleFactor);
                         
+                        String strWidth = width + "px";
+                        String strHeight = height + "px";
+                        String x = "-" + width/2 + "px";
+                        String y = "-" + height/2 + "px";
+                        
+                        Element imgElem = D3.getElement(imageSelection, index);
+                        imgElem.setAttribute("width", strWidth);
+                        imgElem.setAttribute("height", strHeight);
+                        imgElem.setAttribute("x", x);
+                        imgElem.setAttribute("y", y);
+                        
+                        Element rectElem = D3.getElement(rectSelection, index);
+                        rectElem.setAttribute("class", "highlight");
+                        rectElem.setAttribute("fill", "yellow");
+                        rectElem.setAttribute("x", -(width/2 + 2) + "px");
+                        rectElem.setAttribute("y", -(height/2 + 2) + "px");
+                        rectElem.setAttribute("width", (width + 4) + "px" );
+                        rectElem.setAttribute("height", (height + 4) + "px");
+                        rectElem.setAttribute("opacity", "0");
+                        
+                        textSelection.text(label());
+                        Element textElem = D3.getElement(textSelection, index);
+                        textElem.setAttribute("class", "vertex-label");
+                        textElem.setAttribute("x", "0px");
+                        textElem.setAttribute("y",  "" + (height/2 + 5) + "px");
+                        textElem.setAttribute("text-anchor", "middle");
+                        textElem.setAttribute("alignment-baseline", "text-before-edge");
                     }
                     
                 });
-                img.setUrl(datum.getIconUrl());
                 
-                Document.get().getBody().appendChild(img.getElement());
+                
                 return datum.getIconUrl();
             }
         };
