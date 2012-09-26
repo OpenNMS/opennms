@@ -665,6 +665,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
 
 				m_client.sendPendingVariableChanges();
+				
 			}
 		};
 	}
@@ -689,7 +690,9 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                 });
 			    
 			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
-			        deselectVertices(false);
+			        if(!D3.getEvent().getShiftKey()) {
+			            deselectVertices(false);
+			        }
 			    }
 			    
 			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
