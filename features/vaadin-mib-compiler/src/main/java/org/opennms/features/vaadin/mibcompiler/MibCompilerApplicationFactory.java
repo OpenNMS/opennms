@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.mibcompiler;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.ops4j.pax.vaadin.ApplicationFactory;
+import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
 import com.vaadin.Application;
 
@@ -39,7 +39,7 @@ import com.vaadin.Application;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class MibCompilerApplicationFactory implements ApplicationFactory {
+public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
 
     /* (non-Javadoc)
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)

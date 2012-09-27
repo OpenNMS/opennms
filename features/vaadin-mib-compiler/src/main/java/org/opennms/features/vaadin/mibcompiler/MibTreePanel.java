@@ -280,16 +280,20 @@ public class MibTreePanel extends Panel {
      */
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
-        logger.info("Found " + events.getEventCount() + " events.");
-        if (events.getEventCount() > 0) {
-            try {
-                final EventWindow w = new EventWindow(fileName, events, logger);
-                getApplication().getMainWindow().addWindow(w);
-            } catch (Exception e) {
-                getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
-            }
+        if (events == null) {
+            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events.", Notification.TYPE_ERROR_MESSAGE);                
         } else {
-            getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
+            if (events.getEventCount() > 0) {
+                try {
+                    logger.info("Found " + events.getEventCount() + " events.");
+                    final EventWindow w = new EventWindow(fileName, events, logger);
+                    getApplication().getMainWindow().addWindow(w);
+                } catch (Exception e) {
+                    getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                }
+            } else {
+                getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
+            }
         }
     }
 

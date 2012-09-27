@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
@@ -74,34 +74,18 @@ public abstract class EventTable extends Table {
         addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
-                    BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = createEventItem(getEvent(getValue()));
-                    updateExternalSource(item);
+                    updateExternalSource(getEvent(getValue()));
                 }
             }
         });
     }
 
     /**
-     * Creates the event item.
-     *
-     * @param event the event
-     * @return the bean item
-     */
-    public BeanItem<org.opennms.netmgt.xml.eventconf.Event> createEventItem(org.opennms.netmgt.xml.eventconf.Event event) {
-        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
-        item.addItemProperty("logmsgContent", new NestedMethodProperty(item.getBean(), "logmsg.content"));
-        item.addItemProperty("logmsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));
-        item.addItemProperty("maskElements", new NestedMethodProperty(item.getBean(), "mask.maskelementCollection"));
-        item.addItemProperty("maskVarbinds", new NestedMethodProperty(item.getBean(), "mask.varbindCollection"));
-        return item;
-    }
-
-    /**
      * Update external source.
      *
-     * @param item the item
+     * @param event the OpenNMS event
      */
-    public abstract void updateExternalSource(BeanItem<org.opennms.netmgt.xml.eventconf.Event> item);
+    public abstract void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event);
 
     /**
      * Gets the OpenNMS events.
@@ -118,10 +102,13 @@ public abstract class EventTable extends Table {
         }
         return events;
     }
-    
+
     @SuppressWarnings("unchecked")
     private org.opennms.netmgt.xml.eventconf.Event getEvent(Object itemId) {
-        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getContainerDataSource().getItem(itemId)).getBean();
+        org.opennms.netmgt.xml.eventconf.Event e = ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getContainerDataSource().getItem(itemId)).getBean();
+        if (e.getAlarmData() == null) // TODO Patching null alarm-data
+            e.setAlarmData(new AlarmData());
+        return e;
     }
 
     /**

@@ -27,7 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
+import java.util.Arrays;
+
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -53,12 +56,21 @@ public abstract class EventForm extends Form implements ClickListener {
         "eventLabel",
         "descr",
         "logmsgContent",
-        "logmsgDest",
+        "logmsgDest",        
         "severity",
-//        "alarmData", // FIXME I need to figure it out how to deal with this.
+        "alarmData", // FIXME I need to figure it out how to deal with this.
         "maskElements",
         "maskVarbinds",
         "varbindsdecodeCollection"
+        /*
+         * Not Implemented:
+         * 
+         * operinstruct (String)
+         * autoactionCollection (CustomField)
+         * operactionCollection (CustomField)
+         * correlation (CustomField)
+         * autoacknowledge (CustomField)
+         */
     };
 
     /** The Edit button. */
@@ -117,6 +129,32 @@ public abstract class EventForm extends Form implements ClickListener {
         return null;
     }
 
+    /**
+     * Creates the event item.
+     *
+     * @param event the event
+     * @return the bean item
+     */
+    // TODO What should we do if some of the following are null ?
+    private BeanItem<org.opennms.netmgt.xml.eventconf.Event> createEventItem(org.opennms.netmgt.xml.eventconf.Event event) {
+        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
+        item.addItemProperty("logmsgContent", new NestedMethodProperty(item.getBean(), "logmsg.content"));
+        item.addItemProperty("logmsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));
+        item.addItemProperty("maskElements", new NestedMethodProperty(item.getBean(), "mask.maskelementCollection"));
+        item.addItemProperty("maskVarbinds", new NestedMethodProperty(item.getBean(), "mask.varbindCollection"));
+        return item;
+    }
+
+    /**
+     * Sets the Event Data Source
+     * 
+     * @param event the OpenNMS event
+     */
+    public void setEventDataSource(org.opennms.netmgt.xml.eventconf.Event event) {
+        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = createEventItem(event);
+        setItemDataSource(item, Arrays.asList(FORM_ITEMS));
+    }
+
     /* (non-Javadoc)
      * @see com.vaadin.ui.Form#setReadOnly(boolean)
      */
@@ -148,11 +186,11 @@ public abstract class EventForm extends Form implements ClickListener {
         }
         if (source == delete) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to continue?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {

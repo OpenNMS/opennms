@@ -17,7 +17,7 @@
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>6.8.2</vaadin.version>
-    <pax.vaadin.version>0.1.0-ONMS-20120621</pax.vaadin.version>
+    <pax.vaadin.version>0.1.0-ONMS-20120906</pax.vaadin.version>
     <grammatica.version>1.4</grammatica.version>
     <mibble.version>2.8</mibble.version>
   </properties>
@@ -54,7 +54,6 @@
           </bundles>
           <features>
             <feature>vaadin</feature>
-            <feature>spring</feature>
           </features>
         </configuration>
       </plugin>

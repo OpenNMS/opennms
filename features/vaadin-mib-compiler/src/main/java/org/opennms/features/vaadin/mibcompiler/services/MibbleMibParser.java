@@ -155,7 +155,9 @@ public class MibbleMibParser implements MibParser, Serializable {
             return converter.convertMibToEvents(mib, ueibase);
         } catch (Throwable e) {
             errors = e.getMessage();
-            LogUtils.errorf(this, "MIB error: %s", e.getMessage());
+            if (errors == null || errors.trim().equals(""))
+                errors = "An unknown error accured when generating events objects from the MIB " + mib.getName();
+            LogUtils.errorf(this, e, "Mib2Events error: %s", errors);
             return null;
         }
     }
@@ -194,7 +196,9 @@ public class MibbleMibParser implements MibParser, Serializable {
             }
         } catch (Throwable e) {
             errors = e.getMessage();
-            LogUtils.errorf(this, "MIB error: %s", e.getMessage());
+            if (errors == null || errors.trim().equals(""))
+                errors = "An unknown error accured when generating data collection objects from the MIB " + mib.getName();
+            LogUtils.errorf(this, e, "Data Collection parsing error: %s", errors);
             return null;
         }
         return dcGroup;

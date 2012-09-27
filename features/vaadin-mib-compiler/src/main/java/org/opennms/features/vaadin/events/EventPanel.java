@@ -27,12 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.util.Arrays;
-
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.xml.eventconf.Events;
 
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -87,8 +84,8 @@ public abstract class EventPanel extends Panel {
         mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
         eventTable = new EventTable(events) {
-            public void updateExternalSource(BeanItem<org.opennms.netmgt.xml.eventconf.Event> item) {
-                eventForm.setItemDataSource(item, Arrays.asList(EventForm.FORM_ITEMS));
+            public void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event) {
+                eventForm.setEventDataSource(event);
                 eventForm.setVisible(true);
                 eventForm.setReadOnly(true);
             }
