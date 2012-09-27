@@ -70,6 +70,7 @@ public class AlarmDataField extends CustomField {
      */
     public AlarmDataField() {
         alarmDataForm = new Form();
+        alarmDataForm.setWriteThrough(false);
         alarmDataForm.setFormFieldFactory(new FormFieldFactory() {
             public Field createField(Item item, Object propertyId, Component uiContext) {
                 if ("alarmType".equals(propertyId)) {
@@ -77,21 +78,22 @@ public class AlarmDataField extends CustomField {
                     f.addItem("1");
                     f.addItem("2");
                     f.addItem("3");
+                    f.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
                     f.setNullSelectionAllowed(false);
                     return f;
                 }
                 if ("autoClean".equals(propertyId)) {
-                    CheckBox f = new CheckBox("Auto Clean");
+                    final CheckBox f = new CheckBox("Auto Clean");
                     return f;
                 }
                 if ("reductionKey".equals(propertyId)) {
-                    TextField f = new TextField("Reduction Key");
+                    final TextField f = new TextField("Reduction Key");
                     f.setWidth("100%");
                     f.setNullRepresentation("");
                     return f;
                 }
                 if ("clearKey".equals(propertyId)) {
-                    TextField f = new TextField("Clear Key");
+                    final TextField f = new TextField("Clear Key");
                     f.setWidth("100%");
                     f.setNullRepresentation("");
                     return f;
@@ -99,7 +101,6 @@ public class AlarmDataField extends CustomField {
                 return DefaultFieldFactory.get().createField(item, propertyId, uiContext);
             }
         });
-        alarmDataForm.setWriteThrough(false);
         setCompositionRoot(alarmDataForm);
     }
 
