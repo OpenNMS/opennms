@@ -29,6 +29,8 @@ package org.opennms.features.vaadin.events;
 
 import java.util.Arrays;
 
+import org.opennms.netmgt.xml.eventconf.AlarmData;
+
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.Button;
@@ -56,8 +58,7 @@ public abstract class EventForm extends Form implements ClickListener {
         "eventLabel",
         "descr",
         "logmsgContent",
-        "logmsgDest",        
-        "operinstruct",
+        "logmsgDest",
         "severity",
         "alarmData", // FIXME I need to figure it out how to deal with this.
         "maskElements",
@@ -66,6 +67,7 @@ public abstract class EventForm extends Form implements ClickListener {
         /*
          * Not Implemented:
          * 
+         * operinstruct
          * autoactionCollection (CustomField)
          * operactionCollection (CustomField)
          * correlation (CustomField)
@@ -141,6 +143,8 @@ public abstract class EventForm extends Form implements ClickListener {
     // TODO What should we do if some of the following are null ?
     private BeanItem<org.opennms.netmgt.xml.eventconf.Event> createEventItem(org.opennms.netmgt.xml.eventconf.Event event) {
         BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
+        if (event.getAlarmData() == null)
+            event.setAlarmData(new AlarmData());
         item.addItemProperty("logmsgContent", new NestedMethodProperty(item.getBean(), "logmsg.content"));
         item.addItemProperty("logmsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));
         item.addItemProperty("maskElements", new NestedMethodProperty(item.getBean(), "mask.maskelementCollection"));

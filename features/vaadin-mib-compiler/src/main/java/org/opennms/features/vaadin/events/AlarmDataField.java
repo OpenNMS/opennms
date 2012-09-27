@@ -36,6 +36,7 @@ import com.vaadin.data.Buffered;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -75,9 +76,17 @@ public class AlarmDataField extends CustomField {
             public Field createField(Item item, Object propertyId, Component uiContext) {
                 if ("alarmType".equals(propertyId)) {
                     final ComboBox f = new ComboBox("Alarm Type");
-                    f.addItem("1");
-                    f.addItem("2");
-                    f.addItem("3");
+                    f.addItem(new Integer(1));
+                    f.addItem(new Integer(2));
+                    f.addItem(new Integer(3));
+                    f.setNewItemHandler(new NewItemHandler() {
+                        @Override
+                        public void addNewItem(String newItemCaption) {
+                            try {
+                                f.addItem(new Integer(newItemCaption));
+                            } catch (Exception e) {}
+                        }
+                    });
                     f.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
                     f.setNullSelectionAllowed(false);
                     return f;
