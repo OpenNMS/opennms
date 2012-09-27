@@ -57,15 +57,15 @@ public abstract class EventForm extends Form implements ClickListener {
         "descr",
         "logmsgContent",
         "logmsgDest",        
+        "operinstruct",
         "severity",
-        //"alarmData", // FIXME I need to figure it out how to deal with this.
+        "alarmData", // FIXME I need to figure it out how to deal with this.
         "maskElements",
         "maskVarbinds",
         "varbindsdecodeCollection"
         /*
          * Not Implemented:
          * 
-         * operinstruct (String)
          * autoactionCollection (CustomField)
          * operactionCollection (CustomField)
          * correlation (CustomField)
@@ -124,7 +124,10 @@ public abstract class EventForm extends Form implements ClickListener {
     private org.opennms.netmgt.xml.eventconf.Event getEvent() {
         if (getItemDataSource() instanceof BeanItem) {
             BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = (BeanItem<org.opennms.netmgt.xml.eventconf.Event>) getItemDataSource();
-            return item.getBean();
+            org.opennms.netmgt.xml.eventconf.Event e = item.getBean();
+            if (e.getAlarmData() != null && e.getAlarmData().getReductionKey() == null) // It doesn't make any sense an alarmData without reductionKey
+                e.setAlarmData(null);
+            return e;
         }
         return null;
     }

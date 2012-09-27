@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
+import java.util.Arrays;
+
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.vaadin.addon.customfield.CustomField;
 
@@ -34,6 +36,8 @@ import com.vaadin.data.Buffered;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
@@ -49,6 +53,14 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class AlarmDataField extends CustomField {
 
+    /** The Constant FORM_ITEMS. */
+    public static final String[] FORM_ITEMS = new String[] {
+        "reductionKey",
+        "clearKey",
+        "alarmType",
+        "autoClean"
+    };
+
     /** The alarm data form. */
     private Form alarmDataForm;
 
@@ -60,12 +72,31 @@ public class AlarmDataField extends CustomField {
         alarmDataForm = new Form();
         alarmDataForm.setFormFieldFactory(new FormFieldFactory() {
             public Field createField(Item item, Object propertyId, Component uiContext) {
-                Field f = DefaultFieldFactory.get().createField(item, propertyId, uiContext);
-                f.setWidth("100%");
-                if (f instanceof TextField) {
-                    ((TextField) f).setNullRepresentation("");
+                if ("alarmType".equals(propertyId)) {
+                    final ComboBox f = new ComboBox("Alarm Type");
+                    f.addItem("1");
+                    f.addItem("2");
+                    f.addItem("3");
+                    f.setNullSelectionAllowed(false);
+                    return f;
                 }
-                return f;
+                if ("autoClean".equals(propertyId)) {
+                    CheckBox f = new CheckBox("Auto Clean");
+                    return f;
+                }
+                if ("reductionKey".equals(propertyId)) {
+                    TextField f = new TextField("Reduction Key");
+                    f.setWidth("100%");
+                    f.setNullRepresentation("");
+                    return f;
+                }
+                if ("clearKey".equals(propertyId)) {
+                    TextField f = new TextField("Clear Key");
+                    f.setWidth("100%");
+                    f.setNullRepresentation("");
+                    return f;
+                }
+                return DefaultFieldFactory.get().createField(item, propertyId, uiContext);
             }
         });
         alarmDataForm.setWriteThrough(false);
@@ -78,8 +109,9 @@ public class AlarmDataField extends CustomField {
     @Override
     public void setInternalValue(Object newValue) throws ReadOnlyException, ConversionException {
         AlarmData alarmData = (newValue instanceof AlarmData) ? (AlarmData) newValue : new AlarmData();
+        alarmData.setAutoClean(false);
         super.setInternalValue(alarmData);
-        alarmDataForm.setItemDataSource(new BeanItem<AlarmData>(alarmData));
+        alarmDataForm.setItemDataSource(new BeanItem<AlarmData>(alarmData), Arrays.asList(FORM_ITEMS));
     }
 
     /* (non-Javadoc)

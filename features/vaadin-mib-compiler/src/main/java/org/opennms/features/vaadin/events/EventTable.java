@@ -30,7 +30,6 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.Property;
@@ -88,7 +87,7 @@ public abstract class EventTable extends Table {
     public abstract void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event);
 
     /**
-     * Gets the OpenNMS events.
+     * Gets all the OpenNMS events.
      *
      * @return the OpenNMS events
      */
@@ -103,12 +102,14 @@ public abstract class EventTable extends Table {
         return events;
     }
 
+    /**
+     * Gets the OpenNMS event.
+     *
+     * @return the OpenNMS event
+     */
     @SuppressWarnings("unchecked")
     private org.opennms.netmgt.xml.eventconf.Event getEvent(Object itemId) {
-        org.opennms.netmgt.xml.eventconf.Event e = ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getContainerDataSource().getItem(itemId)).getBean();
-        //if (e.getAlarmData() == null) // TODO Patching null alarm-data
-        //    e.setAlarmData(new AlarmData());
-        return e;
+        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getContainerDataSource().getItem(itemId)).getBean();
     }
 
     /**
