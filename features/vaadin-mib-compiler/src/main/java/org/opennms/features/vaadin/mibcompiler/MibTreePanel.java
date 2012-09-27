@@ -276,7 +276,6 @@ public class MibTreePanel extends Panel {
      * @param logger the logger
      * @param fileName the file name
      * @param ueiBase the UEI base
-     * @return the events window
      */
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
@@ -288,8 +287,8 @@ public class MibTreePanel extends Panel {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final EventWindow w = new EventWindow(fileName, events, logger);
                     getApplication().getMainWindow().addWindow(w);
-                } catch (Exception e) {
-                    getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                } catch (Throwable t) {
+                    getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                 }
             } else {
                 getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
@@ -310,8 +309,12 @@ public class MibTreePanel extends Panel {
                 getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection.", Notification.TYPE_ERROR_MESSAGE);
             } else {
                 if (dcGroup.getGroupCount() > 0) {
-                    final DataCollectionWindow w = new DataCollectionWindow(fileName, dcGroup, logger);
-                    getApplication().getMainWindow().addWindow(w);
+                    try {
+                        final DataCollectionWindow w = new DataCollectionWindow(fileName, dcGroup, logger);
+                        getApplication().getMainWindow().addWindow(w);
+                    } catch (Throwable t) {
+                        getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    }
                 } else {
                     getApplication().getMainWindow().showNotification("The MIB doesn't contain any metric for data collection.", Notification.TYPE_WARNING_MESSAGE);
                 }

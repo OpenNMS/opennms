@@ -106,8 +106,8 @@ public abstract class EventTable extends Table {
     @SuppressWarnings("unchecked")
     private org.opennms.netmgt.xml.eventconf.Event getEvent(Object itemId) {
         org.opennms.netmgt.xml.eventconf.Event e = ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getContainerDataSource().getItem(itemId)).getBean();
-        if (e.getAlarmData() == null) // TODO Patching null alarm-data
-            e.setAlarmData(new AlarmData());
+        //if (e.getAlarmData() == null) // TODO Patching null alarm-data
+        //    e.setAlarmData(new AlarmData());
         return e;
     }
 

@@ -58,7 +58,7 @@ public abstract class EventForm extends Form implements ClickListener {
         "logmsgContent",
         "logmsgDest",        
         "severity",
-        "alarmData", // FIXME I need to figure it out how to deal with this.
+        //"alarmData", // FIXME I need to figure it out how to deal with this.
         "maskElements",
         "maskVarbinds",
         "varbindsdecodeCollection"

@@ -70,13 +70,8 @@ public class EventWindow extends Window {
      */
     public EventWindow(final String caption, final Events events, final Logger logger) throws Exception {
         super(caption);
-
-        // FIXME: I believe that this is not the best way.
-        // This is also used on opennms-webapp/src/main/webapp/admin/notification/noticeWizard/eventNotices.jsp
-        // I need getRootEvents in order to add a reference to the new file inside eventconf.xml
-        eventsDao = new DefaultEventConfDao();
-        eventsDao.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
-        eventsDao.afterPropertiesSet();
+        
+        initialize(logger);
 
         setScrollable(true);
         setModal(false);
@@ -124,6 +119,22 @@ public class EventWindow extends Window {
         } else {
             validateFile(file, events, logger);
         }
+    }
+    
+    /**
+     * Initialize
+     */
+    /*
+     * FIXME: I believe that this is not the best way.
+     *  This is also used on opennms-webapp/src/main/webapp/admin/notification/noticeWizard/eventNotices.jsp
+     *  I need getRootEvents in order to add a reference to the new file inside eventconf.xml
+     */
+    private void initialize(final Logger logger) throws Exception {
+        File config = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+        logger.info("Parsing events from " + config);
+        eventsDao = new DefaultEventConfDao();
+        eventsDao.setConfigResource(new FileSystemResource(config));
+        eventsDao.afterPropertiesSet();
     }
 
     /**
