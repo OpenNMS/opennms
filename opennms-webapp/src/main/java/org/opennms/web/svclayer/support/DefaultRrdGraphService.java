@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.text.SimpleDateFormat;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
@@ -332,6 +333,48 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), startTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        translationMap.put(RE.simplePatternToFullRegularExpression("{startTimeDate}"), fmt.format(new Date(startTime)).replace(":", "\\:"));
+        translationMap.put(RE.simplePatternToFullRegularExpression("{endTimeDate}"), fmt.format(new Date(endTime)).replace(":", "\\:"));
+
+        // Handle a start time with a format.
+        RE stre = new RE("\\{startTime:(.+?)\\}");
+        int pos = 0;
+        boolean matchFail = false;
+        while (stre.match(command, pos) && !matchFail) {
+            String sdfPattern = stre.getParen(1);
+            if (sdfPattern == null) {
+              matchFail = true;
+            } else {
+                try {
+                    fmt = new SimpleDateFormat(sdfPattern);
+                    translationMap.put(RE.simplePatternToFullRegularExpression("{startTime:"+sdfPattern+"}"), fmt.format(new Date(startTime)).replace(":", "\\:"));
+                } catch (IllegalArgumentException e) {
+                    LogUtils.errorf(this, "Cannot parse date format '%s' for graph %s.", sdfPattern, reportName);
+                }
+                pos = pos + sdfPattern.length() + 1;
+            }
+        }
+
+        // Handle an end time with a format
+        RE etre = new RE("\\{endTime:(.+?)\\}");
+        pos = 0;
+        matchFail = false;
+        while (etre.match(command, pos) && !matchFail) {
+            String sdfPattern = etre.getParen(1);
+            if (sdfPattern == null) {
+              matchFail = true;
+            } else {
+                try {
+                    fmt = new SimpleDateFormat(sdfPattern);
+                    translationMap.put(RE.simplePatternToFullRegularExpression("{endTime:"+sdfPattern+"}"), fmt.format(new Date(endTime)).replace(":", "\\:"));
+                } catch (IllegalArgumentException e) {
+                    LogUtils.errorf(this, "Cannot parse date format '%s' for graph %s.", sdfPattern, reportName);
+                }
+                pos = pos + sdfPattern.length() + 1;
+            }
+        }
 
         try {
             translationMap.putAll(getTranslationsForAttributes(graph.getResource().getExternalValueAttributes(), prefabGraph.getExternalValues(), "external value attribute"));

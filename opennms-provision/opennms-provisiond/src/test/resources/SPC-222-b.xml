@@ -1,0 +1,2203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="test">
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.94" foreign-id="11314462">
+                <interface ip-addr="192.168.113.94" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.92" foreign-id="11314466">
+                <interface ip-addr="192.168.113.92" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.95" foreign-id="11314471">
+                <interface ip-addr="192.168.113.95" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.77" foreign-id="11314476">
+                <interface ip-addr="192.168.113.77" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.102" foreign-id="11314482">
+                <interface ip-addr="192.168.113.102" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.101" foreign-id="11314491">
+                <interface ip-addr="192.168.113.101" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.79" foreign-id="11314494">
+                <interface ip-addr="192.168.113.79" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.76" foreign-id="11314502">
+                <interface ip-addr="192.168.113.76" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.106" foreign-id="11314511">
+                <interface ip-addr="192.168.113.106" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.99" foreign-id="11314516">
+                <interface ip-addr="192.168.113.99" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.96" foreign-id="11314520">
+                <interface ip-addr="192.168.113.96" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.78" foreign-id="11314524">
+                <interface ip-addr="192.168.113.78" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.82" foreign-id="11314528">
+                <interface ip-addr="192.168.113.82" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.75" foreign-id="11314532">
+                <interface ip-addr="192.168.113.75" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.108" foreign-id="11314535">
+                <interface ip-addr="192.168.113.108" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.97" foreign-id="11314541">
+                <interface ip-addr="192.168.113.97" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.83" foreign-id="11314545">
+                <interface ip-addr="192.168.113.83" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.84" foreign-id="11314548">
+                <interface ip-addr="192.168.113.84" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.103" foreign-id="11314552">
+                <interface ip-addr="192.168.113.103" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.73" foreign-id="11314558">
+                <interface ip-addr="192.168.113.73" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.118" foreign-id="11314562">
+                <interface ip-addr="192.168.113.118" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.107" foreign-id="11314566">
+                <interface ip-addr="192.168.113.107" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.100" foreign-id="11314569">
+                <interface ip-addr="192.168.113.100" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.98" foreign-id="11314574">
+                <interface ip-addr="192.168.113.98" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.105" foreign-id="11314578">
+                <interface ip-addr="192.168.113.105" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.104" foreign-id="11314584">
+                <interface ip-addr="192.168.113.104" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.88" foreign-id="11314587">
+                <interface ip-addr="192.168.113.88" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.87" foreign-id="11314592">
+                <interface ip-addr="192.168.113.87" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.127" foreign-id="11314597">
+                <interface ip-addr="192.168.113.127" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.131" foreign-id="11314601">
+                <interface ip-addr="192.168.113.131" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.125" foreign-id="11314606">
+                <interface ip-addr="192.168.113.125" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.86" foreign-id="11314609">
+                <interface ip-addr="192.168.113.86" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.110" foreign-id="11314611">
+                <interface ip-addr="192.168.113.110" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.111" foreign-id="11314618">
+                <interface ip-addr="192.168.113.111" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.109" foreign-id="11314621">
+                <interface ip-addr="192.168.113.109" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.121" foreign-id="11314624">
+                <interface ip-addr="192.168.113.121" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.123" foreign-id="11314630">
+                <interface ip-addr="192.168.113.123" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.116" foreign-id="11314633">
+                <interface ip-addr="192.168.113.116" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.126" foreign-id="11314636">
+                <interface ip-addr="192.168.113.126" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.124" foreign-id="11314639">
+                <interface ip-addr="192.168.113.124" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.122" foreign-id="11314642">
+                <interface ip-addr="192.168.113.122" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.115" foreign-id="11314645">
+                <interface ip-addr="192.168.113.115" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.113" foreign-id="11314648">
+                <interface ip-addr="192.168.113.113" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.112" foreign-id="11314652">
+                <interface ip-addr="192.168.113.112" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.129" foreign-id="11314655">
+                <interface ip-addr="192.168.113.129" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.114" foreign-id="11314661">
+                <interface ip-addr="192.168.113.114" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.130" foreign-id="11314662">
+                <interface ip-addr="192.168.113.130" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.117" foreign-id="11314667">
+                <interface ip-addr="192.168.113.117" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.128" foreign-id="11314673">
+                <interface ip-addr="192.168.113.128" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.85" foreign-id="11314683">
+                <interface ip-addr="192.168.113.85" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.120" foreign-id="11314687">
+                <interface ip-addr="192.168.113.120" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.119" foreign-id="11314698">
+                <interface ip-addr="192.168.113.119" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.133" foreign-id="11314704">
+                <interface ip-addr="192.168.113.133" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.132" foreign-id="11314715">
+                <interface ip-addr="192.168.113.132" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.135" foreign-id="11314743">
+                <interface ip-addr="192.168.113.135" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.134" foreign-id="11314747">
+                <interface ip-addr="192.168.113.134" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.136" foreign-id="11314748">
+                <interface ip-addr="192.168.113.136" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.138" foreign-id="11314758">
+                <interface ip-addr="192.168.113.138" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.139" foreign-id="11314761">
+                <interface ip-addr="192.168.113.139" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.137" foreign-id="11314764">
+                <interface ip-addr="192.168.113.137" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.147" foreign-id="11314773">
+                <interface ip-addr="192.168.113.147" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.145" foreign-id="11314780">
+                <interface ip-addr="192.168.113.145" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.150" foreign-id="11314784">
+                <interface ip-addr="192.168.113.150" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.149" foreign-id="11314788">
+                <interface ip-addr="192.168.113.149" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.148" foreign-id="11314791">
+                <interface ip-addr="192.168.113.148" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.146" foreign-id="11314794">
+                <interface ip-addr="192.168.113.146" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.144" foreign-id="11314797">
+                <interface ip-addr="192.168.113.144" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.143" foreign-id="11314804">
+                <interface ip-addr="192.168.113.143" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.154" foreign-id="11314808">
+                <interface ip-addr="192.168.113.154" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.153" foreign-id="11314812">
+                <interface ip-addr="192.168.113.153" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.151" foreign-id="11314816">
+                <interface ip-addr="192.168.113.151" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.142" foreign-id="11314820">
+                <interface ip-addr="192.168.113.142" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.152" foreign-id="11314824">
+                <interface ip-addr="192.168.113.152" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.141" foreign-id="11314828">
+                <interface ip-addr="192.168.113.141" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.140" foreign-id="11314831">
+                <interface ip-addr="192.168.113.140" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.157" foreign-id="11314837">
+                <interface ip-addr="192.168.113.157" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.156" foreign-id="11314843">
+                <interface ip-addr="192.168.113.156" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.155" foreign-id="11314847">
+                <interface ip-addr="192.168.113.155" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.158" foreign-id="11314851">
+                <interface ip-addr="192.168.113.158" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.159" foreign-id="11314857">
+                <interface ip-addr="192.168.113.159" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.167" foreign-id="11314861">
+                <interface ip-addr="192.168.113.167" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.165" foreign-id="11314865">
+                <interface ip-addr="192.168.113.165" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.166" foreign-id="11314869">
+                <interface ip-addr="192.168.113.166" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.164" foreign-id="11314873">
+                <interface ip-addr="192.168.113.164" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.160" foreign-id="11314877">
+                <interface ip-addr="192.168.113.160" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.162" foreign-id="11314880">
+                <interface ip-addr="192.168.113.162" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.161" foreign-id="11314883">
+                <interface ip-addr="192.168.113.161" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.163" foreign-id="11314889">
+                <interface ip-addr="192.168.113.163" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.173" foreign-id="11314892">
+                <interface ip-addr="192.168.113.173" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.172" foreign-id="11314897">
+                <interface ip-addr="192.168.113.172" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.174" foreign-id="11314900">
+                <interface ip-addr="192.168.113.174" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.168" foreign-id="11314905">
+                <interface ip-addr="192.168.113.168" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.169" foreign-id="11314911">
+                <interface ip-addr="192.168.113.169" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.170" foreign-id="11314915">
+                <interface ip-addr="192.168.113.170" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.171" foreign-id="11314919">
+                <interface ip-addr="192.168.113.171" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.185" foreign-id="11314924">
+                <interface ip-addr="192.168.113.185" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.186" foreign-id="11314928">
+                <interface ip-addr="192.168.113.186" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.187" foreign-id="11314932">
+                <interface ip-addr="192.168.113.187" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.176" foreign-id="11314937">
+                <interface ip-addr="192.168.113.176" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.113.177" foreign-id="11314940">
+                <interface ip-addr="192.168.113.177" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.103" foreign-id="17795178">
+                <interface ip-addr="192.168.146.103" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.98" foreign-id="17795182">
+                <interface ip-addr="192.168.146.98" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.97" foreign-id="17795185">
+                <interface ip-addr="192.168.146.97" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.80" foreign-id="17795188">
+                <interface ip-addr="192.168.146.80" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.115" foreign-id="17795194">
+                <interface ip-addr="192.168.146.115" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.79" foreign-id="17795199">
+                <interface ip-addr="192.168.146.79" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.101" foreign-id="17795203">
+                <interface ip-addr="192.168.146.101" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.61" foreign-id="17795207">
+                <interface ip-addr="192.168.146.61" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.96" foreign-id="17795211">
+                <interface ip-addr="192.168.146.96" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.95" foreign-id="17795214">
+                <interface ip-addr="192.168.146.95" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.111" foreign-id="17795219">
+                <interface ip-addr="192.168.146.111" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.112" foreign-id="17795223">
+                <interface ip-addr="192.168.146.112" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.113" foreign-id="17795226">
+                <interface ip-addr="192.168.146.113" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.117" foreign-id="17795229">
+                <interface ip-addr="192.168.146.117" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.108" foreign-id="17795236">
+                <interface ip-addr="192.168.146.108" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.120" foreign-id="17795240">
+                <interface ip-addr="192.168.146.120" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.81" foreign-id="17795245">
+                <interface ip-addr="192.168.146.81" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.136" foreign-id="17795249">
+                <interface ip-addr="192.168.146.136" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.121" foreign-id="17795253">
+                <interface ip-addr="192.168.146.121" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.114" foreign-id="17795257">
+                <interface ip-addr="192.168.146.114" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.140" foreign-id="17795261">
+                <interface ip-addr="192.168.146.140" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.125" foreign-id="17795265">
+                <interface ip-addr="192.168.146.125" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.107" foreign-id="17795269">
+                <interface ip-addr="192.168.146.107" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.141" foreign-id="17795272">
+                <interface ip-addr="192.168.146.141" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.106" foreign-id="17795275">
+                <interface ip-addr="192.168.146.106" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.77" foreign-id="17795278">
+                <interface ip-addr="192.168.146.77" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.137" foreign-id="17795281">
+                <interface ip-addr="192.168.146.137" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.105" foreign-id="17795288">
+                <interface ip-addr="192.168.146.105" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.127" foreign-id="17795294">
+                <interface ip-addr="192.168.146.127" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.129" foreign-id="17795297">
+                <interface ip-addr="192.168.146.129" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.134" foreign-id="17795302">
+                <interface ip-addr="192.168.146.134" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.109" foreign-id="17795306">
+                <interface ip-addr="192.168.146.109" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.135" foreign-id="17795310">
+                <interface ip-addr="192.168.146.135" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.138" foreign-id="17795314">
+                <interface ip-addr="192.168.146.138" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.131" foreign-id="17795318">
+                <interface ip-addr="192.168.146.131" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.128" foreign-id="17795322">
+                <interface ip-addr="192.168.146.128" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.76" foreign-id="17795327">
+                <interface ip-addr="192.168.146.76" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.123" foreign-id="17795331">
+                <interface ip-addr="192.168.146.123" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.159" foreign-id="17795335">
+                <interface ip-addr="192.168.146.159" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.158" foreign-id="17795339">
+                <interface ip-addr="192.168.146.158" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.147" foreign-id="17795343">
+                <interface ip-addr="192.168.146.147" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.143" foreign-id="17795347">
+                <interface ip-addr="192.168.146.143" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.139" foreign-id="17795352">
+                <interface ip-addr="192.168.146.139" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.145" foreign-id="17795356">
+                <interface ip-addr="192.168.146.145" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.133" foreign-id="17795360">
+                <interface ip-addr="192.168.146.133" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.132" foreign-id="17795364">
+                <interface ip-addr="192.168.146.132" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.153" foreign-id="17795368">
+                <interface ip-addr="192.168.146.153" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.151" foreign-id="17795371">
+                <interface ip-addr="192.168.146.151" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.144" foreign-id="17795374">
+                <interface ip-addr="192.168.146.144" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.160" foreign-id="17795378">
+                <interface ip-addr="192.168.146.160" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.148" foreign-id="17795381">
+                <interface ip-addr="192.168.146.148" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.150" foreign-id="17795386">
+                <interface ip-addr="192.168.146.150" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.156" foreign-id="17795389">
+                <interface ip-addr="192.168.146.156" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.154" foreign-id="17795396">
+                <interface ip-addr="192.168.146.154" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.157" foreign-id="17795401">
+                <interface ip-addr="192.168.146.157" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.152" foreign-id="17795404">
+                <interface ip-addr="192.168.146.152" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.149" foreign-id="17795407">
+                <interface ip-addr="192.168.146.149" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.161" foreign-id="17795413">
+                <interface ip-addr="192.168.146.161" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.162" foreign-id="17795422">
+                <interface ip-addr="192.168.146.162" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.173" foreign-id="17795446">
+                <interface ip-addr="192.168.146.173" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.170" foreign-id="17795449">
+                <interface ip-addr="192.168.146.170" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.169" foreign-id="17795452">
+                <interface ip-addr="192.168.146.169" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.171" foreign-id="17795455">
+                <interface ip-addr="192.168.146.171" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.174" foreign-id="17795458">
+                <interface ip-addr="192.168.146.174" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.165" foreign-id="17795461">
+                <interface ip-addr="192.168.146.165" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.168" foreign-id="17795464">
+                <interface ip-addr="192.168.146.168" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.172" foreign-id="17795467">
+                <interface ip-addr="192.168.146.172" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.175" foreign-id="17795470">
+                <interface ip-addr="192.168.146.175" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.167" foreign-id="17795482">
+                <interface ip-addr="192.168.146.167" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.177" foreign-id="17795487">
+                <interface ip-addr="192.168.146.177" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.176" foreign-id="17795491">
+                <interface ip-addr="192.168.146.176" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.164" foreign-id="17795496">
+                <interface ip-addr="192.168.146.164" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.178" foreign-id="17795502">
+                <interface ip-addr="192.168.146.178" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.181" foreign-id="17795517">
+                <interface ip-addr="192.168.146.181" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.182" foreign-id="17795525">
+                <interface ip-addr="192.168.146.182" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.180" foreign-id="17795529">
+                <interface ip-addr="192.168.146.180" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.183" foreign-id="17795532">
+                <interface ip-addr="192.168.146.183" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.179" foreign-id="17795533">
+                <interface ip-addr="192.168.146.179" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.184" foreign-id="17795545">
+                <interface ip-addr="192.168.146.184" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.185" foreign-id="17795554">
+                <interface ip-addr="192.168.146.185" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.192" foreign-id="17795566">
+                <interface ip-addr="192.168.146.192" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.186" foreign-id="17795569">
+                <interface ip-addr="192.168.146.186" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.187" foreign-id="17795572">
+                <interface ip-addr="192.168.146.187" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.188" foreign-id="17795574">
+                <interface ip-addr="192.168.146.188" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.191" foreign-id="17795586">
+                <interface ip-addr="192.168.146.191" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.190" foreign-id="17795589">
+                <interface ip-addr="192.168.146.190" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.194" foreign-id="17795592">
+                <interface ip-addr="192.168.146.194" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.189" foreign-id="17795596">
+                <interface ip-addr="192.168.146.189" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.193" foreign-id="17795607">
+                <interface ip-addr="192.168.146.193" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.196" foreign-id="17795610">
+                <interface ip-addr="192.168.146.196" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.195" foreign-id="17795615">
+                <interface ip-addr="192.168.146.195" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.198" foreign-id="17795627">
+                <interface ip-addr="192.168.146.198" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.197" foreign-id="17795632">
+                <interface ip-addr="192.168.146.197" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.200" foreign-id="17795640">
+                <interface ip-addr="192.168.146.200" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.203" foreign-id="17795654">
+                <interface ip-addr="192.168.146.203" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.202" foreign-id="17795659">
+                <interface ip-addr="192.168.146.202" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.204" foreign-id="17795664">
+                <interface ip-addr="192.168.146.204" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.207" foreign-id="17795667">
+                <interface ip-addr="192.168.146.207" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.211" foreign-id="17795670">
+                <interface ip-addr="192.168.146.211" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+        <!-- Update node-label, foreign-id, ip-addr and descr to match actual device -->
+        <node node-label="192.168.146.208" foreign-id="17795673">
+                <interface ip-addr="192.168.146.208" descr="mgmt0" status="1" snmp-primary="P">
+                        <monitored-service service-name="ICMP"/>
+                        
+                </interface>
+                <!-- Optional, maybe we can also have a category for Switches? -->
+                <category name="Routers"/>
+                <category name="Medium"/>
+                <category name="Monitor_SNMP"/>
+        </node>
+</model-import>
