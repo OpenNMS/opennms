@@ -43,6 +43,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager.ContactType;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Password;
@@ -53,10 +54,6 @@ import org.opennms.netmgt.config.users.User;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class UpdateUserServlet extends HttpServlet {
     /**
@@ -97,65 +94,65 @@ public class UpdateUserServlet extends HttpServlet {
                 newUser.setTuiPin(tuiPin);
             }
 
-            String email = request.getParameter("email");
+            String email = request.getParameter(ContactType.email.toString());
             String pagerEmail = request.getParameter("pemail");
-            String xmppAddress = request.getParameter("xmppAddress");
-            String microblog = request.getParameter("microblog");
+            String xmppAddress = request.getParameter(ContactType.xmppAddress.toString());
+            String microblog = request.getParameter(ContactType.microblog.toString());
             String numericPage = request.getParameter("numericalService");
             String numericPin = request.getParameter("numericalPin");
             String textPage = request.getParameter("textService");
             String textPin = request.getParameter("textPin");
-            String workPhone = request.getParameter("workPhone");
-            String mobilePhone = request.getParameter("mobilePhone");
-            String homePhone = request.getParameter("homePhone");
+            String workPhone = request.getParameter(ContactType.workPhone.toString());
+            String mobilePhone = request.getParameter(ContactType.mobilePhone.toString());
+            String homePhone = request.getParameter(ContactType.homePhone.toString());
 
             newUser.removeAllContact();
 
             Contact tmpContact = new Contact();
             tmpContact.setInfo(email);
-            tmpContact.setType("email");
+            tmpContact.setType(ContactType.email.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(pagerEmail);
-            tmpContact.setType("pagerEmail");
+            tmpContact.setType(ContactType.pagerEmail.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(xmppAddress);
-            tmpContact.setType("xmppAddress");
+            tmpContact.setType(ContactType.xmppAddress.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(microblog);
-            tmpContact.setType("microblog");
+            tmpContact.setType(ContactType.microblog.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(numericPin);
             tmpContact.setServiceProvider(numericPage);
-            tmpContact.setType("numericPage");
+            tmpContact.setType(ContactType.numericPage.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(textPin);
             tmpContact.setServiceProvider(textPage);
-            tmpContact.setType("textPage");
+            tmpContact.setType(ContactType.textPage.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(workPhone);
-            tmpContact.setType("workPhone");
+            tmpContact.setType(ContactType.workPhone.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(mobilePhone);
-            tmpContact.setType("mobilePhone");
+            tmpContact.setType(ContactType.mobilePhone.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(homePhone);
-            tmpContact.setType("homePhone");
+            tmpContact.setType(ContactType.homePhone.toString());
             newUser.addContact(tmpContact);
 
             // build the duty schedule data structure

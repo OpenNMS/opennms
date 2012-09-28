@@ -235,7 +235,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
      * <li>Both users and magic users files are loaded</li>
      * <li>Magic users file is changed</li>
      * <li>Magic users file is reloaded on the next call to getByUsername</li>
-     * <li>Subsequent calls to getByUsername call caues a reload because the
+     * <li>Subsequent calls to getByUsername call causes a reload because the
      *     last update time for the users file is stored when magic users is
      *     reloaded</li>
      * </ol>

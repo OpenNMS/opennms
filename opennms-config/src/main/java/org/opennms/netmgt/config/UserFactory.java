@@ -53,8 +53,6 @@ public class UserFactory extends UserManager {
      */
     private static UserManager instance;
 
-    // private static ViewFactory viewFactory;
-
     /**
      * File path of users.xml
      */
@@ -74,6 +72,11 @@ public class UserFactory extends UserManager {
      * 
      */
     private long m_lastModified;
+
+    /**
+     * 
+     */
+    private long m_fileSize;
 
     /**
      * Initializes the factory
@@ -141,6 +144,7 @@ public class UserFactory extends UserManager {
 
         InputStream configIn = new FileInputStream(m_usersConfFile);
         m_lastModified = m_usersConfFile.lastModified();
+        m_fileSize = m_usersConfFile.length();
 
         parseXML(configIn);
         
@@ -149,6 +153,7 @@ public class UserFactory extends UserManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_usersConfFile), "UTF-8");
@@ -163,14 +168,21 @@ public class UserFactory extends UserManager {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isUpdateNeeded() {
         if (m_usersConfFile == null) {
             return true;
+        } else {
+            // Check to see if the file size has changed
+            if (m_fileSize != m_usersConfFile.length()) {
+                return true;
+            // Check to see if the timestamp has changed
+            } else if (m_lastModified != m_usersConfFile.lastModified()) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        if (m_lastModified != m_usersConfFile.lastModified()) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -181,6 +193,7 @@ public class UserFactory extends UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (isUpdateNeeded()) {
             reload();
@@ -190,5 +203,10 @@ public class UserFactory extends UserManager {
     @Override
     public long getLastModified() {
         return m_lastModified;
+    }
+
+    @Override
+    public long getFileSize() {
+        return m_fileSize;
     }
 }
