@@ -36,6 +36,7 @@ import org.opennms.features.vaadin.datacollection.DataCollectionWindow;
 import org.opennms.features.vaadin.events.EventWindow;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -93,14 +94,20 @@ public class MibCompilerPanel extends Panel {
     /** The MIB parser. */
     private final MibParser mibParser;
 
+    /** The Events Configuration DAO. */
+    private DefaultEventConfDao eventsDao;
+
     /**
      * Instantiates a new MIB tree panel.
      *
+     * @param eventsDao the Events Configuration DAO
      * @param mibParser the MIB parser
      * @param logger the logger
      */
-    public MibCompilerPanel(final MibParser mibParser, final Logger logger) {
+    public MibCompilerPanel(final DefaultEventConfDao eventsDao, final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
+
+        this.eventsDao = eventsDao;
 
         logger.info("Reading MIBs from " + MIBS_ROOT_DIR);
 
@@ -260,7 +267,7 @@ public class MibCompilerPanel extends Panel {
      */
     private void generateEvents(final Logger logger, final String fileName) {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
-            final EventGenerationWindow w = new EventGenerationWindow() {
+            final EventUeiWindow w = new EventUeiWindow("uei.opennms.org/traps/" + mibParser.getMibName()) {
                 @Override
                 public void changeUeiHandler(String ueiBase) {
                     showEventsWindow(logger, fileName, ueiBase);
@@ -285,7 +292,7 @@ public class MibCompilerPanel extends Panel {
             if (events.getEventCount() > 0) {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
-                    final EventWindow w = new EventWindow(fileName, events, logger);
+                    final EventWindow w = new EventWindow(fileName, eventsDao, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
                     getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);

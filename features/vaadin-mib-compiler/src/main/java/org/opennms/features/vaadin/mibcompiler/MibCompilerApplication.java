@@ -27,7 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
+import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.springframework.core.io.FileSystemResource;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
@@ -52,7 +59,24 @@ public class MibCompilerApplication extends Application {
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsolePanel mibConsole = new MibConsolePanel();
-        final MibCompilerPanel mibPanel = new MibCompilerPanel(new MibbleMibParser(), mibConsole); // TODO Find a better way to pass the MIB parser.
+
+        // Initializing Events Configuration
+        File config;
+        try {
+            config = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read events file", e);
+        }
+        mibConsole.info("Parsing events from " + config);
+        DefaultEventConfDao eventsDao = new DefaultEventConfDao(); // I need to access the raw event configuration
+        eventsDao.setConfigResource(new FileSystemResource(config));
+        eventsDao.afterPropertiesSet();
+
+        // Initializing MIB Parser
+        // TODO Find a better way to pass the MIB parser.
+        MibParser parser = new MibbleMibParser();
+
+        final MibCompilerPanel mibPanel = new MibCompilerPanel(eventsDao, parser, mibConsole);
 
         mainPanel.setSizeFull();
         mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);

@@ -36,12 +36,12 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class Event Generator Window.
+ * The Class Event UEI Window.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class EventGenerationWindow extends Window implements Button.ClickListener {
+public abstract class EventUeiWindow extends Window implements Button.ClickListener {
 
     /** The Event UEI base. */
     private final TextField ueiBase;
@@ -54,9 +54,10 @@ public abstract class EventGenerationWindow extends Window implements Button.Cli
 
     /**
      * Instantiates a new Event Generator window.
-     *
+     * 
+     * @param defaultUei the default value for UEI base
      */
-    public EventGenerationWindow() {
+    public EventUeiWindow(String defaultUei) {
         setCaption("Generate Events");
         setModal(true);
         setWidth("400px");
@@ -70,6 +71,7 @@ public abstract class EventGenerationWindow extends Window implements Button.Cli
         ueiBase.setWriteThrough(false);
         ueiBase.setWidth("100%");
         ueiBase.setRequired(true);
+        ueiBase.setValue(defaultUei);
         ueiBase.setRequiredError("UEI Base cannot be null.");
 
         okButton = new Button("Continue");

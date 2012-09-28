@@ -147,6 +147,14 @@ public class MibbleMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getMibName()
+     */
+    @Override
+    public String getMibName() {
+        return mib == null ? "Unknown" : mib.getName();
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getEvents(java.lang.String)
      */
     public Events getEvents(String ueibase) {

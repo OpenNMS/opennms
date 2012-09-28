@@ -27,7 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
+import java.io.File;
+import java.io.FileWriter;
+
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -40,6 +47,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Event Panel.
@@ -61,13 +72,24 @@ public abstract class EventPanel extends Panel {
     /** The isNew flag. True, if the group is new. */
     private boolean isNew = false;
 
+    /** The Events Configuration DAO. */
+    private DefaultEventConfDao eventsDao;
+
+    /** The Events File name. */
+    private String fileName;
+
     /**
      * Instantiates a new event panel.
      *
+     * @param eventsDao the Events Configuration DAO
+     * @param fileName the Events File
      * @param events the OpenNMS events
      * @param logger the logger
      */
-    public EventPanel(final Events events, final Logger logger) {
+    public EventPanel(final DefaultEventConfDao eventsDao, final String fileName, final Events events, final Logger logger) {
+        this.eventsDao = eventsDao;
+        this.fileName = fileName;
+
         setCaption("Events");
         addStyleName(Runo.PANEL_LIGHT);
 
@@ -76,17 +98,17 @@ public abstract class EventPanel extends Panel {
         mainLayout.setMargin(true);
 
         HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.addComponent(new Button("Cancel Processing", new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                cancelProcessing();
-                logger.info("Event processing has been canceled");
-            }
-        }));
-        toolbar.addComponent(new Button("Generate Evenst File", new Button.ClickListener() {
+        toolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
                 events.setEvent(eventTable.getOnmsEvents());
-                generateEventFile(events);
                 logger.info("The events have been saved.");
+                processEvents(events, logger);
+            }
+        }));
+        toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                logger.info("Event processing has been canceled");
+                cancel();
             }
         }));
         mainLayout.addComponent(toolbar);
@@ -128,9 +150,9 @@ public abstract class EventPanel extends Panel {
             public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 if (isNew) {
                     eventTable.addEvent(event);
-                    logger.info("Event Group " + event.getUei() + " has been created.");
+                    logger.info("Event " + event.getUei() + " has been created.");
                 } else {
-                    logger.info("Event Group " + event.getUei() + " has been updated.");
+                    logger.info("Event " + event.getUei() + " has been updated.");
                 }
                 eventTable.refreshRowCache();
             }
@@ -155,15 +177,109 @@ public abstract class EventPanel extends Panel {
     }
 
     /**
-     * Cancel processing.
+     * Cancel.
      */
-    public abstract void cancelProcessing();
+    public abstract void cancel();
 
     /**
-     * Generate event file.
+     * Success.
+     */
+    public abstract void success();
+
+    /**
+     * Failure.
+     */
+    public abstract void failure();
+
+    /**
+     * Process events.
      *
      * @param events the OpenNMS Events
+     * @param logger the logger
      */
-    public abstract void generateEventFile(Events events);
+    public void processEvents(final Events events, final Logger logger) {
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
+        final File file = new File(configDir, fileName.replaceFirst("\\..*$", ".xml"));
+        if (file.exists()) {
+            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to override the existig file?<br/>All current information will be lost.",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+            mb.addStyleName(Runo.WINDOW_DIALOG);
+            mb.show(new EventListener() {
+                public void buttonClicked(ButtonType buttonType) {
+                    if (buttonType == MessageBox.ButtonType.YES) {
+                        validateFile(file, events, logger);
+                    }
+                }
+            });
+        } else {
+            validateFile(file, events, logger);
+        }
+    }
 
+    /**
+     * Validate file.
+     *
+     * @param file the file
+     * @param events the events
+     * @param logger the logger
+     */
+    private void validateFile(final File file, final Events events, final Logger logger) {
+        int eventCount = 0;
+        for (org.opennms.netmgt.xml.eventconf.Event e : events.getEventCollection()) {
+            if (eventsDao.findByUei(e.getUei()) != null)
+                eventCount++;
+        }
+        if (eventCount == 0) {
+            saveFile(file, events, logger);
+        } else {
+            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+            mb.addStyleName(Runo.WINDOW_DIALOG);
+            mb.show(new EventListener() {
+                public void buttonClicked(ButtonType buttonType) {
+                    if (buttonType == MessageBox.ButtonType.YES) {
+                        saveFile(file, events, logger);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Save file.
+     *
+     * @param file the file
+     * @param events the events
+     * @param logger the logger
+     */
+    private void saveFile(final File file, final Events events, final Logger logger) {
+        try {
+            logger.info("Saving XML data into " + file.getAbsolutePath());
+            // Save the XML of the new events
+            FileWriter writer = new FileWriter(file);
+            JaxbUtils.marshal(events, writer);
+            writer.close();
+            // Add a reference to the new file into eventconf.xml
+            String fileName = "events/" + file.getName();
+            if (!eventsDao.getRootEvents().getEventFileCollection().contains(fileName)) {
+                logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
+                eventsDao.getRootEvents().getEventFileCollection().add(0, fileName);
+                eventsDao.saveCurrent();
+            }
+            // Send eventsConfigChange event
+            logger.warn("Remember to send a " + EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI + " to reload the events configuration.");
+            success();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            failure();
+        }
+    }
 }

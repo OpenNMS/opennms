@@ -70,6 +70,13 @@ public interface MibParser {
     List<String> getMissingDependencies();
 
     /**
+     * Gets the MIB name.
+     * 
+     * @return the MIB name.
+     */
+    String getMibName();
+
+    /**
      * Gets the event list.
      *
      * @param ueibase the UEI base
