@@ -178,7 +178,7 @@ class SyslogReceiver implements Runnable {
 
             try {
                 if (!ioInterrupted) {
-                    log.debug("Wating on a datagram to arrive");
+                    log.debug("Waiting on a datagram to arrive");
                 }
 
                 DatagramPacket pkt = new DatagramPacket(buffer, length);
