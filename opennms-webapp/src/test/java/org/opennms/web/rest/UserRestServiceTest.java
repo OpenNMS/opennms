@@ -30,6 +30,13 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
@@ -65,6 +72,46 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         xml = sendRequest(GET, "/users/test", 200);
         assertTrue(xml.contains(">MONKEYS<"));
+    }
+
+    @Test
+    public void testWriteALotOfUsers() throws Exception {
+        int userCount = 40;
+
+        ExecutorService pool = Executors.newCachedThreadPool();
+        List<Future<?>> createFutures = new ArrayList<Future<?>>();
+        for (int i = 0; i < userCount; i++) {
+            final String userName = "test" + i;
+            createFutures.add(pool.submit(Executors.callable(new Runnable() {
+                public void run() {
+                    try {
+                        createUser(userName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        fail(e.getMessage());
+                    }
+                }
+            })));
+        }
+
+        // Wait for all of the REST operations to complete
+        for(Future<?> future : createFutures) {
+            future.get();
+        }
+
+        sendRequest(GET, "/users", 200);
+
+        // Try changing the password for every user to make sure that they
+        // are properly accessible in the UserManager
+        for (int i = 0; i < userCount; i++) {
+            String xml = sendRequest(GET, "/users/test" + i, 200);
+            assertTrue(xml.contains(String.format("<user><user-id>test%d</user-id>", i)));
+
+            sendPut("/users/test" + i, "password=MONKEYS");
+
+            xml = sendRequest(GET, "/users/test" + i, 200);
+            assertTrue(xml.contains(">MONKEYS<"));
+        }
     }
 
     @Test

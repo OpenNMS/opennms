@@ -2422,6 +2422,11 @@
         <version>${xalanVersion}</version>
       </dependency>
       <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>serializer</artifactId>
+        <version>${xalanVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
         <version>${xercesVersion}</version>
