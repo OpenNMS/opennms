@@ -28,7 +28,10 @@
 package org.opennms.features.vaadin.events;
 
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.netmgt.xml.eventconf.Mask;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -51,6 +54,12 @@ public abstract class EventPanel extends Panel {
 
     /** The event form. */
     private final EventForm eventForm;
+
+    /** The add button. */
+    private final Button add;
+
+    /** The isNew flag. True, if the group is new. */
+    private boolean isNew = false;
 
     /**
      * Instantiates a new event panel.
@@ -88,23 +97,41 @@ public abstract class EventPanel extends Panel {
                 eventForm.setEventDataSource(event);
                 eventForm.setVisible(true);
                 eventForm.setReadOnly(true);
+                setIsNew(false);
             }
         };
         mainLayout.addComponent(eventTable);
 
-        final Button addEventBtn = new Button("Add Event");
-        addEventBtn.addListener(new Button.ClickListener() {
+        add = new Button("Add Event");
+        add.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                eventTable.addEvent();
+                org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
+                e.setUei("uei.opennms.org/newEvent");
+                e.setEventLabel("New Event");
+                e.setDescr("New Event Description");
+                e.setLogmsg(new Logmsg());
+                e.getLogmsg().setContent("New Event Log Message");
+                e.getLogmsg().setDest("logndisplay");
+                e.setSeverity("Indeterminate");
+                e.setMask(new Mask());
+                e.setAlarmData(new AlarmData());
+                eventTable.updateExternalSource(e);
+                eventForm.setReadOnly(false);
+                setIsNew(true);
             }
         });
-        mainLayout.addComponent(addEventBtn);
-        mainLayout.setComponentAlignment(addEventBtn, Alignment.MIDDLE_RIGHT);
+        mainLayout.addComponent(add);
+        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
         eventForm = new EventForm() {
             public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
-                logger.info("Event " + event.getUei() + " has been updated.");
+                if (isNew) {
+                    eventTable.addEvent(event);
+                    logger.info("Event Group " + event.getUei() + " has been created.");
+                } else {
+                    logger.info("Event Group " + event.getUei() + " has been updated.");
+                }
                 eventTable.refreshRowCache();
             }
             public void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event) {
@@ -116,6 +143,15 @@ public abstract class EventPanel extends Panel {
         mainLayout.addComponent(eventForm);
 
         setContent(mainLayout);
+    }
+
+    /**
+     * Sets the value of the ifNew flag
+     *
+     * @param isNew true, if the group is new.
+     */
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
     }
 
     /**

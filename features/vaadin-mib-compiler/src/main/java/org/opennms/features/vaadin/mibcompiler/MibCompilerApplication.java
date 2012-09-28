@@ -52,11 +52,11 @@ public class MibCompilerApplication extends Application {
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsolePanel mibConsole = new MibConsolePanel();
-        final MibTreePanel mibsTree = new MibTreePanel(new MibbleMibParser(), mibConsole); // TODO Find a better way to pass the MIB parser.
+        final MibCompilerPanel mibPanel = new MibCompilerPanel(new MibbleMibParser(), mibConsole); // TODO Find a better way to pass the MIB parser.
 
         mainPanel.setSizeFull();
         mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
-        mainPanel.addComponent(mibsTree);
+        mainPanel.addComponent(mibPanel);
         mainPanel.addComponent(mibConsole);
 
         final Window mainWindow = new Window("MIB Compiler Application", mainPanel);

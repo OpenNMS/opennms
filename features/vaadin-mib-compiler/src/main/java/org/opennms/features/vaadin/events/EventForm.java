@@ -30,6 +30,8 @@ package org.opennms.features.vaadin.events;
 import java.util.Arrays;
 
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.netmgt.xml.eventconf.Mask;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.NestedMethodProperty;
@@ -137,10 +139,15 @@ public abstract class EventForm extends Form implements ClickListener {
      * @param event the event
      * @return the bean item
      */
-    // TODO What should we do if some of the following are null ?
     private BeanItem<org.opennms.netmgt.xml.eventconf.Event> createEventItem(org.opennms.netmgt.xml.eventconf.Event event) {
+        // Be sure that the nested elements exists to avoid problems.
+        if (event.getMask() == null)
+            event.setMask(new Mask());
+        if (event.getLogmsg() == null)
+            event.setLogmsg(new Logmsg());
         if (event.getAlarmData() == null)
             event.setAlarmData(new AlarmData());
+        // Creating BeanItem
         BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
         item.addItemProperty("logmsgContent", new NestedMethodProperty(item.getBean(), "logmsg.content"));
         item.addItemProperty("logmsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));

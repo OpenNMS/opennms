@@ -103,6 +103,7 @@ public class GroupPanel extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 Group group = new Group();
                 group.setName("New Group");
+                group.setIfType("ignore");
                 table.updateExternalSource(new BeanItem<Group>(group));
                 form.setReadOnly(false);
                 setIsNew(true);

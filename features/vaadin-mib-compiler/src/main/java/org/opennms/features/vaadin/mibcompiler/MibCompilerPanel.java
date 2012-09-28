@@ -50,12 +50,12 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class MIB Tree Panel.
+ * The Class MIB Compiler Panel.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibTreePanel extends Panel {
+public class MibCompilerPanel extends Panel {
 
     /** The Constant PENDING. */
     private static final String PENDING = "pending";
@@ -99,7 +99,7 @@ public class MibTreePanel extends Panel {
      * @param mibParser the MIB parser
      * @param logger the logger
      */
-    public MibTreePanel(final MibParser mibParser, final Logger logger) {
+    public MibCompilerPanel(final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
 
         logger.info("Reading MIBs from " + MIBS_ROOT_DIR);

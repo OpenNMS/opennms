@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
 import com.vaadin.data.Property;
@@ -101,11 +100,13 @@ public abstract class EventTable extends Table {
             org.opennms.netmgt.xml.eventconf.Event e = getEvent(itemId);
             e.setDescr(encodeHtml(e.getDescr()));
             e.getLogmsg().setContent(encodeHtml(e.getLogmsg().getContent()));
+            // It doesn't make any sense an alarmData without reductionKey
             AlarmData a = e.getAlarmData();
-            if (a != null && (a.getReductionKey() == null || a.getReductionKey().trim().equals(""))) // It doesn't make any sense an alarmData without reductionKey
+            if (a != null && (a.getReductionKey() == null || a.getReductionKey().trim().equals("")))
                 e.setAlarmData(null);
+            // It doesn't make any sense an mask without mask elements.
             Mask m = e.getMask();
-            if (m != null && m.getMaskelementCollection().isEmpty()) // It doesn't make any sense an mask without mask elements.
+            if (m != null && m.getMaskelementCollection().isEmpty())
                 e.setMask(null);
             events.add(e);
         }
@@ -113,22 +114,12 @@ public abstract class EventTable extends Table {
     }
 
     /**
-     * Adds a new OpenNMS event.
+     * Adds an event.
      *
+     * @param event the new event
      */
-    public void addEvent() {
-        org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
-        e.setUei("uei.opennms.org/newEvent");
-        e.setEventLabel("New Event");
-        e.setDescr("New Event Description");
-        e.setLogmsg(new Logmsg());
-        e.getLogmsg().setContent("New Event Log Message");
-        e.getLogmsg().setDest("logndisplay");
-        e.setSeverity("Indeterminate");
-        e.setMask(new Mask());
-        e.setAlarmData(new AlarmData());
-        container.addBean(e);
-        select(e.getUei());
+    public void addEvent(org.opennms.netmgt.xml.eventconf.Event event) {
+        container.addBean(event);
     }
 
     /**
