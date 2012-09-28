@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.Property;
@@ -97,6 +98,9 @@ public abstract class EventTable extends Table {
             org.opennms.netmgt.xml.eventconf.Event e = getEvent(itemId);
             e.setDescr(encodeHtml(e.getDescr()));
             e.getLogmsg().setContent(encodeHtml(e.getLogmsg().getContent()));
+            AlarmData a = e.getAlarmData();
+            if (a != null && (a.getReductionKey() == null || a.getReductionKey().trim().equals(""))) // It doesn't make any sense an alarmData without reductionKey
+                e.setAlarmData(null);
             events.add(e);
         }
         return events;

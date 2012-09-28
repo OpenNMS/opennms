@@ -209,7 +209,6 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         MibObj obj = new MibObj();
         obj.setOid("1.1.1.1");
         container.addBean(obj);
-        table.setPageLength(container.size()); // TODO: Is this really necessary?
     }
 
     /**

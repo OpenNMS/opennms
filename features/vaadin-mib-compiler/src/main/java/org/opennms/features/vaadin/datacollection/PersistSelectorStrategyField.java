@@ -186,9 +186,9 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new Parameter());
-        table.addItem(itemId);
-        table.setPageLength(container.size()); // TODO: Is this really necessary?
+        Parameter p = new Parameter();
+        p.setKey("New Parameter");
+        container.addBean(p);
     }
 
     /**
@@ -200,11 +200,11 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
             getApplication().getMainWindow().showNotification("Please select a Parameter from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to continue?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {

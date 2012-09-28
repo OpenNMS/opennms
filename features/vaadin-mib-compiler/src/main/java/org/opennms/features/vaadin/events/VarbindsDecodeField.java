@@ -177,9 +177,9 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new Varbindsdecode());
-        table.addItem(itemId);
-        table.setPageLength(container.size()); // TODO: Is this really necessary?
+        Varbindsdecode v = new Varbindsdecode();
+        v.setParmid("??"); // A non null value is required here.
+        container.addBean(v);
     }
 
     /**

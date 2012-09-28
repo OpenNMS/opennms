@@ -126,10 +126,7 @@ public abstract class EventForm extends Form implements ClickListener {
     private org.opennms.netmgt.xml.eventconf.Event getEvent() {
         if (getItemDataSource() instanceof BeanItem) {
             BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = (BeanItem<org.opennms.netmgt.xml.eventconf.Event>) getItemDataSource();
-            org.opennms.netmgt.xml.eventconf.Event e = item.getBean();
-            if (e.getAlarmData() != null && e.getAlarmData().getReductionKey() == null) // It doesn't make any sense an alarmData without reductionKey
-                e.setAlarmData(null);
-            return e;
+            return item.getBean();
         }
         return null;
     }
@@ -142,9 +139,9 @@ public abstract class EventForm extends Form implements ClickListener {
      */
     // TODO What should we do if some of the following are null ?
     private BeanItem<org.opennms.netmgt.xml.eventconf.Event> createEventItem(org.opennms.netmgt.xml.eventconf.Event event) {
-        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
         if (event.getAlarmData() == null)
             event.setAlarmData(new AlarmData());
+        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
         item.addItemProperty("logmsgContent", new NestedMethodProperty(item.getBean(), "logmsg.content"));
         item.addItemProperty("logmsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));
         item.addItemProperty("maskElements", new NestedMethodProperty(item.getBean(), "mask.maskelementCollection"));

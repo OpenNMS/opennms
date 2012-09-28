@@ -103,6 +103,10 @@ public class MibbleMibParser implements MibParser, Serializable {
         try {
             LogUtils.debugf(this, "Parsing MIB file %s", mibFile);
             mib = loader.load(mibFile);
+            if (mib == null) {
+                errors = "Can't load " + mibFile + ", please try again.";
+                return false;
+            }
             if (mib.getLog().warningCount() > 0) {
                 LogUtils.infof(this, "Warning found when processing %s", mibFile);
                 handleMibError(mib.getLog());

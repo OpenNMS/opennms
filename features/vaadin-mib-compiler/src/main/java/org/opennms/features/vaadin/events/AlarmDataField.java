@@ -34,6 +34,7 @@ import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -59,7 +60,7 @@ public class AlarmDataField extends CustomField {
         "reductionKey",
         "clearKey",
         "alarmType",
-        "autoClean"
+//        "autoClean" // FIXME Is not working, I'm not sure why.
     };
 
     /** The alarm data form. */
@@ -114,14 +115,22 @@ public class AlarmDataField extends CustomField {
     }
 
     /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setInternalValue(java.lang.Object)
+     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
      */
     @Override
-    public void setInternalValue(Object newValue) throws ReadOnlyException, ConversionException {
-        AlarmData alarmData = (newValue instanceof AlarmData) ? (AlarmData) newValue : new AlarmData();
-        alarmData.setAutoClean(false);
-        super.setInternalValue(alarmData);
-        alarmDataForm.setItemDataSource(new BeanItem<AlarmData>(alarmData), Arrays.asList(FORM_ITEMS));
+    public void setPropertyDataSource(Property newDataSource) {
+        Object value = newDataSource.getValue();
+        if (value instanceof AlarmData) {
+            alarmDataForm.setItemDataSource(new BeanItem<AlarmData>((AlarmData) value, Arrays.asList(FORM_ITEMS)));
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.vaadin.addon.customfield.CustomField#getValue()
+     */
+    @Override
+    public Object getValue() {
+        return alarmDataForm.getValue();
     }
 
     /* (non-Javadoc)
@@ -129,7 +138,6 @@ public class AlarmDataField extends CustomField {
      */
     @Override
     public void commit() throws Buffered.SourceException, InvalidValueException {
-        super.commit();
         alarmDataForm.commit();
     }
 
@@ -138,7 +146,6 @@ public class AlarmDataField extends CustomField {
      */
     @Override
     public void discard() throws Buffered.SourceException {
-        super.discard();
         alarmDataForm.discard();
     }
 
@@ -147,7 +154,6 @@ public class AlarmDataField extends CustomField {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         alarmDataForm.setReadOnly(readOnly);
     }
 

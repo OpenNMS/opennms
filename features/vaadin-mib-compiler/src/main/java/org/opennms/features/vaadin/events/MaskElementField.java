@@ -174,9 +174,9 @@ public class MaskElementField extends CustomField implements Button.ClickListene
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new Maskelement());
-        table.addItem(itemId);
-        table.setPageLength(container.size()); // TODO: Is this really necessary?
+        Maskelement e = new Maskelement();
+        e.setMename("??"); // A non null value is required here.
+        container.addBean(e);
     }
 
     /**

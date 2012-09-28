@@ -175,9 +175,9 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      * Adds the handler.
      */
     private void addHandler() {
-        Object itemId = container.addBean(new Varbind());
-        table.addItem(itemId);
-        table.setPageLength(container.size()); // TODO: Is this really necessary?
+        Varbind v = new Varbind();
+        v.setVbnumber(1); // A non null value is required here.
+        container.addBean(v);
     }
 
     /**
