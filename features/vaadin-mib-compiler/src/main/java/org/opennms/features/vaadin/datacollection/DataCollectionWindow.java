@@ -27,20 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.io.File;
-import java.io.FileWriter;
-
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Data Collection Window.
@@ -68,67 +59,18 @@ public class DataCollectionWindow extends Window {
         setSizeFull();
         setContent(new DataCollectionGroupPanel(dcGroup, logger) {
             @Override
-            public void cancelProcessing() {
+            public void cancel() {
                 close();
             }
             @Override
-            public void generateDataCollectionFile(DatacollectionGroup group) {
-                processDataCollection(group, logger);
+            public void success() {
+                close();
+            }
+            @Override
+            public void failure() {
+                close();
             }
         });
-    }
-
-    /**
-     * Process data collection.
-     *
-     * @param dcGroup the OpenNMS Data Collection Group
-     * @param logger the logger
-     */
-    /*
-     * TODO Validations
-     * 
-     * - Check if there is no DCGroup with the same name
-     */
-    public void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
-        final File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
-        if (file.exists()) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                    "Are you sure?",
-                    MessageBox.Icon.QUESTION,
-                    "Do you really want to override the existig file?<br/>All current information will be lost.",
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
-                        saveFile(file, dcGroup, logger);
-                    }
-                }
-            });
-        } else {
-            saveFile(file, dcGroup, logger);
-        }
-    }
-
-    /**
-     * Save file.
-     *
-     * @param file the file
-     * @param dcGroup the datacollection-group
-     * @param logger the logger
-     */
-    private void saveFile(final File file, final DatacollectionGroup dcGroup, final Logger logger) {
-        try {
-            FileWriter writer = new FileWriter(file);
-            JaxbUtils.marshal(dcGroup, writer);
-            logger.info("Saving XML data into " + file.getAbsolutePath());
-            logger.warn("Remember to update datacollection-config.xml to include the group " + dcGroup.getName() + " and restart OpenNMS.");
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        close();
     }
 
 }

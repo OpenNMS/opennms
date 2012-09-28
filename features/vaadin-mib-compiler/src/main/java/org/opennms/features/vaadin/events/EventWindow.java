@@ -34,9 +34,6 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
-/*
- * TODO A dependency to opennms-services is required in order to use an EventProxy or EventIpcManager
- */
 /**
  * The Class Event Window.
  * 

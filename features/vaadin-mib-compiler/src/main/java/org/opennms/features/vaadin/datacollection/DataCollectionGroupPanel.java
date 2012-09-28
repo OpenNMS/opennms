@@ -27,6 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.io.File;
+import java.io.FileWriter;
+
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 
@@ -42,6 +47,10 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class DataCollectionGroupPanel.
@@ -86,16 +95,16 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         // Button Toolbar
 
         final HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.addComponent(new Button("Cancel Processing", new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                cancelProcessing();
-                logger.info("Data collection processing has been canceled");
+        toolbar.addComponent(new Button("Save Data Collection File", new Button.ClickListener() {
+            public void buttonClick(ClickEvent event) {
+                logger.info("The data collection have been saved.");
+                processDataCollection(getOnmsDataCollection(), logger);
             }
         }));
-        toolbar.addComponent(new Button("Generate Data Collection File", new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                generateDataCollectionFile(getOnmsDataCollection());
-                logger.info("The data collection have been saved.");
+        toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                logger.info("Data collection processing has been canceled");
+                cancel();
             }
         }));
 
@@ -146,15 +155,71 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     }
 
     /**
-     * Cancel processing.
+     * Cancel.
      */
-    public abstract void cancelProcessing();
+    public abstract void cancel();
 
     /**
-     * Generate event file.
-     *
-     * @param group the OpenNMS Data Collection Group
+     * Success.
      */
-    public abstract void generateDataCollectionFile(DatacollectionGroup group);
+    public abstract void success();
 
+    /**
+     * Failure.
+     */
+    public abstract void failure();
+
+    /**
+     * Process data collection.
+     *
+     * @param dcGroup the OpenNMS Data Collection Group
+     * @param logger the logger
+     */
+    /*
+     * TODO Validations
+     * 
+     * - Check if there is no DCGroup with the same name
+     */
+    public void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+        final File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
+        if (file.exists()) {
+            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to override the existig file?<br/>All current information will be lost.",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+            mb.addStyleName(Runo.WINDOW_DIALOG);
+            mb.show(new EventListener() {
+                public void buttonClicked(ButtonType buttonType) {
+                    if (buttonType == MessageBox.ButtonType.YES) {
+                        saveFile(file, dcGroup, logger);
+                    }
+                }
+            });
+        } else {
+            saveFile(file, dcGroup, logger);
+        }
+    }
+
+    /**
+     * Save file.
+     *
+     * @param file the file
+     * @param dcGroup the datacollection-group
+     * @param logger the logger
+     */
+    private void saveFile(final File file, final DatacollectionGroup dcGroup, final Logger logger) {
+        try {
+            FileWriter writer = new FileWriter(file);
+            JaxbUtils.marshal(dcGroup, writer);
+            logger.info("Saving XML data into " + file.getAbsolutePath());
+            logger.warn("Remember to update datacollection-config.xml to include the group " + dcGroup.getName() + " and restart OpenNMS.");
+            success();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            failure();
+        }
+    }
 }

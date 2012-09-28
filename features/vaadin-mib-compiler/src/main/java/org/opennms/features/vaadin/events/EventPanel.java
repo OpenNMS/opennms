@@ -52,6 +52,9 @@ import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
+/*
+ * TODO A dependency to opennms-services is required in order to use an EventProxy or EventIpcManager
+ */
 /**
  * The Class Event Panel.
  * 
