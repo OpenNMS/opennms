@@ -32,9 +32,10 @@ import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.netmgt.xml.eventconf.Mask;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
@@ -53,14 +54,16 @@ public abstract class EventTable extends Table {
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "Generated Events" };
 
+    /** The Table Container for Events. */
+    private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container;
+
     /**
      * Instantiates a new event table.
      *
      * @param events the OpenNMS events
      */
     public EventTable(final Events events) {
-        BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container =
-                new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
+        container = new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
         container.setBeanIdProperty("uei");
         container.addAll(events.getEventCollection());
         setContainerDataSource(container);
@@ -94,26 +97,48 @@ public abstract class EventTable extends Table {
      */
     public List<org.opennms.netmgt.xml.eventconf.Event> getOnmsEvents() {
         List<org.opennms.netmgt.xml.eventconf.Event> events = new ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
-        for (Object itemId : getContainerDataSource().getItemIds()) {
+        for (String itemId : container.getItemIds()) {
             org.opennms.netmgt.xml.eventconf.Event e = getEvent(itemId);
             e.setDescr(encodeHtml(e.getDescr()));
             e.getLogmsg().setContent(encodeHtml(e.getLogmsg().getContent()));
             AlarmData a = e.getAlarmData();
             if (a != null && (a.getReductionKey() == null || a.getReductionKey().trim().equals(""))) // It doesn't make any sense an alarmData without reductionKey
                 e.setAlarmData(null);
+            Mask m = e.getMask();
+            if (m != null && m.getMaskelementCollection().isEmpty()) // It doesn't make any sense an mask without mask elements.
+                e.setMask(null);
             events.add(e);
         }
         return events;
     }
 
     /**
+     * Adds a new OpenNMS event.
+     *
+     */
+    public void addEvent() {
+        org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
+        e.setUei("uei.opennms.org/newEvent");
+        e.setEventLabel("New Event");
+        e.setDescr("New Event Description");
+        e.setLogmsg(new Logmsg());
+        e.getLogmsg().setContent("New Event Log Message");
+        e.getLogmsg().setDest("logndisplay");
+        e.setSeverity("Indeterminate");
+        e.setMask(new Mask());
+        e.setAlarmData(new AlarmData());
+        container.addBean(e);
+        select(e.getUei());
+    }
+
+    /**
      * Gets the OpenNMS event.
      *
+     * @param itemId the internal Item ID (Event's UEI)
      * @return the OpenNMS event
      */
-    @SuppressWarnings("unchecked")
     private org.opennms.netmgt.xml.eventconf.Event getEvent(Object itemId) {
-        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getContainerDataSource().getItem(itemId)).getBean();
+        return container.getItem(itemId).getBean();
     }
 
     /**

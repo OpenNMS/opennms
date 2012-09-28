@@ -92,6 +92,16 @@ public abstract class EventPanel extends Panel {
         };
         mainLayout.addComponent(eventTable);
 
+        final Button addEventBtn = new Button("Add Event");
+        addEventBtn.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                eventTable.addEvent();
+            }
+        });
+        mainLayout.addComponent(addEventBtn);
+        mainLayout.setComponentAlignment(addEventBtn, Alignment.MIDDLE_RIGHT);
+
         eventForm = new EventForm() {
             public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 logger.info("Event " + event.getUei() + " has been updated.");
