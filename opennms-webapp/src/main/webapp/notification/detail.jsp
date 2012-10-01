@@ -173,7 +173,7 @@
       </tr>
 
       <tr class="<%=eventSeverity%>">
-        <td><%=notice.getTextMessage()%></td>
+        <td><pre><%=notice.getTextMessage()%></pre></td>
       </tr>
     <% } %>
   </table>

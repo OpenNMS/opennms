@@ -62,7 +62,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
-    	LoggerFactory.getLogger(getClass()).debug("{}.createApplication()", getClass().getName());
+    	LoggerFactory.getLogger(getClass()).debug("createApplication() for servlet path {}", request.getServletPath());
 		TopologyWidgetTestApplication application = new TopologyWidgetTestApplication(m_commandManager, m_topologyProvider, m_iconRepositoryManager);
 		application.setTheme(m_themeName);
 		

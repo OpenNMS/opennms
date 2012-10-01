@@ -78,7 +78,19 @@ public abstract class UserManager {
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
     private final Lock m_writeLock = m_readWriteLock.writeLock();
-    
+
+    public enum ContactType {
+        email,
+        pagerEmail,
+        xmppAddress,
+        microblog,
+        numericPage,
+        textPage,
+        workPhone,
+        mobilePhone,
+        homePhone
+    }
+
     protected GroupManager m_groupManager;
     /**
      * A mapping of user IDs to the User objects
@@ -431,7 +443,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public String getMicroblogName(final String name) throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        return getContactInfo(name, "microblog");
+        return getContactInfo(name, ContactType.microblog.toString());
     }
 
     /**
@@ -446,7 +458,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public String getMicroblogName(final User user) throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        return getContactInfo(user, "microblog");
+        return getContactInfo(user, ContactType.microblog.toString());
     }
 
     /**
@@ -574,7 +586,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getEmail(final String userID) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userID, "email");
+        return getContactInfo(userID, ContactType.email.toString());
     }
     
     /**
@@ -587,7 +599,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getEmail(final User user) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(user, "email");
+        return getContactInfo(user, ContactType.email.toString());
     }
 
     /**
@@ -601,7 +613,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getPagerEmail(final String userID) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userID, "pagerEmail");
+        return getContactInfo(userID, ContactType.pagerEmail.toString());
     }
 
     /**
@@ -614,7 +626,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getPagerEmail(final User user) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(user, "pagerEmail");
+        return getContactInfo(user, ContactType.pagerEmail.toString());
     }
 
     /**
@@ -628,7 +640,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getNumericPin(final String userID) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userID, "numericPage");
+        return getContactInfo(userID, ContactType.numericPage.toString());
     }
 
     /**
@@ -641,7 +653,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getNumericPin(final User user) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(user, "numericPage");
+        return getContactInfo(user, ContactType.numericPage.toString());
     }
 
     /**
@@ -693,7 +705,7 @@ public abstract class UserManager {
             return "";
         
         for (final Contact contact : user.getContactCollection()) {
-        	if (contact != null && contact.getType().equals("xmppAddress")) {
+        	if (contact != null && contact.getType().equals(ContactType.xmppAddress.toString())) {
         		return contact.getInfo();
         	}
         }
@@ -712,7 +724,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getNumericPage(final String userID) throws IOException, MarshalException, ValidationException {
-        return getContactServiceProvider(userID, "numericPage");
+        return getContactServiceProvider(userID, ContactType.numericPage.toString());
     }
     
     /**
@@ -725,7 +737,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getNumericPage(final User user) throws IOException, MarshalException, ValidationException {
-        return getContactServiceProvider(user, "numericPage");
+        return getContactServiceProvider(user, ContactType.numericPage.toString());
     }
 
     /**
@@ -739,7 +751,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getTextPin(final String userID) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userID, "textPage");
+        return getContactInfo(userID, ContactType.textPage.toString());
     }
     
     /**
@@ -752,7 +764,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getTextPin(final User user) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(user, "textPage");
+        return getContactInfo(user, ContactType.textPage.toString());
     }
 
     /**
@@ -766,7 +778,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getTextPage(final String userID) throws IOException, MarshalException, ValidationException {
-        return getContactServiceProvider(userID, "textPage");
+        return getContactServiceProvider(userID, ContactType.textPage.toString());
     }
     
     /**
@@ -779,7 +791,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getTextPage(final User user) throws IOException, MarshalException, ValidationException {
-        return getContactServiceProvider(user, "textPage");
+        return getContactServiceProvider(user, ContactType.textPage.toString());
     }
     
     /**
@@ -793,7 +805,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public String getWorkPhone(final String userID) throws MarshalException, ValidationException, IOException {
-        return getContactInfo(userID, "workPhone");
+        return getContactInfo(userID, ContactType.workPhone.toString());
     }
     
     /**
@@ -806,7 +818,7 @@ public abstract class UserManager {
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      */
     public String getWorkPhone(final User user) throws MarshalException, ValidationException, IOException {
-        return getContactInfo(user, "workPhone");
+        return getContactInfo(user, ContactType.workPhone.toString());
     }
 
     /**
@@ -820,7 +832,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public String getMobilePhone(final String userID) throws MarshalException, ValidationException, IOException {
-        return getContactInfo(userID, "mobilePhone");
+        return getContactInfo(userID, ContactType.mobilePhone.toString());
     }
     
     /**
@@ -833,7 +845,7 @@ public abstract class UserManager {
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      */
     public String getMobilePhone(final User user) throws MarshalException, ValidationException, IOException {
-        return getContactInfo(user, "mobilePhone");
+        return getContactInfo(user, ContactType.mobilePhone.toString());
     }
 
     /**
@@ -847,7 +859,7 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public String getHomePhone(final String userID) throws MarshalException, ValidationException, IOException {
-        return getContactInfo(userID, "homePhone");
+        return getContactInfo(userID, ContactType.homePhone.toString());
     }
     
     /**
@@ -860,7 +872,7 @@ public abstract class UserManager {
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      */
     public String getHomePhone(final User user) throws MarshalException, ValidationException, IOException {
-        return getContactInfo(user, "homePhone");
+        return getContactInfo(user, ContactType.homePhone.toString());
     }
 
     /**
@@ -1311,5 +1323,6 @@ public abstract class UserManager {
     public abstract boolean isUpdateNeeded();
 
     public abstract long getLastModified();
+    public abstract long getFileSize();
 
 }

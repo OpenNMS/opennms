@@ -80,6 +80,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     
     private long m_usersLastModified;
 
+    private long m_userFileSize;
+
     private String m_magicUsersConfigurationFile;
 	
     /**
@@ -121,8 +123,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
         log().debug("Loaded the users.xml file with " + users.size() + " users");
 
-
-        m_usersLastModified = m_userManager.getLastModified(); 
+        m_usersLastModified = m_userManager.getLastModified();
+        m_userFileSize = m_userManager.getFileSize();
         m_users = users;
     }
     
@@ -308,13 +310,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private boolean isUsersParseNecessary() {
         if (m_users == null) {
             return true;
+        } else {
+            return m_userManager.isUpdateNeeded();
         }
-
-        if (m_usersLastModified != new File(m_usersConfigurationFile).lastModified()) {
-            return true;
-        }
-
-        return false;
     }
     
     /**
@@ -331,12 +329,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      * </p>
      */
     private boolean isGroupsParseNecessary() {
-
         if (m_groupsLastModified != new File(m_groupsConfigurationFile).lastModified()) {
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -355,13 +352,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private boolean isMagicUsersParseNecessary() {
         if (m_magicUsers == null) {
             return true;
-        }
-
-        if (m_magicUsersLastModified != new File(m_magicUsersConfigurationFile).lastModified()) {
+        } else if (m_magicUsersLastModified != new File(m_magicUsersConfigurationFile).lastModified()) {
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -421,6 +416,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsUser getByUsername(String username) {
         reloadIfNecessary();
 
