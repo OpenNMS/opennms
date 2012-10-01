@@ -76,6 +76,9 @@ public class MibCompilerPanel extends Panel {
     /** The Constant ACTION_EDIT. */
     private static final Action ACTION_EDIT = new Action("Edit MIB");
 
+    /** The Constant ACTION_DELETE. */
+    private static final Action ACTION_DELETE = new Action("Delete MIB");
+
     /** The Constant ACTION_COMPILE. */
     private static final Action ACTION_COMPILE = new Action("Compile MIB");
 
@@ -190,12 +193,20 @@ public class MibCompilerPanel extends Panel {
                     return new Action[] { ACTION_EVENTS, ACTION_COLLECT };
                 } else {
                     LogUtils.debugf(this, "Adding actions for PENDING MIB %s", target);
-                    return new Action[] { ACTION_EDIT, ACTION_COMPILE };
+                    return new Action[] { ACTION_EDIT, ACTION_DELETE, ACTION_COMPILE };
                 }
             }
 
             public void handleAction(Action action, Object sender, Object target) {
                 String fileName = (String) target;
+                if (action == ACTION_DELETE) {
+                    File file = new File(MIBS_PENDING_DIR, fileName);
+                    if (file.delete()) {
+                        mibsContainer.removeItem(target);
+                    } else {
+                        getApplication().getMainWindow().showNotification("Can't delete " + file);
+                    }
+                }
                 if (action == ACTION_EDIT) {
                     Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger);
                     getApplication().getMainWindow().addWindow(w);

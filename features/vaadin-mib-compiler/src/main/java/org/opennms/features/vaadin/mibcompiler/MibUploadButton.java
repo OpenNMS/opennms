@@ -74,11 +74,9 @@ public abstract class MibUploadButton extends Upload {
                 File pending = new File(pendingDir, event.getFilename());
                 File compiled = new File(compiledDir, event.getFilename());
                 if (pending.exists()) {
-                    event.getUpload().interruptUpload();
-                    logger.warn("File " + pending.getName() + " already exist on Pending directory.");
+                    logger.warn("The file " + pending.getName() + " already exist on Pending directory.");
                 } else if (compiled.exists()){
-                    event.getUpload().interruptUpload();
-                    logger.warn("File " + compiled.getName() + " already exist on Compiled directory.");
+                    logger.warn("The file " + compiled.getName() + " already exist on Compiled directory.");
                 } else {
                     logger.info("Uploading " + event.getFilename());
                 }

@@ -182,7 +182,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      */
     public void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
-        final File file = new File(configDir, getCaption().replaceFirst("\\..*$", ".xml"));
+        final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                     "Are you sure?",

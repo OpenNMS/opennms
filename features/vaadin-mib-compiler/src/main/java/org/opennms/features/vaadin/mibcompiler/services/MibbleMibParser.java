@@ -33,7 +33,12 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,8 +48,14 @@ import net.percederberg.mibble.MibLoaderException;
 import net.percederberg.mibble.MibLoaderLog;
 import net.percederberg.mibble.MibType;
 import net.percederberg.mibble.MibTypeTag;
+import net.percederberg.mibble.MibValue;
 import net.percederberg.mibble.MibValueSymbol;
+import net.percederberg.mibble.snmp.SnmpNotificationType;
 import net.percederberg.mibble.snmp.SnmpObjectType;
+import net.percederberg.mibble.snmp.SnmpTrapType;
+import net.percederberg.mibble.snmp.SnmpType;
+import net.percederberg.mibble.type.IntegerType;
+import net.percederberg.mibble.value.ObjectIdentifierValue;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
@@ -55,8 +66,13 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
-import org.opennms.netmgt.mib2events.Mib2Events;
+import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.netmgt.xml.eventconf.Mask;
+import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 
 /**
  * Mibble implementation of the interface MibParser.
@@ -79,7 +95,9 @@ public class MibbleMibParser implements MibParser, Serializable {
     private Mib mib;
 
     /** The pattern. */
-    private Pattern pattern = Pattern.compile("couldn't find referenced MIB '(.+)'", Pattern.MULTILINE);
+    private static final Pattern DEPENDENCY_PATERN = Pattern.compile("couldn't find referenced MIB '(.+)'", Pattern.MULTILINE);
+
+    private static final Pattern TRAP_OID_PATTERN = Pattern.compile("(.*)\\.(\\d+)$");
 
     /**
      * Instantiates a new Mibble MIB parser.
@@ -100,6 +118,8 @@ public class MibbleMibParser implements MibParser, Serializable {
      * @see org.opennms.features.vaadin.mibcompiler.MibParser#parseMib(java.io.File)
      */
     public boolean parseMib(File mibFile) {
+        errors = null; // Cleaning existing errors.
+        mib = null; // Cleaning existing MIB object.
         try {
             LogUtils.debugf(this, "Parsing MIB file %s", mibFile);
             mib = loader.load(mibFile);
@@ -137,7 +157,7 @@ public class MibbleMibParser implements MibParser, Serializable {
         List<String> dependencies = new ArrayList<String>();
         if (errors == null)
             return dependencies;
-        Matcher m = pattern.matcher(errors);
+        Matcher m = DEPENDENCY_PATERN.matcher(errors);
         while (m.find()) {
             final String dep = m.group(1);
             if (!dependencies.contains(dep))
@@ -163,8 +183,7 @@ public class MibbleMibParser implements MibParser, Serializable {
         }
         LogUtils.infof(this, "Generating events for %s using the following UEI Base: %s", mib.getName(), ueibase);
         try {
-            Mib2Events converter = new Mib2Events();
-            return converter.convertMibToEvents(mib, ueibase);
+            return convertMibToEvents(mib, ueibase);
         } catch (Throwable e) {
             errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
@@ -285,6 +304,214 @@ public class MibbleMibParser implements MibParser, Serializable {
         PrintStream ps = new PrintStream(os);
         log.printTo(ps);
         errors = os.toString();
+    }
+
+    /*
+     * The following code has been extracted from Mib2Events
+     */
+
+    protected Events convertMibToEvents(Mib mib, String ueibase) {
+        Events events = new Events();
+        for (Object sym : mib.getAllSymbols()) {
+            if (!(sym instanceof MibValueSymbol)) {
+                continue;
+            }
+            MibValueSymbol vsym = (MibValueSymbol) sym;
+            if ((!(vsym.getType() instanceof SnmpNotificationType)) && (!(vsym.getType() instanceof SnmpTrapType))) {
+                continue;
+            }
+            events.addEvent(getTrapEvent(vsym, ueibase));
+        }
+        return events;
+    }
+
+    protected Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
+        Event evt = new Event();
+        // Set the event's UEI, event-label, logmsg, severity, and descr
+        evt.setUei(getTrapEventUEI(trapValueSymbol, ueibase));
+        evt.setEventLabel(getTrapEventLabel(trapValueSymbol));
+        evt.setLogmsg(getTrapEventLogmsg(trapValueSymbol));
+        evt.setSeverity("Indeterminate");
+        evt.setDescr(getTrapEventDescr(trapValueSymbol));
+        List<Varbindsdecode> decode = getTrapVarbindsDecode(trapValueSymbol);
+        if (!decode.isEmpty()) {
+            evt.setVarbindsdecode(decode);
+        }
+        evt.setMask(new Mask());
+        // The "ID" mask element (trap enterprise)
+        addMaskElement(evt, "id", getTrapEnterprise(trapValueSymbol));
+        // The "generic" mask element: hard-wired to enterprise-specific(6)
+        addMaskElement(evt, "generic", "6");
+        // The "specific" mask element (trap specific-type)
+        addMaskElement(evt, "specific", getTrapSpecificType(trapValueSymbol));
+        return evt;
+    }
+
+    protected  String getTrapEventUEI(MibValueSymbol trapValueSymbol, String ueibase) {
+        StringBuffer buf = new StringBuffer(ueibase);
+        if (! ueibase.endsWith("/")) {
+            buf.append("/");
+        }
+        buf.append(trapValueSymbol.getName());
+        return buf.toString();
+    }
+
+    protected String getTrapEventLabel(MibValueSymbol trapValueSymbol) {
+        StringBuffer buf = new StringBuffer();
+        buf.append(trapValueSymbol.getMib());
+        buf.append(" defined trap event: ");
+        buf.append(trapValueSymbol.getName());
+        return buf.toString();
+    }
+
+    protected Logmsg getTrapEventLogmsg(MibValueSymbol trapValueSymbol) {
+        Logmsg msg = new Logmsg();
+        msg.setDest("logndisplay");
+        final StringBuffer dbuf = new StringBuffer();
+        dbuf.append("<p>");
+        dbuf.append("\n");
+        dbuf.append("\t").append(trapValueSymbol.getName()).append(" trap received\n");
+        int vbNum = 1;
+        for (MibValue vb : getTrapVars(trapValueSymbol)) {
+            dbuf.append("\t").append(vb.getName()).append("=%parm[#").append(vbNum).append("]%\n");
+            vbNum++;
+        }
+        if (dbuf.charAt(dbuf.length() - 1) == '\n') {
+            dbuf.deleteCharAt(dbuf.length() - 1); // delete the \n at the end
+        }
+        dbuf.append("</p>\n\t");
+        msg.setContent(dbuf.toString());
+        return msg;
+    }
+
+    protected List<MibValue> getTrapVars(MibValueSymbol trapValueSymbol) {
+        if (trapValueSymbol.getType() instanceof SnmpNotificationType) {
+            SnmpNotificationType v2notif = (SnmpNotificationType) trapValueSymbol.getType();
+            return getV2NotificationObjects(v2notif);
+        } else if (trapValueSymbol.getType() instanceof SnmpTrapType) {
+            SnmpTrapType v1trap = (SnmpTrapType) trapValueSymbol.getType();
+            return getV1TrapVariables(v1trap);
+        } else {
+            throw new IllegalStateException("trap type is not an SNMP v1 Trap or v2 Notification");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<MibValue> getV1TrapVariables(SnmpTrapType v1trap) {
+        return v1trap.getVariables();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<MibValue> getV2NotificationObjects(SnmpNotificationType v2notif) {
+        return v2notif.getObjects();
+    }
+
+    protected String getTrapEventDescr(MibValueSymbol trapValueSymbol) {
+        String description = ((SnmpType) trapValueSymbol.getType()).getDescription();
+        // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
+        final String descrStartingNewlines = description.replaceAll("^", "\n<p>");
+        final String descrEndingNewlines = descrStartingNewlines.replaceAll("$", "</p>\n");
+        final StringBuffer dbuf = new StringBuffer(descrEndingNewlines);
+        if (dbuf.charAt(dbuf.length() - 1) == '\n') {
+            dbuf.deleteCharAt(dbuf.length() - 1); // delete the \n at the end
+        }
+        dbuf.append("<table>");
+        dbuf.append("\n");
+        int vbNum = 1;
+        for (MibValue vb : getTrapVars(trapValueSymbol)) {
+            dbuf.append("\t<tr><td><b>\n\n\t").append(vb.getName());
+            dbuf.append("</b></td><td>\n\t%parm[#").append(vbNum).append("]%;</td><td><p>");
+            SnmpObjectType snmpObjectType = ((SnmpObjectType) ((ObjectIdentifierValue) vb).getSymbol().getType());
+            if (snmpObjectType.getSyntax().getClass().equals(IntegerType.class)) {
+                IntegerType integerType = (IntegerType) snmpObjectType.getSyntax();
+                if (integerType.getAllSymbols().length > 0) {
+                    SortedMap<Integer, String> map = new TreeMap<Integer, String>();
+                    for (MibValueSymbol sym : integerType.getAllSymbols()) {
+                        map.put(new Integer(sym.getValue().toString()), sym.getName());
+                    }
+                    dbuf.append("\n");
+                    for (Entry<Integer, String> entry : map.entrySet()) {
+                        dbuf.append("\t\t").append(entry.getValue()).append("(").append(entry.getKey()).append(")\n");
+                    }
+                    dbuf.append("\t");
+                }
+            }
+            dbuf.append("</p></td></tr>\n");
+            vbNum++;
+        }
+        if (dbuf.charAt(dbuf.length() - 1) == '\n') {
+            dbuf.deleteCharAt(dbuf.length() - 1); // delete the \n at the end
+        }
+        dbuf.append("</table>\n\t");
+        return dbuf.toString();
+    }
+
+    protected List<Varbindsdecode> getTrapVarbindsDecode(MibValueSymbol trapValueSymbol) {
+        Map<String, Varbindsdecode> decode = new LinkedHashMap<String, Varbindsdecode>();
+        int vbNum = 1;
+        for (MibValue vb : getTrapVars(trapValueSymbol)) {
+            String parmName = "parm[#" + vbNum + "]";
+            SnmpObjectType snmpObjectType = ((SnmpObjectType) ((ObjectIdentifierValue) vb).getSymbol().getType());
+            if (snmpObjectType.getSyntax().getClass().equals(IntegerType.class)) {
+                IntegerType integerType = (IntegerType) snmpObjectType.getSyntax();
+                if (integerType.getAllSymbols().length > 0) {
+                    SortedMap<Integer, String> map = new TreeMap<Integer, String>();
+                    for (MibValueSymbol sym : integerType.getAllSymbols()) {
+                        map.put(new Integer(sym.getValue().toString()), sym.getName());
+                    }
+                    for (Entry<Integer, String> entry : map.entrySet()) {
+                        if (!decode.containsKey(parmName)) {
+                            Varbindsdecode newVarbind = new Varbindsdecode();
+                            newVarbind.setParmid(parmName);
+                            decode.put(newVarbind.getParmid(), newVarbind);
+                        }
+                        Decode d = new Decode();
+                        d.setVarbinddecodedstring(entry.getValue());
+                        d.setVarbindvalue(entry.getKey().toString());
+                        decode.get(parmName).addDecode(d);
+                    }
+                }
+            }
+            vbNum++;
+        }
+        return new ArrayList<Varbindsdecode>(decode.values());
+    }
+
+    private String getTrapEnterprise(MibValueSymbol trapValueSymbol) {
+        return getMatcherForOid(getTrapOid(trapValueSymbol)).group(1);
+    }
+
+    private String getTrapSpecificType(MibValueSymbol trapValueSymbol) {
+        return getMatcherForOid(getTrapOid(trapValueSymbol)).group(2);
+    }
+
+    private Matcher getMatcherForOid(String trapOid) {
+        Matcher m = TRAP_OID_PATTERN.matcher(trapOid);
+        if (!m.matches()) {
+            throw new IllegalStateException("Could not match the trap OID '" + trapOid + "' against '" + m.pattern().pattern() + "'");
+        }
+        return m;
+    }
+
+    private String getTrapOid(MibValueSymbol trapValueSymbol) {
+        if (trapValueSymbol.getType() instanceof SnmpNotificationType) {
+            return "." + trapValueSymbol.getValue().toString();
+        } else if (trapValueSymbol.getType() instanceof SnmpTrapType) {
+            SnmpTrapType v1trap = (SnmpTrapType) trapValueSymbol.getType();
+            return "." + v1trap.getEnterprise().toString() + "." + trapValueSymbol.getValue().toString();
+        } else {
+            throw new IllegalStateException("Trying to get trap information from an object that's not a trap and not a notification");
+        }
+    }
+
+    private void addMaskElement(Event event, String name, String value) {
+        if (event.getMask() == null) {
+            throw new IllegalStateException("Event mask is null, must have been set before this method was called");
+        }
+        Maskelement me = new Maskelement();
+        me.setMename(name);
+        me.addMevalue(value);
+        event.getMask().addMaskelement(me);
     }
 
 }
