@@ -31,9 +31,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfDao;
 import org.springframework.core.io.FileSystemResource;
 
 import com.vaadin.Application;
@@ -42,6 +44,8 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+// TODO EventProxy for sending events
+// TODO DataCollectionConfigDao for handling changes on datacollection-config.xml
 /**
  * The Class MIB Compiler Application.
  * 
@@ -49,6 +53,12 @@ import com.vaadin.ui.themes.Runo;
  */
 @SuppressWarnings("serial")
 public class MibCompilerApplication extends Application {
+
+    /** The OpenNMS Event configuration DAO. */
+    private EventConfDao eventConfDao;
+
+    /** The MIB parser. */
+    private MibParser mibParser;
 
     /* (non-Javadoc)
      * @see com.vaadin.Application#init()
@@ -59,24 +69,7 @@ public class MibCompilerApplication extends Application {
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsolePanel mibConsole = new MibConsolePanel();
-
-        // Initializing Events Configuration
-        File config;
-        try {
-            config = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to read events file", e);
-        }
-        mibConsole.info("Parsing events from " + config);
-        DefaultEventConfDao eventsDao = new DefaultEventConfDao(); // I need to access the raw event configuration
-        eventsDao.setConfigResource(new FileSystemResource(config));
-        eventsDao.afterPropertiesSet();
-
-        // Initializing MIB Parser
-        // TODO Find a better way to pass the MIB parser.
-        MibParser parser = new MibbleMibParser();
-
-        final MibCompilerPanel mibPanel = new MibCompilerPanel(eventsDao, parser, mibConsole);
+        final MibCompilerPanel mibPanel = new MibCompilerPanel(getEventConfDao(), getMibParser(), mibConsole);
 
         mainPanel.setSizeFull();
         mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
@@ -85,6 +78,61 @@ public class MibCompilerApplication extends Application {
 
         final Window mainWindow = new Window("MIB Compiler Application", mainPanel);
         setMainWindow(mainWindow);
+    }
+
+    /**
+     * Gets the OpenNMS Event configuration DAO.
+     * <p>This will try to instantiate the manually the eventConfDao in case this application is running through Jetty.</p>
+     *
+     * @return the OpenNMS Event configuration DAO
+     */
+    public EventConfDao getEventConfDao() {
+        if (eventConfDao == null) {
+            File config;
+            try {
+                config = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to read events file", e);
+            }
+            LogUtils.warnf(this, "Instantiating DefaultEventConfDao using events from " + config);
+            DefaultEventConfDao dao = new DefaultEventConfDao(); // I need to access the raw event configuration
+            dao.setConfigResource(new FileSystemResource(config));
+            dao.afterPropertiesSet();
+            eventConfDao = dao;
+        }
+        return eventConfDao;
+    }
+
+    /**
+     * Sets the OpenNMS Event configuration DAO.
+     *
+     * @param eventConfDao the new OpenNMS Event configuration DAO
+     */
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        this.eventConfDao = eventConfDao;
+    }
+
+    /**
+     * Gets the MIB Parser.
+     * <p>This will try to instantiate the manually the mibParser in case this application is running through Jetty.</p>
+     *
+     * @return the MIB Parser
+     */
+    public MibParser getMibParser() {
+        if (mibParser == null) {
+            LogUtils.warnf(this, "Instantiating Mibble MibParser");
+            mibParser = new MibbleMibParser();
+        }
+        return mibParser;
+    }
+
+    /**
+     * Sets the MIB Parser.
+     *
+     * @param mibParser the new MIB Parser
+     */
+    public void setMibParser(MibParser mibParser) {
+        this.mibParser = mibParser;
     }
 
 }

@@ -36,7 +36,7 @@ import org.opennms.features.vaadin.datacollection.DataCollectionWindow;
 import org.opennms.features.vaadin.events.EventWindow;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Events;
 
@@ -98,7 +98,7 @@ public class MibCompilerPanel extends Panel {
     private final MibParser mibParser;
 
     /** The Events Configuration DAO. */
-    private DefaultEventConfDao eventsDao;
+    private EventConfDao eventsDao;
 
     /**
      * Instantiates a new MIB tree panel.
@@ -107,7 +107,7 @@ public class MibCompilerPanel extends Panel {
      * @param mibParser the MIB parser
      * @param logger the logger
      */
-    public MibCompilerPanel(final DefaultEventConfDao eventsDao, final MibParser mibParser, final Logger logger) {
+    public MibCompilerPanel(final EventConfDao eventsDao, final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
 
         this.eventsDao = eventsDao;

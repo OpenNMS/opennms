@@ -28,7 +28,7 @@
 package org.opennms.features.vaadin.events;
 
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.ui.Window;
@@ -52,7 +52,7 @@ public class EventWindow extends Window {
      * 
      * @throws Exception the exception
      */
-    public EventWindow(final String fileName, final DefaultEventConfDao eventsDao, final Events events, final Logger logger) throws Exception {
+    public EventWindow(final String fileName, final EventConfDao eventsDao, final Events events, final Logger logger) throws Exception {
         super(fileName);
         setScrollable(true);
         setModal(false);

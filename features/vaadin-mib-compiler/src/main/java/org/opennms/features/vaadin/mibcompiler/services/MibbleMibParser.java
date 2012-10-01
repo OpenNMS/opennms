@@ -57,8 +57,9 @@ import net.percederberg.mibble.snmp.SnmpType;
 import net.percederberg.mibble.type.IntegerType;
 import net.percederberg.mibble.value.ObjectIdentifierValue;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
@@ -78,7 +79,7 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
  * Mibble implementation of the interface MibParser.
  * 
  * <p>Mibble is a GPL Library.</p>
- * <p>Mib2Events also depends on Mibble.</p>
+ * <p>The event parsing code has been extracted from Mib2Events.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -97,6 +98,7 @@ public class MibbleMibParser implements MibParser, Serializable {
     /** The pattern. */
     private static final Pattern DEPENDENCY_PATERN = Pattern.compile("couldn't find referenced MIB '(.+)'", Pattern.MULTILINE);
 
+    /** The Constant TRAP_OID_PATTERN. */
     private static final Pattern TRAP_OID_PATTERN = Pattern.compile("(.*)\\.(\\d+)$");
 
     /**
@@ -241,7 +243,6 @@ public class MibbleMibParser implements MibParser, Serializable {
      * @param data the data
      * @param groupName the group name
      * @param resourceType the resource type
-     * @param isTable the is table
      * @return the group
      */
     public Group getGroup(DatacollectionGroup data, String groupName, String resourceType) {
@@ -310,6 +311,13 @@ public class MibbleMibParser implements MibParser, Serializable {
      * The following code has been extracted from Mib2Events
      */
 
+    /**
+     * Convert mib to events.
+     *
+     * @param mib the mib
+     * @param ueibase the ueibase
+     * @return the events
+     */
     protected Events convertMibToEvents(Mib mib, String ueibase) {
         Events events = new Events();
         for (Object sym : mib.getAllSymbols()) {
@@ -325,6 +333,13 @@ public class MibbleMibParser implements MibParser, Serializable {
         return events;
     }
 
+    /**
+     * Gets the trap event.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @param ueibase the ueibase
+     * @return the trap event
+     */
     protected Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
         Event evt = new Event();
         // Set the event's UEI, event-label, logmsg, severity, and descr
@@ -347,6 +362,13 @@ public class MibbleMibParser implements MibParser, Serializable {
         return evt;
     }
 
+    /**
+     * Gets the trap event uei.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @param ueibase the ueibase
+     * @return the trap event uei
+     */
     protected  String getTrapEventUEI(MibValueSymbol trapValueSymbol, String ueibase) {
         StringBuffer buf = new StringBuffer(ueibase);
         if (! ueibase.endsWith("/")) {
@@ -356,6 +378,12 @@ public class MibbleMibParser implements MibParser, Serializable {
         return buf.toString();
     }
 
+    /**
+     * Gets the trap event label.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap event label
+     */
     protected String getTrapEventLabel(MibValueSymbol trapValueSymbol) {
         StringBuffer buf = new StringBuffer();
         buf.append(trapValueSymbol.getMib());
@@ -364,6 +392,12 @@ public class MibbleMibParser implements MibParser, Serializable {
         return buf.toString();
     }
 
+    /**
+     * Gets the trap event logmsg.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap event logmsg
+     */
     protected Logmsg getTrapEventLogmsg(MibValueSymbol trapValueSymbol) {
         Logmsg msg = new Logmsg();
         msg.setDest("logndisplay");
@@ -384,6 +418,12 @@ public class MibbleMibParser implements MibParser, Serializable {
         return msg;
     }
 
+    /**
+     * Gets the trap vars.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap vars
+     */
     protected List<MibValue> getTrapVars(MibValueSymbol trapValueSymbol) {
         if (trapValueSymbol.getType() instanceof SnmpNotificationType) {
             SnmpNotificationType v2notif = (SnmpNotificationType) trapValueSymbol.getType();
@@ -396,16 +436,34 @@ public class MibbleMibParser implements MibParser, Serializable {
         }
     }
 
+    /**
+     * Gets the v1 trap variables.
+     *
+     * @param v1trap the v1trap
+     * @return the v1 trap variables
+     */
     @SuppressWarnings("unchecked")
     protected List<MibValue> getV1TrapVariables(SnmpTrapType v1trap) {
         return v1trap.getVariables();
     }
 
+    /**
+     * Gets the v2 notification objects.
+     *
+     * @param v2notif the v2notif
+     * @return the v2 notification objects
+     */
     @SuppressWarnings("unchecked")
     protected List<MibValue> getV2NotificationObjects(SnmpNotificationType v2notif) {
         return v2notif.getObjects();
     }
 
+    /**
+     * Gets the trap event descr.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap event descr
+     */
     protected String getTrapEventDescr(MibValueSymbol trapValueSymbol) {
         String description = ((SnmpType) trapValueSymbol.getType()).getDescription();
         // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
@@ -446,6 +504,12 @@ public class MibbleMibParser implements MibParser, Serializable {
         return dbuf.toString();
     }
 
+    /**
+     * Gets the trap varbinds decode.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap varbinds decode
+     */
     protected List<Varbindsdecode> getTrapVarbindsDecode(MibValueSymbol trapValueSymbol) {
         Map<String, Varbindsdecode> decode = new LinkedHashMap<String, Varbindsdecode>();
         int vbNum = 1;
@@ -477,14 +541,32 @@ public class MibbleMibParser implements MibParser, Serializable {
         return new ArrayList<Varbindsdecode>(decode.values());
     }
 
+    /**
+     * Gets the trap enterprise.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap enterprise
+     */
     private String getTrapEnterprise(MibValueSymbol trapValueSymbol) {
         return getMatcherForOid(getTrapOid(trapValueSymbol)).group(1);
     }
 
+    /**
+     * Gets the trap specific type.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap specific type
+     */
     private String getTrapSpecificType(MibValueSymbol trapValueSymbol) {
         return getMatcherForOid(getTrapOid(trapValueSymbol)).group(2);
     }
 
+    /**
+     * Gets the matcher for oid.
+     *
+     * @param trapOid the trap oid
+     * @return the matcher for oid
+     */
     private Matcher getMatcherForOid(String trapOid) {
         Matcher m = TRAP_OID_PATTERN.matcher(trapOid);
         if (!m.matches()) {
@@ -493,6 +575,12 @@ public class MibbleMibParser implements MibParser, Serializable {
         return m;
     }
 
+    /**
+     * Gets the trap oid.
+     *
+     * @param trapValueSymbol the trap value symbol
+     * @return the trap oid
+     */
     private String getTrapOid(MibValueSymbol trapValueSymbol) {
         if (trapValueSymbol.getType() instanceof SnmpNotificationType) {
             return "." + trapValueSymbol.getValue().toString();
@@ -504,6 +592,13 @@ public class MibbleMibParser implements MibParser, Serializable {
         }
     }
 
+    /**
+     * Adds the mask element.
+     *
+     * @param event the event
+     * @param name the name
+     * @param value the value
+     */
     private void addMaskElement(Event event, String name, String value) {
         if (event.getMask() == null) {
             throw new IllegalStateException("Event mask is null, must have been set before this method was called");

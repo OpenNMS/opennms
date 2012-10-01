@@ -134,7 +134,7 @@ public class GroupPanel extends VerticalLayout {
     }
 
     /**
-     * Sets the value of the ifNew flag
+     * Sets the value of the ifNew flag.
      *
      * @param isNew true, if the group is new.
      */

@@ -34,7 +34,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -76,7 +76,7 @@ public abstract class EventPanel extends Panel {
     private boolean isNew = false;
 
     /** The Events Configuration DAO. */
-    private DefaultEventConfDao eventsDao;
+    private EventConfDao eventsDao;
 
     /** The Events File name. */
     private String fileName;
@@ -89,7 +89,7 @@ public abstract class EventPanel extends Panel {
      * @param events the OpenNMS events
      * @param logger the logger
      */
-    public EventPanel(final DefaultEventConfDao eventsDao, final String fileName, final Events events, final Logger logger) {
+    public EventPanel(final EventConfDao eventsDao, final String fileName, final Events events, final Logger logger) {
         this.eventsDao = eventsDao;
         this.fileName = fileName;
 
@@ -171,7 +171,7 @@ public abstract class EventPanel extends Panel {
     }
 
     /**
-     * Sets the value of the ifNew flag
+     * Sets the value of the ifNew flag.
      *
      * @param isNew true, if the group is new.
      */
