@@ -189,10 +189,8 @@ public class MibCompilerPanel extends Panel {
                     return new Action[] {};
                 }
                 if (parent.equals(COMPILED)) {
-                    LogUtils.debugf(this, "Adding actions for COMPILED MIB %s", target);
                     return new Action[] { ACTION_EVENTS, ACTION_COLLECT };
                 } else {
-                    LogUtils.debugf(this, "Adding actions for PENDING MIB %s", target);
                     return new Action[] { ACTION_EDIT, ACTION_DELETE, ACTION_COMPILE };
                 }
             }
@@ -203,6 +201,7 @@ public class MibCompilerPanel extends Panel {
                     File file = new File(MIBS_PENDING_DIR, fileName);
                     if (file.delete()) {
                         mibsContainer.removeItem(target);
+                        logger.info("MIB " + file + " has been successfully removed.");
                     } else {
                         getApplication().getMainWindow().showNotification("Can't delete " + file);
                     }

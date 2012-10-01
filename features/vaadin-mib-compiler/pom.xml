@@ -20,7 +20,8 @@
     <pax.vaadin.version>0.1.0-ONMS-20120906</pax.vaadin.version>
     <grammatica.version>1.4</grammatica.version>
     <mibble.version>2.8</mibble.version>
-    <xerces.version>2.9.1</xerces.version>
+    <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
+    <vaadin.messagebox.version>1.1.1</vaadin.messagebox.version>
   </properties>
 
   <build>
@@ -45,8 +46,8 @@
         <configuration>
           <bundles>
             <bundle>mvn:org.opennms.features/vaadin-mib-compiler/${project.version}</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/customfield/1.0.0</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/messagebox/1.1.1</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/customfield/${vaadin.customfield.version}</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/messagebox/${vaadin.messagebox.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.mibble/mibble/${mibble.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.mibble/mibble-mibs/${mibble.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.grammatica/grammatica/${grammatica.version}</bundle>
@@ -130,12 +131,12 @@
     <dependency>
       <groupId>org.vaadin.addons</groupId>
       <artifactId>customfield</artifactId>
-      <version>1.0.0</version>
+      <version>${vaadin.customfield.version}</version>
     </dependency>
     <dependency>
       <groupId>org.vaadin.addons</groupId>
       <artifactId>messagebox</artifactId>
-      <version>1.1.1</version>
+      <version>${vaadin.messagebox.version}</version>
     </dependency>
 
     <!-- MIB Compiler Dependencies -->
