@@ -825,7 +825,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public List<OnmsResource> findTopLevelResources() {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         resources.addAll(findNodeResources());
-        resources.addAll(findNodeSourceResources());
+        // @see http://issues.opennms.org/browse/SPC-370
+        //resources.addAll(findNodeSourceResources());
         resources.addAll(findDomainResources());
         return resources;
     }
