@@ -32,6 +32,9 @@ import java.util.Date;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -57,13 +60,33 @@ public class MibConsolePanel extends Panel implements Logger {
     /** The Constant DEBUG. */
     private static final String DEBUG  = "<b><font color='gray'>&nbsp;[DEBUG]&nbsp;</font></b>";
 
+    /** The log content. */
+    private final VerticalLayout logContent;
+
+    /** The clear button. */
+    private final Button clearButton;
+
     /**
      * Instantiates a new MIB Console Panel.
      */
     public MibConsolePanel() {
         super("MIB Console");
-        setSizeFull();
         addStyleName(Runo.PANEL_LIGHT);
+
+        clearButton = new Button("Clear Log");
+        clearButton.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                logContent.removeAllComponents();
+            }
+        });
+        addComponent(clearButton);
+        ((VerticalLayout) getContent()).setComponentAlignment(clearButton, Alignment.TOP_RIGHT);
+
+        logContent = new VerticalLayout();
+        addComponent(logContent);
+
+        setSizeFull();
     }
 
     /**
@@ -75,7 +98,7 @@ public class MibConsolePanel extends Panel implements Logger {
     private void logMsg(String level, String message) {
         String msg = new Date().toString() + level + message;
         Label error = new Label(msg, Label.CONTENT_XHTML);
-        addComponent(error);
+        logContent.addComponent(error);
         scrollIntoView();
         LogUtils.infof(this, message);
     }
@@ -88,7 +111,7 @@ public class MibConsolePanel extends Panel implements Logger {
         if (getApplication() != null && layout.getComponentCount() > 0)
             getApplication().getMainWindow().scrollIntoView(layout.getComponent(layout.getComponentCount() - 1));
     }
-    
+
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#error(java.lang.String)
      */
