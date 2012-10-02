@@ -74,7 +74,7 @@ public class CollectionResourceWrapper {
      * 
      * Just a holder class for two associated values; no need for the formality of accessors
      */
-    class CacheEntry {
+    static class CacheEntry {
     	Date timestamp;
     	Double value;
     	public CacheEntry(Date timestamp, Double value) {
