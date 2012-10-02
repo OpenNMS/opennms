@@ -66,11 +66,11 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     private ServiceRegistry m_serviceRegistry;
     
     @Autowired
-    @Qualifier("deployed")
+    @Qualifier("queuedDeployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     
     @Autowired
-    @Qualifier("pending")
+    @Qualifier("queuedPending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     private static Map<String,String> m_detectors;
