@@ -126,7 +126,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         }
         
         public String getType() {
-            return getThresholdConfig().getType().toString();
+            return getThresholdConfig().getType();
         }
         
         public Status evaluate(double dsValue) {
@@ -213,7 +213,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     }
                     return createBasicEvent(uei, date, dsValue, resource);
                 } else {
-                    throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
+                    throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType() + " is not supported");
                 } 
                 
             case RE_ARMED:
@@ -229,7 +229,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     }
                     return createBasicEvent(uei, date, dsValue, resource);
                 } else {
-                    throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
+                    throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType() + " is not supported");
                 } 
                 
             case NO_CHANGE:

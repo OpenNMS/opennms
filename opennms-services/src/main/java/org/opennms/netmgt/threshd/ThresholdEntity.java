@@ -321,7 +321,7 @@ public final class ThresholdEntity implements Cloneable {
 
         for (ThresholdEvaluatorState item : defaultList) {
             if (threshold.getType().equals(item.getThresholdConfig().getType())) {
-                throw new IllegalStateException(threshold.getType().toString() + " threshold already set.");
+                throw new IllegalStateException(threshold.getType() + " threshold already set.");
             }
         }
 
@@ -336,7 +336,7 @@ public final class ThresholdEntity implements Cloneable {
         }
 
  
-        String message = "Threshold type '" + threshold.getType().toString() + "' for "+ threshold.getDatasourceExpression() + " is not supported"; 
+        String message = "Threshold type '" + threshold.getType() + "' for "+ threshold.getDatasourceExpression() + " is not supported"; 
         log().warn(message);
         throw new IllegalArgumentException(message);
     }

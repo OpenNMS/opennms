@@ -44,173 +44,173 @@ public interface ReportInstance {
     /**
      * <p>walk</p>
      */
-    public void walk();
+    void walk();
 
     /**
      * <p>getResults</p>
      *
      * @return a {@link java.util.SortedSet} object.
      */
-    public SortedSet<AttributeStatistic> getResults();
+    SortedSet<AttributeStatistic> getResults();
 
     /**
      * <p>getResourceTypeMatch</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceTypeMatch();
+    String getResourceTypeMatch();
 
     /**
      * <p>setResourceTypeMatch</p>
      *
      * @param resourceType a {@link java.lang.String} object.
      */
-    public void setResourceTypeMatch(String resourceType);
+    void setResourceTypeMatch(String resourceType);
 
     /**
      * <p>getAttributeMatch</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getAttributeMatch();
+    String getAttributeMatch();
 
     /**
      * <p>setAttributeMatch</p>
      *
      * @param attr a {@link java.lang.String} object.
      */
-    public void setAttributeMatch(String attr);
+    void setAttributeMatch(String attr);
 
     /**
      * <p>getStartTime</p>
      *
      * @return a long.
      */
-    public long getStartTime();
+    long getStartTime();
 
     /**
      * <p>setStartTime</p>
      *
      * @param start a long.
      */
-    public void setStartTime(long start);
+    void setStartTime(long start);
 
     /**
      * <p>getEndTime</p>
      *
      * @return a long.
      */
-    public long getEndTime();
+    long getEndTime();
 
     /**
      * <p>setEndTime</p>
      *
      * @param end a long.
      */
-    public void setEndTime(long end);
+    void setEndTime(long end);
 
     /**
      * <p>getConsolidationFunction</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getConsolidationFunction();
+    String getConsolidationFunction();
 
     /**
      * <p>setConsolidationFunction</p>
      *
      * @param cf a {@link java.lang.String} object.
      */
-    public void setConsolidationFunction(String cf);
+    void setConsolidationFunction(String cf);
 
     /**
      * <p>getCount</p>
      *
      * @return a int.
      */
-    public int getCount();
+    int getCount();
 
     /**
      * <p>setCount</p>
      *
      * @param count a int.
      */
-    public void setCount(int count);
+    void setCount(int count);
 
     /**
      * <p>getJobStartedDate</p>
      *
      * @return a {@link java.util.Date} object.
      */
-    public Date getJobStartedDate();
+    Date getJobStartedDate();
     
     /**
      * <p>getJobCompletedDate</p>
      *
      * @return a {@link java.util.Date} object.
      */
-    public Date getJobCompletedDate();
+    Date getJobCompletedDate();
 
     /**
      * <p>getName</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getName();
+    String getName();
 
     /**
      * <p>getDescription</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * <p>getRetainInterval</p>
      *
      * @return a long.
      */
-    public long getRetainInterval();
+    long getRetainInterval();
 
     /**
      * <p>getReportDefinition</p>
      *
      * @return a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
      */
-    public ReportDefinition getReportDefinition();
+    ReportDefinition getReportDefinition();
     
     /**
      * <p>setReportDefinition</p>
      *
      * @param definition a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
      */
-    public void setReportDefinition(ReportDefinition definition);
+    void setReportDefinition(ReportDefinition definition);
 
     /**
      * <p>setResourceAttributeKey</p>
      *
      * @param resourceAttributeKey a {@link java.lang.String} object.
      */
-    public void setResourceAttributeKey(String resourceAttributeKey);
+    void setResourceAttributeKey(String resourceAttributeKey);
     
     /**
      * <p>getResourceAttributeKey</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceAttributeKey();
+    String getResourceAttributeKey();
 
     /**
      * <p>setResourceAttributeValueMatch</p>
      *
      * @param resourceAttributeValueMatch a {@link java.lang.String} object.
      */
-    public void setResourceAttributeValueMatch(String resourceAttributeValueMatch);
+    void setResourceAttributeValueMatch(String resourceAttributeValueMatch);
 
     /**
      * <p>getResourceAttributeValueMatch</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceAttributeValueMatch();
+    String getResourceAttributeValueMatch();
 }

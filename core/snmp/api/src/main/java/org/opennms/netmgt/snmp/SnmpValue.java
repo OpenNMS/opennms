@@ -31,7 +31,6 @@ package org.opennms.netmgt.snmp;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
-
 public interface SnmpValue {
     // These values match the ASN.1 constants
     public final static int SNMP_INT32 = (0x02);
@@ -60,33 +59,31 @@ public interface SnmpValue {
 
     public final static int SNMP_END_OF_MIB = (0x82); // 8*16 + 2 = 130
     
-    public abstract boolean isEndOfMib();
+    boolean isEndOfMib();
     
-    public abstract boolean isError();
+    boolean isError();
 
-    public abstract boolean isNull();
+    boolean isNull();
 
-    public abstract boolean isDisplayable();
+    boolean isDisplayable();
 
-    public abstract boolean isNumeric();
+    boolean isNumeric();
 
-    public abstract int toInt();
+    int toInt();
 
-    public abstract String toDisplayString();
+    String toDisplayString();
 
-    public abstract InetAddress toInetAddress();
+    InetAddress toInetAddress();
 
-    public abstract long toLong();
+    long toLong();
     
-    public abstract BigInteger toBigInteger();
+    BigInteger toBigInteger();
 
-    public abstract String toHexString();
+    String toHexString();
     
-    public abstract int getType();
+    int getType();
     
-    public abstract byte[] getBytes();
+    byte[] getBytes();
 
-    public abstract SnmpObjId toSnmpObjId();
-
-
+    SnmpObjId toSnmpObjId();
 }

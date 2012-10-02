@@ -354,7 +354,7 @@ final class MergeableDefinition {
         return m_snmpConfigDef;
     }
     
-    final private boolean compareStrings(String str1, String str2) {
+    final private boolean compareObjects(Object str1, Object str2) {
         boolean match = false;
         if (str1 == null && str2 == null) {
             match = true;
@@ -590,11 +590,11 @@ final class MergeableDefinition {
     }
 
     boolean matches(MergeableDefinition other) {
-        boolean compares = compareStrings(getConfigDef().getReadCommunity(), other.getConfigDef().getReadCommunity())
-                && getConfigDef().getPort() == other.getConfigDef().getPort() 
-                && getConfigDef().getRetry() == other.getConfigDef().getRetry()
-                && getConfigDef().getTimeout() == other.getConfigDef().getTimeout()
-                && compareStrings(getConfigDef().getVersion(), other.getConfigDef().getVersion());
+        boolean compares = compareObjects(getConfigDef().getReadCommunity(), other.getConfigDef().getReadCommunity())
+                && compareObjects(getConfigDef().getPort(), other.getConfigDef().getPort()) 
+                && compareObjects(getConfigDef().getRetry(), other.getConfigDef().getRetry())
+                && compareObjects(getConfigDef().getTimeout(), other.getConfigDef().getTimeout())
+                && compareObjects(getConfigDef().getVersion(), other.getConfigDef().getVersion());
         return compares;
     }
     
