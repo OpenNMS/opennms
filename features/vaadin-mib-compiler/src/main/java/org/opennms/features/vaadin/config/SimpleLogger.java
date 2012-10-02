@@ -27,44 +27,42 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.features.vaadin.mibcompiler.api.Logger;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
+/**
+ * The Class Simple Logger
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ */
+public class SimpleLogger implements Logger {
 
-@SuppressWarnings("serial")
-public class SnmpCollectionAdminApplication extends Application {
-
-    /** The OpenNMS Data Collection Configuration DAO. */
-    private DataCollectionConfigDao dataCollectionDao;
-
-    /**
-     * Sets the OpenNMS Data Collection Configuration DAO.
-     *
-     * @param eventConfDao the new OpenNMS Data Collection Configuration DAO
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.services.Logger#error(java.lang.String)
      */
-    public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
-        this.dataCollectionDao = dataCollectionDao;
+    public void error(String message) {
+        LogUtils.errorf(this, message);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.Application#init()
+     * @see org.opennms.features.vaadin.mibcompiler.services.Logger#warn(java.lang.String)
      */
-    @Override
-    public void init() {
-        if (dataCollectionDao == null)
-            throw new RuntimeException("dataCollectionDao cannot be null.");
+    public void warn(String message) {
+        LogUtils.warnf(this, message);
+    }
 
-        setTheme(Runo.THEME_NAME);
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.services.Logger#info(java.lang.String)
+     */
+    public void info(String message) {
+        LogUtils.infof(this, message);
+    }
 
-        final VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(new Label("SNMP Collections Administration"));
-
-        final Window mainWindow = new Window("SNMP Collection Administration", layout);
-        setMainWindow(mainWindow);
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.services.Logger#debug(java.lang.String)
+     */
+    public void debug(String message) {
+        LogUtils.debugf(this, message);
     }
 
 }

@@ -27,13 +27,28 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
 
+import java.io.File;
+
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.events.EventPanel;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.Application;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -79,10 +94,92 @@ public class EventAdminApplication extends Application {
             throw new RuntimeException("eventConfDao cannot be null.");
 
         setTheme(Runo.THEME_NAME);
+        final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
+
         final VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(new Label("Event Administration"));
+
+        final HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.setMargin(true);
+
+        final ComboBox eventSource = new ComboBox();
+        toolbar.addComponent(eventSource);
+        eventSource.setImmediate(true);
+        eventSource.setNullSelectionAllowed(false);
+        eventSource.setContainerDataSource(new FilesystemContainer(eventsDir));
+        eventSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
+        eventSource.addListener(new ComboBox.ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                final File file = (File) event.getProperty().getValue();
+                LogUtils.infof(this, "Loading events from %s", file);
+                Events events = JaxbUtils.unmarshal(Events.class, file);
+                layout.removeComponent(layout.getComponent(1));
+                layout.addComponent(createEventPanel(file, events));
+            }
+        });
+
+        final Button add = new Button("+");
+        toolbar.addComponent(add);
+        add.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                EventFileNameWindow w = new EventFileNameWindow() {
+                    @Override
+                    public void filenameChangeHandler(String fileName) {
+                        File file = new File(eventsDir, fileName);
+                        LogUtils.infof(this, "Adding new events file %s", file);
+                        Events events = new Events();
+                        layout.removeComponent(layout.getComponent(1));
+                        layout.addComponent(createEventPanel(file, events));
+                    }
+                };
+                getMainWindow().addWindow(w);
+            }
+        });
+
+        final Button remove = new Button("-");
+        toolbar.addComponent(remove);
+        remove.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                getMainWindow().showNotification("Not impementet yet!");
+            }
+        });
+
+        layout.addComponent(toolbar);
+        layout.addComponent(new Label("Please select an event file from the above toolbar"));
+        layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+
         final Window mainWindow = new Window("Events Administration", layout);
         setMainWindow(mainWindow);
+    }
+
+    /**
+     * Creates a new Events Panel
+     * 
+     * @param file the Events File Name
+     * @param events the Events Object
+     * 
+     * @return a new Events Panel Object
+     */
+    private EventPanel createEventPanel(final File file, Events events) {
+        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file.getName(), events, new SimpleLogger()) {
+            @Override
+            public void cancel() {
+                this.setVisible(false);
+            }
+            @Override
+            public void success() {
+                getMainWindow().showNotification("Event file " + file.getName() + " has been successfuly saved.");
+                this.setVisible(false);
+            }
+            @Override
+            public void failure() {
+                getMainWindow().showNotification("Event file " + file.getName() + " cannot be saved.", Notification.TYPE_ERROR_MESSAGE);
+            }
+        };
+        eventPanel.setCaption("Events from " + file.getName());
+        return eventPanel;
     }
 
 }
