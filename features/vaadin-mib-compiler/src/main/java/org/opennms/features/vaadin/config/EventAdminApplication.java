@@ -25,58 +25,64 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.events;
+package org.opennms.features.vaadin.config;
 
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.xml.eventconf.Events;
 
+import com.vaadin.Application;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class Event Window.
+ * The Class Event Administration Application.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class EventWindow extends Window {
+public class EventAdminApplication extends Application {
+
+    /** The OpenNMS Event Proxy. */
+    private EventProxy eventProxy;
+
+    /** The OpenNMS Event Configuration DAO. */
+    private EventConfDao eventConfDao;
 
     /**
-     * Instantiates a new events window.
+     * Sets the OpenNMS Event configuration DAO.
      *
-     * @param eventConfDao the OpenNMS Events Configuration DAO
-     * @param eventProxy the OpenNMS Events Proxy
-     * @param fileName the MIB's file name
-     * @param events the OpenNMS events object
-     * @param logger the logger object
-     * 
-     * @throws Exception the exception
+     * @param eventConfDao the new OpenNMS Event configuration DAO
      */
-    public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final String fileName, final Events events, final Logger logger) throws Exception {
-        super(fileName); // Using fileName for as the window's name.
-        setScrollable(true);
-        setModal(false);
-        setClosable(false);
-        setDraggable(false);
-        setResizable(false);
-        addStyleName(Runo.WINDOW_DIALOG);
-        setSizeFull();
-        setContent(new EventPanel(eventConfDao, eventProxy, fileName, events, logger) {
-            @Override
-            public void cancel() {
-                close();
-            }
-            @Override
-            public void success() {
-                close();
-            }
-            @Override
-            public void failure() {
-                close();
-            }
-        });
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        this.eventConfDao = eventConfDao;
+    }
+
+    /**
+     * Sets the OpenNMS Event Proxy.
+     *
+     * @param eventConfDao the new OpenNMS Event Proxy
+     */
+    public void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.Application#init()
+     */
+    @Override
+    public void init() {
+        if (eventProxy == null)
+            throw new RuntimeException("eventProxy cannot be null.");
+        if (eventConfDao == null)
+            throw new RuntimeException("eventConfDao cannot be null.");
+
+        setTheme(Runo.THEME_NAME);
+        final VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(new Label("Event Administration"));
+        final Window mainWindow = new Window("Events Administration", layout);
+        setMainWindow(mainWindow);
     }
 
 }

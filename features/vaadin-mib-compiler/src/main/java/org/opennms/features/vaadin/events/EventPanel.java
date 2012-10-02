@@ -75,10 +75,10 @@ public abstract class EventPanel extends Panel {
     private boolean isNew = false;
 
     /** The Events Configuration DAO. */
-    private EventConfDao eventsDao;
+    private EventConfDao eventConfDao;
 
     /** The Events Proxy. */
-    private EventProxy eventsProxy;
+    private EventProxy eventProxy;
 
     /** The Events File name. */
     private String fileName;
@@ -86,21 +86,21 @@ public abstract class EventPanel extends Panel {
     /**
      * Instantiates a new event panel.
      *
-     * @param eventsDao the OpenNMS Events Configuration DAO
-     * @param eventsProxy the OpenNMS Events Proxy
+     * @param eventConfDao the OpenNMS Events Configuration DAO
+     * @param eventProxy the OpenNMS Events Proxy
      * @param fileName the MIB's file name
      * @param events the OpenNMS events object
      * @param logger the logger object
      */
-    public EventPanel(final EventConfDao eventsDao, final EventProxy eventsProxy, final String fileName, final Events events, final Logger logger) {
+    public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final String fileName, final Events events, final Logger logger) {
 
-        if (eventsProxy == null)
+        if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
-        if (eventsDao == null)
-            throw new RuntimeException("eventsDao cannot be null.");
+        if (eventConfDao == null)
+            throw new RuntimeException("eventConfDao cannot be null.");
 
-        this.eventsDao = eventsDao;
-        this.eventsProxy = eventsProxy;
+        this.eventConfDao = eventConfDao;
+        this.eventProxy = eventProxy;
         this.fileName = fileName;
 
         setCaption("Events");
@@ -243,7 +243,7 @@ public abstract class EventPanel extends Panel {
     private void validateFile(final File file, final Events events, final Logger logger) {
         int eventCount = 0;
         for (org.opennms.netmgt.xml.eventconf.Event e : events.getEventCollection()) {
-            if (eventsDao.findByUei(e.getUei()) != null)
+            if (eventConfDao.findByUei(e.getUei()) != null)
                 eventCount++;
         }
         if (eventCount == 0) {
@@ -282,14 +282,14 @@ public abstract class EventPanel extends Panel {
             writer.close();
             // Add a reference to the new file into eventconf.xml
             String fileName = "events/" + file.getName();
-            if (!eventsDao.getRootEvents().getEventFileCollection().contains(fileName)) {
+            if (!eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
                 logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
-                eventsDao.getRootEvents().getEventFileCollection().add(0, fileName);
-                eventsDao.saveCurrent();
+                eventConfDao.getRootEvents().getEventFileCollection().add(0, fileName);
+                eventConfDao.saveCurrent();
             }
             // Send eventsConfigChange event
             EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
-            eventsProxy.send(eb.getEvent());
+            eventProxy.send(eb.getEvent());
             logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {

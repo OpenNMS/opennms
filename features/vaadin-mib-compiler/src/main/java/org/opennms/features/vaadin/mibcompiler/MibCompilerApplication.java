@@ -58,37 +58,13 @@ public class MibCompilerApplication extends Application {
     /** The MIB parser. */
     private MibParser mibParser;
 
-    /* (non-Javadoc)
-     * @see com.vaadin.Application#init()
-     */
-    // TODO Add support for EventProxy and DataCollectionConfigDao on MIB Compiler
-    @Override
-    public void init() {
-        setTheme(Runo.THEME_NAME);
-
-        final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
-        final MibConsolePanel mibConsole = new MibConsolePanel();
-        final MibCompilerPanel mibPanel = new MibCompilerPanel(getEventConfDao(), getEventProxy(), getMibParser(), mibConsole);
-
-        mainPanel.setSizeFull();
-        mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
-        mainPanel.addComponent(mibPanel);
-        mainPanel.addComponent(mibConsole);
-
-        final Window mainWindow = new Window("MIB Compiler Application", mainPanel);
-        setMainWindow(mainWindow);
-    }
-
     /**
-     * Gets the OpenNMS Event configuration DAO.
+     * Sets the OpenNMS Event Proxy.
      *
-     * @return the OpenNMS Event configuration DAO
+     * @param eventConfDao the new OpenNMS Event Proxy
      */
-    public EventConfDao getEventConfDao() {
-        if (eventConfDao == null) {
-            throw new RuntimeException("EventConfDao implementation is required.");
-        }
-        return eventConfDao;
+    public void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
     }
 
     /**
@@ -101,18 +77,6 @@ public class MibCompilerApplication extends Application {
     }
 
     /**
-     * Gets the MIB Parser.
-     *
-     * @return the MIB Parser
-     */
-    public MibParser getMibParser() {
-        if (mibParser == null) {
-            throw new RuntimeException("MibParser implementation is required.");
-        }
-        return mibParser;
-    }
-
-    /**
      * Sets the MIB Parser.
      *
      * @param mibParser the new MIB Parser
@@ -122,43 +86,40 @@ public class MibCompilerApplication extends Application {
     }
 
     /**
-     * Gets the OpenNMS Event Proxy.
-     *
-     * @return the OpenNMS Event Proxy
-     */
-    public EventProxy getEventProxy() {
-        if (eventProxy == null)
-            throw new RuntimeException("EventProxy implementation is required.");
-        return eventProxy;
-    }
-
-    /**
-     * Sets the OpenNMS Event Proxy.
-     *
-     * @param eventConfDao the new OpenNMS Event Proxy
-     */
-    public void setEventProxy(EventProxy eventProxy) {
-        this.eventProxy = eventProxy;
-    }
-
-    /**
-     * Gets the OpenNMS Data Collection Configuration DAO.
-     *
-     * @return the OpenNMS Data Collection Configuration DAO
-     */
-    public DataCollectionConfigDao getDataCollectionDao() {
-        if (dataCollectionDao == null)
-            throw new RuntimeException("DataCollectionConfigDao implementation is required.");
-        return dataCollectionDao;
-    }
-
-    /**
      * Sets the OpenNMS Data Collection Configuration DAO.
      *
      * @param eventConfDao the new OpenNMS Data Collection Configuration DAO
      */
     public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
         this.dataCollectionDao = dataCollectionDao;
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.Application#init()
+     */
+    // TODO Add support DataCollectionConfigDao on MIB Compiler
+    @Override
+    public void init() {
+        if (eventProxy == null)
+            throw new RuntimeException("eventProxy cannot be null.");
+        if (eventConfDao == null)
+            throw new RuntimeException("eventConfDao cannot be null.");
+        if (dataCollectionDao == null)
+            throw new RuntimeException("dataCollectionDao cannot be null.");
+
+        setTheme(Runo.THEME_NAME);
+
+        final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
+        final MibConsolePanel mibConsole = new MibConsolePanel();
+        final MibCompilerPanel mibPanel = new MibCompilerPanel(eventConfDao, eventProxy, mibParser, mibConsole);
+
+        mainPanel.setSizeFull();
+        mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
+        mainPanel.addComponent(mibPanel);
+        mainPanel.addComponent(mibConsole);
+
+        final Window mainWindow = new Window("MIB Compiler Application", mainPanel);
+        setMainWindow(mainWindow);
     }
 
 }
