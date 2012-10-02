@@ -35,6 +35,8 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -52,9 +54,6 @@ import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
-/*
- * TODO A dependency to opennms-services is required in order to use an EventProxy or EventIpcManager
- */
 /**
  * The Class Event Panel.
  * 
@@ -78,19 +77,30 @@ public abstract class EventPanel extends Panel {
     /** The Events Configuration DAO. */
     private EventConfDao eventsDao;
 
+    /** The Events Proxy. */
+    private EventProxy eventsProxy;
+
     /** The Events File name. */
     private String fileName;
 
     /**
      * Instantiates a new event panel.
      *
-     * @param eventsDao the Events Configuration DAO
-     * @param fileName the Events File
-     * @param events the OpenNMS events
-     * @param logger the logger
+     * @param eventsDao the OpenNMS Events Configuration DAO
+     * @param eventsProxy the OpenNMS Events Proxy
+     * @param fileName the MIB's file name
+     * @param events the OpenNMS events object
+     * @param logger the logger object
      */
-    public EventPanel(final EventConfDao eventsDao, final String fileName, final Events events, final Logger logger) {
+    public EventPanel(final EventConfDao eventsDao, final EventProxy eventsProxy, final String fileName, final Events events, final Logger logger) {
+
+        if (eventsProxy == null)
+            throw new RuntimeException("eventProxy cannot be null.");
+        if (eventsDao == null)
+            throw new RuntimeException("eventsDao cannot be null.");
+
         this.eventsDao = eventsDao;
+        this.eventsProxy = eventsProxy;
         this.fileName = fileName;
 
         setCaption("Events");
@@ -278,7 +288,9 @@ public abstract class EventPanel extends Panel {
                 eventsDao.saveCurrent();
             }
             // Send eventsConfigChange event
-            logger.warn("Remember to send a " + EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI + " to reload the events configuration.");
+            EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
+            eventsProxy.send(eb.getEvent());
+            logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {
             logger.error(e.getMessage());

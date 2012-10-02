@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.events;
 
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.ui.Window;
@@ -45,15 +46,16 @@ public class EventWindow extends Window {
     /**
      * Instantiates a new events window.
      *
-     * @param caption the caption
-     * @param eventsDao the Events Configuration DAO
-     * @param events the OpenNMS Events
-     * @param logger the logger
+     * @param eventsDao the OpenNMS Events Configuration DAO
+     * @param eventsProxy the OpenNMS Events Proxy
+     * @param fileName the MIB's file name
+     * @param events the OpenNMS events object
+     * @param logger the logger object
      * 
      * @throws Exception the exception
      */
-    public EventWindow(final String fileName, final EventConfDao eventsDao, final Events events, final Logger logger) throws Exception {
-        super(fileName);
+    public EventWindow(final EventConfDao eventsDao, final EventProxy eventsProxy, final String fileName, final Events events, final Logger logger) throws Exception {
+        super(fileName); // Using fileName for as the window's name.
         setScrollable(true);
         setModal(false);
         setClosable(false);
@@ -61,7 +63,7 @@ public class EventWindow extends Window {
         setResizable(false);
         addStyleName(Runo.WINDOW_DIALOG);
         setSizeFull();
-        setContent(new EventPanel(eventsDao, fileName, events, logger) {
+        setContent(new EventPanel(eventsDao, eventsProxy, fileName, events, logger) {
             @Override
             public void cancel() {
                 close();

@@ -31,7 +31,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
 import com.vaadin.Application;
@@ -43,10 +45,16 @@ import com.vaadin.Application;
  */
 public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
 
-    /** The OpenNMS Event configuration DAO. */
+    /** The OpenNMS Event Proxy. */
+    private EventProxy eventProxy;
+
+    /** The OpenNMS Event Configuration DAO. */
     private EventConfDao eventConfDao;
 
-    /** The MIB Parser. */
+    /** The OpenNMS Data Collection Configuration DAO. */
+    private DataCollectionConfigDao dataCollectionDao;
+
+    /** The MIB parser. */
     private MibParser mibParser;
 
     /* (non-Javadoc)
@@ -54,12 +62,18 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
      */
     @Override
     public Application createApplication(HttpServletRequest request) throws ServletException {
+        if (eventProxy == null)
+            throw new RuntimeException("eventProxy cannot be null.");
         if (eventConfDao == null)
-            throw new RuntimeException("eventConfDao cannot be null");
+            throw new RuntimeException("eventConfDao cannot be null.");
+        if (dataCollectionDao == null)
+            throw new RuntimeException("dataCollectionDao cannot be null.");
         if (mibParser == null)
-            throw new RuntimeException("mibParser cannot be null");
+            throw new RuntimeException("mibParser cannot be null.");
         MibCompilerApplication app = new MibCompilerApplication();
+        app.setEventProxy(eventProxy);
         app.setEventConfDao(eventConfDao);
+        app.setDataCollectionDao(dataCollectionDao);
         app.setMibParser(mibParser);
         return app;
     }
@@ -88,6 +102,24 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
      */
     public void setMibParser(MibParser mibParser) {
         this.mibParser = mibParser;
+    }
+
+    /**
+     * Sets the OpenNMS Event Proxy.
+     *
+     * @param eventConfDao the new OpenNMS Event Proxy
+     */
+    public void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
+    }
+
+    /**
+     * Sets the OpenNMS Data Collection Configuration DAO.
+     *
+     * @param eventConfDao the new OpenNMS Data Collection Configuration DAO
+     */
+    public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
+        this.dataCollectionDao = dataCollectionDao;
     }
 
 }

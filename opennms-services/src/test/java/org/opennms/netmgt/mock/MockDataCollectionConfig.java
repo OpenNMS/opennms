@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.collectd.SnmpCollector;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -202,4 +203,7 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
         return repo;
     }
 
+    public DatacollectionConfig getRootDataCollection() {
+        return new DatacollectionConfig();
+    }
 }

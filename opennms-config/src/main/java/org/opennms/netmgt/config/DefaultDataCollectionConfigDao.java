@@ -593,4 +593,9 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
         }
     }
+
+    @Override
+    public DatacollectionConfig getRootDataCollection() {
+        return getContainer().getObject();
+    }
 }

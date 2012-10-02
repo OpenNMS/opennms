@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
 
@@ -101,4 +102,10 @@ public interface DataCollectionConfigDao {
      */
     String getRrdPath();
 
+    /**
+     * <p>getRootDataCollection</p>
+     * 
+     * @return a {@link org.opennms.netmgt.config.datacollection.DatacollectionConfig} object.
+     */
+    DatacollectionConfig getRootDataCollection();
 }

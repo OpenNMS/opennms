@@ -38,6 +38,7 @@ import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.util.HierarchicalContainer;
@@ -100,17 +101,27 @@ public class MibCompilerPanel extends Panel {
     /** The Events Configuration DAO. */
     private EventConfDao eventsDao;
 
+    /** The Events Proxy. */
+    private EventProxy eventsProxy;
+
     /**
      * Instantiates a new MIB tree panel.
      *
-     * @param eventsDao the Events Configuration DAO
+     * @param eventsDao the OpenNMS Events Configuration DAO
+     * @param eventsProxy the OpenNMS Events Proxy
      * @param mibParser the MIB parser
      * @param logger the logger
      */
-    public MibCompilerPanel(final EventConfDao eventsDao, final MibParser mibParser, final Logger logger) {
+    public MibCompilerPanel(final EventConfDao eventsDao, final EventProxy eventsProxy, final MibParser mibParser, final Logger logger) {
         super("MIB Compiler");
 
+        if (eventsProxy == null)
+            throw new RuntimeException("eventProxy cannot be null.");
+        if (eventsDao == null)
+            throw new RuntimeException("eventsDao cannot be null.");
+
         this.eventsDao = eventsDao;
+        this.eventsProxy = eventsProxy;
 
         logger.info("Reading MIBs from " + MIBS_ROOT_DIR);
 
@@ -302,7 +313,7 @@ public class MibCompilerPanel extends Panel {
             if (events.getEventCount() > 0) {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
-                    final EventWindow w = new EventWindow(fileName, eventsDao, events, logger);
+                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, fileName, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
                     getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);

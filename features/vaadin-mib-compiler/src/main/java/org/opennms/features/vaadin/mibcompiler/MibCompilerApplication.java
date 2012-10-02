@@ -27,16 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.EventConfDao;
-import org.springframework.core.io.FileSystemResource;
+import org.opennms.netmgt.model.events.EventProxy;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
@@ -44,8 +38,6 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
-// TODO EventProxy for sending events
-// TODO DataCollectionConfigDao for handling changes on datacollection-config.xml
 /**
  * The Class MIB Compiler Application.
  * 
@@ -54,8 +46,14 @@ import com.vaadin.ui.themes.Runo;
 @SuppressWarnings("serial")
 public class MibCompilerApplication extends Application {
 
-    /** The OpenNMS Event configuration DAO. */
+    /** The OpenNMS Event Proxy. */
+    private EventProxy eventProxy;
+
+    /** The OpenNMS Event Configuration DAO. */
     private EventConfDao eventConfDao;
+
+    /** The OpenNMS Data Collection Configuration DAO. */
+    private DataCollectionConfigDao dataCollectionDao;
 
     /** The MIB parser. */
     private MibParser mibParser;
@@ -63,13 +61,14 @@ public class MibCompilerApplication extends Application {
     /* (non-Javadoc)
      * @see com.vaadin.Application#init()
      */
+    // TODO Add support for EventProxy and DataCollectionConfigDao on MIB Compiler
     @Override
     public void init() {
         setTheme(Runo.THEME_NAME);
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsolePanel mibConsole = new MibConsolePanel();
-        final MibCompilerPanel mibPanel = new MibCompilerPanel(getEventConfDao(), getMibParser(), mibConsole);
+        final MibCompilerPanel mibPanel = new MibCompilerPanel(getEventConfDao(), getEventProxy(), getMibParser(), mibConsole);
 
         mainPanel.setSizeFull();
         mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
@@ -82,23 +81,12 @@ public class MibCompilerApplication extends Application {
 
     /**
      * Gets the OpenNMS Event configuration DAO.
-     * <p>This will try to instantiate the manually the eventConfDao in case this application is running through Jetty.</p>
      *
      * @return the OpenNMS Event configuration DAO
      */
     public EventConfDao getEventConfDao() {
         if (eventConfDao == null) {
-            File config;
-            try {
-                config = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to read events file", e);
-            }
-            LogUtils.warnf(this, "Instantiating DefaultEventConfDao using events from " + config);
-            DefaultEventConfDao dao = new DefaultEventConfDao(); // I need to access the raw event configuration
-            dao.setConfigResource(new FileSystemResource(config));
-            dao.afterPropertiesSet();
-            eventConfDao = dao;
+            throw new RuntimeException("EventConfDao implementation is required.");
         }
         return eventConfDao;
     }
@@ -114,14 +102,12 @@ public class MibCompilerApplication extends Application {
 
     /**
      * Gets the MIB Parser.
-     * <p>This will try to instantiate the manually the mibParser in case this application is running through Jetty.</p>
      *
      * @return the MIB Parser
      */
     public MibParser getMibParser() {
         if (mibParser == null) {
-            LogUtils.warnf(this, "Instantiating Mibble MibParser");
-            mibParser = new MibbleMibParser();
+            throw new RuntimeException("MibParser implementation is required.");
         }
         return mibParser;
     }
@@ -133,6 +119,46 @@ public class MibCompilerApplication extends Application {
      */
     public void setMibParser(MibParser mibParser) {
         this.mibParser = mibParser;
+    }
+
+    /**
+     * Gets the OpenNMS Event Proxy.
+     *
+     * @return the OpenNMS Event Proxy
+     */
+    public EventProxy getEventProxy() {
+        if (eventProxy == null)
+            throw new RuntimeException("EventProxy implementation is required.");
+        return eventProxy;
+    }
+
+    /**
+     * Sets the OpenNMS Event Proxy.
+     *
+     * @param eventConfDao the new OpenNMS Event Proxy
+     */
+    public void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
+    }
+
+    /**
+     * Gets the OpenNMS Data Collection Configuration DAO.
+     *
+     * @return the OpenNMS Data Collection Configuration DAO
+     */
+    public DataCollectionConfigDao getDataCollectionDao() {
+        if (dataCollectionDao == null)
+            throw new RuntimeException("DataCollectionConfigDao implementation is required.");
+        return dataCollectionDao;
+    }
+
+    /**
+     * Sets the OpenNMS Data Collection Configuration DAO.
+     *
+     * @param eventConfDao the new OpenNMS Data Collection Configuration DAO
+     */
+    public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
+        this.dataCollectionDao = dataCollectionDao;
     }
 
 }
