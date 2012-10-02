@@ -162,7 +162,7 @@ public class EventAdminApplication extends Application {
      * 
      * @return a new Events Panel Object
      */
-    private EventPanel createEventPanel(final File file, Events events) {
+    private EventPanel createEventPanel(final File file, final Events events) {
         EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file.getName(), events, new SimpleLogger()) {
             @Override
             public void cancel() {
