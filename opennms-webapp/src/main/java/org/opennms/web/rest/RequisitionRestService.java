@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Set;
@@ -57,6 +58,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -720,7 +722,7 @@ public class RequisitionRestService extends OnmsRestService {
     public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("rescanExisting") Boolean rescanExisting) {
         writeLock();
         try {
-            log().debug("importing requisition for foreign source " + foreignSource);
+            LogUtils.debugf(this, "importing requisition for foreign source %s", foreignSource);
 
             m_pendingForeignSourceRepository.flush();
             m_deployedForeignSourceRepository.flush();
@@ -740,6 +742,10 @@ public class RequisitionRestService extends OnmsRestService {
             
             return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(foreignSource)).build();
             // return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
+        } catch (final MalformedURLException e) {
+            final DataAccessResourceFailureException exception = new DataAccessResourceFailureException("Failed to create a requisition URL for the '" + foreignSource + "' foreign source.", e);
+            LogUtils.warnf(this, exception, "Unable to send event to import group %s", foreignSource);
+            throw exception;
         } finally {
             writeUnlock();
         }
@@ -1046,19 +1052,16 @@ public class RequisitionRestService extends OnmsRestService {
         return fsNames;
     }
 
-    private URL getActiveUrl(String foreignSourceName) {
+    private URL getActiveUrl(String foreignSourceName) throws MalformedURLException {
         Requisition pending = m_pendingForeignSourceRepository.getRequisition(foreignSourceName);
         Requisition deployed = m_deployedForeignSourceRepository.getRequisition(foreignSourceName);
-        
-        if (pending == null) {
-            return m_deployedForeignSourceRepository.getRequisitionURL(foreignSourceName);
-        } else if (deployed == null) {
-            return m_pendingForeignSourceRepository.getRequisitionURL(foreignSourceName);
-        } else if (deployed.getDateStamp().compare(pending.getDateStamp()) > -1) {
-            // deployed is newer than pending
+
+        if (pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)) {
+            // all we have is deployed, or deployed is newer than pending
             return m_deployedForeignSourceRepository.getRequisitionURL(foreignSourceName);
         }
-        return m_pendingForeignSourceRepository.getRequisitionURL(foreignSourceName);
+        
+        return RequisitionFileUtils.createSnapshot(m_pendingForeignSourceRepository, foreignSourceName).toURI().toURL();
     }
 
     private Requisition getActiveRequisition(String foreignSourceName, boolean createIfMissing) {
@@ -1078,9 +1081,8 @@ public class RequisitionRestService extends OnmsRestService {
         return pending;
     }
 
-    private void debug(String format, Object... values) {
-//        System.err.println(String.format(format, values));
-//        log().debug(String.format(format, values));
+    private void debug(final String format, final Object... values) {
+        LogUtils.tracef(this, format, values);
     }
     
 }
