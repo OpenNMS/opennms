@@ -56,6 +56,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         Assert.notNull(resource);
  
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
+        requisition.setResource(resource);
         save(requisition);
         return requisition;
     }
