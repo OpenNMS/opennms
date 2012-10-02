@@ -85,6 +85,7 @@ import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -154,6 +155,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private ForeignSourceRepository m_foreignSourceRepository;
     
     @Autowired
+    @Qualifier("pending")
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
+
+    @Autowired
     private PluginRegistry m_pluginRegistry;
     
     @Autowired
@@ -165,6 +170,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
     }
 
     /**

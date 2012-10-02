@@ -63,20 +63,19 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.springframework.core.io.Resource;
 
 
 /**
  * <p>Requisition class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="model-import")
 @ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
-
-    private static final long serialVersionUID = 2099710942679236239L;
+    private static final long serialVersionUID = 1316605927474869066L;
 
     @XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
@@ -92,6 +91,10 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     
     @XmlAttribute(name="last-import")
     protected XMLGregorianCalendar m_lastImport;
+
+    @XmlTransient
+    /** the resource that this requisition was created from **/
+    private Resource m_resource;
 
     /**
      * <p>getNode</p>
@@ -326,7 +329,19 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         this();
         m_foreignSource = foreignSource;
     }
+
+    /**
+     * Get the resource (if any) this requisition is associated with.
+     * @return a Resource representing the location of the requisition file
+     */
+    public Resource getResource() {
+        return m_resource;
+    }
     
+    public void setResource(final Resource resource) {
+        m_resource = resource;
+    }
+
     private void updateNodeCache() {
         m_nodeReqs.clear();
         if (m_nodes != null) {
