@@ -135,6 +135,9 @@
             <td>
               <b>Event</b>
             </td>
+            <td>
+              <b>UEI</b>
+            </td>
           </tr>
           <% Map<String, Notification> noticeMap = new TreeMap<String, Notification>(m_notificationFactory.getNotifications());
              for(String key : noticeMap.keySet()) {
@@ -162,6 +165,9 @@
             </td>
             <td>
               <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
+            </td>
+            <td>
+              <%=curNotif.getUei()%>
             </td>
           </tr>
           <% } %>
