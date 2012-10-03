@@ -62,14 +62,14 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ProvisionService {
     
 	
-    public boolean isRequisitionedEntityDeletionEnabled();
+    boolean isRequisitionedEntityDeletionEnabled();
 
     /**
      * <p>isDiscoveryEnabled</p>
      *
      * @return a boolean.
      */
-    public abstract boolean isDiscoveryEnabled();
+    boolean isDiscoveryEnabled();
     
     /**
      * Clear the Hibernate object cache. This is used to clear the object
@@ -77,7 +77,7 @@ public interface ProvisionService {
      * up caching the entire database when it has no intention of using a
      * node's data again. This is needed only to help memory performance.
      */
-    public abstract void clearCache();
+    void clearCache();
 
     /**
      * Lookup a distPoller in the database, creating it if necessary. This
@@ -95,7 +95,7 @@ public interface ProvisionService {
      *         transaction is committed.
      */
     @Transactional
-    public abstract OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr);
+    OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr);
 
     /**
      * Update the database entry for the given node. The node supplied is used
@@ -108,7 +108,7 @@ public interface ProvisionService {
      *            database
      */
     @Transactional
-    public abstract void updateNode(OnmsNode node);
+    void updateNode(OnmsNode node);
     
     /**
      * <p>updateNodeAttributes</p>
@@ -117,7 +117,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public abstract OnmsNode updateNodeAttributes(OnmsNode node);
+    OnmsNode updateNodeAttributes(OnmsNode node);
    
     /**
      * <p>getDbNodeInitCat</p>
@@ -126,7 +126,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public OnmsNode getDbNodeInitCat(Integer nodeId);
+    OnmsNode getDbNodeInitCat(Integer nodeId);
     
     /**
      * <p>updateIpInterfaceAttributes</p>
@@ -136,7 +136,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @Transactional
-    public abstract OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface);
+    OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface);
     
     /**
      * <p>updateSnmpInterfaceAttributes</p>
@@ -146,7 +146,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     @Transactional
-    public OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface);
+    OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface);
 
     /**
      * <p>addMonitoredService</p>
@@ -156,7 +156,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
     @Transactional
-    public abstract OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName);
+    OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName);
 
     /**
      * <p>addMonitoredService</p>
@@ -167,7 +167,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
     @Transactional
-    public abstract OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName);
+    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName);
 
     /**
      * <p>updateMonitoredServiceState</p>
@@ -178,7 +178,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
     @Transactional
-    public abstract OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);
+    OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);
 
     /**
      * <p>getRequisitionedNode</p>
@@ -188,7 +188,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public abstract OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
+    OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
 
     /**
      * Delete the indicated node form the database.
@@ -196,7 +196,7 @@ public interface ProvisionService {
      * @param nodeId a {@link java.lang.Integer} object.
      */
     @Transactional
-    public abstract void deleteNode(Integer nodeId);
+    void deleteNode(Integer nodeId);
 
     /**
      * <p>deleteInterface</p>
@@ -205,7 +205,7 @@ public interface ProvisionService {
      * @param ipAddr a {@link java.lang.String} object.
      */
     @Transactional
-    public abstract void deleteInterface(Integer nodeId, String ipAddr);
+    void deleteInterface(Integer nodeId, String ipAddr);
 
     /**
      * <p>deleteService</p>
@@ -215,7 +215,7 @@ public interface ProvisionService {
      * @param service a {@link java.lang.String} object.
      */
     @Transactional
-    public abstract void deleteService(Integer nodeId, InetAddress addr, String service);
+    void deleteService(Integer nodeId, InetAddress addr, String service);
 
 
     /**
@@ -224,7 +224,7 @@ public interface ProvisionService {
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public abstract void insertNode(OnmsNode node);
+    void insertNode(OnmsNode node);
 
     /**
      * Look up the OnmsServiceType with the given name, creating one if it
@@ -237,7 +237,7 @@ public interface ProvisionService {
      *         the database.
      */
     @Transactional
-    public abstract OnmsServiceType createServiceTypeIfNecessary(String serviceName);
+    OnmsServiceType createServiceTypeIfNecessary(String serviceName);
 
     /**
      * Look up the OnmsCategory with the give name, creating one if none
@@ -249,7 +249,7 @@ public interface ProvisionService {
      *         in the database a new one will have been created.
      */
     @Transactional
-    public abstract OnmsCategory createCategoryIfNecessary(String name);
+    OnmsCategory createCategoryIfNecessary(String name);
 
     /**
      * Creates a map of foreignIds to nodeIds for all nodes that have the indicated foreignSorce.
@@ -258,7 +258,7 @@ public interface ProvisionService {
      * @return a {@link java.util.Map} object.
      */
     @Transactional(readOnly = true)
-    public abstract Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
+    Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
 
     /**
      * Sets the parent of the node and adds the relationship to the path
@@ -278,7 +278,7 @@ public interface ProvisionService {
      *        is made
      */
     @Transactional
-    public abstract void setNodeParentAndDependencies(
+    void setNodeParentAndDependencies(
             String foreignSource, String foreignId, 
             String parentForeignSource, String parentForeignId, 
             String parentNodeLabel
@@ -289,7 +289,7 @@ public interface ProvisionService {
      *
      * @return a {@link java.util.List} object.
      */
-    public abstract List<NodeScanSchedule> getScheduleForNodes();
+    List<NodeScanSchedule> getScheduleForNodes();
     
     /**
      * <p>getScheduleForNode</p>
@@ -298,14 +298,14 @@ public interface ProvisionService {
      * @param force a boolean.
      * @return a {@link org.opennms.netmgt.provision.service.NodeScanSchedule} object.
      */
-    public abstract NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
+    NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
     
     /**
      * <p>setForeignSourceRepository</p>
      *
      * @param foriengSourceRepository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
      */
-    public abstract void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
+    void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
 
     /**
      * <p>loadRequisition</p>
@@ -313,7 +313,7 @@ public interface ProvisionService {
      * @param resource a {@link org.springframework.core.io.Resource} object.
      * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      */
-    public abstract Requisition loadRequisition(Resource resource);
+    Requisition loadRequisition(Resource resource);
 
     /**
      * <p>getDetectorsForForeignSource</p>
@@ -321,7 +321,7 @@ public interface ProvisionService {
      * @param foreignSource a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
+    List<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
     
     /**
      * <p>getNodePoliciesForForeignSource</p>
@@ -329,7 +329,7 @@ public interface ProvisionService {
      * @param foreignSourceName a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
+    List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
     
     /**
      * <p>getIpInterfacePoliciesForForeignSource</p>
@@ -337,7 +337,7 @@ public interface ProvisionService {
      * @param foreignSourceName a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName);
+    List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName);
     
     /**
      * <p>getSnmpInterfacePoliciesForForeignSource</p>
@@ -345,7 +345,7 @@ public interface ProvisionService {
      * @param foreignSourceName a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<SnmpInterfacePolicy> getSnmpInterfacePoliciesForForeignSource(String foreignSourceName);
+    List<SnmpInterfacePolicy> getSnmpInterfacePoliciesForForeignSource(String foreignSourceName);
 
     /**
      * <p>updateNodeScanStamp</p>
@@ -354,7 +354,7 @@ public interface ProvisionService {
      * @param scanStamp a {@link java.util.Date} object.
      */
     @Transactional
-    public abstract void updateNodeScanStamp(Integer nodeId, Date scanStamp);
+    void updateNodeScanStamp(Integer nodeId, Date scanStamp);
 
     /**
      * <p>deleteObsoleteInterfaces</p>
@@ -363,7 +363,7 @@ public interface ProvisionService {
      * @param scanStamp a {@link java.util.Date} object.
      */
     @Transactional
-    public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
+    void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
     /**
      * <p>setIsPrimaryFlag</p>
@@ -373,7 +373,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @Transactional
-    public abstract OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress);
+    OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress);
 
     /**
      * <p>getPrimaryInterfaceForNode</p>
@@ -382,7 +382,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @Transactional
-    public abstract OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
+    OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     /**
      * <p>createUndiscoveredNode</p>
@@ -391,7 +391,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public abstract OnmsNode createUndiscoveredNode(String ipAddress);
+    OnmsNode createUndiscoveredNode(String ipAddress);
 
     /**
      * <p>getNode</p>
@@ -400,7 +400,7 @@ public interface ProvisionService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    public abstract OnmsNode getNode(Integer nodeId);
+    OnmsNode getNode(Integer nodeId);
 
 
 

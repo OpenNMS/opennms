@@ -42,7 +42,7 @@ public class DropForeignKeyConstraintCascadeChange extends DropForeignKeyConstra
 	}
 
 	public String getCascade() {
-		return m_cascade.toString();
+		return m_cascade;
 	}
 	
 	public void setCascade(final String cascade) {

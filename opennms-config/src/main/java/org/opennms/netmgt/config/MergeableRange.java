@@ -69,18 +69,20 @@ final class MergeableRange implements Comparable<Range> {
      * @param range a {@link org.opennms.netmgt.config.common.Range} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final Range range) {
         return m_comparator.compare(getRange(), range);
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         boolean equals = false;
         
         if (obj == null) {
             equals = false;
         } else if (obj instanceof Range ) {
-            equals = equals((Range)obj);
+            equals = equalsRange((Range)obj);
         }
         return equals;
     }
@@ -100,7 +102,7 @@ final class MergeableRange implements Comparable<Range> {
      * @param range a {@link org.opennms.netmgt.config.MergeableRange} object.
      * @return a boolean.
      */
-    public boolean equals(MergeableRange range) {
+    private boolean equalsMergeableRange(MergeableRange range) {
         boolean equals = false;
         
         if (getFirst() == range.getFirst() && getLast() == range.getLast()) {
@@ -115,8 +117,8 @@ final class MergeableRange implements Comparable<Range> {
      * @param range a {@link org.opennms.netmgt.config.common.Range} object.
      * @return a boolean.
      */
-    public boolean equals(Range range) {
-        return equals(new MergeableRange(range));
+    private boolean equalsRange(Range range) {
+        return equalsMergeableRange(new MergeableRange(range));
     }
     
     /**

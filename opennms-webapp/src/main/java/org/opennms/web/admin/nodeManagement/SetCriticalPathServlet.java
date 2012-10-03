@@ -29,7 +29,6 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.lang.String;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

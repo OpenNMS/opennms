@@ -28,7 +28,6 @@
 
 package org.opennms.util.ilr;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,7 +49,15 @@ public class BaseLogMessage implements LogMessage {
         END_PERSIST,
     }
     
-    private static final DateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
+    /**
+     *  Use ThreadLocal SimpleDateFormat instances because SimpleDateFormat is not thread-safe.
+     */
+    private static final ThreadLocal<SimpleDateFormat> s_format = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
+        }
+    };
     private static final String s_regexp = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) DEBUG \\[([^\\]]+)] Collectd: collector.collect: (begin|end|error|persistDataQueueing: begin|persistDataQueueing: end): ?(\\d+/\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/[\\w-]+).*";
     private static final Pattern s_pattern = Pattern.compile(s_regexp);
 
@@ -76,7 +83,7 @@ public class BaseLogMessage implements LogMessage {
 
     public static Date parseTimestamp(String dateString) {
         try {
-            return s_format.parse(dateString);
+            return s_format.get().parse(dateString);
         } catch (ParseException e) {
             throw new IllegalArgumentException(dateString + " is not a valid dateString");
         }

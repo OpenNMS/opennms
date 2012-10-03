@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.utils;
 
-import java.lang.NumberFormatException;
 import java.util.StringTokenizer;
 
 import org.opennms.core.utils.ThreadCategory;

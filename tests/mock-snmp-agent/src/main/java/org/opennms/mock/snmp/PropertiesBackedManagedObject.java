@@ -296,8 +296,8 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	        newVar = new Null();
 	    }
 	    else {
-	        String moTypeStr = valStr.substring(0, valStr.indexOf(":"));
-	        String moValStr = valStr.substring(valStr.indexOf(":") + 2);
+	        String moTypeStr = valStr.substring(0, valStr.indexOf(':'));
+	        String moValStr = valStr.substring(valStr.indexOf(':') + 2);
 	
 	        try {
 	
@@ -317,7 +317,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	            } else if (moTypeStr.equals("Counter64")) {
 	                newVar = new Counter64(Long.parseLong(moValStr));
 	            } else if (moTypeStr.equals("Timeticks")) {
-	                Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf("(") + 1, moValStr.indexOf(")") ) );
+	                Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf('(') + 1, moValStr.indexOf(')') ) );
 	                newVar = new TimeTicks(ticksInt);
 	            } else if (moTypeStr.equals("OID")) {
 	                newVar = new OID(moValStr);
