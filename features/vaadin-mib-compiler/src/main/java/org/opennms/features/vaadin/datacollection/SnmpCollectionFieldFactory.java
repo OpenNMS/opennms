@@ -52,8 +52,8 @@ public final class SnmpCollectionFieldFactory implements FormFieldFactory {
             f.setWidth("100%");
             return f;
         }
-        if ("snmpCollectFlag".equals(propertyId)) {
-            final ComboBox f = new ComboBox("SNMP Collection Flag");
+        if ("snmpStorageFlag".equals(propertyId)) {
+            final ComboBox f = new ComboBox("SNMP Storage Flag");
             f.setRequired(true);
             f.addItem("select");
             f.addItem("all");

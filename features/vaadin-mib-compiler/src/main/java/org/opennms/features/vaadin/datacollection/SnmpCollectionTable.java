@@ -59,6 +59,7 @@ public abstract class SnmpCollectionTable extends Table {
         BeanContainer<String,SnmpCollection> container = new BeanContainer<String,SnmpCollection>(SnmpCollection.class);
         container.setBeanIdProperty("name");
         container.addAll(dataCollectionConfig.getSnmpCollectionCollection());
+        container.removeItem("__resource_type_collection"); // This is a protected collection and should not be edited.
         setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);

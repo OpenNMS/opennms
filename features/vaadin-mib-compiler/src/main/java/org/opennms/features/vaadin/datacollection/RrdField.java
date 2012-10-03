@@ -209,11 +209,10 @@ public class RrdField extends CustomField implements Button.ClickListener {
      * Instantiates a new RRD field.
      */
     public RrdField() {
-        step.setCaption("Step");
+        step.setCaption("RRD Step (in seconds)");
         step.setRequired(true);
         step.setNullSettingAllowed(false);
 
-        table.setCaption("RRAs");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"cf", "xff", "steps", "rows"});

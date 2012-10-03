@@ -137,7 +137,6 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
      * Instantiates a new include collection field.
      */
     public IncludeCollectionField() {
-        table.setCaption("Include Collections");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"type", "value"});
@@ -182,9 +181,9 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
             List<DCGroup> groups = new ArrayList<DCGroup>();
             for (IncludeCollection ic : list) {
                 if (ic.getSystemDef() == null || ic.getSystemDef().trim().equals("")) {
-                    groups.add(new DCGroup("SystemDef", ic.getSystemDef()));
-                } else {
                     groups.add(new DCGroup("DataCollectionGroup", ic.getDataCollectionGroup()));
+                } else {
+                    groups.add(new DCGroup("SystemDef", ic.getSystemDef()));
                 }
             }
             container.removeAllItems();
@@ -205,9 +204,9 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         for (Object itemId: container.getItemIds()) {
             DCGroup dcg = container.getItem(itemId).getBean();
             IncludeCollection ic = new IncludeCollection();
-            if (dcg.getType().equals("SystemDef"))
+            if (dcg.getType().equals("SystemDef") && dcg.getValue() != null)
                 ic.setSystemDef(dcg.getValue());
-            if (dcg.getType().equals("DataCollectionGroup"))
+            if (dcg.getType().equals("DataCollectionGroup") && dcg.getValue() != null)
                 ic.setDataCollectionGroup(dcg.getValue());
             list.add(ic);
         }
