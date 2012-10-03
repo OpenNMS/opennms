@@ -314,7 +314,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             m_service.startService();
 
             printGatewayInfo(gateway, intp);
-            m_port = port;
 
         }catch(Throwable e){
             intp.printStackTrace(e);
