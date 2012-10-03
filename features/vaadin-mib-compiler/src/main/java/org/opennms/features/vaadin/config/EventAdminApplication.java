@@ -123,10 +123,10 @@ public class EventAdminApplication extends Application {
         add.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                EventFileNameWindow w = new EventFileNameWindow() {
+                PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
-                    public void filenameChangeHandler(String fileName) {
-                        File file = new File(eventsDir, fileName);
+                    public void textFieldChanged(String fieldValue) {
+                        File file = new File(eventsDir, fieldValue);
                         LogUtils.infof(this, "Adding new events file %s", file);
                         Events events = new Events();
                         layout.removeComponent(layout.getComponent(1));
@@ -147,7 +147,7 @@ public class EventAdminApplication extends Application {
         });
 
         layout.addComponent(toolbar);
-        layout.addComponent(new Label("Please select an event file from the above toolbar"));
+        layout.addComponent(new Label(""));
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
         final Window mainWindow = new Window("Events Administration", layout);

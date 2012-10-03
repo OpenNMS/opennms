@@ -36,12 +36,12 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class Event File Name Window.
+ * The Class Prompt Window.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class EventFileNameWindow extends Window implements Button.ClickListener {
+public abstract class PromptWindow extends Window implements Button.ClickListener {
 
     /** The Event File Name base. */
     private final TextField fileName;
@@ -55,8 +55,8 @@ public abstract class EventFileNameWindow extends Window implements Button.Click
     /**
      * Instantiates a new Event Generator window.
      */
-    public EventFileNameWindow() {
-        setCaption("Generate an events file");
+    public PromptWindow(String caption, String fieldLabel) {
+        setCaption(caption);
         setModal(true);
         setWidth("400px");
         setHeight("150px");
@@ -64,12 +64,12 @@ public abstract class EventFileNameWindow extends Window implements Button.Click
         setClosable(false);
         addStyleName(Runo.WINDOW_DIALOG);
 
-        fileName = new TextField("File Name");
+        fileName = new TextField(fieldLabel);
         fileName.setNullSettingAllowed(false);
         fileName.setWriteThrough(false);
         fileName.setWidth("100%");
         fileName.setRequired(true);
-        fileName.setRequiredError("Filename cannot be null.");
+        fileName.setRequiredError("This field cannot be null.");
 
         okButton = new Button("Continue");
         okButton.addListener(this);
@@ -95,7 +95,7 @@ public abstract class EventFileNameWindow extends Window implements Button.Click
         if (btn == okButton) {
             if (fileName.getValue() != null && ! ((String) fileName.getValue()).trim().equals("")) {
                 close();
-                filenameChangeHandler((String)fileName.getValue());
+                textFieldChanged((String)fileName.getValue());
             }
         }
         if (btn == cancelButton) {
@@ -104,10 +104,10 @@ public abstract class EventFileNameWindow extends Window implements Button.Click
     }
 
     /**
-     * Filename change handler.
+     * Text field changed.
      *
-     * @param fileName the file name
+     * @param fieldValue the field value
      */
-    public abstract void filenameChangeHandler(String fileName);
+    public abstract void textFieldChanged(String fieldValue);
 
 }

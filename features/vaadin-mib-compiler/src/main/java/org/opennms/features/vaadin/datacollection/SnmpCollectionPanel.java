@@ -27,8 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.io.File;
 import java.io.FileWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,10 +37,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.Systems;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
@@ -66,7 +64,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
     /** The add button. */
     private final Button add;
 
-    /** The isNew flag. True, if the resource type is new. */
+    /** The isNew flag. True, if the SNMP collection is new. */
     private boolean isNew;
 
     /**
@@ -123,8 +121,6 @@ public class SnmpCollectionPanel extends VerticalLayout {
                 rrd.addRra("RRA:MAX:0.5:288:366");
                 rrd.addRra("RRA:MIN:0.5:288:366");
                 collection.setRrd(rrd);
-                collection.setGroups(new Groups());
-                collection.setSystems(new Systems());
                 table.updateExternalSource(new BeanItem<SnmpCollection>(collection));
                 form.setReadOnly(false);
                 setIsNew(true);
@@ -149,7 +145,10 @@ public class SnmpCollectionPanel extends VerticalLayout {
     public List<SnmpCollection> getSnmpCollections() {
         final List<SnmpCollection> collections = new ArrayList<SnmpCollection>();
         for (Object itemId : table.getContainerDataSource().getItemIds()) {
-            collections.add(((BeanItem<SnmpCollection>)table.getContainerDataSource().getItem(itemId)).getBean());
+            SnmpCollection c = ((BeanItem<SnmpCollection>)table.getContainerDataSource().getItem(itemId)).getBean();
+            c.setGroups(null);
+            c.setSystems(null);
+            collections.add(c);
         }
         return collections;
     }
@@ -170,10 +169,11 @@ public class SnmpCollectionPanel extends VerticalLayout {
      * @param logger the logger
      */
     public void saveSnmpCollections(DatacollectionConfig dataCollectionConfig, Logger logger) {
-        dataCollectionConfig.setSnmpCollection(getSnmpCollections());
         try {
-            Writer writer = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME));
-            JaxbUtils.marshal(dataCollectionConfig, writer);
+            File file = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+            logger.info("Saving data colleciton configuration on " + file);
+            dataCollectionConfig.setSnmpCollection(getSnmpCollections());
+            JaxbUtils.marshal(dataCollectionConfig, new FileWriter(file));
             logger.info("The data collection configuration has been saved.");
         } catch (Exception e) {
             logger.error("An error ocurred while saving the data collection configuration, " + e.getMessage());

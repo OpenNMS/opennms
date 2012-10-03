@@ -59,18 +59,19 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
      * @param dataCollectionDao the data collection DAO
      */
     public DataCollectionGroupAdminPanel(DataCollectionConfigDao dataCollectionDao) {
-        final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
-
-        //final VerticalLayout self = this;
+        setCaption("Data Collection Groups");
+        final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
+
+        final VerticalLayout self = this;
 
         final ComboBox dcGroupSource = new ComboBox();
         toolbar.addComponent(dcGroupSource);
         dcGroupSource.setImmediate(true);
         dcGroupSource.setNullSelectionAllowed(false);
-        dcGroupSource.setContainerDataSource(new FilesystemContainer(eventsDir));
+        dcGroupSource.setContainerDataSource(new FilesystemContainer(datacollectionDir));
         dcGroupSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         dcGroupSource.addListener(new ComboBox.ValueChangeListener() {
             @Override
@@ -78,8 +79,8 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 final File file = (File) event.getProperty().getValue();
                 LogUtils.infof(this, "Loading data collection data from %s", file);
                 DatacollectionGroup dcGroup = JaxbUtils.unmarshal(DatacollectionGroup.class, file);
-                removeComponent(getComponent(1));
-                addComponent(createDataCollectionGroupPanel(file, dcGroup));
+                self.removeComponent(getComponent(1));
+                self.addComponent(createDataCollectionGroupPanel(file, dcGroup));
             }
         });
 
@@ -88,15 +89,15 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
         add.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                EventFileNameWindow w = new EventFileNameWindow() {
+                PromptWindow w = new PromptWindow("New Data Collection Group", "Group Name") {
                     @Override
-                    public void filenameChangeHandler(String fileName) {
-                        File file = new File(eventsDir, fileName);
+                    public void textFieldChanged(String fieldValue) {
+                        File file = new File(datacollectionDir, fieldValue.replaceAll(" ", "_") + ".xml");
                         LogUtils.infof(this, "Adding new data collection file %s", file);
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
-                        dcGroup.setName(file.getName());
-                        removeComponent(getComponent(1));
-                        addComponent(createDataCollectionGroupPanel(file, dcGroup));
+                        dcGroup.setName(fieldValue);
+                        self.removeComponent(getComponent(1));
+                        self.addComponent(createDataCollectionGroupPanel(file, dcGroup));
                     }
                 };
                 getApplication().getMainWindow().addWindow(w);
@@ -113,7 +114,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
         });
 
         addComponent(toolbar);
-        addComponent(new Label("Please select a data collection group file from the above toolbar"));
+        addComponent(new Label(""));
         setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
     }
 

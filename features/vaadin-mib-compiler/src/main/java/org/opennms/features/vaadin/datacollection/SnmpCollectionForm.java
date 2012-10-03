@@ -27,9 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.Systems;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
@@ -111,8 +109,9 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
         if (getItemDataSource() instanceof BeanItem) {
             BeanItem<SnmpCollection> item = (BeanItem<SnmpCollection>) getItemDataSource();
             SnmpCollection collection = item.getBean();
-            collection.setGroups(new Groups());
-            collection.setSystems(new Systems());
+            collection.setGroups(null); // Removing groups, only include-collection are allowed
+            collection.setSystems(null);  // Removing systems, only include-collection are allowed
+            return collection;
         }
         return null;
     }
@@ -165,8 +164,18 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
         }
     }
 
+    /**
+     * Save SNMP collection.
+     *
+     * @param snmpCollection the SNMP collection
+     */
     public abstract void saveSnmpCollection(SnmpCollection snmpCollection);
 
+    /**
+     * Delete SNMP collection.
+     *
+     * @param snmpCollection the SNMP collection
+     */
     public abstract void deleteSnmpCollection(SnmpCollection snmpCollection);
 
 }
