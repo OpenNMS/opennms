@@ -74,7 +74,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
     private Button delete;
 
     /**
-     * Instantiates a new mask element table.
+     * Instantiates a new mask element field.
      */
     public MaskElementField() {
         container.setBeanIdProperty("mename");

@@ -67,7 +67,7 @@ public class CollectField extends CustomField implements Button.ClickListener {
     private Button delete;
 
     /**
-     * Instantiates a new mask element table.
+     * Instantiates a new collect field.
      *
      * @param groups the groups
      */

@@ -42,7 +42,7 @@ import com.vaadin.ui.themes.Runo;
 public class DataCollectionWindow extends Window {
 
     /**
-     * Instantiates a new events window.
+     * Instantiates a new data collection window.
      *
      * @param caption the caption
      * @param dcGroup the data collection group

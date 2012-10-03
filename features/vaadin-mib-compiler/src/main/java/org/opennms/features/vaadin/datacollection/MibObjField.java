@@ -82,7 +82,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     private Button delete;
 
     /**
-     * Instantiates a new mask element table.
+     * Instantiates a new MIB object field.
      *
      * @param resourceTypes the resource types
      */

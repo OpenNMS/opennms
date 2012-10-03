@@ -72,7 +72,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     private Button delete;
 
     /**
-     * Instantiates a new mask element table.
+     * Instantiates a new persist selector strategy field.
      */
     public PersistSelectorStrategyField() {
         combo.setCaption("Class Name");

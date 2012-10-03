@@ -37,7 +37,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class Resource Type Table.
+ * The Class System Definition Table.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -51,7 +51,7 @@ public abstract class SystemDefTable extends Table {
     public static final String[] COLUMN_LABELS = new String[] { "System Definition" };
 
     /**
-     * Instantiates a new event table.
+     * Instantiates a new system definition table.
      *
      * @param group the OpenNMS Data Collection Group
      */

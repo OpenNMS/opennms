@@ -75,7 +75,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
     private Button delete;
 
     /**
-     * Instantiates a new mask element table.
+     * Instantiates a new storage strategy field.
      */
     public StorageStrategyField() {
         combo.setCaption("Class Name");

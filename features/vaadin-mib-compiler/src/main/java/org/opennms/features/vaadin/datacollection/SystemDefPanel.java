@@ -43,7 +43,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 /**
- * The Class SystemDefPanel.
+ * The Class System Definition Panel.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */

@@ -51,7 +51,7 @@ public abstract class GroupTable extends Table {
     public static final String[] COLUMN_LABELS = new String[] { "MIB Group" };
 
     /**
-     * Instantiates a new event table.
+     * Instantiates a new group table.
      *
      * @param source the OpenNMS Data Collection Group
      */

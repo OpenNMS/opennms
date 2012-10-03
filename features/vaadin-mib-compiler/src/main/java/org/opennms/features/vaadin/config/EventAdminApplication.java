@@ -77,7 +77,7 @@ public class EventAdminApplication extends Application {
     /**
      * Sets the OpenNMS Event Proxy.
      *
-     * @param eventConfDao the new OpenNMS Event Proxy
+     * @param eventProxy the new event proxy
      */
     public void setEventProxy(EventProxy eventProxy) {
         this.eventProxy = eventProxy;
@@ -118,7 +118,7 @@ public class EventAdminApplication extends Application {
             }
         });
 
-        final Button add = new Button("+");
+        final Button add = new Button("Add File");
         toolbar.addComponent(add);
         add.addListener(new Button.ClickListener() {
             @Override
@@ -137,7 +137,7 @@ public class EventAdminApplication extends Application {
             }
         });
 
-        final Button remove = new Button("-");
+        final Button remove = new Button("Remove File");
         toolbar.addComponent(remove);
         remove.addListener(new Button.ClickListener() {
             @Override
@@ -155,11 +155,10 @@ public class EventAdminApplication extends Application {
     }
 
     /**
-     * Creates a new Events Panel
-     * 
+     * Creates a new Events Panel.
+     *
      * @param file the Events File Name
      * @param events the Events Object
-     * 
      * @return a new Events Panel Object
      */
     private EventPanel createEventPanel(final File file, final Events events) {

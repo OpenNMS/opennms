@@ -75,7 +75,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
     private Button delete;
 
     /**
-     * Instantiates a new mask varbind table.
+     * Instantiates a new mask varbind field.
      */
     public MaskVarbindField() {
         container.setBeanIdProperty("vbnumber");

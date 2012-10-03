@@ -35,6 +35,9 @@ import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
 import com.vaadin.Application;
 
+/**
+ * A factory for creating SNMP Collection Administration Application objects.
+ */
 public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFactory {
 
     /** The OpenNMS Data Collection Configuration DAO. */
@@ -43,7 +46,7 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
     /**
      * Sets the OpenNMS Data Collection Configuration DAO.
      *
-     * @param eventConfDao the new OpenNMS Data Collection Configuration DAO
+     * @param dataCollectionDao the new data collection DAO
      */
     public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
         this.dataCollectionDao = dataCollectionDao;

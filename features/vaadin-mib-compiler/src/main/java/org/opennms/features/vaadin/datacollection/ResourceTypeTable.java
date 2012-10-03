@@ -51,7 +51,7 @@ public abstract class ResourceTypeTable extends Table {
     public static final String[] COLUMN_LABELS = new String[] { "Resource Type" };
 
     /**
-     * Instantiates a new event table.
+     * Instantiates a new resource type table.
      *
      * @param group the OpenNMS Data Collection Group
      */

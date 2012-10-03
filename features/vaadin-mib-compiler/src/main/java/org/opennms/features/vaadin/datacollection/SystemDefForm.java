@@ -43,7 +43,7 @@ import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
- * The Class Event Form.
+ * The Class System Definition Form.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
@@ -70,7 +70,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
     private final Button cancel = new Button("Cancel");
 
     /**
-     * Instantiates a new event form.
+     * Instantiates a new system definition form.
      *
      * @param source the source
      */

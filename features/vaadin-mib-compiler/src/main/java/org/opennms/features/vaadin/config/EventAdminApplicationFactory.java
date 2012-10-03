@@ -61,7 +61,7 @@ public class EventAdminApplicationFactory extends AbstractApplicationFactory {
     /**
      * Sets the OpenNMS Event Proxy.
      *
-     * @param eventConfDao the new OpenNMS Event Proxy
+     * @param eventProxy the new event proxy
      */
     public void setEventProxy(EventProxy eventProxy) {
         this.eventProxy = eventProxy;

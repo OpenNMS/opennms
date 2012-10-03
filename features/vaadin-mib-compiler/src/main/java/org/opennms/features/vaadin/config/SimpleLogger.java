@@ -31,9 +31,9 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
 
 /**
- * The Class Simple Logger
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * The Class Simple Logger.
+ *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SimpleLogger implements Logger {
 

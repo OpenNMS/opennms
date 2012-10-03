@@ -70,7 +70,7 @@ public abstract class GroupForm extends Form implements ClickListener {
     private final Button cancel = new Button("Cancel");
 
     /**
-     * Instantiates a new event form.
+     * Instantiates a new group form.
      * 
      * @param source the OpenNMS Data Collection Group
      */

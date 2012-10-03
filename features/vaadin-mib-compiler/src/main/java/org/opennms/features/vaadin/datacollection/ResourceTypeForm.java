@@ -71,7 +71,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
     private final Button cancel = new Button("Cancel");
 
     /**
-     * Instantiates a new event form.
+     * Instantiates a new resource type form.
      */
     public ResourceTypeForm() {
         setCaption("Resource Type Detail");
