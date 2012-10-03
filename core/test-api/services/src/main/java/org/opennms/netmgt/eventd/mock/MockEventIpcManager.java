@@ -55,6 +55,7 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.model.events.EventWriter;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.springframework.beans.factory.InitializingBean;
@@ -150,6 +151,10 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
 
         public void saveCurrent() {}
+
+        public Events getRootEvents() {
+            return null;
+        }
     }
 
     private EventAnticipator m_anticipator;
