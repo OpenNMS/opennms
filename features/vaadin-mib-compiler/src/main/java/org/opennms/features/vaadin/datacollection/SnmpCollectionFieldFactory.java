@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.netmgt.config.DataCollectionConfigDao;
+
 import com.vaadin.data.Item;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -41,6 +43,12 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public final class SnmpCollectionFieldFactory implements FormFieldFactory {
+
+    final DataCollectionConfigDao dataCollectionConfigDao;
+
+    public SnmpCollectionFieldFactory(final DataCollectionConfigDao dataCollectionConfigDao) {
+        this.dataCollectionConfigDao = dataCollectionConfigDao;
+    }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
@@ -67,7 +75,7 @@ public final class SnmpCollectionFieldFactory implements FormFieldFactory {
             return f;
         }
         if ("includeCollectionCollection".equals(propertyId)) {
-            IncludeCollectionField f = new IncludeCollectionField();
+            IncludeCollectionField f = new IncludeCollectionField(dataCollectionConfigDao);
             f.setCaption("Include Collections");
             return f;
         }

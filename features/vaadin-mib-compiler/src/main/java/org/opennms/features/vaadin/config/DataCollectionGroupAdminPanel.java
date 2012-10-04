@@ -33,6 +33,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
+import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 
@@ -57,8 +58,9 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
      * Instantiates a new data collection group administration panel.
      *
      * @param dataCollectionDao the data collection DAO
+     * @param logger the logger
      */
-    public DataCollectionGroupAdminPanel(DataCollectionConfigDao dataCollectionDao) {
+    public DataCollectionGroupAdminPanel(DataCollectionConfigDao dataCollectionDao, Logger logger) {
         setCaption("Data Collection Groups");
         final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
 

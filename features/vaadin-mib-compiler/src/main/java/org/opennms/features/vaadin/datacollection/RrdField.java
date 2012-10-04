@@ -33,10 +33,15 @@ import java.util.List;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.vaadin.addon.customfield.CustomField;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DefaultFieldFactory;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -221,6 +226,24 @@ public class RrdField extends CustomField implements Button.ClickListener {
         table.setSelectable(true);
         table.setHeight("125px");
         table.setWidth("100%");
+        table.setTableFieldFactory(new DefaultFieldFactory() {
+            @Override
+            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                if (propertyId.equals("cf")) {
+                    final ComboBox field = new ComboBox();
+                    field.setImmediate(true);
+                    field.setNullSelectionAllowed(false);
+                    field.setNewItemsAllowed(true);
+                    field.addItem("AVERAGE");
+                    field.addItem("MIX");
+                    field.addItem("MAX");
+                    field.addItem("LAST");
+                    return field;
+                }
+                return super.createField(container, itemId, propertyId, uiContext);
+            }
+        });
+
 
         add = new Button("Add", (Button.ClickListener) this);
         delete = new Button("Delete", (Button.ClickListener) this);

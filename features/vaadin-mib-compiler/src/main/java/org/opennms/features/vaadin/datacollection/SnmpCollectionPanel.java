@@ -36,6 +36,7 @@ import java.util.List;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
@@ -70,14 +71,16 @@ public class SnmpCollectionPanel extends VerticalLayout {
     /**
      * Instantiates a new SNMP collection panel.
      *
-     * @param dataCollectionConfig the data collection configuration
+     * @param dataCollectionConfigDao the data collection configuration DAO
      * @param logger the logger
      */
-    public SnmpCollectionPanel(final DatacollectionConfig dataCollectionConfig, final Logger logger) {
+    public SnmpCollectionPanel(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
         setCaption("SNMP Collections");
         addStyleName(Runo.PANEL_LIGHT);
 
-        form = new SnmpCollectionForm() {
+        final DatacollectionConfig dataCollectionConfig = dataCollectionConfigDao.getRootDataCollection();
+
+        form = new SnmpCollectionForm(dataCollectionConfigDao) {
             @Override
             public void saveSnmpCollection(SnmpCollection snmpCollection) {
                 if (isNew) {

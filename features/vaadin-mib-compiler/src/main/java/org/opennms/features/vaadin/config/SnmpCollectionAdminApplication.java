@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.config;
 
 import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
+import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
 import com.vaadin.Application;
@@ -63,8 +64,9 @@ public class SnmpCollectionAdminApplication extends Application {
 
         setTheme(Runo.THEME_NAME);
 
-        SnmpCollectionPanel scAdmin = new SnmpCollectionPanel(dataCollectionDao.getRootDataCollection(), new SimpleLogger());
-        DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao);
+        Logger logger = new SimpleLogger();
+        SnmpCollectionPanel scAdmin = new SnmpCollectionPanel(dataCollectionDao, logger);
+        DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao, logger);
 
         TabSheet tabs = new TabSheet();
         tabs.setStyleName(Runo.TABSHEET_SMALL);

@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 import com.vaadin.data.util.BeanItem;
@@ -71,12 +72,14 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
 
     /**
      * Instantiates a new SNMP collection form.
+     *
+     * @param dataCollectionConfigDao the data collection configuration DAO
      */
-    public SnmpCollectionForm() {
+    public SnmpCollectionForm(final DataCollectionConfigDao dataCollectionConfigDao) {
         setCaption("SNMP Collection Detail");
         setWriteThrough(false);
         setVisible(false);
-        setFormFieldFactory(new SnmpCollectionFieldFactory());
+        setFormFieldFactory(new SnmpCollectionFieldFactory(dataCollectionConfigDao));
         initToolbar();
     }
 
@@ -108,10 +111,7 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
     private SnmpCollection getSnmpCollection() {
         if (getItemDataSource() instanceof BeanItem) {
             BeanItem<SnmpCollection> item = (BeanItem<SnmpCollection>) getItemDataSource();
-            SnmpCollection collection = item.getBean();
-            collection.setGroups(null); // Removing groups, only include-collection are allowed
-            collection.setSystems(null);  // Removing systems, only include-collection are allowed
-            return collection;
+            return item.getBean();
         }
         return null;
     }
