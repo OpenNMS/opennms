@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.InitializingBean;
@@ -110,12 +111,14 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        LogUtils.debugf(this, "Queueing save of foreign source %s", foreignSource.getName());
         m_pendingForeignSources.put(foreignSource.getName(), foreignSource);
         m_executor.execute(new QueuePersistRunnable());
     }
 
     @Override
     public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        LogUtils.debugf(this, "Queueing delete of foreign source %s", foreignSource.getName());
         m_pendingForeignSources.put(foreignSource.getName(), new DeletedForeignSource(foreignSource));
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -142,12 +145,14 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
+        LogUtils.debugf(this, "Queueing save of requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
         m_pendingRequisitions.put(requisition.getForeignSource(), requisition);
         m_executor.execute(new QueuePersistRunnable());
     }
 
     @Override
     public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
+        LogUtils.debugf(this, "Queueing delete of requistion %s", requisition.getForeignSource());
         m_pendingRequisitions.put(requisition.getForeignSource(), new DeletedRequisition(requisition));
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -188,42 +193,54 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     }
 
     private final class QueuePersistRunnable implements Runnable {
+        private final String m_prefix;
+
+        public QueuePersistRunnable() {
+            m_prefix = ThreadCategory.getPrefix();
+        }
+
         @Override
         public void run() {
-            LogUtils.debugf(this, "persisting repository changes");
-            final Set<Entry<String,ForeignSource>> foreignSources = m_pendingForeignSources.entrySet();
-            final Set<Entry<String,Requisition>>   requisitions   = m_pendingRequisitions.entrySet();
+            final String prefix = ThreadCategory.getPrefix();
+            try {
+                ThreadCategory.setPrefix(m_prefix);
+                LogUtils.debugf(this, "persisting repository changes");
+                final Set<Entry<String,ForeignSource>> foreignSources = m_pendingForeignSources.entrySet();
+                final Set<Entry<String,Requisition>>   requisitions   = m_pendingRequisitions.entrySet();
 
-            LogUtils.debugf(this, "* %d pending foreign sources", m_pendingForeignSources.size());
-            LogUtils.debugf(this, "* %d pending requisitions",    m_pendingRequisitions.size());
+                LogUtils.debugf(this, "* %d pending foreign sources", m_pendingForeignSources.size());
+                LogUtils.debugf(this, "* %d pending requisitions",    m_pendingRequisitions.size());
 
-            for (final Entry<String,ForeignSource> entry : foreignSources) {
-                final String foreignSourceName = entry.getKey();
-                final ForeignSource foreignSource = entry.getValue();
+                for (final Entry<String,ForeignSource> entry : foreignSources) {
+                    final String foreignSourceName = entry.getKey();
+                    final ForeignSource foreignSource = entry.getValue();
 
-                if (foreignSource instanceof DeletedForeignSource) {
-                    final DeletedForeignSource deletedForeignSource = (DeletedForeignSource)foreignSource;
-                    m_repository.delete(deletedForeignSource.getOriginal());
-                } else {
-                    m_repository.save(foreignSource);
+                    if (foreignSource instanceof DeletedForeignSource) {
+                        final DeletedForeignSource deletedForeignSource = (DeletedForeignSource)foreignSource;
+                        m_repository.delete(deletedForeignSource.getOriginal());
+                    } else {
+                        m_repository.save(foreignSource);
+                    }
+                    m_pendingForeignSources.remove(foreignSourceName, foreignSource);
                 }
-                m_pendingForeignSources.remove(foreignSourceName, foreignSource);
-            }
-            
-            for (final Entry<String,Requisition> entry : requisitions) {
-                final String foreignSourceName = entry.getKey();
-                final Requisition requisition = entry.getValue();
-                
-                if (requisition instanceof DeletedRequisition) {
-                    final DeletedRequisition deletedRequisition = (DeletedRequisition)requisition;
-                    m_repository.delete(deletedRequisition.getOriginal());
-                } else {
-                    m_repository.save(requisition);
+
+                for (final Entry<String,Requisition> entry : requisitions) {
+                    final String foreignSourceName = entry.getKey();
+                    final Requisition requisition = entry.getValue();
+
+                    if (requisition instanceof DeletedRequisition) {
+                        final DeletedRequisition deletedRequisition = (DeletedRequisition)requisition;
+                        m_repository.delete(deletedRequisition.getOriginal());
+                    } else {
+                        m_repository.save(requisition);
+                    }
+                    m_pendingRequisitions.remove(foreignSourceName, requisition);
                 }
-                m_pendingRequisitions.remove(foreignSourceName, requisition);
+
+                LogUtils.debugf(this, "finished persisting repository changes");
+            } finally {
+                ThreadCategory.setPrefix(prefix);
             }
-            
-            LogUtils.debugf(this, "finished persisting repository changes");
         }
     }
 
