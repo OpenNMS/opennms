@@ -492,7 +492,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             OnmsNode node = m_nodeDao.get(nodeId);
             if (snmpNodes.contains(nodeId)) {
                 found = true;
-            } else if ((responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) && (node.getForeignSource() == null || node.getForeignId() == null)) {
+            } else if (responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) {
                 for (final OnmsIpInterface ip : m_nodeDao.get(nodeId).getIpInterfaces()) {
                     final String addr = InetAddressUtils.str(ip.getIpAddress());
 					if (responseTimeInterfaces.contains(addr) || distributedResponseTimeInterfaces.contains(addr)) {
