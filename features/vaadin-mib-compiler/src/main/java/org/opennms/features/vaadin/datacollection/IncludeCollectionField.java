@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.addon.customfield.CustomField;
 
@@ -58,7 +59,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<DCGroup> container = new BeanItemContainer<DCGroup>(DCGroup.class);
+    private BeanItemContainer<IncludeObject> container = new BeanItemContainer<IncludeObject>(IncludeObject.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -70,73 +71,11 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     private Button delete;
 
     /**
-     * The Class DCGroup.
-     */
-    public class DCGroup {
-
-        /** The type. */
-        private String type;
-
-        /** The value. */
-        private String value;
-
-        /**
-         * Instantiates a new dC group.
-         */
-        public DCGroup() {}
-
-        /**
-         * Instantiates a new dC group.
-         *
-         * @param type the type
-         * @param value the value
-         */
-        public DCGroup(String type, String value) {
-            setType(type);
-            setValue(value);
-        }
-
-        /**
-         * Gets the type.
-         *
-         * @return the type
-         */
-        public String getType() {
-            return type;
-        }
-
-        /**
-         * Sets the type.
-         *
-         * @param type the new type
-         */
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        /**
-         * Gets the value.
-         *
-         * @return the value
-         */
-        public String getValue() {
-            return value;
-        }
-
-        /**
-         * Sets the value.
-         *
-         * @param value the new value
-         */
-        public void setValue(String value) {
-            this.value = value;
-        }
-    }
-
-    /**
      * Instantiates a new include collection field.
+     * 
+     * @param dataCollectionConfigDao the data collection configuration DAO
      */
-    public IncludeCollectionField() {
+    public IncludeCollectionField(final DataCollectionConfigDao dataCollectionConfigDao) {
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"type", "value"});
@@ -178,12 +117,12 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         if (value instanceof List<?>) {
             @SuppressWarnings("unchecked")
             List<IncludeCollection> list = (List<IncludeCollection>) value;
-            List<DCGroup> groups = new ArrayList<DCGroup>();
+            List<IncludeObject> groups = new ArrayList<IncludeObject>();
             for (IncludeCollection ic : list) {
                 if (ic.getSystemDef() == null || ic.getSystemDef().trim().equals("")) {
-                    groups.add(new DCGroup("DataCollectionGroup", ic.getDataCollectionGroup()));
+                    groups.add(new IncludeObject(IncludeObject.DC_GROUP, ic.getDataCollectionGroup()));
                 } else {
-                    groups.add(new DCGroup("SystemDef", ic.getSystemDef()));
+                    groups.add(new IncludeObject(IncludeObject.SYSTEM_DEF, ic.getSystemDef()));
                 }
             }
             container.removeAllItems();
@@ -202,7 +141,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     public Object getValue() {
         List<IncludeCollection> list = new ArrayList<IncludeCollection>();
         for (Object itemId: container.getItemIds()) {
-            DCGroup dcg = container.getItem(itemId).getBean();
+            IncludeObject dcg = container.getItem(itemId).getBean();
             IncludeCollection ic = new IncludeCollection();
             if (dcg.getType().equals("SystemDef") && dcg.getValue() != null)
                 ic.setSystemDef(dcg.getValue());
@@ -240,7 +179,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
      * Adds the handler.
      */
     private void addHandler() {
-        container.addBean(new DCGroup());
+        container.addBean(new IncludeObject());
     }
 
     /**
