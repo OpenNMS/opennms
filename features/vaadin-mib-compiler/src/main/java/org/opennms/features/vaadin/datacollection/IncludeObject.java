@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
+
 /**
  * The Include Object.
  * 
@@ -47,6 +49,16 @@ public class IncludeObject {
      * Instantiates a new include object.
      */
     public IncludeObject() {}
+
+    public IncludeObject(IncludeCollection ic) {
+        if (ic.getSystemDef() == null || ic.getSystemDef().trim().equals("")) {
+            setType(DC_GROUP);
+            setValue(ic.getDataCollectionGroup());
+        } else {
+            setType(SYSTEM_DEF);
+            setValue(ic.getSystemDef());
+        }
+    }
 
     /**
      * Instantiates a new include object.
@@ -93,6 +105,15 @@ public class IncludeObject {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public IncludeCollection createIncludeCollection() {
+        IncludeCollection ic = new IncludeCollection();
+        if (getType().equals(SYSTEM_DEF))
+            ic.setSystemDef(getValue());
+        if (getType().equals(IncludeObject.DC_GROUP))
+            ic.setDataCollectionGroup(getValue());
+        return ic;
     }
 
     @Override

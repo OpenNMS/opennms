@@ -78,137 +78,6 @@ public class RrdField extends CustomField implements Button.ClickListener {
     /** The delete button. */
     private Button delete;
 
-    /**
-     * The Class RRA.
-     */
-    public class RRA {
-
-        /** The consolidation function. */
-        private String cf;
-
-        /** The XFF. */
-        private Double xff;
-
-        /** The steps. */
-        private Integer steps;
-
-        /** The rows. */
-        private Integer rows;
-
-        /**
-         * Instantiates a new RRA.
-         */
-        public RRA() {}
-
-        /**
-         * Instantiates a new RRA.
-         *
-         * @param rra the RRA
-         */
-        public RRA(String rra) {
-            setRra(rra);
-        }
-
-        /**
-         * Gets the consolidation function.
-         *
-         * @return the consolidation function
-         */
-        public String getCf() {
-            return cf;
-        }
-
-        /**
-         * Sets the consolidation function.
-         *
-         * @param cf the new consolidation function
-         */
-        public void setCf(String cf) {
-            this.cf = cf;
-        }
-
-        /**
-         * Gets the XFF.
-         *
-         * @return the XFF
-         */
-        public Double getXff() {
-            return xff;
-        }
-
-        /**
-         * Sets the XFF.
-         *
-         * @param xff the new XFF
-         */
-        public void setXff(Double xff) {
-            this.xff = xff;
-        }
-
-        /**
-         * Gets the steps.
-         *
-         * @return the steps
-         */
-        public Integer getSteps() {
-            return steps;
-        }
-
-        /**
-         * Sets the steps.
-         *
-         * @param steps the new steps
-         */
-        public void setSteps(Integer steps) {
-            this.steps = steps;
-        }
-
-        /**
-         * Gets the rows.
-         *
-         * @return the rows
-         */
-        public Integer getRows() {
-            return rows;
-        }
-
-        /**
-         * Sets the rows.
-         *
-         * @param rows the new rows
-         */
-        public void setRows(Integer rows) {
-            this.rows = rows;
-        }
-
-        /**
-         * Gets the RRA.
-         *
-         * @return the RRA
-         */
-        public String getRra() {
-            return "RRA:" + cf + ':' + xff + ':' + steps + ':' + rows;
-        }
-
-        /**
-         * Sets the RRA.
-         *
-         * @param rra the new RRA
-         */
-        public void setRra(String rra) {
-            String [] parts = rra.split(":");
-            if (parts.length < 5)
-                throw new IllegalArgumentException("Malformed RRA");
-            try {
-                setCf(parts[1]);
-                setXff(new Double(parts[2]));
-                setSteps(new Integer(parts[3]));
-                setRows(new Integer(parts[4]));
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Malformed RRA");
-            }
-        }
-    }
 
     /**
      * Instantiates a new RRD field.
@@ -224,6 +93,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
         table.setColumnHeaders(new String[]{"Consolidation Function", "XFF", "Steps", "Rows"});
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
+        table.setImmediate(true);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
@@ -235,7 +105,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     field.setNullSelectionAllowed(false);
                     field.setNewItemsAllowed(true);
                     field.addItem("AVERAGE");
-                    field.addItem("MIX");
+                    field.addItem("MIN");
                     field.addItem("MAX");
                     field.addItem("LAST");
                     return field;

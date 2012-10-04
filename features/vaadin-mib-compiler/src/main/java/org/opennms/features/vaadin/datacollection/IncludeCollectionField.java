@@ -34,10 +34,17 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.addon.customfield.CustomField;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -55,20 +62,23 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 @SuppressWarnings("serial")
 public class IncludeCollectionField extends CustomField implements Button.ClickListener {
 
-    /** The RRA Table. */
-    private Table table = new Table();
+    /** The Include Field Table. */
+    private final Table table = new Table("Include Field");
+
+    /** The Include Field Form. */
+    private final Form form = new Form();
 
     /** The Container. */
-    private BeanItemContainer<IncludeObject> container = new BeanItemContainer<IncludeObject>(IncludeObject.class);
+    private final BeanItemContainer<IncludeObject> container = new BeanItemContainer<IncludeObject>(IncludeObject.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new include collection field.
@@ -80,10 +90,62 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"type", "value"});
         table.setColumnHeaders(new String[]{"Type", "Value"});
-        table.setEditable(!isReadOnly());
         table.setSelectable(true);
+        table.setImmediate(true);
         table.setHeight("125px");
         table.setWidth("100%");
+        table.addListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (table.getValue() != null) {
+                    IncludeObject obj = (IncludeObject) table.getValue();
+                    form.setItemDataSource(new BeanItem<IncludeObject>(obj));
+                }
+            }
+        });
+
+        form.setImmediate(true);
+        form.getLayout().setMargin(true);
+
+        final ComboBox valueField = new ComboBox("Value");
+        valueField.setEnabled(false);
+        valueField.setRequired(true);
+        valueField.setImmediate(true);
+        valueField.setNewItemsAllowed(false);
+        valueField.setNullSelectionAllowed(false);
+
+        final ComboBox typeField = new ComboBox("Type");
+        typeField.setImmediate(true);
+        typeField.setRequired(true);
+        typeField.setNewItemsAllowed(false);
+        typeField.setNullSelectionAllowed(false);
+        typeField.addItem(IncludeObject.DC_GROUP);
+        typeField.addItem(IncludeObject.SYSTEM_DEF);
+        typeField.addListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String selected = (String) typeField.getValue();
+                if (selected == null)
+                    return;
+                List<String> values = selected.equals(IncludeObject.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
+                        : dataCollectionConfigDao.getAvailableDataCollectionGroups();
+                valueField.removeAllItems();
+                for (String v : values)
+                    valueField.addItem(v);
+                valueField.setEnabled(values.size() > 1);
+            }
+        });
+
+        form.setFormFieldFactory(new FormFieldFactory() {
+            @Override
+            public Field createField(Item item, Object propertyId, Component uiContext) {
+                if (propertyId.equals("type"))
+                    return typeField;
+                if (propertyId.equals("value"))
+                    return valueField;
+                return null;
+            }
+        });
 
         add = new Button("Add", (Button.ClickListener) this);
         delete = new Button("Delete", (Button.ClickListener) this);
@@ -91,11 +153,17 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
 
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(table);
-        layout.addComponent(toolbar);
-        layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+        VerticalLayout vlayout = new VerticalLayout();
+        vlayout.addComponent(table);
+        vlayout.addComponent(toolbar);
+        vlayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setWidth("100%");
+        layout.addComponent(vlayout);
+        layout.addComponent(form);
+        layout.setExpandRatio(vlayout, 2);
+        layout.setExpandRatio(form, 1);
         setWriteThrough(false);
         setCompositionRoot(layout);
     }
@@ -119,11 +187,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
             List<IncludeCollection> list = (List<IncludeCollection>) value;
             List<IncludeObject> groups = new ArrayList<IncludeObject>();
             for (IncludeCollection ic : list) {
-                if (ic.getSystemDef() == null || ic.getSystemDef().trim().equals("")) {
-                    groups.add(new IncludeObject(IncludeObject.DC_GROUP, ic.getDataCollectionGroup()));
-                } else {
-                    groups.add(new IncludeObject(IncludeObject.SYSTEM_DEF, ic.getSystemDef()));
-                }
+                groups.add(new IncludeObject(ic));
             }
             container.removeAllItems();
             container.addAll(groups);
@@ -141,13 +205,8 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     public Object getValue() {
         List<IncludeCollection> list = new ArrayList<IncludeCollection>();
         for (Object itemId: container.getItemIds()) {
-            IncludeObject dcg = container.getItem(itemId).getBean();
-            IncludeCollection ic = new IncludeCollection();
-            if (dcg.getType().equals("SystemDef") && dcg.getValue() != null)
-                ic.setSystemDef(dcg.getValue());
-            if (dcg.getType().equals("DataCollectionGroup") && dcg.getValue() != null)
-                ic.setDataCollectionGroup(dcg.getValue());
-            list.add(ic);
+            IncludeObject obj = container.getItem(itemId).getBean();
+            list.add(obj.createIncludeCollection());
         }
         return list;
     }
@@ -157,8 +216,8 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        table.setEditable(!readOnly);
         toolbar.setVisible(!readOnly);
+        form.setReadOnly(readOnly);
         super.setReadOnly(readOnly);
     }
 
@@ -179,7 +238,9 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
      * Adds the handler.
      */
     private void addHandler() {
-        container.addBean(new IncludeObject());
+        IncludeObject obj = new IncludeObject();
+        BeanItem<IncludeObject> item = container.addBean(obj);
+        form.setItemDataSource(item);
     }
 
     /**
