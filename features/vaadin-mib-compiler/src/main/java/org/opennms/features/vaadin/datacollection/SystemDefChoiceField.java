@@ -34,7 +34,7 @@ import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -74,12 +74,7 @@ public class SystemDefChoiceField extends CustomField {
         oidValue.setWidth("100%");
         oidValue.setNullSettingAllowed(false);
         oidValue.setRequired(true);
-        oidValue.addValidator(new AbstractStringValidator("Invalid OID {0}") {
-            @Override
-            protected boolean isValidString(String value) {
-                return value.matches("[.\\d]+");
-            }
-        });
+        oidValue.addValidator(new RegexpValidator("[.\\d]+", "Invalid OID {0}"));
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(true);

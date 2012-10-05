@@ -86,9 +86,11 @@ public class RrdField extends CustomField implements Button.ClickListener {
     public RrdField() {
         step.setCaption("RRD Step (in seconds)");
         step.setRequired(true);
+        step.setValidationVisible(true);
         step.setNullSettingAllowed(false);
         step.addValidator(new IntegerValidator("Invalid integer {0}"));
 
+        table.setCaption("RRA List");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"cf", "xff", "steps", "rows"});
@@ -118,6 +120,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     field.setRequired(true);
                     field.setNullSettingAllowed(false);
                     field.addValidator(new IntegerValidator("Invalid integer {0}"));
+                    return field;
                 }
                 if (propertyId.equals("xff")) {
                     final TextField field = new TextField();
@@ -125,11 +128,11 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     field.setRequired(true);
                     field.setNullSettingAllowed(false);
                     field.addValidator(new DoubleValidator("Invalid double {0}"));
+                    return field;
                 }
                 return null;
             }
         });
-
 
         add = new Button("Add", (Button.ClickListener) this);
         delete = new Button("Delete", (Button.ClickListener) this);
@@ -163,7 +166,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
         Object value = newDataSource.getValue();
         if (value instanceof Rrd) {
             Rrd dto = (Rrd) value;
-            step.setValue(dto.getStep());
+            step.setValue(dto.getStep().toString());
             container.removeAllItems();
             List<RRA> rras = new ArrayList<RRA>();
             for (String rra : dto.getRraCollection()) {
@@ -183,7 +186,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
     @Override
     public Object getValue() {
         Rrd dto = new Rrd();
-        dto.setStep(new Integer((String)step.getValue()));
+        dto.setStep(new Integer((String) step.getValue()));
         for (Object itemId: container.getItemIds()) {
             dto.addRra(container.getItem(itemId).getBean().getRra());
         }

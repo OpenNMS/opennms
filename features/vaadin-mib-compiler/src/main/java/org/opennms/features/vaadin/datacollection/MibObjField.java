@@ -37,7 +37,7 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -102,12 +102,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
                 if (propertyId.equals("oid")) {
                     final TextField field = new TextField();
                     field.setRequired(true);
-                    field.addValidator(new AbstractStringValidator("Invalid OID {0}") {
-                        @Override
-                        protected boolean isValidString(String value) {
-                            return value.matches("[.\\d]+");
-                        }
-                    });
+                    field.addValidator(new RegexpValidator("[.\\d]+", "Invalid OID {0}"));
                     return field;
                 }
                 if (propertyId.equals("instance")) {
@@ -138,12 +133,8 @@ public class MibObjField extends CustomField implements Button.ClickListener {
                 if (propertyId.equals("type")) {
                     final TextField field = new TextField();
                     field.setRequired(true);
-                    field.addValidator(new AbstractStringValidator("Invalid type {0}. Valid types are: gauge, integer, counter, string") {
-                        @Override
-                        protected boolean isValidString(String value) {
-                            return value.toLowerCase().matches("^(gauge|counter|integer|string|octetstring)");
-                        }
-                    });
+                    field.addValidator(new RegexpValidator("^(gauge|counter|integer|string|octetstring)",
+                            "Invalid type {0}. Valid types are: gauge, integer, counter, string"));
                     return field;
                 }
                 return null;

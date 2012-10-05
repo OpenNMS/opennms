@@ -63,7 +63,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 public class IncludeCollectionField extends CustomField implements Button.ClickListener {
 
     /** The Include Field Table. */
-    private final Table table = new Table("Include Field");
+    private final Table table = new Table();
 
     /** The Include Field Form. */
     private final Form form = new Form();
@@ -86,6 +86,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
      * @param dataCollectionConfigDao the data collection configuration DAO
      */
     public IncludeCollectionField(final DataCollectionConfigDao dataCollectionConfigDao) {
+        table.setCaption("Includes List");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"type", "value"});
@@ -100,6 +101,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
                 if (table.getValue() != null) {
                     IncludeCollectionWrapper obj = (IncludeCollectionWrapper) table.getValue();
                     form.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(obj));
+                    form.setVisible(!isReadOnly());
                 }
             }
         });
@@ -217,7 +219,6 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     @Override
     public void setReadOnly(boolean readOnly) {
         toolbar.setVisible(!readOnly);
-        form.setReadOnly(readOnly);
         super.setReadOnly(readOnly);
     }
 
@@ -240,6 +241,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     private void addHandler() {
         IncludeCollectionWrapper obj = new IncludeCollectionWrapper();
         BeanItem<IncludeCollectionWrapper> item = container.addBean(obj);
+        table.select(obj);
         form.setItemDataSource(item);
     }
 
