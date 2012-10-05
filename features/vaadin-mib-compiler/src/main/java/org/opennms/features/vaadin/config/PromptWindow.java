@@ -94,13 +94,10 @@ public abstract class PromptWindow extends Window implements Button.ClickListene
         final Button btn = event.getButton();
         if (btn == okButton) {
             if (fileName.getValue() != null && ! ((String) fileName.getValue()).trim().equals("")) {
-                close();
                 textFieldChanged((String)fileName.getValue());
             }
         }
-        if (btn == cancelButton) {
-            close();
-        }
+        close();
     }
 
     /**

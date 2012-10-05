@@ -34,17 +34,11 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.addon.customfield.CustomField;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -60,13 +54,10 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField implements Button.ClickListener {
+public class IncludeCollectionField extends CustomField {
 
     /** The Include Field Table. */
     private final Table table = new Table();
-
-    /** The Include Field Form. */
-    private final Form form = new Form();
 
     /** The Container. */
     private final BeanItemContainer<IncludeCollectionWrapper> container = new BeanItemContainer<IncludeCollectionWrapper>(IncludeCollectionWrapper.class);
@@ -76,6 +67,9 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
 
     /** The add button. */
     private final Button add;
+
+    /** The edit button. */
+    private final Button edit;
 
     /** The delete button. */
     private final Button delete;
@@ -95,89 +89,54 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         table.setImmediate(true);
         table.setHeight("125px");
         table.setWidth("100%");
-        table.addListener(new Property.ValueChangeListener() {
+        add = new Button("Add", new Button.ClickListener() {
             @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (table.getValue() != null) {
-                    IncludeCollectionWrapper obj = (IncludeCollectionWrapper) table.getValue();
-                    form.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(obj));
-                    form.setVisible(!isReadOnly());
-                }
+            public void buttonClick(ClickEvent event) {
+                final IncludeCollectionWrapper obj = new IncludeCollectionWrapper();
+                IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, obj) {
+                    @Override
+                    public void fieldChanged() {
+                        container.addBean(obj);
+                        table.select(obj);
+                    }
+                };
+                getApplication().getMainWindow().addWindow(w);
             }
         });
-
-        form.setImmediate(true);
-        form.getLayout().setMargin(true);
-
-        final ComboBox valueField = new ComboBox("Value");
-        valueField.setEnabled(false);
-        valueField.setRequired(true);
-        valueField.setImmediate(true);
-        valueField.setNewItemsAllowed(false);
-        valueField.setNullSelectionAllowed(false);
-
-        final ComboBox typeField = new ComboBox("Type");
-        typeField.setImmediate(true);
-        typeField.setRequired(true);
-        typeField.setNewItemsAllowed(false);
-        typeField.setNullSelectionAllowed(false);
-        typeField.addItem(IncludeCollectionWrapper.DC_GROUP);
-        typeField.addItem(IncludeCollectionWrapper.SYSTEM_DEF);
-        typeField.addListener(new Property.ValueChangeListener() {
+        edit = new Button("Edit", new Button.ClickListener() {
             @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                String selected = (String) typeField.getValue();
-                if (selected == null) {
+            public void buttonClick(ClickEvent event) {
+                final Object value = table.getValue();
+                if (value == null) {
+                    getApplication().getMainWindow().showNotification("Please select a IncludeCollection from the table.");
                     return;
                 }
-                // Get available fields.
-                List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
-                        : dataCollectionConfigDao.getAvailableDataCollectionGroups();
-                // Get used fields
-                List<String> usedValues = new ArrayList<String>();
-                for (Object itemId: container.getItemIds()) {
-                    IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
-                    if (obj.getType().equals(selected))
-                        usedValues.add(obj.getValue());
-                }
-                // Updating combo-box
-                valueField.removeAllItems();
-                for (String v : values) {
-                    if (!usedValues.contains(v))
-                        valueField.addItem(v);
-                }
-                valueField.setEnabled(values.size() > 1);
+                IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, (IncludeCollectionWrapper) value) {
+                    @Override
+                    public void fieldChanged() {
+                        table.refreshRowCache();
+                    }
+                };
+                getApplication().getMainWindow().addWindow(w);
             }
         });
-
-        form.setFormFieldFactory(new FormFieldFactory() {
+        delete = new Button("Delete", new Button.ClickListener() {
             @Override
-            public Field createField(Item item, Object propertyId, Component uiContext) {
-                if (propertyId.equals("type"))
-                    return typeField;
-                if (propertyId.equals("value"))
-                    return valueField;
-                return null;
+            public void buttonClick(ClickEvent event) {
+                deleteHandler();
             }
         });
 
-        add = new Button("Add", (Button.ClickListener) this);
-        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
+        toolbar.addComponent(edit);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
 
-        VerticalLayout vlayout = new VerticalLayout();
-        vlayout.addComponent(table);
-        vlayout.addComponent(toolbar);
-        vlayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(table);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setWidth("100%");
-        layout.addComponent(vlayout);
-        layout.addComponent(form);
-        layout.setExpandRatio(vlayout, 2);
-        layout.setExpandRatio(form, 1);
         setWriteThrough(false);
         setCompositionRoot(layout);
     }
@@ -234,29 +193,6 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         super.setReadOnly(readOnly);
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
-     */
-    public void buttonClick(Button.ClickEvent event) {
-        final Button btn = event.getButton();
-        if (btn == add) {
-            addHandler();
-        }
-        if (btn == delete) {
-            deleteHandler();
-        }
-    }
-
-    /**
-     * Adds the handler.
-     */
-    private void addHandler() {
-        IncludeCollectionWrapper obj = new IncludeCollectionWrapper();
-        BeanItem<IncludeCollectionWrapper> item = container.addBean(obj);
-        table.select(obj);
-        form.setItemDataSource(item);
-    }
-
     /**
      * Delete handler.
      */
@@ -264,22 +200,22 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         final Object itemId = table.getValue();
         if (itemId == null) {
             getApplication().getMainWindow().showNotification("Please select a IncludeCollection from the table.");
-        } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                    "Are you sure?",
-                    MessageBox.Icon.QUESTION,
-                    "Do you really want to continue?",
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
-                        table.removeItem(itemId);
-                    }
-                }
-            });
+            return;
         }
+        MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                "Are you sure?",
+                MessageBox.Icon.QUESTION,
+                "Do you really want to continue?",
+                new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+        mb.addStyleName(Runo.WINDOW_DIALOG);
+        mb.show(new EventListener() {
+            public void buttonClicked(ButtonType buttonType) {
+                if (buttonType == MessageBox.ButtonType.YES) {
+                    table.removeItem(itemId);
+                }
+            }
+        });
     }
 
 }
