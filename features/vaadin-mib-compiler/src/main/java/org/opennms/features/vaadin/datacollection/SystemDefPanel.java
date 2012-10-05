@@ -136,7 +136,7 @@ public class SystemDefPanel extends VerticalLayout {
     }
 
     /**
-     * Sets the value of the ifNew flag
+     * Sets the value of the ifNew flag.
      *
      * @param isNew true, if the system definition is new.
      */

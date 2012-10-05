@@ -44,8 +44,14 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public final class SnmpCollectionFieldFactory implements FormFieldFactory {
 
+    /** The data collection config dao. */
     final DataCollectionConfigDao dataCollectionConfigDao;
 
+    /**
+     * Instantiates a new snmp collection field factory.
+     *
+     * @param dataCollectionConfigDao the data collection config dao
+     */
     public SnmpCollectionFieldFactory(final DataCollectionConfigDao dataCollectionConfigDao) {
         this.dataCollectionConfigDao = dataCollectionConfigDao;
     }

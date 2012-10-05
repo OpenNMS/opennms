@@ -37,6 +37,7 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -46,6 +47,7 @@ import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
@@ -57,11 +59,6 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * The MIB Object Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
- */
-/*
- * TODO Edit Fields
- * Type ~ ComboBox
- * Instance ~ ComboBox (using configured resource types)
  */
 @SuppressWarnings("serial")
 public class MibObjField extends CustomField implements Button.ClickListener {
@@ -102,6 +99,17 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                if (propertyId.equals("oid")) {
+                    final TextField field = new TextField();
+                    field.setRequired(true);
+                    field.addValidator(new AbstractStringValidator("Invalid OID {0}") {
+                        @Override
+                        protected boolean isValidString(String value) {
+                            return value.matches("[.\\d]+");
+                        }
+                    });
+                    return field;
+                }
                 if (propertyId.equals("instance")) {
                     final ComboBox field = new ComboBox();
                     field.setImmediate(true);
@@ -122,7 +130,23 @@ public class MibObjField extends CustomField implements Button.ClickListener {
                     }
                     return field;
                 }
-                return super.createField(container, itemId, propertyId, uiContext);
+                if (propertyId.equals("alias")) {
+                    final TextField field = new TextField();
+                    field.setRequired(true);
+                    return field;
+                }
+                if (propertyId.equals("type")) {
+                    final TextField field = new TextField();
+                    field.setRequired(true);
+                    field.addValidator(new AbstractStringValidator("Invalid type {0}. Valid types are: gauge, integer, counter, string") {
+                        @Override
+                        protected boolean isValidString(String value) {
+                            return value.toLowerCase().matches("^(gauge|counter|integer|string|octetstring)");
+                        }
+                    });
+                    return field;
+                }
+                return null;
             }
         });
 

@@ -69,7 +69,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     private final Form form = new Form();
 
     /** The Container. */
-    private final BeanItemContainer<IncludeObject> container = new BeanItemContainer<IncludeObject>(IncludeObject.class);
+    private final BeanItemContainer<IncludeCollectionWrapper> container = new BeanItemContainer<IncludeCollectionWrapper>(IncludeCollectionWrapper.class);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -98,8 +98,8 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (table.getValue() != null) {
-                    IncludeObject obj = (IncludeObject) table.getValue();
-                    form.setItemDataSource(new BeanItem<IncludeObject>(obj));
+                    IncludeCollectionWrapper obj = (IncludeCollectionWrapper) table.getValue();
+                    form.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(obj));
                 }
             }
         });
@@ -119,15 +119,15 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         typeField.setRequired(true);
         typeField.setNewItemsAllowed(false);
         typeField.setNullSelectionAllowed(false);
-        typeField.addItem(IncludeObject.DC_GROUP);
-        typeField.addItem(IncludeObject.SYSTEM_DEF);
+        typeField.addItem(IncludeCollectionWrapper.DC_GROUP);
+        typeField.addItem(IncludeCollectionWrapper.SYSTEM_DEF);
         typeField.addListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 String selected = (String) typeField.getValue();
                 if (selected == null)
                     return;
-                List<String> values = selected.equals(IncludeObject.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
+                List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
                         : dataCollectionConfigDao.getAvailableDataCollectionGroups();
                 valueField.removeAllItems();
                 for (String v : values)
@@ -185,9 +185,9 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
         if (value instanceof List<?>) {
             @SuppressWarnings("unchecked")
             List<IncludeCollection> list = (List<IncludeCollection>) value;
-            List<IncludeObject> groups = new ArrayList<IncludeObject>();
+            List<IncludeCollectionWrapper> groups = new ArrayList<IncludeCollectionWrapper>();
             for (IncludeCollection ic : list) {
-                groups.add(new IncludeObject(ic));
+                groups.add(new IncludeCollectionWrapper(ic));
             }
             container.removeAllItems();
             container.addAll(groups);
@@ -205,7 +205,7 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
     public Object getValue() {
         List<IncludeCollection> list = new ArrayList<IncludeCollection>();
         for (Object itemId: container.getItemIds()) {
-            IncludeObject obj = container.getItem(itemId).getBean();
+            IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
             list.add(obj.createIncludeCollection());
         }
         return list;
@@ -238,8 +238,8 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
      * Adds the handler.
      */
     private void addHandler() {
-        IncludeObject obj = new IncludeObject();
-        BeanItem<IncludeObject> item = container.addBean(obj);
+        IncludeCollectionWrapper obj = new IncludeCollectionWrapper();
+        BeanItem<IncludeCollectionWrapper> item = container.addBean(obj);
         form.setItemDataSource(item);
     }
 

@@ -30,13 +30,16 @@ package org.opennms.features.vaadin.datacollection;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 
 /**
- * The Include Object.
+ * The Class Include Collection Wrapper.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class IncludeObject {
+public class IncludeCollectionWrapper {
 
+    /** The Constant SYSTEM_DEF. */
     public static final String SYSTEM_DEF = "SystemDef";
+
+    /** The Constant DC_GROUP. */
     public static final String DC_GROUP = "DataCollectionGroup";
 
     /** The type. */
@@ -46,11 +49,16 @@ public class IncludeObject {
     private String value;
 
     /**
-     * Instantiates a new include object.
+     * Instantiates a new include collection Wrapper.
      */
-    public IncludeObject() {}
+    public IncludeCollectionWrapper() {}
 
-    public IncludeObject(IncludeCollection ic) {
+    /**
+     * Instantiates a new include collection Wrapper.
+     *
+     * @param ic the source include collection
+     */
+    public IncludeCollectionWrapper(IncludeCollection ic) {
         if (ic.getSystemDef() == null || ic.getSystemDef().trim().equals("")) {
             setType(DC_GROUP);
             setValue(ic.getDataCollectionGroup());
@@ -66,7 +74,7 @@ public class IncludeObject {
      * @param type the type
      * @param value the value
      */
-    public IncludeObject(String type, String value) {
+    public IncludeCollectionWrapper(String type, String value) {
         setType(type);
         setValue(value);
     }
@@ -107,15 +115,23 @@ public class IncludeObject {
         this.value = value;
     }
 
+    /**
+     * Creates the include collection.
+     *
+     * @return the include collection
+     */
     public IncludeCollection createIncludeCollection() {
         IncludeCollection ic = new IncludeCollection();
         if (getType().equals(SYSTEM_DEF))
             ic.setSystemDef(getValue());
-        if (getType().equals(IncludeObject.DC_GROUP))
+        if (getType().equals(IncludeCollectionWrapper.DC_GROUP))
             ic.setDataCollectionGroup(getValue());
         return ic;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
         return value + " (" + type + ")";

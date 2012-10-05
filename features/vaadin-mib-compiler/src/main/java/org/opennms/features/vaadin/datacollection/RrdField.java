@@ -36,6 +36,8 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.DoubleValidator;
+import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -78,7 +80,6 @@ public class RrdField extends CustomField implements Button.ClickListener {
     /** The delete button. */
     private Button delete;
 
-
     /**
      * Instantiates a new RRD field.
      */
@@ -86,6 +87,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
         step.setCaption("RRD Step (in seconds)");
         step.setRequired(true);
         step.setNullSettingAllowed(false);
+        step.addValidator(new IntegerValidator("Invalid integer {0}"));
 
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
@@ -102,15 +104,29 @@ public class RrdField extends CustomField implements Button.ClickListener {
                 if (propertyId.equals("cf")) {
                     final ComboBox field = new ComboBox();
                     field.setImmediate(true);
+                    field.setRequired(true);
                     field.setNullSelectionAllowed(false);
-                    field.setNewItemsAllowed(true);
                     field.addItem("AVERAGE");
                     field.addItem("MIN");
                     field.addItem("MAX");
                     field.addItem("LAST");
                     return field;
                 }
-                return super.createField(container, itemId, propertyId, uiContext);
+                if (propertyId.equals("steps") || propertyId.equals("rows")) {
+                    final TextField field = new TextField();
+                    field.setImmediate(true);
+                    field.setRequired(true);
+                    field.setNullSettingAllowed(false);
+                    field.addValidator(new IntegerValidator("Invalid integer {0}"));
+                }
+                if (propertyId.equals("xff")) {
+                    final TextField field = new TextField();
+                    field.setImmediate(true);
+                    field.setRequired(true);
+                    field.setNullSettingAllowed(false);
+                    field.addValidator(new DoubleValidator("Invalid double {0}"));
+                }
+                return null;
             }
         });
 
@@ -167,7 +183,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
     @Override
     public Object getValue() {
         Rrd dto = new Rrd();
-        dto.setStep((Integer) step.getValue());
+        dto.setStep(new Integer((String)step.getValue()));
         for (Object itemId: container.getItemIds()) {
             dto.addRra(container.getItem(itemId).getBean().getRra());
         }
