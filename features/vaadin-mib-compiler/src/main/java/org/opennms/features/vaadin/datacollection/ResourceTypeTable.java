@@ -45,10 +45,10 @@ import com.vaadin.ui.themes.Runo;
 public abstract class ResourceTypeTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "label" };
+    public static final String[] COLUMN_NAMES = new String[] { "label", "name" };
 
     /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "Resource Type" };
+    public static final String[] COLUMN_LABELS = new String[] { "Resource Type Label", "Resource Type Name" };
 
     /**
      * Instantiates a new resource type table.

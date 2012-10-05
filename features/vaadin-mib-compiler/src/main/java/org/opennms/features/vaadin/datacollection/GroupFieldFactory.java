@@ -29,9 +29,6 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.ResourceType;
-
 import com.vaadin.data.Item;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -49,15 +46,15 @@ import com.vaadin.ui.AbstractSelect.NewItemHandler;
 public final class GroupFieldFactory implements FormFieldFactory {
     
     /** The resource types. */
-    private final List<ResourceType> resourceTypes;
+    private final List<String> resourceTypes;
     
     /**
      * Instantiates a new group field factory.
      *
-     * @param source the source
+     * @param resourceTypes the available resource types
      */
-    public GroupFieldFactory(final DatacollectionGroup source) {
-        resourceTypes = source.getResourceTypeCollection();
+    public GroupFieldFactory(final List<String> resourceTypes) {
+        this.resourceTypes = resourceTypes;
     }
 
     /* (non-Javadoc)

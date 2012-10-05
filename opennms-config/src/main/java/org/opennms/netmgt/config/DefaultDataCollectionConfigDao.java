@@ -621,4 +621,17 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return systemDefs;
     }
 
+    @Override
+    public List<String> getAvailableMibGroups() {
+        List<String> groups = new ArrayList<String>();
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+            if (collection.getGroups() != null) {
+                for (final Group group : collection.getGroups().getGroupCollection()) {
+                    groups.add(group.getName());
+                }
+            }
+        }
+        return groups;
+    }
+
 }

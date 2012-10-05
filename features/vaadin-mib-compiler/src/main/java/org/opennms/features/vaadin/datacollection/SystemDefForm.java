@@ -27,7 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.util.BeanItem;
@@ -47,6 +52,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// TODO when a new group is added, the group list passed to SystemDefFieldFactory must be updated.
 @SuppressWarnings("serial")
 public abstract class SystemDefForm extends Form implements ClickListener {
 
@@ -72,13 +78,23 @@ public abstract class SystemDefForm extends Form implements ClickListener {
     /**
      * Instantiates a new system definition form.
      *
-     * @param source the source
+     * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
+     * @param source the OpenNMS Data Collection Group object
      */
-    public SystemDefForm(final DatacollectionGroup source) {
+    public SystemDefForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
         setCaption("System Definition Detail");
         setWriteThrough(false);
         setVisible(false);
-        setFormFieldFactory(new SystemDefFieldFactory(source));
+
+        // Adding all groups already defined on this source
+        final List<String> groups = new ArrayList<String>();
+        for (Group group : source.getGroupCollection()) {
+            groups.add(group.getName());
+        }
+        // Adding all defined groups
+        groups.addAll(dataCollectionConfigDao.getAvailableMibGroups());
+
+        setFormFieldFactory(new SystemDefFieldFactory(groups));
         initToolbar();
     }
 
@@ -146,11 +162,11 @@ public abstract class SystemDefForm extends Form implements ClickListener {
         }
         if (source == delete) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to continue?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {

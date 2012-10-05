@@ -51,16 +51,17 @@ import com.vaadin.ui.Window.Notification;
 /**
  * The Class Data Collection Group Administration Panel.
  */
+//TODO When deleting a group, all the SNMP collections must be updated.
 @SuppressWarnings("serial")
 public class DataCollectionGroupAdminPanel extends VerticalLayout {
 
     /**
      * Instantiates a new data collection group administration panel.
      *
-     * @param dataCollectionDao the data collection DAO
+     * @param dataCollectionDao the OpenNMS data collection configuration DAO
      * @param logger the logger
      */
-    public DataCollectionGroupAdminPanel(DataCollectionConfigDao dataCollectionDao, Logger logger) {
+    public DataCollectionGroupAdminPanel(final DataCollectionConfigDao dataCollectionDao, final Logger logger) {
         setCaption("Data Collection Groups");
         final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
 
@@ -82,7 +83,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 LogUtils.infof(this, "Loading data collection data from %s", file);
                 DatacollectionGroup dcGroup = JaxbUtils.unmarshal(DatacollectionGroup.class, file);
                 self.removeComponent(getComponent(1));
-                self.addComponent(createDataCollectionGroupPanel(file, dcGroup));
+                self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
             }
         });
 
@@ -99,7 +100,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
                         dcGroup.setName(fieldValue);
                         self.removeComponent(getComponent(1));
-                        self.addComponent(createDataCollectionGroupPanel(file, dcGroup));
+                        self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
                     }
                 };
                 getApplication().getMainWindow().addWindow(w);
@@ -123,12 +124,13 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
     /**
      * Creates a data collection group panel.
      *
+     * @param dataCollectionDao the OpenNMS data collection configuration DAO
      * @param file data collection group file name
      * @param dcGroup the data collection group object
      * @return a new data collection group panel object
      */
-    private DataCollectionGroupPanel createDataCollectionGroupPanel(final File file, final DatacollectionGroup dcGroup) {
-        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dcGroup, new SimpleLogger()) {
+    private DataCollectionGroupPanel createDataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionDao, final File file, final DatacollectionGroup dcGroup) {
+        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dataCollectionDao, dcGroup, new SimpleLogger()) {
             @Override
             public void cancel() {
                 this.setVisible(false);

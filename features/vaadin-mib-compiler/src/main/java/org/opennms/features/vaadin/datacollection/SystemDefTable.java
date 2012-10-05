@@ -45,10 +45,10 @@ import com.vaadin.ui.themes.Runo;
 public abstract class SystemDefTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "name" };
+    public static final String[] COLUMN_NAMES = new String[] { "name", "oid", "count" };
 
     /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "System Definition" };
+    public static final String[] COLUMN_LABELS = new String[] { "System Definition", "OID", "# Groups" };
 
     /**
      * Instantiates a new system definition table.
@@ -63,10 +63,26 @@ public abstract class SystemDefTable extends Table {
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
         setWidth("100%");
         setHeight("250px");
+        addGeneratedColumn("count", new ColumnGenerator() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(itemId);
+                return item.getBean().getCollect() == null ? 0 : item.getBean().getCollect().getIncludeGroupCount();
+            }
+        });
+        addGeneratedColumn("oid", new ColumnGenerator() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(itemId);
+                final SystemDef s = item.getBean();
+                final String value = s.getSysoid() == null ? s.getSysoidMask() : s.getSysoid();
+                return value == null ? "N/A" : value;
+            }
+        });
         addListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
@@ -76,6 +92,8 @@ public abstract class SystemDefTable extends Table {
                 }
             }
         });
+        setVisibleColumns(COLUMN_NAMES);
+        setColumnHeaders(COLUMN_LABELS);
     }
 
     /**

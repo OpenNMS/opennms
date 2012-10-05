@@ -30,24 +30,21 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Collect;
-import org.opennms.netmgt.config.datacollection.Group;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Select;
 
 /**
  * The Collect Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// TODO when a new group is added, the groupField must be updated.
 @SuppressWarnings("serial")
 public class CollectField extends CustomField implements Button.ClickListener {
 
@@ -69,17 +66,14 @@ public class CollectField extends CustomField implements Button.ClickListener {
     /**
      * Instantiates a new collect field.
      *
-     * @param groups the groups
+     * @param groups the available groups
      */
-    public CollectField(List<Group> groups) {
+    public CollectField(List<String> groups) {
         listField.setRows(10);
 
-        BeanContainer<String,Group> container = new BeanContainer<String,Group>(Group.class);
-        container.setBeanIdProperty("name");
-        container.addAll(groups);
-        groupField.setContainerDataSource(container);
-        groupField.setItemCaptionMode(Select.ITEM_CAPTION_MODE_PROPERTY);
-        groupField.setItemCaptionPropertyId("name");
+        for (String group : groups) {
+            groupField.addItem(group);
+        }
 
         add = new Button("Add Group", (Button.ClickListener) this);
         delete = new Button("Delete Selected", (Button.ClickListener) this);
@@ -161,10 +155,8 @@ public class CollectField extends CustomField implements Button.ClickListener {
     /**
      * Adds the handler.
      */
-    @SuppressWarnings("unchecked")
     private void addHandler() {
-        Group dto = ((BeanItem<Group>) groupField.getContainerDataSource().getItem(groupField.getValue())).getBean();
-        listField.addItem(dto.getName());
+        listField.addItem((String) groupField.getValue());
     }
 
     /**

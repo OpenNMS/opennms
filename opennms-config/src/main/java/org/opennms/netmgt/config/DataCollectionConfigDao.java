@@ -113,4 +113,6 @@ public interface DataCollectionConfigDao {
 
     List<String> getAvailableSystemDefs();
 
+    List<String> getAvailableMibGroups();
+
 }

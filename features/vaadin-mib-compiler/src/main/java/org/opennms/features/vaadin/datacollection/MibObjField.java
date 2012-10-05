@@ -31,23 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.MibObj;
-import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.vaadin.addon.customfield.CustomField;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
@@ -81,9 +72,9 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     /**
      * Instantiates a new MIB object field.
      *
-     * @param resourceTypes the resource types
+     * @param resourceTypes the available resource types
      */
-    public MibObjField(final List<ResourceType> resourceTypes) {
+    public MibObjField(final List<String> resourceTypes) {
         container.setBeanIdProperty("oid");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
@@ -96,50 +87,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         table.setSelectable(true);
         table.setHeight("250px");
         table.setWidth("100%");
-        table.setTableFieldFactory(new DefaultFieldFactory() {
-            @Override
-            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                if (propertyId.equals("oid")) {
-                    final TextField field = new TextField();
-                    field.setRequired(true);
-                    field.addValidator(new RegexpValidator("[.\\d]+", "Invalid OID {0}"));
-                    return field;
-                }
-                if (propertyId.equals("instance")) {
-                    final ComboBox field = new ComboBox();
-                    field.setImmediate(true);
-                    field.setNullSelectionAllowed(false);
-                    field.setNewItemsAllowed(true);
-                    field.setNewItemHandler(new NewItemHandler() {
-                        public void addNewItem(String newItemCaption) {
-                            if (!field.containsId(newItemCaption)) {
-                                field.addItem(newItemCaption);
-                                field.setValue(newItemCaption);
-                            }
-                        }
-                    });
-                    field.addItem("0");
-                    field.addItem("ifIndex");
-                    for (ResourceType rt : resourceTypes) {
-                        field.addItem(rt.getName());
-                    }
-                    return field;
-                }
-                if (propertyId.equals("alias")) {
-                    final TextField field = new TextField();
-                    field.setRequired(true);
-                    return field;
-                }
-                if (propertyId.equals("type")) {
-                    final TextField field = new TextField();
-                    field.setRequired(true);
-                    field.addValidator(new RegexpValidator("^(gauge|counter|integer|string|octetstring)",
-                            "Invalid type {0}. Valid types are: gauge, integer, counter, string"));
-                    return field;
-                }
-                return null;
-            }
-        });
+        table.setTableFieldFactory(new MibObjFieldFactory(resourceTypes));
 
         add = new Button("Add", (Button.ClickListener) this);
         delete = new Button("Delete", (Button.ClickListener) this);

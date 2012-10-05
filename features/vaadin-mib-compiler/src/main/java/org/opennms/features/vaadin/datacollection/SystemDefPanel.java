@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.SystemDef;
@@ -65,13 +66,14 @@ public class SystemDefPanel extends VerticalLayout {
     /**
      * Instantiates a new system definition panel.
      *
-     * @param source the data collection group
-     * @param logger the logger
+     * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
+     * @param source the OpenNMS Data Collection Group object
+     * @param logger the logger object
      */
-    public SystemDefPanel(final DatacollectionGroup source, final Logger logger) {
+    public SystemDefPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
         addStyleName(Runo.PANEL_LIGHT);
 
-        form = new SystemDefForm(source) {
+        form = new SystemDefForm(dataCollectionConfigDao, source) {
             @Override
             public void saveSystemDef(SystemDef systemDef) {
                 if (isNew) {

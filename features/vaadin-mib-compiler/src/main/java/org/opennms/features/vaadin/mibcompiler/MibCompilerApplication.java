@@ -97,7 +97,6 @@ public class MibCompilerApplication extends Application {
     /* (non-Javadoc)
      * @see com.vaadin.Application#init()
      */
-    // TODO Add support DataCollectionConfigDao on MIB Compiler
     @Override
     public void init() {
         if (eventProxy == null)
@@ -111,7 +110,7 @@ public class MibCompilerApplication extends Application {
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsolePanel mibConsole = new MibConsolePanel();
-        final MibCompilerPanel mibPanel = new MibCompilerPanel(eventConfDao, eventProxy, mibParser, mibConsole);
+        final MibCompilerPanel mibPanel = new MibCompilerPanel(dataCollectionDao, eventConfDao, eventProxy, mibParser, mibConsole);
 
         mainPanel.setSizeFull();
         mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);

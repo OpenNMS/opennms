@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -67,10 +68,11 @@ public class ResourceTypePanel extends VerticalLayout {
     /**
      * Instantiates a new resource type panel.
      *
-     * @param source the data collection group
-     * @param logger the logger
+     * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
+     * @param source the OpenNMS Data Collection Group object
+     * @param logger the logger object
      */
-    public ResourceTypePanel(final DatacollectionGroup source, final Logger logger) {
+    public ResourceTypePanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
         addStyleName(Runo.PANEL_LIGHT);
 
         form = new ResourceTypeForm() {

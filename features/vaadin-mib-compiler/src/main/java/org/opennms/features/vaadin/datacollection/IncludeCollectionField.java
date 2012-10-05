@@ -127,13 +127,25 @@ public class IncludeCollectionField extends CustomField implements Button.ClickL
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 String selected = (String) typeField.getValue();
-                if (selected == null)
+                if (selected == null) {
                     return;
+                }
+                // Get available fields.
                 List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
                         : dataCollectionConfigDao.getAvailableDataCollectionGroups();
+                // Get used fields
+                List<String> usedValues = new ArrayList<String>();
+                for (Object itemId: container.getItemIds()) {
+                    IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
+                    if (obj.getType().equals(selected))
+                        usedValues.add(obj.getValue());
+                }
+                // Updating combo-box
                 valueField.removeAllItems();
-                for (String v : values)
-                    valueField.addItem(v);
+                for (String v : values) {
+                    if (!usedValues.contains(v))
+                        valueField.addItem(v);
+                }
                 valueField.setEnabled(values.size() > 1);
             }
         });

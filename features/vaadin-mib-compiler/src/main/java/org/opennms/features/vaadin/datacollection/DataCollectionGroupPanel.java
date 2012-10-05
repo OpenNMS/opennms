@@ -33,6 +33,7 @@ import java.io.FileWriter;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 
 import com.vaadin.data.util.ObjectProperty;
@@ -57,6 +58,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// TODO When renaming a group, all the SNMP collections must be updated.
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
@@ -75,10 +77,11 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     /**
      * Instantiates a new data collection group panel.
      *
-     * @param group the group
-     * @param logger the logger
+     * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
+     * @param group the data collection group object
+     * @param logger the logger object
      */
-    public DataCollectionGroupPanel(final DatacollectionGroup group, final Logger logger) {
+    public DataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup group, final Logger logger) {
         setCaption("Data Collection");
         addStyleName(Runo.PANEL_LIGHT);
 
@@ -88,23 +91,29 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         groupName.setPropertyDataSource(new ObjectProperty<String>(group.getName()));
         groupName.setNullSettingAllowed(false);
         groupName.setImmediate(true);
-        resourceTypes = new ResourceTypePanel(group, logger);
-        groups = new GroupPanel(group, logger);
-        systemDefs = new SystemDefPanel(group, logger);
+
+        resourceTypes = new ResourceTypePanel(dataCollectionConfigDao, group, logger);
+        groups = new GroupPanel(dataCollectionConfigDao, group, logger);
+        systemDefs = new SystemDefPanel(dataCollectionConfigDao, group, logger);
 
         // Button Toolbar
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Save Data Collection File", new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-                logger.info("The data collection have been saved.");
-                processDataCollection(getOnmsDataCollection(), logger);
+                DatacollectionGroup dcGroup = getOnmsDataCollection();
+                if (dataCollectionConfigDao.getAvailableDataCollectionGroups().contains(dcGroup.getName())) {
+                    getApplication().getMainWindow().showNotification("There is a group with the same name, please pick another one.");
+                } else {
+                    processDataCollection(getOnmsDataCollection(), logger);
+                    logger.info("The data collection have been saved.");
+                }
             }
         }));
         toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                logger.info("Data collection processing has been canceled");
                 cancel();
+                logger.info("Data collection processing has been canceled");
             }
         }));
 
@@ -175,12 +184,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      * @param dcGroup the OpenNMS Data Collection Group
      * @param logger the logger
      */
-    /*
-     * TODO Validations
-     * 
-     * - Check if there is no DCGroup with the same name
-     */
-    public void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
+    private void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
@@ -204,7 +208,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     }
 
     /**
-     * Save file.
+     * Saves file.
      *
      * @param file the file
      * @param dcGroup the datacollection-group

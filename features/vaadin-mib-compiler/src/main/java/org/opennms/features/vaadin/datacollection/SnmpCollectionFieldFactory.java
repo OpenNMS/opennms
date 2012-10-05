@@ -48,9 +48,9 @@ public final class SnmpCollectionFieldFactory implements FormFieldFactory {
     final DataCollectionConfigDao dataCollectionConfigDao;
 
     /**
-     * Instantiates a new snmp collection field factory.
+     * Instantiates a new SNMP collection field factory.
      *
-     * @param dataCollectionConfigDao the data collection config dao
+     * @param dataCollectionConfigDao the data collection configuration DAO
      */
     public SnmpCollectionFieldFactory(final DataCollectionConfigDao dataCollectionConfigDao) {
         this.dataCollectionConfigDao = dataCollectionConfigDao;
@@ -74,8 +74,7 @@ public final class SnmpCollectionFieldFactory implements FormFieldFactory {
             return f;
         }
         if ("rrd".equals(propertyId)) {
-            final RrdField f = new RrdField();
-            f.setCaption("RRD");
+            final RrdField f = new RrdField("RRD");
             f.setRequired(true);
             f.setWidth("100%");
             return f;

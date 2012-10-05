@@ -150,6 +150,16 @@ public class RrdField extends CustomField implements Button.ClickListener {
         setCompositionRoot(layout);
     }
 
+    /**
+     * Instantiates a new RRD field.
+     * 
+     * @Param caption the field's caption
+     */
+    public RrdField(String caption) {
+        this();
+        setCaption(caption);
+    }
+
     /* (non-Javadoc)
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */

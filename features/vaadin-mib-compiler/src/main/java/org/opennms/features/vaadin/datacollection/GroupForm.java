@@ -27,8 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
@@ -47,6 +52,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// TODO when a new resource type is added, the resourceType list passed to GroupFieldFactory must be updated.
 @SuppressWarnings("serial")
 public abstract class GroupForm extends Form implements ClickListener {
 
@@ -72,13 +78,23 @@ public abstract class GroupForm extends Form implements ClickListener {
     /**
      * Instantiates a new group form.
      * 
-     * @param source the OpenNMS Data Collection Group
+     * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
+     * @param source the OpenNMS Data Collection Group object
      */
-    public GroupForm(final DatacollectionGroup source) {
+    public GroupForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
         setCaption("MIB Group Detail");
         setWriteThrough(false);
         setVisible(false);
-        setFormFieldFactory(new GroupFieldFactory(source));
+
+        // Adding all resource types already defined on this source
+        final List<String> resourceTypes = new ArrayList<String>();
+        for (ResourceType type : source.getResourceTypeCollection()) {
+            resourceTypes.add(type.getName());
+        }
+        // Adding all defined resource types
+        resourceTypes.addAll(dataCollectionConfigDao.getConfiguredResourceTypes().keySet());
+
+        setFormFieldFactory(new GroupFieldFactory(resourceTypes));
         initToolbar();
     }
 
@@ -147,11 +163,11 @@ public abstract class GroupForm extends Form implements ClickListener {
         if (source == delete) {
             // FIXME You cannot delete a group if it is being used on any systemDef
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    "Are you sure?",
+                    MessageBox.Icon.QUESTION,
+                    "Do you really want to continue?",
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {

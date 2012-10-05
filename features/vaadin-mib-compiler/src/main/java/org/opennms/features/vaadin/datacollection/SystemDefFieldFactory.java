@@ -29,9 +29,6 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.Group;
-
 import com.vaadin.data.Item;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -47,20 +44,21 @@ import com.vaadin.ui.TextField;
 public final class SystemDefFieldFactory implements FormFieldFactory {
 
     /** The groups. */
-    private final List<Group> groups;
+    private final List<String> groups;
     
     /**
      * Instantiates a new system definition field factory.
      *
-     * @param source the source
+     * @param groups the available groups
      */
-    public SystemDefFieldFactory(final DatacollectionGroup source) {
-        groups = source.getGroupCollection();
+    public SystemDefFieldFactory(List<String> groups) {
+        this.groups = groups;
     }
     
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
+    @Override
     public Field createField(Item item, Object propertyId, Component uiContext) {
         if ("name".equals(propertyId)) {
             final TextField f = new TextField("Group Name");

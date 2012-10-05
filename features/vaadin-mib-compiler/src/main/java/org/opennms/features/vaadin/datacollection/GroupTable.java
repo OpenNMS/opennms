@@ -45,10 +45,10 @@ import com.vaadin.ui.themes.Runo;
 public abstract class GroupTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "name" };
+    public static final String[] COLUMN_NAMES = new String[] { "name", "count" };
 
     /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "MIB Group" };
+    public static final String[] COLUMN_LABELS = new String[] { "MIB Group", "# MIB Objects" };
 
     /**
      * Instantiates a new group table.
@@ -63,10 +63,16 @@ public abstract class GroupTable extends Table {
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
         setWidth("100%");
         setHeight("250px");
+        addGeneratedColumn("count", new ColumnGenerator() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                BeanItem<Group> item = (BeanItem<Group>) source.getContainerDataSource().getItem(itemId);
+                return item.getBean().getMibObjCount();
+            }
+        });
         addListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
@@ -76,6 +82,8 @@ public abstract class GroupTable extends Table {
                 }
             }
         });
+        setVisibleColumns(COLUMN_NAMES);
+        setColumnHeaders(COLUMN_LABELS);
     }
 
     /**
