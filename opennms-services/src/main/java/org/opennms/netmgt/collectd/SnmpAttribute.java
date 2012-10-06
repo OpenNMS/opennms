@@ -206,9 +206,15 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             try {
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
-                log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
-                return null;
             }
+            if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
+                try {
+                    return Long.valueOf(getValue().toHexString(), 16).toString();
+                } catch(NumberFormatException e) {
+                }
+            }
+            log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+            return null;
         }
     }
     
