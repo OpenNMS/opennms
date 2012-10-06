@@ -18,6 +18,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.sms.phonebook.*;version="${project.version}"</Export-Package>
@@ -36,15 +37,13 @@
     <!-- OSGi Stuff -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <version>1.0</version>
+      <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <version>1.0</version>
+      <artifactId>org.osgi.compendium</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

@@ -46,7 +46,6 @@
         classpath:/META-INF/opennms/applicationContext-reportingJasperReports.xml
 
         classpath:/META-INF/opennms/applicationContext-reporting.xml
-        /WEB-INF/applicationContext-jms.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
         /WEB-INF/applicationContext-spring-webflow.xml
@@ -267,28 +266,6 @@
         <param-value>tcp://localhost:61616</param-value>
         <description>The URL of the Message Broker to connect to</description>
     </context-param>
-  
-    <servlet>
-      <servlet-name>AjaxServlet</servlet-name>
-      <servlet-class>org.opennms.web.controller.nrt.NrtAmqAjaxServlet</servlet-class>
-      <!-- servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class -->
-      <load-on-startup>1</load-on-startup>
-    </servlet>
-  
-    <servlet-mapping>
-        <servlet-name>AjaxServlet</servlet-name>
-        <url-pattern>/amq/*</url-pattern>
-    </servlet-mapping>
-
-    <filter>
-      <filter-name>session</filter-name>
-      <filter-class>org.apache.activemq.web.SessionFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>session</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
   
   <!-- WARMERGE: insert listener -->
 

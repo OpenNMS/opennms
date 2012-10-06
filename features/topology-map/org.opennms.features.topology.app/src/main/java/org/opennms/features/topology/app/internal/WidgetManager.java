@@ -46,6 +46,11 @@ public class WidgetManager {
     
     public void addUpdateListener(WidgetUpdateListener listener) {
         m_listeners.add(listener);
+        updateWidgetListeners();
+    }
+    
+    public int widgetCount() {
+        return m_viewContributors.size();
     }
     
     public TabSheet getTabSheet() {
@@ -77,6 +82,7 @@ public class WidgetManager {
     
     public void onUnbind(IViewContribution viewContribution) {
         m_viewContributors.remove(viewContribution);
+        updateWidgetListeners();
     }
 
     public void removeUpdateListener(WidgetUpdateListener listener) {

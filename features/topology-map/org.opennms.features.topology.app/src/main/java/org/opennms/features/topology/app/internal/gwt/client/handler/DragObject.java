@@ -69,10 +69,8 @@ public class DragObject{
 
             @Override
             public void call(GWTVertex vertex, int index) {
-                if(vertex.isSelected()) {
-                    Point p = new Point(vertex.getX(), vertex.getY());
-                    m_startPosition.put(vertex.getId(), p);
-                }
+                Point p = new Point(vertex.getX(), vertex.getY());
+                m_startPosition.put(vertex.getId(), p);
             }
         });
 		

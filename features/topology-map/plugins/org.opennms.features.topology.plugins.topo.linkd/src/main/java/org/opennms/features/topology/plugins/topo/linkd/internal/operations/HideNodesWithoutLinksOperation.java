@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
+import org.slf4j.LoggerFactory;
 
 public class HideNodesWithoutLinksOperation implements CheckedOperation {
 
@@ -49,10 +50,10 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
         m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
         log("switched addNodeWithoutLinks to: " + m_topologyProvider.isAddNodeWithoutLink());
         m_topologyProvider.load(null);
-        //if (operationContext != null && operationContext.getGraphContainer() != null) {
-            //log("operationcontext and GraphContainer not null: executing redoLayout");
-            //operationContext.getGraphContainer().redoLayout();
-        //}
+        if (operationContext != null && operationContext.getGraphContainer() != null) {
+            log("operationcontext and GraphContainer not null: executing redoLayout");
+            operationContext.getGraphContainer().redoLayout();
+        }
         return null;
     }
 
@@ -80,7 +81,6 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
     }
 
     private void log(final String string) {
-        System.err.println(getId()+": "+ string);
+        LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
     }
-
 }

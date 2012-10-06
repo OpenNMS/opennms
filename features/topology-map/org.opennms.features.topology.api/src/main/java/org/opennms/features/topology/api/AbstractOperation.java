@@ -2,6 +2,8 @@ package org.opennms.features.topology.api;
 
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
@@ -33,24 +35,24 @@ public abstract class AbstractOperation implements Operation {
     @Override
     public abstract String getId();
 
-    protected String getLabelValue(final OperationContext operationContext, final Object target) {
+    protected static String getLabelValue(final OperationContext operationContext, final Object target) {
         return getVertexPropertyValue(operationContext, target, "label", String.class);
     }
 
-    protected String getIpAddrValue(final OperationContext operationContext, final Object target) {
+    protected static String getIpAddrValue(final OperationContext operationContext, final Object target) {
         return getVertexPropertyValue(operationContext, target, "ipAddr", String.class);
     }
 
-    protected Integer getNodeIdValue(final OperationContext operationContext, final Object target) {
+    protected static Integer getNodeIdValue(final OperationContext operationContext, final Object target) {
         return getVertexPropertyValue(operationContext, target, "nodeID", Integer.class);
     }
 
-    protected <T> T getVertexPropertyValue(final OperationContext operationContext, final Object target, final Object id, final Class<T> clazz) {
+    protected static <T> T getVertexPropertyValue(final OperationContext operationContext, final Object target, final Object id, final Class<T> clazz) {
         return getPropertyValue(operationContext.getGraphContainer().getVertexItem(target), id, clazz);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getPropertyValue(final Item item, final Object id, final Class<T> clazz) {
+    protected static <T> T getPropertyValue(final Item item, final Object id, final Class<T> clazz) {
         if (item == null) return null;
 
         final Property prop = item.getItemProperty(id);
@@ -63,7 +65,7 @@ public abstract class AbstractOperation implements Operation {
         if (value == null) return null;
 
         if (!type.isAssignableFrom(clazz)) {
-            System.err.println("Warning: expected " + id + " of type " + clazz + ", but got " + type + " instead.");
+            LoggerFactory.getLogger(AbstractOperation.class).warn("Expected " + id + " of type " + clazz.getName() + ", but got " + type.getName() + " instead.");
             return null;
         }
 

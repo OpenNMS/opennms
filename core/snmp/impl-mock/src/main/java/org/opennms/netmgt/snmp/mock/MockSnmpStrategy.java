@@ -56,6 +56,7 @@ import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.springframework.core.io.Resource;
 
 public class MockSnmpStrategy implements SnmpStrategy {
+    public static final SnmpAgentAddress ALL_AGENTS = new SnmpAgentAddress(InetAddressUtils.addr("0.0.0.0"), 161);
     private static final SnmpValue[] EMPTY_SNMP_VALUE_ARRAY = new SnmpValue[0];
 
     // TOG's enterprise ID
@@ -64,40 +65,47 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     public MockSnmpStrategy() {
     }
-    
+
+    protected PropertyOidContainer getOidContainer(final SnmpAgentConfig agentConfig) {
+        return getOidContainer(new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort()));
+    }
+
+    protected PropertyOidContainer getOidContainer(final SnmpAgentAddress aa) {
+        if (m_loaders.containsKey(aa)) {
+            return m_loaders.get(aa);
+        } else {
+            return m_loaders.get(ALL_AGENTS);
+        }
+    }
+
     @Override
     public SnmpWalker createWalker(final SnmpAgentConfig agentConfig, final String name, final CollectionTracker tracker) {
         LogUtils.debugf(this, "createWalker(%s/%d, %s, %s)", InetAddressUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
         final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        return new MockSnmpWalker(aa, agentConfig.getVersion(), m_loaders.get(aa), name, tracker, agentConfig.getMaxVarsPerPdu());
+        final PropertyOidContainer oidContainer = getOidContainer(aa);
+        return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu());
     }
 
     @Override
     public SnmpValue set(final SnmpAgentConfig agentConfig, final SnmpObjId oid, final SnmpValue value) {
-        final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            return null;
-        }
-        return m_loaders.get(aa).set(oid, value);
+        final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
+        if (oidContainer == null) return null;
+        return oidContainer.set(oid, value);
     }
 
     @Override
     public SnmpValue[] set(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids, final SnmpValue[] values) {
-        final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            return new SnmpValue[values.length];
-        }
-        return m_loaders.get(aa).set(oids, values);
+        final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
+        if (oidContainer == null) return new SnmpValue[values.length];
+        return oidContainer.set(oids, values);
     }
 
     @Override
     public SnmpValue get(final SnmpAgentConfig agentConfig, final SnmpObjId oid) {
-        final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            return null;
-        }
+        final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
+        if (oidContainer == null) return null;
 
-        SnmpValue val = m_loaders.get(aa).findValueForOid(oid);
+        SnmpValue val = oidContainer.findValueForOid(oid);
         if (val.isNull()) {
         	return null;
         }
@@ -106,9 +114,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public SnmpValue[] get(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids) {
-        final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-
-        final PropertyOidContainer container = m_loaders.get(aa);
+        final PropertyOidContainer container = getOidContainer(agentConfig);
         if (container == null) return new SnmpValue[oids.length];
         final List<SnmpValue> values = new ArrayList<SnmpValue>();
 
@@ -120,27 +126,19 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public SnmpValue getNext(final SnmpAgentConfig agentConfig, final SnmpObjId oid) {
-        final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            return null;
-        }
-
-        final PropertyOidContainer container = m_loaders.get(aa);
-        return container.findNextValueForOid(oid);
+        final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
+        if (oidContainer == null) return null;
+        return oidContainer.findNextValueForOid(oid);
     }
 
     @Override
     public SnmpValue[] getNext(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids) {
-        final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
-        if (!m_loaders.containsKey(aa)) {
-            return null;
-        }
-
-        final PropertyOidContainer container = m_loaders.get(aa);
+        final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
+        if (oidContainer == null) return null;
         final List<SnmpValue> values = new ArrayList<SnmpValue>();
 
         for (final SnmpObjId oid : oids) {
-            values.add(container.findNextValueForOid(oid));
+            values.add(oidContainer.findNextValueForOid(oid));
         }
         return values.toArray(EMPTY_SNMP_VALUE_ARRAY);
     }
@@ -233,7 +231,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         return ArrayUtils.addAll(engineID, ip);
     }
 
-	public static void setDataForAddress(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
+    public static void setDataForAddress(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
         m_loaders.put(agentAddress, new PropertyOidContainer(resource));
     }
     
@@ -241,8 +239,8 @@ public class MockSnmpStrategy implements SnmpStrategy {
         m_loaders.remove(agentAddr);
     }
 
-	public static void resetData() {
-		m_loaders.clear();
-	}
+    public static void resetData() {
+        m_loaders.clear();
+    }
 
 }

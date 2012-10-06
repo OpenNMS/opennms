@@ -37,11 +37,11 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler
 import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.ToggleButton;
 
 public class MarqueeSelectHandler implements DragBehaviorHandler{
 
@@ -74,7 +74,6 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     private int m_y1;
     private int m_offsetX;
     private int m_offsetY;
-    private ToggleButton m_toggle;
     private SVGTopologyMap m_svgTopologyMap;
     
     public MarqueeSelectHandler(SVGTopologyMap topologyMap) {
@@ -87,10 +86,12 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             m_dragging = true;
             
             SVGElement svg = m_svgTopologyMap.getSVGElement();
-            ClientRect rect = svg.getBoundingClientRect();
-            m_offsetX = rect.getLeft();
-            m_offsetY = rect.getTop();
+            SVGMatrix rect = svg.getScreenCTM();
             
+            m_offsetX = (int) rect.getE();
+            m_offsetY = (int) rect.getF();
+            consoleLog(rect);
+            consoleLog("m_offsetX: " + m_offsetX + " m_offsetY: " + m_offsetY);
             m_x1 = D3.getEvent().getClientX() - m_offsetX;
             m_y1 = D3.getEvent().getClientY() - m_offsetY;
             
@@ -98,6 +99,10 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             D3.d3().select(m_svgTopologyMap.getMarqueeElement()).attr("display", "inline");
         }
     }
+    
+    public final native void consoleLog(Object log)/*-{
+        $wnd.console.log(log);
+    }-*/;
 
     @Override
     public void onDrag(Element elem) {

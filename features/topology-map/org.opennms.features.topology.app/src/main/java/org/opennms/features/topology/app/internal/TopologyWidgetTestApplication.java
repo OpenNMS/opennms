@@ -56,7 +56,6 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
@@ -80,6 +79,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
 	private Layout m_viewContribLayout;
+    private HorizontalSplitPanel m_treeMapSplitPanel;
+    private VerticalSplitPanel m_bottomLayoutBar;
+    private boolean m_widgetViewShowing = false;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
@@ -130,7 +132,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
 
-		NativeButton zoomInBtn = new NativeButton("+");
+		Button zoomInBtn = new Button();
+		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
+		zoomInBtn.setDescription("Expand Semantic Zoom Level");
+		zoomInBtn.setStyleName("semantic-zoom-button");
 		zoomInBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
@@ -141,7 +146,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			}
 		});
 
-		NativeButton zoomOutBtn = new NativeButton("-");
+		Button zoomOutBtn = new Button();
+		zoomOutBtn.setIcon(new ThemeResource("images/minus.png"));
+		zoomOutBtn.setDescription("Collapse Semantic Zoom Level");
+		zoomOutBtn.setStyleName("semantic-zoom-button");
 		zoomOutBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
@@ -190,40 +198,66 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		AbsoluteLayout mapLayout = new AbsoluteLayout();
 
 		mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-		mapLayout.addComponent(slider, "top: 20px; left: 20px; z-index:1000;");
+		mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
 		mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
-		mapLayout.addComponent(zoomInBtn, "top: 0px; left: 0px;");
-		mapLayout.addComponent(zoomOutBtn, "top: 0px; left: 25px");
+		mapLayout.addComponent(zoomInBtn, "top: 380px; left: 2px;");
+		mapLayout.addComponent(zoomOutBtn, "top: 380px; left: 27px");
 		mapLayout.setSizeFull();
 
-		HorizontalSplitPanel treeMapSplitPanel = new HorizontalSplitPanel();
-		treeMapSplitPanel.setFirstComponent(createWestLayout());
-		treeMapSplitPanel.setSecondComponent(mapLayout);
-		treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
-		treeMapSplitPanel.setSizeFull();
-
-
-		VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-		bottomLayoutBar.setFirstComponent(treeMapSplitPanel);
-
-		m_viewContribLayout = new VerticalLayout();
-
-		bottomLayoutBar.setSecondComponent(m_viewContribLayout);
-		bottomLayoutBar.setSplitPosition(99, Sizeable.UNITS_PERCENTAGE);
-		bottomLayoutBar.setSizeFull();
-
+		m_treeMapSplitPanel = new HorizontalSplitPanel();
+		m_treeMapSplitPanel.setFirstComponent(createWestLayout());
+		m_treeMapSplitPanel.setSecondComponent(mapLayout);
+		m_treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
+		m_treeMapSplitPanel.setSizeFull();
 
 		m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
 		m_commandManager.addCommandUpdateListener(this);
 
 
 		menuBarUpdated(m_commandManager);
-		if(m_widgetManager != null) {
-		    widgetListUpdated(m_widgetManager);
+		if(m_widgetManager.widgetCount() != 0) {
+		    updateWidgetView(m_widgetManager);
+		}else {
+		    m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
 		}
 		
-		m_layout.addComponent(bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
 	}
+
+
+    private void updateWidgetView(WidgetManager widgetManager) {
+        if(widgetManager.widgetCount() == 0) {
+            if(m_viewContribLayout != null) {
+                m_viewContribLayout.removeAllComponents();
+            }
+            
+            m_layout.removeAllComponents();
+            m_layout.addComponent(m_menuBar);
+            m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
+            m_layout.requestRepaint();
+        } else {
+            if(m_bottomLayoutBar == null) {
+                m_bottomLayoutBar = new VerticalSplitPanel();
+                m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                
+                if(m_viewContribLayout == null) {
+                    m_viewContribLayout = new VerticalLayout();
+                    m_bottomLayoutBar.setSecondComponent(m_viewContribLayout);
+                }
+                
+                m_bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
+                m_bottomLayoutBar.setSizeFull();
+                
+            }
+            m_viewContribLayout.removeAllComponents();
+            m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+            
+            m_layout.removeAllComponents();
+            m_layout.addComponent(m_menuBar);
+            m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
+            m_layout.requestRepaint();
+            
+        }
+    }
 
 
     private Layout createWestLayout() {
@@ -386,8 +420,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     @Override
     public void widgetListUpdated(WidgetManager widgetManager) {
-        m_viewContribLayout.removeAllComponents();
-        m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+        if(isRunning()) {
+            updateWidgetView(widgetManager);
+        }
     }
 
 }

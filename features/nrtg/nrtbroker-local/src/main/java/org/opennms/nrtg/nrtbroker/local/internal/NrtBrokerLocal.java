@@ -1,5 +1,10 @@
 package org.opennms.nrtg.nrtbroker.local.internal;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -7,7 +12,6 @@ import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
 
 public class NrtBrokerLocal implements NrtBroker {
 

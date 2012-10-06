@@ -540,7 +540,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     			
     		case Event.ONCLICK:
     		    if(event.getEventTarget().equals(m_svg)) {
-    		        deselectVertices();
+    		        deselectVertices(true);
     		    }
     		    break;
 		}
@@ -548,12 +548,13 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 
-	private void deselectVertices() {
+	private void deselectVertices(boolean immediate) {
 	    m_client.updateVariable(m_paintableId, "clickedVertex", "", false);
         m_client.updateVariable(m_paintableId, "shiftKeyPressed", false, false);
-
-        m_client.sendPendingVariableChanges();
-        
+	    if(immediate) {
+	        m_client.sendPendingVariableChanges();
+	    }
+	    
     }
 
     private Handler<GWTVertex> vertexContextMenuHandler() {
@@ -578,7 +579,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				};
 
 				showContextMenu(vertex.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "vertex");
-				//m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
 				D3.eventPreventDefault();
 			}
 		};
@@ -606,7 +606,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				};
 
 				showContextMenu(edge.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "edge");
-				//m_client.getContextMenu().showAt(owner, D3.getEvent().getClientX(), D3.getEvent().getClientY());
 				D3.eventPreventDefault();
 
 			}
@@ -666,6 +665,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
 
 				m_client.sendPendingVariableChanges();
+				
 			}
 		};
 	}
@@ -689,7 +689,14 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                     }
                 });
 			    
-			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), true);
+			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
+			        if(!D3.getEvent().getShiftKey()) {
+			            deselectVertices(false);
+			        }
+			    }
+			    
+			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
+			    m_client.sendPendingVariableChanges();
 			    
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
@@ -704,13 +711,20 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			public void call(GWTVertex vertex, int index) {
 				NativeEvent event = D3.getEvent();
 				Element draggableElement = Element.as(event.getEventTarget()).getParentElement();
+				D3 selection = null;
 				
-				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, getSVGViewPort(), D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME));
-
+				boolean isSelected = draggableElement.getAttribute("class").equals("vertex selected");
+				
+				if(isSelected) {
+				    selection = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+				}else {
+				    selection = D3.d3().select(Element.as(event.getEventTarget()).getParentElement());
+				}
+				
+				m_dragObject = new DragObject(VTopologyComponent.this, draggableElement, getSVGViewPort(), selection);
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
 			}
-
 
 		};
 	}
@@ -919,10 +933,10 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		m_graph = graph;
 		
 		if(isPanToSelection()) {
-		    repaintGraphNow();
+		    repaintGraph();
 		    centerSelection(m_graph.getVertices(m_semanticZoomLevel));
 		} else if(isFitToView()) {
-		    repaintGraphNow();
+		    repaintGraph();
 		    fitMapToView(m_graph.getVertices(m_semanticZoomLevel));
 		}else {
 		    repaintGraph();
@@ -1118,15 +1132,15 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                    
         String transformVal = matrixTransform(transform);
         
-        double strokeWidth = 2 * (1/scale);
-        D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
+        final double strokeWidth = 2 * (1/scale);
+        //D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
         
         D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
             
             @Override
             public void call() {
                 setMapScaleNow(scale);
-                
+                D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
             }
         });
         

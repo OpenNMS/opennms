@@ -13,6 +13,7 @@
     <module>opennms-integration-otrs</module>
     <module>opennms-integration-rt</module>
     <module>opennms-dns-provisioning-adapter</module>
+    <module>opennms-reverse-dns-provisioning-adapter</module>
     <module>opennms-link-provisioning-adapter</module>
     <module>opennms-map-provisioning-adapter</module>
     <module>opennms-puppet-provisioning-adapter</module>

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.nrtcollector.internal.config;
+package org.opennms.nrtg.nrtcollector.standalone.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.nrtg.nrtcollector.api.NrtCollector;

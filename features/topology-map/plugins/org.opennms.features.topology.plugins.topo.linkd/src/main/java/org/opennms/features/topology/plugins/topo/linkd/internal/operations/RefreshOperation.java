@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.slf4j.LoggerFactory;
 
 public class RefreshOperation implements Operation {
 
@@ -46,17 +47,16 @@ public class RefreshOperation implements Operation {
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
             log("executing linkd topology refresh operation");
             m_topologyProvider.load(null);
-            //if (operationContext != null && operationContext.getGraphContainer() != null) {
-                //log("operationcontext and GraphContainer not null: executing redoLayout");
-                //operationContext.getGraphContainer().setDataSource(m_topologyProvider);
-                //operationContext.getGraphContainer().redoLayout();
-            //}
+            if (operationContext != null && operationContext.getGraphContainer() != null) {
+                log("operationcontext and GraphContainer not null: executing redoLayout");
+                operationContext.getGraphContainer().redoLayout();
+            }
             return null;
     }
 
     private void log(final String string) {
-		System.err.println(getId()+": "+ string);
-	}
+        LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
+    }
 
 	@Override
     public boolean display(List<Object> targets, OperationContext operationContext) {

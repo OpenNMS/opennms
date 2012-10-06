@@ -82,5 +82,9 @@ public class SVGElement extends Element{
         return this.createSVGLength();
     }-*/;
 
+    public final native SVGMatrix getScreenCTM() /*-{
+        return this.getScreenCTM();
+    }-*/;
+
 
 }

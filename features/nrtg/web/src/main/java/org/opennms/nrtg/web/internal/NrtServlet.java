@@ -28,7 +28,6 @@
 
 package org.opennms.nrtg.web.internal;
 
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

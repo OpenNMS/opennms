@@ -26,6 +26,8 @@
             <artifactId>nrtg-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <!-- Google Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -44,17 +46,15 @@
             <version>1.0.4</version>
             <scope>test</scope>
         </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>3.1</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

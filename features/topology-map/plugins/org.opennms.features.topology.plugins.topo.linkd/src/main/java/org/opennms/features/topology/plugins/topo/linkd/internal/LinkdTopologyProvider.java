@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.slf4j.LoggerFactory;
 //import org.springframework.transaction.annotation.Transactional;
 //import org.springframework.transaction.support.TransactionOperations;
 
@@ -65,6 +66,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public static final String SERVER_ICON_KEY = "linkd:system";
     public static final String ROOT_GROUP_ID = "Network";
     
+    private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
+    private static final String HTML_TOOLTIP_TAG_END  = "";
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
@@ -100,7 +103,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         "LowerLayerDown"   //7
       };
 
-    private boolean addNodeWithoutLink = true;
+    private boolean addNodeWithoutLink = false;
     
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     
@@ -146,8 +149,8 @@ public class LinkdTopologyProvider implements TopologyProvider {
         this.addNodeWithoutLink = addNodeWithoutLink;
     }
 
-    private LinkdVertexContainer m_vertexContainer;
-    private BeanContainer<String, LinkdEdge> m_edgeContainer;
+    private final LinkdVertexContainer m_vertexContainer;
+    private final BeanContainer<String, LinkdEdge> m_edgeContainer;
 
     private int m_groupCounter = 0;
     
@@ -385,6 +388,13 @@ public class LinkdTopologyProvider implements TopologyProvider {
             }
         }
         
+        log("Found Vertexes: #" + vertexes.size());        
+        log("Found Edges: #" + edges.size());
+
+                
+        m_vertexContainer.addAll(vertexes.values());
+        m_edgeContainer.addAll(edges);        
+ 
         File configFile = new File(m_configurationFile);
 
         if (configFile.exists() && configFile.canRead()) {
@@ -393,25 +403,26 @@ public class LinkdTopologyProvider implements TopologyProvider {
             SimpleGraph graph = getGraphFromFile(configFile);
             for (LinkdVertex vertex: graph.m_vertices) {
                 if (!vertex.isLeaf()) {
+                    log("loadtopology: adding group to topology: " + vertex.getId());
                     m_groupCounter++;
-                    LinkdGroup group = (LinkdGroup) vertex;
-                    log("loadtopology: found group: " + group.getId());
-                    for (LinkdVertex vx: group.getMembers()) {
-                        log("loadtopology: found group/member: " + group.getId()+"/"+ vx.getId());
-                        if (vx.isLeaf() && !vertexes.containsKey(vx.getId()))
-                            group.removeMember(vx);
-                    }
-                    vertexes.put(group.getId(), group);
+                    addGroup(vertex.getId(), vertex.getIconKey(), vertex.getLabel());
                 }
             }
+            
+            for (LinkdVertex vertex: graph.m_vertices) {
+                log("loadtopology: found vertex: " + vertex.getId());
+                if (vertex.isRoot()) {
+                    if (!vertex.isLeaf())
+                        setParent(vertex.getId(), ROOT_GROUP_ID);
+                } else {
+                    setParent(vertex.getId(), vertex.getParent().getId());
+                }
+            }
+
         }
-        
-        log("Found Vertexes: #" + vertexes.size());        
-        log("Found Edges: #" + edges.size());
         log("Found Groups: #" + m_groupCounter);
-        
-        m_vertexContainer.addAll(vertexes.values());
-        m_edgeContainer.addAll(edges);        
+
+
     }
 
     private LinkdVertex getVertex(OnmsNode onmsnode) {
@@ -442,48 +453,58 @@ public class LinkdTopologyProvider implements TopologyProvider {
         OnmsSnmpInterface sourceInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), link.getIfIndex());
         OnmsSnmpInterface targetInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), link.getParentIfIndex());
         
-        if (sourceInterface == null || targetInterface == null) {
-            tooltipText+= "Type of the Link: Layer2";
-        } else if (sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress() 
-                && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+        if (sourceInterface != null && targetInterface != null
+         && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress() 
+         && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
             tooltipText+= "Type of the Link: Layer3/Layer2";
+        } else {
+            tooltipText+= "Type of the Link: Layer2";            
         }
-        tooltipText +="\n";
+        tooltipText +=HTML_TOOLTIP_TAG_END;
 
-        tooltipText += "Name: <endpoint1 " + source.getLabel() ;
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+        tooltipText += "Name: &lt;endpoint1 " + source.getLabel() ;
         if (sourceInterface != null ) 
             tooltipText += ":"+sourceInterface.getIfName();
-        
         tooltipText += " ---- endpoint2 " + target.getLabel();
         if (targetInterface != null) 
             tooltipText += ":"+targetInterface.getIfName();
-        tooltipText +=">\n";
+        tooltipText +="&gt;";
+        tooltipText +=HTML_TOOLTIP_TAG_END;
         
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
+                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
                 tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed());
-                tooltipText +="\n";
+                tooltipText +=HTML_TOOLTIP_TAG_END;
             }
             if (targetInterface.getIfOperStatus() != null) {
+                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
                 tooltipText += "Link status: " + getIfStatusString(targetInterface.getIfOperStatus());
-                tooltipText +="\n";
+                tooltipText +=HTML_TOOLTIP_TAG_END;
             }
         } else if (sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
+                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
                 tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed());
-                tooltipText +="\n";
+                tooltipText +=HTML_TOOLTIP_TAG_END;
             }
             if (sourceInterface.getIfOperStatus() != null) {
+                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
                 tooltipText += "Link status: " + getIfStatusString(sourceInterface.getIfOperStatus());
-                tooltipText +="\n";
+                tooltipText +=HTML_TOOLTIP_TAG_END;
             }
         }
 
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
         tooltipText += "EndPoint1: " + source.getLabel() + ", " + source.getIpAddr();
-        tooltipText +="\n";
+        tooltipText +=HTML_TOOLTIP_TAG_END;
         
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
         tooltipText += "EndPoint2: " + target.getLabel() + ", " + target.getIpAddr();
-        tooltipText +="\n";
+        tooltipText +=HTML_TOOLTIP_TAG_END;
+
         log("getEdgeTooltipText\n" + tooltipText);
         return tooltipText;
     }
@@ -491,27 +512,32 @@ public class LinkdTopologyProvider implements TopologyProvider {
     private String getNodeTooltipText(OnmsNode node, LinkdVertex vertex, OnmsIpInterface ip) {
         String tooltipText="";
         if (node.getSysDescription() != null && node.getSysDescription().length() >0) {
-            tooltipText +=node.getSysDescription();
-            tooltipText +="\n";
+            tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+            tooltipText +="Description: " + node.getSysDescription();
+            tooltipText +=HTML_TOOLTIP_TAG_END;
         }
-        tooltipText += vertex.getIpAddr();
-        tooltipText +="\n";
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+        tooltipText += "Mngt ip: " + vertex.getIpAddr();
+        tooltipText +=HTML_TOOLTIP_TAG_END;
         
-        tooltipText += vertex.getLabel();
-        tooltipText +="\n";
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+        tooltipText += "Name: " + vertex.getLabel();
+        tooltipText +=HTML_TOOLTIP_TAG_END;
         
         if (node.getSysLocation() != null && node.getSysLocation().length() >0) {
-            tooltipText +=node.getSysLocation();
-            tooltipText +="\n";
+            tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+            tooltipText +="Location: " + node.getSysLocation();
+            tooltipText +=HTML_TOOLTIP_TAG_END;
         }
         
-        tooltipText += getNodeStatusString(node.getType().charAt(0));
-        if (ip.isManaged()) {
+        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+        tooltipText += "Status: " +getNodeStatusString(node.getType().charAt(0));
+        if (ip != null && ip.isManaged()) {
             tooltipText += "/Managed";
         } else {
             tooltipText += "/UnManaged";
         }
-        tooltipText +="\n";
+        tooltipText +=HTML_TOOLTIP_TAG_END;
 
         log("getNodeTooltipText:\n" + tooltipText);
         
@@ -535,7 +561,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         JAXB.marshal(graph, new File(filename));
     }
 
-    private <T> List<T> getBeans(BeanContainer<?, T> container) {
+    private static <T> List<T> getBeans(BeanContainer<?, T> container) {
         Collection<?> itemIds = container.getItemIds();
         List<T> beans = new ArrayList<T>(itemIds.size());
         
@@ -552,7 +578,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         log("setParent for vertex:" + vertexId + " parent: " + parentId + ": "+ addedparent);
     }
     
-      private String getIfStatusString(int ifStatusNum) {
+      private static String getIfStatusString(int ifStatusNum) {
           if (ifStatusNum < OPER_ADMIN_STATUS.length) {
               return OPER_ADMIN_STATUS[ifStatusNum];
           } else {
@@ -583,7 +609,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
      * @return A string representation of the speed (&quot;100 Mbps&quot; for
      *         example)
      */
-    private String getHumanReadableIfSpeed(long ifSpeed) {
+    private static String getHumanReadableIfSpeed(long ifSpeed) {
         DecimalFormat formatter;
         double displaySpeed;
         String units;
@@ -622,7 +648,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     private void log(final String string) {
-        System.err.println("LinkdTopologyProvider: "+ string);
+        LoggerFactory.getLogger(getClass()).debug(string);
     }
 /*
     public TransactionOperations getTransactionTemplate() {
