@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Pape
  */
 
-public class NrtBrokerLocal implements NrtBroker {
+public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
 
     private class TimedOutMap {
         private Map<String, List<MeasurementSet>> m_measurementSets = new HashMap<String, List<MeasurementSet>>();
@@ -94,6 +94,10 @@ public class NrtBrokerLocal implements NrtBroker {
                 }
             }
         }
+        
+        private Integer getAmountOfMeasurementSets() {
+            return m_measurementSets.size();
+        }
     }
 
     private List<ProtocolCollector> m_protocolCollectors = new ArrayList<ProtocolCollector>();
@@ -134,5 +138,10 @@ public class NrtBrokerLocal implements NrtBroker {
 
     public List<ProtocolCollector> getProtocolCollectors() {
         return m_protocolCollectors;
+    }
+    
+    @Override
+    public Integer getMeasurementSetSize() {
+        return m_measurementSets.getAmountOfMeasurementSets();
     }
 }
