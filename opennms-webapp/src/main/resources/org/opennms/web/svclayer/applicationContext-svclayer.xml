@@ -51,7 +51,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
   <bean name="nodeProvisionService" class="org.opennms.netmgt.provision.persist.DefaultNodeProvisionService">
-    <property name="foreignSourceRepository" ref="queuedDeployedForeignSourceRepository"/>
+    <property name="foreignSourceRepository" ref="deployedForeignSourceRepository"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
   <!-- Daemon Status Service beans -->
@@ -119,8 +119,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="importFileDirectory" value="${importer.requisition.dir}"/>
   </bean>
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="queuedDeployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="queuedPendingForeignSourceRepository"/>
+    <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
+    <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository"/>
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>

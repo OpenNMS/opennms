@@ -136,11 +136,11 @@ import com.sun.jersey.spi.resource.PerRequest;
 public class RequisitionRestService extends OnmsRestService {
     
     @Autowired
-    @Qualifier("queuedPending")
+    @Qualifier("pending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
     
     @Autowired
-    @Qualifier("queuedDeployed")
+    @Qualifier("deployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     
     @Autowired
