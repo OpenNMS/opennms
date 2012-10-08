@@ -105,7 +105,8 @@ public class NrtRrdCommandFormatter {
                 s.append(", \n");
             }
 
-            final String metric = metrics[i];
+            //TODO Tak the MetricsMapping for the graphing must be protocol independent.
+            final String metric = metrics[i].substring("SNMP_".length());
             final String column = columns[i];
 
             s.append(String.format("'%s': '%s:%s'", metric, rrdFileMapping.get(column), column));

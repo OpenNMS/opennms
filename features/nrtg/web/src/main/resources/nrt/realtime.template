@@ -186,6 +186,7 @@
         
         $('#displayMode').live('change', function() {
             graph.config.options.compress = $(this).val() === 'COMPRESS';
+//            TODO change compress vs fixed mode for the graph
 //            var compress_toggle_text = graph.config.options.compress ? 'COMPRESS' : 'FIXED';
 //            graph.svg.compress_toggle.text(compress_toggle_text);
         });
@@ -256,6 +257,9 @@
                 </tr><tr>
                     <td><b>RRD command<b></td>
                     <td><div id="debug_rrd_string">${rrdGraphString}</div></td>
+                </tr><tr>
+                    <td><b>Metrics mapping<b></td>
+                    <td><div id="debug_metrics_mapping">${metricsMapping}</div></td>
                 </tr>
             </table>
         </div>

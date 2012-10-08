@@ -139,7 +139,8 @@ public class NrtController {
 
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
-            collectionJob.addMetric(prefabGraph.getMetricIds()[i], resultDestinations);
+            //remove SNMP_ prefix from metricId
+            collectionJob.addMetric(prefabGraph.getMetricIds()[i].substring("SNMP_".length()), resultDestinations);
         }
         logger.debug("CollectionJob '{}'", collectionJob.toString());
         m_nrtBroker.publishCollectionJob(collectionJob);
