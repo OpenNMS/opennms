@@ -138,13 +138,13 @@ public class LightweightMeasurementSet implements MeasurementSet {
                 first = false;
             }
             buf.append("{");
-            buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
-            buf.append("'metricType'").append(":'").append(m.getMetricType()).append("'").append(",");
-            buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
-            buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
-            buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
-            buf.append("'timeStamp'").append(":").append(m.getTimestamp().getTime()).append(",");
-            buf.append("'value'").append(":").append(m.getValue());
+            buf.append("\"metricId\"").append(":\"").append(m.getMetricId()).append("\",");
+            buf.append("\"metricType\"").append(":\"").append(m.getMetricType()).append("\",");
+            buf.append("\"netInterface\"").append(":\"").append(m.getNetInterface()).append("\",");
+            buf.append("\"nodeId\"").append(":").append(m.getNodeId()).append(",");
+            buf.append("\"service\"").append(":\"").append(m.getService()).append("\",");
+            buf.append("\"timeStamp\"").append(":").append(m.getTimestamp().getTime()).append(",");
+            buf.append("\"value\"").append(":").append(m.getValue());
             buf.append("}");
         }
 

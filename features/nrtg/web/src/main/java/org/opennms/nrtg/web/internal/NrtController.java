@@ -85,7 +85,7 @@ public class NrtController {
             buffer.append(measurementSet.toString());
         }
         
-        return "[" + buffer.toString() + "]";
+        return "{\"measurement_sets\":[" + buffer.toString() + "]}";
     }
 
     @SuppressWarnings("unchecked")
