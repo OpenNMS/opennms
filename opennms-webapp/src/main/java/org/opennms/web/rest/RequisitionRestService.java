@@ -542,7 +542,7 @@ public class RequisitionRestService extends OnmsRestService {
                 LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
+            debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
             m_pendingForeignSourceRepository.save(requisition);
             return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(requisition.getForeignSource())).build();
         } finally {
@@ -722,12 +722,13 @@ public class RequisitionRestService extends OnmsRestService {
     public Response importRequisition(@PathParam("foreignSource") String foreignSource, @QueryParam("rescanExisting") Boolean rescanExisting) {
         writeLock();
         try {
-            LogUtils.debugf(this, "importing requisition for foreign source %s", foreignSource);
+            debug("importRequisition: Importing requisition for foreign source %s", foreignSource);
 
             m_pendingForeignSourceRepository.flush();
             m_deployedForeignSourceRepository.flush();
 
             final String url = getActiveUrl(foreignSource).toString();
+            debug("importRequisition: Sending import event with URL %s", url);
             final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
             bldr.addParam(EventConstants.PARM_URL, url);
             if (rescanExisting != null) {
@@ -765,11 +766,11 @@ public class RequisitionRestService extends OnmsRestService {
     public Response updateRequisition(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
         writeLock();
         try {
+            debug("updateRequisition: Updating requisition with foreign source %s", foreignSource);
             Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
-                debug("updateRequisition: updating requisition with foreign source %s", foreignSource);
                 setProperties(params, req);
-                debug("updateRequisition: requisition with foreign source %s updated", foreignSource);
+                debug("updateRequisition: Requisition with foreign source %s updated", foreignSource);
                 m_pendingForeignSourceRepository.save(req);
                 return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(foreignSource)).build();
                 // return Response.ok(req).build();
@@ -795,13 +796,13 @@ public class RequisitionRestService extends OnmsRestService {
     public Response updateNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, MultivaluedMapImpl params) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource, false);
+            debug("updateNode: Updating node with foreign source %s and foreign id %s", foreignSource, foreignId);
+            final Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    debug("updateNode: updating node with foreign source %s and foreign id %s", foreignSource, foreignId);
                     setProperties(params, node);
-                    debug("updateNode: node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
+                    debug("updateNode: Node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
                     m_pendingForeignSourceRepository.save(req);
                     return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(foreignSource, foreignId)).build();
                     // return Response.ok(node).build();
@@ -829,15 +830,15 @@ public class RequisitionRestService extends OnmsRestService {
     public Response updateInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, MultivaluedMapImpl params) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource, false);
+            debug("updateInterface: Updating interface %s on node %s/%s", ipAddress, foreignSource, foreignId);
+            final Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
-                        debug("updateInterface: updating interface %s on node %s/%s", ipAddress, foreignSource, foreignId);
                         setProperties(params, iface);
-                        debug("updateInterface: interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
+                        debug("updateInterface: Interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
                         m_pendingForeignSourceRepository.save(req);
                         return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, ipAddress)).build();
                         // return Response.ok(node).build();
@@ -862,8 +863,8 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deletePendingRequisition(@PathParam("foreignSource") String foreignSource) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource, false);
             debug("deletePendingRequisition: deleting pending requisition with foreign source %s", foreignSource);
+            Requisition req = getActiveRequisition(foreignSource, false);
             m_pendingForeignSourceRepository.delete(req);
             return Response.ok().build();
         } finally {
@@ -883,8 +884,8 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteDeployedRequisition(@PathParam("foreignSource") String foreignSource) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource, false);
             debug("deleteDeployedRequisition: deleting pending requisition with foreign source %s", foreignSource);
+            Requisition req = getActiveRequisition(foreignSource, false);
             m_deployedForeignSourceRepository.delete(req);
             return Response.ok().build();
         } finally {
@@ -905,7 +906,8 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource, false);
+            debug("deleteNode: Deleting node %s from foreign source %s", foreignId, foreignSource);
+            final Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 req.deleteNode(foreignId);
                 m_pendingForeignSourceRepository.save(req);
@@ -931,6 +933,7 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) {
         writeLock();
         try {
+            debug("deleteInterface: Deleting interface %s from node %s/%s", ipAddress, foreignSource, foreignId);
             Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
@@ -964,7 +967,8 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteInterfaceService(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
         writeLock();
         try {
-            Requisition req = getActiveRequisition(foreignSource, false);
+            debug("deleteInterfaceService: Deleting service %s from interface %s on node %s/%s", service, ipAddress, foreignSource, foreignId);
+            final Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -996,6 +1000,7 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("category") String category) {
         writeLock();
         try {
+            debug("deleteCategory: Deleting category %s from node %s/%s", category, foreignSource, foreignId);
             Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 RequisitionNode node = req.getNode(foreignId);
@@ -1028,6 +1033,7 @@ public class RequisitionRestService extends OnmsRestService {
     public Response deleteAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) {
         writeLock();
         try {
+            debug("deleteAssetParameter: Deleting asset parameter %s from node %s/%s", parameter, foreignSource, foreignId);
             final Requisition req = getActiveRequisition(foreignSource, false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
@@ -1082,7 +1088,7 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     private void debug(final String format, final Object... values) {
-        LogUtils.tracef(this, format, values);
+        LogUtils.debugf(this, format, values);
     }
     
 }
