@@ -218,7 +218,7 @@ public class MibbleMibParser implements MibParser, Serializable {
                         String typeName = getType(type.getSyntax());
                         if (typeName != null) {
                             MibObj mibObj = new MibObj();
-                            mibObj.setOid(node.getValue().toString());
+                            mibObj.setOid('.' + node.getValue().toString());
                             mibObj.setInstance(node.isTableColumn() ? resourceType : "0");
                             mibObj.setAlias(node.getName());
                             mibObj.setType(typeName);

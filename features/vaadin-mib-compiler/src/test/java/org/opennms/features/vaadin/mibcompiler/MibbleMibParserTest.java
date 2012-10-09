@@ -35,7 +35,12 @@ import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 
 /**
  * The Test Class for MibbleMibParser.
@@ -100,6 +105,33 @@ public class MibbleMibParserTest {
             Assert.assertNotNull(events);
             System.out.println(JaxbUtils.marshal(events));
             Assert.assertEquals(2, events.getEventCount());
+            Event event  = null;
+            for (Event e : events.getEventCollection()) {
+                if (e.getUei().contains("linkDown"))
+                    event = e;
+            }
+            Assert.assertNotNull(event);
+            Assert.assertNotNull(event.getDescr()); // TODO Must be more specific
+            Assert.assertNotNull(event.getLogmsg());
+            Assert.assertNotNull(event.getLogmsg().getContent()); // TODO Must be more specific
+            Assert.assertEquals("Indeterminate", event.getSeverity());
+            Assert.assertEquals("IF-MIB defined trap event: linkDown", event.getEventLabel());
+            Assert.assertNotNull(event.getMask());
+            for (Maskelement me : event.getMask().getMaskelementCollection()) {
+                if (me.getMename().equals("id"))
+                    Assert.assertEquals(".1.3.6.1.6.3.1.1.5", me.getMevalueCollection().get(0));
+                if (me.getMename().equals("generic"))
+                    Assert.assertEquals("6", me.getMevalueCollection().get(0));
+                if (me.getMename().equals("specific"))
+                    Assert.assertEquals("3", me.getMevalueCollection().get(0));
+            }
+            Assert.assertEquals(2, event.getVarbindsdecodeCount());
+            for (Varbindsdecode vb : event.getVarbindsdecodeCollection()) {
+                if (vb.getParmid().equals("parm[#2]"))
+                    Assert.assertEquals(3, vb.getDecodeCount());
+                if (vb.getParmid().equals("parm[#3]"))
+                    Assert.assertEquals(7, vb.getDecodeCount());
+            }
         } else {
             Assert.fail();
         }
@@ -113,11 +145,24 @@ public class MibbleMibParserTest {
     @Test
     public void testGenerateDataCollection() throws Exception {
         if (parser.parseMib(new File(MIB_DIR, "IF-MIB.txt"))) {
-            DatacollectionGroup group = parser.getDataCollection();
-            Assert.assertNotNull(group);
-            System.out.println(JaxbUtils.marshal(group));
-            Assert.assertEquals(5, group.getResourceTypeCount());
-            Assert.assertEquals(7, group.getGroupCount());
+            DatacollectionGroup dcGroup = parser.getDataCollection();
+            Assert.assertNotNull(dcGroup);
+            System.out.println(JaxbUtils.marshal(dcGroup));
+            Assert.assertEquals(5, dcGroup.getResourceTypeCount());
+            Assert.assertEquals(7, dcGroup.getGroupCount());
+            Group mibGroup = null;
+            for (Group g : dcGroup.getGroupCollection()) {
+                if (g.getName().equals("ifTable"))
+                    mibGroup = g;
+            }
+            Assert.assertNotNull(mibGroup);
+            Assert.assertEquals(22, mibGroup.getMibObjCount());
+            for (MibObj mo : mibGroup.getMibObjCollection()) {
+                Assert.assertEquals("ifEntry", mo.getInstance());
+                Assert.assertTrue(mo.getOid().startsWith(".1.3.6.1.2.1.2.2.1"));
+                System.err.println("checking " + mo.getType());
+                Assert.assertTrue(mo.getType().matches("^(Integer32|Gauge|String|OctetString|Counter)"));
+            }
         } else {
             Assert.fail();
         }
