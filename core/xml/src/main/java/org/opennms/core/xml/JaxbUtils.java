@@ -75,7 +75,7 @@ public abstract class JaxbUtils {
 
 		@Override
 		public boolean handleEvent(final ValidationEvent event) {
-			LogUtils.debugf(m_clazz, event.getLinkedException(), "event = %s", event);
+			LogUtils.tracef(m_clazz, event.getLinkedException(), "event = %s", event);
 			return false;
 		}
 	}
@@ -170,7 +170,7 @@ public abstract class JaxbUtils {
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate) {
 		final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
 		
-		LogUtils.debugf(clazz, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
+		LogUtils.tracef(clazz, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
 		try {
 			final XMLFilter filter = getXMLFilterForClass(clazz);
 			final SAXSource source = new SAXSource(filter, inputSource);
@@ -192,7 +192,7 @@ public abstract class JaxbUtils {
 		if (schema != null) {
 			final String namespace = schema.namespace();
 			if (namespace != null && !"".equals(namespace)) {
-				LogUtils.debugf(clazz, "found namespace %s for class %s", namespace, clazz);
+				LogUtils.tracef(clazz, "found namespace %s for class %s", namespace, clazz);
 				filter = new SimpleNamespaceFilter(namespace, true);
 			} else {
 				filter = new SimpleNamespaceFilter("", false);
@@ -216,11 +216,11 @@ public abstract class JaxbUtils {
 				m_marshallers.set(marshallers);
 			}
 			if (marshallers.containsKey(clazz)) {
-				LogUtils.debugf(clazz, "found unmarshaller for %s", clazz);
+				LogUtils.tracef(clazz, "found unmarshaller for %s", clazz);
 				return marshallers.get(clazz);
 			}
 		}
-		LogUtils.debugf(clazz, "creating unmarshaller for %s", clazz);
+		LogUtils.tracef(clazz, "creating unmarshaller for %s", clazz);
 
 		try {
 			final JAXBContext context;
@@ -262,7 +262,7 @@ public abstract class JaxbUtils {
 				m_unMarshallers.set(unmarshallers);
 			}
 			if (unmarshallers.containsKey(clazz)) {
-				LogUtils.debugf(clazz, "found unmarshaller for %s", clazz);
+				LogUtils.tracef(clazz, "found unmarshaller for %s", clazz);
 				unmarshaller = unmarshallers.get(clazz);
 			}
 		}
@@ -281,12 +281,12 @@ public abstract class JaxbUtils {
             }
 		}
 
-		LogUtils.debugf(clazz, "created unmarshaller for %s", clazz);
+		LogUtils.tracef(clazz, "created unmarshaller for %s", clazz);
 
 		if (validate) {
             final Schema schema = getValidatorFor(clazz);
             if (schema == null) {
-                LogUtils.debugf(clazz, "Validation is enabled, but no XSD found for class %s", clazz.getSimpleName());
+                LogUtils.tracef(clazz, "Validation is enabled, but no XSD found for class %s", clazz.getSimpleName());
             }
             unmarshaller.setSchema(schema);
 		}
@@ -326,14 +326,14 @@ public abstract class JaxbUtils {
 			if (schemaInputStream == null) {
 				final File schemaFile = new File(System.getProperty("opennms.home") + "/share/xsds/" + schemaFileName);
 				if (schemaFile.exists()) {
-					LogUtils.debugf(clazz, "using file %s", schemaFile);
+					LogUtils.tracef(clazz, "using file %s", schemaFile);
 					schemaInputStream = new FileInputStream(schemaFile);
 				};
 			}
 			if (schemaInputStream == null) {
 				final File schemaFile = new File("target/xsds/" + schemaFileName);
 				if (schemaFile.exists()) {
-					LogUtils.debugf(clazz, "using file %s", schemaFile);
+					LogUtils.tracef(clazz, "using file %s", schemaFile);
 					schemaInputStream = new FileInputStream(schemaFile);
 				};
 			}
@@ -342,12 +342,12 @@ public abstract class JaxbUtils {
 				if (schemaResource == null) {
 					LogUtils.debugf(clazz, "Unable to load resource xsds/%s from the classpath.", schemaFileName);
 				} else {
-					LogUtils.debugf(clazz, "using resource %s from classpath", schemaResource);
+					LogUtils.tracef(clazz, "using resource %s from classpath", schemaResource);
 					schemaInputStream = schemaResource.openStream();
 				}
 			}
 			if (schemaInputStream == null) {
-				LogUtils.debugf(clazz, "Did not find a suitable XSD.  Skipping.");
+				LogUtils.tracef(clazz, "Did not find a suitable XSD.  Skipping.");
 				return null;
 			}
 			final Schema schema = factory.newSchema(new StreamSource(schemaInputStream));
