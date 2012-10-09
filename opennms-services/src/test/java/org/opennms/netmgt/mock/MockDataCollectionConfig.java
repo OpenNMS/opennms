@@ -206,4 +206,17 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
     public DatacollectionConfig getRootDataCollection() {
         return new DatacollectionConfig();
     }
+
+    public List<String> getAvailableDataCollectionGroups() {
+        return null;
+    }
+
+    public List<String> getAvailableSystemDefs() {
+        return null;
+    }
+
+    public List<String> getAvailableMibGroups() {
+        return null;
+    }
+
 }
