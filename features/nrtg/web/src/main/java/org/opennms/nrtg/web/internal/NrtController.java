@@ -54,53 +54,6 @@ public class NrtController {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
-    public void nrtCollectionJobTrigger(String nrtCollectionTaskId, HttpSession httpSession) {
-        logger.debug("Republish CollectionJobTrigger for '{}'", nrtCollectionTaskId);
-
-        Map<String, CollectionJob> nrtCollectionTasks = getCollectionJobMap(httpSession, false);
-
-        if (nrtCollectionTasks != null) {
-            CollectionJob collectionJob = nrtCollectionTasks.get(nrtCollectionTaskId);
-            logger.debug("CollectionJob is '{}'", collectionJob);
-            if (collectionJob != null) {
-                m_nrtBroker.publishCollectionJob(collectionJob);
-                logger.debug("collectionJob was sent!");
-            } else {
-                logger.debug("collectionJob for collectionTask not found in session '{}'", nrtCollectionTaskId);
-            }
-        } else {
-            logger.debug("No CollectionTasks map in session found.");
-        }
-    }
-    
-    public String getMeasurementSetsForDestination(String nrtCollectionTaskId) {
-        List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
-
-        StringBuffer buffer = new StringBuffer();
-        
-        for(MeasurementSet measurementSet : measurementSets) {
-            if (buffer.length() > 0) {
-                buffer.append(", ");
-            }
-            buffer.append(measurementSet.toString());
-        }
-        
-        return "{\"measurement_sets\":[" + buffer.toString() + "]}";
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
-        if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
-            httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
-        }
-        try {
-            return (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectionTasks");
-        } catch (Exception e) {
-            logger.error("Session contains incompatible datastructure for NrtCollectionTasks attribute '{}'", e.getMessage());
-            return null;
-        }
-    }
-
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);
@@ -120,8 +73,8 @@ public class NrtController {
         logger.debug("SnmpAgentConfig '{}' communityString '{}'", snmpAgentConfig, snmpAgentConfig.getReadCommunity());
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
-        //TODO Tak graph service is able to check is a graph is propper for a given resource, check that later.
-        lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
+        //TODO Tak graph service is able to check if a graph is propper for a given resource, check that later.
+        prefabGraph = lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
 
         String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
 
@@ -140,7 +93,7 @@ public class NrtController {
 
         for (int i = 0; i < prefabGraph.getColumns().length; i++) {
             logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
-            //remove SNMP_ prefix from metricId
+            //Add the Metric for the SnmpGraphAttribute/Columns, remove SNMP_ prefix what is a hack, add the destinations
             collectionJob.addMetric(prefabGraph.getMetricIds()[i].substring("SNMP_".length()), resultDestinations);
         }
         logger.debug("CollectionJob '{}'", collectionJob.toString());
@@ -162,14 +115,79 @@ public class NrtController {
 
         return modelAndView;
     }
+    
+    /**
+     * Will be called by the JS-Graphing-Frontend as http/GET
+     * Publishes the CollectionJob corresponding to the nrtCollectionTaskId.
+     * @param nrtCollectionTaskId
+     * @param httpSession 
+     */
+    public void nrtCollectionJobTrigger(String nrtCollectionTaskId, HttpSession httpSession) {
+        logger.debug("Republish CollectionJobTrigger for '{}'", nrtCollectionTaskId);
+
+        Map<String, CollectionJob> nrtCollectionTasks = getCollectionJobMap(httpSession, false);
+
+        if (nrtCollectionTasks != null) {
+            CollectionJob collectionJob = nrtCollectionTasks.get(nrtCollectionTaskId);
+            logger.debug("CollectionJob is '{}'", collectionJob);
+            if (collectionJob != null) {
+                m_nrtBroker.publishCollectionJob(collectionJob);
+                logger.debug("collectionJob was sent!");
+            } else {
+                logger.debug("collectionJob for collectionTask not found in session '{}'", nrtCollectionTaskId);
+            }
+        } else {
+            logger.debug("No CollectionTasks map in session found.");
+        }
+    }
+    
+    /**
+     * Will be called by the JS-Graphing-Frontend as http/GET
+     * Get Measurements from NrtBroker, transform them into Json and return them to the JS-Graphing-Frontend
+     * @param nrtCollectionTaskId
+     * @return Json Representation of MeasurementeSets for the given nrtCollectionTaskId
+     */
+    public String getMeasurementSetsForDestination(String nrtCollectionTaskId) {
+        List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
+
+        StringBuffer buffer = new StringBuffer();
+        
+        for(MeasurementSet measurementSet : measurementSets) {
+            if (buffer.length() > 0) {
+                buffer.append(", ");
+            }
+            buffer.append(measurementSet.toString());
+        }
+        
+        return "{\"measurement_sets\":[" + buffer.toString() + "]}";
+    }
+
+    /**
+     * Provides all CollectionJobs resolved by nrtCollectionTaskId from the Session  
+     * @param httpSession
+     * @param create
+     * @return Map of nrtCollectionTaskId to CollectionJob
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
+        if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
+            httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
+        }
+        try {
+            return (Map<String, CollectionJob>) httpSession.getAttribute("NrtCollectionTasks");
+        } catch (Exception e) {
+            logger.error("Session contains incompatible datastructure for NrtCollectionTasks attribute '{}'", e);
+            return null;
+        }
+    }
 
     /**
      * <p>getRequiredRrGraphdAttributes</p>
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<RrdGraphAttribute> getRequiredRrdGraphAttributes(OnmsResource onmsResource, PrefabGraph prefabGraph) {
-        Map<String, RrdGraphAttribute> available = onmsResource.getRrdGraphAttributes();
+    public Collection<RrdGraphAttribute> getRequiredRrdGraphAttributes(OnmsResource reportResource, PrefabGraph prefabGraph) {
+        Map<String, RrdGraphAttribute> available = reportResource.getRrdGraphAttributes();
         Set<RrdGraphAttribute> reqAttrs = new LinkedHashSet<RrdGraphAttribute>();
         for (String attrName : prefabGraph.getColumns()) {
             RrdGraphAttribute attr = available.get(attrName);
@@ -185,12 +203,12 @@ public class NrtController {
      * metric to column name mappings are provided by the filesToPromote. At the moment this method will check for the filenames
      * in the list and expects to file a file with this name and a .meta ending.
      */
-    public void lookUpMetricsForColumnsOfPrefabGraphs(PrefabGraph prefabGraph, OnmsResource onmsResource) {
+    public PrefabGraph lookUpMetricsForColumnsOfPrefabGraphs(PrefabGraph prefabGraph, OnmsResource reportResource) {
         //Build a Hashmap with all columns to metrics from the files
         Map<String, String> columnsToMetrics = new HashMap<String, String>();
 
         //get all metrics to columns mappings from the files in to hashmap
-        for (RrdGraphAttribute attr : getRequiredRrdGraphAttributes(onmsResource, prefabGraph)) {
+        for (RrdGraphAttribute attr : getRequiredRrdGraphAttributes(reportResource, prefabGraph)) {
             String fileName = null;
             BufferedReader bf = null;
             try {
@@ -228,6 +246,8 @@ public class NrtController {
             metrics[i] = columnsToMetrics.get(prefabGraph.getColumns()[i]);
         }
         prefabGraph.setMetricIds(metrics);
+        
+        return prefabGraph;
     }
 
     public void setGraphDao(GraphDao graphDao) {
@@ -238,8 +258,7 @@ public class NrtController {
         m_resourceDao = resourceDao;
     }
 
-    public void setSnmpAgentConfigFactory(
-            SnmpAgentConfigFactory snmpAgentConfigFactory) {
+    public void setSnmpAgentConfigFactory(SnmpAgentConfigFactory snmpAgentConfigFactory) {
         m_snmpAgentConfigFactory = snmpAgentConfigFactory;
     }
 
