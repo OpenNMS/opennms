@@ -4,6 +4,8 @@ use strict;
 use Getopt::Long;
 use IO::Socket;
 use POSIX qw(strftime);
+use Sys::Hostname;
+
 use vars qw(
 	$VERSION
 
@@ -54,7 +56,7 @@ if ($help)     { print get_help(); exit; }
 # parm array is numerically referenced in OpenNMS' templates
 @PARMS = reverse map { parse_parm($_) } @PARMS;
 
-chomp (my $hostname = `hostname -f`);
+my $hostname = hostname;
 
 ## we'll try turning the hostname into an IP and back, to see if we can get a canonical FQDN
 my @addr = gethostbyname($hostname);
