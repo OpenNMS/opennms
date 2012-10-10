@@ -149,7 +149,7 @@ public class MibCompilerPanel extends Panel {
         // Parser Configuration
 
         this.mibParser = mibParser;
-        mibParser.addMibDirectory(MIBS_COMPILED_DIR);
+        mibParser.setMibDirectory(MIBS_COMPILED_DIR);
 
         // Initialize Toolbar
 

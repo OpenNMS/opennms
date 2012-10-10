@@ -109,9 +109,9 @@ public class MibbleMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#addMibDirectory(java.io.File)
+     * @see org.opennms.features.vaadin.mibcompiler.MibParser#setMibDirectory(java.io.File)
      */
-    public void addMibDirectory(File mibDirectory) {
+    public void setMibDirectory(File mibDirectory) {
         LogUtils.debugf(this, "Adding MIB directory to %s", mibDirectory);
         loader.addDir(mibDirectory);
     }
@@ -245,7 +245,7 @@ public class MibbleMibParser implements MibParser, Serializable {
      * @param resourceType the resource type
      * @return the group
      */
-    public Group getGroup(DatacollectionGroup data, String groupName, String resourceType) {
+    protected Group getGroup(DatacollectionGroup data, String groupName, String resourceType) {
         for (Group group : data.getGroupCollection()) {
             if (group.getName().equals(groupName))
                 return group;
@@ -312,10 +312,10 @@ public class MibbleMibParser implements MibParser, Serializable {
      */
 
     /**
-     * Convert mib to events.
+     * Convert MIB to events.
      *
-     * @param mib the mib
-     * @param ueibase the ueibase
+     * @param mib the MIB
+     * @param ueibase the UEI base
      * @return the events
      */
     protected Events convertMibToEvents(Mib mib, String ueibase) {
@@ -337,7 +337,7 @@ public class MibbleMibParser implements MibParser, Serializable {
      * Gets the trap event.
      *
      * @param trapValueSymbol the trap value symbol
-     * @param ueibase the ueibase
+     * @param ueibase the UEI base
      * @return the trap event
      */
     protected Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
@@ -459,10 +459,10 @@ public class MibbleMibParser implements MibParser, Serializable {
     }
 
     /**
-     * Gets the trap event descr.
+     * Gets the trap event description.
      *
      * @param trapValueSymbol the trap value symbol
-     * @return the trap event descr
+     * @return the trap event description
      */
     protected String getTrapEventDescr(MibValueSymbol trapValueSymbol) {
         String description = ((SnmpType) trapValueSymbol.getType()).getDescription();
@@ -562,10 +562,10 @@ public class MibbleMibParser implements MibParser, Serializable {
     }
 
     /**
-     * Gets the matcher for oid.
+     * Gets the matcher for OID.
      *
-     * @param trapOid the trap oid
-     * @return the matcher for oid
+     * @param trapOid the trap OID
+     * @return the matcher for OID
      */
     private Matcher getMatcherForOid(String trapOid) {
         Matcher m = TRAP_OID_PATTERN.matcher(trapOid);
@@ -576,10 +576,10 @@ public class MibbleMibParser implements MibParser, Serializable {
     }
 
     /**
-     * Gets the trap oid.
+     * Gets the trap OID.
      *
      * @param trapValueSymbol the trap value symbol
-     * @return the trap oid
+     * @return the trap OID
      */
     private String getTrapOid(MibValueSymbol trapValueSymbol) {
         if (trapValueSymbol.getType() instanceof SnmpNotificationType) {

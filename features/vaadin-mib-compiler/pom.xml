@@ -18,6 +18,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>6.8.2</vaadin.version>
     <pax.vaadin.version>0.1.0-ONMS-20120906</pax.vaadin.version>
+    <jsmiparser.version>0.11-SNAPSHOT</jsmiparser.version>
     <grammatica.version>1.4</grammatica.version>
     <mibble.version>2.8</mibble.version>
     <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
@@ -51,6 +52,8 @@
             <bundle>wrap:mvn:net.percederberg.mibble/mibble/${mibble.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.mibble/mibble-mibs/${mibble.version}</bundle>
             <bundle>wrap:mvn:net.percederberg.grammatica/grammatica/${grammatica.version}</bundle>
+            <bundle>wrap:mvn:org.jsmiparser/jsmiparser-api/${jsmiparser.version}</bundle>
+            <bundle>wrap:mvn:org.jsmiparser/jsmiparser-util/${jsmiparser.version}</bundle>
           </bundles>
           <features>
             <feature>vaadin</feature>
@@ -180,12 +183,25 @@
       <version>${mibble.version}</version>
       <scope>provided</scope>
     </dependency>
-
-    <!-- To avoid Karaf loading problems -->
+    <dependency>
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
+      <version>${jsmiparser.version}</version>
+      <scope>provided</scope>
+    </dependency>
+ 
+    <!-- Mibble Dependency, to avoid Karaf loading problems -->
 
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <!-- JsmiParser Dependency, to avoid Karaf loading problems -->
+
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
     </dependency>
 
     <!-- Tests Dependencies -->

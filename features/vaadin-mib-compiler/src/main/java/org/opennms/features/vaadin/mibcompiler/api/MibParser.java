@@ -41,11 +41,11 @@ import org.opennms.netmgt.xml.eventconf.Events;
 public interface MibParser {
 
     /**
-     * Adds a MIB directory.
+     * Sets the MIB directory.
      *
      * @param mibDirectory the MIB directory
      */
-    void addMibDirectory(File mibDirectory);
+    void setMibDirectory(File mibDirectory);
 
     /**
      * Parses the MIB.

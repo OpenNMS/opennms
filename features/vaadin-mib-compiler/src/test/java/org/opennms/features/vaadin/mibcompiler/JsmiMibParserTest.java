@@ -33,18 +33,18 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.MibbleMibParser;
+import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
 
 /**
- * The Test Class for MibbleMibParser.
+ * The Test Class for JsmiMibParser.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class MibbleMibParserTest extends AbstractMibParserTest {
+public class JsmiMibParserTest extends AbstractMibParserTest {
 
     @Override
     public MibParser getMibParser() {
-        return new MibbleMibParser();
+        return new JsmiMibParser();
     }
 
     /**
@@ -58,9 +58,9 @@ public class MibbleMibParserTest extends AbstractMibParserTest {
             Assert.fail();
         } else {
             List<String> dependencies = parser.getMissingDependencies();
-            Assert.assertEquals(2, dependencies.size());
+            Assert.assertEquals(4, dependencies.size());
             Assert.assertNotNull(parser.getFormattedErrors());
-            Assert.assertEquals("[SONUS-SMI, SONUS-TC]", dependencies.toString());
+            Assert.assertEquals("[SNMPv2-SMI, SNMPv2-TC, SONUS-SMI, SONUS-TC]", dependencies.toString());
         }
     }
 
