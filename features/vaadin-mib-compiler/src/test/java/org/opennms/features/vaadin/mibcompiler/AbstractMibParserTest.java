@@ -49,11 +49,17 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
  */
 public abstract class AbstractMibParserTest {
 
+    /** The Constant MIB_DIR. */
     protected static final File MIB_DIR = new File("src/test/resources");
 
     /** The parser. */
     protected MibParser parser;
 
+    /**
+     * Gets the MIB parser.
+     *
+     * @return the MIB parser
+     */
     public abstract MibParser getMibParser();
     
     /**

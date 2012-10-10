@@ -42,6 +42,9 @@ import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
  */
 public class JsmiMibParserTest extends AbstractMibParserTest {
 
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.AbstractMibParserTest#getMibParser()
+     */
     @Override
     public MibParser getMibParser() {
         return new JsmiMibParser();
