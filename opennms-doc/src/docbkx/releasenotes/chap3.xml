@@ -7,9 +7,7 @@
 	<section id="issues-current-release">
 		<title>Current Release</title>
 		<para>
-			We are still investigating <ulink href="http://issues.opennms.org/browse/NMS-5469">a
-         socket issue</ulink> that appears like it may be related to certain uncommon
-         configurations of the IPv6 stack on Linux.
+			There are no known major issues in the current release.
 		</para>
 	</section>
 
