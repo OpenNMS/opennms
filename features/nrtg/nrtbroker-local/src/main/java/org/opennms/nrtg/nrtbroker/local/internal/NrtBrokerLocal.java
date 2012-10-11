@@ -28,17 +28,14 @@
 
 package org.opennms.nrtg.nrtbroker.local.internal;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * @author Markus Neumann
@@ -63,7 +60,12 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
 
         public void addMeasurementSets(Map<String, MeasurementSet> measurementSets) {
             for (Map.Entry<String, MeasurementSet> entry : measurementSets.entrySet()) {
-                addMeasurementSet(entry.getKey(), entry.getValue());
+
+                String arr[] = entry.getKey().split(",");
+
+                for (String destination : arr) {
+                    addMeasurementSet(destination.trim(), entry.getValue());
+                }
             }
 
             doHousekeeping();
@@ -94,7 +96,7 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
                 }
             }
         }
-        
+
         private Integer getAmountOfMeasurementSets() {
             return m_measurementSets.size();
         }
@@ -140,7 +142,7 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
     public List<ProtocolCollector> getProtocolCollectors() {
         return m_protocolCollectors;
     }
-    
+
     @Override
     public Integer getMeasurementSetSize() {
         return m_measurementSets.getAmountOfMeasurementSets();
