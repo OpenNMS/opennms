@@ -22,7 +22,7 @@ BEGIN
        
      IF NOT FOUND 
      THEN
-        RAISE EXCEPTION ''Outages Trigger Exception, Condition 1: No service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid;
+        RAISE EXCEPTION ''Outages Trigger Exception, Condition 1: No service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid USING ERRCODE = ''23NMS'';
      END IF;
   
   --
@@ -38,7 +38,7 @@ BEGIN
       WHERE (ifsvc.id = NEW.ifServiceId);
       
       IF NOT FOUND THEN
-         RAISE EXCEPTION ''Outages Trigger Exception, Condition 2: No service found for serviceID: %'', NEW.ifServiceId;
+         RAISE EXCEPTION ''Outages Trigger Exception, Condition 2: No service found for serviceID: %'', NEW.ifServiceId USING ERRCODE = ''23NMS'';
       END IF;
 
   END IF;

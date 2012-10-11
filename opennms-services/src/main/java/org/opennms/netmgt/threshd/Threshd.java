@@ -426,7 +426,7 @@ public final class Threshd extends AbstractServiceDaemon {
 
                 // Initialize the thresholder with the service.
                 //
-                ServiceThresholder thresholder = this.getServiceThresholder(svcName);
+                ServiceThresholder thresholder = Threshd.getServiceThresholder(svcName);
                 if (thresholder == null) {
                     // no thresholder exists for this service so go on to the next one
                     log().warn("Unable to find a Thresholder for service "+svcName+"! But it is configured for Thresholding!");

@@ -74,6 +74,11 @@ public class JRobinFieldsProvider implements FieldsProvider  {
         
         query = reportDataset.getQuery().getText();
         
+        if(query.contains("--step")) {
+            addStepField(fields);
+        }
+        
+        
         Matcher matcher = m_pattern.matcher(query);
         boolean matchFound = matcher.find();
         
@@ -99,7 +104,16 @@ public class JRobinFieldsProvider implements FieldsProvider  {
         return fields.toArray(new JRField[fields.size()]);
     }
 
-    private void addTimestampField(List<JRField> fields) {
+  private void addStepField(List<JRField> fields) {
+        JRDesignField field = new JRDesignField();
+        field.setName("Step");
+        field.setDescription("Step");
+        field.setValueClass(Integer.class);
+        fields.add(field);
+        
+    }
+
+  private void addTimestampField(List<JRField> fields) {
         JRDesignField field = new JRDesignField();
         field.setName("Timestamp");
         field.setDescription("Timestamp");

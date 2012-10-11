@@ -717,7 +717,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.11.3.A</opennms.osgi.version>
+    <opennms.osgi.version>1.11.3</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -2174,7 +2174,7 @@
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
-        <version>1.4.1</version>
+        <version>1.4.5</version>
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>

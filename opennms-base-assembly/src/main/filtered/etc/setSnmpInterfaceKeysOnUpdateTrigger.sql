@@ -27,7 +27,7 @@ BEGIN
        WHERE (snmpif.nodeid = NEW.nodeid AND snmpif.snmpIfIndex = NEW.ifIndex);
        
      IF NOT FOUND THEN
-       RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 3: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex;
+       RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 3: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex USING ERRCODE = ''23NMS'';
      END IF;
     END IF;
      
@@ -37,7 +37,7 @@ BEGIN
   -- This usually happens with the Hibernate DAOs decide to change the snmpinterfaceid represented
   -- by the ipinterface.
   --
-  -- We don't match on the case where NEW.snmpInterfaceId IS NULL, because we use it in the WHERE clause.
+  -- We don''t match on the case where NEW.snmpInterfaceId IS NULL, because we use it in the WHERE clause.
   --
   ELSIF (NEW.snmpInterfaceId != OLD.snmpInterfaceId OR (NEW.snmpInterfaceId IS NOT NULL AND OLD.snmpInterfaceId IS NULL))
   THEN
@@ -46,7 +46,7 @@ BEGIN
       WHERE (snmpif.id = NEW.snmpInterfaceId);
       
       IF NOT FOUND THEN
-         RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 4: No SnmpInterface found for snmpInterfaceId: %'', NEW.snmpInterfaceId;
+         RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 4: No SnmpInterface found for snmpInterfaceId: %'', NEW.snmpInterfaceId USING ERRCODE = ''23NMS'';
       END IF;
   END IF;
 

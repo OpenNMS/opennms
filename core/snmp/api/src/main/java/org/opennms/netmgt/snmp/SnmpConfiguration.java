@@ -120,100 +120,100 @@ public class SnmpConfiguration {
         }
     }
 
-    public int getPort() {
+    public final int getPort() {
         return m_port;
     }
 
-    public void setPort(int port) {
+    public final void setPort(int port) {
         m_port = port;
     }
 
-    public int getTimeout() {
+    public final int getTimeout() {
         return m_timeout;
     }
 
 
-    public void setTimeout(int timeout) {
+    public final void setTimeout(int timeout) {
         m_timeout = timeout;
     }
 
-    public int getVersion() {
+    public final int getVersion() {
         return m_version;
     }
     
-    public void setVersion(int version) {
+    public final void setVersion(int version) {
         m_version = version;
     }
 
-    public String getVersionAsString() {
+    public final String getVersionAsString() {
         return versionToString(getVersion());
     }
     
-    public void setVersionAsString(String version) {
+    public final void setVersionAsString(String version) {
         setVersion(stringToVersion(version));
     }
 
-    public int getRetries() {
+    public final int getRetries() {
         return m_retries;
     }
 
-    public void setRetries(int retries) {
+    public final void setRetries(int retries) {
         m_retries = retries;
     }
 
-    public int getSecurityLevel() {
+    public final int getSecurityLevel() {
         return m_securityLevel;
     }
 
-    public void setSecurityLevel(int securityLevel) {
+    public final void setSecurityLevel(int securityLevel) {
         m_securityLevel = securityLevel;
     }
 
-    public String getSecurityName() {
+    public final String getSecurityName() {
         return m_securityName;
     }
 
-    public void setSecurityName(String securityName) {
+    public final void setSecurityName(String securityName) {
         m_securityName = securityName;
     }
 
-    public void setReadCommunity(String community) {
+    public final void setReadCommunity(String community) {
         m_readCommunity = community;
     }
 
-    public int getMaxRequestSize() {
+    public final int getMaxRequestSize() {
         return m_maxRequestSize;
     }
 
-    public void setMaxRequestSize(int maxRequestSize) {
+    public final void setMaxRequestSize(int maxRequestSize) {
         m_maxRequestSize = maxRequestSize;
     }
 
-    public String getReadCommunity() {
+    public final String getReadCommunity() {
         return m_readCommunity;
     }
 
-    public int getMaxVarsPerPdu() {
+    public final int getMaxVarsPerPdu() {
         return m_maxVarsPerPdu;
     }
 
-    public void setMaxVarsPerPdu(int maxVarsPerPdu) {
+    public final void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
 
-    public int getMaxRepetitions() {
+    public final int getMaxRepetitions() {
         return m_maxRepetitions;
     }
 
-    public void setMaxRepetitions(int maxRepetitions) {
+    public final void setMaxRepetitions(int maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
     }
 
-    public String getWriteCommunity() {
+    public final String getWriteCommunity() {
         return m_writeCommunity;
     }
 
-    public void setWriteCommunity(String community) {
+    public final void setWriteCommunity(String community) {
         m_writeCommunity = community;
     }
 
@@ -243,35 +243,35 @@ public class SnmpConfiguration {
         return VERSION1;
     }
 
-    public String getAuthPassPhrase() {
+    public final String getAuthPassPhrase() {
         return m_authPassPhrase;
     }
 
-    public void setAuthPassPhrase(String authPassPhrase) {
+    public final void setAuthPassPhrase(String authPassPhrase) {
         m_authPassPhrase = authPassPhrase;
     }
 
-    public String getPrivProtocol() {
+    public final String getPrivProtocol() {
         return m_privProtocol;
     }
 
-    public void setPrivProtocol(String authPrivProtocol) {
+    public final void setPrivProtocol(String authPrivProtocol) {
         m_privProtocol = authPrivProtocol;
     }
 
-    public String getAuthProtocol() {
+    public final String getAuthProtocol() {
         return m_authProtocol;
     }
 
-    public void setAuthProtocol(String authProtocol) {
+    public final void setAuthProtocol(String authProtocol) {
         m_authProtocol = authProtocol;
     }
 
-    public String getPrivPassPhrase() {
+    public final String getPrivPassPhrase() {
         return m_privPassPhrase;
     }
 
-    public void setPrivPassPhrase(String privPassPhrase) {
+    public final void setPrivPassPhrase(String privPassPhrase) {
         m_privPassPhrase = privPassPhrase;
     }
 

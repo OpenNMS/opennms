@@ -21,7 +21,7 @@ BEGIN
        WHERE (ifsvc.nodeid = NEW.nodeid AND ifsvc.ipAddr = NEW.ipAddr AND ifsvc.serviceid = NEW.serviceid);
        
      IF NOT FOUND THEN
-        RAISE EXCEPTION ''Outages Trigger Exception, Condition 3: No service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid;
+        RAISE EXCEPTION ''Outages Trigger Exception, Condition 3: No service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid USING ERRCODE = ''23NMS'';
      END IF;
   --
   -- (Update with new style foreign key)
@@ -36,7 +36,7 @@ BEGIN
       WHERE (ifsvc.id = NEW.ifServiceId);
       
       IF NOT FOUND THEN
-         RAISE EXCEPTION ''Outages Trigger Exception, Condition 4: No service found for serviceID: %'', NEW.ifServiceId;
+         RAISE EXCEPTION ''Outages Trigger Exception, Condition 4: No service found for serviceID: %'', NEW.ifServiceId USING ERRCODE = ''23NMS'';
       END IF;
   END IF;
 
