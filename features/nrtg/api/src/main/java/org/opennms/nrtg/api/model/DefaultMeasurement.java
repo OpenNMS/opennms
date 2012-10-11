@@ -43,6 +43,7 @@ public class DefaultMeasurement implements Measurement {
     private String m_interface, m_service, m_metricId, m_value, m_metricType;
     private int m_nodeId;
     private Date m_timestamp;
+    private String m_onmsLogicMetricId;
 
     @Override
     public void setNodeId(int nodeId) {
@@ -113,6 +114,17 @@ public class DefaultMeasurement implements Measurement {
     public Date getTimestamp() {
         return m_timestamp;
     }
+
+    @Override
+    public void setOnmsLogicMetricId(String onmsLogicMetricId) {
+        m_onmsLogicMetricId = onmsLogicMetricId;
+    }
+
+    @Override
+    public String getOnmsLogicMetricId() {
+        return m_onmsLogicMetricId;
+    }
+
 
     @Override
     public String toString() {

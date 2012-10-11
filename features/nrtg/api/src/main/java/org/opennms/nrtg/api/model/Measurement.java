@@ -55,6 +55,10 @@ public interface Measurement extends Serializable {
 
     public void setTimestamp(Date timestamp);
 
+    public void setOnmsLogicMetricId(String onmsLogicMetricId);
+
+    public String getOnmsLogicMetricId();
+
     public int getNodeId();
 
     public String getNetInterface();

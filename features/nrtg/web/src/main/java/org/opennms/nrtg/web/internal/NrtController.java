@@ -40,16 +40,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Markus Neumann
@@ -63,41 +54,69 @@ public class NrtController {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
+    private class MetricTuple {
+        private String m_metricId;
+        private String m_onmsLogicMetricId;
+
+        public MetricTuple(String metricId, String onmsLogicMetricId) {
+            m_onmsLogicMetricId = onmsLogicMetricId;
+            m_metricId = metricId;
+        }
+
+        public String getMetricId() {
+            return m_metricId;
+        }
+
+        public String getOnmsLogicMetricId() {
+            return m_onmsLogicMetricId;
+        }
+
+        public boolean equals(Object object) {
+            if (object instanceof MetricTuple) {
+                return getOnmsLogicMetricId().equals(((MetricTuple) object).getOnmsLogicMetricId());
+            } else {
+                return false;
+            }
+        }
+    }
+
     /**
-     * Provides a Map that provides Lists of MetricIds by protocols. 
+     * Provides a Map that provides Lists of MetricIds by protocols.
+     *
      * @param reportResource
      * @param prefabGraph
-     * @return 
+     * @return
      */
-    private Map<String, List<String>> getMetricIdsByProtocol(OnmsResource reportResource, PrefabGraph prefabGraph) {
-        Map<String, List<String>> metricIdsByProtocol = new HashMap<String, List<String>>();
+    private Map<String, List<MetricTuple>> getMetricIdsByProtocol(OnmsResource reportResource, PrefabGraph prefabGraph) {
+        Map<String, List<MetricTuple>> metricIdsByProtocol = new HashMap<String, List<MetricTuple>>();
         Set<RrdGraphAttribute> relevantRrdGraphAttributes = getRequiredRrdGraphAttributes(reportResource, prefabGraph);
-        Set<String> rrdGraphAttributesMetaData = getMetaDataForReport(relevantRrdGraphAttributes);
-        
+        Map<String, String> rrdGraphAttributesMetaData = getMetaDataForReport(relevantRrdGraphAttributes);
+
         //Protocol_metricId=RrdGraphAttribute
         //SNMP_.1.3.6.1.2.1.5.7.0=icmpInRedirects
-        for (String meta : rrdGraphAttributesMetaData) {
-            String splitByUndescore[] = meta.split("_");
+        for (Map.Entry<String, String> entry : rrdGraphAttributesMetaData.entrySet()) {
+            String splitByUndescore[] = entry.getValue().split("_");
             String protocol = splitByUndescore[0];
             String splitByEqual[] = splitByUndescore[1].split("=");
             String metricId = splitByEqual[0];
             //String rrdGraphAttribute = splitByEqual[1];
 
             if (!metricIdsByProtocol.containsKey(protocol)) {
-                metricIdsByProtocol.put(protocol, new ArrayList<String>());
+                metricIdsByProtocol.put(protocol, new ArrayList<MetricTuple>());
             }
-            metricIdsByProtocol.get(protocol).add(metricId);
-        }   
+            metricIdsByProtocol.get(protocol).add(new MetricTuple(metricId, entry.getKey()));
+        }
         return metricIdsByProtocol;
     }
 
-    private Set<String> getMetaDataForReport(Set<RrdGraphAttribute> rrdGraphAttributes) {
-        Set<String> metaData = new HashSet<String>();
+    private Map<String, String> getMetaDataForReport(Set<RrdGraphAttribute> rrdGraphAttributes) {
+        Map<String, String> metaData = new HashMap<String, String>();
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (RrdGraphAttribute attr : rrdGraphAttributes) {
             String fileName = null;
             BufferedReader bf = null;
+
             try {
                 fileName = m_resourceDao.getRrdDirectory() + File.separator + attr.getRrdRelativePath();
 
@@ -108,7 +127,7 @@ public class NrtController {
 
                 String mappingLine = "";
                 while (mappingLine != null) {
-                    metaData.add(mappingLine);
+                    metaData.put(attr.toString(), mappingLine);
                     mappingLine = bf.readLine();
                 }
             } catch (Exception ex) {
@@ -136,8 +155,8 @@ public class NrtController {
 
         //What protocols are involved?
         //For each protocol build a new CollectionJob
-        Map<String, List<String>> metricsByProtocol = getMetricIdsByProtocol(reportResource, prefabGraph);
-        
+        Map<String, List<MetricTuple>> metricsByProtocol = getMetricIdsByProtocol(reportResource, prefabGraph);
+
         //Destinations for MeasurementSets
         Set<String> resultDestinations = new HashSet<String>();
         resultDestinations.add(nrtCollectionTaskId);
@@ -148,9 +167,9 @@ public class NrtController {
             collectionJob.setService(protocol);
             collectionJob.setNodeId(nodeId);
             collectionJob.setCreationTimestamp(createTimestamp);
-            
-            for (String metricId : metricsByProtocol.get(protocol)) {
-                collectionJob.addMetric(metricId, resultDestinations);
+
+            for (MetricTuple metricTuple : metricsByProtocol.get(protocol)) {
+                collectionJob.addMetric(metricTuple.getMetricId(), resultDestinations, metricTuple.getOnmsLogicMetricId());
             }
 
             if (protocol.equals("SNMP")) {
@@ -159,7 +178,7 @@ public class NrtController {
                 collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
                 collectionJob.setNetInterface(node.getPrimaryInterface().getIpAddress().getHostAddress());
                 collectionJobs.add(collectionJob);
-            }else {
+            } else {
                 logger.error("Protocol '{}' is not supported yet. CollectionJob will be ignorred.", protocol);
             }
         }

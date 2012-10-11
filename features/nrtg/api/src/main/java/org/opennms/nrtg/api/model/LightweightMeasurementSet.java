@@ -61,11 +61,12 @@ public class LightweightMeasurementSet implements MeasurementSet {
         setTimestamp(timestamp);
     }
 
-    public void addMeasurement(String metricId, String metricType, String value) {
-        ArrayList<String> valueTypeList = new ArrayList<String>(2);
+    public void addMeasurement(String metricId, String metricType, String value, String onmsLogicMetricId) {
+        ArrayList<String> valueTypeList = new ArrayList<String>(3);
 
         valueTypeList.add(metricType);
         valueTypeList.add(value);
+        valueTypeList.add(onmsLogicMetricId);
 
         m_values.put(metricId, valueTypeList);
     }
@@ -87,6 +88,7 @@ public class LightweightMeasurementSet implements MeasurementSet {
 
             measurement.setMetricType(valueTypeList.get(0));
             measurement.setValue(valueTypeList.get(1));
+            measurement.setOnmsLogicMetricId(valueTypeList.get(2));
 
             measurements.add(measurement);
         }
@@ -144,6 +146,7 @@ public class LightweightMeasurementSet implements MeasurementSet {
             buf.append("\"nodeId\"").append(":").append(m.getNodeId()).append(",");
             buf.append("\"service\"").append(":\"").append(m.getService()).append("\",");
             buf.append("\"timeStamp\"").append(":").append(m.getTimestamp().getTime()).append(",");
+            buf.append("\"onmsLogicMetricId\"").append(":").append(m.getOnmsLogicMetricId()).append(",");
             buf.append("\"value\"").append(":").append(m.getValue());
             buf.append("}");
         }
@@ -151,7 +154,6 @@ public class LightweightMeasurementSet implements MeasurementSet {
         buf.append("]");
         return buf.toString();
     }
-
 
     /**
      * This toString method is for displaying reasons in the webapp NrtGrapher only.

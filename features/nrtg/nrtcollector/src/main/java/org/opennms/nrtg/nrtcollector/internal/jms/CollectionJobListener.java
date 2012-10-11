@@ -104,16 +104,15 @@ public class CollectionJobListener implements MessageListener {
 
             Map<String, MeasurementSet> measurementSets = collectionJob.getMeasurementSetsByDestination();
 
-		    int val = counter.incrementAndGet();
+            int val = counter.incrementAndGet();
 
-		    if (val % 1000 == 0) {
-		    	logger.debug("processed job #{}, {} measurement set(s)", val, measurementSets.size());
-		    }
-		    else {
-		    	logger.trace("processed job #{}, {} measurement set(s)", val, measurementSets.size());
-		    }
+            if (val % 1000 == 0) {
+                logger.debug("processed job #{}, {} measurement set(s)", val, measurementSets.size());
+            } else {
+                logger.trace("processed job #{}, {} measurement set(s)", val, measurementSets.size());
+            }
 
-            for (String destinationString : measurementSets.keySet()) { 
+            for (String destinationString : measurementSets.keySet()) {
                 jmsTemplate.convertAndSend(destinationString, measurementSets.get(destinationString));
                 logger.info("** sending msg '{}' to '{}'", measurementSets.get(destinationString), destinationString);
             }
@@ -126,7 +125,7 @@ public class CollectionJobListener implements MessageListener {
             for (String metricId : collectionJob.getAllMetrics()) {
 
                 if (collectionJob.getMetricValue(metricId) == null) {
-                    errorMeasurementSet.addMeasurement(metricId, collectionJob.getMetricType(metricId), null);
+                    errorMeasurementSet.addMeasurement(metricId, collectionJob.getMetricType(metricId), null, collectionJob.getOnmsLogicMetricId(metricId));
                 }
 
                 logger.trace("collected metric of job #{}='{}'", counter + ": "
