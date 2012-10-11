@@ -98,8 +98,6 @@ public abstract class EventTable extends Table {
         List<org.opennms.netmgt.xml.eventconf.Event> events = new ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
         for (String itemId : container.getItemIds()) {
             org.opennms.netmgt.xml.eventconf.Event e = getEvent(itemId);
-            e.setDescr(encodeHtml(e.getDescr()));
-            e.getLogmsg().setContent(encodeHtml(e.getLogmsg().getContent()));
             // It doesn't make any sense an alarmData without reductionKey
             AlarmData a = e.getAlarmData();
             if (a != null && (a.getReductionKey() == null || a.getReductionKey().trim().equals("")))
@@ -132,13 +130,4 @@ public abstract class EventTable extends Table {
         return container.getItem(itemId).getBean();
     }
 
-    /**
-     * Encode HTML.
-     *
-     * @param html the HTML
-     * @return the encoded string
-     */
-    private String encodeHtml(String html) {
-        return html.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
 }
