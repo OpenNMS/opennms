@@ -150,13 +150,13 @@
       <version>${jsmiparser.version}</version>
       <scope>provided</scope>
     </dependency>
- 
-    <!-- Additional dependencies, to avoid Karaf loading problems -->
-
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+
+    <!-- JsmiParser Dependencie, to avoid Karaf loading problems -->
+
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
