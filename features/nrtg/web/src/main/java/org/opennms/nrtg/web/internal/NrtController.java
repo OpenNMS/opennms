@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/
  *
  * For more information contact: OpenNMS(R) Licensing <license@opennms.org> http://www.opennms.org/ http://www.opennms.com/
- ******************************************************************************
+ * *****************************************************************************
  */
 package org.opennms.nrtg.web.internal;
 
@@ -40,7 +40,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Markus Neumann
@@ -54,6 +63,110 @@ public class NrtController {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
+    /**
+     * Provides a Map that provides Lists of MetricIds by protocols. 
+     * @param reportResource
+     * @param prefabGraph
+     * @return 
+     */
+    private Map<String, List<String>> getMetricIdsByProtocol(OnmsResource reportResource, PrefabGraph prefabGraph) {
+        Map<String, List<String>> metricIdsByProtocol = new HashMap<String, List<String>>();
+        Set<RrdGraphAttribute> relevantRrdGraphAttributes = getRequiredRrdGraphAttributes(reportResource, prefabGraph);
+        Set<String> rrdGraphAttributesMetaData = getMetaDataForReport(relevantRrdGraphAttributes);
+        
+        //Protocol_metricId=RrdGraphAttribute
+        //SNMP_.1.3.6.1.2.1.5.7.0=icmpInRedirects
+        for (String meta : rrdGraphAttributesMetaData) {
+            String splitByUndescore[] = meta.split("_");
+            String protocol = splitByUndescore[0];
+            String splitByEqual[] = splitByUndescore[1].split("=");
+            String metricId = splitByEqual[0];
+            //String rrdGraphAttribute = splitByEqual[1];
+
+            if (!metricIdsByProtocol.containsKey(protocol)) {
+                metricIdsByProtocol.put(protocol, new ArrayList<String>());
+            }
+            metricIdsByProtocol.get(protocol).add(metricId);
+        }   
+        return metricIdsByProtocol;
+    }
+
+    private Set<String> getMetaDataForReport(Set<RrdGraphAttribute> rrdGraphAttributes) {
+        Set<String> metaData = new HashSet<String>();
+
+        //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
+        for (RrdGraphAttribute attr : rrdGraphAttributes) {
+            String fileName = null;
+            BufferedReader bf = null;
+            try {
+                fileName = m_resourceDao.getRrdDirectory() + File.separator + attr.getRrdRelativePath();
+
+                //get meta files instead of rrd or jrb
+                fileName = fileName.substring(0, fileName.lastIndexOf("."));
+                fileName = fileName.concat(".meta");
+                bf = new BufferedReader(new FileReader(fileName));
+
+                String mappingLine = "";
+                while (mappingLine != null) {
+                    metaData.add(mappingLine);
+                    mappingLine = bf.readLine();
+                }
+            } catch (Exception ex) {
+                logger.error("Problem by looking up metadata about metrics for RrdGraphAttributes in context of NRTG from meta file '{}' '{}'", fileName, ex.getMessage());
+            } finally {
+                if (bf != null) {
+                    try {
+                        bf.close();
+                    } catch (IOException ex) {
+                        logger.warn("problem by reader close", ex);
+                    }
+                }
+            }
+        }
+        return metaData;
+    }
+
+    private List<CollectionJob> createCollectionJobs(OnmsResource reportResource, PrefabGraph prefabGraph, String nrtCollectionTaskId) {
+        List<CollectionJob> collectionJobs = new ArrayList<CollectionJob>();
+
+        OnmsResource nodeResource = reportResource.getParent();
+        OnmsNode node = (OnmsNode) nodeResource.getEntity();
+        Integer nodeId = node.getId();
+        Date createTimestamp = new Date();
+
+        //What protocols are involved?
+        //For each protocol build a new CollectionJob
+        Map<String, List<String>> metricsByProtocol = getMetricIdsByProtocol(reportResource, prefabGraph);
+        
+        //Destinations for MeasurementSets
+        Set<String> resultDestinations = new HashSet<String>();
+        resultDestinations.add(nrtCollectionTaskId);
+        resultDestinations.add("NrtPersistMe");
+
+        for (String protocol : metricsByProtocol.keySet()) {
+            CollectionJob collectionJob = new DefaultCollectionJob();
+            collectionJob.setService(protocol);
+            collectionJob.setNodeId(nodeId);
+            collectionJob.setCreationTimestamp(createTimestamp);
+            
+            for (String metricId : metricsByProtocol.get(protocol)) {
+                collectionJob.addMetric(metricId, resultDestinations);
+            }
+
+            if (protocol.equals("SNMP")) {
+                collectionJob.setNetInterface(protocol);
+                SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
+                collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
+                collectionJob.setNetInterface(node.getPrimaryInterface().getIpAddress().getHostAddress());
+                collectionJobs.add(collectionJob);
+            }else {
+                logger.error("Protocol '{}' is not supported yet. CollectionJob will be ignorred.", protocol);
+            }
+        }
+
+        return collectionJobs;
+    }
+
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);
@@ -62,15 +175,7 @@ public class NrtController {
         assert (report != null);
         logger.debug("report: '{}'", report);
 
-        //Todo Tak there is you session to manage the CollectionSessions
-        logger.debug(httpSession.toString());
-
         OnmsResource reportResource = m_resourceDao.getResourceById(resourceId);
-        OnmsResource topResource = reportResource.getParent();
-        OnmsNode node = (OnmsNode) topResource.getEntity();
-
-        SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
-        logger.debug("SnmpAgentConfig '{}' communityString '{}'", snmpAgentConfig, snmpAgentConfig.getReadCommunity());
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         //TODO Tak graph service is able to check if a graph is propper for a given resource, check that later.
@@ -78,29 +183,11 @@ public class NrtController {
 
         String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
 
-        CollectionJob collectionJob = new DefaultCollectionJob();
-        collectionJob.setService("SNMP");
-        collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
-
-        collectionJob.setNodeId(node.getId());
-        String netInterface = node.getPrimaryInterface().getIpAddress().getHostAddress();
-        logger.debug("netInterface '{}'", netInterface);
-        collectionJob.setNetInterface(netInterface);
-
-        Set<String> resultDestinations = new HashSet<String>();
-        resultDestinations.add(nrtCollectionTaskId);
-        //resultDestinations.add("NrtPersistMe");
-
-        for (int i = 0; i < prefabGraph.getColumns().length; i++) {
-            logger.debug("Adding Metric '{}' with MetricId '{}' to collectionJob", prefabGraph.getColumns()[i], prefabGraph.getMetricIds()[i]);
-            //Add the Metric for the SnmpGraphAttribute/Columns, remove SNMP_ prefix what is a hack, add the destinations
-            collectionJob.addMetric(prefabGraph.getMetricIds()[i].substring("SNMP_".length()), resultDestinations);
+        List<CollectionJob> collectionJobs = createCollectionJobs(reportResource, prefabGraph, nrtCollectionTaskId);
+        for (CollectionJob collectionJob : collectionJobs) {
+            m_nrtBroker.publishCollectionJob(collectionJob);
+            getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
         }
-        logger.debug("CollectionJob '{}'", collectionJob.toString());
-        m_nrtBroker.publishCollectionJob(collectionJob);
-
-        //Check if there is a NrtCollectionTasks map in the session already 
-        getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
 
         ModelAndView modelAndView = new ModelAndView("nrt/realtime");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
@@ -115,12 +202,13 @@ public class NrtController {
 
         return modelAndView;
     }
-    
+
     /**
-     * Will be called by the JS-Graphing-Frontend as http/GET
-     * Publishes the CollectionJob corresponding to the nrtCollectionTaskId.
+     * Will be called by the JS-Graphing-Frontend as http/GET Publishes the CollectionJob corresponding to the
+     * nrtCollectionTaskId.
+     *
      * @param nrtCollectionTaskId
-     * @param httpSession 
+     * @param httpSession
      */
     public void nrtCollectionJobTrigger(String nrtCollectionTaskId, HttpSession httpSession) {
         logger.debug("Republish CollectionJobTrigger for '{}'", nrtCollectionTaskId);
@@ -140,10 +228,11 @@ public class NrtController {
             logger.debug("No CollectionTasks map in session found.");
         }
     }
-    
+
     /**
-     * Will be called by the JS-Graphing-Frontend as http/GET
-     * Get Measurements from NrtBroker, transform them into Json and return them to the JS-Graphing-Frontend
+     * Will be called by the JS-Graphing-Frontend as http/GET Get Measurements from NrtBroker, transform them into Json and return
+     * them to the JS-Graphing-Frontend
+     *
      * @param nrtCollectionTaskId
      * @return Json Representation of MeasurementeSets for the given nrtCollectionTaskId
      */
@@ -151,19 +240,20 @@ public class NrtController {
         List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
 
         StringBuffer buffer = new StringBuffer();
-        
-        for(MeasurementSet measurementSet : measurementSets) {
+
+        for (MeasurementSet measurementSet : measurementSets) {
             if (buffer.length() > 0) {
                 buffer.append(", ");
             }
             buffer.append(measurementSet.toString());
         }
-        
+
         return "{\"measurement_sets\":[" + buffer.toString() + "]}";
     }
 
     /**
-     * Provides all CollectionJobs resolved by nrtCollectionTaskId from the Session  
+     * Provides all CollectionJobs resolved by nrtCollectionTaskId from the Session
+     *
      * @param httpSession
      * @param create
      * @return Map of nrtCollectionTaskId to CollectionJob
@@ -186,7 +276,7 @@ public class NrtController {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<RrdGraphAttribute> getRequiredRrdGraphAttributes(OnmsResource reportResource, PrefabGraph prefabGraph) {
+    public Set<RrdGraphAttribute> getRequiredRrdGraphAttributes(OnmsResource reportResource, PrefabGraph prefabGraph) {
         Map<String, RrdGraphAttribute> available = reportResource.getRrdGraphAttributes();
         Set<RrdGraphAttribute> reqAttrs = new LinkedHashSet<RrdGraphAttribute>();
         for (String attrName : prefabGraph.getColumns()) {
@@ -246,7 +336,7 @@ public class NrtController {
             metrics[i] = columnsToMetrics.get(prefabGraph.getColumns()[i]);
         }
         prefabGraph.setMetricIds(metrics);
-        
+
         return prefabGraph;
     }
 
@@ -268,5 +358,9 @@ public class NrtController {
 
     public void setNrtBroker(NrtBroker nrtBroker) {
         this.m_nrtBroker = nrtBroker;
+    }
+
+    private List<String> getProtocols() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

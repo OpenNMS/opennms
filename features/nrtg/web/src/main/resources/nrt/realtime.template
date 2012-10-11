@@ -240,6 +240,10 @@
         <div id="debug" style="display:none;">
             <table border="1" width="75%">
                 <tr>
+                    <td><b>CollectionTaskId</b></td>
+                    <td><div id="debug_nrt_collection_taks_id">${nrtCollectionTaskId}</div></td>
+                </tr>
+                <tr>
                     <td><b>Error message(s)</b></td>
                     <td><div id="errorDiv"></div></td>
                 </tr><tr>
