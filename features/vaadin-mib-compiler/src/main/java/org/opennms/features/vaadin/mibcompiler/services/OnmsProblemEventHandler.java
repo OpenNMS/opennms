@@ -71,7 +71,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      */
     public OnmsProblemEventHandler(SmiDefaultParser parser) {
         m_out = new PrintStream(m_outputStream);
-        ProblemReporterFactory problemReporterFactory = new DefaultProblemReporterFactory(this);
+        ProblemReporterFactory problemReporterFactory = new DefaultProblemReporterFactory(getClass().getClassLoader(), this);
         parser.setProblemReporterFactory(problemReporterFactory);
     }
 

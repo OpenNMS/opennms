@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,7 +62,7 @@ public abstract class AbstractMibParserTest {
      * @return the MIB parser
      */
     public abstract MibParser getMibParser();
-    
+
     /**
      * Sets the up.
      */
@@ -83,6 +84,23 @@ public abstract class AbstractMibParserTest {
             Assert.assertNull(parser.getFormattedErrors());
         } else {
             Assert.fail();
+        }
+    }
+
+    /**
+     * Test bad MIB.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testBadMib() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "SONUS-COMMON-MIB.txt"))) {
+            Assert.fail();
+        } else {
+            List<String> dependencies = parser.getMissingDependencies();
+            Assert.assertEquals(2, dependencies.size());
+            Assert.assertNotNull(parser.getFormattedErrors());
+            Assert.assertEquals("[SONUS-SMI, SONUS-TC]", dependencies.toString());
         }
     }
 

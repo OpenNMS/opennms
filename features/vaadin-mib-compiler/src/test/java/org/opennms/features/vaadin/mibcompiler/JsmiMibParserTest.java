@@ -28,12 +28,13 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import java.io.File;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
+import org.opennms.netmgt.xml.eventconf.Events;
 
 /**
  * The Test Class for JsmiMibParser.
@@ -50,20 +51,16 @@ public class JsmiMibParserTest extends AbstractMibParserTest {
         return new JsmiMibParser();
     }
 
-    /**
-     * Test bad MIB.
-     *
-     * @throws Exception the exception
-     */
     @Test
-    public void testBadMib() throws Exception {
-        if (parser.parseMib(new File(MIB_DIR, "SONUS-COMMON-MIB.txt"))) {
-            Assert.fail();
+    public void testTraps() {
+        if (parser.parseMib(new File(MIB_DIR, "RFC1269-MIB.txt"))) {
+            Assert.assertEquals("RFC1269-MIB", parser.getMibName());
+            Events events = parser.getEvents("uei.opennms.org/traps/RFC1269");
+            Assert.assertNotNull(events);
+            Assert.assertEquals(2, events.getEventCount());
+            System.out.println(JaxbUtils.marshal(events));
         } else {
-            List<String> dependencies = parser.getMissingDependencies();
-            Assert.assertEquals(4, dependencies.size());
-            Assert.assertNotNull(parser.getFormattedErrors());
-            Assert.assertEquals("[SNMPv2-SMI, SNMPv2-TC, SONUS-SMI, SONUS-TC]", dependencies.toString());
+            Assert.fail();
         }
     }
 

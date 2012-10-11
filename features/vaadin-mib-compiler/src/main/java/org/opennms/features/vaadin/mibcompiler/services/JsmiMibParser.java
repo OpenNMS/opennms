@@ -49,8 +49,11 @@ import org.jsmiparser.smi.SmiNamedNumber;
 import org.jsmiparser.smi.SmiNotificationType;
 import org.jsmiparser.smi.SmiPrimitiveType;
 import org.jsmiparser.smi.SmiRow;
+import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
 import org.jsmiparser.util.token.IdToken;
+import org.jsmiparser.util.traps.TrapWrapper;
+import org.jsmiparser.util.traps.TrapWrapperFactory;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
@@ -77,6 +80,9 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 @SuppressWarnings("serial")
 public class JsmiMibParser implements MibParser, Serializable {
 
+    /** The Constant MIB_SUFFIXES. */
+    private static final String[] MIB_SUFFIXES = new String[] { "", ".txt", ".mib", ".my" };
+
     /** The Constant TRAP_OID_PATTERN. */
     private static final Pattern TRAP_OID_PATTERN = Pattern.compile("(.*)\\.(\\d+)$");
 
@@ -94,6 +100,9 @@ public class JsmiMibParser implements MibParser, Serializable {
 
     /** The errors. */
     private String errors;
+
+    /** The missing dependencies. */
+    private List<String> missingDependencies;
 
     /**
      * Instantiates a new JLIBSMI MIB parser.
@@ -140,11 +149,10 @@ public class JsmiMibParser implements MibParser, Serializable {
         if (parser.getProblemEventHandler().isNotOk()) {
             LogUtils.infof(this, "Some errors has been found when processing %s", mibFile.getAbsolutePath());
             // Check for dependencies and update URLs if the MIBs exists on the MIB directory
-            List<String> dependencies = errorHandler.getDependencies();
-            for (Iterator<String> it = dependencies.iterator(); it.hasNext();) {
+            missingDependencies = errorHandler.getDependencies();
+            for (Iterator<String> it = missingDependencies.iterator(); it.hasNext();) {
                 String dependency = it.next();
-                String[] suffixes = new String[] { ".txt", ".mib" };
-                for (String suffix : suffixes) {
+                for (String suffix : MIB_SUFFIXES) {
                     File f = new File(mibDirectory, dependency + suffix);
                     if (f.exists()) {
                         LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
@@ -158,7 +166,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     }
                 }
             }
-            if (dependencies.isEmpty()) {
+            if (missingDependencies.isEmpty()) {
                 LogUtils.infof(this, "Reparsing all files %s", inputUrls);
                 // All dependencies found, trying again.
                 errorHandler.reset();
@@ -169,8 +177,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 }
             } else {
                 // There are still unsatisfied dependencies.
-                // FIXME the new dependency set must be used instead of the set returned by the error handler.
-                LogUtils.warnf(this, "There are unsatisfied dependencies remaining.");
+                LogUtils.warnf(this, "There are unsatisfied dependencies remaining: " + missingDependencies);
                 return false;
             }
         }
@@ -190,7 +197,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @see org.opennms.features.vaadin.mibcompiler.MibParser#getMissingDependencies()
      */
     public List<String> getMissingDependencies() {
-        return errorHandler.getDependencies();
+        return missingDependencies;
     }
 
     /* (non-Javadoc)
@@ -342,7 +349,12 @@ public class JsmiMibParser implements MibParser, Serializable {
     protected Events convertMibToEvents(SmiModule module, String ueibase) {
         Events events = new Events();
         for (SmiNotificationType trap : module.getNotificationTypes()) {
-            events.addEvent(getTrapEvent(trap, ueibase));
+            TrapWrapper wrapper = TrapWrapperFactory.create(trap);
+            events.addEvent(getTrapEvent(wrapper, ueibase));
+        }
+        for (SmiTrapType trap : module.getTrapTypes()) {
+            TrapWrapper wrapper = TrapWrapperFactory.create(trap);
+            events.addEvent(getTrapEvent(wrapper, ueibase));
         }
         return events;
     }
@@ -354,7 +366,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param ueibase the UEI base
      * @return the trap event
      */
-    protected Event getTrapEvent(SmiNotificationType trap, String ueibase) {
+    protected Event getTrapEvent(TrapWrapper trap, String ueibase) {
         Event evt = new Event();
         // Set the event's UEI, event-label, logmsg, severity, and descr
         evt.setUei(getTrapEventUEI(trap, ueibase));
@@ -383,7 +395,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param ueibase the UEI base
      * @return the trap event UEI
      */
-    protected String getTrapEventUEI(SmiNotificationType trap, String ueibase) {
+    protected String getTrapEventUEI(TrapWrapper trap, String ueibase) {
         StringBuffer buf = new StringBuffer(ueibase);
         if (! ueibase.endsWith("/")) {
             buf.append("/");
@@ -398,7 +410,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap event label
      */
-    protected String getTrapEventLabel(SmiNotificationType trap) {
+    protected String getTrapEventLabel(TrapWrapper trap) {
         StringBuffer buf = new StringBuffer();
         buf.append(trap.getModule().getId());
         buf.append(" defined trap event: ");
@@ -412,7 +424,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap event LogMsg
      */
-    protected Logmsg getTrapEventLogmsg(SmiNotificationType trap) {
+    protected Logmsg getTrapEventLogmsg(TrapWrapper trap) {
         Logmsg msg = new Logmsg();
         msg.setDest("logndisplay");
         final StringBuffer dbuf = new StringBuffer();
@@ -420,7 +432,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         dbuf.append("\n");
         dbuf.append("\t").append(trap.getId()).append(" trap received\n");
         int vbNum = 1;
-        for (IdToken token : trap.getObjectTokens()) {
+        for (IdToken token : trap.getParameterTokens()) {
             dbuf.append("\t").append(token.getId()).append("=%parm[#").append(vbNum).append("]%\n");
             vbNum++;
         }
@@ -438,7 +450,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap event description
      */
-    protected String getTrapEventDescr(SmiNotificationType trap) {
+    protected String getTrapEventDescr(TrapWrapper trap) {
         String description = trap.getDescription();
         // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
         final String descrStartingNewlines = description.replaceAll("^", "\n<p>");
@@ -450,7 +462,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         dbuf.append("<table>");
         dbuf.append("\n");
         int vbNum = 1;
-        for (IdToken token : trap.getObjectTokens()) {
+        for (IdToken token : trap.getParameterTokens()) {
             SmiVariable var = trap.getModule().findVariable(token.getId());
             dbuf.append("\t<tr><td><b>\n\n\t").append(var.getId());
             dbuf.append("</b></td><td>\n\t%parm[#").append(vbNum).append("]%;</td><td><p>");
@@ -482,10 +494,10 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap varbinds decode
      */
-    protected List<Varbindsdecode> getTrapVarbindsDecode(SmiNotificationType trap) {
+    protected List<Varbindsdecode> getTrapVarbindsDecode(TrapWrapper trap) {
         Map<String, Varbindsdecode> decode = new LinkedHashMap<String, Varbindsdecode>();
         int vbNum = 1;
-        for (IdToken token : trap.getObjectTokens()) {
+        for (IdToken token : trap.getParameterTokens()) {
             SmiVariable var = trap.getModule().findVariable(token.getId());
             String parmName = "parm[#" + vbNum + "]";
             SmiPrimitiveType type = var.getType().getPrimitiveType();
@@ -517,7 +529,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap enterprise
      */
-    private String getTrapEnterprise(SmiNotificationType trap) {
+    private String getTrapEnterprise(TrapWrapper trap) {
         return getMatcherForOid(getTrapOid(trap)).group(1);
     }
 
@@ -527,7 +539,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap specific type
      */
-    private String getTrapSpecificType(SmiNotificationType trap) {
+    private String getTrapSpecificType(TrapWrapper trap) {
         return getMatcherForOid(getTrapOid(trap)).group(2);
     }
 
@@ -551,8 +563,8 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap OID
      */
-    private String getTrapOid(SmiNotificationType trap) {
-        return '.' + trap.getOidStr();
+    private String getTrapOid(TrapWrapper trap) {
+        return '.' + trap.getTrapOid();
     }
 
     /**
