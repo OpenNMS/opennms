@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.mibcompiler.api;
+package org.opennms.features.vaadin.api;
 
 /**
  * The Interface Logger.

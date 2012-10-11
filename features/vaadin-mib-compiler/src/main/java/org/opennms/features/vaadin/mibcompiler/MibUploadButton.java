@@ -32,7 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.features.vaadin.api.Logger;
 
 import com.vaadin.ui.Upload;
 

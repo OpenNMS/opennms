@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;

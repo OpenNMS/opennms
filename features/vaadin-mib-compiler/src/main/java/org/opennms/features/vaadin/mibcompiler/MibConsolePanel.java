@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.mibcompiler;
 import java.util.Date;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.features.vaadin.api.Logger;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;

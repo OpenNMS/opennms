@@ -29,7 +29,7 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import java.io.File;
 
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.features.vaadin.api.Logger;
 
 import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.ui.Button;

@@ -32,8 +32,8 @@ import java.io.File;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 

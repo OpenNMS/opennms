@@ -28,7 +28,7 @@
 package org.opennms.features.vaadin.config;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
+import org.opennms.features.vaadin.api.Logger;
 
 /**
  * The Class Simple Logger.

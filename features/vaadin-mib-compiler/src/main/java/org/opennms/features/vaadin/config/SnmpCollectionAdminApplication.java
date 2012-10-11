@@ -27,8 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
 
+import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
-import org.opennms.features.vaadin.mibcompiler.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
 import com.vaadin.Application;
