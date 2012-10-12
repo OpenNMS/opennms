@@ -160,7 +160,7 @@ public class NrtController {
         //Destinations for MeasurementSets
         Set<String> resultDestinations = new HashSet<String>();
         resultDestinations.add(nrtCollectionTaskId);
-        resultDestinations.add("NrtPersistMe");
+        //resultDestinations.add("NrtPersistMe");
 
         for (String protocol : metricsByProtocol.keySet()) {
             CollectionJob collectionJob = new DefaultCollectionJob();
@@ -197,7 +197,7 @@ public class NrtController {
         OnmsResource reportResource = m_resourceDao.getResourceById(resourceId);
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
-        //TODO Tak graph service is able to check if a graph is propper for a given resource, check that later.
+        //TODO Tak graph service is able to check if a graph is proper for a given resource, check that later.
         prefabGraph = lookUpMetricsForColumnsOfPrefabGraphs(prefabGraph, reportResource);
 
         String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
@@ -379,7 +379,4 @@ public class NrtController {
         this.m_nrtBroker = nrtBroker;
     }
 
-    private List<String> getProtocols() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

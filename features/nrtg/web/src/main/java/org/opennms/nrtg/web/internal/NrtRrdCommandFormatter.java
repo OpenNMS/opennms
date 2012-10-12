@@ -30,7 +30,7 @@ package org.opennms.nrtg.web.internal;
 
 import org.opennms.netmgt.model.PrefabGraph;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +42,13 @@ import java.util.regex.Pattern;
  */
 public class NrtRrdCommandFormatter {
 
-    public final static List<String> RRD_KEYWORDS = new ArrayList<String>() {{
-        add("--");
-        add("DEF");
-        add("CDEF");
-        add("LINE");
-        add("GPRINT");
-    }};
+    public final static List<String> RRD_KEYWORDS = Arrays.asList(
+        "--",
+        "DEF",
+        "CDEF",
+        "LINE",
+        "GPRINT"
+    );
 
     private String rrdGraphString;
 
