@@ -30,15 +30,18 @@ package org.opennms.mock.snmp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.opennms.mock.snmp.responder.DynamicVariable;
 import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
@@ -75,10 +78,19 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     private MOScope m_scope = null;
 
 	private Object m_oldValue;
+	
+	/*
+	 * Cache the dynamic variable types to speed things up.
+	 * This removes the need to search the class-path and use reflection at every call.
+	 */
+	HashMap<String,DynamicVariable> m_dynamicVariableCache = new HashMap<String,DynamicVariable>();
     
     /** {@inheritDoc} */
     public List<ManagedObject> loadMOs(URL moFile) {
     	final Properties props = loadProperties(moFile);
+    	
+    	// Clear cache on reload
+    	m_dynamicVariableCache.clear();
 
         m_vars = new TreeMap<OID, Object>();
 
@@ -296,8 +308,8 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	        newVar = new Null();
 	    }
 	    else {
-	        String moTypeStr = valStr.substring(0, valStr.indexOf(":"));
-	        String moValStr = valStr.substring(valStr.indexOf(":") + 2);
+	        String moTypeStr = valStr.substring(0, valStr.indexOf(':'));
+	        String moValStr = valStr.substring(valStr.indexOf(':') + 2);
 	
 	        try {
 	
@@ -317,7 +329,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	            } else if (moTypeStr.equals("Counter64")) {
 	                newVar = new Counter64(Long.parseLong(moValStr));
 	            } else if (moTypeStr.equals("Timeticks")) {
-	                Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf("(") + 1, moValStr.indexOf(")") ) );
+	                Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf('(') + 1, moValStr.indexOf(')') ) );
 	                newVar = new TimeTicks(ticksInt);
 	            } else if (moTypeStr.equals("OID")) {
 	                newVar = new OID(moValStr);
@@ -325,6 +337,8 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	                newVar = new IpAddress(moValStr.trim());
 	            } else if (moTypeStr.equals("Network Address")) {
 	                newVar = OctetString.fromHexString(moValStr.trim());
+	            } else if (moTypeStr.equals("Responder")) {
+	            	newVar = handleDynamicVariable(oidStr,moValStr);
 	            } else {
 	                // Punt, assume it's a String
 	                //newVar = new OctetString(moValStr);
@@ -337,4 +351,50 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	    return newVar;
 	}
 
+    /**
+     * <p>handleDynamicVariable</p>
+     *
+     * @param oidStr a {@link java.lang.String} object.
+     * @param typeStr a {@link java.lang.String} object.
+     * @return a {@link org.snmp4j.smi.Variable} object.
+     */
+	protected Variable handleDynamicVariable(String oidStr, String typeStr) {
+		DynamicVariable responder = m_dynamicVariableCache.get(oidStr);
+		
+		if( responder != null ) {
+			return responder.getVariableForOID(oidStr);
+		} else if( m_dynamicVariableCache.containsKey(oidStr) ) {
+			throw new IllegalArgumentException("Already failed to initialize the dynamic variable "+typeStr);
+		}
+		
+		try{
+			// Create a new instance of the class in typeStr
+			final Class<? extends DynamicVariable> dv = Class.forName(typeStr).asSubclass(DynamicVariable.class);
+			if (!DynamicVariable.class.isAssignableFrom(dv)) {
+				throw new IllegalArgumentException(typeStr+" must implement the DynamicVariable interface");
+			}
+			
+			// Attempt to instantiate the object using the singleton pattern
+			try{
+				Method method = dv.getMethod("getInstance", new Class[0]);
+				responder = (DynamicVariable)method.invoke(dv, new Object[0]);
+			} catch(NoSuchMethodException e) {
+				// Do nothing
+			}
+			
+			// If the singleton initialization failed, then create a new instance
+			if(responder==null) {
+				responder = (DynamicVariable)dv.newInstance();
+			}
+		} catch(IllegalArgumentException e ) {
+			throw e;
+		} catch(Throwable t) {
+			throw new IllegalArgumentException("Failed to marshall "+typeStr);
+		} finally {
+			// Cache the result - good or bad
+			m_dynamicVariableCache.put(oidStr, responder);
+		}
+		
+		return responder.getVariableForOID(oidStr);
+	}
 }

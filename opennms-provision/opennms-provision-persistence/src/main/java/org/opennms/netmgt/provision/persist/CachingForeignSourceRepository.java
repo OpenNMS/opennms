@@ -70,7 +70,6 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 		executor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
 		executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-		executor.setMaximumPoolSize(1);
 		m_executor = executor;
 
 		// every refreshInterval milliseconds, save any modifications, and clean out existing cached data

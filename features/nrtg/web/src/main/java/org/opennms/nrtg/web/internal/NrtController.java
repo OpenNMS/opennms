@@ -34,13 +34,6 @@ import org.opennms.nrtg.api.model.DefaultCollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
@@ -53,8 +46,6 @@ import java.util.*;
  * @author Markus Neumann
  * @author Christian Pape
  */
-@Controller
-@RequestMapping("/nrt/starter.htm")
 public class NrtController {
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
@@ -63,9 +54,6 @@ public class NrtController {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
-    @RequestMapping(method = RequestMethod.GET, params = {"nrtCollectionTaskId"})
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public void nrtCollectionJobTrigger(String nrtCollectionTaskId, HttpSession httpSession) {
         logger.debug("Republish CollectionJobTrigger for '{}'", nrtCollectionTaskId);
 
@@ -113,7 +101,6 @@ public class NrtController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, params = {"resourceId", "report"})
     public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);

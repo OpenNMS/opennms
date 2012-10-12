@@ -38,21 +38,21 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.LoggerFactory;
 
-public class TopologySelector  {
+public class TopologySelector {
 
-	private TopologyProvider m_activeTopologyProvider;
 	private BundleContext m_bundleContext;
-	private Map<TopologyProvider, TopologySelectorOperation> m_operations = new HashMap<TopologyProvider, TopologySelector.TopologySelectorOperation>();
-	private Map<TopologyProvider, ServiceRegistration> m_registrations = new HashMap<TopologyProvider, ServiceRegistration>();
+	private final Map<TopologyProvider, TopologySelectorOperation> m_operations = new HashMap<TopologyProvider, TopologySelector.TopologySelectorOperation>();
+	private final Map<TopologyProvider, ServiceRegistration> m_registrations = new HashMap<TopologyProvider, ServiceRegistration>();
 	
     
     private class TopologySelectorOperation implements CheckedOperation {
     	
     	private TopologyProvider m_topologyProvider;
-    	private Map m_metaData;
+    	private Map<?,?> m_metaData;
 
-    	public TopologySelectorOperation(TopologyProvider topologyProvider, Map metaData) {
+    	public TopologySelectorOperation(TopologyProvider topologyProvider, Map<?,?> metaData) {
     		m_topologyProvider = topologyProvider;
     		m_metaData = metaData;
 		}
@@ -86,7 +86,7 @@ public class TopologySelector  {
 		@Override
 		public boolean isChecked(List<Object> targets,	OperationContext operationContext) {
 			TopologyProvider activeTopologyProvider = operationContext.getGraphContainer().getDataSource();
-			System.err.println("Active Provider is " + activeTopologyProvider + ": Expected " + m_topologyProvider);
+			LoggerFactory.getLogger(getClass()).debug("Active provider is " + activeTopologyProvider + ": Expected " + m_topologyProvider);
 			return m_topologyProvider.equals(activeTopologyProvider);
 		}
     }
@@ -96,9 +96,9 @@ public class TopologySelector  {
 		m_bundleContext = bundleContext;
 	}
 	
-    public void addTopologyProvider(TopologyProvider topologyProvider, Map metaData) {
+	public void addTopologyProvider(TopologyProvider topologyProvider, Map<?,?> metaData) {
     	
-    	System.err.println("Adding Topology Provider " + topologyProvider);
+    	LoggerFactory.getLogger(getClass()).debug("Adding topology provider: " + topologyProvider);
     	
     	TopologySelectorOperation operation = new TopologySelectorOperation(topologyProvider, metaData);
     	
@@ -113,10 +113,10 @@ public class TopologySelector  {
     	m_registrations.put(topologyProvider, reg);
     }
     
-    public void  removeTopologyProvider(TopologyProvider topologyProvider, Map metaData) {
+	public void removeTopologyProvider(TopologyProvider topologyProvider, Map<?,?> metaData) {
     	
-    	System.err.println("Removing Topology Provider" + topologyProvider);
-
+    	LoggerFactory.getLogger(getClass()).debug("Removing topology provider: " + topologyProvider);
+    	
     	m_operations.remove(topologyProvider);
     	ServiceRegistration reg = m_registrations.remove(topologyProvider);
     	if (reg != null) {

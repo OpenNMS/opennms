@@ -49,49 +49,49 @@ import org.opennms.core.resource.Vault;
  * @since 1.8.1
  */
 public class NotificationModel extends Object {
-    private final String USERID = "userID";
+    private static final String USERID = "userID";
 
-    private final String NOTICE_TIME = "notifytime";
+    private static final String NOTICE_TIME = "notifytime";
 
-    private final String TXT_MESG = "textMsg";
+    private static final String TXT_MESG = "textMsg";
 
-    private final String NUM_MESG = "numericMsg";
+    private static final String NUM_MESG = "numericMsg";
 
-    private final String NOTIFY = "notifyID";
+    private static final String NOTIFY = "notifyID";
 
-    private final String TIME = "pageTime";
+    private static final String TIME = "pageTime";
 
-    private final String REPLYTIME = "respondTime";
+    private static final String REPLYTIME = "respondTime";
 
-    private final String ANS_BY = "answeredBy";
+    private static final String ANS_BY = "answeredBy";
 
-    private final String CONTACT = "contactInfo";
+    private static final String CONTACT = "contactInfo";
 
-    private final String NODE = "nodeID";
+    private static final String NODE = "nodeID";
 
-    private final String INTERFACE = "interfaceID";
+    private static final String INTERFACE = "interfaceID";
 
-    private final String SERVICE = "serviceID";
+    private static final String SERVICE = "serviceID";
 
-    private final String MEDIA = "media";
+    private static final String MEDIA = "media";
 
-    private final String EVENTID = "eventid";
+    private static final String EVENTID = "eventid";
 
-    private final String SELECT = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS";
+    private static final String SELECT = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS";
 
-    private final String NOTICE_ID = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS where NOTIFYID = ?";
+    private static final String NOTICE_ID = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS where NOTIFYID = ?";
 
-    private final String SENT_TO = "SELECT userid, notifytime, media, contactinfo FROM usersnotified WHERE notifyid=?";
+    private static final String SENT_TO = "SELECT userid, notifytime, media, contactinfo FROM usersnotified WHERE notifyid=?";
 
-    private final String INSERT_NOTIFY = "INSERT INTO NOTIFICATIONS (notifyid, textmsg, numericmsg, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid) VALUES (NEXTVAL('notifyNxtId'), ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_NOTIFY = "INSERT INTO NOTIFICATIONS (notifyid, textmsg, numericmsg, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid) VALUES (NEXTVAL('notifyNxtId'), ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    private final String OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE respondTime is NULL";
+    private static final String OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE respondTime is NULL";
 
-    private final String OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE respondTime is NULL";
+    private static final String OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE respondTime is NULL";
 
-    private final String USER_OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
+    private static final String USER_OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
 
-    private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
+    private static final String USER_OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
 
     private Logger log() {
         return Logger.getLogger(getClass());

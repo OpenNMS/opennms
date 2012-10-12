@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,7 @@ import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.ops4j.pax.vaadin.ScriptTag;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.Application;
 
@@ -62,7 +62,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
-    	System.err.println("createApplication");
+    	LoggerFactory.getLogger(getClass()).debug("createApplication() for servlet path {}", request.getServletPath());
 		TopologyWidgetTestApplication application = new TopologyWidgetTestApplication(m_commandManager, m_topologyProvider, m_iconRepositoryManager);
 		application.setTheme(m_themeName);
 		
@@ -70,7 +70,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 		    application.setWidgetManager(m_widgetManager);
 		}
 		
-		System.err.println("application is " + application);
+        LoggerFactory.getLogger(getClass()).debug("Application is " + application);
         return application;
 	}
 

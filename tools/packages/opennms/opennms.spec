@@ -29,6 +29,7 @@
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
 %{!?skip_compile:%define skip_compile 0}
+%{!?enable_snapshots:%define enable_snapshots 1}
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -431,7 +432,9 @@ fi
 
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
-	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
+	if [ "%{enable_snapshots}" = 1 ]; then
+		export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
+	fi
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		pushd $dir

@@ -390,7 +390,7 @@ public abstract class EventUtils {
         if (event.getLoggroupCount() > 0) {
             b.append(" Loggroup:");
             for (Iterator<String> i = event.getLoggroupCollection().iterator(); i.hasNext(); ) {
-                b.append(" " + i.next().toString());
+                b.append(" " + i.next());
             }
             b.append("\n");
         }

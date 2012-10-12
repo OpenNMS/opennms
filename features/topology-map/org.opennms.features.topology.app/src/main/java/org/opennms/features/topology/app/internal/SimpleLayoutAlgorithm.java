@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.slf4j.LoggerFactory;
 
 public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
 
@@ -47,7 +48,7 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
         List<Vertex> vertices = graph.getVertices(szl);
 		for(int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
-			System.err.println("Laying out Vertex " + vertex);
+            LoggerFactory.getLogger(getClass()).debug("Laying out vertex: {}", vertex);
             if(i == 0) {
                 vertex.setX(cx);
                 vertex.setY(cy);

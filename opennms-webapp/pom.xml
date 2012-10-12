@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -176,7 +176,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.11.3-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.3-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-1.11.4-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.4-SNAPSHOT.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>
@@ -261,11 +261,6 @@
     <!-- indirect dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
 
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>activemq-web-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>

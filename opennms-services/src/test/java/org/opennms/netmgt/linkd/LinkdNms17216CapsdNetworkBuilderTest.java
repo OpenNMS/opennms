@@ -106,7 +106,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER1_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt")
     })
     @Transactional
     public final void testRouter1() throws MarshalException, ValidationException, IOException {
@@ -143,7 +143,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER2_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt")
     })
     @Transactional
     public final void testRouter2() throws MarshalException, ValidationException, IOException {
@@ -178,7 +178,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER3_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
     })
     @Transactional
     public final void testRouter3() throws MarshalException, ValidationException, IOException {
@@ -213,7 +213,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/"+ROUTER4_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
     })
     @Transactional
     public final void testRouter4() throws MarshalException, ValidationException, IOException {
@@ -248,7 +248,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH1_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
     @Transactional
     public final void testSwitch1() throws MarshalException, ValidationException, IOException {
@@ -283,7 +283,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH2_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
     })
     @Transactional
     public final void testSwitch2() throws MarshalException, ValidationException, IOException {
@@ -318,7 +318,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH3_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
     })
     @Transactional
     public final void testSwitch3() throws MarshalException, ValidationException, IOException {
@@ -353,7 +353,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH4_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
     })
     @Transactional
     public final void testSwitch4() throws MarshalException, ValidationException, IOException {
@@ -388,7 +388,7 @@ public class LinkdNms17216CapsdNetworkBuilderTest extends LinkdNms17216NetworkBu
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/"+SWITCH5_NAME+"-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
     })
     @Transactional
     public final void testSwitch5() throws MarshalException, ValidationException, IOException {

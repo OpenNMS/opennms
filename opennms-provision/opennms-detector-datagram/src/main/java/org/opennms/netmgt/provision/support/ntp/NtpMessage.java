@@ -91,7 +91,15 @@ public class NtpMessage {
     
     private static final DecimalFormat NTP_FRACTION_FORMAT = new DecimalFormat(".000000");
 
-    private static final SimpleDateFormat NTP_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+    /**
+     *  Use ThreadLocal SimpleDateFormat instances because SimpleDateFormat is not thread-safe.
+     */
+    private static final ThreadLocal<SimpleDateFormat> NTP_DATE_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        }
+    };
 
     /**
      * This is a two-bit code warning of an impending leap second to be
@@ -422,7 +430,7 @@ public class NtpMessage {
         final long ms = (long) (utc * 1000.0);
 
         // date/time
-        final String date = NTP_DATE_FORMAT.format(new Date(ms));
+        final String date = NTP_DATE_FORMAT.get().format(new Date(ms));
 
         // fraction
         final double fraction = timestamp - ((long) timestamp);

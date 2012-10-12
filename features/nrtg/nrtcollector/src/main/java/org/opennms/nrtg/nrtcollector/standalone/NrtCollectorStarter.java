@@ -26,9 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.nrtcollector.internal;
+package org.opennms.nrtg.nrtcollector.standalone;
 
 import org.opennms.nrtg.nrtcollector.api.NrtCollector;
+import org.opennms.nrtg.nrtcollector.standalone.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -49,7 +50,7 @@ public class NrtCollectorStarter {
     private static AbstractApplicationContext context;
 
     public static void main(String args[]) {
-        context = new AnnotationConfigApplicationContext(org.opennms.nrtg.nrtcollector.internal.config.AppConfig.class);
+        context = new AnnotationConfigApplicationContext(org.opennms.nrtg.nrtcollector.standalone.config.AppConfig.class);
         context.registerShutdownHook();
         NrtCollector nrtCollector = (NrtCollector) context.getBean("nrtCollector");
         nrtCollector.start();

@@ -40,18 +40,19 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.ItemSetChangeListener;
+import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.MethodProperty;
 
 public class SimpleGraphContainer implements GraphContainer {
 
-    public class GVertex{
+    public class GVertex {
         
         private String m_key;
         private Object m_itemId;
@@ -206,7 +207,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
     }
     
-    public class GEdge{
+    public static class GEdge {
 
         private String m_key;
         private Object m_itemId;
@@ -322,7 +323,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
-            System.err.println("containerItemSetChange called in GEdgeContainer");
+            LoggerFactory.getLogger(getClass()).debug("containerItemSetChange()");
             m_edgeHolder.update();
             removeAllItems();
             addAll(m_edgeHolder.getElements());
@@ -334,8 +335,9 @@ public class SimpleGraphContainer implements GraphContainer {
      
     private class GVertexContainer extends VertexContainer<Object, GVertex> implements ItemSetChangeListener, PropertySetChangeListener{
     	
-		private static final long serialVersionUID = 1L;
 		
+		private static final long serialVersionUID = -5363822401177550580L;
+
 		TopologyProvider topologyProvider;
 
 		public GVertexContainer() {
@@ -429,9 +431,8 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
-            System.err.println("containerItemSetChange called in GVertexContainer");
+            LoggerFactory.getLogger(getClass()).debug("containerItemSetChange()");
             m_vertexHolder.update();
-            
             
 //            removeAllItems();
 //            addAll(m_vertexHolder.getElements());
@@ -481,7 +482,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerPropertySetChange(PropertySetChangeEvent event) {
-            System.err.println("containerPropertySetChange called in GVertexContainer");
+            LoggerFactory.getLogger(getClass()).debug("containerPropertySetChange()");
             m_vertexHolder.update();
             removeAllItems();
             addAll(m_vertexHolder.getElements());
@@ -559,10 +560,12 @@ public class SimpleGraphContainer implements GraphContainer {
 		
 	}
 	
+	@Override
 	public TopologyProvider getDataSource() {
 		return m_topologyProvider;
 	}
 	
+	@Override
 	public void setDataSource(TopologyProvider topologyProvider) {
 	    if (m_topologyProvider == topologyProvider) return;
 	    
@@ -579,30 +582,37 @@ public class SimpleGraphContainer implements GraphContainer {
 
 	}
 
+	@Override
 	public VertexContainer<Object, GVertex> getVertexContainer() {
 		return m_vertexContainer;
 	}
 
+	@Override
 	public BeanContainer<String,GEdge> getEdgeContainer() {
 		return m_edgeContainer;
 	}
 
+	@Override
 	public Collection<Object> getVertexIds() {
 		return m_vertexContainer.getItemIds();
 	}
 
+	@Override
 	public Collection<String> getEdgeIds() {
 		return m_edgeContainer.getItemIds();
 	}
 
+	@Override
 	public BeanItem<GVertex> getVertexItem(Object vertexId) {
 		return m_vertexContainer.getItem(vertexId);
 	}
 
+	@Override
 	public BeanItem<GEdge> getEdgeItem(Object edgeId) {
 		return m_edgeContainer.getItem(edgeId); 
 	}
 	
+	@Override
 	public Collection<String> getEndPointIdsForEdge(Object key) {
 	        if (key == null) return Collections.emptyList();
 		GEdge edge = m_edgeHolder.getElementByKey(key.toString());
@@ -610,15 +620,17 @@ public class SimpleGraphContainer implements GraphContainer {
 		return Arrays.asList(edge.getSource().getKey(), edge.getTarget().getKey());
 	}
 
+	@Override
 	public Collection<String> getEdgeIdsForVertex(Object vertexKey) {
 	    GVertex vertex = m_vertexHolder.getElementByKey(vertexKey.toString());
 	    return m_edgeHolder.getKeysByItemId(m_topologyProvider.getEdgeIdsForVertex(vertex.getItemId()));
 	}
 	
-	public Collection<String> getPropertyIds() {
+	public static Collection<String> getPropertyIds() {
 	    return Arrays.asList(new String[] {"semanticZoomLevel", "scale"});
 	}
 
+	@Override
 	public Property getProperty(String propertyId) {
 	    if(propertyId.equals("semanticZoomLevel")) {
 	        return m_zoomLevelProperty;
@@ -652,7 +664,7 @@ public class SimpleGraphContainer implements GraphContainer {
     public LayoutAlgorithm getLayoutAlgorithm() {
         return m_layoutAlgorithm;
     }
-    
+
     public Double getScale() {
         return m_scale;
     }
@@ -662,7 +674,7 @@ public class SimpleGraphContainer implements GraphContainer {
     }
     @Override
     public void redoLayout() {
-        System.err.println("redoLayout for simpleGraphContainer");
+        LoggerFactory.getLogger(getClass()).debug("redoLayout()");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
             getVertexContainer().fireItemSetChange();

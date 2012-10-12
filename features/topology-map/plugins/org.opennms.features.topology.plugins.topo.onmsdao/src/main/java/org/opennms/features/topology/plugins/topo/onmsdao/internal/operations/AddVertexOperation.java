@@ -34,6 +34,7 @@ import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
+import org.slf4j.LoggerFactory;
 
 public class AddVertexOperation implements Operation{
     
@@ -76,7 +77,7 @@ public class AddVertexOperation implements Operation{
     }
 
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
-        System.err.println("/*** Executing add Vertex in AddVertexOperation ***/");
+        LoggerFactory.getLogger(getClass()).debug("execute()");
         Object vertexId = targets.isEmpty() ? null : targets.get(0);
         String icon = getIcon();
         if (vertexId == null) {

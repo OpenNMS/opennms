@@ -64,7 +64,7 @@ public class Configuration implements Serializable {
 	private static final long serialVersionUID = -6800972339377512259L;
 
 	/**
-	 * The proxy host to use when communiciating with this agent
+	 * The proxy host to use when communicating with this agent
 	 */
 	@XmlAttribute(name="proxy-host")
 	private String _proxyHost;
@@ -309,7 +309,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'AuthPassphrase'.
 	 */
-	public String getAuthPassphrase() {
+	public final String getAuthPassphrase() {
 		return _authPassphrase;
 	}
 
@@ -319,7 +319,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'AuthProtocol'.
 	 */
-	public String getAuthProtocol() {
+	public final String getAuthProtocol() {
 		return _authProtocol;
 	}
 
@@ -329,7 +329,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'ContextEngineId'.
 	 */
-	public String getContextEngineId() {
+	public final String getContextEngineId() {
 		return _contextEngineId;
 	}
 
@@ -339,7 +339,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'ContextName'.
 	 */
-	public String getContextName() {
+	public final String getContextName() {
 		return _contextName;
 	}
 
@@ -349,7 +349,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'EngineId'.
 	 */
-	public String getEngineId() {
+	public final String getEngineId() {
 		return _engineId;
 	}
 
@@ -359,7 +359,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'EnterpriseId'.
 	 */
-	public String getEnterpriseId() {
+	public final String getEnterpriseId() {
 		return _enterpriseId;
 	}
 
@@ -371,7 +371,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'MaxRepetitions'.
 	 */
-	public Integer getMaxRepetitions() {
+	public final Integer getMaxRepetitions() {
 		return _maxRepetitions == null? 2 : _maxRepetitions;
 	}
 
@@ -384,7 +384,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'MaxRequestSize'.
 	 */
-	public Integer getMaxRequestSize() {
+	public final Integer getMaxRequestSize() {
 		return _maxRequestSize == null? 65535 : _maxRequestSize;
 	}
 
@@ -395,7 +395,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'MaxVarsPerPdu'.
 	 */
-	public Integer getMaxVarsPerPdu() {
+	public final Integer getMaxVarsPerPdu() {
 		return _maxVarsPerPdu == null? 10 : _maxVarsPerPdu;
 	}
 
@@ -406,7 +406,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Port'.
 	 */
-	public Integer getPort() {
+	public final Integer getPort() {
 		return _port == null? 0 : _port;
 	}
 
@@ -416,7 +416,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'PrivacyPassphrase'.
 	 */
-	public String getPrivacyPassphrase() {
+	public final String getPrivacyPassphrase() {
 		return _privacyPassphrase;
 	}
 
@@ -426,7 +426,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'PrivacyProtocol'.
 	 */
-	public String getPrivacyProtocol() {
+	public final String getPrivacyProtocol() {
 		return _privacyProtocol;
 	}
 
@@ -437,7 +437,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'ProxyHost'.
 	 */
-	public String getProxyHost() {
+	public final String getProxyHost() {
 		return _proxyHost;
 	}
 
@@ -447,7 +447,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'ReadCommunity'.
 	 */
-	public String getReadCommunity() {
+	public final String getReadCommunity() {
 		return _readCommunity;
 	}
 
@@ -457,7 +457,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Retry'.
 	 */
-	public Integer getRetry() {
+	public final Integer getRetry() {
 		return _retry == null? 0 : _retry;
 	}
 
@@ -467,7 +467,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'SecurityLevel'.
 	 */
-	public Integer getSecurityLevel() {
+	public final Integer getSecurityLevel() {
 		return _securityLevel == null? 0 : _securityLevel;
 	}
 
@@ -477,7 +477,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'SecurityName'.
 	 */
-	public String getSecurityName() {
+	public final String getSecurityName() {
 		return _securityName;
 	}
 
@@ -487,7 +487,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Timeout'.
 	 */
-	public Integer getTimeout() {
+	public final Integer getTimeout() {
 		return _timeout == null? 0 : _timeout;
 	}
 
@@ -498,7 +498,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Version'.
 	 */
-	public String getVersion() {
+	public final String getVersion() {
 		return _version;
 	}
 
@@ -508,7 +508,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'WriteCommunity'.
 	 */
-	public String getWriteCommunity() {
+	public final String getWriteCommunity() {
 		return _writeCommunity;
 	}
 
@@ -687,7 +687,7 @@ public class Configuration implements Serializable {
 	 * @param authPassphrase
 	 *            the value of field 'authPassphrase'.
 	 */
-	public void setAuthPassphrase(final String authPassphrase) {
+	public final void setAuthPassphrase(final String authPassphrase) {
 		_authPassphrase = authPassphrase;
 	}
 
@@ -698,7 +698,7 @@ public class Configuration implements Serializable {
 	 * @param authProtocol
 	 *            the value of field 'authProtocol'.
 	 */
-	public void setAuthProtocol(final String authProtocol) {
+	public final void setAuthProtocol(final String authProtocol) {
 		_authProtocol = authProtocol;
 	}
 
@@ -709,7 +709,7 @@ public class Configuration implements Serializable {
 	 * @param contextEngineId
 	 *            the value of field 'contextEngineId'.
 	 */
-	public void setContextEngineId(final String contextEngineId) {
+	public final void setContextEngineId(final String contextEngineId) {
 		_contextEngineId = contextEngineId;
 	}
 
@@ -720,7 +720,7 @@ public class Configuration implements Serializable {
 	 * @param contextName
 	 *            the value of field 'contextName'.
 	 */
-	public void setContextName(final String contextName) {
+	public final void setContextName(final String contextName) {
 		_contextName = contextName;
 	}
 
@@ -731,7 +731,7 @@ public class Configuration implements Serializable {
 	 * @param engineId
 	 *            the value of field 'engineId'.
 	 */
-	public void setEngineId(final String engineId) {
+	public final void setEngineId(final String engineId) {
 		_engineId = engineId;
 	}
 
@@ -742,7 +742,7 @@ public class Configuration implements Serializable {
 	 * @param enterpriseId
 	 *            the value of field 'enterpriseId'.
 	 */
-	public void setEnterpriseId(final String enterpriseId) {
+	public final void setEnterpriseId(final String enterpriseId) {
 		_enterpriseId = enterpriseId;
 	}
 
@@ -755,7 +755,7 @@ public class Configuration implements Serializable {
 	 * @param maxRepetitions
 	 *            the value of field 'maxRepetitions'.
 	 */
-	public void setMaxRepetitions(final Integer maxRepetitions) {
+	public final void setMaxRepetitions(final Integer maxRepetitions) {
 		_maxRepetitions = maxRepetitions;
 	}
 
@@ -769,7 +769,7 @@ public class Configuration implements Serializable {
 	 * @param maxRequestSize
 	 *            the value of field 'maxRequestSize'.
 	 */
-	public void setMaxRequestSize(final Integer maxRequestSize) {
+	public final void setMaxRequestSize(final Integer maxRequestSize) {
 		_maxRequestSize = maxRequestSize;
 	}
 
@@ -781,7 +781,7 @@ public class Configuration implements Serializable {
 	 * @param maxVarsPerPdu
 	 *            the value of field 'maxVarsPerPdu'.
 	 */
-	public void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
+	public final void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
 		_maxVarsPerPdu = maxVarsPerPdu;
 	}
 
@@ -793,7 +793,7 @@ public class Configuration implements Serializable {
 	 * @param port
 	 *            the value of field 'port'.
 	 */
-	public void setPort(final Integer port) {
+	public final void setPort(final Integer port) {
 		_port = port;
 	}
 
@@ -804,7 +804,7 @@ public class Configuration implements Serializable {
 	 * @param privacyPassphrase
 	 *            the value of field 'privacyPassphrase'.
 	 */
-	public void setPrivacyPassphrase(final String privacyPassphrase) {
+	public final void setPrivacyPassphrase(final String privacyPassphrase) {
 		_privacyPassphrase = privacyPassphrase;
 	}
 
@@ -815,7 +815,7 @@ public class Configuration implements Serializable {
 	 * @param privacyProtocol
 	 *            the value of field 'privacyProtocol'.
 	 */
-	public void setPrivacyProtocol(final String privacyProtocol) {
+	public final void setPrivacyProtocol(final String privacyProtocol) {
 		_privacyProtocol = privacyProtocol;
 	}
 
@@ -827,7 +827,7 @@ public class Configuration implements Serializable {
 	 * @param proxyHost
 	 *            the value of field 'proxyHost'.
 	 */
-	public void setProxyHost(final String proxyHost) {
+	public final void setProxyHost(final String proxyHost) {
 		_proxyHost = proxyHost;
 	}
 
@@ -838,7 +838,7 @@ public class Configuration implements Serializable {
 	 * @param readCommunity
 	 *            the value of field 'readCommunity'.
 	 */
-	public void setReadCommunity(final String readCommunity) {
+	public final void setReadCommunity(final String readCommunity) {
 		_readCommunity = readCommunity;
 	}
 
@@ -849,7 +849,7 @@ public class Configuration implements Serializable {
 	 * @param retry
 	 *            the value of field 'retry'.
 	 */
-	public void setRetry(final Integer retry) {
+	public final void setRetry(final Integer retry) {
 		_retry = retry;
 	}
 
@@ -860,7 +860,7 @@ public class Configuration implements Serializable {
 	 * @param securityLevel
 	 *            the value of field 'securityLevel'.
 	 */
-	public void setSecurityLevel(final Integer securityLevel) {
+	public final void setSecurityLevel(final Integer securityLevel) {
 		_securityLevel = securityLevel;
 	}
 
@@ -871,7 +871,7 @@ public class Configuration implements Serializable {
 	 * @param securityName
 	 *            the value of field 'securityName'.
 	 */
-	public void setSecurityName(final String securityName) {
+	public final void setSecurityName(final String securityName) {
 		_securityName = securityName;
 	}
 
@@ -882,7 +882,7 @@ public class Configuration implements Serializable {
 	 * @param timeout
 	 *            the value of field 'timeout'.
 	 */
-	public void setTimeout(final Integer timeout) {
+	public final void setTimeout(final Integer timeout) {
 		_timeout = timeout;
 	}
 
@@ -894,7 +894,7 @@ public class Configuration implements Serializable {
 	 * @param version
 	 *            the value of field 'version'.
 	 */
-	public void setVersion(final String version) {
+	public final void setVersion(final String version) {
 		_version = version;
 	}
 
@@ -905,7 +905,7 @@ public class Configuration implements Serializable {
 	 * @param writeCommunity
 	 *            the value of field 'writeCommunity'.
 	 */
-	public void setWriteCommunity(final String writeCommunity) {
+	public final void setWriteCommunity(final String writeCommunity) {
 		_writeCommunity = writeCommunity;
 	}
 

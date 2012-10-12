@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -28,6 +28,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>manual</Bundle-SymbolicName>
                         <Import-Package>*</Import-Package>
                         <Private-Package>!*</Private-Package>

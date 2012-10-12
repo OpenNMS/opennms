@@ -65,7 +65,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 @Distributable
-final public class SmtpMonitor extends AbstractServiceMonitor {
+public final class SmtpMonitor extends AbstractServiceMonitor {
 
     /**
      * Default SMTP port.
@@ -94,12 +94,6 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
      * instead of a space.
      */
     private static final RE MULTILINE;
-
-    /**
-     * Used to check for the end of a multiline response. The end of a multiline
-     * response is the same 3 digit response code followed by a space
-     */
-    private RE ENDMULTILINE = null;
 
     /**
      * Init MULTILINE
@@ -148,8 +142,9 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
         InetAddress ipAddr = iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
-		if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+        }
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -169,7 +164,7 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
 
-                BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream(), "ASCII"));
 
                 //
                 // Tokenize the Banner Line, and check the first
@@ -177,19 +172,22 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                 //
                 String banner = rdr.readLine();
 
-                if (banner == null)
+                if (banner == null) {
                     continue;
+                }
+
                 if (MULTILINE.match(banner)) {
                     // Ok we have a multi-line response...first three
                     // chars of the response line are the return code.
                     // The last line of the response will start with
                     // return code followed by a space.
-                    String multiLineRC = new String(banner.getBytes(), 0, 3) + " ";
+                    String multiLineRC = new String(banner.getBytes("ASCII"), 0, 3, "ASCII");
 
                     // Create new regExp to look for last line
-                    // of this mutli line response
+                    // of this multi line response
+                    RE endMultiline = null;
                     try {
-                        ENDMULTILINE = new RE(multiLineRC);
+                        endMultiline = new RE(multiLineRC);
                     } catch (RESyntaxException ex) {
                         throw new java.lang.reflect.UndeclaredThrowableException(ex);
                     }
@@ -198,9 +196,10 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                     // response
                     do {
                         banner = rdr.readLine();
-                    } while (banner != null && !ENDMULTILINE.match(banner));
-                    if (banner == null)
+                    } while (banner != null && !endMultiline.match(banner));
+                    if (banner == null) {
                         continue;
+                    }
                 }
 
                 if (log().isDebugEnabled())
@@ -222,19 +221,22 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                     String response = rdr.readLine();
                     double responseTime = tracker.elapsedTimeInMillis();
 
-                    if (response == null)
+                    if (response == null) {
                         continue;
+                    }
+
                     if (MULTILINE.match(response)) {
                         // Ok we have a multi-line response...first three
                         // chars of the response line are the return code.
                         // The last line of the response will start with
                         // return code followed by a space.
-                        String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
+                        String multiLineRC = new String(response.getBytes("ASCII"), 0, 3, "ASCII");
 
                         // Create new regExp to look for last line
-                        // of this mutli line response
+                        // of this multi line response
+                        RE endMultiline = null;
                         try {
-                            ENDMULTILINE = new RE(multiLineRC);
+                            endMultiline = new RE(multiLineRC);
                         } catch (RESyntaxException ex) {
                             throw new java.lang.reflect.UndeclaredThrowableException(ex);
                         }
@@ -243,35 +245,38 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                         // response
                         do {
                             response = rdr.readLine();
-                        } while (response != null && !ENDMULTILINE.match(response));
-                        if (response == null)
+                        } while (response != null && !endMultiline.match(response));
+                        if (response == null) {
                             continue;
+                        }
                     }
 
                     t = new StringTokenizer(response);
                     rc = Integer.parseInt(t.nextToken());
                     if (rc == 250) {
                         cmd = "QUIT\r\n";
-                        socket.getOutputStream().write(cmd.getBytes());
+                        socket.getOutputStream().write(cmd.getBytes("ASCII"));
 
                         //
                         // get the returned string, tokenize, and
                         // verify the correct output.
                         //
                         response = rdr.readLine();
-                        if (response == null)
+                        if (response == null) {
                             continue;
+                        }
                         if (MULTILINE.match(response)) {
                             // Ok we have a multi-line response...first three
                             // chars of the response line are the return code.
                             // The last line of the response will start with
                             // return code followed by a space.
-                            String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
+                            String multiLineRC = new String(response.getBytes("ASCII"), 0, 3, "ASCII");
 
                             // Create new regExp to look for last line
-                            // of this mutli line response
+                            // of this multi line response
+                            RE endMultiline = null;
                             try {
-                                ENDMULTILINE = new RE(multiLineRC);
+                                endMultiline = new RE(multiLineRC);
                             } catch (RESyntaxException ex) {
                                 throw new java.lang.reflect.UndeclaredThrowableException(ex);
                             }
@@ -280,9 +285,10 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                             // response
                             do {
                                 response = rdr.readLine();
-                            } while (response != null && !ENDMULTILINE.match(response));
-                            if (response == null)
+                            } while (response != null && !endMultiline.match(response));
+                            if (response == null) {
                                 continue;
+                            }
                         }
 
                         t = new StringTokenizer(response);
@@ -314,12 +320,14 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
             } finally {
                 try {
                     // Close the socket
-                    if (socket != null)
+                    if (socket != null) {
                         socket.close();
+                    }
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log().isDebugEnabled())
+                    if (log().isDebugEnabled()) {
                         log().debug("poll: Error closing socket.", e);
+                    }
                 }
             }
         }

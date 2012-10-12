@@ -28,11 +28,21 @@
 
 package org.opennms.core.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * <p>StringUtils class.</p>
@@ -144,5 +154,30 @@ public abstract class StringUtils {
 		if (FileSystemView.getFileSystemView().isFileSystemRoot(file)) return true;
 
     	return false;
+    }
+
+    /**
+     * Uses the Xalan javax.transform classes to indent an XML string properly
+     * so that it is easier to read.
+     */
+    public static String prettyXml(String xml) throws UnsupportedEncodingException, TransformerException {
+        StringWriter out = new StringWriter();
+
+        TransformerFactory transFactory = TransformerFactory.newInstance();
+        Transformer transformer  = transFactory.newTransformer();
+
+        // Set options on the transformer so that it will indent the XML properly
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+        StreamResult result = new StreamResult(out);
+        Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
+        // Run the transformer to put the XML into the StringWriter
+        transformer.transform(source, result);
+
+        return out.toString().trim();
     }
 }
