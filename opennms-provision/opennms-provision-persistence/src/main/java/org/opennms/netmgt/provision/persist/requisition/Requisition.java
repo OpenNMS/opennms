@@ -75,9 +75,9 @@ import org.springframework.core.io.Resource;
 @XmlRootElement(name="model-import")
 @ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
-    private static final long serialVersionUID = 1316605927474869066L;
+	private static final long serialVersionUID = 1629774241824443273L;
 
-    @XmlTransient
+	@XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
@@ -288,24 +288,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         } catch (final DatatypeConfigurationException e) {
             LogUtils.warnf(this, e, "unable to update last import datestamp");
         }
-    }
-
-    // Exists only to be compatible with old (1.6!) imports XSD
-    @XmlAttribute(name="non-ip-interfaces")
-    public boolean getNonIpInterfaces() {
-        return false;
-    }
-
-    public void setNonIpInterfaces(final boolean nii) {
-    }
-
-    // Exists only to be compatible with old (1.6!) imports XSD
-    @XmlAttribute(name="non-ip-snmp-primary")
-    public String getNonIpSnmpPrimary() {
-        return "N";
-    }
-    
-    public void setNonIpSnmpPrimary(final String nisp) {
     }
 
     /* Start non-JAXB methods */
