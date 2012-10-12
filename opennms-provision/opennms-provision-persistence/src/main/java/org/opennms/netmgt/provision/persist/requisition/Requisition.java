@@ -297,7 +297,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     }
 
     public void setNonIpInterfaces(final boolean nii) {
-        LogUtils.warnf(this, "The non-ip-interfaces field was deprecated in 1.6, and removed in 1.8.  Ignored.");
     }
 
     // Exists only to be compatible with old (1.6!) imports XSD
@@ -307,7 +306,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     }
     
     public void setNonIpSnmpPrimary(final String nisp) {
-        LogUtils.warnf(this, "The non-ip-snmp-primary field was deprecated in 1.6, and removed in 1.8.  Ignored.");
     }
 
     /* Start non-JAXB methods */
