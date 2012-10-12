@@ -762,7 +762,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         final Dot1dBaseGroup dod1db = snmpVlanColl.getDot1dBase();
 
         final String baseBridgeAddress = dod1db.getBridgeAddress();
-        if (baseBridgeAddress == null || baseBridgeAddress == "000000000000") {
+        if (baseBridgeAddress == null || baseBridgeAddress.equals("000000000000")) {
             LogUtils.infof(this, "processDot1DBase: Invalid base bridge address (%s) on node %d", baseBridgeAddress, node.getNodeId());
             return;
         }
