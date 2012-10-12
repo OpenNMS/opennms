@@ -37,13 +37,10 @@ import java.util.List;
 /**
  * Result of a {@link CollectionJob}. List of metricId/values pairs with minimal redundancy (timestamp, nodeId, service
  * and interface are stored only once). The list of {@link Measurement} will be generated on the fly.
- * <p/>
- * Created with IntelliJ IDEA.
- * User: chris
- * Date: 22.06.12
- * Time: 10:51
- * To change this template use File | Settings | File Templates.
- */
+ * 
+ * @author Christian Pape
+ * @author Markus Neumann
+*/
 public class LightweightMeasurementSet implements MeasurementSet {
     private static final long serialVersionUID = 1166779403641774595L;
     private HashMap<String, ArrayList<String>> m_values = new HashMap<String, ArrayList<String>>();
@@ -146,7 +143,7 @@ public class LightweightMeasurementSet implements MeasurementSet {
             buf.append("\"nodeId\"").append(":").append(m.getNodeId()).append(",");
             buf.append("\"service\"").append(":\"").append(m.getService()).append("\",");
             buf.append("\"timeStamp\"").append(":").append(m.getTimestamp().getTime()).append(",");
-            buf.append("\"onmsLogicMetricId\"").append(":").append(m.getOnmsLogicMetricId()).append(",");
+            buf.append("\"onmsLogicMetricId\"").append(":\"").append(m.getOnmsLogicMetricId()).append("\",");
             buf.append("\"value\"").append(":").append(m.getValue());
             buf.append("}");
         }

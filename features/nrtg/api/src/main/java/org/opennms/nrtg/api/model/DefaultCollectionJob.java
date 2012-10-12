@@ -35,9 +35,8 @@ import java.util.*;
 
 
 /**
- * User: chris
- * Date: 13.06.12
- * Time: 11:47
+ * @author Christian Pape
+ * @author Markus Neumann
  */
 public class DefaultCollectionJob implements CollectionJob {
     private static final long serialVersionUID = -857193182688356245L;

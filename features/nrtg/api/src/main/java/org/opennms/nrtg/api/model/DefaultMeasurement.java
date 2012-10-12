@@ -32,10 +32,8 @@ import java.util.Date;
 
 /**
  * {@inheritDoc}
- * User: chris
- * Date: 19.06.12
- * Time: 14:48
- * To change this template use File | Settings | File Templates.
+ * @author Christian Pape
+ * @author Markus Neumann
  */
 public class DefaultMeasurement implements Measurement {
 
