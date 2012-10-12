@@ -334,9 +334,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>com.sun.xml</groupId>
+      <artifactId>com.springsource.com.sun.xml.bind</artifactId>
+      <version>${jaxbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
