@@ -43,6 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsmiparser.parser.SmiDefaultParser;
+import org.jsmiparser.smi.Notification;
 import org.jsmiparser.smi.SmiMib;
 import org.jsmiparser.smi.SmiModule;
 import org.jsmiparser.smi.SmiNamedNumber;
@@ -51,9 +52,6 @@ import org.jsmiparser.smi.SmiPrimitiveType;
 import org.jsmiparser.smi.SmiRow;
 import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
-import org.jsmiparser.util.token.IdToken;
-import org.jsmiparser.util.traps.TrapWrapper;
-import org.jsmiparser.util.traps.TrapWrapperFactory;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
@@ -355,12 +353,10 @@ public class JsmiMibParser implements MibParser, Serializable {
     protected Events convertMibToEvents(SmiModule module, String ueibase) {
         Events events = new Events();
         for (SmiNotificationType trap : module.getNotificationTypes()) {
-            TrapWrapper wrapper = TrapWrapperFactory.create(trap);
-            events.addEvent(getTrapEvent(wrapper, ueibase));
+            events.addEvent(getTrapEvent(trap, ueibase));
         }
         for (SmiTrapType trap : module.getTrapTypes()) {
-            TrapWrapper wrapper = TrapWrapperFactory.create(trap);
-            events.addEvent(getTrapEvent(wrapper, ueibase));
+            events.addEvent(getTrapEvent(trap, ueibase));
         }
         return events;
     }
@@ -372,7 +368,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param ueibase the UEI base
      * @return the trap event
      */
-    protected Event getTrapEvent(TrapWrapper trap, String ueibase) {
+    protected Event getTrapEvent(Notification trap, String ueibase) {
         Event evt = new Event();
         // Set the event's UEI, event-label, logmsg, severity, and descr
         evt.setUei(getTrapEventUEI(trap, ueibase));
@@ -401,7 +397,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param ueibase the UEI base
      * @return the trap event UEI
      */
-    protected String getTrapEventUEI(TrapWrapper trap, String ueibase) {
+    protected String getTrapEventUEI(Notification trap, String ueibase) {
         StringBuffer buf = new StringBuffer(ueibase);
         if (! ueibase.endsWith("/")) {
             buf.append("/");
@@ -416,7 +412,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap event label
      */
-    protected String getTrapEventLabel(TrapWrapper trap) {
+    protected String getTrapEventLabel(Notification trap) {
         StringBuffer buf = new StringBuffer();
         buf.append(trap.getModule().getId());
         buf.append(" defined trap event: ");
@@ -430,7 +426,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap event LogMsg
      */
-    protected Logmsg getTrapEventLogmsg(TrapWrapper trap) {
+    protected Logmsg getTrapEventLogmsg(Notification trap) {
         Logmsg msg = new Logmsg();
         msg.setDest("logndisplay");
         final StringBuffer dbuf = new StringBuffer();
@@ -438,8 +434,8 @@ public class JsmiMibParser implements MibParser, Serializable {
         dbuf.append("\n");
         dbuf.append("\t").append(trap.getId()).append(" trap received\n");
         int vbNum = 1;
-        for (IdToken token : trap.getParameterTokens()) {
-            dbuf.append("\t").append(token.getId()).append("=%parm[#").append(vbNum).append("]%\n");
+        for (SmiVariable var : trap.getObjects()) {
+            dbuf.append("\t").append(var.getId()).append("=%parm[#").append(vbNum).append("]%\n");
             vbNum++;
         }
         if (dbuf.charAt(dbuf.length() - 1) == '\n') {
@@ -456,7 +452,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap event description
      */
-    protected String getTrapEventDescr(TrapWrapper trap) {
+    protected String getTrapEventDescr(Notification trap) {
         String description = trap.getDescription();
         // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
         final String descrStartingNewlines = description.replaceAll("^", "\n<p>");
@@ -468,8 +464,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         dbuf.append("<table>");
         dbuf.append("\n");
         int vbNum = 1;
-        for (IdToken token : trap.getParameterTokens()) {
-            SmiVariable var = trap.getModule().findVariable(token.getId());
+        for (SmiVariable var : trap.getObjects()) {
             dbuf.append("\t<tr><td><b>\n\n\t").append(var.getId());
             dbuf.append("</b></td><td>\n\t%parm[#").append(vbNum).append("]%;</td><td><p>");
             SmiPrimitiveType type = var.getType().getPrimitiveType();
@@ -500,11 +495,10 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap varbinds decode
      */
-    protected List<Varbindsdecode> getTrapVarbindsDecode(TrapWrapper trap) {
+    protected List<Varbindsdecode> getTrapVarbindsDecode(Notification trap) {
         Map<String, Varbindsdecode> decode = new LinkedHashMap<String, Varbindsdecode>();
         int vbNum = 1;
-        for (IdToken token : trap.getParameterTokens()) {
-            SmiVariable var = trap.getModule().findVariable(token.getId());
+        for (SmiVariable var : trap.getObjects()) {
             String parmName = "parm[#" + vbNum + "]";
             SmiPrimitiveType type = var.getType().getPrimitiveType();
             if (type.equals(SmiPrimitiveType.ENUM)) {
@@ -535,7 +529,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap enterprise
      */
-    private String getTrapEnterprise(TrapWrapper trap) {
+    private String getTrapEnterprise(Notification trap) {
         return getMatcherForOid(getTrapOid(trap)).group(1);
     }
 
@@ -545,7 +539,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap specific type
      */
-    private String getTrapSpecificType(TrapWrapper trap) {
+    private String getTrapSpecificType(Notification trap) {
         return getMatcherForOid(getTrapOid(trap)).group(2);
     }
 
@@ -569,8 +563,8 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @param trap the trap object
      * @return the trap OID
      */
-    private String getTrapOid(TrapWrapper trap) {
-        return '.' + trap.getTrapOid();
+    private String getTrapOid(Notification trap) {
+        return '.' + trap.getOidStr();
     }
 
     /**
