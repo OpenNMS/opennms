@@ -1522,7 +1522,7 @@ var RRDGraph = window['RRDGraph'] = {};
 
   Graph.prototype.update = function () {
     var y_min = Math.floor(this.data.extremes.y.min);
-    var y_max = Math.floor(this.data.extremes.y.max);
+    var y_max = Math.ceil(this.data.extremes.y.max);
 
     var conf_y_max = this.config.options['upper-limit'];
     var conf_y_min = this.config.options['lower-limit'];
@@ -1536,17 +1536,8 @@ var RRDGraph = window['RRDGraph'] = {};
     }
     /* Handle y_min and y_max for initial or not changing values */
     if (y_min == y_max) {
-      if (y_min > 0) {
-         y_min = 0;
-         y_max = y_max * 1.2;
-      } else {
-	y_min = y_min * 1.2;
-	y_max = 0;
-      }
-      if (y_min == y_max) {
-	y_min = y_min - 10;
-	y_max = y_max + 10;
-      }
+      y_min = y_min - 0.001
+      y_max = y_min + 0.01;
     }
     this.scales.y.
       domain([y_min, y_max]);
