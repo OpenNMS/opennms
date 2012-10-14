@@ -9,12 +9,14 @@
     <version>1.11.3-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
-  <artifactId>vaadin-mib-compiler</artifactId>
+  <artifactId>vaadin-snmp-events-and-metrics</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS MIB Compiler</name>
-
+  <name>OpenNMS Admin UI for SNMP Events and Metrics</name>
+  <description>
+    OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.
+  </description>
   <properties>
-    <bundle.symbolicName>org.opennms.features.vaadin-mib-compiler</bundle.symbolicName>
+    <bundle.symbolicName>org.opennms.features.vaadin-snmp-events-and-metrics</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <vaadin.version>6.8.2</vaadin.version>
@@ -39,7 +41,7 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <bundles>
-            <bundle>mvn:org.opennms.features/vaadin-mib-compiler/${project.version}</bundle>
+            <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/customfield/${vaadin.customfield.version}</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/messagebox/${vaadin.messagebox.version}</bundle>
           </bundles>
