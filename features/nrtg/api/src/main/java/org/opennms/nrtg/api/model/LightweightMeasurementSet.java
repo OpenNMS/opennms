@@ -37,13 +37,10 @@ import java.util.List;
 /**
  * Result of a {@link CollectionJob}. List of metricId/values pairs with minimal redundancy (timestamp, nodeId, service
  * and interface are stored only once). The list of {@link Measurement} will be generated on the fly.
- * <p/>
- * Created with IntelliJ IDEA.
- * User: chris
- * Date: 22.06.12
- * Time: 10:51
- * To change this template use File | Settings | File Templates.
- */
+ * 
+ * @author Christian Pape
+ * @author Markus Neumann
+*/
 public class LightweightMeasurementSet implements MeasurementSet {
     private static final long serialVersionUID = 1166779403641774595L;
     private HashMap<String, ArrayList<String>> m_values = new HashMap<String, ArrayList<String>>();
@@ -61,11 +58,12 @@ public class LightweightMeasurementSet implements MeasurementSet {
         setTimestamp(timestamp);
     }
 
-    public void addMeasurement(String metricId, String metricType, String value) {
-        ArrayList<String> valueTypeList = new ArrayList<String>(2);
+    public void addMeasurement(String metricId, String metricType, String value, String onmsLogicMetricId) {
+        ArrayList<String> valueTypeList = new ArrayList<String>(3);
 
         valueTypeList.add(metricType);
         valueTypeList.add(value);
+        valueTypeList.add(onmsLogicMetricId);
 
         m_values.put(metricId, valueTypeList);
     }
@@ -87,6 +85,7 @@ public class LightweightMeasurementSet implements MeasurementSet {
 
             measurement.setMetricType(valueTypeList.get(0));
             measurement.setValue(valueTypeList.get(1));
+            measurement.setOnmsLogicMetricId(valueTypeList.get(2));
 
             measurements.add(measurement);
         }
@@ -138,20 +137,20 @@ public class LightweightMeasurementSet implements MeasurementSet {
                 first = false;
             }
             buf.append("{");
-            buf.append("'metricId'").append(":'").append(m.getMetricId()).append("'").append(",");
-            buf.append("'metricType'").append(":'").append(m.getMetricType()).append("'").append(",");
-            buf.append("'netInterface'").append(":'").append(m.getNetInterface()).append("'").append(",");
-            buf.append("'nodeId'").append(":").append(m.getNodeId()).append(",");
-            buf.append("'service'").append(":'").append(m.getService()).append("'").append(",");
-            buf.append("'timeStamp'").append(":").append(m.getTimestamp().getTime()).append(",");
-            buf.append("'value'").append(":").append(m.getValue());
+            buf.append("\"metricId\"").append(":\"").append(m.getMetricId()).append("\",");
+            buf.append("\"metricType\"").append(":\"").append(m.getMetricType()).append("\",");
+            buf.append("\"netInterface\"").append(":\"").append(m.getNetInterface()).append("\",");
+            buf.append("\"nodeId\"").append(":").append(m.getNodeId()).append(",");
+            buf.append("\"service\"").append(":\"").append(m.getService()).append("\",");
+            buf.append("\"timeStamp\"").append(":").append(m.getTimestamp().getTime()).append(",");
+            buf.append("\"onmsLogicMetricId\"").append(":\"").append(m.getOnmsLogicMetricId()).append("\",");
+            buf.append("\"value\"").append(":").append(m.getValue());
             buf.append("}");
         }
 
         buf.append("]");
         return buf.toString();
     }
-
 
     /**
      * This toString method is for displaying reasons in the webapp NrtGrapher only.

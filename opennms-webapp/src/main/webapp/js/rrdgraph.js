@@ -1522,7 +1522,7 @@ var RRDGraph = window['RRDGraph'] = {};
 
   Graph.prototype.update = function () {
     var y_min = Math.floor(this.data.extremes.y.min);
-    var y_max = Math.floor(this.data.extremes.y.max);
+    var y_max = Math.ceil(this.data.extremes.y.max);
 
     var conf_y_max = this.config.options['upper-limit'];
     var conf_y_min = this.config.options['lower-limit'];
@@ -1534,8 +1534,11 @@ var RRDGraph = window['RRDGraph'] = {};
     if (!isNaN(conf_y_min) && (y_min > conf_y_min || rigid)) {
       y_min = conf_y_min;
     }
-
-
+    /* Handle y_min and y_max for initial or not changing values */
+    if (y_min == y_max) {
+      y_min = y_min - 0.001
+      y_max = y_min + 0.01;
+    }
     this.scales.y.
       domain([y_min, y_max]);
 
@@ -1906,6 +1909,7 @@ var RRDGraph = window['RRDGraph'] = {};
   var DataCollector = window['RRDGraph']['DataCollector'] = function (config, data, mappings) {
     this.config = config;
     this.data = data;
+    /* TODO Tak is involved in the refrash cycle of the graph */
     this.setRate(5);
 
     this.setupMappings(mappings);
@@ -1944,7 +1948,7 @@ var RRDGraph = window['RRDGraph'] = {};
     } else if (rate > 100) {
       this.measurements = 5;
     } else {
-      this.measurements = 10;
+      this.measurements = 1; //was 10
     }
   };
 

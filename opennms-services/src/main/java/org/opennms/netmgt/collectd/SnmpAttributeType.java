@@ -328,6 +328,6 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
 
     @Override
     public String getAttributeId() {
-        return this.m_attributeId;
+        return "SNMP_".concat(this.m_attributeId);
     }
 }

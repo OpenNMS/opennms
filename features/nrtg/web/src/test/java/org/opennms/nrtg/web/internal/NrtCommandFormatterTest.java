@@ -47,7 +47,7 @@ public class NrtCommandFormatterTest {
         String expectedResult = "'.1.3.6.1.2.1.6.9.0': '{rrd1}:tcpCurrEstab'";
 
         String[] columns = new String[]{"tcpCurrEstab"};
-        String[] metrics = new String[]{".1.3.6.1.2.1.6.9.0"};
+        String[] metrics = new String[]{"SNMP_.1.3.6.1.2.1.6.9.0"};
 
         PrefabGraph prefabGraph = createMock(PrefabGraph.class);
         expect(prefabGraph.getCommand()).andReturn(rawString).anyTimes();
@@ -78,7 +78,7 @@ public class NrtCommandFormatterTest {
                 + "'.1.3.6.1.4.1.2021.4.13.0': '{rrd6}:memShared'";
 
         String[] columns = new String[]{"memAvailSwap", "memTotalReal", "memAvailReal", "memBuffer", "memCached", "memShared"};
-        String[] metrics = new String[]{".1.3.6.1.4.1.2021.4.4.0", ".1.3.6.1.4.1.2021.4.5.0", ".1.3.6.1.4.1.2021.4.6.0", ".1.3.6.1.4.1.2021.4.14.0", ".1.3.6.1.4.1.2021.4.15.0", ".1.3.6.1.4.1.2021.4.13.0"};
+        String[] metrics = new String[]{"SNMP_.1.3.6.1.4.1.2021.4.4.0", "SNMP_.1.3.6.1.4.1.2021.4.5.0", "SNMP_.1.3.6.1.4.1.2021.4.6.0", "SNMP_.1.3.6.1.4.1.2021.4.14.0", "SNMP_.1.3.6.1.4.1.2021.4.15.0", "SNMP_.1.3.6.1.4.1.2021.4.13.0"};
 
         PrefabGraph prefabGraph = createMock(PrefabGraph.class);
         expect(prefabGraph.getCommand()).andReturn(rawString).anyTimes();
@@ -112,7 +112,7 @@ public class NrtCommandFormatterTest {
         String rawString = "--title=\"TCP Open Connections\" --vertical-label=\"TCP Opens Per Second\" DEF:actOpen={rrd1}:tcpActiveOpens:AVERAGE DEF:minActOpen={rrd1}:tcpActiveOpens:MIN DEF:maxActOpen={rrd1}:tcpActiveOpens:MAX DEF:passOpen={rrd2}:tcpPassiveOpens:AVERAGE DEF:minPassOpen={rrd2}:tcpPassiveOpens:MIN DEF:maxPassOpen={rrd2}:tcpPassiveOpens:MAX CDEF:negActOpen=0,actOpen,- AREA:passOpen#00ff00:\"In (Passive)\" GPRINT:passOpen:AVERAGE:\"Avg  \\: %8.2lf %s\" GPRINT:passOpen:MIN:\"Min  \\: %8.2lf %s\" GPRINT:passOpen:MAX:\"Max  \\: %8.2lf %s\\n\" AREA:negActOpen#0000ff:\"Out (Active)\" GPRINT:actOpen:AVERAGE:\"Avg  \\: %8.2lf %s\" GPRINT:actOpen:MIN:\"Min  \\: %8.2lf %s\" GPRINT:actOpen:MAX:\"Max  \\: %8.2lf %s\\n\"";
         String expectedResult = "'.1.3.6.1.2.1.6.5.0': '{rrd1}:tcpActiveOpens', \n'.1.3.6.1.2.1.6.6.0': '{rrd2}:tcpPassiveOpens'";
         String[] columns = new String[]{"tcpActiveOpens", "tcpPassiveOpens"};
-        String[] metrics = new String[]{".1.3.6.1.2.1.6.5.0", ".1.3.6.1.2.1.6.6.0"};
+        String[] metrics = new String[]{"SNMP_.1.3.6.1.2.1.6.5.0", "SNMP_.1.3.6.1.2.1.6.6.0"};
 
         PrefabGraph prefabGraph = createMock(PrefabGraph.class);
         expect(prefabGraph.getCommand()).andReturn(rawString).anyTimes();

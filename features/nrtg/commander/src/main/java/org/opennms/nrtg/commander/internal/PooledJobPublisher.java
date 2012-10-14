@@ -93,7 +93,7 @@ public class PooledJobPublisher implements JobPublisher, Runnable {
 
             CollectionJob snmpJob = new DefaultCollectionJob();
 
-            snmpJob.addMetric(".1.3.6.1.4.1.2021.9.1.9.1", destinationSet);
+            snmpJob.addMetric(".1.3.6.1.4.1.2021.9.1.9.1", destinationSet, "DummyName");
 //            snmpJob.addMetric(".1.3.6.1.2.1.2.2.1.10.1", destinationSet);
 //            snmpJob.addMetric(".1.3.6.1.2.1.2.2.1.10.2", destinationSet);
 //            snmpJob.addMetric(".1.3.6.1.2.1.2.2.1.10.4", destinationSet);

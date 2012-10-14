@@ -28,24 +28,15 @@
 
 package org.opennms.nrtg.api.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
 
 
 /**
- * User: chris
- * Date: 13.06.12
- * Time: 11:47
+ * @author Christian Pape
+ * @author Markus Neumann
  */
 public class DefaultCollectionJob implements CollectionJob {
     private static final long serialVersionUID = -857193182688356245L;
@@ -62,6 +53,8 @@ public class DefaultCollectionJob implements CollectionJob {
 
     private Map<Set<String>, Set<String>> m_metricSets = new HashMap<Set<String>, Set<String>>();
     private Map<String, ArrayList<String>> m_allMetrics = new HashMap<String, ArrayList<String>>();
+    private Map<String, String> m_onmsLogicMetricIdMapping = new HashMap<String, String>();
+
     private Map<String, Object> m_parameters = null;
     private Date m_creationTimestamp = new Date();
     private Date m_finishedTimestamp = null;
@@ -146,7 +139,7 @@ public class DefaultCollectionJob implements CollectionJob {
             Set<String> metricSet = m_metricSets.get(destinationSet);
 
             for (String metricId : metricSet) {
-                measurementSet.addMeasurement(metricId, getMetricType(metricId), getMetricValue(metricId));
+                measurementSet.addMeasurement(metricId, getMetricType(metricId), getMetricValue(metricId), getOnmsLogicMetricId(metricId));
             }
         }
 
@@ -174,7 +167,7 @@ public class DefaultCollectionJob implements CollectionJob {
     }
 
     @Override
-    public void addMetric(String metricId, Set<String> destinationSet) throws IllegalArgumentException {
+    public void addMetric(String metricId, Set<String> destinationSet, String onmsLogicMetricId) throws IllegalArgumentException {
         if (destinationSet == null) {
             throw new IllegalArgumentException("destinationSet must not be null");
         } else {
@@ -220,13 +213,16 @@ public class DefaultCollectionJob implements CollectionJob {
         // adding the metric to the map
         m_metricSets.get(destinationSetToUse).add(metricId);
         m_allMetrics.put(metricId, null);
+        m_onmsLogicMetricIdMapping.put(metricId, onmsLogicMetricId);
     }
 
+    /*
     public void addAllMetrics(List<String> metric, Set<String> destinationSet) {
         for (String metricId : metric) {
             addMetric(metricId, destinationSet);
         }
     }
+    */
 
     @Override
     public void setMetricValue(String metricId, String metricType, String value) throws IllegalArgumentException {
@@ -295,8 +291,12 @@ public class DefaultCollectionJob implements CollectionJob {
             destinationStringBuilder.append(destination);
             destinationStringBuilder.append(", ");
         }
-        
+
         return destinationStringBuilder.substring(0, destinationStringBuilder.toString().length() - 2);
+    }
+
+    public String getOnmsLogicMetricId(String metricId) {
+        return m_onmsLogicMetricIdMapping.get(metricId);
     }
 
     /*
@@ -314,7 +314,7 @@ public class DefaultCollectionJob implements CollectionJob {
             Set<String> metricSet = m_metricSets.get(destinationSet);
 
             for (String metricId : metricSet) {
-                measurementSet.addMeasurement(metricId, getMetricType(metricId), getMetricValue(metricId));
+                measurementSet.addMeasurement(metricId, getMetricType(metricId), getMetricValue(metricId), getOnmsLogicMetricId(metricId));
             }
 
             measurementMap.put(getDestinationString(destinationSet), measurementSet);

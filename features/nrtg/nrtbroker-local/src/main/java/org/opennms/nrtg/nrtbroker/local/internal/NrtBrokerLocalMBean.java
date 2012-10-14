@@ -26,49 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.nrtg.api.model;
-
-import java.io.Serializable;
-import java.util.Date;
+package org.opennms.nrtg.nrtbroker.local.internal;
 
 /**
- * Result of a single metric on a given node/interface to a given time.
- * <p/>
- * @author Christian Pape
+ *
  * @author Markus Neumann
- * 
  */
-public interface Measurement extends Serializable {
-
-    public void setNodeId(int nodeId);
-
-    public void setNetInterface(String theInterface);
-
-    public void setService(String service);
-
-    public void setMetricId(String metricId);
-
-    public void setMetricType(String metricType);
-
-    public void setValue(String value);
-
-    public void setTimestamp(Date timestamp);
-
-    public void setOnmsLogicMetricId(String onmsLogicMetricId);
-
-    public String getOnmsLogicMetricId();
-
-    public int getNodeId();
-
-    public String getNetInterface();
-
-    public String getService();
-
-    public String getMetricId();
-
-    public String getMetricType();
-
-    public String getValue();
-
-    public Date getTimestamp();
+public interface NrtBrokerLocalMBean {
+    public Integer getMeasurementSetSize();
 }

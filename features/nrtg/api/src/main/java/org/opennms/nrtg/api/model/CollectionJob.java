@@ -61,7 +61,7 @@ public interface CollectionJob extends Serializable {
 
     public String getMetricValue(String metricId) throws IllegalArgumentException;
 
-    public void addMetric(String metricId, Set<String> destinationSet) throws IllegalArgumentException;
+    public void addMetric(String metricId, Set<String> destinationSet, String onmsLogicMetricId) throws IllegalArgumentException;
 
     public void setParameters(Map<String, Object> parameters);
 
@@ -101,9 +101,11 @@ public interface CollectionJob extends Serializable {
     public Map<String, MeasurementSet> getMeasurementSetsByDestination();
 
     public void setProtocolConfiguration(String configurationString);
-	
+
     public String getProtocolConfiguration();
 
     public String getMetricType(String metricId) throws IllegalArgumentException;
+
+    public String getOnmsLogicMetricId(String metricId);
 
 }
