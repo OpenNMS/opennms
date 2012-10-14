@@ -24,7 +24,7 @@ BEGIN
        
        IF NOT FOUND 
        THEN
-         RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 1: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex;
+         RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 1: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex USING ERRCODE = ''23NMS'';
        END IF;
      END IF;
        
@@ -43,7 +43,7 @@ BEGIN
       
       IF NOT FOUND
       THEN
-         RAISE EXCEPTION ''IpInterface Trigger Notice: No SnmpInterface found for snmpInterfaceId: %'', NEW.snmpInterfaceId;
+         RAISE EXCEPTION ''IpInterface Trigger Notice: No SnmpInterface found for snmpInterfaceId: %'', NEW.snmpInterfaceId USING ERRCODE = ''23NMS'';
       END IF;
   END IF;
   RETURN NEW;

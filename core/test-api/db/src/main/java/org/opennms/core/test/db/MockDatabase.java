@@ -110,19 +110,19 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     }
     
     public void writeNode(MockNode node) {
-        Object[] values = { new Integer(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
+        Object[] values = { Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
         update("insert into node (dpName, nodeID, nodeLabel, nodeCreateTime, nodeType) values ('localhost', ?, ?, ?, ?);", values);
         
     }
 
     public void writeInterface(MockInterface iface) {
         writeSnmpInterface(iface);
-		Object[] values = { new Integer(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
+		Object[] values = { Integer.valueOf(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
         update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
     }
 
     public void writeSnmpInterface(MockInterface iface) {
-        Object[] values = { new Integer(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
+        Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
         update("insert into snmpInterface (nodeID, snmpifAlias, snmpIfIndex) values (?, ?, ?);", values);
     }
 
@@ -138,7 +138,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
             svc.setId(serviceId);
         }
         String status = svc.getMgmtStatus().toDbString();
-        Object[] values = { new Integer(svc.getNodeId()), str(svc.getAddress()), new Integer(svc.getId()), status };
+        Object[] values = { Integer.valueOf(svc.getNodeId()), str(svc.getAddress()), Integer.valueOf(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
 
@@ -177,7 +177,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     
     public String getServiceName(int serviceId) {
         SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceName from service where serviceId = ?");
-        querier.execute(new Integer(serviceId));
+        querier.execute(Integer.valueOf(serviceId));
         return (String)querier.getResult();
     }
     
@@ -191,7 +191,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     
     public int countOutagesForService(MockService svc, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        Object[] values = { Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getId()) };
         return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql, values);
     }
 
@@ -202,10 +202,10 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public void createOutage(MockService svc, int eventId, Timestamp time) {
         Object[] values = {
                 getNextOutageId(), // outageID
-                new Integer(eventId),           // svcLostEventId
-                new Integer(svc.getNodeId()), // nodeId
+                Integer.valueOf(eventId),           // svcLostEventId
+                Integer.valueOf(svc.getNodeId()), // nodeId
                 str(svc.getAddress()),                // ipAddr
-                new Integer(svc.getId()),       // serviceID
+                Integer.valueOf(svc.getId()),       // serviceID
                 time, // ifLostService
                };
         
@@ -220,11 +220,11 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
         
         Object[] values = {
-                new Integer(eventId),           // svcLostEventId
+                Integer.valueOf(eventId),           // svcLostEventId
                 timestamp, // ifLostService
-                new Integer(svc.getNodeId()), // nodeId
+                Integer.valueOf(svc.getNodeId()), // nodeId
                 svc.getIpAddr(),                // ipAddr
-                new Integer(svc.getId()),       // serviceID
+                Integer.valueOf(svc.getId()),       // serviceID
                };
         
         update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL));", values);
@@ -258,7 +258,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 e.getUei(),
                 convertEventTimeToTimeStamp(e.getCreationTime()),
                 convertEventTimeToTimeStamp(e.getTime()),
-                new Integer(OnmsSeverity.get(e.getSeverity()).getId()),
+                Integer.valueOf(OnmsSeverity.get(e.getSeverity()).getId()),
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),
                 getServiceID(e.getService()),
@@ -279,13 +279,13 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
-        Object[] values = { String.valueOf(newStatus), new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        Object[] values = { String.valueOf(newStatus), Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getId()) };
         update("update ifServices set status = ? where nodeId = ? and ipAddr = ? and serviceId = ?", values);
     }
 
     public char getServiceStatus(MockService svc) {
         SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?");
-        querier.execute(new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()));
+        querier.execute(Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getId()));
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
             return 'X';
@@ -294,13 +294,13 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     }
 
     public void setInterfaceStatus(MockInterface iface, char newStatus) {
-        Object[] values = { String.valueOf(newStatus), new Integer(iface.getNodeId()), iface.getIpAddr() };
+        Object[] values = { String.valueOf(newStatus), Integer.valueOf(iface.getNodeId()), iface.getIpAddr() };
         update("update ipInterface set isManaged = ? where nodeId = ? and ipAddr = ?;", values);
     }
     
     public char getInterfaceStatus(MockInterface iface) {
         SingleResultQuerier querier = new SingleResultQuerier(this, "select isManaged from ipInterface where nodeId = ? and ipAddr = ?");
-        querier.execute(new Integer(iface.getNodeId()), iface.getIpAddr());
+        querier.execute(Integer.valueOf(iface.getNodeId()), iface.getIpAddr());
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
             return 'X';
@@ -331,7 +331,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
 
     public int countOutagesForInterface(MockInterface iface, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
-        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
+        Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIpAddr() };
         return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql, values);
     }
     
@@ -442,7 +442,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 notifyIds.add(rs.getInt(1));
             }
         };
-        loadExisting.execute(new Integer(event.getDbid()));
+        loadExisting.execute(Integer.valueOf(event.getDbid()));
         return notifyIds;
     }
 

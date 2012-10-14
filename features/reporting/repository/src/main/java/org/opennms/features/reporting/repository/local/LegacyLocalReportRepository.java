@@ -167,7 +167,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public String getReportService(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         return m_localReportsDao.getReportService(id);
     }
 
@@ -176,7 +176,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public String getDisplayName(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         return m_localReportsDao.getDisplayName(id);
     }
 
@@ -185,7 +185,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public String getEngine(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         return m_localJasperReportsDao.getEngine(id);
     }
 
@@ -194,7 +194,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public InputStream getTemplateStream(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         InputStream result = null;
         try {
             result = m_localJasperReportsDao.getTemplateStream(id);

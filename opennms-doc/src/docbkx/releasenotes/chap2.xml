@@ -6,6 +6,32 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.3">
+		<title>Changes in OpenNMS 1.11.3</title>
+
+		<section id="opennms-1.11.3-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>garbage collection vacuumd automation entries can be safely removed (Issue <ulink url='http://issues.opennms.org/browse/NMS-5411'>NMS-5411</ulink>)</para></listitem>
+				<listitem><para>notification text message is not treated as plain text in UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5477'>NMS-5477</ulink>)</para></listitem>
+				<listitem><para>sched-outage page needs boundary limits for cell content heights. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5497'>NMS-5497</ulink>)</para></listitem>
+				<listitem><para>Thresholding on HTTP collections is broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-5504'>NMS-5504</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.3-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Added support for dynamic responses to the Mock SNMP Agent (Issue <ulink url='http://issues.opennms.org/browse/NMS-5412'>NMS-5412</ulink>)</para></listitem>
+				<listitem><para>Linkd use obsolete ip route table to get ip route data  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5429'>NMS-5429</ulink>)</para></listitem>
+				<listitem><para>Dns Reverse provisioning Adapter   (Issue <ulink url='http://issues.opennms.org/browse/NMS-5514'>NMS-5514</ulink>)</para></listitem>
+				<listitem><para>add nodeid and foreign source to node list page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5523'>NMS-5523</ulink>)</para></listitem>
+				<listitem><para>add date format translation mapping for prefab graph command (Issue <ulink url='http://issues.opennms.org/browse/NMS-5533'>NMS-5533</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.2">
 		<title>Changes in OpenNMS 1.11.2</title>
 
@@ -152,6 +178,33 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+
+	<section id="opennms-1.10.6">
+		<title>Changes in OpenNMS 1.10.6</title>
+
+		<section id="opennms-1.10.6-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>1.10 Removed IP Hostname Field During Provisioning Scans (Issue <ulink url='http://issues.opennms.org/browse/NMS-5233'>NMS-5233</ulink>)</para></listitem>
+				<listitem><para>send-event.pl changes system hostname on Solaris systems (Issue <ulink url='http://issues.opennms.org/browse/NMS-5351'>NMS-5351</ulink>)</para></listitem>
+				<listitem><para>The &quot;finished&quot; logging statement is never called for CollectableService:doCollection() (Issue <ulink url='http://issues.opennms.org/browse/NMS-5441'>NMS-5441</ulink>)</para></listitem>
+				<listitem><para>provisioning problem for simple services java.net.SocketException (Issue <ulink url='http://issues.opennms.org/browse/NMS-5469'>NMS-5469</ulink>)</para></listitem>
+				<listitem><para>Thresholding on HTTP collections is broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-5504'>NMS-5504</ulink>)</para></listitem>
+				<listitem><para>Fedora 17 Packages (Issue <ulink url='http://issues.opennms.org/browse/NMS-5538'>NMS-5538</ulink>)</para></listitem>
+				<listitem><para>CollectionResourceWrapper cache takes up large amounts of RAM (Issue <ulink url='http://issues.opennms.org/browse/NMS-5557'>NMS-5557</ulink>)</para></listitem>
+				<listitem><para>Update RRD datasources to have a step field (Issue <ulink url='http://issues.opennms.org/browse/NMS-5570'>NMS-5570</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.6-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Add UEI to the notification configuration UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5559'>NMS-5559</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.5">
 		<title>Changes in OpenNMS 1.10.5</title>

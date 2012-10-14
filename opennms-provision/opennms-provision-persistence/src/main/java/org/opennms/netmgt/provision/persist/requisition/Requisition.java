@@ -63,22 +63,21 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.springframework.core.io.Resource;
 
 
 /**
  * <p>Requisition class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="model-import")
 @ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
+	private static final long serialVersionUID = 1629774241824443273L;
 
-    private static final long serialVersionUID = 2099710942679236239L;
-
-    @XmlTransient
+	@XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
@@ -92,6 +91,10 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     
     @XmlAttribute(name="last-import")
     protected XMLGregorianCalendar m_lastImport;
+
+    @XmlTransient
+    /** the resource that this requisition was created from **/
+    private Resource m_resource;
 
     /**
      * <p>getNode</p>
@@ -287,26 +290,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
-    // Exists only to be compatible with old (1.6!) imports XSD
-    @XmlAttribute(name="non-ip-interfaces")
-    public boolean getNonIpInterfaces() {
-        return false;
-    }
-
-    public void setNonIpInterfaces(final boolean nii) {
-        LogUtils.warnf(this, "The non-ip-interfaces field was deprecated in 1.6, and removed in 1.8.  Ignored.");
-    }
-
-    // Exists only to be compatible with old (1.6!) imports XSD
-    @XmlAttribute(name="non-ip-snmp-primary")
-    public String getNonIpSnmpPrimary() {
-        return "N";
-    }
-    
-    public void setNonIpSnmpPrimary(final String nisp) {
-        LogUtils.warnf(this, "The non-ip-snmp-primary field was deprecated in 1.6, and removed in 1.8.  Ignored.");
-    }
-
     /* Start non-JAXB methods */
 
     /**
@@ -326,7 +309,19 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         this();
         m_foreignSource = foreignSource;
     }
+
+    /**
+     * Get the resource (if any) this requisition is associated with.
+     * @return a Resource representing the location of the requisition file
+     */
+    public Resource getResource() {
+        return m_resource;
+    }
     
+    public void setResource(final Resource resource) {
+        m_resource = resource;
+    }
+
     private void updateNodeCache() {
         m_nodeReqs.clear();
         if (m_nodes != null) {

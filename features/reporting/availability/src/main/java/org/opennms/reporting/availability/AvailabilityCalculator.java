@@ -45,7 +45,7 @@ public interface AvailabilityCalculator {
      *
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
-    public abstract void calculate() throws AvailabilityCalculationException;
+    void calculate() throws AvailabilityCalculationException;
 
     /**
      * <p>writeXML</p>
@@ -53,7 +53,7 @@ public interface AvailabilityCalculator {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
-    public abstract String writeXML() throws AvailabilityCalculationException;
+    String writeXML() throws AvailabilityCalculationException;
 
     /**
      * <p>writeXML</p>
@@ -61,7 +61,7 @@ public interface AvailabilityCalculator {
      * @param outputFileName a {@link java.lang.String} object.
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
-    public abstract void writeXML(String outputFileName)
+    void writeXML(String outputFileName)
             throws AvailabilityCalculationException;
     
     /**
@@ -70,7 +70,7 @@ public interface AvailabilityCalculator {
      * @param outputStream a {@link java.io.OutputStream} object.
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
-    public abstract void writeXML(OutputStream outputStream)
+    void writeXML(OutputStream outputStream)
         throws AvailabilityCalculationException;
 
     /**
@@ -80,7 +80,7 @@ public interface AvailabilityCalculator {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
-    public abstract String writeLocateableXML(String id)
+    String writeLocateableXML(String id)
             throws AvailabilityCalculationException;
 
     /**
@@ -89,7 +89,7 @@ public interface AvailabilityCalculator {
      * @param outputFile a {@link java.io.File} object.
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
-    public abstract void marshal(File outputFile)
+    void marshal(File outputFile)
             throws AvailabilityCalculationException;
 
     /**
@@ -97,119 +97,119 @@ public interface AvailabilityCalculator {
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getLogoURL();
+    String getLogoURL();
 
     /**
      * <p>setLogoURL</p>
      *
      * @param logoURL a {@link java.lang.String} object.
      */
-    public abstract void setLogoURL(String logoURL);
+    void setLogoURL(String logoURL);
 
     /**
      * <p>getOutputFileName</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getOutputFileName();
+    String getOutputFileName();
 
     /**
      * <p>setOutputFileName</p>
      *
      * @param outputFileName a {@link java.lang.String} object.
      */
-    public abstract void setOutputFileName(String outputFileName);
+    void setOutputFileName(String outputFileName);
 
     /**
      * <p>getAuthor</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getAuthor();
+    String getAuthor();
 
     /**
      * <p>setAuthor</p>
      *
      * @param author a {@link java.lang.String} object.
      */
-    public abstract void setAuthor(String author);
+    void setAuthor(String author);
 
     /**
      * <p>getCategoryName</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getCategoryName();
+    String getCategoryName();
 
     /**
      * <p>setCategoryName</p>
      *
      * @param categoryName a {@link java.lang.String} object.
      */
-    public abstract void setCategoryName(String categoryName);
+    void setCategoryName(String categoryName);
 
     /**
      * <p>getMonthFormat</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getMonthFormat();
+    String getMonthFormat();
 
     /**
      * <p>setMonthFormat</p>
      *
      * @param monthFormat a {@link java.lang.String} object.
      */
-    public abstract void setMonthFormat(String monthFormat);
+    void setMonthFormat(String monthFormat);
 
     /**
      * <p>getReportFormat</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getReportFormat();
+    String getReportFormat();
 
     /**
      * <p>setReportFormat</p>
      *
      * @param reportFormat a {@link java.lang.String} object.
      */
-    public abstract void setReportFormat(String reportFormat);
+    void setReportFormat(String reportFormat);
 
     /**
      * <p>getReport</p>
      *
      * @return a {@link org.opennms.reporting.availability.Report} object.
      */
-    public abstract Report getReport();
+    Report getReport();
 
     /**
      * <p>setCalendar</p>
      *
      * @param calendar a {@link java.util.Calendar} object.
      */
-    public abstract void setCalendar(Calendar calendar);
+    void setCalendar(Calendar calendar);
 
     /**
      * <p>getPeriodEndDate</p>
      *
      * @return a {@link java.util.Date} object.
      */
-    public abstract Date getPeriodEndDate();
+    Date getPeriodEndDate();
 
     /**
      * <p>setPeriodEndDate</p>
      *
      * @param periodEndDate a {@link java.util.Date} object.
      */
-    public abstract void setPeriodEndDate(Date periodEndDate);
+    void setPeriodEndDate(Date periodEndDate);
 
     /**
      * <p>setReportStoreService</p>
      *
      * @param reportStoreService a {@link org.opennms.reporting.core.svclayer.ReportStoreService} object.
      */
-    public abstract void setReportStoreService(
+    void setReportStoreService(
             ReportStoreService reportStoreService);
 
     /**
@@ -217,20 +217,20 @@ public interface AvailabilityCalculator {
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getBaseDir();
+    String getBaseDir();
 
     /**
      * <p>setBaseDir</p>
      *
      * @param baseDir a {@link java.lang.String} object.
      */
-    public abstract void setBaseDir(String baseDir);
+    void setBaseDir(String baseDir);
 
     /**
      * <p>setAvailabilityData</p>
      *
      * @param availabilityData a {@link org.opennms.reporting.availability.AvailabilityData} object.
      */
-    public abstract void setAvailabilityData(AvailabilityData availabilityData);
+    void setAvailabilityData(AvailabilityData availabilityData);
 
 }

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -23,7 +23,6 @@
     <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
-    <module>jaxb</module>
     <module>jcifs</module>
     <module>jdbc-pool</module>
     <module>jersey</module>

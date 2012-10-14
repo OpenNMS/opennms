@@ -43,6 +43,7 @@ public class MockUserManager extends UserManager {
     String m_xmlString;
     boolean updateNeeded = true;
     private long m_lastModified;
+    private long m_fileSize;
     
     public MockUserManager(GroupManager groupManager, String xmlString) throws MarshalException, ValidationException {
         super(groupManager);
@@ -55,6 +56,7 @@ public class MockUserManager extends UserManager {
         parseXML(in);
         updateNeeded = false;
         m_lastModified = System.currentTimeMillis();
+        m_fileSize = m_xmlString.getBytes().length;
     }
 
     @Override
@@ -78,6 +80,11 @@ public class MockUserManager extends UserManager {
     @Override
     public long getLastModified() {
         return m_lastModified;
+    }
+
+    @Override
+    public long getFileSize() {
+        return m_fileSize;
     }
 
 }

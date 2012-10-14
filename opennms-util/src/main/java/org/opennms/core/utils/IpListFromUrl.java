@@ -115,14 +115,14 @@ public class IpListFromUrl extends Object {
                 buffer.close();
             } else {
                 // log something
-                log().warn("URL does not exist: " + url.toString());
+                log().warn("URL does not exist: " + url);
             }
         } catch (MalformedURLException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
         } catch (FileNotFoundException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
         } catch (IOException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
         }
 
         return iplist;

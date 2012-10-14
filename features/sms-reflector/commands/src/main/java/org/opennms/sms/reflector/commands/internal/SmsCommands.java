@@ -70,13 +70,7 @@ import org.springframework.osgi.context.BundleContextAware;
  */
 public class SmsCommands implements CommandProvider, BundleContextAware
 {
-    // Unused?
-    private String m_port;
     private Service m_service;
-    private OutboundNotification m_outboundNotification;
-    private InboundNotification m_inboundNotification;
-    private CallNotification m_callNotification;
-    private GatewayStatusNotification m_gatewayStatusNotification;
     private ConfigurationAdmin m_configAdmin;
     private BundleContext m_context;
 
@@ -300,10 +294,10 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
 
         try{
-            m_outboundNotification = new OutboundNotification();
-            m_inboundNotification = new InboundNotification();
-            m_callNotification = new CallNotification();
-            m_gatewayStatusNotification = new GatewayStatusNotification();
+            OutboundNotification m_outboundNotification = new OutboundNotification();
+            InboundNotification m_inboundNotification = new InboundNotification();
+            CallNotification m_callNotification = new CallNotification();
+            GatewayStatusNotification m_gatewayStatusNotification = new GatewayStatusNotification();
 
             m_service = new Service();
             SerialModemGateway gateway = new SerialModemGateway("modem."+ port, port, 57600, "SonyEricsson", "W760");
@@ -320,7 +314,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             m_service.startService();
 
             printGatewayInfo(gateway, intp);
-            m_port = port;
 
         }catch(Throwable e){
             intp.printStackTrace(e);

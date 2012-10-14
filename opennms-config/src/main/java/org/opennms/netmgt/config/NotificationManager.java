@@ -795,7 +795,7 @@ public abstract class NotificationManager {
     
             // notifications nodeID field
             String node = params.get(NotificationManager.PARAM_NODE);
-            if (node != null && !node.trim().equals("") && !node.toLowerCase().equals("null") && !node.toLowerCase().equals("%nodeid%")) {
+            if (node != null && !node.trim().equals("") && !node.equalsIgnoreCase("null") && !node.equalsIgnoreCase("%nodeid%")) {
                 statement.setInt(5, Integer.parseInt(node));
             } else {
                 statement.setNull(5, Types.INTEGER);
@@ -803,7 +803,7 @@ public abstract class NotificationManager {
     
             // notifications interfaceID field
             String ipaddr = params.get(NotificationManager.PARAM_INTERFACE);
-            if (ipaddr != null && !ipaddr.trim().equals("") && !ipaddr.toLowerCase().equals("null") && !ipaddr.toLowerCase().equals("%interface%")) {
+            if (ipaddr != null && !ipaddr.trim().equals("") && !ipaddr.equalsIgnoreCase("null") && !ipaddr.equalsIgnoreCase("%interface%")) {
                 statement.setString(6, ipaddr);
             } else {
                 statement.setString(6, null);
@@ -811,7 +811,7 @@ public abstract class NotificationManager {
     
             // notifications serviceID field
             String service = params.get(NotificationManager.PARAM_SERVICE);
-            if (service != null && !service.trim().equals("") && !service.toLowerCase().equals("null") && !service.toLowerCase().equals("%service%")) {
+            if (service != null && !service.trim().equals("") && !service.equalsIgnoreCase("null") && !service.equalsIgnoreCase("%service%")) {
                 statement.setInt(7, getServiceId(service));
             } else {
                 statement.setNull(7, Types.INTEGER);
