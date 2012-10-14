@@ -241,6 +241,16 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         return m_ids.length;
     }
     
+    public SnmpObjId getPrefix(int length) {
+    	if (length >= length()) {
+    		throw new IllegalArgumentException("Invalid length: " + length +" is longer than length of ObjId");
+    	}
+    	
+    	int[] newIds = cloneIds(m_ids, length);
+        return new SnmpObjId(newIds, false);
+    	
+    }
+    
     public int getSubIdAt(int index) {
         return m_ids[index];
     }
