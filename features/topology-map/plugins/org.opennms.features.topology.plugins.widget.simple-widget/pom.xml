@@ -5,7 +5,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.opennms.features.topology</groupId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   
   <groupId>org.opennms.features.topology.plugins.widget</groupId>

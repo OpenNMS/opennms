@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.opennms-tools</groupId>
     <artifactId>org.opennms.opennms-tools.syslog-profiler</artifactId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.opennms-tools.syslog-profiler</groupId>

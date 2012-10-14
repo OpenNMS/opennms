@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -166,13 +166,6 @@
           <artifactId>jaxb-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <!-- for geoGoogle -->
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <!-- GWT -->
     <dependency>
