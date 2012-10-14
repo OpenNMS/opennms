@@ -33,10 +33,8 @@ import java.util.List;
 
 /**
  * Set of {@link Measurement}, typically a result of a {@link CollectionJob}.
- * User: chris
- * Date: 19.06.12
- * Time: 14:43
- * To change this template use File | Settings | File Templates.
+ * @author Christian Pape
+ * @author Markus Neumann
  */
 public interface MeasurementSet extends Serializable {
 

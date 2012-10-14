@@ -59,7 +59,7 @@ public class LightweightMeasurementSetTest {
         LightweightMeasurementSet lightweightMeasurementSet = new LightweightMeasurementSet(1, "service", "interface", date);
 
         for (String metricId : metrics.keySet()) {
-            lightweightMeasurementSet.addMeasurement(metricId, "int32", metrics.get(metricId));
+            lightweightMeasurementSet.addMeasurement(metricId, "int32", metrics.get(metricId), "DummyName");
         }
 
         List<Measurement> measurementList = lightweightMeasurementSet.getMeasurements();

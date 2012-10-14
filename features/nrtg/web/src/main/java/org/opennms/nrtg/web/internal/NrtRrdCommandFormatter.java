@@ -30,7 +30,7 @@ package org.opennms.nrtg.web.internal;
 
 import org.opennms.netmgt.model.PrefabGraph;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +42,13 @@ import java.util.regex.Pattern;
  */
 public class NrtRrdCommandFormatter {
 
-    public final static List<String> RRD_KEYWORDS = new ArrayList<String>() {{
-        add("--");
-        add("DEF");
-        add("CDEF");
-        add("LINE");
-        add("GPRINT");
-    }};
+    public final static List<String> RRD_KEYWORDS = Arrays.asList(
+        "--",
+        "DEF",
+        "CDEF",
+        "LINE",
+        "GPRINT"
+    );
 
     private String rrdGraphString;
 
@@ -105,7 +105,8 @@ public class NrtRrdCommandFormatter {
                 s.append(", \n");
             }
 
-            final String metric = metrics[i];
+            //TODO Tak the MetricsMapping for the graphing must be protocol independent.
+            final String metric = metrics[i].substring("SNMP_".length());
             final String column = columns[i];
 
             s.append(String.format("'%s': '%s:%s'", metric, rrdFileMapping.get(column), column));

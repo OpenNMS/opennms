@@ -49,12 +49,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
       <type>pom</type>
       <scope>provided</scope>

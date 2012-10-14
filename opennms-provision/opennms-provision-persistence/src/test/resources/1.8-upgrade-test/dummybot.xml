@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
     date-stamp="2009-11-01T19:17:57.939Z"
-    last-import="2009-11-01T19:17:57.930Z" foreign-source="dummybot" non-ip-snmp-primary="N">
+    last-import="2009-11-01T19:17:57.930Z" foreign-source="dummybot">
     <node node-label="dummyrouter" foreign-id="1257103063862" building="dummybot"/>
     <node node-label="dummydata" foreign-id="1255586363041" building="dummybot"/>
     <node node-label="dummybot" foreign-id="1254956472421" building="dummybot"/>

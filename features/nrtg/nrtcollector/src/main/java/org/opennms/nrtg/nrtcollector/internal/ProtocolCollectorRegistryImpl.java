@@ -47,7 +47,7 @@ public class ProtocolCollectorRegistryImpl implements ProtocolCollectorRegistry 
             if (pc.getProtcol().equals(protocol))
                 return pc;
         }
-        throw new RuntimeException("Unkown protocol! " + protocol);
+        throw new RuntimeException("Unknown protocol! " + protocol);
     }
 
     public void setProtocolCollectors(List<ProtocolCollector> protocolCollectors) {

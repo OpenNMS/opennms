@@ -168,12 +168,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
-      <type>pom</type>
-      <scope>${provided.by.opennms}</scope>
-    </dependency>
   </dependencies>
   <repositories>
     <repository>
