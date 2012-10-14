@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
     date-stamp="2009-10-16T23:56:17.666Z"
-    last-import="2009-10-16T23:56:17.654Z" foreign-source="wsp" non-ip-snmp-primary="N">
+    last-import="2009-10-16T23:56:17.654Z" foreign-source="wsp">
     <node node-label="api.websitepulse.com" foreign-id="1255737286242" building="wsp">
         <interface ip-addr="69.20.117.172" descr="" status="1" snmp-primary="N">
             <monitored-service service-name="wsp_stats"/>

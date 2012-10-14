@@ -167,7 +167,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getReportService(String reportId) {
-        reportId = reportId.substring(reportId.indexOf("_") + 1);
+        reportId = reportId.substring(reportId.indexOf('_') + 1);
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "reportService/" + reportId);
@@ -187,7 +187,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getDisplayName(String reportId) {
-        reportId = reportId.substring(reportId.indexOf("_") + 1);
+        reportId = reportId.substring(reportId.indexOf('_') + 1);
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "displayName/" + reportId);
@@ -209,7 +209,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public String getEngine(String reportId) {
-        reportId = reportId.substring(reportId.indexOf("_") + 1);
+        reportId = reportId.substring(reportId.indexOf('_') + 1);
         String result = "";
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "engine/" + reportId);
@@ -231,7 +231,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public InputStream getTemplateStream(String reportId) {
-        reportId = reportId.substring(reportId.indexOf("_") + 1);
+        reportId = reportId.substring(reportId.indexOf('_') + 1);
         InputStream templateStreamResult = null;
         if (isConfigOk()) {
             m_webResource = m_client.resource(m_remoteRepositoryDefintion.getURI() + "templateStream/" + reportId);

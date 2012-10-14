@@ -57,6 +57,7 @@ import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -369,7 +370,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         dispatch(request, response);
         String xml = response.getContentAsString();
         if (xml != null) {
-            System.err.println(xml);
+            try {
+                System.err.println(StringUtils.prettyXml(xml));
+            } catch (Exception e) {
+                System.err.println(xml);
+            }
         }
         assertEquals(expectedStatus, response.getStatus());
         return xml;

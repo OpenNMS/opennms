@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.InitializingBean;
@@ -203,8 +206,41 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
      * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
-    public synchronized void save(Requisition requisition) throws ForeignSourceRepositoryException {
-        m_pendingForeignSourceRepository.delete(requisition);
+    public synchronized void save(final Requisition requisition) throws ForeignSourceRepositoryException {
+        final String foreignSource = requisition.getForeignSource();
+
+        final URL pendingUrl = m_pendingForeignSourceRepository.getRequisitionURL(foreignSource);
+        final File pendingFile = pendingUrl == null? null : new File(pendingUrl.getFile());
+
+        /*
+        final URL deployedUrl = m_deployedForeignSourceRepository.getRequisitionURL(foreignSource);
+        final File deployedFile = deployedUrl == null? null : new File(deployedUrl.getFile());
+        */
+
+        final List<File> pendingSnapshots = RequisitionFileUtils.findSnapshots(m_pendingForeignSourceRepository, foreignSource);
+
+        /* determine whether to delete the pending requisition */
+        boolean deletePendingRequisition = true;
+        if (pendingSnapshots.size() > 0) {
+            for (final File snap : pendingSnapshots) {
+                if (FileUtils.isFileNewer(pendingFile, snap)) {
+                    // the pending file is newer than an in-process snapshot, don't delete it
+                    deletePendingRequisition = false;
+                    break;
+                } else if (snap.lastModified() == pendingFile.lastModified() && snap.length() != pendingFile.length()) {
+                    // if the dates are the same, but they're different lengths, err on the side of caution and leave the pending file
+                    deletePendingRequisition = false;
+                    break;
+                }
+            }
+        }
+        if (deletePendingRequisition) {
+            m_pendingForeignSourceRepository.delete(requisition);
+        }
+
+        /* determine whether this requisition was imported from a snapshot, and if so, delete its snapshot file */
+        RequisitionFileUtils.deleteResourceIfSnapshot(requisition);
+ 
         m_deployedForeignSourceRepository.save(requisition);
     }
 

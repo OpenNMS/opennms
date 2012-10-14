@@ -37,18 +37,17 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
  * <p>SnmpIfData class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class SnmpIfData {
 
-    private int m_nodeId;
-    private boolean m_collectionEnabled;
-    private int m_ifIndex;
-    private int m_ifType;
-    private String m_rrdLabel;
-    private String m_ifAlias;
+    private final int m_nodeId;
+    private final boolean m_collectionEnabled;
+    private final int m_ifIndex;
+    private final int m_ifType;
+    private final String m_rrdLabel;
+    private final String m_ifAlias;
     
-    private Map<String,String> m_attributes;
+    private final Map<String,String> m_attributes = new HashMap<String,String>();
 
     /**
      * <p>Constructor for SnmpIfData.</p>
@@ -62,7 +61,6 @@ public class SnmpIfData {
         m_ifType = nullSafeUnbox(snmpIface.getIfType(), -1);
         m_rrdLabel = snmpIface.computeLabelForRRD();
         m_ifAlias = snmpIface.getIfAlias();
-        m_attributes = new HashMap<String,String>();
         m_attributes.put("snmpphysaddr", snmpIface.getPhysAddr());
         m_attributes.put("snmpifindex", Integer.toString(m_ifIndex));
         m_attributes.put("snmpifdescr", snmpIface.getIfDescr());
@@ -74,11 +72,11 @@ public class SnmpIfData {
         m_attributes.put("snmpifalias", m_ifAlias);
     }
     
-    int nullSafeUnbox(Integer num, int dflt) {
+    protected static int nullSafeUnbox(Integer num, int dflt) {
         return (num == null ? dflt : num.intValue());
     }
 
-    long nullSafeUnbox(Long num, int dflt) {
+    protected static long nullSafeUnbox(Long num, int dflt) {
         return (num == null ? dflt : num.intValue());
     }
 

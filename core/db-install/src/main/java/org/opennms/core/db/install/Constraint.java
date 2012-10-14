@@ -76,15 +76,6 @@ public class Constraint {
         this.setTable(table);
     }
 
-    /*
-    public Constraint(String table, String name, String column) {
-        setTable(table);
-        setName(name);
-        setType(PRIMARY_KEY);
-        setColumn(column);
-    }
-    */
-    
     /**
      * Construct a primary key constraint from it's required elements
      *
@@ -141,7 +132,7 @@ public class Constraint {
      *
      * @param fupdtype a {@link java.lang.String} object.
      */
-    public void setForeignUpdType(String fupdtype) {
+    public final void setForeignUpdType(String fupdtype) {
         m_fupdtype = fupdtype;
     }
     
@@ -150,7 +141,7 @@ public class Constraint {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getForeignUpdType() {
+    public final String getForeignUpdType() {
         return m_fupdtype;
     }
 
@@ -159,7 +150,7 @@ public class Constraint {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getName() {
+    public final String getName() {
         return m_name;
     }
 
@@ -168,7 +159,7 @@ public class Constraint {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public void setName(String name) {
+    public final void setName(String name) {
         m_name = name.toLowerCase();
     }
 
@@ -177,7 +168,7 @@ public class Constraint {
      *
      * @return a int.
      */
-    public int getType() {
+    public final int getType() {
         return m_type;
     }
 
@@ -186,7 +177,7 @@ public class Constraint {
      *
      * @param type a int.
      */
-    public void setType(int type) {
+    public final void setType(int type) {
         m_type = type;
     }
     
@@ -222,7 +213,7 @@ public class Constraint {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String getTable() {
+	public final String getTable() {
 		return m_table;
 	}
 
@@ -231,7 +222,7 @@ public class Constraint {
 	 *
 	 * @param table a {@link java.lang.String} object.
 	 */
-	public void setTable(String table) {
+	public final void setTable(String table) {
 		m_table = table;
 	}
     
@@ -240,7 +231,7 @@ public class Constraint {
      *
      * @param columns a {@link java.util.List} object.
      */
-    public void setColumns(List<String> columns) {
+    public final void setColumns(List<String> columns) {
     	m_columns = new ArrayList<String>(columns.size());
     	for (String i : columns) {
     		m_columns.add(i.toLowerCase());
@@ -252,7 +243,7 @@ public class Constraint {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<String> getColumns() {
+    public final List<String> getColumns() {
         return m_columns;
     }
 
@@ -261,7 +252,7 @@ public class Constraint {
      *
      * @param column a {@link java.lang.String} object.
      */
-    public void setColumn(String column) {
+    public final void setColumn(String column) {
     	List<String> columns = new ArrayList<String>(1);
         columns.add(column.toLowerCase());
         setColumns(columns);
@@ -272,7 +263,7 @@ public class Constraint {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getForeignTable() {
+    public final String getForeignTable() {
         return m_ftable;
     }
 
@@ -281,7 +272,7 @@ public class Constraint {
      *
      * @param ftable a {@link java.lang.String} object.
      */
-    public void setForeignTable(String ftable) {
+    public final void setForeignTable(String ftable) {
         m_ftable = ftable.toLowerCase();
     }
 
@@ -290,7 +281,7 @@ public class Constraint {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<String> getForeignColumns() {
+    public final List<String> getForeignColumns() {
         return m_fcolumns;
     }
 
@@ -299,7 +290,7 @@ public class Constraint {
      *
      * @param fcolumn a {@link java.lang.String} object.
      */
-    public void setForeignColumn(String fcolumn) {
+    public final void setForeignColumn(String fcolumn) {
     	List<String> fcolumns = new ArrayList<String>(1);
     	fcolumns.add(fcolumn.toLowerCase());
         setForeignColumns(fcolumns);
@@ -310,7 +301,7 @@ public class Constraint {
      *
      * @param fcolumns a {@link java.util.List} object.
      */
-    public void setForeignColumns(List<String> fcolumns) {
+    public final void setForeignColumns(List<String> fcolumns) {
     	List<String> newFcolumns = new ArrayList<String>(fcolumns.size());
     	for (String fcolumn : fcolumns) {
     		newFcolumns.add(fcolumn.toLowerCase());
@@ -323,7 +314,7 @@ public class Constraint {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getForeignDelType() {
+    public final String getForeignDelType() {
         return m_fdeltype;
     }
 
@@ -333,7 +324,7 @@ public class Constraint {
      * @param fdeltype a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public void setForeignDelType(String fdeltype) throws Exception {
+    public final void setForeignDelType(String fdeltype) throws Exception {
         if (fdeltype.equals("a") || fdeltype.equals("c") || fdeltype.equals("r") || fdeltype.equals("n") || fdeltype.equals("d")) {
             m_fdeltype = fdeltype;
         } else {
@@ -346,7 +337,7 @@ public class Constraint {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String getCheckExpression() {
+	public final String getCheckExpression() {
 		return m_checkExpression;
 	}
 
@@ -355,7 +346,7 @@ public class Constraint {
 	 *
 	 * @param expression a {@link java.lang.String} object.
 	 */
-	public void setCheckExpression(String expression) {
+	public final void setCheckExpression(String expression) {
 		m_checkExpression = expression;
 	}
 	

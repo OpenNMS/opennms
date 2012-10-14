@@ -1274,14 +1274,14 @@ public class AvailCalculations extends Object {
      * Format the number (String) and return 6 digits of the number
      */
     private String formatNumber(String num) {
-        if (num.indexOf(".") == 0) {
+        if (num.indexOf('.') == 0) {
             num = "0" + num;
         }
-        if (num.indexOf(".") == -1) {
+        if (num.indexOf('.') == -1) {
             num = num + ".0";
         }
         num = num + "000000";
-        return (num.substring(0, num.indexOf(".") + 6));
+        return (num.substring(0, num.indexOf('.') + 6));
     }
 
 }

@@ -156,10 +156,10 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
      */
     public static String[] parseResourceId(String resourceId) {
         try {
-            String parent = resourceId.substring(0, resourceId.indexOf("]") + 1);
-            String child = resourceId.substring(resourceId.indexOf("]") + 2);
-            String childType = child.substring(0, child.indexOf("["));
-            String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
+            String parent = resourceId.substring(0, resourceId.indexOf(']') + 1);
+            String child = resourceId.substring(resourceId.indexOf(']') + 2);
+            String childType = child.substring(0, child.indexOf('['));
+            String childName = child.substring(child.indexOf('[') + 1, child.indexOf(']'));
             return new String[]{parent, childType, childName};
         } catch (Throwable e) {
             log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);

@@ -52,10 +52,12 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
-    public Requisition importResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
+    public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
  
+        LogUtils.debugf(this, "importing requisition from %s", resource);
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
+        requisition.setResource(resource);
         save(requisition);
         return requisition;
     }

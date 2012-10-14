@@ -30,7 +30,6 @@ package org.opennms.netmgt.snmp;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Scanner;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -48,7 +47,9 @@ import org.slf4j.LoggerFactory;
 @XmlRootElement(name = "snmpAgentConfig")
 public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
-    private static Logger s_logger = LoggerFactory.getLogger(SnmpAgentConfig.class);
+	private static final long serialVersionUID = 1456963719970029200L;
+
+	private static Logger s_logger = LoggerFactory.getLogger(SnmpAgentConfig.class);
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;

@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmValue;
@@ -333,10 +334,14 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 					"\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml", vldtn_ex);
 			throw new UndeclaredThrowableException(vldtn_ex);
 		} catch(IOException io_ex){
-			String configFile = System.getProperty("opennms.home");		//Get the OpenNMS home directory
-			if(configFile.endsWith(java.io.File.separator))				//if the is '/' at the end
-				configFile.substring(0, configFile.length() - 1);		//remove it so that
-			configFile += "/etc/QoSD-configuration.xml";			//we can compose a valid filename
+			//Get the OpenNMS home directory
+			String configFile = System.getProperty("opennms.home");
+			// if there is '/' at the end...
+			if(configFile.endsWith(java.io.File.separator)) {
+				// ... remove it so that we can compose a valid filename
+				configFile = configFile.substring(0, configFile.length() - 1);
+			}
+			configFile += java.io.File.separator + "etc" + java.io.File.separator + "QoSD-configuration.xml";
 			log.error("Qosd.start(): Failed to load configuration file: " + configFile +
 					"\n\t\t\t\tMake sure that it exists", io_ex);
 			throw new UndeclaredThrowableException(io_ex);
@@ -705,9 +710,8 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 			if (log.isDebugEnabled()) {
 				log.debug("QosD sendAlarms() - Alarm list built:");
 				log.debug("QosD sendAlarms() - ******* Alarm List to be sent : primary keys");
-				for (AlarmKey key : ossjAlarmUpdateList.keySet()) {
-					AlarmValue a = ossjAlarmUpdateList.get(key);
-					log.debug("QosD sendAlarms() key : " + key.getPrimaryKey() +"  AlarmValue.getAlarmChangedTime: " + a.getAlarmChangedTime()); 
+				for (Entry<AlarmKey, AlarmValue> entry : ossjAlarmUpdateList.entrySet()) {
+					log.debug("QosD sendAlarms() key : " + entry.getKey().getPrimaryKey() +"  AlarmValue.getAlarmChangedTime: " + entry.getValue().getAlarmChangedTime()); 
 				}
 				log.debug("QosD sendAlarms() - ******* END OF LIST");
 				log.debug("QosD sendAlarms() Sending alarm list to bean");

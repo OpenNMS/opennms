@@ -64,77 +64,77 @@ public class DNSAddressRequest {
      * Defines the class internet in the domain name system.
      * </P>
      */
-    public final int CLASS_IN = 1; // internet
+    public static final int CLASS_IN = 1; // internet
 
     /**
      * <P>
      * Defines the address type.
      * </P>
      */
-    public final int TYPE_ADDR = 1; // address
+    public static final int TYPE_ADDR = 1; // address
 
     /**
      * <P>
      * The offset of the query bit in the header.
      * </P>
      */
-    public final int SHIFT_QUERY = 15;
+    public static final int SHIFT_QUERY = 15;
 
     /**
      * <P>
      * The offset of the opcode bits in the header.
      * </P>
      */
-    public final int SHIFT_OPCODE = 11;
+    public static final int SHIFT_OPCODE = 11;
 
     /**
      * <P>
      * The offset of the authoritative bit in the header.
      * </P>
      */
-    public final int SHIFT_AUTHORITATIVE = 10;
+    public static final int SHIFT_AUTHORITATIVE = 10;
 
     /**
      * <P>
      * The offset of the truncated bit in the header.
      * </P>
      */
-    public final int SHIFT_TRUNCATED = 9;
+    public static final int SHIFT_TRUNCATED = 9;
 
     /**
      * <P>
      * The offset of the recurse req bit in the header.
      * </P>
      */
-    public final int SHIFT_RECURSE_PLEASE = 8;
+    public static final int SHIFT_RECURSE_PLEASE = 8;
 
     /**
      * <P>
      * The offset of the requrse avail bit in the header.
      * </P>
      */
-    public final int SHIFT_RECURSE_AVAILABLE = 7;
+    public static final int SHIFT_RECURSE_AVAILABLE = 7;
 
     /**
      * <P>
      * The offset of the reserved bits in the header.
      * </P>
      */
-    public final int SHIFT_RESERVED = 4;
+    public static final int SHIFT_RESERVED = 4;
 
     /**
      * <P>
      * The offset of the response code bits in the header.
      * </P>
      */
-    public final int SHIFT_RESPONSE_CODE = 0;
+    public static final int SHIFT_RESPONSE_CODE = 0;
 
     /**
      * <P>
      * The op code for a query in the header.
      * </P>
      */
-    public final int OPCODE_QUERY = 0;
+    public static final int OPCODE_QUERY = 0;
 
     /**
      * <P>

@@ -76,7 +76,7 @@ public class AddVertexOperation implements Operation{
     }
 
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
-        LoggerFactory.getLogger(getClass()).debug(getClass().getName() + ".execute()");
+        LoggerFactory.getLogger(getClass()).debug("execute()");
         Object vertexKey = targets.isEmpty() ? null : targets.get(0);
         Object vertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(vertexKey);
         String icon = getIconKey();

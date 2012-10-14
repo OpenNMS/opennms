@@ -43,8 +43,25 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
 
-    private static final SimpleDateFormat SDF_4DY = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-    private static final SimpleDateFormat SDF_2DY = new SimpleDateFormat( "yy-MM-dd HH:mm:ss" );
+    /**
+     *  Use ThreadLocal SimpleDateFormat instances because SimpleDateFormat is not thread-safe.
+     */
+    private static final ThreadLocal<SimpleDateFormat> SDF_4DY = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        }
+    };
+
+    /**
+     *  Use ThreadLocal SimpleDateFormat instances because SimpleDateFormat is not thread-safe.
+     */
+    private static final ThreadLocal<SimpleDateFormat> SDF_2DY = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat( "yy-MM-dd HH:mm:ss" );
+        }
+    };
 
     /*
      * (non-Javadoc)
@@ -100,13 +117,13 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         
         try {
             if (message.getHeader().getDate().matches("^[0-9]{4}")) {
-                message.getHeader().setTimestamp(SDF_4DY.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
+                message.getHeader().setTimestamp(SDF_4DY.get().parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
             } else {
-                message.getHeader().setTimestamp(SDF_2DY.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
+                message.getHeader().setTimestamp(SDF_2DY.get().parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
             }
             message.setTimestamp(message.getHeader().getTimestamp());
         } catch (ParseException e) {
-            throw new IllegalArgumentException("The line: "+line+", doesn't contain date and time in the format: "+SDF_2DY.toLocalizedPattern() + " or " + SDF_4DY.toLocalizedPattern());
+            throw new IllegalArgumentException("The line: "+line+", doesn't contain date and time in the format: "+SDF_2DY.get().toLocalizedPattern() + " or " + SDF_4DY.get().toLocalizedPattern());
         }
         
         return true;

@@ -539,7 +539,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
-    protected void onStart() {
+    protected synchronized void onStart() {
 		//
         // Start all the threads
         //
@@ -589,7 +589,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
-    protected void onStop() {
+    protected synchronized void onStop() {
 		try {
             if (log().isDebugEnabled())
                 log().debug("Beginning shutdown process");

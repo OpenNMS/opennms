@@ -323,7 +323,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
-            LoggerFactory.getLogger(getClass()).debug("{}.containerItemSetChange()", getClass().getName());
+            LoggerFactory.getLogger(getClass()).debug("containerItemSetChange()");
             m_edgeHolder.update();
             removeAllItems();
             addAll(m_edgeHolder.getElements());
@@ -431,7 +431,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerItemSetChange(ItemSetChangeEvent event) {
-            LoggerFactory.getLogger(getClass()).debug("{}.containerItemSetChange()", getClass().getName());
+            LoggerFactory.getLogger(getClass()).debug("containerItemSetChange()");
             m_vertexHolder.update();
             
 //            removeAllItems();
@@ -482,7 +482,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
         @Override
         public void containerPropertySetChange(PropertySetChangeEvent event) {
-            LoggerFactory.getLogger(getClass()).debug("{}.containerPropertySetChange()", getClass().getName());
+            LoggerFactory.getLogger(getClass()).debug("containerPropertySetChange()");
             m_vertexHolder.update();
             removeAllItems();
             addAll(m_vertexHolder.getElements());
@@ -674,7 +674,7 @@ public class SimpleGraphContainer implements GraphContainer {
     }
     @Override
     public void redoLayout() {
-        LoggerFactory.getLogger(getClass()).debug("{}.redoLayout()", getClass().getName());
+        LoggerFactory.getLogger(getClass()).debug("redoLayout()");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
             getVertexContainer().fireItemSetChange();

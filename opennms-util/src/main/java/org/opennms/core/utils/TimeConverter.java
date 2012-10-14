@@ -101,16 +101,16 @@ public class TimeConverter {
             index = timeVal.indexOf("ms");
         } else if (timeVal.endsWith("s")) {
             factor = 1000.0f;
-            index = timeVal.indexOf("s");
+            index = timeVal.indexOf('s');
         } else if (timeVal.endsWith("m")) {
             factor = 1000.0f * 60.0f;
-            index = timeVal.indexOf("m");
+            index = timeVal.indexOf('m');
         } else if (timeVal.endsWith("h")) {
             factor = 1000.0f * 60.0f * 60.0f;
-            index = timeVal.indexOf("h");
+            index = timeVal.indexOf('h');
         } else if (timeVal.endsWith("d")) {
             factor = 1000.0f * 60.0f * 60.0f * 24.0f;
-            index = timeVal.indexOf("d");
+            index = timeVal.indexOf('d');
         }
 
         if (index == 0) {
