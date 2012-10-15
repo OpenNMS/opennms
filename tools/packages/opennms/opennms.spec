@@ -95,8 +95,8 @@ Requires:	jicmp6
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-#Requires(pre):	opennms-auto-upgrade = %{version}-%{release}
-#Requires:	opennms-auto-upgrade = %{version}-%{release}
+Requires(pre):	opennms-auto-upgrade = %{version}-%{release}
+Requires:	opennms-auto-upgrade = %{version}-%{release}
 Obsoletes:	opennms < 1.3.11
 
 %description core
@@ -378,18 +378,18 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %{extrainfo2}
 
 
-#%package auto-upgrade
-#Summary:	OpenNMS Upgrade Package
-#Group:		Applications/System
-#Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-#Requires(pre):	rpm
-#Requires(post):	git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
-#
-#%description auto-upgrade
-#Tools to deal with upgrading from a previous OpenNMS release.
-#
-#%{extrainfo}
-#%{extrainfo2}
+%package auto-upgrade
+Summary:	OpenNMS Upgrade Package
+Group:		Applications/System
+Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
+Requires(pre):	rpm
+Requires(post):	git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
+
+%description auto-upgrade
+Tools to deal with upgrading from a previous OpenNMS release.
+
+%{extrainfo}
+%{extrainfo2}
 
 
 %prep
@@ -457,14 +457,14 @@ pushd opennms-tools
 popd
 
 TOOLDIR="%{bindir}/config-tools"
-#pushd opennms-base-assembly/src/main/resources/contrib/config-tools
-#	make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="vendor"
-#	find "$RPM_BUILD_ROOT%{_prefix}" -name perllocal.pod -exec rm -rf {} \;
-#	install -d -m 755 "$RPM_BUILD_ROOT$TOOLDIR"
-#	mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT$TOOLDIR"/
-#	cd "$RPM_BUILD_ROOT$TOOLDIR"
-#	ln -s opennms-pretrans.pl opennms-pre.pl
-#popd
+pushd opennms-base-assembly/src/main/resources/contrib/config-tools
+	make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="vendor"
+	find "$RPM_BUILD_ROOT%{_prefix}" -name perllocal.pod -exec rm -rf {} \;
+	install -d -m 755 "$RPM_BUILD_ROOT$TOOLDIR"
+	mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT$TOOLDIR"/
+	cd "$RPM_BUILD_ROOT$TOOLDIR"
+	ln -s opennms-pretrans.pl opennms-pre.pl
+popd
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -795,18 +795,18 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/datacollection/juniper-tca*
 %{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
-#%files auto-upgrade
-#%defattr(644 root root 755)
-#%attr(755,root,root) %{bindir}/config-tools/*.pl
-#%{perl_vendorlib}
-#%{perl_vendorarch}
-#%{_mandir}/man3/OpenNMS::Config*
-#
-#%pre auto-upgrade
-#rpm -q --queryformat='\%{version}-\%{release}' opennms-core 2>/dev/null | grep -v 'is not installed' | sort -u | head -n 1 > /tmp/git-setup.opennms-core
-#
-#%post auto-upgrade
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/git-setup.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
+%files auto-upgrade
+%defattr(644 root root 755)
+%attr(755,root,root) %{bindir}/config-tools/*.pl
+%{perl_vendorlib}
+%{perl_vendorarch}
+%{_mandir}/man3/OpenNMS::Config*
+
+%pre auto-upgrade
+rpm -q --queryformat='\%{version}-\%{release}' opennms-core 2>/dev/null | grep -v 'is not installed' | sort -u | head -n 1 > /tmp/git-setup.opennms-core
+
+%post auto-upgrade
+"$RPM_INSTALL_PREFIX0/bin/config-tools/git-setup.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
@@ -825,27 +825,27 @@ if [ "$1" = 0 ]; then
 	fi
 fi
 
-#%pretrans core
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
+%pretrans core
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 %pre core
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 # clean out old jasper files
 rpm -ql opennms-core | grep -v 'etc-pristine' | grep -v '/subreports/' | grep -E '.jasper$' | while read FILE; do
@@ -933,7 +933,7 @@ for LIBNAME in jicmp jicmp6 jrrd; do
 	fi
 done
 
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
@@ -949,9 +949,9 @@ echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."
 echo ""
 
-#%posttrans core
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
+%posttrans core
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
 %postun core
 
@@ -963,409 +963,409 @@ if [ "$1" = 0 ]; then
 	done
 fi
 
-#%pretrans remote-poller
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
-#
-#%pre remote-poller
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
-#
-#%post remote-poller
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "remote-poller" "%{version}-%{release}" 1>&2
-#
-#%posttrans remote-poller
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
-#
-#%pretrans webapp-jetty
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
-#
-#%pre webapp-jetty
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
-#
-#%post webapp-jetty
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "webapp-jetty" "%{version}-%{release}" 1>&2
-#
-#%posttrans webapp-jetty
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
-#
-#%pretrans ncs
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
-#
-#%pre ncs
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
-#
-#%post ncs
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "ncs" "%{version}-%{release}" 1>&2
-#
-#%posttrans ncs
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-provisioning-dns
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-provisioning-dns
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-#
-#%post plugin-provisioning-dns
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-provisioning-dns
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-provisioning-link
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-provisioning-link
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-#
-#%post plugin-provisioning-link
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-provisioning-link
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-provisioning-map
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-provisioning-map
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-#
-#%post plugin-provisioning-map
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-provisioning-map
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-provisioning-rancid
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-provisioning-rancid
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-#
-#%post plugin-provisioning-rancid
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-provisioning-rancid
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-provisioning-snmp-asset
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-provisioning-snmp-asset
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-#
-#%post plugin-provisioning-snmp-asset
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-provisioning-snmp-asset
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-protocol-dhcp
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-protocol-dhcp
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-#
-#%post plugin-protocol-dhcp
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-protocol-dhcp
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-protocol-nsclient
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-protocol-nsclient
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-#
-#%post plugin-protocol-nsclient
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-protocol-nsclient
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-protocol-radius
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-protocol-radius
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-#
-#%post plugin-protocol-radius
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-protocol-radius
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-protocol-xml
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-protocol-xml
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-#
-#%post plugin-protocol-xml
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-protocol-xml
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-protocol-xmp
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-protocol-xmp
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-#
-#%post plugin-protocol-xmp
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-protocol-xmp
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-#
-#%pretrans plugin-collector-juniper-tca
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-#	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-#	# on a first install, if we're upgrading save etc/ for git-setup.pl
-#	# this avoids anything in etc/ as being marked as .rpmnew
-#	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-#		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-#		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-#		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-#			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-#			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-#			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-#		fi
-#	fi
-#	exit 0;
-#fi
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-#
-#%pre plugin-collector-juniper-tca
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-#
-#%post plugin-collector-juniper-tca
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-#
-#%posttrans plugin-collector-juniper-tca
-#RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-#"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-#
+%pretrans remote-poller
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
+
+%pre remote-poller
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
+
+%post remote-poller
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "remote-poller" "%{version}-%{release}" 1>&2
+
+%posttrans remote-poller
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
+
+%pretrans webapp-jetty
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
+
+%pre webapp-jetty
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
+
+%post webapp-jetty
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "webapp-jetty" "%{version}-%{release}" 1>&2
+
+%posttrans webapp-jetty
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
+
+%pretrans ncs
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
+
+%pre ncs
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
+
+%post ncs
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "ncs" "%{version}-%{release}" 1>&2
+
+%posttrans ncs
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-provisioning-dns
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
+
+%pre plugin-provisioning-dns
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
+
+%post plugin-provisioning-dns
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-provisioning-dns
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-provisioning-link
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
+
+%pre plugin-provisioning-link
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
+
+%post plugin-provisioning-link
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-provisioning-link
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-provisioning-map
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
+
+%pre plugin-provisioning-map
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
+
+%post plugin-provisioning-map
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-provisioning-map
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-provisioning-rancid
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
+
+%pre plugin-provisioning-rancid
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
+
+%post plugin-provisioning-rancid
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-provisioning-rancid
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-provisioning-snmp-asset
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
+
+%pre plugin-provisioning-snmp-asset
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
+
+%post plugin-provisioning-snmp-asset
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-provisioning-snmp-asset
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-protocol-dhcp
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
+
+%pre plugin-protocol-dhcp
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
+
+%post plugin-protocol-dhcp
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-protocol-dhcp
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-protocol-nsclient
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
+
+%pre plugin-protocol-nsclient
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
+
+%post plugin-protocol-nsclient
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-protocol-nsclient
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-protocol-radius
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
+
+%pre plugin-protocol-radius
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
+
+%post plugin-protocol-radius
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-protocol-radius
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-protocol-xml
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
+
+%pre plugin-protocol-xml
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
+
+%post plugin-protocol-xml
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-protocol-xml
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-protocol-xmp
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
+
+%pre plugin-protocol-xmp
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
+
+%post plugin-protocol-xmp
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-protocol-xmp
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-collector-juniper-tca
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
+
+%pre plugin-collector-juniper-tca
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
+
+%post plugin-collector-juniper-tca
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-collector-juniper-tca
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
+
