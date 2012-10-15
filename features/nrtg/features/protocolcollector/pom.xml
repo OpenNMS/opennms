@@ -17,5 +17,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>snmp</module>
+    <module>tca</module>
   </modules>
 </project>
