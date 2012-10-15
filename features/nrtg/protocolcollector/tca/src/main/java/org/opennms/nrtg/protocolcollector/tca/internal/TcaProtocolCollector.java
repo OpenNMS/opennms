@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A ProtocolCollector to execute CollectionJobs for TCA
+ * TCA provides multiple values behind special SnmpOids.
+ * This Collector is providing directly addressed values from the multiple value SnmpOids.
  *
  * @author Markus Neumann
  */
@@ -49,7 +51,15 @@ public class TcaProtocolCollector implements ProtocolCollector {
     private static Logger logger = LoggerFactory.getLogger(TcaProtocolCollector.class);
     private static final String PROTOCOL = "TCA";
     private SnmpStrategy m_snmpStrategy;
-
+    private final List<String> keywords = new ArrayList<String>();
+    {
+        keywords.add("inboundDelay");
+        keywords.add("inboundJitter");
+        keywords.add("outboundDelay");
+        keywords.add("outboundJitter");
+        keywords.add("timesyncStatus");
+        
+    }    
     public SnmpStrategy getSnmpStrategy() {
         return m_snmpStrategy;
     }
@@ -58,43 +68,32 @@ public class TcaProtocolCollector implements ProtocolCollector {
         m_snmpStrategy = snmpStrategy;
     }
 
-    private String typeToString(int type) {
-        switch (type) {
-            case SnmpValue.SNMP_COUNTER32:
-                return "counter32";
-            case SnmpValue.SNMP_COUNTER64:
-                return "counter64";
-            case SnmpValue.SNMP_GAUGE32:
-                return "gauge32";
-            case SnmpValue.SNMP_INT32:
-                return "int32";
-            case SnmpValue.SNMP_IPADDRESS:
-                return "ipAddress";
-            case SnmpValue.SNMP_OCTET_STRING:
-                return "octetString";
-            case SnmpValue.SNMP_OPAQUE:
-                return "opaque";
-            case SnmpValue.SNMP_TIMETICKS:
-                return "timeticks";
-            case SnmpValue.SNMP_OBJECT_IDENTIFIER:
-                return "objectIdentifier";
-            case SnmpValue.SNMP_NULL:
-                return "null";
-            default:
-                return "unknown";
+    protected String getCompositeValue(String keyword, String snmpResult) {
+        //String sampleSnmpResult = "|25|1327451762,42,23,11,0,1|1327451763,11,0,11,0,1|1327451764,11,0,11,0,1|1327451765,11,0,11,0,1|1327451766,11,0,11,0,1|1327451767,11,0,11,0,1|1327451768,11,0,11,0,1|1327451769,11,0,11,0,1|1327451770,11,0,11,0,1|1327451771,11,0,11,0,1|1327451772,11,0,11,0,1|1327451773,11,0,11,0,1|1327451774,11,0,11,0,1|1327451775,11,0,11,0,1|1327451776,11,0,11,0,1|1327451777,11,0,11,0,1|1327451778,11,0,11,0,1|1327451779,11,0,11,0,1|1327451780,11,0,11,0,1|1327451781,11,0,11,0,1|1327451782,11,0,11,0,1|1327451783,11,0,11,0,1|1327451784,11,0,11,0,1|1327451785,11,0,11,0,1|1327451786,12,0,11,0,423|";
+        String result = null;
+        if (snmpResult != null && keyword != null && keywords.contains(keyword)) {
+            String[] snmpResultSets = snmpResult.split("\\|");
+            Integer amount = Integer.parseInt(snmpResultSets[1]);
+            String snmpResultSubSet = snmpResultSets[amount +1];
+            String[] results = snmpResultSubSet.split(",");
+            result = results[keywords.indexOf(keyword) +1];
         }
+        
+        return result;
     }
-
+    
     @Override
     public CollectionJob collect(final CollectionJob collectionJob) {
-        logger.info("SnmpProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
+        logger.info("TcaProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
 
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
         List<Collectable> trackers = new ArrayList<Collectable>();
         for (final String metricObjId : collectionJob.getAllMetrics()) {
-
-            SnmpObjId requestOid = SnmpObjId.get(metricObjId);
+            
+            final String keyword = metricObjId.substring(metricObjId.lastIndexOf("_") + 1);
+            final SnmpObjId requestOid = SnmpObjId.get(metricObjId.substring(0, metricObjId.lastIndexOf("_")));
+            
             SnmpObjId base = requestOid.getPrefix(requestOid.length() - 1);
             int lastId = requestOid.getLastSubId();
 
@@ -103,8 +102,8 @@ public class TcaProtocolCollector implements ProtocolCollector {
                 protected void storeResult(SnmpResult result) {
                     logger.trace("Collected SnmpValue '{}'", result);
                     SnmpValue value = result.getValue();
-                    String metricType = value == null ? "unknown" : typeToString(value.getType());
-                    collectionJob.setMetricValue(metricObjId, metricType, value == null ? null : value.toDisplayString());
+                    String compositeResult = getCompositeValue(keyword, value.toDisplayString());
+                    collectionJob.setMetricValue(metricObjId, "int32", compositeResult);
                 }
 
                 @Override
@@ -122,7 +121,6 @@ public class TcaProtocolCollector implements ProtocolCollector {
                 }
             };
             trackers.add(instanceTracker);
-
         }
 
         CollectionTracker tracker = new AggregateTracker(trackers);

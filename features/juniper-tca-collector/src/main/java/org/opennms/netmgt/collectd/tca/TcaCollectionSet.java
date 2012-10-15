@@ -217,7 +217,7 @@ public class TcaCollectionSet implements CollectionSet {
 			long lastTimestamp = getLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()));
 			String[] rawData = entry.getRawData().split("\\|");
 			int samples = Integer.parseInt(rawData[1]);
-			SnmpObjId entryObjId = entry.getFullObjId();
+			SnmpObjId entryObjId = SnmpObjId.get(".1.3.6.1.4.1.27091.3.1.6.1.2", entry.getInstance().toString());
 			for (int i=0; i<samples; i++) {
 				log().debug("process: processing row " + i + ": " + rawData[2 + i]);
 				String[] rawEntry = rawData[2 + i].split(",");
