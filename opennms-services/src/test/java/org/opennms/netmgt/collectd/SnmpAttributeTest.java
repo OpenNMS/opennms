@@ -36,13 +36,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.TestCase;
 
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
@@ -52,6 +58,9 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 import org.opennms.test.mock.EasyMockUtils;
@@ -114,7 +123,8 @@ public class SnmpAttributeTest extends TestCase {
         CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
-        NodeInfo nodeInfo = new NodeInfo(resourceType, agent);
+        NodeInfo nodeInfo = resourceType.getNodeInfo();
+        
 
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.3.6.1.4.1.12238.55.9997.4.1.2.9.116.101.109.112.95.117.108.107.111");
@@ -124,16 +134,28 @@ public class SnmpAttributeTest extends TestCase {
 
         NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", "ignore"));
 
-        SnmpAttribute attr = new SnmpAttribute(nodeInfo, attributeType, snmpValue);
+        attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
+        
 
         RrdRepository repository = new RrdRepository();
         repository.setRraList(new ArrayList<String>(Collections.singleton("RRA:AVERAGE:0.5:1:2016")));
 
-        BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
+        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
         persister.createBuilder(nodeInfo, "baz", attributeType);
+        
+        final AtomicInteger count = new AtomicInteger(0);
+        
+        nodeInfo.visit(new AbstractCollectionSetVisitor() {
+			
+			@Override
+			public void visitAttribute(CollectionAttribute attr) {
+		        attr.storeAttribute(persister);
+		        count.incrementAndGet();
+			}
+			
+		});
 
-        attr.storeAttribute(persister);
-
+        assertEquals(1, count.get());
         persister.commitBuilder();
     }
 
