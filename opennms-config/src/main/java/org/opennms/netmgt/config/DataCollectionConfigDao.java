@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
 
@@ -38,7 +39,7 @@ import org.opennms.netmgt.model.RrdRepository;
  * <p>DataCollectionConfig interface.</p>
  */
 public interface DataCollectionConfigDao {
-    
+
     /** Constant <code>NODE_ATTRIBUTES=-1</code> */
     static final int NODE_ATTRIBUTES = -1;
     /** Constant <code>ALL_IF_ATTRIBUTES=-2</code> */
@@ -69,7 +70,7 @@ public interface DataCollectionConfigDao {
      * @return a {@link java.util.Map} object.
      */
     Map<String,ResourceType> getConfiguredResourceTypes();
-    
+
     /**
      * <p>getRrdRepository</p>
      *
@@ -77,7 +78,7 @@ public interface DataCollectionConfigDao {
      * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
      */
     RrdRepository getRrdRepository(String collectionName);
-    
+
     /**
      * <p>getStep</p>
      *
@@ -100,5 +101,18 @@ public interface DataCollectionConfigDao {
      * @return a {@link java.lang.String} object.
      */
     String getRrdPath();
+
+    /**
+     * <p>getRootDataCollection</p>
+     * 
+     * @return a {@link org.opennms.netmgt.config.datacollection.DatacollectionConfig} object.
+     */
+    DatacollectionConfig getRootDataCollection();
+
+    List<String> getAvailableDataCollectionGroups();
+
+    List<String> getAvailableSystemDefs();
+
+    List<String> getAvailableMibGroups();
 
 }

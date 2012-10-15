@@ -27,6 +27,9 @@
     <module>system-report</module>
     <module>ticketing</module>
 
+    <!-- SNMP MIB Parser and Event/Collection Configuration -->
+    <module>vaadin-snmp-events-and-metrics</module>
+
     <!-- Near Real Time Graphing -->
     <module>nrtg</module>
 

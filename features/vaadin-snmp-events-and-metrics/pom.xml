@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <relativePath>../topology-map/poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.4-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>vaadin-snmp-events-and-metrics</artifactId>
+  <packaging>bundle</packaging>
+  <name>OpenNMS Admin UI for SNMP Events and Metrics</name>
+  <description>
+    OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.
+  </description>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.vaadin-snmp-events-and-metrics</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <vaadin.version>6.8.2</vaadin.version>
+    <pax.vaadin.version>0.1.0-ONMS-20120906</pax.vaadin.version>
+    <jsmiparser.version>0.11</jsmiparser.version>
+    <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
+    <vaadin.messagebox.version>1.1.1</vaadin.messagebox.version>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+       <directory>src/main/java</directory>
+      </resource>
+      <resource>
+       <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <bundles>
+            <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/customfield/${vaadin.customfield.version}</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/messagebox/${vaadin.messagebox.version}</bundle>
+          </bundles>
+          <features>
+            <feature>vaadin</feature>
+          </features>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+ 
+  <repositories>
+    <repository>
+      <id>vaadin-snapshots</id>
+      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus-snapshots</id>
+      <url>http://nexus.codehaus.org/snapshots</url>
+      <snapshots>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>vaadin-snapshots</id>
+      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <snapshots>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+
+    <!-- OSGi Dependencies -->
+
+    <dependency>
+      <groupId>org.ops4j.pax.vaadin</groupId>
+      <artifactId>service</artifactId>
+      <version>${pax.vaadin.version}</version>
+    </dependency>
+    <dependency> <!-- Required by pax/vaadin -->
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Vaadin Dependencies -->
+
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${vaadin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>customfield</artifactId>
+      <version>${vaadin.customfield.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>messagebox</artifactId>
+      <version>${vaadin.messagebox.version}</version>
+    </dependency>
+
+    <!-- MIB Compiler Dependencies -->
+
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
+      <version>${jsmiparser.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <!-- JsmiParser Dependencie, to avoid Karaf loading problems -->
+
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+
+    <!-- Tests Dependencies -->
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+ 
+  </dependencies>
+
+</project>
