@@ -34,4 +34,7 @@ package org.opennms.nrtg.nrtbroker.local.internal;
  */
 public interface NrtBrokerLocalMBean {
     public Integer getMeasurementSetSize();
+    public Long getNumberOfDiscardedMeasurementSets();
+    public String[] getQueues();
+    public void doHouseKeeping();
 }

@@ -49,6 +49,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+	<groupId>org.apache.aries.jmx</groupId>
+	<artifactId>org.apache.aries.jmx.whiteboard</artifactId>
+	<version>0.3</version>
+    </dependency>
+            
   </dependencies>
 
 </project>

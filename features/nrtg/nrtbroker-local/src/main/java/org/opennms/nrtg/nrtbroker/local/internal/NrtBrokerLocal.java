@@ -47,13 +47,17 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
     private class TimedOutMap {
         private Map<String, List<MeasurementSet>> m_measurementSets = new HashMap<String, List<MeasurementSet>>();
         private Map<String, Date> m_lastAccess = new HashMap<String, Date>();
-
+        private Map<String, Long> m_consumed = new HashMap<String, Long>();
+        private long m_discardedSets = 0;
+        
         public List<MeasurementSet> getAndRemove(String key) {
             synchronized (m_measurementSets) {
                 m_lastAccess.put(key, new Date());
                 List<MeasurementSet> measurementSetList = m_measurementSets.get(key);
                 m_measurementSets.put(key, new ArrayList<MeasurementSet>());
-
+                
+                m_consumed.put(key, m_consumed.get(key) + measurementSetList.size());
+                
                 return measurementSetList;
             }
         }
@@ -75,6 +79,8 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
             synchronized (m_measurementSets) {
                 if (!m_measurementSets.containsKey(key)) {
                     m_measurementSets.put(key, new ArrayList<MeasurementSet>());
+                    m_consumed.put(key, Long.valueOf(0));
+                    // m_lastAccess.put(key, new Date());
                 }
 
                 List<MeasurementSet> measurementSetList = m_measurementSets.get(key);
@@ -90,7 +96,8 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
                     if (now.getTime() - lastAccess.getTime() > 120000) {
                         m_lastAccess.remove(key);
                         m_measurementSets.remove(key);
-
+                        m_consumed.remove(key);
+                        m_discardedSets++;
                         logger.warn("Timed out object removed '{}'", key);
                     }
                 }
@@ -99,6 +106,19 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
 
         private Integer getAmountOfMeasurementSets() {
             return m_measurementSets.size();
+        }
+        
+        private Long getAmountOfDiscardedMeasurementSets() {
+            return m_discardedSets;
+        }
+        
+        private String[] getQueues() {
+            ArrayList<String> queues = new ArrayList<String>();
+
+            for(String key : m_measurementSets.keySet()) {
+                queues.add(key +" ("+m_measurementSets.get(key).size() +"/"+m_consumed.get(key) +")");
+            }
+            return queues.toArray(new String[0]);
         }
     }
 
@@ -146,5 +166,20 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
     @Override
     public Integer getMeasurementSetSize() {
         return m_measurementSets.getAmountOfMeasurementSets();
+    }
+    
+    @Override
+    public Long getNumberOfDiscardedMeasurementSets() {
+        return m_measurementSets.getAmountOfDiscardedMeasurementSets();
+    }    
+
+    @Override
+    public String[] getQueues() {
+        return m_measurementSets.getQueues();
+    }
+    
+    @Override
+    public void doHouseKeeping() {
+        m_measurementSets.doHousekeeping();
     }
 }
