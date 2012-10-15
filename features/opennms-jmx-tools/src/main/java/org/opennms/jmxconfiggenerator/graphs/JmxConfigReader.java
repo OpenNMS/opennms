@@ -32,7 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.xml.bind.JAXB;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.jmxconfiggenerator.helper.Colors;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
 import org.slf4j.Logger;
