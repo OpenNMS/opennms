@@ -30,6 +30,8 @@ package org.opennms.netmgt.collectd.tca;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * The Class TcaDataEntry.
@@ -49,12 +51,29 @@ public final class TcaDataEntry extends SnmpStore {
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_PEER_ADDRESS, ".1.3.6.1.4.1.27091.3.1.6.1.1", 1),
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_RAW_DATA, ".1.3.6.1.4.1.27091.3.1.6.1.2", 2),
 	};
+	
+	private final SnmpObjId m_base;
+	private final SnmpInstId m_instance;
 
 	/**
 	 * Instantiates a new TCA data entry.
 	 */
-	public TcaDataEntry() {
+	public TcaDataEntry(SnmpObjId base, SnmpInstId instance) {
 		super(tca_elemList);
+		m_base = base;
+		m_instance = instance;
+	}
+	
+	public SnmpObjId getBase() {
+		return m_base;
+	}
+	
+	public SnmpInstId getInstance() {
+		return m_instance;
+	}
+	
+	public SnmpObjId getFullObjId() {
+		return SnmpObjId.get(m_base, m_instance);
 	}
 
 	/**
