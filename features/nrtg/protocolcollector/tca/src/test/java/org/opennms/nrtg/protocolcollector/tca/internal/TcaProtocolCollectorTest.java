@@ -18,7 +18,7 @@
  * For more information contact: OpenNMS(R) Licensing <license@opennms.org> http://www.opennms.org/ http://www.opennms.com/
  ******************************************************************************
  */
-package org.opennms.nrtg.protocolcollector.snmp.internal;
+package org.opennms.nrtg.protocolcollector.tca.internal;
 
 import java.net.InetAddress;
 import java.util.HashSet;
@@ -46,15 +46,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * TODO Tak refactor this test to be snmp and not tca
  * @author Markus Neumann
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:SnmpProtocolCollectorTestContext.xml"})
-@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:SnmpSample.properties")
-public class SnmpProtocolCollectorTest implements InitializingBean {
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:TcaProtocolCollectorTestContext.xml"})
+@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:juniperTcaSample.properties")
+public class TcaProtocolCollectorTest implements InitializingBean {
 
-    private static Logger logger = LoggerFactory.getLogger(SnmpProtocolCollectorTest.class);
+    private static Logger logger = LoggerFactory.getLogger(TcaProtocolCollectorTest.class);
 
     @Autowired
     private ProtocolCollector protocolCollector;
@@ -63,9 +62,6 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
     private InetAddress localhost;
     private SnmpAgentConfig snmpAgentConfig;
     private Set<String> destinations;
-    
-    private final String testMetric = ".1.3.6.1.2.1.1.1.0";
-    private final String testMetricValue = "Mock Juniper TCA Device";
     
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -88,19 +84,37 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
 
     @Test
     public void testCollect() {
-        collectionJob.setService("SNMP");
+
+        final String testMetric = ".1.3.6.1.2.1.1.1.0";
+        final String testMetricValue = "Mock Juniper TCA Device";
+        
+        collectionJob.setService("TCA");
         collectionJob.setNodeId(1);
         collectionJob.setNetInterface(localhost.getHostAddress());
         collectionJob.addMetric(testMetric, destinations, "OnmsLocicMetricId");
         collectionJob.setId("testing");
         CollectionJob result = protocolCollector.collect(collectionJob);
-        Assert.assertEquals(result.getService(), "SNMP");
+        Assert.assertEquals(result.getMetricValue(testMetric), testMetricValue);
+    }
+    
+    @Test
+    public void testCollectWithCompountMertic() {
+
+        final String testMetric = ".1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundDelay";
+        final String testMetricValue = "12";
+        
+        collectionJob.setService("TCA");
+        collectionJob.setNodeId(1);
+        collectionJob.setNetInterface(localhost.getHostAddress());
+        collectionJob.addMetric(testMetric, destinations, "OnmsLocicMetricId");
+        collectionJob.setId("testing");
+        CollectionJob result = protocolCollector.collect(collectionJob);
         Assert.assertEquals(result.getMetricValue(testMetric), testMetricValue);
     }
 
     @Test
     public void testGetProtocol() {
-        Assert.assertEquals("SNMP", protocolCollector.getProtcol());
+        Assert.assertEquals("TCA", protocolCollector.getProtcol());
     }
 
     @Test

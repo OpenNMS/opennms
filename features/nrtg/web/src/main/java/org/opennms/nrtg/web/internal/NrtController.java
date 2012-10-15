@@ -171,8 +171,8 @@ public class NrtController {
             for (MetricTuple metricTuple : metricsByProtocol.get(protocol)) {
                 collectionJob.addMetric(metricTuple.getMetricId(), resultDestinations, metricTuple.getOnmsLogicMetricId());
             }
-
-            if (protocol.equals("SNMP")) {
+            //I know....
+            if (protocol.equals("SNMP") || protocol.equals("TCA")) {
                 collectionJob.setNetInterface(protocol);
                 SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
                 collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
