@@ -33,9 +33,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
@@ -58,7 +61,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class BasePersisterTest extends TestCase {
+public class BasePersisterTest {
     private FileAnticipator m_fileAnticipator;
     private File m_snmpDirectory;
     private BasePersister m_persister;
@@ -69,11 +72,12 @@ public class BasePersisterTest extends TestCase {
     private IpInterfaceDao m_ifDao;
     private ServiceParameters m_serviceParams;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
-        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
+    /* erg, Rule fields must be public */
+    @Rule public TestName m_testName = new TestName();
+
+    @Before
+    public void setUp() throws Exception {
+        MockUtil.println("------------ Begin Test " + m_testName.getMethodName() + " --------------------------");
         MockLogAppender.setupLogging();
 
         m_fileAnticipator = new FileAnticipator();
@@ -90,21 +94,20 @@ public class BasePersisterTest extends TestCase {
         
     }
     
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
+    @After
+    public void checkWarnings() throws Throwable {
         MockLogAppender.assertNoWarningsOrGreater();
         m_fileAnticipator.deleteExpected();
     }
     
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         m_fileAnticipator.deleteExpected(true);
         m_fileAnticipator.tearDown();
-        MockUtil.println("------------ End Test " + getName() + " --------------------------");
-        super.tearDown();
+        MockUtil.println("------------ End Test " + m_testName.getMethodName() + " --------------------------");
     }
     
+    @Test
     public void testPersistStringAttributeWithExistingPropertiesFile() throws Exception {
         initPersister();
         
@@ -115,6 +118,7 @@ public class BasePersisterTest extends TestCase {
         m_persister.persistStringAttribute(attribute);
     }
     
+    @Test
     public void testPersistStringAttributeWithParentDirectory() throws Exception {
         initPersister();
         
@@ -125,6 +129,7 @@ public class BasePersisterTest extends TestCase {
         m_persister.persistStringAttribute(attribute);
     }
     
+    @Test
     public void testPersistStringAttributeWithNoParentDirectory() throws Exception {
         initPersister();
         
@@ -139,6 +144,7 @@ public class BasePersisterTest extends TestCase {
      * Test for bug #1817 where a string attribute will get persisted to
      * both strings.properties and an RRD file if it is a numeric value.
      */
+    @Test
     public void testPersistStringAttributeUsingBuilder() throws Exception {
         initPersister();
         
@@ -161,6 +167,7 @@ public class BasePersisterTest extends TestCase {
         m_persister.popShouldPersist();
     }
 
+    @Test
     public void testBug2733() throws Exception {
         m_serviceParams.getParameters().put("storing-enabled", "false");
         testPersistStringAttributeUsingBuilder();
