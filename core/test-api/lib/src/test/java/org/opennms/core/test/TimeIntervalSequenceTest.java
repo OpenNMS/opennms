@@ -28,8 +28,13 @@
 
 package org.opennms.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
+import org.junit.Test;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.TimeInterval;
@@ -37,7 +42,7 @@ import org.opennms.core.utils.TimeIntervalSequence;
 
 public class TimeIntervalSequenceTest extends IntervalTestCase {
     
-
+    @Test
     public void testPreceeds() throws Exception {
         TimeInterval first = new TimeInterval(new Date(0), date("18-08-2005 00:00:00"));
         TimeInterval second = aug(18);
@@ -45,6 +50,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertFalse(second.preceeds(first));
     }
     
+    @Test
     public void testFollows() throws Exception {
         TimeInterval first = new TimeInterval(new Date(0), date("18-08-2005 00:00:00"));
         TimeInterval second = aug(18);
@@ -52,12 +58,14 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertFalse(first.follows(second));
     }
 
+    @Test
     public void testEmptySequence() {
         TimeIntervalSequence seq = new TimeIntervalSequence();
         // expect a sequence of no intervals
         assertTimeIntervalSequence(new TimeInterval[0], seq);
     }
     
+    @Test
     public void testSingletonSeq() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18));
         // expect a sequence of one interval
@@ -65,6 +73,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
     }
 
     
+    @Test
     public void testAddToEmptySeq() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence();
         seq.addInterval(aug(18));
@@ -73,6 +82,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(18) }, seq);
     }
     
+    @Test
     public void testAddNonOverlappingLater() throws Exception {
         
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18));
@@ -82,6 +92,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testAddNonOverlappingEarlier() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18));
         seq.addInterval(aug(17, 11, 12));
@@ -89,6 +100,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] {aug(17, 11, 12), aug(18) }, seq);
     }
     
+    @Test
     public void testAddEquals() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 8, 17));
@@ -96,6 +108,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(18, 8, 17) }, seq);
     }
     
+    @Test
     public void testAddOverlappingCentered() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 11, 12));
@@ -104,6 +117,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testAddOverlappingLater() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 11, 20));
@@ -112,6 +126,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testAddOverlappingEarlier() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 3, 12));
@@ -120,6 +135,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
 
+    @Test
     public void testAddOverlappingStraddle() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 3, 20));
@@ -128,6 +144,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testAddOverlappingFirstSegmentEmpty() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 8, 20));
@@ -135,6 +152,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(18, 8, 17), aug(18, 17, 20) }, seq);
     }
     
+    @Test
     public void testAddOverlappingLastSegmentEmpty() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(18, 3, 17));
@@ -142,6 +160,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(18, 3, 8), aug(18, 8, 17) }, seq);
     }
     
+    @Test
     public void testAddOverlappingMany() throws Exception {
         // seg with three entryies 8-5 on aug 18, aug 19 and aug 20
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
@@ -165,6 +184,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testRemoveOnlyInterval() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 8, 17));
@@ -172,6 +192,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[0], seq);
     }
     
+    @Test
     public void testRemoveFirstEntireInterval() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(19, 11, 12));
@@ -181,6 +202,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(19, 11, 12) }, seq);
     }
     
+    @Test
     public void testRemoveMiddleEntireInterval() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(19, 11, 12));
@@ -192,6 +214,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
     }
 
 
+    @Test
     public void testRemoveLastEntireInterval() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(19, 11, 12));
@@ -201,6 +224,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(18, 8, 17) }, seq);
     }
     
+    @Test
     public void testRemoveCenteredOverlappingInterval() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 11, 12));
@@ -209,6 +233,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertTimeIntervalSequence(new TimeInterval[] { aug(18, 8, 11), aug(18, 12, 17) }, seq);
     }
     
+    @Test
     public void testRemoveOverlappingLater() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 11, 20));
@@ -218,6 +243,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
 
+    @Test
     public void testRemoveOverlappingEarlier() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 3, 12));
@@ -227,6 +253,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testRemoveOverlappingStraddle() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 3, 20));
@@ -236,6 +263,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
 
+    @Test
     public void testRemoveOverlappingDegeneratePrefix() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 8, 12));
@@ -245,6 +273,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
 
+    @Test
     public void testRemoveOverlappingDegenerateSuffix() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.removeInterval(aug(18, 12, 17));
@@ -254,6 +283,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testRemoveOverlappingMany() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(19, 8, 17));
@@ -275,6 +305,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testBound() throws Exception {
         
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
@@ -296,7 +327,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
-    
+    @Test
     public void testGetBounds() throws Exception {
         TimeIntervalSequence seq = new TimeIntervalSequence(aug(18, 8, 17));
         seq.addInterval(aug(19, 8, 17));
@@ -307,6 +338,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         assertEquals(aug(18, 8, 22, 17), seq.getBounds());
     }
     
+    @Test
     public void testExtensionAdd() throws Exception {
         // seg with three entryies 8-5 on aug 18, aug 19 and aug 20
         OwnedIntervalSequence seq = new OwnedIntervalSequence(ownedOne(aug(18, 8, 17)));
@@ -330,6 +362,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testExtensionRemoveWrongOwner() throws Exception {
 
         // seg with three entryies 8-5 on aug 18, aug 19 and aug 20
@@ -351,6 +384,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
 
     }
 
+    @Test
     public void testExtensionRemoveOneOwner() throws Exception {
 
         // seg with three entryies 8-5 on aug 18, aug 19 and aug 20
@@ -374,6 +408,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
 
     }
 
+    @Test
     public void testExtensionRemoveAllOwners() throws Exception {
 
         // seg with three entryies 8-5 on aug 18, aug 19 and aug 20
@@ -394,6 +429,7 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
 
     }
     
+    @Test
     public void testExtensionUnscheduled() throws Exception {
         
         // seg with three entryies 8-5 on aug 18, aug 19 and aug 20
