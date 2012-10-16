@@ -28,19 +28,24 @@
 
 package org.opennms.netmgt.config.mock;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.IntervalTestCase;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
-import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.MonthlyCalendar;
@@ -49,6 +54,7 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.WebGroup;
 import org.opennms.netmgt.config.WebGroupManager;
 import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.WebRoleManager;
 import org.opennms.netmgt.config.WebUser;
 import org.opennms.netmgt.config.WebUserManager;
@@ -63,8 +69,8 @@ public class RolesTest extends IntervalTestCase {
     private WebGroupManager m_groupMgr;
     private WebUserManager m_userMgr;
 
-
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         
         MockLogAppender.setupLogging();
@@ -80,10 +86,7 @@ public class RolesTest extends IntervalTestCase {
 
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    
+    @Test
     public void testRoles() throws Exception {
         assertNotNull(m_roleMgr);
         assertNotNull(m_roleMgr.getRoles());
@@ -116,6 +119,7 @@ public class RolesTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testWeekCount() throws Exception {
         Date aug3 = getDate("2005-08-03");
         MonthlyCalendar calendar = new MonthlyCalendar(aug3, null, null);
@@ -139,6 +143,7 @@ public class RolesTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testTimeIntervals() throws Exception {
         OwnedIntervalSequence intervals = m_groupManager.getRoleScheduleEntries("oncall", getDate("2005-08-18"), getDate("2005-08-19"));
         
