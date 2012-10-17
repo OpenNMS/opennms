@@ -231,6 +231,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("source", edge.getSource().getKey());
         	target.addAttribute("target", edge.getTarget().getKey());
         	target.addAttribute("selected", edge.isSelected());
+        	target.addAttribute("cssClass", edge.getCssClass());
         	target.addAttribute("tooltipText", edge.getTooltipText());
 
     		List<String> edgeActionList = new ArrayList<String>();

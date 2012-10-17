@@ -48,7 +48,7 @@ public final class GWTEdge extends JavaScriptObject {
     }-*/;
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-        return {"id":id, "source":source, "target":target, "actions":[]};
+        return {"id":id, "source":source, "target":target, "actions":[], "cssClass": "path"};
     }-*/;
 
     public final native String getId() /*-{
@@ -70,6 +70,14 @@ public final class GWTEdge extends JavaScriptObject {
     
     public final native void setSelected(boolean selected) /*-{
         this.selected = selected;
+    }-*/;
+    
+    public final native void setCssClass(String cssClass) /*-{
+        this.cssClass = cssClass;
+    }-*/;
+    
+    public final native String getCssClass() /*-{
+        return this.cssClass;
     }-*/;
 
 
@@ -143,7 +151,7 @@ public final class GWTEdge extends JavaScriptObject {
             @Override
             public D3 run(D3 selection) {
                 
-                return selection.style("stroke", GWTEdge.selectionFilter())
+                return selection.attr("class", GWTEdge.getCssStyleClass())
                         .attr("x1", GWTEdge.getSourceX())
                         .attr("x2", GWTEdge.getTargetX())
                         .attr("y1", GWTEdge.getSourceY())
@@ -152,14 +160,13 @@ public final class GWTEdge extends JavaScriptObject {
         };
     }
     
-    protected static Func<String, GWTEdge> selectionFilter() {
-        // TODO Auto-generated method stub
+    protected static Func<String, GWTEdge> getCssStyleClass(){
         return new Func<String, GWTEdge>(){
 
-            public String call(GWTEdge edge, int index) {
-                return edge.isSelected() ? "yellow" : "#ccc";
+            @Override
+            public String call(GWTEdge datum, int index) {
+                return datum.getCssClass();
             }
-            
         };
     }
 
@@ -168,7 +175,7 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.append("line").attr("opacity", 0).style("stroke", "#ccc").style("stroke-width", "2").style("cursor", "pointer")
+                return selection.append("g").append("line").attr("class", "path").attr("opacity", 0).style("stroke-width", "5").style("cursor", "pointer")
                         .call(draw());
             }
         };
