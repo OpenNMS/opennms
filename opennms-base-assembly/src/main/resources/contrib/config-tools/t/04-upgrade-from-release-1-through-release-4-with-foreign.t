@@ -79,22 +79,14 @@ write_file($testfile, "o-test-feature-a-1.0-4broken\n\n\nblah\nHoly crap, monkey
 $rpms = build_rpm("t/rpms/feature-a-1.0-5.spec", "target/rpm6-5");
 OpenNMS::Config::RPM->install(rpms => $rpms, root => "target/rpmroot");
 ok(-e $testfile);
-is(read_file($testfile), <<END);
-<<<<<<< HEAD
-o-test-feature-a-1.0-4broken
-=======
-o-test-feature-a-1.0-5
->>>>>>> opennms-auto-upgrade/pristine
-
-
-blah
-Holy crap, monkeys are awesome.
-END
+is(read_file($testfile), "o-test-feature-a-1.0-5\n\n\n");
 ok(-e $touchy . '1.0-5');
 ok(! -e $touchy . '1.0-1');
 ok(! -e $touchy . '1.0-2');
 ok(! -e $touchy . '1.0-3');
-#ok(! -e $touchy . '1.0-4');
+ok(! -e $touchy . '1.0-4');
+ok(-e $touchy . '1.0-4.old');
+ok(-e $testfile . '.old');
 ok(-e $b);
 ok(! -e $foreign);
 ok(-e $really_foreign);

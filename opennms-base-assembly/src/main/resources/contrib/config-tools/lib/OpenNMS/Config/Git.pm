@@ -5,6 +5,8 @@ use strict;
 use warnings;
 
 use Carp;
+use Error qw(:try);
+use File::Copy;
 use File::Path;
 use File::Spec;
 use Git;
@@ -406,6 +408,99 @@ sub merge {
 		$self->_git()->command('merge', $branch);
 	} "Error \%d while merging the '$branch' branch into the current branch: \%s";
 
+	return $self;
+}
+
+=head2 * merge_or_fail($branch_name)
+
+Merge the given branch into the current branch.  Croaks on failure.
+
+=cut
+
+sub merge_or_fail {
+	my $self = shift;
+	my $branch = shift;
+
+	if (not defined $branch) {
+		croak "You must specify a branch to merge!";
+	}
+
+	try {
+		my $result = $self->_git()->command('merge', $branch);
+	} catch Git::Error::Command with {
+		my $E = shift;
+		croak "Error while running git merge $branch: " . $E->stringify;
+	};
+
+	return $self;
+}
+
+=head2 * reset(SHA, tag, or branch)
+
+Reset the working tree to the Git SHA, tag, or branch specified.
+
+Croaks on failure.
+
+=cut
+
+sub reset {
+	my $self = shift;
+	my $sha  = shift;
+	
+	if (not defined $sha or $sha eq '') {
+		croak "You must specify a git SHA, tag, or branch name!";
+	}
+
+	try {
+		my $result = $self->_git()->command('reset', '--hard', $sha);
+	} catch Git::Error::Command with {
+		my $E = shift;
+		croak "Error while running git reset --hard $sha: " . $E->stringify;
+	};
+	return $self;
+}
+
+=head2 * save_changes_compared_to(SHA, tag, or branch, extension)
+
+For each file that is new or different from the specified SHA, tag, or branch,
+create a copy of the file with the specified extension, and replace the file
+with the version in the SHA/tag/branch.
+
+Croaks on failure.
+
+=cut
+
+sub save_changes_compared_to {
+	my $self = shift;
+	my $sha  = shift;
+	my $ext  = shift || '.old';
+
+	if (not defined $sha or $sha eq '') {
+		croak "You must specify a git SHA, tag, or branch name!";
+	}
+
+	my @files;
+	try {
+		@files = $self->_git()->command('diff', '--name-only', $sha);
+	} catch Git::Error::Command with {
+		my $E = shift;
+		croak "Failed to run git diff --name-only $sha: " . $E->stringify;
+	};
+	for my $file (@files) {
+		my $from = File::Spec->catfile($self->dir, $file);
+		my $to   = $from . $ext;
+
+		if (-f $from) {
+			move($from, $to) or croak "Unable to copy $from to $to: $!";
+		}
+		try {
+			my $result = $self->_git()->command('checkout', $sha, $file);
+		} catch Git::Error::Command with {
+			my $E = shift;
+			croak "Failed to checkout $file from $sha: " . $E->stringify;
+		};
+	}
+	
 	return $self;
 }
 

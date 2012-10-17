@@ -80,6 +80,7 @@ $config->log('creating .gitignore');
 my $gitignore = IO::Handle->new();
 open ($gitignore, '>', File::Spec->catfile($pristinedir, '.gitignore')) or croak "unable to write to .gitignore in $etcdir: $!";
 print $gitignore "*.jasper\n";
+print $gitignore "*.old\n";
 print $gitignore "*.rpmnew\n";
 print $gitignore "*.rpmorig\n";
 print $gitignore "*.rpmsave\n";

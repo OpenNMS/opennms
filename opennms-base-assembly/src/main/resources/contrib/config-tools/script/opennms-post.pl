@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Carp;
+use Error qw(:try);
 
 use OpenNMS::Config;
 use OpenNMS::Config::Git;
@@ -49,9 +50,21 @@ $config->log('checking out ', $config->runtime_branch());
 $git->checkout($config->runtime_branch());
 
 $config->log('merging ', $config->pristine_branch());
-$git->merge($config->pristine_branch());
-
-$config->log('tagging merged modifications');
-$git->tag($config->get_tag_name("merged-modifications-$rpm_name-$rpm_version"));
+eval {
+	$git->merge_or_fail($config->pristine_branch());
+	$config->log('tagging merged modifications');
+	$git->tag($config->get_tag_name("merged-modifications-$rpm_name-$rpm_version"));
+};
+if ($@) {
+	$config->log($@);
+	$config->log('reverting to pristine and saving user modifications');
+	$git->reset($config->runtime_branch());
+	$git->save_changes_compared_to($config->pristine_branch());
+	$config->log('committing pristine changes back to the user branch');
+	my $mods = $git->commit_modifications("Pristine revert for $rpm_name $rpm_version");
+	if ($mods == 0) {
+		$config->log('(no changes to commit)');
+	}
+};
 
 exit 0;
