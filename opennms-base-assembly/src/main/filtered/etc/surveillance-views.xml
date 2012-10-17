@@ -16,6 +16,9 @@
         <row-def label="Security Devices" >
           <category name="Security Devices" />
         </row-def>
+         <row-def label="Media Flow Controllers" >
+          <category name="Media Flow Controllers" />
+        </row-def>
         <row-def label="Other Devices" >
           <category name="Other Devices" />
         </row-def>
