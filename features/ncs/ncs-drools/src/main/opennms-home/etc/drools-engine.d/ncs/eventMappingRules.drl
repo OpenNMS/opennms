@@ -190,7 +190,57 @@ then
 	}
 end
 
+rule "rpd_mpls_path_bfd  component up"
+          salience 100
+when
+          $e : Event( uei matches ".*rpd_mpls_path_bfd_up" )
+then
+          retract( $e );
+          List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("lspName", 1));
+          for ( NCSComponent ncs : list ) {
+                  Component c = new Component( ncs );
+                  insert( new ComponentUpEvent( c, $e ) );
+          }
+end
 
+rule "rpd_mpls_path_bfd  component down"
+          salience 100
+when
+          $e : Event( uei matches ".*rpd_mpls_path_bfd_down" )
+then
+          retract( $e );
+          List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("lspName", 1));
+          for ( NCSComponent ncs : list ) {
+                  Component c = new Component( ncs );
+                  insert( new ComponentDownEvent( c, $e ) );
+          }
+end
+
+rule "lfmd_3ah_linkup  component up"
+          salience 100
+when
+          $e : Event( uei matches ".*lfmd_3ah_linkup" )
+then
+          retract( $e );
+          List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("lfmLinkName", 1));
+          for ( NCSComponent ncs : list ) {
+                  Component c = new Component( ncs );
+                  insert( new ComponentUpEvent( c, $e ) );
+          }
+end
+
+rule "lfmd_3ah_linkdown  component down"
+          salience 100
+when
+          $e : Event( uei matches ".*lfmd_3ah_linkdown" )
+then
+          retract( $e );
+          List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("lfmLinkName", 1));
+          for ( NCSComponent ncs : list ) {
+                  Component c = new Component( ncs );
+                  insert( new ComponentDownEvent( c, $e ) );
+          }
+end
 
 function void println(Object msg)
 {
@@ -224,6 +274,5 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
 	bldr.addParam("cause", e.getDbid() );
 	engine.sendEvent(bldr.getEvent());
 }
-
 
 
