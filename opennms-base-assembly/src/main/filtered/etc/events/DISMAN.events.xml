@@ -311,7 +311,7 @@ instances has fired, for triggers with mteTriggerType
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
-                        Cisco Event: mteTriggerFired trap received
+                        mteTriggerFired trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
                         mteHotContextName=%parm[#3]%
@@ -361,7 +361,7 @@ with mteTriggerType 'threshold'.&lt;/p&gt;&lt;table&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
-                        Cisco Event: mteTriggerRising trap received
+                        mteTriggerRising trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
                         mteHotContextName=%parm[#3]%
@@ -412,7 +412,7 @@ with mteTriggerType 'threshold'.&lt;/p&gt;&lt;table&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
-                        Cisco Event: mteTriggerFalling trap received
+                        mteTriggerFalling trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
                         mteHotContextName=%parm[#3]%
@@ -494,7 +494,7 @@ be found otherwise.&lt;/p&gt;&lt;table&gt;
         &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
-                        Cisco Event: mteTriggerFailure trap received
+                        mteTriggerFailure trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
                         mteHotContextName=%parm[#3]%
