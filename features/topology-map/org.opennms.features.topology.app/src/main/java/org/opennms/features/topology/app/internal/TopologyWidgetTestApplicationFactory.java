@@ -119,6 +119,23 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         final List<ScriptTag> tags = new ArrayList<ScriptTag>();
         tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
         tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
+
+	String idleJs = "\r\n" +  
+	"if (window.top != window.self) { " + "\r\n" +
+	"	document.onclick = function(e) { " + "\r\n" +
+	"       	if (parent.resetIdle != null) " + "\r\n" +
+	"               	parent.resetIdle(); " + "\r\n" +
+	"	} " + "\r\n" +
+	"	document.onkeypress = function(e) { " + "\r\n" +
+	"               if (parent.resetIdle != null) " + "\r\n" +
+	"                        parent.resetIdle(); " + "\r\n" +
+	"       } " + "\r\n" +
+	"	document.onmousemove = function(e) { " + "\r\n" +
+	"               if (parent.resetIdle != null) " + "\r\n" +
+	"                        parent.resetIdle(); " + "\r\n" +
+	"       } " + "\r\n" +
+	"} " + "\r\n";
+	tags.add(new ScriptTag(null, "text/javascript", idleJs));
         return tags;
     }
 }
