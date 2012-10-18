@@ -28,7 +28,7 @@ dbSync()
 	/bin/mv $OPENNMS_DUMP/opennms.sql $OPENNMS_DUMP/opennms.sql.bk
   fi
 
-  pg_dump -i -h localhost -U opennms opennms > $OPENNMS_DUMP/opennms.sql
+  /usr/bin/pg_dump -i -h localhost -U opennms opennms > $OPENNMS_DUMP/opennms.sql
 
   if [ $? -eq 0 ]
   then
