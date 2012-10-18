@@ -28,22 +28,34 @@
 
 package org.opennms.core.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
 import org.opennms.core.utils.AbstractTimeIntervalSequence;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.TimeInterval;
 
-public class IntervalTestCase extends TestCase {
+public class IntervalTestCase {
 
     DateFormat m_dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
 
     protected Date date(String dateStr) throws Exception {
         return m_dateFormat.parse(dateStr);
