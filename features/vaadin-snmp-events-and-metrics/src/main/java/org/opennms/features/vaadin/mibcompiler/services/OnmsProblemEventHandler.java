@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.mibcompiler.services;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +50,11 @@ import org.jsmiparser.util.problem.annotations.ProblemSeverity;
  */
 public class OnmsProblemEventHandler implements ProblemEventHandler {
 
+    /** The Constant FILE_PREFIX. */
+    private static final String FILE_PREFIX = "file://";
+
     /** The Constant DEPENDENCY_PATERN. */
-    private static final Pattern DEPENDENCY_PATERN = Pattern.compile("Cannot find module file:([^:]+):([^:]+):([^:]+):(.+)", Pattern.MULTILINE);
+    private static final Pattern DEPENDENCY_PATERN = Pattern.compile("Cannot find module ([^,]+)", Pattern.MULTILINE);
 
     /** The severity counters. */
     private int[] m_severityCounters = new int[ProblemSeverity.values().length];
@@ -129,8 +133,15 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @param localizedMessage the localized message
      */
     private void print(PrintStream stream, String sev, Location location, String localizedMessage) {
-        String loc = location != null ? location.toString() : null;
-        stream.println(sev + ": file://" + loc + " :" + localizedMessage);
+        int n = localizedMessage.indexOf(FILE_PREFIX);
+        if (n > 0) {
+            String source = localizedMessage.substring(n).replaceAll(FILE_PREFIX, "");
+            String[] data = source.split(":");
+            String message = localizedMessage.substring(0,n) + data[3];
+            stream.println(sev + ": " + message + ", Source: " + new File(data[0]).getName() + ", Row: " + data[1] + ", Col: " + data[2]);
+        } else {
+            stream.println(sev + ": " + localizedMessage);
+        }
     }
 
     /**
@@ -152,7 +163,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
         if (m_outputStream.size() > 0) {
             Matcher m = DEPENDENCY_PATERN.matcher(m_outputStream.toString());
             while (m.find()) {
-                final String dep = m.group(4);
+                final String dep = m.group(1);
                 if (!dependencies.contains(dep))
                     dependencies.add(dep);
             }
