@@ -33,6 +33,7 @@ import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -97,9 +98,12 @@ public abstract class BasicDetector<Request, Response> extends SyncAbstractDetec
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 LogUtils.infof(this, e, "isServiceDetected: %s: No route to address %s was available", getServiceName(), ipAddr);
+            } catch (final PortUnreachableException e) {
+                // Port unreachable
+                LogUtils.infof(this, e, "isServiceDetected: %s: Port unreachable while connecting to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                LogUtils.infof(this, e, "isServiceDetected: %s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
+                LogUtils.infof(this, e, "isServiceDetected: %s: Did not connect to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
                 LogUtils.errorf(this, e, "isServiceDetected: %s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
