@@ -263,4 +263,21 @@ public class JsmiMibParserTest {
         }
     }
 
+    /**
+     * Test a MIB with internal syntax errors (or invalid content).
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testBadIfMib() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "IF-MIB-BAD.txt"))) {
+            Assert.fail();
+        } else {
+            Assert.assertEquals(0, parser.getMissingDependencies().size());
+            String errors = parser.getFormattedErrors();
+            Assert.assertNotNull(errors);
+            System.err.println(errors);
+        }
+    }
+
 }
