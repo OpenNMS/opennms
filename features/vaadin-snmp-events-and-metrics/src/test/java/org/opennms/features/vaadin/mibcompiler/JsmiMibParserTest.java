@@ -81,7 +81,7 @@ public class JsmiMibParserTest {
             Assert.assertTrue(parser.getMissingDependencies().isEmpty());
             Assert.assertNull(parser.getFormattedErrors());
         } else {
-            Assert.fail();
+            Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
@@ -93,7 +93,7 @@ public class JsmiMibParserTest {
     @Test
     public void testMissingDependencies() throws Exception {
         if (parser.parseMib(new File(MIB_DIR, "SONUS-COMMON-MIB.txt"))) {
-            Assert.fail();
+            Assert.fail("The SONUS-COMMON-MIB.txt file contains unsatisfied dependencies, so the MIB parser must generate errors.");
         } else {
             List<String> dependencies = parser.getMissingDependencies();
             Assert.assertEquals(2, dependencies.size());
@@ -110,7 +110,7 @@ public class JsmiMibParserTest {
     @Test
     public void testMibWithErrors() throws Exception {
         if (parser.parseMib(new File(MIB_DIR, "NET-SNMP-MIB.txt"))) {
-            Assert.fail();
+            Assert.fail("The NET-SNMP-MIB.txt file contains errors, so the MIB parser must generate errors.");
         } else {
             Assert.assertTrue(parser.getMissingDependencies().isEmpty());
             String errors = parser.getFormattedErrors();
@@ -159,7 +159,7 @@ public class JsmiMibParserTest {
                     Assert.assertEquals(7, vb.getDecodeCount());
             }
         } else {
-            Assert.fail();
+            Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
@@ -201,7 +201,7 @@ public class JsmiMibParserTest {
                     Assert.assertEquals(6, vb.getDecodeCount());
             }
         } else {
-            Assert.fail();
+            Assert.fail("The RFC1269-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
@@ -231,7 +231,7 @@ public class JsmiMibParserTest {
                 Assert.assertTrue(mo.getType().matches("^([Ii]nteger|[Gg]auge|[Ss]tring|[Oo]ctet[Ss]tring|[Cc]ounter).*"));
             }
         } else {
-            Assert.fail();
+            Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
@@ -259,7 +259,7 @@ public class JsmiMibParserTest {
             Assert.assertNotNull(errorHandler.getMessages());
             System.err.println(errorHandler.getMessages());
         } else {
-            Assert.fail();
+            Assert.fail("The NET-SNMP-MIB.txt file contains errors, so the MIB parser must generate errors.");
         }
     }
 
