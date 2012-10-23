@@ -82,7 +82,8 @@ public class PersistenceSelectorStrategy implements Serializable {
     }
 
     public PersistenceSelectorStrategy(final String clazz) {
-        m_clazz = clazz.intern();
+        if (clazz != null)
+            m_clazz = clazz.intern();
     }
 
     /**

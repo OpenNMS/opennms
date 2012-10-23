@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Test;
 import org.opennms.core.test.IntervalTestCase;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
@@ -43,16 +45,8 @@ import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.groups.Schedule;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
-    
-    protected void setUp() throws Exception {
-        MockLogAppender.setupLogging();
-    }
 
-
-    protected void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
-    }
-
+    @Test
     public void testSimpleScheduleExcluded() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"specific\">" +
@@ -67,6 +61,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
 
     }
 
+    @Test
     public void testSimpleScheduleIncluded() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"specific\">" +
@@ -81,6 +76,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
 
     }
     
+    @Test
     public void testDoubleScheduleIncluded() throws Exception {
         String schedSpec = 
             "           <schedule name=\"double\" type=\"specific\">" +
@@ -96,6 +92,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
 
     }
     
+    @Test
     public void testComplexScheduleIncluded() throws Exception {
         String schedSpec = 
             "           <schedule name=\"complex\" type=\"specific\">" +
@@ -121,6 +118,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
 
     }
     
+    @Test
     public void testSpecificInterval() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"specific\">" +
@@ -136,6 +134,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         
     }
     
+    @Test
     public void testMonthlyInterval() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"specific\">" +
@@ -151,6 +150,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         
     }
 
+    @Test
     public void testWeeklyInterval() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"specific\">" +
@@ -166,6 +166,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         
     }
 
+    @Test
     public void testGetIntervalsWeekly() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"weekly\">" +
@@ -188,6 +189,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         assertTimeIntervalSequence(expected, intervals);
     }
 
+    @Test
     public void testGetIntervalsMonthly() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"monthly\">" +
@@ -212,6 +214,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         assertTimeIntervalSequence(expected, intervals);
     }
     
+    @Test
     public void testGetIntervalsDaily() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"daily\">" +
@@ -229,7 +232,6 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         	expected.add(owned(owner, jun(i, 11, i, 14)));
         }
         
-        System.err.println(expected);
         assertTimeIntervalSequence(expected.toArray(new OwnedInterval[]{}), intervals);
     }
 

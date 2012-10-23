@@ -71,6 +71,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     private boolean m_validated = false;
     private RuntimeException m_validationException = null;
 
+    private List<String> dataCollectionGroups = new ArrayList<String>();
+
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
     }
@@ -100,6 +102,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         resourceTypeCollection.setGroups(new Groups());
         resourceTypeCollection.setSystems(new Systems());
         config.getSnmpCollectionCollection().add(0, resourceTypeCollection);
+        dataCollectionGroups.clear();
+        dataCollectionGroups.addAll(parser.getExternalGroupMap().keySet());
         return config;
     }
 
@@ -593,4 +597,41 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
         }
     }
+
+    @Override
+    public DatacollectionConfig getRootDataCollection() {
+        return getContainer().getObject();
+    }
+    
+    @Override
+    public List<String> getAvailableDataCollectionGroups() {
+        return dataCollectionGroups;
+    }
+
+    @Override
+    public List<String> getAvailableSystemDefs() {
+        List<String> systemDefs = new ArrayList<String>();
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+            if (collection.getSystems() != null) {
+                for (final SystemDef systemDef : collection.getSystems().getSystemDefCollection()) {
+                    systemDefs.add(systemDef.getName());
+                }
+            }
+        }
+        return systemDefs;
+    }
+
+    @Override
+    public List<String> getAvailableMibGroups() {
+        List<String> groups = new ArrayList<String>();
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+            if (collection.getGroups() != null) {
+                for (final Group group : collection.getGroups().getGroupCollection()) {
+                    groups.add(group.getName());
+                }
+            }
+        }
+        return groups;
+    }
+
 }

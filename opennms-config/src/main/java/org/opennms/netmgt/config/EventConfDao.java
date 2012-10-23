@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -143,4 +144,10 @@ public interface EventConfDao {
      */
     Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent);
 
+    /**
+     * <p>getRootEvents</p>
+     * 
+     * @return a {@link org.opennms.netmgt.xml.event.Events} object.
+     */
+    Events getRootEvents();
 }

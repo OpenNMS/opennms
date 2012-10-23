@@ -359,7 +359,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
         getProgrammaticStoreEvents().addEvent(event);
     }
 
-    private Events getRootEvents() {
+    public Events getRootEvents() {
         return getEventConfiguration().getEventFiles().get(getConfigResource());
     }
 

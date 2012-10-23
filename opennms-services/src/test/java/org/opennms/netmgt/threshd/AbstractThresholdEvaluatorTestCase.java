@@ -28,16 +28,18 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-
-import junit.framework.TestCase;
 
 /**
  * @author jeffg
  *
  */
-public abstract class AbstractThresholdEvaluatorTestCase extends TestCase {
+public abstract class AbstractThresholdEvaluatorTestCase {
     protected static void parmPresentAndValueNonNull(Event event, String parmName) {
         boolean parmPresent = false;
         
@@ -64,9 +66,5 @@ public abstract class AbstractThresholdEvaluatorTestCase extends TestCase {
             }
         }
         assertTrue("Parm '" + parmName + "' present", parmPresent);
-    }
-
-    /* just here to make surefire happy */
-    public void testDoNothing() {
     }
 }
