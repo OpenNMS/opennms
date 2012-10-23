@@ -61,5 +61,4 @@ public class NrtControllerTest {
         List<MetricTuple> tcaMetrics = metricIdsByProtocol.get("TCA");
         assertTrue(tcaMetrics.get(0).getMetricId().equals(".1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter"));
     }
-
 }

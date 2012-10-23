@@ -84,7 +84,7 @@ public class TcaProtocolCollector implements ProtocolCollector {
     
     @Override
     public CollectionJob collect(final CollectionJob collectionJob) {
-        logger.info("TcaProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
+        logger.info("TcaProtocolCollector is collecting collectionJob '{}'", collectionJob);
 
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
@@ -134,7 +134,7 @@ public class TcaProtocolCollector implements ProtocolCollector {
             // TODO What should we do here
         }
         return collectionJob;
-
+        
     }
 
     /*
