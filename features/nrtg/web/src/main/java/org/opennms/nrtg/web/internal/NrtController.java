@@ -99,7 +99,6 @@ public class NrtController {
         //Protocol_metricId=RrdGraphAttribute
         //SNMP_.1.3.6.1.2.1.5.7.0=icmpInRedirects
         //TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter=inboundJitter
-        //TODO Spit by "_" is not working for TCA...
         for (Map.Entry<String, String> entry : rrdGraphAttributesMetaData.entrySet()) {
             String protocol = entry.getValue().substring(0, entry.getValue().indexOf("_"));
             String metricId = entry.getValue().substring(entry.getValue().indexOf("_") + 1, entry.getValue().lastIndexOf("="));
@@ -114,6 +113,8 @@ public class NrtController {
 
     private Map<String, String> getMetaDataForReport(Set<RrdGraphAttribute> rrdGraphAttributes) {
         Map<String, String> metaData = new HashMap<String, String>();
+        
+        logger.debug("getMetaDataForReport: " + rrdGraphAttributes);
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (RrdGraphAttribute attr : rrdGraphAttributes) {
@@ -130,6 +131,7 @@ public class NrtController {
 
                 String mappingLine = "";
                 while (mappingLine != null) {
+                    logger.debug("attr = " + attr.toString() + ", mappingLine = " + mappingLine);
                     metaData.put(attr.toString(), mappingLine);
                     mappingLine = bf.readLine();
                 }

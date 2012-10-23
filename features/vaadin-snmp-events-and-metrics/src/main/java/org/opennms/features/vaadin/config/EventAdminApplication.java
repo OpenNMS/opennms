@@ -94,18 +94,18 @@ public class EventAdminApplication extends Application {
             throw new RuntimeException("eventConfDao cannot be null.");
 
         setTheme(Runo.THEME_NAME);
-        final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
 
         final VerticalLayout layout = new VerticalLayout();
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
 
+        final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
         final ComboBox eventSource = new ComboBox();
         toolbar.addComponent(eventSource);
         eventSource.setImmediate(true);
         eventSource.setNullSelectionAllowed(false);
-        eventSource.setContainerDataSource(new FilesystemContainer(eventsDir));
+        eventSource.setContainerDataSource(new XmlFileContainer(eventsDir));
         eventSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         eventSource.addListener(new ComboBox.ValueChangeListener() {
             @Override
