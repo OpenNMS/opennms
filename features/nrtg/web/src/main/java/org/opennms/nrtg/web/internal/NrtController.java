@@ -54,7 +54,7 @@ public class NrtController {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
-    private class MetricTuple {
+    protected class MetricTuple {
         private String m_metricId;
         private String m_onmsLogicMetricId;
 
@@ -71,6 +71,7 @@ public class NrtController {
             return m_onmsLogicMetricId;
         }
 
+        @Override
         public boolean equals(Object object) {
             if (object instanceof MetricTuple) {
                 return getOnmsLogicMetricId().equals(((MetricTuple) object).getOnmsLogicMetricId());
@@ -78,29 +79,31 @@ public class NrtController {
                 return false;
             }
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 37 * hash + (this.m_metricId != null ? this.m_metricId.hashCode() : 0);
+            return hash;
+        }
     }
 
     /**
      * Provides a Map that provides Lists of MetricIds by protocols.
-     *
-     * @param reportResource
-     * @param prefabGraph
-     * @return
+     * @param rrdGraphAttributesMetaData String-key is the RrdGraphArrtibute the String-value is the MetaDataLine
+     * @return a Map of Protocols as String-keys and a List of MetricTuples
      */
-    private Map<String, List<MetricTuple>> getMetricIdsByProtocol(OnmsResource reportResource, PrefabGraph prefabGraph) {
+    protected Map<String, List<MetricTuple>> getMetricIdsByProtocol(Map<String, String> rrdGraphAttributesMetaData) {
         Map<String, List<MetricTuple>> metricIdsByProtocol = new HashMap<String, List<MetricTuple>>();
-        Set<RrdGraphAttribute> relevantRrdGraphAttributes = getRequiredRrdGraphAttributes(reportResource, prefabGraph);
-        Map<String, String> rrdGraphAttributesMetaData = getMetaDataForReport(relevantRrdGraphAttributes);
 
         //Protocol_metricId=RrdGraphAttribute
         //SNMP_.1.3.6.1.2.1.5.7.0=icmpInRedirects
+        //TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter=inboundJitter
+        //TODO Spit by "_" is not working for TCA...
         for (Map.Entry<String, String> entry : rrdGraphAttributesMetaData.entrySet()) {
-            String splitByUndescore[] = entry.getValue().split("_");
-            String protocol = splitByUndescore[0];
-            String splitByEqual[] = splitByUndescore[1].split("=");
-            String metricId = splitByEqual[0];
-            //String rrdGraphAttribute = splitByEqual[1];
-
+            String protocol = entry.getValue().substring(0, entry.getValue().indexOf("_"));
+            String metricId = entry.getValue().substring(entry.getValue().indexOf("_") + 1, entry.getValue().lastIndexOf("="));
+        
             if (!metricIdsByProtocol.containsKey(protocol)) {
                 metricIdsByProtocol.put(protocol, new ArrayList<MetricTuple>());
             }
@@ -155,7 +158,10 @@ public class NrtController {
 
         //What protocols are involved?
         //For each protocol build a new CollectionJob
-        Map<String, List<MetricTuple>> metricsByProtocol = getMetricIdsByProtocol(reportResource, prefabGraph);
+        Set<RrdGraphAttribute> relevantRrdGraphAttributes = getRequiredRrdGraphAttributes(reportResource, prefabGraph);
+        Map<String, String> rrdGraphAttributesMetaData = getMetaDataForReport(relevantRrdGraphAttributes);
+        
+        Map<String, List<MetricTuple>> metricsByProtocol = getMetricIdsByProtocol(rrdGraphAttributesMetaData);
 
         //Destinations for MeasurementSets
         Set<String> resultDestinations = new HashSet<String>();
@@ -328,9 +334,8 @@ public class NrtController {
                 fileName = fileName.concat(".meta");
                 bf = new BufferedReader(new FileReader(fileName));
 
-                String mappingLine = "";
-                while (mappingLine != null) {
-                    mappingLine = bf.readLine();
+                String mappingLine;
+                while ((mappingLine = bf.readLine()) != null) {
                     String metric = mappingLine.substring(0, mappingLine.lastIndexOf("="));
                     String column = mappingLine.substring(mappingLine.lastIndexOf("=") + 1);
                     columnsToMetrics.put(column, metric);
