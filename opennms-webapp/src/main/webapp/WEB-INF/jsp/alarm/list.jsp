@@ -284,11 +284,11 @@
 					<tr>
                                              <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
-						<th width="1%">Ack</th>
+						<th width="3%"><nobr>Ack</nobr></th>
 						<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-						<th width="1%">UnAck</th>
+						<th width="3%"><nobr>UnAck</nobr></th>
 						<% } else if ( parms.ackType == AcknowledgeType.BOTH ) { %>
-						<th width="1%">Ack?</th>
+						<th width="3%"><nobr>Ack?</nobr></th>
 						<% } %>
                     <% } else { %>
                         <th width="1%">&nbsp;</th>

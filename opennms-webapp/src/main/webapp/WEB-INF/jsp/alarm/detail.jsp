@@ -120,7 +120,7 @@
             &nbsp;
             <% }%>
         </td>
-        <th width="100em">Acknowledged&nbsp;By</th>
+        <th width="135em">Acknowledged&nbsp;By</th>
         <td class="divider" width="28%"><%=alarm.getAcknowledgeUser() != null ? alarm.getAcknowledgeUser() : "&nbsp;"%></td>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
