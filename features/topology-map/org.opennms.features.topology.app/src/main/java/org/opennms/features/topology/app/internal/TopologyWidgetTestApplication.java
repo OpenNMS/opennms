@@ -29,10 +29,13 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
@@ -47,6 +50,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -56,7 +60,6 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.TextField;
@@ -64,10 +67,9 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener {
-
+    
 	private Window m_window;
 	private TopologyComponent m_topologyComponent;
 	private Tree m_tree;
@@ -78,7 +80,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private AbsoluteLayout m_layout;
 	private IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
+	private WidgetManager m_treeWidgetManager;
 	private Layout m_viewContribLayout;
+	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
     private boolean m_widgetViewShowing = false;
@@ -221,9 +225,36 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		    m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
 		}
 		
+		if(m_treeWidgetManager.widgetCount() != 0) {
+		    updateAccordionView(m_treeWidgetManager);
+		}
 	}
 
+	/**
+	 * Update the Accordion View with installed widgets
+	 * @param treeWidgetManager
+	 */
+    private void updateAccordionView(WidgetManager treeWidgetManager) {
+        m_treeAccordion.removeAllComponents();
+        
+        m_treeAccordion.addTab(m_tree, "Nodes");
+        for(IViewContribution widget : treeWidgetManager.getWidgets()) {
+            if(widget.getIcon() != null) {
+                m_treeAccordion.addTab(widget.getView(), widget.getTitle(), widget.getIcon());
+            }else {
+                m_treeAccordion.addTab(widget.getView(), widget.getTitle());
+            }
+        }
+    }
 
+    /**
+     * Updates the bottom widget area with the registered widgets
+     * 
+     * Any widget with the service property of 'location=bottom' are
+     * included.
+     * 
+     * @param widgetManager
+     */
     private void updateWidgetView(WidgetManager widgetManager) {
         if(widgetManager.widgetCount() == 0) {
             if(m_viewContribLayout != null) {
@@ -259,7 +290,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         }
     }
 
-
+    /**
+     * Creates the west area layout including the
+     * accordion and tree views.
+     * 
+     * @return
+     */
     private Layout createWestLayout() {
         m_tree = createTree();
         
@@ -280,10 +316,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                     container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
                 }
                 
-                
             }
         });
-        
         
         
         HorizontalLayout filterArea = new HorizontalLayout();
@@ -291,24 +325,22 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         filterArea.addComponent(filterBtn);
         filterArea.setComponentAlignment(filterBtn, Alignment.BOTTOM_CENTER);
         
-        Panel scrollPanel = new Panel("Vertices");
-        scrollPanel.setHeight("100%");
-        scrollPanel.setWidth("100%");
-        
-        scrollPanel.setStyleName(Reindeer.PANEL_LIGHT);
-        scrollPanel.addComponent(m_tree);
+        m_treeAccordion = new Accordion();
+        m_treeAccordion.addTab(m_tree, "Nodes");
+        m_treeAccordion.setWidth("100%");
+        m_treeAccordion.setHeight("100%");
         
         AbsoluteLayout absLayout = new AbsoluteLayout();
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
         absLayout.addComponent(filterArea, "top: 25px; left: 15px;");
-        absLayout.addComponent(scrollPanel, "top: 75px; left: 15px; bottom:0px;"); 
+        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; bottom:25px;"); 
         
         return absLayout;
     }
 
 	private Tree createTree() {
-	    FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
+	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
 	    
 		final Tree tree = new Tree();
 		tree.setMultiSelect(true);
@@ -324,7 +356,23 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             
             @Override
             public void valueChange(ValueChangeEvent event) {
-                m_topologyComponent.selectVerticesByItemId((Collection<Object>) event.getProperty().getValue());
+                Collection<Object> selectedList = (Collection<Object>) event.getProperty().getValue();
+                Set<Object> completeSelectionList = new HashSet<Object>();
+                completeSelectionList.addAll(selectedList);
+                
+                for( Object itemId : selectedList) {
+                    if(container.hasChildren(itemId)) {
+                        
+                        Collection<?> children = container.getChildren(itemId);
+                        completeSelectionList.addAll(children);
+                        
+                        for(Object childId : children) {
+                            tree.select(childId);
+                        }
+                    }
+                }
+                
+                m_topologyComponent.selectVerticesByItemId(completeSelectionList);
             }
         });
 		
@@ -372,14 +420,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
 		m_menuBar.setWidth("100%");
 		m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
-		//TODO: Finish implementing the context menu
+
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
 		getMainWindow().addComponent(m_contextMenu);
 		updateMenuItems();
 	}
-
-
-	@Override
+	
 	public void show(Object target, int left, int top) {
 		updateContextMenuItems(target, m_contextMenu.getItems());
 		updateSubMenuDisplay(m_contextMenu.getItems());
@@ -421,8 +467,27 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     @Override
     public void widgetListUpdated(WidgetManager widgetManager) {
         if(isRunning()) {
-            updateWidgetView(widgetManager);
+            if(widgetManager == m_widgetManager) {
+                updateWidgetView(widgetManager);
+            }else if(widgetManager == m_treeWidgetManager) {
+                updateAccordionView(widgetManager);
+            }
         }
+    }
+
+
+    public WidgetManager getTreeWidgetManager() {
+        return m_treeWidgetManager;
+    }
+
+
+    public void setTreeWidgetManager(WidgetManager treeWidgetManager) {
+        if(m_treeWidgetManager != null) {
+            m_treeWidgetManager.removeUpdateListener(this);
+        }
+        
+        m_treeWidgetManager = treeWidgetManager;
+        m_treeWidgetManager.addUpdateListener(this);
     }
 
 }

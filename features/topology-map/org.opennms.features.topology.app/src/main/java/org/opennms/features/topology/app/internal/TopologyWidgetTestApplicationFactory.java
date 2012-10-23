@@ -50,6 +50,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 	private CommandManager m_commandManager = new CommandManager();
 	private IconRepositoryManager m_iconRepositoryManager = new IconRepositoryManager();
 	private WidgetManager m_widgetManager;
+	private WidgetManager m_treeWidgetManager;
     private String m_themeName = "reindeer";
 	
 	public CommandManager getCommandManager() {
@@ -68,6 +69,10 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 		
 		if(m_widgetManager != null) {
 		    application.setWidgetManager(m_widgetManager);
+		}
+		
+		if(m_treeWidgetManager != null) {
+		    application.setTreeWidgetManager(m_treeWidgetManager);
 		}
 		
         LoggerFactory.getLogger(getClass()).debug("Application is " + application);
@@ -120,5 +125,13 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
         tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
         return tags;
+    }
+
+    public WidgetManager getTreeWidgetManager() {
+        return m_treeWidgetManager;
+    }
+
+    public void setTreeWidgetManager(WidgetManager treeWidgetManager) {
+        m_treeWidgetManager = treeWidgetManager;
     }
 }

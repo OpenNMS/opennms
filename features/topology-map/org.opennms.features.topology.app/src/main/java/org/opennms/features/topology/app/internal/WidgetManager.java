@@ -53,6 +53,20 @@ public class WidgetManager {
         return m_viewContributors.size();
     }
     
+    /**
+     * Gets the list of Widgets as IViewContributions
+     * 
+     * @return List<IViewContribution>
+     */
+    public List<IViewContribution> getWidgets(){
+        return m_viewContributors;
+    }
+    
+    /**
+     * Gets a TabSheet view for all widgets in manager
+     * 
+     * @return TabSheet
+     */
     public TabSheet getTabSheet() {
         TabSheet tabSheet = new TabSheet();
         

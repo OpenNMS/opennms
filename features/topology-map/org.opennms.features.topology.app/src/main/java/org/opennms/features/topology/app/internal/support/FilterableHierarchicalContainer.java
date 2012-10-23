@@ -127,7 +127,6 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
 
     @Override
     public boolean removeAllItems() throws UnsupportedOperationException {
-        
         return false;
     }
 

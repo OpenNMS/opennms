@@ -336,6 +336,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             singleSelectEdge(edgeId);
         }
         
+        if(variables.containsKey("deselectAllItems")) {
+            deselectAllEdges();
+            deselectAllVertices();
+            updateSelectionListeners();
+            requestRepaint();
+        }
+        
         if(variables.containsKey("clickedVertex")) {
         	String vertexId = (String) variables.get("clickedVertex");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
@@ -627,6 +634,23 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             m_activeTool = toolname;
             requestRepaint();
         }
+    }
+
+    public List<Object> getVerticesForGroups(Collection<Object> value) {
+        List<Object> retVal = new ArrayList<Object>();
+        
+        for(Object itemId : value) {
+            for(Vertex v : getGraph().getVertices()) {
+                if(v.getGroupId() == itemId) {
+                    retVal.add(v.getItemId());
+                }
+            }
+        }
+        return retVal;
+    }
+    
+    private void updateSelectionListeners() {
+        
     }
    
 
