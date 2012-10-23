@@ -53,6 +53,7 @@ public class NrtServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         HttpSession httpSession = req.getSession(true);
+        resp.setContentType("text/html");
 
         if (req.getParameter("nrtCollectionTaskId") != null) {
             m_controller.nrtCollectionJobTrigger(req.getParameter("nrtCollectionTaskId"), httpSession);
