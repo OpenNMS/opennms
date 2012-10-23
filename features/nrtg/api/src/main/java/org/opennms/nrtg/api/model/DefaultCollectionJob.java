@@ -28,10 +28,18 @@
 
 package org.opennms.nrtg.api.model;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 
 /**
@@ -42,9 +50,10 @@ public class DefaultCollectionJob implements CollectionJob {
     private static final long serialVersionUID = -857193182688356245L;
     private static final String METRIC_TYPE_UNKNOWN = "metricTypeUnknown";
 
+    private static AtomicLong s_idGenerator = new AtomicLong(0L);
     private static Logger logger = LoggerFactory.getLogger(DefaultCollectionJob.class);
 
-    private String m_id;
+    private String m_id = String.valueOf(s_idGenerator.incrementAndGet());
     private String m_site;
     private String m_netInterface;
     private String m_service;
