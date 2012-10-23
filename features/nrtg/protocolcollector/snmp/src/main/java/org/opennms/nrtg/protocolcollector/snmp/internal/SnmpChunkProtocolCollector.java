@@ -93,7 +93,7 @@ public class SnmpChunkProtocolCollector implements ProtocolCollector {
 
     @Override
     public CollectionJob collect(CollectionJob collectionJob) {
-        logger.trace("SnmpChunkProtocolCollector is collecting collectionJob '{}' from '{}'",
+        logger.info("SnmpChunkProtocolCollector is collecting collectionJob '{}' from '{}'",
                 collectionJob.getId(), collectionJob.getNetInterface());
 
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
