@@ -187,7 +187,9 @@ checkRpmFiles(){
 		fi
 	done
 
-	for EXTENSION in rpmnew rpmsave dpkg-dist; do
+	FATAL="rpmnew rpmsave dpkg-dist"
+	NON_FATAL="old"
+	for EXTENSION in $FATAL; do
 		if [ `find $CHECKDIRS -name \*.$EXTENSION | wc -l` -gt 0 ]; then
 			cat <<END >&2
 
@@ -204,6 +206,23 @@ END
 			return 6	# From LSB: 6 - program is not configured
 		fi
 	done
+
+	if [ `find $CHECKDIRS -name \*.old | wc -l` -gt 0 ]; then
+		cat <<END >&2
+
+WARNING!  You have files that end in .old in your
+OPENNMS_HOME ($OPENNMS_HOME) directory.
+
+These are likely the result of a package upgrade
+that has had a configuration conflict.  Your existing
+modified configuration files have been renamed to .old
+and pristine copies have been put in place so that
+OpenNMS can safely start up.  Please re-apply the
+changes from your .old configuration files and delete
+them to avoid this message.
+
+END
+	fi
 
 	return 0
 }
