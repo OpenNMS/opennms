@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
@@ -126,6 +127,7 @@ public class PolicyTest {
     }
 
     @Test
+    @Ignore
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.7.15.240", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
         @JUnitSnmpAgent(host="10.7.15.241", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
