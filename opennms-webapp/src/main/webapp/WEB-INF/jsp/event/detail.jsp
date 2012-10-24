@@ -111,7 +111,7 @@
               &nbsp;
             <% } %>
           </td>
-          <th class="divider" width="100em">Acknowledged&nbsp;By</th>
+          <th class="divider" width="135em">Acknowledged&nbsp;By</th>
           <td class="divider" width="28%"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
         </tr>
         
@@ -167,14 +167,13 @@
           
         <tr class="<%= event.getSeverity().getLabel() %>">
           	<th>UEI</th>
-                <td>
+                <td colspan="5">
           	<% if( event.getUei() != null ) { %>
           	      <%=event.getUei()%>
           	<% } else {%>
                 	&nbsp;
           	<% } %>
                 </td>
-                <td colspan="4">&nbsp;</td>
         </tr>
       </table>
 

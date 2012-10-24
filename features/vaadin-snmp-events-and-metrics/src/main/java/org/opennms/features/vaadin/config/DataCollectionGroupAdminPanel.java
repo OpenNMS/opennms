@@ -63,18 +63,17 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
      */
     public DataCollectionGroupAdminPanel(final DataCollectionConfigDao dataCollectionDao, final Logger logger) {
         setCaption("Data Collection Groups");
-        final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
 
         final VerticalLayout self = this;
-
+        final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
         final ComboBox dcGroupSource = new ComboBox();
         toolbar.addComponent(dcGroupSource);
         dcGroupSource.setImmediate(true);
         dcGroupSource.setNullSelectionAllowed(false);
-        dcGroupSource.setContainerDataSource(new FilesystemContainer(datacollectionDir));
+        dcGroupSource.setContainerDataSource(new XmlFileContainer(datacollectionDir, false));
         dcGroupSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         dcGroupSource.addListener(new ComboBox.ValueChangeListener() {
             @Override

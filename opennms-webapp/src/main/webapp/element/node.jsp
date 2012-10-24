@@ -258,8 +258,8 @@
     
     <c:if test="${! empty model.resources}">
       <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-        <c:param name="parentResourceType" value="${model.parentResType}"/>
-        <c:param name="parentResource" value="${model.parentRes}"/>
+        <c:param name="parentResourceType" value="node"/>
+        <c:param name="parentResource" value="${model.id}"/>
         <c:param name="reports" value="all"/>
       </c:url>
       <li class="o-menuitem">
@@ -329,7 +329,7 @@
     <h3 class="o-box">SNMP Attributes</h3>
     <table class="o-box">
       <tr>
-        <th>Name</th>
+        <th width="25%">Name</th>
         <td>${model.node.sysName}</td>
       </tr>
       <tr>

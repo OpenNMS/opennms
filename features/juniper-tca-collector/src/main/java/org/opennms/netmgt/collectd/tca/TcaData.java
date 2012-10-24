@@ -55,7 +55,7 @@ public final class TcaData extends SnmpTable<TcaDataEntry> {
 	 */
 	@Override
 	protected TcaDataEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
-		return new TcaDataEntry();
+		return new TcaDataEntry(inst);
 	}
 
 }

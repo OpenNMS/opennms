@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
 import org.junit.Test;
@@ -39,6 +43,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
 
 public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTestCase {
+
     @Test
     public void testConstructorThresholdNull() {
         ThrowableAnticipator ta = new ThrowableAnticipator();

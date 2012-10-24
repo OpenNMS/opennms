@@ -2108,11 +2108,12 @@
 <event-file>events/JuniperEvents/vse-mcg/MME5.0_032.0.20A_APP_eventconf.xml</event-file>
 <event-file>events/JuniperEvents/vse-mcg/MME5.0_032.0.20A_VSE_eventconf.xml</event-file>
 <!-- Events for the mfc family -->
-<event-file>events/JuniperEvents/mfc/Juniper.MFD.events.xml</event-file>
 <event-file>events/JuniperEvents/mfc/NodeIface.Correlator.events.xml</event-file>
-<event-file>events/JuniperEvents/mfc/TallMaple.events.xml</event-file>
+<event-file>events/JuniperEvents/mfc/Juniper.MFC.events.xml</event-file>
 <!-- Syslog events -->
 <event-file>events/JuniperEvents/syslog/cfmd_ccm_defects.xml</event-file>
+<event-file>events/JuniperEvents/syslog/rpd_mpls_bfd.xml</event-file>
+<event-file>events/JuniperEvents/syslog/lfm_syslog.xml</event-file>
 <!-- Space Platform events -->
 <event-file>events/JuniperEvents/space-platform/mib-jnx-space-platform.xml</event-file>
 <!-- End of Juniper Event Files -->

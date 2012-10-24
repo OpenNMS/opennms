@@ -20,6 +20,10 @@
     <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_mac_status</event>
     <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_unknown</event>
     <event>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_down</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_up</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkup</event>
+    <event>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkdown</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
     <event>uei.opennms.org/internal/ncs/componentAdded</event>

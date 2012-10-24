@@ -145,6 +145,14 @@ final String baseHref = Util.calculateUrlBase( request );
 <c:forEach var="extras" items="${paramValues.extras}">
   <c:out value="${extras}" escapeXml="false" />
 </c:forEach>
+
+<c:if test="${param.vaadinEmbeddedStyles == 'true'}">
+  <style type="text/css">
+  div#footer { position:absolute; bottom:0; width:100%; }
+  div#content { position:absolute; top:99px; left:0px; right:0px; bottom:53px; }
+  </style>
+</c:if>
+
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the

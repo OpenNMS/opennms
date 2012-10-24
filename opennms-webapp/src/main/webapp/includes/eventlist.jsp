@@ -177,15 +177,17 @@
 %>
      <tr class="<%= event.getSeverity().getLabel() %>">
        <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-           <td class="divider">
+           <td class="divider" width="15%">
              <nobr>
                <input type="checkbox" name="event" value="<%=event.getId()%>" />
                <a href="event/detail.jsp?id=<%=event.getId()%>"><%=event.getId()%></a>
              </nobr>
            </td>
-       <% } %>
-       <td class="divider"><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></td>
-       <td class="divider bright"><%= event.getSeverity().getLabel() %></td>
+       <% } else {%>
+	<td class="divider" width="15%">&nbsp;</td>
+	<%}%>
+       <td class="divider" width="15%"><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></td>
+       <td class="divider bright" width="15%"><%= event.getSeverity().getLabel() %></td>
        <td class="divider"><%=event.getLogMessage()%></td>
      </tr>
 <% } %>

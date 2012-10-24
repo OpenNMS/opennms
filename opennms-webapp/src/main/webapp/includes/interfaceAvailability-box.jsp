@@ -105,8 +105,8 @@
 <h3>Availability</h3>
 <table>
   <tr class="<%= overallStatus %>">
-    <td class="divider">Overall Availability</td>
-    <td class="divider bright" colspan="2"><%= overallStatusString %></td>
+    <td class="divider" width="35%">Overall Availability</td>
+    <td class="divider bright"><%= overallStatusString %></td>
   </tr>
 
   <% for( int i=0; i < services.length; i++ ) { %>

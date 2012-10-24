@@ -57,7 +57,7 @@ border:1px solid #666666
 -->
 <table style="width:100%">
 <tbody><tr>
-<td class="notstyle" style="text-align:right;width:100%;vertical-align:middle;height:15px">
+<td class="notstyle" style="text-align:right;width:90%;vertical-align:middle;height:15px">
 Legend
 </td>
 <td class="notstyle" style="vertical-align:middle">

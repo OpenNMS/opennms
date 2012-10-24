@@ -249,7 +249,7 @@ function doDelete() {
             <!-- general info box -->
 	    <table>
               <tr>
-                <th>Node</th>
+                <th width="35%">Node</th>
                 <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(intf_db.getNodeId())%></a></td>
               </tr>
               <tr> 

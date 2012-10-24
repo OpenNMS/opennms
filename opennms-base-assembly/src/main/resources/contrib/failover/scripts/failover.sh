@@ -4,10 +4,10 @@ syncOn() {
         TEMP=$(mktemp)
         /usr/bin/crontab -l > $TEMP
         /bin/sed -i -e '/^\s*$/d'  $TEMP
-        /bin/grep sync.sh $TEMP >/dev/null
+        /bin/grep sync.sh $TEMP | /bin/grep -v ^# >/dev/null
         if [ $? != 0 ]; then
                 cat  >> $TEMP <<AAAAA
-0 0 * * *       /opt/opennms/contrib/failover/scripts/sync.sh
+0 0 * * *       /opt/opennms/contrib/failover/scripts/sync.sh >> /opt/opennms/logs/failover.log 2>&1
 AAAAA
                 /usr/bin/crontab -u root $TEMP
                 service crond restart
@@ -16,7 +16,7 @@ AAAAA
 }
 ## start work
 syncOn
-/etc/rc.d/init.d/postgresql-9.1 start
+#/etc/rc.d/init.d/postgresql-9.1 start
 OPENNMS_DUMP=/var/opennms/rrd
 PGSQL_DATA_DIR=/var/lib/pgsql/9.1/data
 PGSQL_TRIGGER_FILE=$PGSQL_DATA_DIR/trigger.txt # This file triggers the recovery
@@ -24,8 +24,8 @@ PGSQL_RECOVERY_FILE=$PGSQL_DATA_DIR/recovery.done # This file sinals recovery is
 LOG=/opt/opennms/logs/failover.log
 
 stopOpenNMS() {
-        service jmp-watchdog stop
-        service jmp-opennms stop
+	chkconfig jmp-opennms off # Stop opennms monitoring
+        service opennms stop
 }
 
 checkForRecoveryDone() {
@@ -46,8 +46,8 @@ checkForRecoveryDone() {
 
 	# Did we complete recovery?
         if [ ! -e $PGSQL_RECOVERY_FILE ]; then
-        	echo "ERROR: PGSQL recovery FAILED, opennms will not be started"  >> $LOG
-		service jmp-watchdog start
+        	echo "ERROR: PGSQL recovery FAILED, opennms might not be started"  >> $LOG
+		chkconfig jmp-opennms on
 		exit;
 	fi
 }
@@ -57,6 +57,6 @@ checkForRecoveryDone() {
 stopOpenNMS
 touch $PGSQL_TRIGGER_FILE
 checkForRecoveryDone
-service jmp-watchdog start
-/etc/rc.d/init.d/opennms start
+chkconfig jmp-opennms on
+service jmp-opennms start
 

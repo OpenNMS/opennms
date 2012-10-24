@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
@@ -216,6 +217,7 @@ public class TcaCollectionSet implements CollectionSet {
 			long lastTimestamp = getLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()));
 			String[] rawData = entry.getRawData().split("\\|");
 			int samples = Integer.parseInt(rawData[1]);
+			SnmpObjId entryObjId = SnmpObjId.get(".1.3.6.1.4.1.27091.3.1.6.1.2", entry.getInstance().toString());
 			for (int i=0; i<samples; i++) {
 				log().debug("process: processing row " + i + ": " + rawData[2 + i]);
 				String[] rawEntry = rawData[2 + i].split(",");
@@ -223,11 +225,11 @@ public class TcaCollectionSet implements CollectionSet {
 				if (timestamp > lastTimestamp) {
 					TcaCollectionResource resource = new TcaCollectionResource(m_agent, entry.getPeerAddress());
 					resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
-					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, INBOUND_DELAY), rawEntry[1]);
-					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, INBOUND_JITTER), rawEntry[2]);
-					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, OUTBOUND_DELAY), rawEntry[3]);
-					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, OUTBOUND_JITTER), rawEntry[4]);
-					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, TIMESYNC_STATUS), rawEntry[5]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, INBOUND_DELAY), rawEntry[1]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, INBOUND_JITTER), rawEntry[2]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, OUTBOUND_DELAY), rawEntry[3]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, OUTBOUND_JITTER), rawEntry[4]);
+					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, TIMESYNC_STATUS), rawEntry[5]);
 					m_collectionResources.add(resource);
 				} else {
 					log().debug("process: skipping row " + i + " " + rawData[2 + i] + " because it was already processed.");

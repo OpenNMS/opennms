@@ -32,6 +32,7 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * The Class TcaCollectionAttributeType.
@@ -51,10 +52,12 @@ import org.opennms.netmgt.config.collector.Persister;
 public class TcaCollectionAttributeType implements CollectionAttributeType {
 
 	/** The Attribute Group Type. */
-	private AttributeGroupType m_groupType;
+	private final AttributeGroupType m_groupType;
+	
+	private final SnmpObjId m_attributeObjectId; 
 
 	/** The m_name. */
-	private String m_name;
+	private final String m_name;
 
 	/**
 	 * Instantiates a new TCA collection attribute type.
@@ -62,9 +65,10 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 	 * @param groupType the group type
 	 * @param name the name
 	 */
-	public TcaCollectionAttributeType(AttributeGroupType groupType, String name) {
+	public TcaCollectionAttributeType(AttributeGroupType groupType, SnmpObjId atributeObjectId, String name) {
 		super();
 		this.m_groupType = groupType;
+		this.m_attributeObjectId = atributeObjectId;
 		this.m_name = name;
 	}
 
@@ -102,7 +106,7 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 
     @Override
     public String getAttributeId() {
-        return "Not supported yet._" + "TCA_" + getName();
+        return "TCA_" + m_attributeObjectId + '_' + getName();
     }
 
 }

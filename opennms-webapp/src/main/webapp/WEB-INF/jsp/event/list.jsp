@@ -274,19 +274,19 @@
         <tr>
           <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
             <% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
-            <th width="1%">Ack</th>
+            <th width="2%"><nobr>Ack</nobr></th>
             <% } else { %>
-            <th width="1%">UnAck</th>
+            <th width="2%"><nobr>UnAck</nobr></th>
             <% } %>
           <% } else { %>
-            <th width="1%">&nbsp;</th>
+            <th width="2%">&nbsp;</th>
           <% } %>
-          <th width="1%"> <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID"        )%></th>
+          <th width="4%"> <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID"        )%></th>
           <th width="10%"><%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
           <th width="19%"><%=this.makeSortLink( parms, SortStyle.TIME,      SortStyle.REVERSE_TIME,      "time",      "Time"      )%></th>
-          <th width="25%"><%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+          <th width="24%"><%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
           <th width="16%"><%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
-          <th width="15%"><%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+          <th width="14%"><%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -407,7 +407,7 @@
         </tr>
        
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="5"><%=events[i].getLogMessage()%></td>
+          <td colspan="4"><%=events[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>

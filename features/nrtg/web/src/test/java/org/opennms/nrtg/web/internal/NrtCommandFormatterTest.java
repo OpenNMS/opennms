@@ -130,4 +130,29 @@ public class NrtCommandFormatterTest {
 
         assertEquals(mappingResult, expectedResult);
     }
+    
+    @Test
+    public void testRrdMetricsMappingTca() {
+        System.out.println("metrics mapping for TCA");
+
+        String rawString = "--watermark=\"NRTG Alpha 1.0\" --slope-mode --width=960 --height=400 --title=\"TCA Delay\" --vertical-label=\"Microseconds\" DEF:in={rrd1}:inboundDelay:AVERAGE DEF:out={rrd2}:outboundDelay:AVERAGE AREA:in#00ff00:\"Inbound \" GPRINT:in:AVERAGE:\" Avg \\: %8.2lf %s\" GPRINT:in:MIN:\"Min \\: %8.2lf %s\" GPRINT:in:MAX:\"Max \\: %8.2lf %s\\n\" LINE1:out#0000ff:\"Outbound\" GPRINT:out:AVERAGE:\" Avg \\: %8.2lf %s\" GPRINT:out:MIN:\"Min \\: %8.2lf %s\" GPRINT:out:MAX:\"Max \\: %8.2lf %s\\n\"";
+        String expectedResult = "'.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundDelay': '{rrd1}:inboundDelay', \n'.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_outboundDelay': '{rrd2}:outboundDelay'";
+
+        String[] columns = new String[]{"inboundDelay", "outboundDelay"};
+        String[] metrics = new String[]{"TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundDelay", "TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_outboundDelay"};
+
+        PrefabGraph prefabGraph = createMock(PrefabGraph.class);
+        expect(prefabGraph.getCommand()).andReturn(rawString).anyTimes();
+        expect(prefabGraph.getColumns()).andReturn(columns).anyTimes();
+        expect(prefabGraph.getMetricIds()).andReturn(metrics).anyTimes();
+        replay(prefabGraph);
+
+        NrtRrdCommandFormatter commandFormatter = new NrtRrdCommandFormatter(prefabGraph);
+        String mappingResult = commandFormatter.getRrdMetricsMapping();
+
+        assertTrue(mappingResult.contains(".1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundDelay"));
+        assertFalse(mappingResult.contains("TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundDelay"));
+        
+        assertEquals(expectedResult, mappingResult);
+    }
 }
