@@ -1,5 +1,9 @@
 use Carp;
 use Cwd qw(abs_path);
+use File::Copy;
+use File::Path;
+use File::Slurp;
+use OpenNMS::Config;
 
 use strict;
 use warnings;

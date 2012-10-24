@@ -3,20 +3,91 @@ use warnings;
 
 $|++;
 
-use Error qw(:try);
 use File::Path;
 use File::Slurp;
+use File::Spec;
+use Git;
 
 #use Test::More tests => 8;
 use Test::More qw(no_plan);
+
+unshift(@INC, 't');
 
 BEGIN {
 	use_ok('OpenNMS::Config::Git');
 };
 
+require('common.pl');
+
+my $testdir = File::Spec->catdir('target', '02');
+
+eval { OpenNMS::Config::Git->new(); };
+ok($@, '->new with no arguments should croak');
+
+my $git = OpenNMS::Config::Git->new($testdir);
+ok(! -d $testdir, '$testdir should not exist');
+is($git->dir(), $testdir);
+$git->init();
+ok(-d $testdir, 'init should have created $testdir');
+
+my $rawgit = Git->repository(Directory => $testdir);
+my $current_branch = $rawgit->command_oneline('branch');
+# no branch has been created yet, because there are no commits
+is($current_branch, undef);
+
+is($git->author_name(), 'Unknown');
+is($git->author_email(), 'unknown@opennms-config-git.pl');
+
+write_file(File::Spec->catfile($testdir, 'foo.txt'), 'foo');
+$git->add('.');
+$git->commit('add foo');
+
+$current_branch = $rawgit->command_oneline('branch');
+is($current_branch, '* master');
+
+rmtree($testdir);
+
+# try again, but with different authors and branch name
+$git->init(
+	author_name => 'Horatio',
+	author_email => 'ho@rat.io',
+	branch_name => 'funky',
+);
+ok(-d $testdir, 'init should have re-created $testdir');
+
+is($git->author_name(), 'Horatio');
+is($git->author_email(), 'ho@rat.io');
+
+my $foo = File::Spec->catfile($testdir, 'foo.txt');
+my $bar = File::Spec->catfile($testdir, 'bar.txt');
+
+write_file($foo, 'foo');
+$git->add('.');
+$git->commit('re-add foo');
+
+$current_branch = $rawgit->command_oneline('branch');
+is($current_branch, '* funky');
+
+is($git->get_index_status('foo.txt'), 'unchanged');
+is($git->get_index_status('bar.txt'), 'unchanged');
+write_file($bar, 'bar');
+is($git->get_index_status('bar.txt'), 'untracked');
+$git->add('bar.txt');
+is($git->get_index_status('bar.txt'), 'new');
+$git->commit('add bar');
+is($git->get_index_status('bar.txt'), 'unchanged');
+write_file($bar, 'MORE bar');
+is($git->get_index_status('bar.txt'), 'unchanged');
+$git->add('bar.txt');
+is($git->get_index_status('bar.txt'), 'modified');
+unlink($bar);
+is($git->get_index_status('bar.txt'), 'modified');
+$git->rm('bar.txt');
+is($git->get_index_status('bar.txt'), 'deleted');
+
 rmtree("target");
 
-my $git = OpenNMS::Config::Git->new("target/git-test/repo");
+$git = OpenNMS::Config::Git->new("target/git-test/repo");
 $git->init(branch_name => 'pristine');
 ok(-d "target/git-test/repo/.git");
 is($git->get_branch_name(), 'pristine');

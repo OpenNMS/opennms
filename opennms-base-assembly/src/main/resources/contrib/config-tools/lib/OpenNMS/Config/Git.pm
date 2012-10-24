@@ -44,7 +44,7 @@ sub new {
 
 	my $dir = shift;
 	if (not defined $dir) {
-		carp "You must pass the git directory!";
+		croak "You must pass the git directory!";
 	}
 
 	my $self = {
@@ -97,6 +97,14 @@ Options:
 
 The name of the initial branch.  (Default: master)
 
+=item * author_name
+
+The name of the author of commits used in this Git object.
+
+=item * author_email
+
+The email address of the author of commits used in this Git object.
+
 =back
 
 =cut
@@ -107,6 +115,14 @@ sub init {
 
 	if (! -d $self->dir()) {
 		mkpath($self->dir());
+	}
+
+	if (exists $options{'author_name'}) {
+		$self->author_name($options{'author_name'});
+	}
+
+	if (exists $options{'author_email'}) {
+		$self->author_email($options{'author_email'});
 	}
 
 	git_cmd_try {
@@ -149,6 +165,9 @@ sub author_name {
 	if (defined $author_name) {
 		$self->{AUTHOR_NAME} = $author_name;
 	}
+	if (not exists $self->{AUTHOR_NAME}) {
+		$self->{AUTHOR_NAME} = 'Unknown';
+	}
 	return $self->{AUTHOR_NAME};
 }
 
@@ -164,6 +183,9 @@ sub author_email {
 	my $author_email = shift;
 	if (defined $author_email) {
 		$self->{AUTHOR_EMAIL} = $author_email;
+	}
+	if (not exists $self->{AUTHOR_EMAIL}) {
+		$self->{AUTHOR_EMAIL} = 'unknown@opennms-config-git.pl';
 	}
 	return $self->{AUTHOR_EMAIL};
 }

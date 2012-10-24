@@ -1,6 +1,5 @@
 DESIGN.txt
 lib/OpenNMS/Config/Git.pm
-lib/OpenNMS/Config/Home.pm
 lib/OpenNMS/Config/Spec.pm
 lib/OpenNMS/Config/RPM.pm
 lib/OpenNMS/Config.pm
@@ -11,11 +10,13 @@ script/git-setup.pl
 script/opennms-pretrans.pl
 script/opennms-post.pl
 script/opennms-posttrans.pl
-t/01-basic-upgrades.t
-t/02-upgrade-with-second-dependency.t
-t/03-upgrade-with-foreign-package-with-no-pre-and-post.t
-t/04-upgrade-from-release-1-through-release-4-with-foreign.t
-t/05-upgrade-from-unmanaged.t
+t/01-OpenNMS-Config.pl 
+t/10-basic-upgrades.t
+t/11-upgrade-with-second-dependency.t
+t/12-upgrade-with-foreign-package-with-no-pre-and-post.t
+t/13-upgrade-from-release-1-through-release-4-with-foreign.t
+t/14-upgrade-from-unmanaged.t
+t/15-upgrade-from-unmanaged-with-config-changes.t
 t/common.pl
 t/git.t
 t/rpms/feature-a-0.9-1.spec
