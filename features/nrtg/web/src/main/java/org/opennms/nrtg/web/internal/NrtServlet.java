@@ -69,7 +69,7 @@ public class NrtServlet extends HttpServlet {
             for (Entry<String, Object> entry : modelAndView.getModel().entrySet()) {
                 template = template.replaceAll("\\$\\{" + entry.getKey() + "\\}", (entry.getValue() != null ? entry.getValue().toString() : "null"));
             }
-
+            
             resp.getOutputStream().write(template.getBytes());
         } else {
             throw new ServletException("unrecognized servlet parameters");
@@ -83,14 +83,16 @@ public class NrtServlet extends HttpServlet {
             StringBuilder results = new StringBuilder();
             r = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + templateName)));
 
-            String line = null;
+            String line;
             while ((line = r.readLine()) != null) {
                 results.append(line).append('\n');
             }
 
             return results.toString();
         } finally {
-            if (r != null) r.close();
+            if (r != null) { 
+                r.close(); 
+            }
         }
     }
 

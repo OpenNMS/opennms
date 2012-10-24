@@ -3,10 +3,10 @@
 
   <reference id="snmpStrategy" interface="org.opennms.netmgt.snmp.SnmpStrategy" availability="mandatory" />
 
-  <bean id="snmpProtocolCollector" class="org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector">
+  <bean id="tcaProtocolCollector" class="org.opennms.nrtg.protocolcollector.tca.internal.TcaProtocolCollector">
     <property name="snmpStrategy" ref="snmpStrategy"/>
   </bean>
   
-  <service interface="org.opennms.nrtg.api.ProtocolCollector" ref="snmpProtocolCollector" />
+  <service interface="org.opennms.nrtg.api.ProtocolCollector" ref="tcaProtocolCollector" />
 
 </blueprint>

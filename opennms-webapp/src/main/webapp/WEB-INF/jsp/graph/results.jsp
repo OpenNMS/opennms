@@ -211,7 +211,7 @@
 
                 <div align="center">
                     <!-- NRTG Starter Zoom -->
-                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP')}">
+                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                             <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${resultSet.graphs[0].name}')"><font size="-1"> Start NRT-Graphing for ${resultSet.graphs[0].title} </font></a><br>
                             </c:if>
@@ -246,7 +246,7 @@
                         <c:param name="end" value="${results.end.time}"/>
                     </c:url>
 
-                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP')}">
+                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                             <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')"><font size="-1"> Start NRT-Graphing for ${graph.title} </font></a><br>
                             </c:if>

@@ -18,7 +18,7 @@
  * For more information contact: OpenNMS(R) Licensing <license@opennms.org> http://www.opennms.org/ http://www.opennms.com/
  ******************************************************************************
  */
-package org.opennms.nrtg.protocolcollector.snmp.internal;
+package org.opennms.nrtg.protocolcollector.tca.internal;
 
 import java.net.InetAddress;
 import java.util.HashSet;
@@ -26,8 +26,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import junit.framework.Assert;
 import org.junit.Before;
@@ -46,15 +44,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * TODO Tak refactor this test to be snmp and not tca
  * @author Markus Neumann
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:SnmpProtocolCollectorTestContext.xml"})
-@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:SnmpSample.properties")
-public class SnmpProtocolCollectorTest implements InitializingBean {
-
-    private static Logger logger = LoggerFactory.getLogger(SnmpProtocolCollectorTest.class);
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:TcaProtocolCollectorTestContext.xml"})
+@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:juniperTcaSample.properties")
+public class TcaProtocolCollectorTest implements InitializingBean {
 
     @Autowired
     private ProtocolCollector protocolCollector;
@@ -63,9 +58,6 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
     private InetAddress localhost;
     private SnmpAgentConfig snmpAgentConfig;
     private Set<String> destinations;
-    
-    private final String testMetric = ".1.3.6.1.2.1.1.1.0";
-    private final String testMetricValue = "Mock Juniper TCA Device";
     
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -85,22 +77,49 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
         destinations = new HashSet<String>();
         destinations.add("test");
     }
-
+    
     @Test
-    public void testCollect() {
-        collectionJob.setService("SNMP");
+    public void testGetCompositeValue() {
+        // snmpResult without "|amount-of-elements|"
+        // timestamp, inboundDelay, inboundJitter, outboundDelay, outboundJitter, timesyncStatus
+        String snmpResult = "1327451762,42,23,11,0,1|1327451763,11,0,11,0,1|1327451764,11,0,11,0,1|1327451765,11,0,11,0,1|1327451766,11,0,11,0,1|1327451767,11,0,11,0,1|1327451768,11,0,11,0,1|1327451769,11,0,11,0,1|1327451770,11,0,11,0,1|1327451771,11,0,11,0,1|1327451772,11,0,11,0,1|1327451773,11,0,11,0,1|1327451774,11,0,11,0,1|1327451775,11,0,11,0,1|1327451776,11,0,11,0,1|1327451777,11,0,11,0,1|1327451778,11,0,11,0,1|1327451779,11,0,11,0,1|1327451780,11,0,11,0,1|1327451781,11,0,11,0,1|1327451782,11,0,11,0,1|1327451783,11,0,11,0,1|1327451784,11,0,11,0,1|1327451785,11,0,11,0,1|1327451786,12,0,11,0,423|";
+        
+        TcaProtocolCollector tcaProtocolCollector = (TcaProtocolCollector)protocolCollector;
+        String result = tcaProtocolCollector.getCompositeValue("inboundDelay", "|1|" + snmpResult);
+        Assert.assertEquals("42", result);
+        
+        result = tcaProtocolCollector.getCompositeValue("inboundJitter", "|1|" + snmpResult);
+        Assert.assertEquals("23", result);
+
+        result = tcaProtocolCollector.getCompositeValue("timesyncStatus", "|25|" + snmpResult );
+        Assert.assertEquals("423", result);
+        
+        Assert.assertNull(tcaProtocolCollector.getCompositeValue("foo", "|1|" + snmpResult));
+        
+        Assert.assertNull(tcaProtocolCollector.getCompositeValue(null, "|1|" + snmpResult));
+        
+        Assert.assertNull(tcaProtocolCollector.getCompositeValue("inboundDelay", null));
+    }
+    
+    @Test
+    public void testCollectWithCompountMertic() {
+
+        final String testMetric = ".1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundDelay";
+        final String testMetricValue = "12";
+        
+        collectionJob.setService("TCA");
         collectionJob.setNodeId(1);
         collectionJob.setNetInterface(localhost.getHostAddress());
         collectionJob.addMetric(testMetric, destinations, "OnmsLocicMetricId");
         collectionJob.setId("testing");
         CollectionJob result = protocolCollector.collect(collectionJob);
-        Assert.assertEquals(result.getService(), "SNMP");
+        Assert.assertNotNull(result);
         Assert.assertEquals(result.getMetricValue(testMetric), testMetricValue);
     }
 
     @Test
     public void testGetProtocol() {
-        Assert.assertEquals("SNMP", protocolCollector.getProtcol());
+        Assert.assertEquals("TCA", protocolCollector.getProtcol());
     }
 
     @Test
