@@ -132,7 +132,9 @@ public class NrtController {
                 String mappingLine = "";
                 while (mappingLine != null) {
                     logger.debug("attr = " + attr.toString() + ", mappingLine = " + mappingLine);
-                    metaData.put(attr.toString(), mappingLine);
+                    if(mappingLine.endsWith(attr.getName())) {
+                        metaData.put(attr.toString(), mappingLine);
+                    }//Not the meta data line we are looking for, will happen if store by group is used
                     mappingLine = bf.readLine();
                 }
             } catch (Exception ex) {

@@ -48,17 +48,21 @@ public class NrtControllerTest {
         //Protocol_metricId=RrdGraphAttribute
         //SNMP_.1.3.6.1.2.1.5.7.0=icmpInRedirects
         //TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter=inboundJitter
-        //TODO Spit by "_" is not working for TCA...
+        
         rrdGraphAttributesMetaData.put("icmpInRedirects", "SNMP_.1.3.6.1.2.1.5.7.0=icmpInRedirects");
+        
+        rrdGraphAttributesMetaData.put("ifOutOctets", "SNMP_.1.3.6.1.2.1.2.2.1.16.3=ifOutOctets");
+        rrdGraphAttributesMetaData.put("ifInOctets", "SNMP_.1.3.6.1.2.1.2.2.1.10.3=ifInOctets");
+        
         rrdGraphAttributesMetaData.put("inboundJitter", "TCA_.1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter=inboundJitter");
         Map<String, List<MetricTuple>> metricIdsByProtocol = nrtController.getMetricIdsByProtocol(rrdGraphAttributesMetaData);
         
         assertNotNull(metricIdsByProtocol.get("SNMP"));
         List<MetricTuple> snmpMetrics = metricIdsByProtocol.get("SNMP");
-        assertTrue(snmpMetrics.get(0).getMetricId().equals(".1.3.6.1.2.1.5.7.0"));
+        assertEquals(".1.3.6.1.2.1.2.2.1.16.3", snmpMetrics.get(0).getMetricId());
         
         assertNotNull(metricIdsByProtocol.get("TCA"));
         List<MetricTuple> tcaMetrics = metricIdsByProtocol.get("TCA");
-        assertTrue(tcaMetrics.get(0).getMetricId().equals(".1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter"));
+        assertEquals(".1.3.6.1.4.1.27091.3.1.6.1.2.171.19.37.60_inboundJitter", tcaMetrics.get(0).getMetricId());
     }
 }
