@@ -142,4 +142,9 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
         return ThreadCategory.getInstance(getClass());
     }
 
+    @Override
+    public String getMetricIdentifier() {
+        return "Not supported yet._" + "XML_" + getName();
+    }
+
 }
