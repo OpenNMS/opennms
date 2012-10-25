@@ -95,8 +95,4 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
             return m_attribute.getType();
         }
 
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "WMI_" + getName();
-    }
 }
