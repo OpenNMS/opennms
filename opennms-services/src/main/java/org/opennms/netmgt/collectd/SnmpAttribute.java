@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -163,6 +164,15 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      */
     public String getName() {
         return getAttributeType().getName();
+    }
+    
+    
+    public String getMetricIdentifier() {
+        String instance = m_resource.getInstance();
+        if (instance == null) {
+            m_type.getInstance();
+        }
+        return "SNMP_"+SnmpObjId.get(m_type.getSnmpObjId(), instance);
     }
 
     /**

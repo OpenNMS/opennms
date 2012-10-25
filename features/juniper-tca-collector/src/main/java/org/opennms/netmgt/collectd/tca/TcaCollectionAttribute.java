@@ -51,7 +51,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	private TcaCollectionResource m_resource;
 
 	/** The Attribute Type. */
-	private CollectionAttributeType m_attribType;
+	private TcaCollectionAttributeType m_attribType;
 
 	/**
 	 * Instantiates a new XML collection attribute.
@@ -61,7 +61,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	 * @param name the attribute name
 	 * @param value the attribute value
 	 */
-	public TcaCollectionAttribute(TcaCollectionResource resource, CollectionAttributeType attribType, String name, String value) {
+	public TcaCollectionAttribute(TcaCollectionResource resource, TcaCollectionAttributeType attribType, String name, String value) {
 		m_resource = resource;
 		m_attribType = attribType;
 		m_name = name;
@@ -81,7 +81,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	public String getName() {
 		return m_name;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
 	 */
@@ -123,5 +123,10 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	public String toString() {
 		return "TcaCollectionAttribute " + m_name + "=" + m_value;
 	}
+
+    @Override
+    public String getMetricIdentifier() {
+        return "TCA_" + m_attribType.getAttributeObjectId() + '_' + getName();
+    }
 
 }
