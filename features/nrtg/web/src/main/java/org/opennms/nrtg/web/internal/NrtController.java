@@ -257,10 +257,11 @@ public class NrtController {
         return reqAttrs;
     }
 
-    private Map<String, String> getRrdGraphAttributsToMetricIds(Map<String, String> rrdGraphAttributesToMetaDataLines) {
+    private Map<String, String> getRrdGraphAttributsToMetricIds(Map<String, String> onmsResourceNamesToMetaDataLines) {
         Map<String, String> rrdGraphAttributesToMetricIds = new HashMap<String, String>();
-        for (Map.Entry entry : rrdGraphAttributesToMetaDataLines.entrySet()) {
-            rrdGraphAttributesToMetricIds.put(entry.getKey().toString(), getMetricIdFromMetaDataLine(entry.getValue().toString()));
+        for (String onmsResouceName : onmsResourceNamesToMetaDataLines.keySet()) {
+            String rrdGraphAttributeName = onmsResouceName.toString().substring(onmsResouceName.lastIndexOf(".") +1);
+            rrdGraphAttributesToMetricIds.put(rrdGraphAttributeName, getMetricIdFromMetaDataLine(onmsResourceNamesToMetaDataLines.get(onmsResouceName)));
         }
         return rrdGraphAttributesToMetricIds;
     }
