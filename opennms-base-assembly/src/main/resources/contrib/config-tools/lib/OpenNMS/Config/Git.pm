@@ -222,6 +222,9 @@ our $STATES = {
 	'A'   => 'new',
 	'M'   => 'modified',
 	'D'   => 'deleted',
+	'R'   => 'renamed',
+	'C'   => 'copied',
+	'U'   => 'modified', # technically, "updated"
 };
 
 sub get_index_status {
