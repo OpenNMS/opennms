@@ -28,11 +28,8 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.IViewContribution;
@@ -41,12 +38,11 @@ import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMen
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.SelectionTree;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -63,16 +59,16 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener {
     
+    
 	private Window m_window;
 	private TopologyComponent m_topologyComponent;
-	private Tree m_tree;
+	private SelectionTree m_tree;
 	private SimpleGraphContainer m_graphContainer;
 	private CommandManager m_commandManager;
 	private MenuBar m_menuBar;
@@ -86,7 +82,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
     private boolean m_widgetViewShowing = false;
-
+    
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
@@ -128,8 +124,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		try {
             slider.setValue(1.0);
         } catch (ValueOutOfBoundsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // Catch an Index out of bounds exception
         }
 		scale.setValue(1.0);
 		slider.setImmediate(true);
@@ -334,15 +329,16 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
         absLayout.addComponent(filterArea, "top: 25px; left: 15px;");
-        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; bottom:25px;"); 
+        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; right: 15px; bottom:25px;"); 
         
         return absLayout;
     }
 
-	private Tree createTree() {
+	@SuppressWarnings({"unchecked", "serial", "unused"})
+    private SelectionTree createTree() {
 	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
 	    
-		final Tree tree = new Tree();
+		final SelectionTree tree = new SelectionTree(m_topologyComponent);
 		tree.setMultiSelect(true);
 		tree.setContainerDataSource(container);
         
@@ -352,31 +348,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			tree.expandItemsRecursively(it.next());
 		}
 		
-		tree.addListener(new ValueChangeListener() {
-            
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                Collection<Object> selectedList = (Collection<Object>) event.getProperty().getValue();
-                Set<Object> completeSelectionList = new HashSet<Object>();
-                completeSelectionList.addAll(selectedList);
-                
-                for( Object itemId : selectedList) {
-                    if(container.hasChildren(itemId)) {
-                        
-                        Collection<?> children = container.getChildren(itemId);
-                        completeSelectionList.addAll(children);
-                        
-                        for(Object childId : children) {
-                            tree.select(childId);
-                        }
-                    }
-                }
-                
-                m_topologyComponent.selectVerticesByItemId(completeSelectionList);
-            }
-        });
-		
-		
+		m_topologyComponent.addSelectionListener(tree);
 		return tree;
 	}
 
