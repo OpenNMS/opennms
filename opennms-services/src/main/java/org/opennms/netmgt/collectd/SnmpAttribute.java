@@ -63,6 +63,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpAttribute) {
             SnmpAttribute attr = (SnmpAttribute) obj;
@@ -76,11 +77,13 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return (m_resource.hashCode() ^ m_type.hashCode());
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         if (log().isDebugEnabled()) {
             log().debug("Visiting attribute "+this);
@@ -94,6 +97,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      */
+    @Override
     public SnmpAttributeType getAttributeType() {
         return m_type;
     }
@@ -103,6 +107,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link org.opennms.core.utils.ThreadCategory} object.
      */
+    @Override
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -112,6 +117,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
+    @Override
     public CollectionResource getResource() {
         return m_resource;
     }
@@ -130,6 +136,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(Persister persister) {
         getAttributeType().storeAttribute(this, persister);
     }
@@ -139,6 +146,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getResource()+"."+getAttributeType()+" = "+getValue();
     }
@@ -148,11 +156,13 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getType() {
         return getAttributeType().getType();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
@@ -162,15 +172,17 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return getAttributeType().getName();
     }
     
     
+    @Override
     public String getMetricIdentifier() {
         String instance = m_resource.getInstance();
         if (instance == null) {
-            m_type.getInstance();
+            instance = m_type.getInstance();
         }
         return "SNMP_"+SnmpObjId.get(m_type.getSnmpObjId(), instance);
     }
@@ -180,6 +192,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getNumericValue() {
         if (getValue() == null) {
             log().debug("No data collected for attribute "+this+". Skipping");
@@ -201,6 +214,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStringValue() {
         SnmpValue value=getValue();
         return (value == null ? null : value.toString());
