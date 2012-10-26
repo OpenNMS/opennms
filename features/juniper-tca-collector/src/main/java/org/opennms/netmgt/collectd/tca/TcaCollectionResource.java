@@ -179,7 +179,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
      * @param type the type
      * @param value the value
      */
-    public void setAttributeValue(CollectionAttributeType type, String value) {
+    public void setAttributeValue(TcaCollectionAttributeType type, String value) {
         TcaCollectionAttribute attr = new TcaCollectionAttribute(this, type, type.getName(), value);
         addAttribute(attr);
     }

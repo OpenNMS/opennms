@@ -716,15 +716,6 @@ public abstract class JMXCollector implements ServiceCollector {
             return m_dataSource.getType();
         }
 
-        @Override
-        public String getAttributeId() {
-            String attributeId = m_groupType.getName();
-            attributeId = attributeId.replace("_type_", ":type=");
-            attributeId = attributeId.replace("_", ".");
-            attributeId = attributeId.concat(".");
-            attributeId = attributeId.concat(m_name);
-            return "JMX_".concat(attributeId);
-        }
     }
     
     class JMXCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
@@ -781,6 +772,17 @@ public abstract class JMXCollector implements ServiceCollector {
         public String toString() {
              return "alias " + m_alias + ", value " + m_value + ", resource "
                  + m_resource + ", attributeType " + m_attribType;
+        }
+
+        @Override
+        public String getMetricIdentifier() {
+            String metricId = m_attribType.getGroupType().getName();
+            metricId = metricId.replace("_type_", ":type=");
+            metricId = metricId.replace("_", ".");
+            metricId = metricId.concat(".");
+            metricId = metricId.concat(getName());
+            return "JMX_".concat(metricId);
+
         }
         
     }

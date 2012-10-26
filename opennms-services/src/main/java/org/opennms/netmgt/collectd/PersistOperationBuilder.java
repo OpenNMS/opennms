@@ -55,6 +55,7 @@ public class PersistOperationBuilder {
     private String m_rrdName;
     private ResourceIdentifier m_resource;
     private Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
+    private Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
     
     /**
@@ -110,6 +111,10 @@ public class PersistOperationBuilder {
     public void setAttributeValue(AttributeDefinition attrType, String value) {
         m_declarations.put(attrType, value);
     }
+    
+    public void setAttributeMetadata(String metricIdentifier, String name) {
+        m_metaData.put(metricIdentifier, name);
+    }
 
     /**
      * Static method which takes a MIB object type (counter, counter32,
@@ -143,6 +148,7 @@ public class PersistOperationBuilder {
         
         RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
         RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+        RrdUtils.createMetaDataFile(getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_metaData);
     }
 
     private String getValues() {
@@ -162,11 +168,7 @@ public class PersistOperationBuilder {
     }
 
     private Map<String, String> getAttributeMappings() {
-        Map<String, String> attribMappings = new HashMap<String, String>();
-        for (AttributeDefinition attributeDefinition : m_declarations.keySet()) {
-            attribMappings.put(attributeDefinition.getAttributeId(), attributeDefinition.getName());
-        }
-        return attribMappings;
+        return null;
     }
     
     private List<RrdDataSource> getDataSources() {

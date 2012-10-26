@@ -128,4 +128,9 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
         public String toString() {
             return "WmiCollectionAttribute " + m_alias+"=" + m_value;
         }
+
+        @Override
+        public String getMetricIdentifier() {
+            return "Not supported yet._" + "WMI_" + getName();
+        }
 }
