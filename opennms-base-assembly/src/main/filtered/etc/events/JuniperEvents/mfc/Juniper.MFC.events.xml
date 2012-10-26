@@ -1,6 +1,6 @@
-<!-- MFC 12.2 version NMS Eastwood version 1.0, file created by Javier Guillermo, Juniper Professional services July-2012 
+<!-- MFC 12.2 version, file created by Suresh Akula, ESBU- CMBU- MFA 3.3 release 
  Main changes: 
-				- Following files were merged into one file for 12.2: Juniper.MFD.events.xml & TallMapel.events.xml
+				- Following files were merged into one file for 12.2: Juniper.MFD.events.xml
 				- Clear codes were added for every single trap
 				- 5 new alarms were introduced
 -->
@@ -25,7 +25,7 @@
     <uei>uei.opennms.org/vendor/Juniper/MFC/traps/jmfcServiceCrash</uei>
     <event-label>JUNIPER-MFC-NOTIF-MIB defined trap event: jmfcServiceCrash</event-label>
     <descr>
-&lt;p&gt;One of the monitored services is down due to a crash.&lt;/p&gt;&lt;table&gt;
+	&lt;p&gt;One of the monitored services is down due to a crash.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	jmfcServiceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
@@ -68,7 +68,7 @@
 	jmfcServiceUp trap received, Clearing Service Crash Alarm.  
 	jmfcServiceName=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcServiceCrash:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="2" auto-clean="false" />	
   </event>
   
@@ -96,7 +96,7 @@
     <logmsg dest="logndisplay">&lt;p&gt;
 	jmfcFanFailure trap received&lt;/p&gt;
 	</logmsg>
-    <severity>Major</severity>
+    <severity>Critical</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="1" auto-clean="false" />		
   </event>
   
@@ -124,7 +124,7 @@
     <logmsg dest="logndisplay">&lt;p&gt;
 	jmfcFanStatusOK trap received, Clearing Fan Failure Alarm. &lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcFanFailure:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="2" auto-clean="false" />		
   </event>
   
@@ -180,7 +180,7 @@
     <logmsg dest="logndisplay">&lt;p&gt;
 	jmfcPowerSupplyOk trap received, Clearing Power Supply Alarm. &lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcPowerSupplyFailure:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="2" auto-clean="false" />			
   </event>
   
@@ -256,7 +256,7 @@
 	jmfcCacheHitRatio=%parm[#1]%
 	jmfcCacheHitRatioClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Minor</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcCacheHitRatioLow:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />				
   </event>
   
@@ -332,7 +332,7 @@
 	jmfcCpuUtil=%parm[#1]%
 	jmfcCpuUtilClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcCpuUtilOk:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />				
   </event>
   
@@ -418,7 +418,7 @@
 	jmfcDiskFreeSpace=%parm[#2]%
 	jmfcDiskSpaceClrThreshold=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcDiskSpaceOk:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" />					
   </event>
 
@@ -494,7 +494,7 @@
 	jmfcMemUtil=%parm[#1]%
 	jmfcMemUtilClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcMemUtilizationHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />						
   </event>
   
@@ -570,7 +570,7 @@
 	jmfcNetIntfUtilCurrent=%parm[#1]%
 	jmfcNetIntfUtilClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcNetUtilizationHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />							
   </event>
   
@@ -656,7 +656,7 @@
 	jmfcDiskIORate=%parm[#2]%
 	jmfcDiskIORateClrThreshold=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcDiskIOHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" />								
   </event>
   
@@ -679,10 +679,25 @@
     <uei>uei.opennms.org/vendor/Juniper/MFC/traps/jmfcOriginNodeDown</uei>
     <event-label>JUNIPER-MFC-NOTIF-MIB defined trap event: jmfcOriginNodeDown</event-label>
     <descr>
-&lt;p&gt;One of the nodes in the cluster is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	&lt;p&gt;One of the nodes in the cluster is down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmfcClusterNamespace&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmfcClusterInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmfcNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
     <logmsg dest="logndisplay">&lt;p&gt;
-	jmfcOriginNodeDown trap received&lt;/p&gt;
+	jmfcOriginNodeDown trap received
+	jmfcClusterNamespace=%parm[#1]%
+	jmfcClusterInstance=%parm[#2]%
+	jmfcNodeName=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Major</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />							
@@ -707,12 +722,27 @@
     <uei>uei.opennms.org/vendor/Juniper/MFC/traps/jmfcOriginNodeUp</uei>
     <event-label>JUNIPER-MFC-NOTIF-MIB defined trap event: jmfcOriginNodeUp</event-label>
     <descr>
-&lt;p&gt;One of the failed nodes in the cluster is up, Clearing Origin Node Down Alarm. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	&lt;p&gt;One of the failed nodes in the cluster is up, Clearing Origin Node Down Alarm.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmfcClusterNamespace&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmfcClusterInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmfcNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
     <logmsg dest="logndisplay">&lt;p&gt;
-	jmfcOriginNodeUp trap received&lt;/p&gt;
+	jmfcOriginNodeUp trap received	
+	jmfcClusterNamespace=%parm[#1]%
+	jmfcClusterInstance=%parm[#2]%
+	jmfcNodeName=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-    <severity>Major</severity>
+    <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcOriginNodeDown:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />									
   </event>
   
@@ -750,7 +780,7 @@
 	jmfcAppMaxCpuUtil=%parm[#1]%
 	jmfcAppMaxCpuUtilErrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Minor</severity>
+    <severity>Major</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />			
   </event>
   
@@ -788,7 +818,7 @@
 	jmfcAppMaxCpuUtil=%parm[#1]%
 	jmfcAppMaxCpuUtilClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Indeterminate</severity>
+    <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcApplCpuUtilHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />										
   </event>
   
@@ -864,7 +894,7 @@
 	jmfcCacheBw=%parm[#1]%
 	jmfcCacheBwClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcCacheBandwidthUsageHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -940,7 +970,7 @@
 	jmfcOriginBw=%parm[#1]%
 	jmfcOriginBwClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcOriginBandwidthUsageHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -1026,7 +1056,7 @@
 	jmfcDiskBW=%parm[#2]%
 	jmfcDiskBWClrThreshold=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcDiskBandwidthUsageHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" />											
   </event>
     
@@ -1102,7 +1132,7 @@
 	jmfcConnectionRateCurrent=%parm[#1]%
 	jmfcConnectionRateClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcDiskBandwidthUsageHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -1178,7 +1208,7 @@
 	jmfcTransactionRateCurrent=%parm[#1]%
 	jmfcTransactionRateClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcTransactionRateHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -1254,7 +1284,7 @@
 	jmfcPagingCurrent=%parm[#1]%
 	jmfcPagingClrThreshold=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcPagingHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -1340,7 +1370,7 @@
 	jmfcResourcePoolBandwidth=%parm[#2]%
 	jmfcResourcePoolActiveConns=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcResourcePoolUsageHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -1426,7 +1456,7 @@
 	jmfcResourcePoolBandwidth=%parm[#2]%
 	jmfcResourcePoolActiveConns=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-    <severity>Warning</severity>
+    <severity>Cleared</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/jmfcResourcePoolUsageLow:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" />											
   </event>
   
@@ -1492,7 +1522,7 @@
 	jmfcServiceLivenessFailure trap received
 	jmfcServiceName=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-    <severity>Minor</severity>
+    <severity>Major</severity>
 	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="1" auto-clean="false" />				  
   </event>
   
