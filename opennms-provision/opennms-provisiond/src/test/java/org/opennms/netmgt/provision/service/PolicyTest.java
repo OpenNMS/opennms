@@ -127,7 +127,6 @@ public class PolicyTest {
     }
 
     @Test
-    @Ignore
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.7.15.240", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
         @JUnitSnmpAgent(host="10.7.15.241", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),

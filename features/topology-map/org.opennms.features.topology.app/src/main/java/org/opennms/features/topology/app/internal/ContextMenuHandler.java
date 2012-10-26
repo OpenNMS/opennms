@@ -29,6 +29,13 @@
 package org.opennms.features.topology.app.internal;
 
 public interface ContextMenuHandler {
-
+    
+    /**
+     * Show the Context Menu for this target at specified left and top location
+     * 
+     * @param target
+     * @param left
+     * @param top
+     */
     public void show(Object target, int left, int top);
 }
