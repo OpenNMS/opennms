@@ -67,6 +67,10 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
 
+        final Label comboLabel = new Label("Select Data Collection Group File");
+        toolbar.addComponent(comboLabel);
+        toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
+
         final VerticalLayout self = this;
         final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
         final ComboBox dcGroupSource = new ComboBox();
@@ -86,7 +90,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
             }
         });
 
-        final Button add = new Button("Add File");
+        final Button add = new Button("Add New Data Collection File");
         toolbar.addComponent(add);
         add.addListener(new Button.ClickListener() {
             @Override
@@ -106,11 +110,19 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
             }
         });
 
-        final Button remove = new Button("Remove File");
+        final Button remove = new Button("Remove Selected Data Collection File");
         toolbar.addComponent(remove);
         remove.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
+                /*
+                 * TODO Delete Event File
+                 * 
+                 * 1. Update ComboBox
+                 * 2. Ask if the user want to do that.
+                 * 3. Remove the file.
+                 * 4. Verify if the file has a reference in datacollection-config.xml, if so, remove it.
+                 */
                 getApplication().getMainWindow().showNotification("Not impementet yet!");
             }
         });

@@ -100,6 +100,10 @@ public class EventAdminApplication extends Application {
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
 
+        final Label comboLabel = new Label("Select Events Configuration File");
+        toolbar.addComponent(comboLabel);
+        toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
+
         final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
         final ComboBox eventSource = new ComboBox();
         toolbar.addComponent(eventSource);
@@ -118,7 +122,7 @@ public class EventAdminApplication extends Application {
             }
         });
 
-        final Button add = new Button("Add File");
+        final Button add = new Button("Add New Events File");
         toolbar.addComponent(add);
         add.addListener(new Button.ClickListener() {
             @Override
@@ -137,11 +141,20 @@ public class EventAdminApplication extends Application {
             }
         });
 
-        final Button remove = new Button("Remove File");
+        final Button remove = new Button("Remove Selected Events File");
         toolbar.addComponent(remove);
         remove.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
+                /*
+                 * TODO Delete Event File
+                 * 
+                 * 1. Update ComboBox
+                 * 2. Ask if the user want to do that.
+                 * 3. Remove the file.
+                 * 4. Verify if the file has a reference in eventconf.xml, if so, remove it.
+                 * 5. Send reload event.
+                 */
                 getMainWindow().showNotification("Not impementet yet!");
             }
         });

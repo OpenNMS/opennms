@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -204,6 +205,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             });
         } else {
             saveFile(file, dcGroup, logger);
+            // Force reload datacollection-config.xml to be able to configure SNMP collections.
+            try {
+                final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+                configFile.setLastModified(System.currentTimeMillis());
+            } catch (IOException e) {
+                logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());
+            }
         }
     }
 
