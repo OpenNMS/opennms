@@ -46,7 +46,6 @@ import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeEvent;
 import com.vaadin.data.Container.PropertySetChangeListener;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -554,7 +553,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
     
     private void toggleSelectVertexByItemId(Object itemId) {
-        Item item = m_graphContainer.getVertexContainer().getItem(itemId);
         Vertex vertex = getGraph().getVertexByItemId(itemId);
         vertex.setSelected(!vertex.isSelected());
         

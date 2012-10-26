@@ -46,6 +46,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.HierarchicalContainer;
 
+@SuppressWarnings("serial")
 public class FilterableHierarchicalContainer extends HierarchicalContainer implements ItemSetChangeListener {
 
     VertexContainer<?, ?> m_container;
@@ -338,7 +339,10 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
     public void containerItemSetChange(Container.ItemSetChangeEvent event) {
         fireItemSetChange();
     }
-
     
+
+    public void fireItemUpdated() {
+        m_container.fireItemSetChange();
+    }
 
 }
