@@ -36,7 +36,7 @@ import java.io.File;
  */
 public class RrdGraphAttribute implements OnmsAttribute {
 
-	private String m_name;
+    private String m_name;
     private String m_relativePath;
     private String m_rrdFile;
     private OnmsResource m_resource;
@@ -59,6 +59,7 @@ public class RrdGraphAttribute implements OnmsAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -68,6 +69,7 @@ public class RrdGraphAttribute implements OnmsAttribute {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
+    @Override
     public OnmsResource getResource() {
         return m_resource;
     }
@@ -78,6 +80,7 @@ public class RrdGraphAttribute implements OnmsAttribute {
      * Set the resource for this attribute.  This is called
      * when the attribute is added to a resource.
      */
+    @Override
     public void setResource(OnmsResource resource) {
         m_resource = resource;
     }

@@ -540,7 +540,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     			
     		case Event.ONCLICK:
     		    if(event.getEventTarget().equals(m_svg)) {
-    		        deselectVertices(true);
+    		        deselectAllItems(true);
     		    }
     		    break;
 		}
@@ -548,13 +548,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 
-	private void deselectVertices(boolean immediate) {
-	    m_client.updateVariable(m_paintableId, "clickedVertex", "", false);
-        m_client.updateVariable(m_paintableId, "shiftKeyPressed", false, false);
-	    if(immediate) {
-	        m_client.sendPendingVariableChanges();
-	    }
-	    
+	private void deselectAllItems(boolean immediate) {
+	    m_client.updateVariable(m_paintableId, "deselectAllItems", true, immediate);
     }
 
     private Handler<GWTVertex> vertexContextMenuHandler() {
@@ -691,7 +686,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			    
 			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
 			        if(!D3.getEvent().getShiftKey()) {
-			            deselectVertices(false);
+			            deselectAllItems(false);
 			        }
 			    }
 			    

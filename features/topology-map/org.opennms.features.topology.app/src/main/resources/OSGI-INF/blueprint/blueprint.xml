@@ -23,6 +23,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="topologyProvider" ref="topologyProvider" />
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
+        <property name="treeWidgetManager" ref="treeWidgetManager"/>
     </bean>
     
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
@@ -86,9 +87,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </service>
     
     <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
+    <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     
-    <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional">
+    <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=bottom)">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="widgetManager"/>
+    </reference-list>
+    
+    <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=left)">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="treeWidgetManager"/>
     </reference-list>
     
     
