@@ -658,6 +658,17 @@
         clear: both;
         height: 1px;
     }
+
+/* --------------------------------------------------
+    :: Style for notification status
+    -------------------------------------------------- */
+#notificationOff{
+	color: #ef2929;
+}
+
+#notificationOn{
+	color: #73d216;
+}
 	
 /* --------------------------------------------------
     :: Deprecated Styles, Please do not uncomment, these

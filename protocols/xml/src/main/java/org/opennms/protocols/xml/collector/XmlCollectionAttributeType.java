@@ -93,9 +93,4 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
     public String getType() {
         return m_object.getDataType();
     }
-
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "XML_" + getName();
-    }
 }

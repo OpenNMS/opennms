@@ -96,6 +96,7 @@ public class MockCollectionResource implements CollectionResource {
                 public CollectionAttributeType getAttributeType() { return null; }
                 public void visit(CollectionSetVisitor visitor) { }
                 public String getType() { return "string"; }
+                public String getMetricIdentifier() { return "MOCK_"+getName(); }
             };
             visitor.visitAttribute(attribute);
         }

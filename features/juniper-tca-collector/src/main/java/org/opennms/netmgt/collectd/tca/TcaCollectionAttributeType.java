@@ -104,9 +104,8 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 		persister.persistNumericAttribute(attribute);
 	}
 
-    @Override
-    public String getAttributeId() {
-        return "TCA_" + m_attributeObjectId + '_' + getName();
+    public SnmpObjId getAttributeObjectId() {
+        return m_attributeObjectId;
     }
 
 }
