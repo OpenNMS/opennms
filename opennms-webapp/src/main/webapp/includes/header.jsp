@@ -71,6 +71,11 @@
     String noticeStatus;
     try {
         noticeStatus = NotifdConfigFactory.getPrettyStatus();
+        if ("Off".equals(noticeStatus)) {
+          noticeStatus="<b id=\"notificationOff\">Off</b>";
+        } else {
+          noticeStatus="<b id=\"notificationOn\">On</b>";
+        }
     } catch (Throwable t) {
         noticeStatus = "<font color=\"ff0000\">Unknown</font>";
     }
@@ -175,7 +180,7 @@ final String baseHref = Util.calculateUrlBase( request );
 			<p align="right">
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
-						User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+						User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a>&nbsp;(Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
 						- <a href="<%= baseHref %>j_spring_security_logout">Log out</a><br/>
 					</c:when>
 					<c:otherwise>
