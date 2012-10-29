@@ -44,9 +44,14 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class SNMP Collection Panel.
@@ -62,9 +67,6 @@ public class SnmpCollectionPanel extends VerticalLayout {
     /** The table. */
     private final SnmpCollectionTable table;
 
-    /** The add button. */
-    private final Button add;
-
     /** The isNew flag. True, if the SNMP collection is new. */
     private boolean isNew;
 
@@ -78,8 +80,6 @@ public class SnmpCollectionPanel extends VerticalLayout {
         setCaption("SNMP Collections");
         addStyleName(Runo.PANEL_LIGHT);
 
-        final DatacollectionConfig dataCollectionConfig = dataCollectionConfigDao.getRootDataCollection();
-
         form = new SnmpCollectionForm(dataCollectionConfigDao) {
             @Override
             public void saveSnmpCollection(SnmpCollection snmpCollection) {
@@ -90,18 +90,18 @@ public class SnmpCollectionPanel extends VerticalLayout {
                     logger.info("SNMP Collection " + snmpCollection.getName() + " has been updated.");
                 }
                 table.refreshRowCache();
-                saveSnmpCollections(dataCollectionConfig, logger);
+                saveSnmpCollections(dataCollectionConfigDao, logger);
             }
             @Override
             public void deleteSnmpCollection(SnmpCollection snmpCollection) {
                 logger.info("SNMP Collection " + snmpCollection.getName() + " has been removed.");
                 table.removeItem(snmpCollection.getName());
                 table.refreshRowCache();
-                saveSnmpCollections(dataCollectionConfig, logger);
+                saveSnmpCollections(dataCollectionConfigDao, logger);
             }
         };
 
-        table = new SnmpCollectionTable(dataCollectionConfig) {
+        table = new SnmpCollectionTable(dataCollectionConfigDao) {
             @Override
             public void updateExternalSource(BeanItem<SnmpCollection> item) {
                 form.setItemDataSource(item, Arrays.asList(SnmpCollectionForm.FORM_ITEMS));
@@ -111,7 +111,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
             }
         };
 
-        add = new Button("Add SNMP Collection", new Button.ClickListener() {
+        final Button add = new Button("Add SNMP Collection", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 SnmpCollection collection = new SnmpCollection();
                 collection.setName("New Collection");
@@ -130,13 +130,38 @@ public class SnmpCollectionPanel extends VerticalLayout {
             }
         });
 
+        final Button refresh = new Button("Refresh SNMP Collections", new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                                               "Are you sure?",
+                                               MessageBox.Icon.QUESTION,
+                                               "By doing this all unsafed changes in SNMP collection will be lost.",
+                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                mb.addStyleName(Runo.WINDOW_DIALOG);
+                mb.show(new EventListener() {
+                    public void buttonClicked(ButtonType buttonType) {
+                        if (buttonType == MessageBox.ButtonType.YES) {
+                            table.refreshSnmpCollections();
+                            table.select(null);
+                            form.setVisible(false);
+
+                        }
+                    }
+                });
+            }
+        });
+
         setSpacing(true);
         setMargin(true);
         addComponent(table);
-        addComponent(add);
+        final HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.addComponent(add);
+        toolbar.addComponent(refresh);
+        addComponent(toolbar);
         addComponent(form);
 
-        setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
+        setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
     }
 
     /**
@@ -168,11 +193,12 @@ public class SnmpCollectionPanel extends VerticalLayout {
     /**
      * Save SNMP collections.
      *
-     * @param dataCollectionConfig the data collection configuration
+     * @param dataCollectionConfigDao the OpenNMS data collection configuration DAO
      * @param logger the logger
      */
-    public void saveSnmpCollections(DatacollectionConfig dataCollectionConfig, Logger logger) {
+    public void saveSnmpCollections(final DataCollectionConfigDao dataCollectionConfigDao, Logger logger) {
         try {
+            final DatacollectionConfig dataCollectionConfig = dataCollectionConfigDao.getRootDataCollection();
             File file = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
             logger.info("Saving data colleciton configuration on " + file);
             dataCollectionConfig.setSnmpCollection(getSnmpCollections());

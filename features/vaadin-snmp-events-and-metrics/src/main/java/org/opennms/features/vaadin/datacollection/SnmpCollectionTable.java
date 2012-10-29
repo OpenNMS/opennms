@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
@@ -50,16 +51,21 @@ public abstract class SnmpCollectionTable extends Table {
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "SNMP Collection Name", "SNMP Storage Flag" };
 
+    /** The OpenNMS Data Collection Config DAO. */
+    private final DataCollectionConfigDao dataCollectionConfigDao;
+
+    /** The SNMP Collection Container. */
+    private BeanContainer<String,SnmpCollection> container = new BeanContainer<String,SnmpCollection>(SnmpCollection.class);
+
     /**
      * Instantiates a new SNMP collection table.
      *
-     * @param dataCollectionConfig the data collection configuration
+     * @param dataCollectionConfigDao the OpenNMS data collection configuration DAO
      */
-    public SnmpCollectionTable(final DatacollectionConfig dataCollectionConfig) {
-        BeanContainer<String,SnmpCollection> container = new BeanContainer<String,SnmpCollection>(SnmpCollection.class);
+    public SnmpCollectionTable(final DataCollectionConfigDao dataCollectionConfigDao) {
+        this.dataCollectionConfigDao = dataCollectionConfigDao;
         container.setBeanIdProperty("name");
-        container.addAll(dataCollectionConfig.getSnmpCollectionCollection());
-        container.removeItem("__resource_type_collection"); // This is a protected collection and should not be edited.
+        refreshSnmpCollections();
         setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
@@ -94,6 +100,16 @@ public abstract class SnmpCollectionTable extends Table {
     @SuppressWarnings("unchecked")
     public void addSnmpCollection(SnmpCollection snmpCollection) {
         ((BeanContainer<String,SnmpCollection>) getContainerDataSource()).addBean(snmpCollection);
+    }
+
+    /**
+     * Refresh SNMP collections.
+     */
+    public void refreshSnmpCollections() {
+        final DatacollectionConfig dataCollectionConfig = dataCollectionConfigDao.getRootDataCollection();
+        container.removeAllItems();
+        container.addAll(dataCollectionConfig.getSnmpCollectionCollection());
+        container.removeItem("__resource_type_collection"); // This is a protected collection and should not be edited.
     }
 
 }
