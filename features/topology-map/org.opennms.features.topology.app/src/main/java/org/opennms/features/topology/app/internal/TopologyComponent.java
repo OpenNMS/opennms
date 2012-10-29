@@ -349,6 +349,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             deselectAllEdges();
             deselectAllVertices();
             requestRepaint();
+            updateSelectionListeners();
         }
         
         if(variables.containsKey("clickedVertex")) {
