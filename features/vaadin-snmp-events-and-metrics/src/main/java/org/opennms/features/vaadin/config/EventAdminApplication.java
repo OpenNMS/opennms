@@ -38,7 +38,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.Application;
@@ -127,10 +126,10 @@ public class EventAdminApplication extends Application {
                     return;
                 try {
                     LogUtils.infof(this, "Loading events from %s", file);
-                    Events events = JaxbUtils.unmarshal(Events.class, file);
-                    layout.removeComponent(layout.getComponent(1));
-                    layout.addComponent(createEventPanel(file, events));
+                    final Events events = JaxbUtils.unmarshal(Events.class, file);
+                    addEventPanel(layout, file, events);
                 } catch (Exception e) {
+                    LogUtils.errorf(this, e, "an error ocurred while saving the event configuration %s: %s", file, e.getMessage());
                     getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
                 }
             }
@@ -144,11 +143,10 @@ public class EventAdminApplication extends Application {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        File file = new File(eventsDir, fieldValue);
+                        final File file = new File(eventsDir, fieldValue);
                         LogUtils.infof(this, "Adding new events file %s", file);
-                        Events events = new Events();
-                        layout.removeComponent(layout.getComponent(1));
-                        layout.addComponent(createEventPanel(file, events));
+                        final Events events = new Events();
+                        addEventPanel(layout, file, events);
                     }
                 };
                 getMainWindow().addWindow(w);
@@ -174,33 +172,32 @@ public class EventAdminApplication extends Application {
                 mb.show(new EventListener() {
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
-                            getMainWindow().showNotification("Not implemented yet. Please open a Jira issue for this.");
-                            /*
                             File file = (File) eventSource.getValue();
                             if (file.delete()) {
-                                boolean modified = false;
-                                for (Iterator<String> it = eventConfDao.getRootEvents().getEventFileCollection().iterator(); it.hasNext();) {
-                                    String fileName = it.next();
-                                    if (file.getAbsolutePath().contains(fileName)) {
-                                        it.remove();
-                                        modified = true;
+                                try {
+                                    boolean modified = false;
+                                    for (Iterator<String> it = eventConfDao.getRootEvents().getEventFileCollection().iterator(); it.hasNext();) {
+                                        String fileName = it.next();
+                                        if (file.getAbsolutePath().contains(fileName)) {
+                                            it.remove();
+                                            modified = true;
+                                        }
                                     }
-                                }
-                                if (modified) {
-                                    eventConfDao.saveCurrent();
-                                    EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
-                                    try {
+                                    if (modified) {
+                                        eventConfDao.saveCurrent();
+                                        EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
                                         eventProxy.send(eb.getEvent());
-                                    } catch (EventProxyException e) {
-                                        getMainWindow().showNotification("Cannot send " + eb.getEvent().getUei() + " event.", Notification.TYPE_WARNING_MESSAGE);
                                     }
+                                    eventSource.select(null);
+                                    if (layout.getComponentCount() > 1)
+                                        layout.removeComponent(layout.getComponent(1));
+                                } catch (Exception e) {
+                                    LogUtils.errorf(this, e, "an error ocurred while saving the event configuration: %s", e.getMessage());
+                                    getMainWindow().showNotification("Can't save event configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                                 }
-                                eventSource.select(null);
-                                layout.removeComponent(layout.getComponent(1));
                             } else {
                                 getMainWindow().showNotification("Cannot delete file " + file, Notification.TYPE_WARNING_MESSAGE);
                             }
-                            */
                         }
                     }
                 });
@@ -216,13 +213,14 @@ public class EventAdminApplication extends Application {
     }
 
     /**
-     * Creates a new Events Panel.
+     * Adds a new Events Panel.
      *
+     * @param layout the layout
      * @param file the Events File Name
      * @param events the Events Object
      * @return a new Events Panel Object
      */
-    private EventPanel createEventPanel(final File file, final Events events) {
+    private void addEventPanel(final VerticalLayout layout, final File file, final Events events) {
         EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file.getName(), events, new SimpleLogger()) {
             @Override
             public void cancel() {
@@ -239,7 +237,18 @@ public class EventAdminApplication extends Application {
             }
         };
         eventPanel.setCaption("Events from " + file.getName());
-        return eventPanel;
+        removeEventPanel(layout);
+        layout.addComponent(eventPanel);
+    }
+
+    /**
+     * Removes the event panel.
+     *
+     * @param layout the layout
+     */
+    private void removeEventPanel(final VerticalLayout layout) {
+        if (layout.getComponentCount() > 1)
+            layout.removeComponent(layout.getComponent(1));
     }
 
 }

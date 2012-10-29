@@ -81,7 +81,6 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
         toolbar.addComponent(comboLabel);
         toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
 
-        final VerticalLayout self = this;
         final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
         final ComboBox dcGroupSource = new ComboBox();
         toolbar.addComponent(dcGroupSource);
@@ -99,9 +98,9 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                     LogUtils.infof(this, "Loading data collection data from %s", file);
                     DatacollectionGroup dcGroup = JaxbUtils.unmarshal(DatacollectionGroup.class, file);
                     m_selectedGroup = dcGroup.getName();
-                    self.removeComponent(getComponent(1));
-                    self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
+                    addDataCollectionGroupPanel(dataCollectionDao, file, dcGroup);
                 } catch (Exception e) {
+                    LogUtils.errorf(this, e, "an error ocurred while parsing the data collection configuration %s: %s", file, e.getMessage());
                     getApplication().getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
                 }
             }
@@ -119,8 +118,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                         LogUtils.infof(this, "Adding new data collection file %s", file);
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
                         dcGroup.setName(fieldValue);
-                        self.removeComponent(self.getComponent(1));
-                        self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
+                        addDataCollectionGroupPanel(dataCollectionDao, file, dcGroup);
                     }
                 };
                 getApplication().getMainWindow().addWindow(w);
@@ -146,8 +144,6 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 mb.show(new EventListener() {
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
-                            getApplication().getMainWindow().showNotification("Not implemented yet. Please open a Jira issue for this.");
-                            /*
                             File file = (File) dcGroupSource.getValue();
                             LogUtils.infof(this, "deleting file %s", file);
                             if (file.delete()) {
@@ -166,18 +162,17 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                     }
                                     if (modified) {
                                         LogUtils.infof(this, "updating data colleciton configuration on %s.", configFile);
-                                        JaxbUtils.marshal(configFile, new FileWriter(configFile));
+                                        JaxbUtils.marshal(config, new FileWriter(configFile));
                                     }
                                     dcGroupSource.select(null);
-                                    self.removeComponent(self.getComponent(1));
+                                    removeDataCollectionGroupPanel();
                                 } catch (Exception e) {
-                                    LogUtils.errorf(this, "an error ocurred while saving the data collection configuration: %s", e.getMessage());
+                                    LogUtils.errorf(this, e, "an error ocurred while saving the data collection configuration: %s", e.getMessage());
                                     getApplication().getMainWindow().showNotification("Can't save data collection configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                                 }
                             } else {
                                 getApplication().getMainWindow().showNotification("Cannot delete file " + file, Notification.TYPE_WARNING_MESSAGE);
                             }
-                            */
                         }
                     }
                 });
@@ -190,14 +185,13 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
     }
 
     /**
-     * Creates a data collection group panel.
+     * Adds a data collection group panel.
      *
      * @param dataCollectionDao the OpenNMS data collection configuration DAO
      * @param file data collection group file name
      * @param dcGroup the data collection group object
-     * @return a new data collection group panel object
      */
-    private DataCollectionGroupPanel createDataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionDao, final File file, final DatacollectionGroup dcGroup) {
+    private void addDataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionDao, final File file, final DatacollectionGroup dcGroup) {
         DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dataCollectionDao, dcGroup, new SimpleLogger()) {
             @Override
             public void cancel() {
@@ -214,7 +208,16 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
             }
         };
         panel.setCaption("Data Collection from " + file.getName());
-        return panel;
+        removeDataCollectionGroupPanel();
+        addComponent(panel);
+    }
+
+    /**
+     * Removes the data collection group panel.
+     */
+    private void removeDataCollectionGroupPanel() {
+        if (this.getComponentCount() > 1)
+            this.removeComponent(this.getComponent(1));
     }
 
 }
