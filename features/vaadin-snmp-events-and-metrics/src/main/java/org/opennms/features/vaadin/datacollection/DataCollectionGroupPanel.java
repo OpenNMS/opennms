@@ -190,11 +190,11 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                    "Are you sure?",
-                    MessageBox.Icon.QUESTION,
-                    "Do you really want to override the existig file?<br/>All current information will be lost.",
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                                           "Are you sure?",
+                                           MessageBox.Icon.QUESTION,
+                                           "Do you really want to override the existig file?<br/>All current information will be lost.",
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {
