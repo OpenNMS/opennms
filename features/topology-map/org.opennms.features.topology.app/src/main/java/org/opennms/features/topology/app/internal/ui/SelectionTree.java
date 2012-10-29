@@ -6,10 +6,11 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.VertexContainer;
-import org.opennms.features.topology.app.internal.TopologyComponent;
 import org.opennms.features.topology.app.internal.TopologyComponent.SelectionListener;
+import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Tree;
@@ -41,13 +42,10 @@ public class SelectionTree extends Tree implements SelectionListener{
     }
     
     private final TreeItemClickTracker m_treeItemClickTracker = new TreeItemClickTracker();
-    private final TopologyComponent m_topologyComponent;
     private boolean m_itemClicked = false;
     
-    public SelectionTree(TopologyComponent topoComponent) {
-        super();
-        
-        m_topologyComponent = topoComponent;
+    public SelectionTree(FilterableHierarchicalContainer container) {
+        super(null, container);
         
         this.addListener(new ValueChangeListener() {
             
@@ -84,8 +82,6 @@ public class SelectionTree extends Tree implements SelectionListener{
                 if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
                     m_treeItemClickTracker.setRemove(true);
                 } 
-                
-                m_topologyComponent.requestRepaint();
                 
             }
         });
@@ -140,20 +136,26 @@ public class SelectionTree extends Tree implements SelectionListener{
 
     private void deselectContainerItems(Set<Object> itemsToDeselected) {
         for(Object itemId : itemsToDeselected) {
-            Item item = getContainerDataSource().getItem(itemId);
-            item.getItemProperty("selected").setValue(false);
+            Property property = getContainerDataSource().getContainerProperty(itemId, "selected");
+            property.setValue(false);
         }
     }
 
     private void selectContainerItemAndChildren(Set<Object> itemsToSelect) {
         for(Object itemId : itemsToSelect) {
-            Item item = getContainerDataSource().getItem(itemId);
-            item.getItemProperty("selected").setValue(true);
+            Property property = getContainerDataSource().getContainerProperty(itemId, "selected");
+            property.setValue(true);
             if( hasChildren(itemId) ) {
                 for(Object id : getChildren(itemId)) {
                     select(id);
                 }
             }
         }
+        getContainerDataSource().fireItemUpdated();
+    }
+    
+    @Override
+    public FilterableHierarchicalContainer getContainerDataSource() {
+        return (FilterableHierarchicalContainer) super.getContainerDataSource();
     }
 }

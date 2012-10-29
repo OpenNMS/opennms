@@ -41,5 +41,5 @@ public abstract class VertexContainer<K, T> extends BeanContainer<K,T> implement
     public void fireItemSetChange() {
         super.fireItemSetChange();
     }
-
+    
 }

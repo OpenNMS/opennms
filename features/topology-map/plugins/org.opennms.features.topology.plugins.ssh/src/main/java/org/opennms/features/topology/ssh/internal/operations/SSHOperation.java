@@ -59,7 +59,12 @@ public class SSHOperation implements Operation {
 	}
 
 	public boolean display(List<Object> targets, OperationContext operationContext) {
-	    return true;
+	    if(targets != null && targets.size() > 0 && targets.get(0) != null) {
+	        return true;
+	    } else {
+	        return false;
+	    }
+	    
 	}
 
 	public boolean enabled(final List<Object> targets, final OperationContext operationContext) {

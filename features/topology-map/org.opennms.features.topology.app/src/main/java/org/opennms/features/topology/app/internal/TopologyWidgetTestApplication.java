@@ -81,7 +81,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
-    private boolean m_widgetViewShowing = false;
     
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
@@ -294,21 +293,26 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private Layout createWestLayout() {
         m_tree = createTree();
         
+        
         final TextField filterField = new TextField("Filter");
         filterField.setTextChangeTimeout(200);
         
-        Button filterBtn = new Button("Filter");
         
+        final Button filterBtn = new Button("Filter");
         filterBtn.addListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                FilterableHierarchicalContainer container =  (FilterableHierarchicalContainer) m_tree.getContainerDataSource();
+                FilterableHierarchicalContainer container = m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
                 
                 String filterString = (String) filterField.getValue();
-                if(!filterString.equals("")) {
+                if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
                     container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                    filterBtn.setCaption("Clear");
+                } else {
+                    filterField.setValue("");
+                    filterBtn.setCaption("Filter");
                 }
                 
             }
@@ -336,11 +340,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 	@SuppressWarnings({"unchecked", "serial", "unused"})
     private SelectionTree createTree() {
-	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());	    
+	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		final SelectionTree tree = new SelectionTree(m_topologyComponent);
+		final SelectionTree tree = new SelectionTree(container);
 		tree.setMultiSelect(true);
-		tree.setContainerDataSource(container);
         
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(Vertex.LABEL_PROPERTY);

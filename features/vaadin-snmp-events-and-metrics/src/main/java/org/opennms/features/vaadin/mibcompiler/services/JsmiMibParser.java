@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -370,12 +371,15 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the trap event
      */
     protected Event getTrapEvent(Notification trap, String ueibase) {
-        Event evt = new Event();
+        // Build default severity
+        String severity = OnmsSeverity.INDETERMINATE.toString();
+        severity = severity.substring(0, 1).toUpperCase() + severity.substring(1).toLowerCase();
         // Set the event's UEI, event-label, logmsg, severity, and descr
+        Event evt = new Event();
         evt.setUei(getTrapEventUEI(trap, ueibase));
         evt.setEventLabel(getTrapEventLabel(trap));
         evt.setLogmsg(getTrapEventLogmsg(trap));
-        evt.setSeverity("Indeterminate");
+        evt.setSeverity(severity);
         evt.setDescr(getTrapEventDescr(trap));
         List<Varbindsdecode> decode = getTrapVarbindsDecode(trap);
         if (!decode.isEmpty()) {
