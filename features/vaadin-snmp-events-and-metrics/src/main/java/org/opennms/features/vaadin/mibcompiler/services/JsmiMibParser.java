@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -150,8 +151,8 @@ public class JsmiMibParser implements MibParser, Serializable {
         // Parse MIB
         LogUtils.debugf(this, "Parsing %s", mibFile.getAbsolutePath());
         SmiMib mib = parser.parse();
-        if (parser.getProblemEventHandler().isNotOk()) {
-            LogUtils.infof(this, "Some errors has been found when processing %s", mibFile.getAbsolutePath());
+        if (errorHandler.isNotOk()) {
+            LogUtils.infof(this, "Found errors when processing %s", mibFile.getAbsolutePath());
             // Check for dependencies and update URLs if the MIBs exists on the MIB directory
             missingDependencies = errorHandler.getDependencies();
             for (Iterator<String> it = missingDependencies.iterator(); it.hasNext();) {
@@ -161,7 +162,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     if (f.exists()) {
                         LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
                         try {
-                            inputUrls.add(f.toURI().toURL());
+                            inputUrls.add(0, f.toURI().toURL());
                         } catch (Exception e) {
                             errors = e.getMessage();
                             return false;
@@ -171,12 +172,12 @@ public class JsmiMibParser implements MibParser, Serializable {
                 }
             }
             if (missingDependencies.isEmpty()) {
-                LogUtils.infof(this, "Reparsing all files %s", inputUrls);
+                LogUtils.infof(this, "Re-parsing the following files %s", inputUrls);
                 // All dependencies found, trying again.
                 errorHandler.reset();
                 mib = parser.parse();
-                if (parser.getProblemEventHandler().isNotOk()) {
-                    LogUtils.errorf(this, "Found errors when processing %s: %s", mibFile, errorHandler.getMessages());
+                if (errorHandler.isNotOk()) {
+                    LogUtils.errorf(this, "Found errors when re-processing %s: %s", mibFile, errorHandler.getMessages());
                     return false;
                 }
             } else {
@@ -186,6 +187,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             }
         }
 
+        LogUtils.infof(this, "The MIB %s has been parsed successfully.", mibFile.getAbsolutePath());
         module = getModule(mib, mibFile);
         return module != null;
     }
@@ -369,12 +371,15 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the trap event
      */
     protected Event getTrapEvent(Notification trap, String ueibase) {
-        Event evt = new Event();
+        // Build default severity
+        String severity = OnmsSeverity.INDETERMINATE.toString();
+        severity = severity.substring(0, 1).toUpperCase() + severity.substring(1).toLowerCase();
         // Set the event's UEI, event-label, logmsg, severity, and descr
+        Event evt = new Event();
         evt.setUei(getTrapEventUEI(trap, ueibase));
         evt.setEventLabel(getTrapEventLabel(trap));
         evt.setLogmsg(getTrapEventLogmsg(trap));
-        evt.setSeverity("Indeterminate");
+        evt.setSeverity(severity);
         evt.setDescr(getTrapEventDescr(trap));
         List<Varbindsdecode> decode = getTrapVarbindsDecode(trap);
         if (!decode.isEmpty()) {

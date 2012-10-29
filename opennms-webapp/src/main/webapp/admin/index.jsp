@@ -146,6 +146,9 @@
         <li><a href="admin/sendevent.jsp">Send Event</a></li>
         <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
         <li><a href="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
+        <li><a href="admin/mibCompiler.jsp">SNMP MIB Compiler</a></li>
+        <li><a href="admin/manageEvents.jsp">Manage Events Configuration</a></li>
+        <li><a href="admin/manageSnmpCollections.jsp">Manage SNMP Collections and Data Collection Groups</a></li>
       </ul>
     </div>
 	<div class="boxWrapper">
@@ -246,7 +249,13 @@
             (or any combination of the four) for any interface/node for any time.  
 	</p>
 
+    <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
+      data collection groups for performance metrics.</p>
 
+    <p><b>Manage Events Configuration</b>: Add and edit configuration files for events definitions.</p>
+
+    <p><b>Manage SNMP Collections and Data Collection Groups</b>: Manage SNMP Collections and the content
+      of the files for data collection groups.</p>
 
         <p><b>Add Interface for Scanning</b>: Trigger a scan of an IPv4 or IPv6 interface. If the 
             IP address of the interface is contained in the IP address tables of an existing node, 

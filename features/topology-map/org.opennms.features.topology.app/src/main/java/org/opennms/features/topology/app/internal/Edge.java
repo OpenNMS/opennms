@@ -103,4 +103,8 @@ public class Edge{
     public boolean isSelected() {
         return (Boolean) m_item.getItemProperty(SELECTED_PROPERTY).getValue();
     }
+    
+    public String getCssClass() {
+        return isSelected() ? "path selected" : "path"; 
+    }
 }

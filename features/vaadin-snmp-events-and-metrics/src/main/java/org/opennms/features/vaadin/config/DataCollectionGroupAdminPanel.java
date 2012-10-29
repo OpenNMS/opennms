@@ -28,14 +28,18 @@
 package org.opennms.features.vaadin.config;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.FilesystemContainer;
@@ -47,47 +51,63 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Data Collection Group Administration Panel.
  */
-//TODO When deleting a group, all the SNMP collections must be updated.
+// TODO When deleting a group, all the SNMP collections UI components must be updated.
 @SuppressWarnings("serial")
 public class DataCollectionGroupAdminPanel extends VerticalLayout {
+
+    private String m_selectedGroup;
 
     /**
      * Instantiates a new data collection group administration panel.
      *
      * @param dataCollectionDao the OpenNMS data collection configuration DAO
-     * @param logger the logger
      */
-    public DataCollectionGroupAdminPanel(final DataCollectionConfigDao dataCollectionDao, final Logger logger) {
+    public DataCollectionGroupAdminPanel(final DataCollectionConfigDao dataCollectionDao) {
         setCaption("Data Collection Groups");
-        final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
 
-        final VerticalLayout self = this;
+        final Label comboLabel = new Label("Select Data Collection Group File");
+        toolbar.addComponent(comboLabel);
+        toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
 
+        final VerticalLayout self = this;
+        final File datacollectionDir = new File(ConfigFileConstants.getFilePathString(), "datacollection");
         final ComboBox dcGroupSource = new ComboBox();
         toolbar.addComponent(dcGroupSource);
         dcGroupSource.setImmediate(true);
         dcGroupSource.setNullSelectionAllowed(false);
-        dcGroupSource.setContainerDataSource(new FilesystemContainer(datacollectionDir));
+        dcGroupSource.setContainerDataSource(new XmlFileContainer(datacollectionDir, false));
         dcGroupSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         dcGroupSource.addListener(new ComboBox.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
                 final File file = (File) event.getProperty().getValue();
-                LogUtils.infof(this, "Loading data collection data from %s", file);
-                DatacollectionGroup dcGroup = JaxbUtils.unmarshal(DatacollectionGroup.class, file);
-                self.removeComponent(getComponent(1));
-                self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
+                if (file == null)
+                    return;
+                try {
+                    LogUtils.infof(this, "Loading data collection data from %s", file);
+                    DatacollectionGroup dcGroup = JaxbUtils.unmarshal(DatacollectionGroup.class, file);
+                    m_selectedGroup = dcGroup.getName();
+                    self.removeComponent(getComponent(1));
+                    self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
+                } catch (Exception e) {
+                    getApplication().getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
+                }
             }
         });
 
-        final Button add = new Button("Add File");
+        final Button add = new Button("Add New Data Collection File");
         toolbar.addComponent(add);
         add.addListener(new Button.ClickListener() {
             @Override
@@ -99,7 +119,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                         LogUtils.infof(this, "Adding new data collection file %s", file);
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
                         dcGroup.setName(fieldValue);
-                        self.removeComponent(getComponent(1));
+                        self.removeComponent(self.getComponent(1));
                         self.addComponent(createDataCollectionGroupPanel(dataCollectionDao, file, dcGroup));
                     }
                 };
@@ -107,12 +127,60 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
             }
         });
 
-        final Button remove = new Button("Remove File");
+        final Button remove = new Button("Remove Selected Data Collection File");
         toolbar.addComponent(remove);
         remove.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                getApplication().getMainWindow().showNotification("Not impementet yet!");
+                if (dcGroupSource.getValue() == null) {
+                    getApplication().getMainWindow().showNotification("Please select a data collection group configuration file.");
+                    return;
+                }
+                MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                                               "Are you sure?",
+                                               MessageBox.Icon.QUESTION,
+                                               "Do you really want to remove the file " + dcGroupSource.getValue() + "?<br/>This cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
+                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                mb.addStyleName(Runo.WINDOW_DIALOG);
+                mb.show(new EventListener() {
+                    public void buttonClicked(ButtonType buttonType) {
+                        if (buttonType == MessageBox.ButtonType.YES) {
+                            getApplication().getMainWindow().showNotification("Not implemented yet. Please open a Jira issue for this.");
+                            /*
+                            File file = (File) dcGroupSource.getValue();
+                            LogUtils.infof(this, "deleting file %s", file);
+                            if (file.delete()) {
+                                try {
+                                    File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+                                    DatacollectionConfig config = JaxbUtils.unmarshal(DatacollectionConfig.class, configFile);
+                                    boolean modified = false;
+                                    for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
+                                        for (Iterator<IncludeCollection> it = collection.getIncludeCollectionCollection().iterator(); it.hasNext();) {
+                                            IncludeCollection ic = it.next();
+                                            if (m_selectedGroup != null && m_selectedGroup.equals(ic.getDataCollectionGroup())) {
+                                                it.remove();
+                                                modified = true;
+                                            }
+                                        }
+                                    }
+                                    if (modified) {
+                                        LogUtils.infof(this, "updating data colleciton configuration on %s.", configFile);
+                                        JaxbUtils.marshal(configFile, new FileWriter(configFile));
+                                    }
+                                    dcGroupSource.select(null);
+                                    self.removeComponent(self.getComponent(1));
+                                } catch (Exception e) {
+                                    LogUtils.errorf(this, "an error ocurred while saving the data collection configuration: %s", e.getMessage());
+                                    getApplication().getMainWindow().showNotification("Can't save data collection configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                                }
+                            } else {
+                                getApplication().getMainWindow().showNotification("Cannot delete file " + file, Notification.TYPE_WARNING_MESSAGE);
+                            }
+                            */
+                        }
+                    }
+                });
             }
         });
 

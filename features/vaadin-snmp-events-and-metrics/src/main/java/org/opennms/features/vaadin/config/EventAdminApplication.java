@@ -28,13 +28,17 @@
 package org.opennms.features.vaadin.config;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.events.EventPanel;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.Application;
@@ -50,6 +54,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Event Administration Application.
@@ -94,31 +102,41 @@ public class EventAdminApplication extends Application {
             throw new RuntimeException("eventConfDao cannot be null.");
 
         setTheme(Runo.THEME_NAME);
-        final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
 
         final VerticalLayout layout = new VerticalLayout();
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setMargin(true);
 
+        final Label comboLabel = new Label("Select Events Configuration File");
+        toolbar.addComponent(comboLabel);
+        toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
+
+        final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
         final ComboBox eventSource = new ComboBox();
         toolbar.addComponent(eventSource);
         eventSource.setImmediate(true);
         eventSource.setNullSelectionAllowed(false);
-        eventSource.setContainerDataSource(new FilesystemContainer(eventsDir));
+        eventSource.setContainerDataSource(new XmlFileContainer(eventsDir));
         eventSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         eventSource.addListener(new ComboBox.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
                 final File file = (File) event.getProperty().getValue();
-                LogUtils.infof(this, "Loading events from %s", file);
-                Events events = JaxbUtils.unmarshal(Events.class, file);
-                layout.removeComponent(layout.getComponent(1));
-                layout.addComponent(createEventPanel(file, events));
+                if (file == null)
+                    return;
+                try {
+                    LogUtils.infof(this, "Loading events from %s", file);
+                    Events events = JaxbUtils.unmarshal(Events.class, file);
+                    layout.removeComponent(layout.getComponent(1));
+                    layout.addComponent(createEventPanel(file, events));
+                } catch (Exception e) {
+                    getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
+                }
             }
         });
 
-        final Button add = new Button("Add File");
+        final Button add = new Button("Add New Events File");
         toolbar.addComponent(add);
         add.addListener(new Button.ClickListener() {
             @Override
@@ -137,12 +155,55 @@ public class EventAdminApplication extends Application {
             }
         });
 
-        final Button remove = new Button("Remove File");
+        final Button remove = new Button("Remove Selected Events File");
         toolbar.addComponent(remove);
         remove.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                getMainWindow().showNotification("Not impementet yet!");
+                if (eventSource.getValue() == null) {
+                    getMainWindow().showNotification("Please select an event configuration file.");
+                    return;
+                }
+                MessageBox mb = new MessageBox(getMainWindow(),
+                                               "Are you sure?",
+                                               MessageBox.Icon.QUESTION,
+                                               "Do you really want to remove the file " + eventSource.getValue() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
+                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                mb.addStyleName(Runo.WINDOW_DIALOG);
+                mb.show(new EventListener() {
+                    public void buttonClicked(ButtonType buttonType) {
+                        if (buttonType == MessageBox.ButtonType.YES) {
+                            getMainWindow().showNotification("Not implemented yet. Please open a Jira issue for this.");
+                            /*
+                            File file = (File) eventSource.getValue();
+                            if (file.delete()) {
+                                boolean modified = false;
+                                for (Iterator<String> it = eventConfDao.getRootEvents().getEventFileCollection().iterator(); it.hasNext();) {
+                                    String fileName = it.next();
+                                    if (file.getAbsolutePath().contains(fileName)) {
+                                        it.remove();
+                                        modified = true;
+                                    }
+                                }
+                                if (modified) {
+                                    eventConfDao.saveCurrent();
+                                    EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
+                                    try {
+                                        eventProxy.send(eb.getEvent());
+                                    } catch (EventProxyException e) {
+                                        getMainWindow().showNotification("Cannot send " + eb.getEvent().getUei() + " event.", Notification.TYPE_WARNING_MESSAGE);
+                                    }
+                                }
+                                eventSource.select(null);
+                                layout.removeComponent(layout.getComponent(1));
+                            } else {
+                                getMainWindow().showNotification("Cannot delete file " + file, Notification.TYPE_WARNING_MESSAGE);
+                            }
+                            */
+                        }
+                    }
+                });
             }
         });
 

@@ -66,7 +66,7 @@ public class SnmpCollectionAdminApplication extends Application {
 
         Logger logger = new SimpleLogger();
         SnmpCollectionPanel scAdmin = new SnmpCollectionPanel(dataCollectionDao, logger);
-        DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao, logger);
+        DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao);
 
         TabSheet tabs = new TabSheet();
         tabs.setStyleName(Runo.TABSHEET_SMALL);

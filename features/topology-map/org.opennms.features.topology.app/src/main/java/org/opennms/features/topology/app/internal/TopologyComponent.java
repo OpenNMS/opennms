@@ -60,9 +60,13 @@ import com.vaadin.ui.ClientWidget;
 
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
-	
-	private static final long serialVersionUID = 1L;
 
+    public interface SelectionListener{
+        public void onSelectionUpdate(GraphContainer graphContainer);
+    }
+    
+	private static final long serialVersionUID = 1L;
+	
 	public class MapManager {
 
         private int m_clientX = 0;
@@ -100,6 +104,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private boolean m_fitToView = true;
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
+    private List<SelectionListener> m_selectionListeners;
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new Graph(dataSource));
@@ -231,6 +236,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("source", edge.getSource().getKey());
         	target.addAttribute("target", edge.getTarget().getKey());
         	target.addAttribute("selected", edge.isSelected());
+        	target.addAttribute("cssClass", edge.getCssClass());
         	target.addAttribute("tooltipText", edge.getTooltipText());
 
     		List<String> edgeActionList = new ArrayList<String>();
@@ -321,6 +327,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         });
     }
     
+    /**
+     * Main vaadin method for receiving communication from the Front End
+     * 
+     */
 	@SuppressWarnings("unchecked")
 	@Override
     public void changeVariables(Object source, Map<String, Object> variables) {
@@ -335,6 +345,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             singleSelectEdge(edgeId);
         }
         
+        if(variables.containsKey("deselectAllItems")) {
+            deselectAllEdges();
+            deselectAllVertices();
+            requestRepaint();
+            updateSelectionListeners();
+        }
+        
         if(variables.containsKey("clickedVertex")) {
         	String vertexId = (String) variables.get("clickedVertex");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
@@ -343,6 +360,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	    singleSelectVertex(vertexId);
         	}
         	
+            updateSelectionListeners();
         }
         
         if(variables.containsKey("marqueeSelection")) {
@@ -499,6 +517,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
     }
     
+    /**
+     * Select multiple vertices at a time
+     * @param vertexIds
+     */
     private void bulkMultiSelectVertex(String[] vertexIds) {
         for(String vertexId : vertexIds) {
             Vertex vertex = getGraph().getVertexByKey((String)vertexId);
@@ -507,6 +529,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         requestRepaint();
     }
+    
     private void multiSelectVertex(String vertexId) {
         toggleSelectedVertex(vertexId);
     }
@@ -516,6 +539,15 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		if(vertex != null) {
 		    vertex.setSelected(!vertex.isSelected());
 		}
+		
+		if(m_graphContainer.getVertexContainer().hasChildren(vertex.getItemId())) {
+		    Collection<?> children = m_graphContainer.getVertexContainer().getChildren(vertex.getItemId());
+		    for( Object childId : children) {
+		        Vertex v = getGraph().getVertexByItemId(childId);
+		        v.setSelected(true);
+		    }
+		}
+		
 		m_graphContainer.getVertexContainer().fireItemSetChange();
 		setFitToView(false);
 		requestRepaint();
@@ -535,7 +567,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         requestRepaint();
     }
 
-	public void setScale(double scale){
+    
+	protected void setScale(double scale){
 	    m_scale.setValue(scale);
     }
     
@@ -553,7 +586,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 	
 	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
-        m_menuItemStateListener .add(listener);
+        m_menuItemStateListener.add(listener);
     }
 	
 	public void removeMenuItemStateListener(MenuItemUpdateListener listener) {
@@ -571,7 +604,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 	
 	public void setContainerDataSource(GraphContainer graphContainer) {
-		m_graph.setDataSource(graphContainer);
+		getGraph().setDataSource(graphContainer);
 		m_graphContainer = graphContainer;
 		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
 		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
@@ -581,13 +614,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
 	public void containerItemSetChange(ItemSetChangeEvent event) {
-		m_graph.update();
+		getGraph().update();
 		setFitToView(true);
 		requestRepaint();
 	}
 
 	public void containerPropertySetChange(PropertySetChangeEvent event) {
-		m_graph.update();
+		getGraph().update();
 		requestRepaint();
 	}
 
@@ -627,6 +660,31 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             requestRepaint();
         }
     }
+
+    public Collection<?> getItemIdsForSelectedVertices() {
+        Collection<?> vItemIds = m_graphContainer.getVertexContainer().getItemIds();
+        List<Object> selectedIds = new ArrayList<Object>(); 
+        
+        for(Object itemId : vItemIds) {
+            if(getGraph().getVertexByItemId(itemId).isSelected()) {
+                selectedIds.add(itemId);
+            }
+        }
+        
+        return selectedIds;
+    }
    
+    public void addSelectionListener(SelectionListener listener) {
+        if(m_selectionListeners == null) {
+            m_selectionListeners = new ArrayList<SelectionListener>();
+        }
+        m_selectionListeners.add(listener);
+    }
+    
+    public void updateSelectionListeners() {
+        for(SelectionListener listener : m_selectionListeners) {
+            listener.onSelectionUpdate(m_graphContainer);
+        }
+    }
 
 }

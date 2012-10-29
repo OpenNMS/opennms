@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -44,25 +45,12 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class AvailabilityMonitorTest extends TestCase {
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
+public class AvailabilityMonitorTest {
 
     /**
      * Test method for {@link org.opennms.netmgt.poller.monitors.AvailabilityMonitor#poll(org.opennms.netmgt.poller.MonitoredService, Map)}.
      */
+    @Test
     public final void testPoll() {
         ServiceMonitor sm = new AvailabilityMonitor();
         Map<String, Object> parameters = new HashMap<String, Object>();

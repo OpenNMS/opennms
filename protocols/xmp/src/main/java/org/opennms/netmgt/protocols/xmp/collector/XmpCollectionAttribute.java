@@ -162,4 +162,9 @@ implements CollectionAttribute
      */
     public String getStringValue() { return aVar.getValue(); }
 
+    @Override
+    public String getMetricIdentifier() {
+        return "Not supported yet._" + "XMP_" + getName();
+    }
+
 }

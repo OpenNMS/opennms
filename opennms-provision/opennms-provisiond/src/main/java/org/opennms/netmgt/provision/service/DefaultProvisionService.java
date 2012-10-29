@@ -996,7 +996,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         for(final PluginConfig config : configs) {
             final T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
             if (plugin == null) {
-				debugf(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
+                LogUtils.tracef(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
             } else {
                 plugins.add(plugin);
             }

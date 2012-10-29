@@ -329,8 +329,15 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     private Color getColor(final String colorValue) {
-        int colorVal = Integer.parseInt(colorValue, 16);
-        return new Color(colorVal);
+        int rVal = Integer.parseInt(colorValue.substring(0, 2), 16);
+        int gVal = Integer.parseInt(colorValue.substring(2, 4), 16);
+        int bVal = Integer.parseInt(colorValue.substring(4, 6), 16);
+        if (colorValue.length() == 6) {
+            return new Color(rVal, gVal, bVal);
+        }
+
+        int aVal = Integer.parseInt(colorValue.substring(6, 8), 16);
+        return new Color(rVal, gVal, bVal, aVal);
     }
 
     // For compatibility with RRDtool defs, the colour value for
@@ -743,22 +750,22 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /**
-     * @param colorArg Should have the form COLORTAG#RRGGBB
+     * @param colorArg Should have the form COLORTAG#RRGGBB[AA]
      * @see http://www.jrobin.org/support/man/rrdgraph.html
      */
     private void parseGraphColor(final RrdGraphDef graphDef, final String colorArg) throws IllegalArgumentException {
-        // Parse for format COLORTAG#RRGGBB
+        // Parse for format COLORTAG#RRGGBB[AA]
         String[] colorArgParts = tokenize(colorArg, "#", false);
         if (colorArgParts.length != 2) {
-            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB");
+            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB[AA]");
         }
 
         String colorTag = colorArgParts[0].toUpperCase();
         String colorHex = colorArgParts[1].toUpperCase();
 
         // validate hex color input is actually an RGB hex color value
-        if (colorHex.length() != 6) {
-            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB");
+        if (colorHex.length() != 6 && colorHex.length() != 8) {
+            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB[AA]");
         }
 
         // this might throw NumberFormatException, but whoever wrote

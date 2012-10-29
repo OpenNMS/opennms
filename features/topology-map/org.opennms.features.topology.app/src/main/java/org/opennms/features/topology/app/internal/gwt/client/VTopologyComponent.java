@@ -540,7 +540,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
     			
     		case Event.ONCLICK:
     		    if(event.getEventTarget().equals(m_svg)) {
-    		        deselectVertices(true);
+    		        deselectAllItems(true);
     		    }
     		    break;
 		}
@@ -548,13 +548,8 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	}
 
-	private void deselectVertices(boolean immediate) {
-	    m_client.updateVariable(m_paintableId, "clickedVertex", "", false);
-        m_client.updateVariable(m_paintableId, "shiftKeyPressed", false, false);
-	    if(immediate) {
-	        m_client.sendPendingVariableChanges();
-	    }
-	    
+	private void deselectAllItems(boolean immediate) {
+	    m_client.updateVariable(m_paintableId, "deselectAllItems", true, immediate);
     }
 
     private Handler<GWTVertex> vertexContextMenuHandler() {
@@ -691,7 +686,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			    
 			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
 			        if(!D3.getEvent().getShiftKey()) {
-			            deselectVertices(false);
+			            deselectAllItems(false);
 			        }
 			    }
 			    
@@ -775,6 +770,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		Iterator<?> children = graph.getChildIterator();
 
 		GWTGraph graphConverted = GWTGraph.create();
+		GWTVertex.setBackgroundImage(client.translateVaadinUri("theme://images/vertex_circle_selector.png"));
 		while(children.hasNext()) {
 			UIDL child = (UIDL) children.next();
 
@@ -832,9 +828,11 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 				GWTVertex source = graphConverted.findVertexById(child.getStringAttribute("source"));
 				GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), source, graphConverted.findVertexById( child.getStringAttribute("target") ));
 				boolean selected = child.getBooleanAttribute("selected");
+				String cssClass = child.getStringAttribute("cssClass");
 				String[] actionKeys = child.getStringArrayAttribute("actionKeys");
 				edge.setActionKeys(actionKeys);
 				edge.setSelected(selected);
+				edge.setCssClass(cssClass);
 				graphConverted.addEdge(edge);
 
 				if(m_client != null) {
@@ -1132,7 +1130,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
                    
         String transformVal = matrixTransform(transform);
         
-        final double strokeWidth = 2 * (1/scale);
+        final double strokeWidth = 5 * (1/scale);
         //D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
         
         D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {

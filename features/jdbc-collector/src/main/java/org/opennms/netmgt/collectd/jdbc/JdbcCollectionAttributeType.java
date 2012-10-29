@@ -67,8 +67,4 @@ public class JdbcCollectionAttributeType implements CollectionAttributeType {
         return m_column.getDataType();
     }
 
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "JDBC_" + getName();
-    }
 }

@@ -25,5 +25,6 @@
   </repositories>
   <modules>
     <module>snmp</module>
+    <module>tca</module>
   </modules>
 </project>

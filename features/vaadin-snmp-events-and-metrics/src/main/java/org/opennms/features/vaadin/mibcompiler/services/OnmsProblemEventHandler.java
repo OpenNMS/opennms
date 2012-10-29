@@ -27,7 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler.services;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +45,7 @@ import org.jsmiparser.util.problem.ProblemEvent;
 import org.jsmiparser.util.problem.ProblemEventHandler;
 import org.jsmiparser.util.problem.ProblemReporterFactory;
 import org.jsmiparser.util.problem.annotations.ProblemSeverity;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * The Implementation of the ProblemEventHandler interface for OpenNMS.
@@ -49,8 +54,11 @@ import org.jsmiparser.util.problem.annotations.ProblemSeverity;
  */
 public class OnmsProblemEventHandler implements ProblemEventHandler {
 
+    /** The Constant FILE_PREFIX. */
+    private static final String FILE_PREFIX = "file://";
+
     /** The Constant DEPENDENCY_PATERN. */
-    private static final Pattern DEPENDENCY_PATERN = Pattern.compile("Cannot find module file:([^:]+):([^:]+):([^:]+):(.+)", Pattern.MULTILINE);
+    private static final Pattern DEPENDENCY_PATERN = Pattern.compile("Cannot find module ([^,]+)", Pattern.MULTILINE);
 
     /** The severity counters. */
     private int[] m_severityCounters = new int[ProblemSeverity.values().length];
@@ -121,7 +129,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     }
 
     /**
-     * Prints the.
+     * Prints the error message
      *
      * @param stream the stream
      * @param sev the severity
@@ -129,8 +137,48 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @param localizedMessage the localized message
      */
     private void print(PrintStream stream, String sev, Location location, String localizedMessage) {
-        String loc = location != null ? location.toString() : null;
-        stream.println(sev + ": file://" + loc + " :" + localizedMessage);
+        LogUtils.debugf(this, "[%s] Location: %s, Message: %s", sev, location, localizedMessage);
+        int n = localizedMessage.indexOf(FILE_PREFIX);
+        if (n > 0) {
+            String source = localizedMessage.substring(n).replaceAll(FILE_PREFIX, "");
+            String message = localizedMessage.substring(0,n) + source.split(":")[3];
+            processMessage(stream, sev, source, message);
+        } else {
+            if (location == null) {
+                stream.println(sev + ": " + localizedMessage);
+            } else {
+                String source = location.toString().replaceAll(FILE_PREFIX, "");
+                String message = localizedMessage;
+                processMessage(stream, sev, source, message);
+            }
+        }
+    }
+
+    /**
+     * Process the error message
+     *
+     * @param stream the stream
+     * @param sev the severity
+     * @param source the location source
+     * @param message the message
+     */
+    // TODO This implementation might be expensive.
+    private void processMessage(PrintStream stream, String sev, String source, String message) {
+        String[] data = source.split(":");
+        File file = new File(data[0]);
+        stream.println(sev + ": " + message + ", Source: " + file.getName() + ", Row: " + data[1] + ", Col: " + data[2]);
+        try {
+            FileInputStream fs= new FileInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fs));
+            int line = Integer.parseInt(data[1]);
+            for(int i = 1; i < line; i++)
+                br.readLine();
+            stream.println(br.readLine());
+            br.close();
+            stream.println(String.format("%" + data[2] + "s", "^"));
+        } catch (Exception e) {
+            LogUtils.warnf(this, "Can't retrieve line %s from file %", data[1], file);
+        }
     }
 
     /**
@@ -152,7 +200,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
         if (m_outputStream.size() > 0) {
             Matcher m = DEPENDENCY_PATERN.matcher(m_outputStream.toString());
             while (m.find()) {
-                final String dep = m.group(4);
+                final String dep = m.group(1);
                 if (!dependencies.contains(dep))
                     dependencies.add(dep);
             }

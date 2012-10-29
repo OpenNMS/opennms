@@ -516,6 +516,13 @@
       <type>tar.gz</type>
       <classifier>etc</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>all</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
   </dependencies>
 
   <repositories>

@@ -3,7 +3,7 @@
 
   <reference id="snmpStrategy" interface="org.opennms.netmgt.snmp.SnmpStrategy" availability="mandatory" />
 
-  <bean id="snmpProtocolCollector" class="org.opennms.nrtg.protocolcollector.snmp.internal.SnmpChunkProtocolCollector">
+  <bean id="snmpProtocolCollector" class="org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector">
     <property name="snmpStrategy" ref="snmpStrategy"/>
   </bean>
   

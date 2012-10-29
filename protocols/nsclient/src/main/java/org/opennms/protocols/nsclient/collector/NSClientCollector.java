@@ -116,10 +116,6 @@ public class NSClientCollector implements ServiceCollector {
             return m_attribute.getType();
         }
 
-        @Override
-        public String getAttributeId() {
-            return "Not supported yet._" + "NSC_" + getName();
-        }
     }
     
     class NSClientCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
@@ -175,6 +171,11 @@ public class NSClientCollector implements ServiceCollector {
         @Override
         public String toString() {
             return "NSClientCollectionAttribute " + m_alias+"=" + m_value;
+        }
+
+        @Override
+        public String getMetricIdentifier() {
+            return "Not supported yet._" + "NSC_" + getName();
         }
         
     }

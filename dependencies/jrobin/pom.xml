@@ -14,10 +14,23 @@
     <dependency>
       <groupId>org.jrobin</groupId>
       <artifactId>jrobin</artifactId>
-      <version>1.5.14</version>
+      <version>1.5.15-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <repositories>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Maven Snapshot Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
     <repository>
       <snapshots>
         <enabled>false</enabled>

@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -189,11 +190,11 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                    "Are you sure?",
-                    MessageBox.Icon.QUESTION,
-                    "Do you really want to override the existig file?<br/>All current information will be lost.",
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                    new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                                           "Are you sure?",
+                                           MessageBox.Icon.QUESTION,
+                                           "Do you really want to override the existig file?<br/>All current information will be lost.",
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {
@@ -204,6 +205,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             });
         } else {
             saveFile(file, dcGroup, logger);
+            // Force reload datacollection-config.xml to be able to configure SNMP collections.
+            try {
+                final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+                configFile.setLastModified(System.currentTimeMillis());
+            } catch (IOException e) {
+                logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());
+            }
         }
     }
 

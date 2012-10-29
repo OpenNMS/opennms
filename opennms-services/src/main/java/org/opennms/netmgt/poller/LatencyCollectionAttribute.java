@@ -128,4 +128,9 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
     public void visit(CollectionSetVisitor visitor) {
     }
 
+    @Override
+    public String getMetricIdentifier() {
+        return "Not_Supported_Yet_Poller_Latency_"+getName();
+    }
+
 }

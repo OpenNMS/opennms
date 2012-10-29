@@ -28,14 +28,19 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.jsmiparser.parser.SmiDefaultParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
+import org.opennms.features.vaadin.mibcompiler.services.OnmsProblemEventHandler;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
@@ -77,24 +82,43 @@ public class JsmiMibParserTest {
             Assert.assertTrue(parser.getMissingDependencies().isEmpty());
             Assert.assertNull(parser.getFormattedErrors());
         } else {
-            Assert.fail();
+            Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
     /**
-     * Test bad MIB.
+     * Test a MIB with missing dependencies.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testBadMib() throws Exception {
+    public void testMissingDependencies() throws Exception {
         if (parser.parseMib(new File(MIB_DIR, "SONUS-COMMON-MIB.txt"))) {
-            Assert.fail();
+            Assert.fail("The SONUS-COMMON-MIB.txt file contains unsatisfied dependencies, so the MIB parser must generate errors.");
         } else {
             List<String> dependencies = parser.getMissingDependencies();
             Assert.assertEquals(2, dependencies.size());
             Assert.assertNotNull(parser.getFormattedErrors());
             Assert.assertEquals("[SONUS-SMI, SONUS-TC]", dependencies.toString());
+        }
+    }
+
+    /**
+     * Test a MIB with internal errors.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @Ignore
+    // This test requires changes on jsmiparser library.
+    public void testMibWithErrors() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "NET-SNMP-MIB.txt"))) {
+            Assert.fail("The NET-SNMP-MIB.txt file contains errors, so the MIB parser must generate errors.");
+        } else {
+            Assert.assertTrue(parser.getMissingDependencies().isEmpty());
+            String errors = parser.getFormattedErrors();
+            Assert.assertNotNull(errors);
+            System.err.println(errors);
         }
     }
 
@@ -138,7 +162,7 @@ public class JsmiMibParserTest {
                     Assert.assertEquals(7, vb.getDecodeCount());
             }
         } else {
-            Assert.fail();
+            Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
@@ -180,7 +204,7 @@ public class JsmiMibParserTest {
                     Assert.assertEquals(6, vb.getDecodeCount());
             }
         } else {
-            Assert.fail();
+            Assert.fail("The RFC1269-MIB.txt file couldn't be parsed successfully.");
         }
     }
 
@@ -210,7 +234,54 @@ public class JsmiMibParserTest {
                 Assert.assertTrue(mo.getType().matches("^([Ii]nteger|[Gg]auge|[Ss]tring|[Oo]ctet[Ss]tring|[Cc]ounter).*"));
             }
         } else {
+            Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
+        }
+    }
+
+    /**
+     * Test a MIB with internal syntax errors (or invalid content).
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @Ignore
+    // This test requires changes on jsmiparser library.
+    public void testMibWithInvalidContent() throws Exception {
+        SmiDefaultParser parser = new SmiDefaultParser();
+        OnmsProblemEventHandler errorHandler = new OnmsProblemEventHandler(parser);
+        List<URL> inputUrls = new ArrayList<URL>();
+        try {
+            inputUrls.add(new File(MIB_DIR, "SNMPv2-SMI.txt").toURI().toURL());
+            inputUrls.add(new File(MIB_DIR, "NET-SNMP-MIB.txt").toURI().toURL());
+        } catch (Exception e) {
             Assert.fail();
+        }
+        parser.getFileParserPhase().setInputUrls(inputUrls);
+        parser.parse();
+        if (parser.getProblemEventHandler().isNotOk()) {
+            Assert.assertEquals(6, parser.getProblemEventHandler().getTotalCount());
+            Assert.assertTrue(errorHandler.getDependencies().isEmpty());
+            Assert.assertNotNull(errorHandler.getMessages());
+            System.err.println(errorHandler.getMessages());
+        } else {
+            Assert.fail("The NET-SNMP-MIB.txt file contains errors, so the MIB parser must generate errors.");
+        }
+    }
+
+    /**
+     * Test a MIB with internal syntax errors (or invalid content).
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testBadIfMib() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "IF-MIB-BAD.txt"))) {
+            Assert.fail();
+        } else {
+            Assert.assertEquals(0, parser.getMissingDependencies().size());
+            String errors = parser.getFormattedErrors();
+            Assert.assertNotNull(errors);
+            System.err.println(errors);
         }
     }
 
