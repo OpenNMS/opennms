@@ -62,7 +62,6 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
     private String m_collectionName;
     private ResourceType m_resourceType;
     private AttributeGroupType m_groupType;
-    private String m_attributeId;
 
     /**
      * <p>Constructor for SnmpAttributeType.</p>
@@ -245,7 +244,6 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
      */
     public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpResult res) {
         log().debug("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
-        this.m_attributeId = res.getAbsoluteInstance().toString();
         SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
             resource = m_resourceType.findAliasedResource(res.getInstance(), res.getValue().toString());
@@ -326,8 +324,4 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
         }
     }
 
-    @Override
-    public String getAttributeId() {
-        return "SNMP_".concat(this.m_attributeId);
-    }
 }

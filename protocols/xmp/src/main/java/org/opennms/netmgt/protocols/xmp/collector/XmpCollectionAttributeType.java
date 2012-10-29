@@ -156,9 +156,4 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
     @Override
     public String toString() { return "XmpCollectionAttributeType "+Xmp.syntaxToString(aVar.getSyntax()); }
 
-    @Override
-    public String getAttributeId() {
-        return "Not supported yet._" + "XMP_" + getName();
-    }
-
 } /* class XmpCollectionAttributeType */

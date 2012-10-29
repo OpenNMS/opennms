@@ -441,8 +441,8 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getAttributeId() {
-            return "Not supported yet._" + "HTTP_" + m_attribType.getName();
+        public String getMetricIdentifier() {
+            return "Not_Supported_Yet_HTTP_"+getAttributeType().getName();
         }
 
     }
@@ -925,11 +925,6 @@ public class HttpCollector implements ServiceCollector {
         @Override
         public String getType() {
             return m_attribute.getType();
-        }
-
-        @Override
-        public String getAttributeId() {
-            return "Not supported yet_" + "HTTP_" + getName();
         }
 
     }

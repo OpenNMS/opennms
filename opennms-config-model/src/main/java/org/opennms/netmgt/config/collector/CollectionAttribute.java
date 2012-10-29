@@ -63,6 +63,13 @@ public interface CollectionAttribute {
      * @return a name
      */
     public String getName();
+    
+    /**
+     * Get the metric identifier for the attribute to be used for NRTG collection
+     * 
+     * @return the metric identifier
+     */
+    public String getMetricIdentifier();
 
     
     /**

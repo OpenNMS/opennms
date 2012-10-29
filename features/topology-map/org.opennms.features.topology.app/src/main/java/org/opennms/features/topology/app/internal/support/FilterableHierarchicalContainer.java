@@ -46,6 +46,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.HierarchicalContainer;
 
+@SuppressWarnings("serial")
 public class FilterableHierarchicalContainer extends HierarchicalContainer implements ItemSetChangeListener {
 
     VertexContainer<?, ?> m_container;
@@ -61,6 +62,14 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
         super();
         m_container = container;
         m_container.addListener(this);
+        m_container.addListener(new PropertySetChangeListener() {
+
+            @Override
+            public void containerPropertySetChange(PropertySetChangeEvent event) {
+                event.getContainer();
+                
+            }
+        });
     }
 
  @Override
@@ -127,7 +136,6 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
 
     @Override
     public boolean removeAllItems() throws UnsupportedOperationException {
-        
         return false;
     }
 
@@ -332,5 +340,9 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
         fireItemSetChange();
     }
     
+
+    public void fireItemUpdated() {
+        m_container.fireItemSetChange();
+    }
 
 }

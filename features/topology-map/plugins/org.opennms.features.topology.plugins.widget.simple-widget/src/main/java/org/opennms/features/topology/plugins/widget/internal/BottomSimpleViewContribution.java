@@ -1,0 +1,26 @@
+package org.opennms.features.topology.plugins.widget.internal;
+
+import org.opennms.features.topology.api.IViewContribution;
+
+import com.vaadin.terminal.Resource;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+
+public class BottomSimpleViewContribution implements IViewContribution {
+
+    @Override
+    public Component getView() {
+        return new Label("This is a test for the bottom view");
+    }
+
+    @Override
+    public String getTitle() {
+        return "Test Widget";
+    }
+
+    @Override
+    public Resource getIcon() {
+        return null;
+    }
+
+}

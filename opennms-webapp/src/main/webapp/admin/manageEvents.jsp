@@ -35,11 +35,11 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Events Administration" />
-  <jsp:param name="headTitle" value="Manage Events" />
+  <jsp:param name="title" value="Manage Events Configuration" />
+  <jsp:param name="headTitle" value="Manage Events Configuration" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Manage Events" />
+  <jsp:param name="breadcrumb" value="Manage Events Configuration" />
   <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 

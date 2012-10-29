@@ -40,12 +40,6 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
 
     private String[] m_columns;
     
-    /**
-     * MetricIds matching the columns
-     * TODO put columns and metricIds in one structure
-     */
-    private String[] m_metricIds;
-
     private String m_command;
 
     private String[] m_externalValues;
@@ -233,14 +227,6 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     public String[] getSuppress() {
         return m_suppress;
     }
-
-    public String[] getMetricIds() {
-        return m_metricIds;
-    }
-
-    public void setMetricIds(String[] m_metricIds) {
-        this.m_metricIds = m_metricIds;
-    }
     
     /**
      * <p>compareTo</p>
@@ -248,6 +234,7 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
      * @param other a {@link org.opennms.netmgt.model.PrefabGraph} object.
      * @return a int.
      */
+    @Override
     public int compareTo(PrefabGraph other) {
         if (other == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

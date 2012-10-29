@@ -60,16 +60,6 @@
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
 
-<style type="text/css">
-	#notificationDisabled{
-		border: 1px solid red;
-		background-color: lightyellow;
-		color: red;
-		padding: 5px;
-		margin-top: 10px;
-	}
-</style>
-
 <h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
 	<ul class="plain o-box">
@@ -100,23 +90,5 @@
         	   status = NotifdConfigFactory.getInstance().getPrettyStatus();
         	} catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
         %>
-
-		<li <%=(status.equals("Off") ? "id=\"notificationDisabled\"" : "")%>>
-			
-        	<strong>Notification Status</strong>:
-        	<%if (status.equals("Unknown")) { %>
-          		Unknown<br />
-        	<% }else{ %>
-        		<%=(status.equals("On") ? "Aktiv" : "")%>
-        		<%=(status.equals("Off") ? "Inaktiv" : "")%>
-        	<% } %>
-		</li>
-		
-        
-        <%if (status.equals("Unknown")) { %>
-          Unknown<br />
-        <% } %>
-
-
 	</ul>
 </div>

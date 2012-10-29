@@ -79,4 +79,9 @@ public class JdbcCollectionAttribute extends AbstractCollectionAttribute impleme
         return "JdbcCollectionAttribute " + m_alias+"=" + m_value;
     }
 
+    @Override
+    public String getMetricIdentifier() {
+        return "Not supported yet._" + "JDBC_" + getName();
+    }
+
 }

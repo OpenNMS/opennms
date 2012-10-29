@@ -62,6 +62,16 @@ public class PingOperation extends AbstractOperation {
             operationContext.getMainWindow().addWindow(new PingWindow(node, getPingURL()));
             return null;
 	}
+	
+	@Override
+    public boolean display(final List<Object> targets, final OperationContext operationContext) {
+        if(targets != null && targets.size() > 0 && targets.get(0) != null) {
+            return true;
+        }else {
+            return false;
+        }
+        
+    }
 
 	public String getId() {
 	    return "ping";

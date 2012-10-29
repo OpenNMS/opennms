@@ -35,11 +35,11 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="SNMP Collections Administration" />
-  <jsp:param name="headTitle" value="Manage SNMP Collections" />
+  <jsp:param name="title" value="Manage SNMP Collections and Data Collection Groups" />
+  <jsp:param name="headTitle" value="Manage SNMP Collections and Data Collection Groups" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Manage SNMP Collections" />
+  <jsp:param name="breadcrumb" value="Manage SNMP Collections and Data Collection Groups" />
   <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 

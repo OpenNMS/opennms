@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
@@ -97,8 +96,8 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         valueField.setNullSelectionAllowed(false);
 
         final ComboBox typeField = new ComboBox("Type");
-        typeField.setImmediate(true);
         typeField.setRequired(true);
+        typeField.setImmediate(true);
         typeField.setNewItemsAllowed(false);
         typeField.setNullSelectionAllowed(false);
         typeField.addItem(IncludeCollectionWrapper.DC_GROUP);
@@ -111,19 +110,19 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
                     return;
                 }
                 // Get available fields.
+                // FIXME If a new dcGroup is added, DataCollectionConfigDao is not able to reach it.
                 List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
-                        : dataCollectionConfigDao.getAvailableDataCollectionGroups();
-                // Create blacklist
-                List<String> blacklist = new ArrayList<String>();
+                    : dataCollectionConfigDao.getAvailableDataCollectionGroups();
+                // Remove already selected
                 for (IncludeCollectionWrapper obj : container.getItemIds()) {
-                    if (obj.getType().equals(selected))
-                        blacklist.add(obj.getValue());
+                    if (obj.getType().equals(selected)) {
+                        values.remove(obj.getValue());
+                    }
                 }
                 // Updating combo-box
                 valueField.removeAllItems();
                 for (String v : values) {
-                    if (!blacklist.contains(v))
-                        valueField.addItem(v);
+                    valueField.addItem(v);
                 }
                 if (wrapper.getValue() != null) {
                     valueField.addItem(wrapper.getValue());

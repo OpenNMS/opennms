@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+
 import com.vaadin.data.Item;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -66,13 +68,9 @@ public final class EventFormFieldFactory implements FormFieldFactory {
         }
         if ("severity".equals(propertyId)) {
             final ComboBox severity = new ComboBox("Severity");
-            severity.addItem("Indeterminate");
-            severity.addItem("Clear");
-            severity.addItem("Normal");
-            severity.addItem("Warning");
-            severity.addItem("Minor");
-            severity.addItem("Mayor");
-            severity.addItem("Critical");
+            for (String sev : OnmsSeverity.names()) {
+                severity.addItem(sev.substring(0, 1).toUpperCase() + sev.substring(1).toLowerCase());
+            }
             severity.setNullSelectionAllowed(false);
             severity.setRequired(true);
             return severity;
