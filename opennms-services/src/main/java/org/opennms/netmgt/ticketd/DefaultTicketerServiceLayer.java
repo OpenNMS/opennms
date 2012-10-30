@@ -233,6 +233,15 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 		m_alarmDao.saveOrUpdate(alarm);
 	}
     
+    /*
+    * (non-Javadoc)
+    * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#reloadTicketer()
+    */
+    /** {@inheritDoc} */
+    public void reloadTicketer() {
+        // Do nothing
+    }
+    
     // TODO what if the alarm doesn't exist?
 	
 	private Event createEvent(String reason) {

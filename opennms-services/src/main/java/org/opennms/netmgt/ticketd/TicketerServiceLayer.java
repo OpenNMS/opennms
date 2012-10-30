@@ -72,5 +72,10 @@ public interface TicketerServiceLayer {
 	 * @param ticketId a {@link java.lang.String} object.
 	 */
 	public void cancelTicketForAlarm(int alarmId, String ticketId);
-
+    
+	/**
+	 * Implement to reload ticketer when requested.
+	 *
+	 */
+	public void reloadTicketer();
 }
