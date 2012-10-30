@@ -7,6 +7,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.SelectionListener;
 import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
 
@@ -165,7 +166,7 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
     public abstract String getTitle();
 
     @Override
-    public Component getView() {
+    public Component getView(WidgetContext widgetContext) {
         return this;
     }
 }
