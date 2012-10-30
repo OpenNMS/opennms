@@ -138,6 +138,9 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
             if (iface.getNode() == null && iface.getNodeId() != null) {
                 iface.setNode(m_nodeDao.get(iface.getNodeId()));
             }
+            if (iface.getSource() == null) {
+                iface.setSource("rest");
+            }
             LogUtils.debugf(this, "addOrReplaceDataLinkInterface: Adding data link interface %s", iface);
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
             return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getLink").build(iface.getId())).build();
