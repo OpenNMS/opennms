@@ -102,13 +102,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Save Data Collection File", new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-                DatacollectionGroup dcGroup = getOnmsDataCollection();
-                if (dataCollectionConfigDao.getAvailableDataCollectionGroups().contains(dcGroup.getName())) {
-                    getApplication().getMainWindow().showNotification("There is a group with the same name, please pick another one.");
-                } else {
-                    processDataCollection(getOnmsDataCollection(), logger);
-                    logger.info("The data collection have been saved.");
-                }
+                processDataCollection(dataCollectionConfigDao, logger);
             }
         }));
         toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
@@ -182,10 +176,11 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     /**
      * Process data collection.
      *
-     * @param dcGroup the OpenNMS Data Collection Group
+     * @param dataCollectionConfigDao the OpenNMS data collection configuration DAO
      * @param logger the logger
      */
-    private void processDataCollection(final DatacollectionGroup dcGroup, final Logger logger) {
+    private void processDataCollection(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
+        final DatacollectionGroup dcGroup = getOnmsDataCollection();
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
@@ -204,13 +199,10 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
                 }
             });
         } else {
-            saveFile(file, dcGroup, logger);
-            // Force reload datacollection-config.xml to be able to configure SNMP collections.
-            try {
-                final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
-                configFile.setLastModified(System.currentTimeMillis());
-            } catch (IOException e) {
-                logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());
+            if (dataCollectionConfigDao.getAvailableDataCollectionGroups().contains(dcGroup.getName())) {
+                getApplication().getMainWindow().showNotification("There is a group with the same name, please pick another one.");
+            } else {
+                saveFile(file, dcGroup, logger);
             }
         }
     }
@@ -228,6 +220,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             JaxbUtils.marshal(dcGroup, writer);
             logger.info("Saving XML data into " + file.getAbsolutePath());
             logger.warn("Remember to update datacollection-config.xml to include the group " + dcGroup.getName() + " and restart OpenNMS.");
+            // Force reload datacollection-config.xml to be able to configure SNMP collections.
+            try {
+                final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+                configFile.setLastModified(System.currentTimeMillis());
+            } catch (IOException e) {
+                logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());
+            }
             success();
         } catch (Exception e) {
             logger.error(e.getMessage());
