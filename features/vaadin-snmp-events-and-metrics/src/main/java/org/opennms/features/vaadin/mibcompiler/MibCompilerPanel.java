@@ -45,12 +45,17 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
+
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
+import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class MIB Compiler Panel.
@@ -165,6 +170,9 @@ public class MibCompilerPanel extends Panel {
         mibsContainer = new HierarchicalContainer();
         mibsTree = new Tree("MIB Tree");
         initMibTree(logger);
+        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>");
+        label.setContentMode(Label.CONTENT_XHTML);
+        addComponent(label);
         addComponent(mibsTree);
 
         // Panel Setup
@@ -208,22 +216,36 @@ public class MibCompilerPanel extends Panel {
                     return new Action[] {};
                 }
                 if (parent.equals(COMPILED)) {
-                    return new Action[] { ACTION_EVENTS, ACTION_COLLECT };
+                    return new Action[] { ACTION_EVENTS, ACTION_COLLECT, ACTION_DELETE };
                 } else {
                     return new Action[] { ACTION_EDIT, ACTION_DELETE, ACTION_COMPILE };
                 }
             }
 
             public void handleAction(Action action, Object sender, Object target) {
-                String fileName = (String) target;
+                final String fileName = (String) target;
                 if (action == ACTION_DELETE) {
-                    File file = new File(MIBS_PENDING_DIR, fileName);
-                    if (file.delete()) {
-                        mibsContainer.removeItem(target);
-                        logger.info("MIB " + file + " has been successfully removed.");
-                    } else {
-                        getApplication().getMainWindow().showNotification("Can't delete " + file);
-                    }
+                    MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                                                   "Are you sure?",
+                                                   MessageBox.Icon.QUESTION,
+                                                   "Do you really want to delete " + fileName + "?<br/>This cannot be undone.",
+                                                   new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                                   new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                    mb.addStyleName(Runo.WINDOW_DIALOG);
+                    mb.show(new EventListener() {
+                        public void buttonClicked(ButtonType buttonType) {
+                            if (buttonType == MessageBox.ButtonType.YES) {
+                                String source = mibsTree.getParent(fileName).toString();
+                                File file = new File(PENDING.equals(source) ? MIBS_PENDING_DIR : MIBS_COMPILED_DIR, fileName);
+                                if (file.delete()) {
+                                    mibsContainer.removeItem(fileName);
+                                    logger.info("MIB " + file + " has been successfully removed.");
+                                } else {
+                                    getApplication().getMainWindow().showNotification("Can't delete " + file);
+                                }
+                            }
+                        }
+                    });
                 }
                 if (action == ACTION_EDIT) {
                     Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger);
