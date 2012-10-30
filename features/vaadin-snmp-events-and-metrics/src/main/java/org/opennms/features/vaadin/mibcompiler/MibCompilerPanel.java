@@ -321,7 +321,8 @@ public class MibCompilerPanel extends Panel {
             if (events.getEventCount() > 0) {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
-                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, fileName, events, logger);
+                    final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
+                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
                     getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
@@ -346,7 +347,8 @@ public class MibCompilerPanel extends Panel {
             } else {
                 if (dcGroup.getGroupCount() > 0) {
                     try {
-                        final DataCollectionWindow w = new DataCollectionWindow(dataCollectionDao, fileName, dcGroup, logger);
+                        final String dataFileName = fileName.replaceFirst("\\..*$", ".xml");
+                        final DataCollectionWindow w = new DataCollectionWindow(dataCollectionDao, dataFileName, dcGroup, logger);
                         getApplication().getMainWindow().addWindow(w);
                     } catch (Throwable t) {
                         getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);

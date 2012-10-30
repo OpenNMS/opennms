@@ -213,7 +213,7 @@ public abstract class EventPanel extends Panel {
      */
     public void processEvents(final Events events, final Logger logger) {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
-        final File file = new File(configDir, fileName.replaceFirst("\\..*$", ".xml"));
+        final File file = new File(configDir, fileName);
         if (file.exists()) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",
