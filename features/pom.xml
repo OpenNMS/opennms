@@ -52,5 +52,8 @@
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
+
+    <!-- Access point monitor -->
+    <module>access-point-monitor</module>
   </modules>
 </project>
