@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -119,5 +120,32 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
         
         final String newXml = sendRequest(GET, "/links", 200);
         assertTrue(newXml.contains("<links count=\"4\""));
+    }
+    
+    @Test
+    public void testPut() throws Exception {
+        String xml = sendRequest(GET, "/links/64", 200);
+        assertNotNull(xml);
+        assertTrue(xml.contains("<link "));
+        assertTrue(xml.contains("source=\"linkd\""));
+        
+        MockHttpServletResponse response = sendPut("/links/64", "source=monkey", 303);
+        assertTrue(response.getHeader("Location").toString().endsWith("opennms/rest/links/64"));
+        
+        xml = sendRequest(GET, "/links/64", 200);
+        assertNotNull(xml);
+        assertTrue(xml.contains("<link "));
+        assertTrue(xml.contains("source=\"monkey\""));
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        String xml = sendRequest(GET, "/links/64", 200);
+        assertNotNull(xml);
+        assertTrue(xml.contains("<link "));
+        
+        sendRequest(DELETE, "/links/64", 200);
+
+        xml = sendRequest(GET, "/links/64", 204);
     }
 }
