@@ -86,6 +86,9 @@ public class MibCompilerPanel extends Panel {
     /** The Constant ACTION_DELETE. */
     private static final Action ACTION_DELETE = new Action("Delete MIB");
 
+    /** The Constant ACTION_VIEW. */
+    private static final Action ACTION_VIEW = new Action("View MIB");
+
     /** The Constant ACTION_COMPILE. */
     private static final Action ACTION_COMPILE = new Action("Compile MIB");
 
@@ -170,7 +173,8 @@ public class MibCompilerPanel extends Panel {
         mibsContainer = new HierarchicalContainer();
         mibsTree = new Tree("MIB Tree");
         initMibTree(logger);
-        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>");
+        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>"
+                                      + "<p>The file name requires to be the same as the MIB to be processed.</p>");
         label.setContentMode(Label.CONTENT_XHTML);
         addComponent(label);
         addComponent(mibsTree);
@@ -216,7 +220,7 @@ public class MibCompilerPanel extends Panel {
                     return new Action[] {};
                 }
                 if (parent.equals(COMPILED)) {
-                    return new Action[] { ACTION_EVENTS, ACTION_COLLECT, ACTION_DELETE };
+                    return new Action[] { ACTION_EVENTS, ACTION_COLLECT, ACTION_VIEW, ACTION_DELETE };
                 } else {
                     return new Action[] { ACTION_EDIT, ACTION_DELETE, ACTION_COMPILE };
                 }
@@ -248,7 +252,11 @@ public class MibCompilerPanel extends Panel {
                     });
                 }
                 if (action == ACTION_EDIT) {
-                    Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger);
+                    Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger, false);
+                    getApplication().getMainWindow().addWindow(w);
+                }
+                if (action == ACTION_VIEW) {
+                    Window w = new FileEditorWindow(new File(MIBS_COMPILED_DIR, fileName), logger, true);
                     getApplication().getMainWindow().addWindow(w);
                 }
                 if (action == ACTION_COMPILE) {

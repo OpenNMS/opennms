@@ -28,16 +28,23 @@
 
 package org.opennms.web.rest;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterfaceList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,19 +70,18 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
     @Context
     UriInfo m_uriInfo;
 
     @Context
     ResourceContext m_context;
 
-    /**
-     * <p>getLinks</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.DataLinkInterfaceList} object.
-     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Transactional(readOnly=true)
     public DataLinkInterfaceList getLinks() {
         readLock();
         
@@ -89,21 +95,71 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
         }
     }
 
-    /**
-     * <p>getLink</p>
-     *
-     * @param mapId a int.
-     * @return a {@link org.opennms.netmgt.model.OnmsMap} object.
-     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{linkId}")
-    public DataLinkInterface getLink(@PathParam("linkId") final int linkId) {
+    @Transactional(readOnly=true)
+    public DataLinkInterface getLink(@PathParam("linkId") final Integer linkId) {
         readLock();
         try {
             return m_dataLinkInterfaceDao.get(linkId);
         } finally {
             readUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{linkId}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Transactional
+    public Response updateDataLinkInterface(@PathParam("linkId") final Integer linkId, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            LogUtils.debugf(this, "updateDataLinkInterface: Updating DataLinkInterface with ID %s", linkId);
+            final DataLinkInterface iface = m_dataLinkInterfaceDao.get(linkId);
+            if (iface != null) {
+                setProperties(params, iface);
+                LogUtils.debugf(this, "updateDataLinkInterface: DataLinkInterface with ID %s updated", linkId);
+                m_dataLinkInterfaceDao.saveOrUpdate(iface);
+                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getLink").build(linkId)).build();
+            }
+            return Response.notModified(linkId.toString()).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Transactional
+    public Response addOrReplaceDataLinkInterface(final DataLinkInterface iface) {
+        writeLock();
+        try {
+            if (iface.getNode() == null && iface.getNodeId() != null) {
+                iface.setNode(m_nodeDao.get(iface.getNodeId()));
+            }
+            if (iface.getSource() == null) {
+                iface.setSource("rest");
+            }
+            LogUtils.debugf(this, "addOrReplaceDataLinkInterface: Adding data link interface %s", iface);
+            m_dataLinkInterfaceDao.saveOrUpdate(iface);
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getLink").build(iface.getId())).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{linkId}")
+    public Response deleteDataLinkInterface(@PathParam("linkId") Integer linkId) {
+        writeLock();
+        try {
+            LogUtils.debugf(this, "deleteDataLinkInterface: deleting DataLinkInterface with ID %s", linkId);
+            final DataLinkInterface iface = m_dataLinkInterfaceDao.get(linkId);
+            m_dataLinkInterfaceDao.delete(iface);
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
         }
     }
 

@@ -142,7 +142,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             m_snmpPeerFactory.define(eventInfo);
             //TODO: this shouldn't be a static call
             SnmpPeerFactory.saveCurrent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getSnmpInfo").build(ipAddress)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getSnmpInfo").build(ipAddress)).build();
             // return Response.ok().build();
         } catch (final Throwable e) {
             return Response.serverError().build();
@@ -170,7 +170,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             final SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
             m_snmpPeerFactory.define(eventInfo);
             SnmpPeerFactory.saveCurrent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getSnmpInfo").build(ipAddress)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getSnmpInfo").build(ipAddress)).build();
             // return Response.ok().build();
         } catch (final Throwable e) {
             return Response.serverError().build();

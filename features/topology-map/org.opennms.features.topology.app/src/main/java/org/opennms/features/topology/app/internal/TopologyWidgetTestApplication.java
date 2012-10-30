@@ -32,11 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.features.topology.app.internal.ui.SelectionTree;
 
@@ -63,7 +65,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext {
     
     
 	private Window m_window;
@@ -88,6 +90,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer = new SimpleGraphContainer();
 		m_graphContainer.setDataSource(topologyProvider);
 		m_iconRepositoryManager = iconRepoManager;
+		
 	}
 
 
@@ -234,9 +237,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_treeAccordion.addTab(m_tree, m_tree.getTitle());
         for(IViewContribution widget : treeWidgetManager.getWidgets()) {
             if(widget.getIcon() != null) {
-                m_treeAccordion.addTab(widget.getView(), widget.getTitle(), widget.getIcon());
+                m_treeAccordion.addTab(widget.getView(this), widget.getTitle(), widget.getIcon());
             }else {
-                m_treeAccordion.addTab(widget.getView(), widget.getTitle());
+                m_treeAccordion.addTab(widget.getView(this), widget.getTitle());
             }
         }
     }
@@ -274,7 +277,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 
             }
             m_viewContribLayout.removeAllComponents();
-            m_viewContribLayout.addComponent(widgetManager.getTabSheet());
+            m_viewContribLayout.addComponent(widgetManager.getTabSheet(this));
             
             m_layout.removeAllComponents();
             m_layout.addComponent(m_menuBar);
@@ -466,6 +469,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         
         m_treeWidgetManager = treeWidgetManager;
         m_treeWidgetManager.addUpdateListener(this);
+    }
+
+
+    @Override
+    public GraphContainer getGraphContainer() {
+        return m_graphContainer;
     }
 
 }

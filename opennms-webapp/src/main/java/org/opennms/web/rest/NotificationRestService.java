@@ -158,7 +158,7 @@ public class NotificationRestService extends OnmsRestService {
                 throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processNotifAck(notif,ack);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNotification").build(notifId)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();
         } finally {
             writeUnlock();
         }
@@ -188,7 +188,7 @@ public class NotificationRestService extends OnmsRestService {
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(notif, ack);
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNotifications").build()).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotifications").build()).build();
         } finally {
             writeUnlock();
         }

@@ -360,7 +360,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             debug("addForeignSource: Adding foreignSource %s", foreignSource.getName());
             m_pendingForeignSourceRepository.save(foreignSource);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getForeignSource").build(foreignSource.getName())).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getForeignSource").build(foreignSource.getName())).build();
             // return Response.ok(foreignSource).build();
         } finally {
             writeUnlock();
@@ -385,7 +385,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             fs.addDetector(detector);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getDetector").build(foreignSource, detector.getName())).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getDetector").build(foreignSource, detector.getName())).build();
             // return Response.ok(detector).build();
         } finally {
             writeUnlock();
@@ -410,7 +410,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             fs.addPolicy(policy);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getPolicy").build(foreignSource, policy.getName())).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getPolicy").build(foreignSource, policy.getName())).build();
             // return Response.ok(policy).build();
         } finally {
             writeUnlock();
@@ -445,7 +445,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
             debug("updateForeignSource: foreign source %s updated", foreignSource);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getForeignSource").build(foreignSource)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getForeignSource").build(foreignSource)).build();
             // return Response.ok(fs).build();
         } finally {
             writeUnlock();

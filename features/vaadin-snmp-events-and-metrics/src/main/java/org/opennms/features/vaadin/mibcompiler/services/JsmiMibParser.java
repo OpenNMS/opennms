@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +100,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     private String errors;
 
     /** The missing dependencies. */
-    private List<String> missingDependencies;
+    private List<String> missingDependencies = new ArrayList<String>();
 
     /**
      * Instantiates a new JLIBSMI MIB parser.
@@ -128,59 +127,36 @@ public class JsmiMibParser implements MibParser, Serializable {
             return false;
         }
 
-        // Reset error handler
-        errorHandler.reset();
+        // Reset error handler and dependencies tracker
+        missingDependencies.clear();
         errors = null;
 
-        // Add MIB to be parsed
-        List<URL> inputUrls = new ArrayList<URL>();
-        try {
-            inputUrls.add(mibFile.toURI().toURL());
-        } catch (Exception e) {
-            errors = e.getMessage();
-            return false;
-        }
-        parser.getFileParserPhase().setInputUrls(inputUrls);
+        // Set UP the MIB Queue MIB to be parsed
+        List<URL> queue = new ArrayList<URL>();
+        parser.getFileParserPhase().setInputUrls(queue);
 
         // Parse MIB
         LogUtils.debugf(this, "Parsing %s", mibFile.getAbsolutePath());
-        SmiMib mib = parser.parse();
-        if (errorHandler.isNotOk()) {
-            LogUtils.infof(this, "Found errors when processing %s", mibFile.getAbsolutePath());
-            // Check for dependencies and update URLs if the MIBs exists on the MIB directory
-            missingDependencies = errorHandler.getDependencies();
-            for (Iterator<String> it = missingDependencies.iterator(); it.hasNext();) {
-                String dependency = it.next();
-                for (String suffix : MIB_SUFFIXES) {
-                    File f = new File(mibDirectory, dependency + suffix);
-                    if (f.exists()) {
-                        LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
-                        try {
-                            inputUrls.add(0, f.toURI().toURL());
-                        } catch (Exception e) {
-                            errors = e.getMessage();
-                            return false;
-                        }
-                        it.remove();
-                    }
-                }
-            }
-            if (missingDependencies.isEmpty()) {
-                LogUtils.infof(this, "Re-parsing the following files %s", inputUrls);
-                // All dependencies found, trying again.
-                errorHandler.reset();
-                mib = parser.parse();
-                if (errorHandler.isNotOk()) {
-                    LogUtils.errorf(this, "Found errors when re-processing %s: %s", mibFile, errorHandler.getMessages());
-                    return false;
-                }
+        SmiMib mib = null;
+        addFileToQueue(queue, mibFile);
+        while (true) {
+            errorHandler.reset();
+            mib = parser.parse();
+            if (errorHandler.isOk()) {
+                break;
             } else {
-                // There are still unsatisfied dependencies.
-                LogUtils.warnf(this, "There are unsatisfied dependencies remaining: " + missingDependencies);
-                return false;
+                List<String> dependencies = errorHandler.getDependencies();
+                if (dependencies.isEmpty()) // No dependencies, everything is fine.
+                    break;
+                missingDependencies.addAll(dependencies);
+                if (!addDependencyToQueue(queue))
+                    break;
             }
         }
+        if (errorHandler.isNotOk()) // There are still non-dependency related problems.
+            return false;
 
+        // Extracting the module from compiled MIB.
         LogUtils.infof(this, "The MIB %s has been parsed successfully.", mibFile.getAbsolutePath());
         module = getModule(mib, mibFile);
         return module != null;
@@ -265,6 +241,55 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         return dcGroup;
+    }
+
+    /**
+     * Adds a file to the queue.
+     *
+     * @param queue the queue
+     * @param mibFile the MIB file
+     */
+    private void addFileToQueue(List<URL> queue, File mibFile) {
+        try {
+            URL url = mibFile.toURI().toURL();
+            if (!queue.contains(url)) {
+                LogUtils.debugf(this, "Adding %s to queue ", url);
+                queue.add(url);
+            }
+        } catch (Exception e) {
+            LogUtils.warnf(this, "Can't generate URL from %s", mibFile.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Adds the dependency to the queue.
+     *
+     * @param queue the queue
+     * @return true, if successful
+     */
+    private boolean addDependencyToQueue(List<URL> queue) {
+        final List<String> dependencies = new ArrayList<String>(missingDependencies);
+        for (String dependency : dependencies) {
+            boolean found = false;
+            for (String suffix : MIB_SUFFIXES) {
+                File f = new File(mibDirectory, dependency + suffix);
+                LogUtils.debugf(this, "Checking dependency file %s", f.getAbsolutePath());
+                if (f.exists()) {
+                    LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
+                    addFileToQueue(queue, f);
+                    missingDependencies.remove(dependency);
+                    found = true;
+                    break;
+                } else {
+                    LogUtils.debugf(this, "Dependency file %s doesn't exist", f.getAbsolutePath());
+                }
+            }
+            if (!found) {
+                LogUtils.warnf(this, "Couldn't find dependency %s on %s", dependency, mibDirectory);
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

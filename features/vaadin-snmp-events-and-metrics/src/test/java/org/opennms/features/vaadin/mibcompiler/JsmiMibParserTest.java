@@ -36,7 +36,6 @@ import org.jsmiparser.parser.SmiDefaultParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
@@ -109,8 +108,6 @@ public class JsmiMibParserTest {
      * @throws Exception the exception
      */
     @Test
-    @Ignore
-    // This test requires changes on jsmiparser library.
     public void testMibWithErrors() throws Exception {
         if (parser.parseMib(new File(MIB_DIR, "NET-SNMP-MIB.txt"))) {
             Assert.fail("The NET-SNMP-MIB.txt file contains errors, so the MIB parser must generate errors.");
@@ -244,8 +241,6 @@ public class JsmiMibParserTest {
      * @throws Exception the exception
      */
     @Test
-    @Ignore
-    // This test requires changes on jsmiparser library.
     public void testMibWithInvalidContent() throws Exception {
         SmiDefaultParser parser = new SmiDefaultParser();
         OnmsProblemEventHandler errorHandler = new OnmsProblemEventHandler(parser);

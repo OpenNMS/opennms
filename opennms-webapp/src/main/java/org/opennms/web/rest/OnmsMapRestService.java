@@ -129,7 +129,7 @@ public class OnmsMapRestService extends OnmsRestService {
         try {
             LogUtils.debugf(this, "addMap: Adding map %s", map);
             m_mapDao.save(map);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getMap").build(map.getId())).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(map.getId())).build();
             // return Response.ok(map).build();
         } finally {
             writeUnlock();
@@ -187,7 +187,7 @@ public class OnmsMapRestService extends OnmsRestService {
     
             LogUtils.debugf(this, "updateMap: map %s updated", map);
             m_mapDao.saveOrUpdate(map);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getMap").build(mapId)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(mapId)).build();
             // return Response.ok(map).build();
         } finally {
             writeUnlock();
