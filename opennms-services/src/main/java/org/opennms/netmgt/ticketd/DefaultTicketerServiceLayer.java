@@ -189,7 +189,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	 * TODO: Add alarmid to Ticket class for ability to reference back to Alarm (waffling on this
 	 * since ticket isn't a persisted object and other reasons)
 	 */
-    private Ticket createTicketFromAlarm(OnmsAlarm alarm) {
+    protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
         Ticket ticket = new Ticket();
         ticket.setSummary(alarm.getLogMsg());
         ticket.setDetails(alarm.getDescription());
