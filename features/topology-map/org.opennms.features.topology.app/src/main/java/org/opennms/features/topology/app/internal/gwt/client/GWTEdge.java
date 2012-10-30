@@ -37,6 +37,8 @@ import com.google.gwt.core.client.JsArrayString;
 
 public final class GWTEdge extends JavaScriptObject {
     
+    public static final String SVG_EDGE_ELEMENT = "path";
+    
     protected GWTEdge() {};
     
     public final native GWTVertex getSource() /*-{
@@ -48,7 +50,7 @@ public final class GWTEdge extends JavaScriptObject {
     }-*/;
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-        return {"id":id, "source":source, "target":target, "actions":[], "cssClass": "path"};
+        return {"id":id, "source":source, "target":target, "actions":[], "cssClass": "path", "linkNum":1, "tooltipText": ""};
     }-*/;
 
     public final native String getId() /*-{
@@ -80,6 +82,21 @@ public final class GWTEdge extends JavaScriptObject {
         return this.cssClass;
     }-*/;
 
+    public final native void setLinkNum(int num) /*-{
+        this.linkNum = num;
+    }-*/;
+    
+    public final native int getLinkNum() /*-{
+        return this.linkNum;
+    }-*/;
+    
+    public final native void setTooltipText(String tooltipText) /*-{
+        this.tooltipText = tooltipText;
+    }-*/;
+    
+    public final native String getTooltipText()/*-{
+        return this.tooltipText;
+    }-*/;
 
 	public void setActionKeys(String[] keys) {
 		JsArrayString actionKeys = actionKeys(newStringArray());
@@ -150,13 +167,25 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                
-                return selection.attr("class", GWTEdge.getCssStyleClass())
-                        .attr("x1", GWTEdge.getSourceX())
-                        .attr("x2", GWTEdge.getTargetX())
-                        .attr("y1", GWTEdge.getSourceY())
-                        .attr("y2", GWTEdge.getTargetY());
+                return selection.attr("class", GWTEdge.getCssStyleClass()).attr("d", GWTEdge.createPath());
             }
+        };
+    }
+    
+    protected static Func<String, GWTEdge> createPath(){
+        return new Func<String, GWTEdge>(){
+
+            @Override
+            public String call(GWTEdge edge, int index) {
+                int dx = Math.abs(edge.getTarget().getX() - edge.getSource().getX());
+                int dy = Math.abs(edge.getTarget().getY() - edge.getSource().getY());
+                int dr = edge.getLinkNum() > 1 ? (Math.max(dx, dy) * 10) / edge.getLinkNum() : 0;
+                int direction = edge.getLinkNum() % 2 == 0  ? 0 : 1;
+                
+                return "M" + edge.getSource().getX() + "," + edge.getSource().getY() + 
+                       " A" + dr + "," + dr + " 0 0, " + direction + " " + edge.getTarget().getX() + "," + edge.getTarget().getY();
+            }
+            
         };
     }
     
@@ -175,10 +204,11 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.append("g").append("line").attr("class", "path").attr("opacity", 0).style("stroke-width", "5").style("cursor", "pointer")
+                return selection.append("g").append(SVG_EDGE_ELEMENT).attr("class", "path").attr("opacity", 0).style("stroke-width", "5").style("fill", "none").style("cursor", "pointer")
                         .call(draw());
             }
         };
     }
+
 
 }
