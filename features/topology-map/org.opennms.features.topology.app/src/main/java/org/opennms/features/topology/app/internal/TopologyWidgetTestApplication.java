@@ -231,7 +231,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private void updateAccordionView(WidgetManager treeWidgetManager) {
         m_treeAccordion.removeAllComponents();
         
-        m_treeAccordion.addTab(m_tree, "Nodes");
+        m_treeAccordion.addTab(m_tree, m_tree.getTitle());
         for(IViewContribution widget : treeWidgetManager.getWidgets()) {
             if(widget.getIcon() != null) {
                 m_treeAccordion.addTab(widget.getView(), widget.getTitle(), widget.getIcon());
@@ -325,7 +325,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         filterArea.setComponentAlignment(filterBtn, Alignment.BOTTOM_CENTER);
         
         m_treeAccordion = new Accordion();
-        m_treeAccordion.addTab(m_tree, "Nodes");
+        m_treeAccordion.addTab(m_tree, m_tree.getTitle());
         m_treeAccordion.setWidth("100%");
         m_treeAccordion.setHeight("100%");
         
@@ -338,11 +338,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         return absLayout;
     }
 
-	@SuppressWarnings({"unchecked", "serial", "unused"})
     private SelectionTree createTree() {
 	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		final SelectionTree tree = new SelectionTree(container);
+		final SelectionTree tree = new SelectionTree(container) {
+			public String getTitle() {
+				return "Nodes";
+			}
+		};
 		tree.setMultiSelect(true);
         
 		tree.setImmediate(true);

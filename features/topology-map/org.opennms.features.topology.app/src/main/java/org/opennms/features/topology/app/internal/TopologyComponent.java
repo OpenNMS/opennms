@@ -343,12 +343,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         if(variables.containsKey("clickedEdge")) {
             String edgeId = (String) variables.get("clickedEdge");
             singleSelectEdge(edgeId);
+            updateSelectionListeners();
         }
         
         if(variables.containsKey("deselectAllItems")) {
             deselectAllEdges();
             deselectAllVertices();
             requestRepaint();
+            updateSelectionListeners();
         }
         
         if(variables.containsKey("clickedVertex")) {

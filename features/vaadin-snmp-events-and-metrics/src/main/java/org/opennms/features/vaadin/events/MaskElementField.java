@@ -190,7 +190,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
-                                           "Do you really want to continue?",
+                                           "Do you really want to remove the selected Mask Element field ?<br/>This action cannot be undone.",
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);

@@ -177,8 +177,22 @@ public final class GWTGraph extends JavaScriptObject {
 				visible.push(edge);
 			}else {
 				GWTEdge displayEdge = GWTEdge.create(edge.getId(), displaySource, displayTarget);
+				displayEdge.setLinkNum(edge.getLinkNum());
+				displayEdge.setTooltipText(edge.getTooltipText());
 				visible.push(displayEdge);
 			}
+		}
+		
+		for(int i = 0; i < visible.length(); i++) {
+		    GWTEdge edge = visible.get(0);
+		    if(i > 0) {
+                GWTEdge previousEdge = visible.get(i - 1);
+                if(edge.getSource() == previousEdge.getSource() && edge.getTarget() == previousEdge.getTarget()) {
+                    edge.setLinkNum( previousEdge.getLinkNum() + 1 );
+                } else {
+                    edge.setLinkNum(1);
+                }
+            }
 		}
 		
 		return visible;

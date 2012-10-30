@@ -151,7 +151,12 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             }
             LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
             for (String ds : entries.keySet()) {
-                attributes.put(ds, entries.get(ds).doubleValue());
+                Number sampleValue = entries.get(ds);
+                if (sampleValue == null) {
+                    attributes.put(ds, Double.NaN);
+                } else {
+                    attributes.put(ds, sampleValue.doubleValue());
+                }
             }
             if (m_thresholdingSet.isNodeInOutage()) {
                 log().info("applyThresholds: the threshold processing will be skipped because the service " + service + " is on a scheduled outage.");

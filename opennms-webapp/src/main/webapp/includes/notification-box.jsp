@@ -37,11 +37,14 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*" %>
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="org.opennms.netmgt.config.NotifdConfigFactory"
+<%@page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.notification.*,
+	org.opennms.netmgt.config.NotifdConfigFactory"
+%>
+
+<%!
+	protected NotificationModel model = new NotificationModel();
+	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
 
 <%
@@ -53,16 +56,34 @@
     if( nodeIdString != null ) {
         nodeFilter = "&amp;filter=node%3D" + nodeIdString;
     }
+
+		// @i18n
+		String status = "Unknown";
+		try {
+				NotifdConfigFactory.init();
+				status = NotifdConfigFactory.getInstance().getPrettyStatus();
+		} catch (Throwable e) { 
+			// If factory can't be initialized, status is already 'Unknown'
+		}
 %>
 
-<%!
-    protected NotificationModel model = new NotificationModel();
-    protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
-%>
+<style type="text/css">
+	#notificationDisabled{
+		border: 1px solid red;
+		background-color: lightyellow;
+		color: red;
+		padding: 5px;
+	}
+</style>
 
 <h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
 	<ul class="plain o-box">
+		<li <%=("Off".equals(status) ? "id=\"notificationDisabled\"" : "")%>>
+			<strong>Notification Status</strong>:
+			<%=status%>
+		</li>
+
 		<% if( nodeIdString == null ) { %>
 			<li><strong>You</strong>: <%
 				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
@@ -83,12 +104,5 @@
 			<li><strong>You: Acknowledged</strong>: 
 				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 		<% } %>
-
-		<%String status = "Unknown";
-        	try{
-        	   NotifdConfigFactory.init();
-        	   status = NotifdConfigFactory.getInstance().getPrettyStatus();
-        	} catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
-        %>
 	</ul>
 </div>

@@ -76,12 +76,6 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-/*
- * TODO Pending features:
- * 
- * - Better error output (more human readable).
- * - Fix HTML encoding for Description and LogMsg
- */
 @SuppressWarnings("serial")
 public class JsmiMibParser implements MibParser, Serializable {
 

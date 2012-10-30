@@ -32,6 +32,7 @@ public abstract class AbstractActivator
         return this.context;
     }
 
+    @Override
     public final void start(BundleContext context)
         throws Exception
     {
@@ -41,6 +42,7 @@ public abstract class AbstractActivator
         doStart();
     }
 
+    @Override
     public final void stop(BundleContext context)
         throws Exception
     {

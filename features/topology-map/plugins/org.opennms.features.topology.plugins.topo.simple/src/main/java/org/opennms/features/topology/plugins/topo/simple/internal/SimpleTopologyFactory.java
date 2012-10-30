@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,7 +74,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 
 				m_providers.put(pid, topoProvider);
 
-				Properties metaData = new Properties();
+				Dictionary<String,Object> metaData = new Hashtable<String,Object>();
 				metaData.put(Constants.SERVICE_PID, pid);
 
 				if (properties.get(LABEL) != null) {

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
+import org.exolab.castor.types.OperationNotSupportedException;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +83,13 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class PolicyTest {
+	
+	public static interface BackgroundTask {
+		public void await() throws InterruptedException;
+	}
+	
+	@Autowired
+	private SimpleJdbcOperations m_jdbcOperations;
     
     @Autowired
     private Provisioner m_provisioner;
@@ -88,12 +97,6 @@ public class PolicyTest {
     @Autowired
     private ResourceLoader m_resourceLoader;
     
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    private NodeDao m_nodeDao;
-
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
     
@@ -133,57 +136,80 @@ public class PolicyTest {
         @JUnitSnmpAgent(host="10.102.251.200", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
         @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:snmpwalk-NMS-5414.properties")
     })
-    @Transactional
+    //@Transactional Do not use transactional because it freezes the database and makes it impossible to check for 
+    // values created in other transactions (unless you are lucky - which sometimes we are not)
     public void testSnmpPollPolicy() throws Exception {
-        final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
+        final BackgroundTask eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
 
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-        
+        int nodeId = getNodeId();
         eventRecieved.await();
         
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+		final NodeScan scan = m_provisioner.createNodeScan(nodeId, getForeignSource(nodeId), getForeignId(nodeId));
         runScan(scan);
-      
-        OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.add(Restrictions.ilike("ifDescr", "Trunk 1", MatchMode.ANYWHERE));
-        List<OnmsSnmpInterface> onmssnmpifaces = getSnmpInterfaceDao().findMatching(criteria);
-        assertEquals(1, onmssnmpifaces.size());
-
-        OnmsSnmpInterface onmsinterface = onmssnmpifaces.get(0);
-        assertEquals("1", onmsinterface.getNode().getNodeId());
-        assertEquals(8193, onmsinterface.getIfIndex().intValue());
-        assertEquals(0, onmsinterface.getIpInterfaces().size());
-        assertEquals("P", onmsinterface.getPoll());
-
-        criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.add(Restrictions.ilike("ifDescr", "VLAN 600 L3", MatchMode.ANYWHERE));
-        onmssnmpifaces = getSnmpInterfaceDao().findMatching(criteria);
-        assertEquals(1, onmssnmpifaces.size());
         
-        onmsinterface = onmssnmpifaces.get(0);
-        assertEquals("1", onmsinterface.getNode().getNodeId());
-        assertEquals(10600, onmsinterface.getIfIndex().intValue());
-        assertEquals(1, onmsinterface.getIpInterfaces().size());
-        assertEquals("P", onmsinterface.getPoll());
-
-        criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.add(Restrictions.ilike("ifName", "ifc3 (Slot: 1 Port: 3)", MatchMode.ANYWHERE));
-        onmssnmpifaces = getSnmpInterfaceDao().findMatching(criteria);
-        assertEquals(1, onmssnmpifaces.size());
         
-        onmsinterface = onmssnmpifaces.get(0);
-        assertEquals("1", onmsinterface.getNode().getNodeId());
-        assertEquals(3, onmsinterface.getIfIndex().intValue());
-        assertEquals(1, onmsinterface.getIpInterfaces().size());
-        assertEquals("P", onmsinterface.getPoll());
+        Integer snmpIfId = findMatchingSnmpIf("ifDescr", "Trunk 1");
+        
+		assertEquals(1, getNodeId(snmpIfId));
+        assertEquals(8193, getIfIndex(snmpIfId));
+        assertEquals(0, getIpInterfaceCount(snmpIfId));
+        assertEquals("P", getPollSetting(snmpIfId));
 
-        criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.add(Restrictions.eq("poll", "P"));
-        assertEquals(3, getSnmpInterfaceDao().countMatching(criteria));
+        snmpIfId = findMatchingSnmpIf("ifDescr", "VLAN 600 L3");
+        
+        assertEquals(1, getNodeId(snmpIfId));
+        assertEquals(10600, getIfIndex(snmpIfId));
+        assertEquals(1, getIpInterfaceCount(snmpIfId));
+        assertEquals("P", getPollSetting(snmpIfId));
+
+        snmpIfId = findMatchingSnmpIf("ifName", "ifc3 (Slot: 1 Port: 3)");
+        
+        assertEquals(1, getNodeId(snmpIfId));
+        assertEquals(3, getIfIndex(snmpIfId));
+        assertEquals(1, getIpInterfaceCount(snmpIfId));
+        assertEquals("P", getPollSetting(snmpIfId));
+
+        assertEquals(3, countSnmpIfsWithPollSetting("P"));
                 
     }
+
+	private int countSnmpIfsWithPollSetting(String pollSetting) {
+		return m_jdbcOperations.queryForInt("select count(*) from snmpinterface where snmppoll = ?", pollSetting);
+	}
+    
+    private Integer findMatchingSnmpIf(String property, String value) {
+		String columnName = "snmp"+property.toLowerCase();
+		return m_jdbcOperations.queryForInt("select id from snmpinterface where "+columnName+" ilike ?", "%"+value+"%");
+	}
+
+	private String getPollSetting(Integer snmpIfId) {
+		return m_jdbcOperations.queryForObject("select snmppoll from snmpinterface where id = ?", String.class, snmpIfId);
+	}
+
+	private int getIpInterfaceCount(Integer snmpIfId) {
+		return m_jdbcOperations.queryForInt("select count(*) from ipinterface where snmpinterfaceid = ?", snmpIfId);
+	}
+
+	private int getIfIndex(Integer snmpIfId) {
+		return m_jdbcOperations.queryForInt("select snmpifindex from snmpinterface where id = ?", snmpIfId);
+	}
+
+	private int getNodeId(Integer snmpIfId) {
+		return m_jdbcOperations.queryForInt("select nodeId from snmpinterface where id = ?", snmpIfId);
+	}
+
+	private int getNodeId() {
+		return m_jdbcOperations.queryForInt("select nodeId from node order by nodelabel limit 1");
+	}
+
+	private String getForeignId(Integer nodeId) {
+		return m_jdbcOperations.queryForObject("select foreignId from node where nodeid = ?", String.class, nodeId);
+	}
+
+	private String getForeignSource(Integer nodeId) {
+		return m_jdbcOperations.queryForObject("select foreignSource from node where nodeid = ?", String.class, nodeId);
+	}
     
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
     	final Task t = scan.createTask();
@@ -191,7 +217,7 @@ public class PolicyTest {
         t.waitFor();
     }
     
-    private CountDownLatch anticipateEvents(String... ueis) {
+    private BackgroundTask anticipateEvents(String... ueis) {
         final CountDownLatch eventRecieved = new CountDownLatch(1);
         m_eventSubscriber.addEventListener(new EventListener() {
 
@@ -203,14 +229,15 @@ public class PolicyTest {
                 return "Test Initial Setup";
             }
         }, Arrays.asList(ueis));
-        return eventRecieved;
+        
+        return new BackgroundTask() {
+			
+			@Override
+			public void await() throws InterruptedException {
+				eventRecieved.await();
+			}
+		};
+
     }
     
-    private NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-    
-    private SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
 }

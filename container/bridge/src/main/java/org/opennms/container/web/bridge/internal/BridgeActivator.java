@@ -70,6 +70,7 @@ public final class BridgeActivator extends AbstractActivator
         SystemLogger.info("Started bridged http service");
     }
 
+    @Override
     protected void doStop() throws Exception {
         this.controller.unregister();
         this.dispatcher.destroy();
