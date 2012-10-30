@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.app.internal.TopologyComponent.SelectionListener;
 import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
@@ -13,10 +14,11 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial", "unchecked"})
-public class SelectionTree extends Tree implements SelectionListener{
+public abstract class SelectionTree extends Tree implements SelectionListener, IViewContribution {
     
     private class TreeItemClickTracker{
         
@@ -157,5 +159,13 @@ public class SelectionTree extends Tree implements SelectionListener{
     @Override
     public FilterableHierarchicalContainer getContainerDataSource() {
         return (FilterableHierarchicalContainer) super.getContainerDataSource();
+    }
+
+    @Override
+    public abstract String getTitle();
+
+    @Override
+    public Component getView() {
+        return this;
     }
 }
