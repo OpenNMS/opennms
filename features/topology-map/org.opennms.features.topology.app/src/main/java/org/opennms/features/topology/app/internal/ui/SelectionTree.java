@@ -4,13 +4,12 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.SelectionListener;
 import org.opennms.features.topology.app.internal.support.FilterableHierarchicalContainer;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
@@ -91,13 +90,12 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
     }
 
     @Override
-    public void onSelectionUpdate(GraphContainer graphContainer) {
+    public void onSelectionUpdate(Container container) {
         m_itemClicked = false;
-        VertexContainer<?,?> vertexContainer = graphContainer.getVertexContainer();
-        Collection<?> itemIds = vertexContainer.getItemIds();
+        Collection<?> itemIds = container.getItemIds();
         
         for(Object itemId : itemIds) {
-            Item item = vertexContainer.getItem(itemId);
+            Item item = container.getItem(itemId);
             if((Boolean) item.getItemProperty("selected").getValue()) {
                 select(itemId);
             } else {
