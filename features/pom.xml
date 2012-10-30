@@ -53,6 +53,9 @@
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
 
+    <!-- Notifications -->
+    <module>notifications</module>
+
     <!-- Access point monitor -->
     <module>access-point-monitor</module>
   </modules>
