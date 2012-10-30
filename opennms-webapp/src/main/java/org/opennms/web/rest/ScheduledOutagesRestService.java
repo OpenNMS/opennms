@@ -148,7 +148,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             }
             m_configFactory.saveCurrent();
             sendConfigChangedEvent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getOutage").build(newOutage.getName())).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getOutage").build(newOutage.getName())).build();
             // return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage " + newOutage.getName() + " because, " + e.getMessage());
@@ -185,7 +185,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateCollectd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getOutage").build(outageName)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getOutage").build(outageName)).build();
             // return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to collector package " + packageName + ", because: " + e.getMessage());
@@ -216,7 +216,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updatePollerd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getOutage").build(outageName)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getOutage").build(outageName)).build();
             // return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to poller package " + packageName  + ", because: " + e.getMessage());
@@ -247,7 +247,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateThreshd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getOutage").build(outageName)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getOutage").build(outageName)).build();
             // return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to threshold package " + packageName + ", because: " + e.getMessage());
@@ -278,7 +278,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateNotifd(ConfigAction.ADD, outageName);
             sendConfigChangedEvent();
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getOutage").build(outageName)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getOutage").build(outageName)).build();
             // return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to notifications because: " + e.getMessage());

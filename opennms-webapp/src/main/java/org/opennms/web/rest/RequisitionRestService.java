@@ -544,7 +544,7 @@ public class RequisitionRestService extends OnmsRestService {
             }
             debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
             m_pendingForeignSourceRepository.save(requisition);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(requisition.getForeignSource())).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(requisition.getForeignSource())).build();
         } finally {
             writeUnlock();
         }
@@ -569,7 +569,7 @@ public class RequisitionRestService extends OnmsRestService {
             if (req != null) {
                 req.putNode(node);
                 m_pendingForeignSourceRepository.save(req);
-                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(foreignSource, node.getForeignId())).build();
+                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNode").build(foreignSource, node.getForeignId())).build();
                 // return Response.ok(req).build();
             }
             return Response.notModified().build();
@@ -600,7 +600,7 @@ public class RequisitionRestService extends OnmsRestService {
                 if (node != null) {
                     node.putInterface(iface);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, iface.getIpAddr())).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, iface.getIpAddr())).build();
                     // return Response.ok(req).build();
                 }
             }
@@ -635,7 +635,7 @@ public class RequisitionRestService extends OnmsRestService {
                     if (iface != null) {
                         iface.putMonitoredService(service);
                         m_pendingForeignSourceRepository.save(req);
-                        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getServiceForInterface").build(foreignSource, foreignId, ipAddress, service.getServiceName())).build();
+                        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getServiceForInterface").build(foreignSource, foreignId, ipAddress, service.getServiceName())).build();
                         // return Response.ok(req).build();
                     }
                 }
@@ -668,7 +668,7 @@ public class RequisitionRestService extends OnmsRestService {
                 if (node != null) {
                     node.putCategory(category);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getCategory").build(foreignSource, foreignId, category.getName())).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getCategory").build(foreignSource, foreignId, category.getName())).build();
                     // return Response.ok(req).build();
                 }
             }
@@ -700,7 +700,7 @@ public class RequisitionRestService extends OnmsRestService {
                 if (node != null) {
                     node.putAsset(asset);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getAssetParameter").build(foreignSource, foreignId, asset.getName())).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getAssetParameter").build(foreignSource, foreignId, asset.getName())).build();
                     // return Response.ok(req).build();
                 }
             }
@@ -741,7 +741,7 @@ public class RequisitionRestService extends OnmsRestService {
                 throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
             }
             
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(foreignSource)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
             // return suppressOutput == null || suppressOutput == false ? Response.ok(req).build() : Response.ok().build();
         } catch (final MalformedURLException e) {
             final DataAccessResourceFailureException exception = new DataAccessResourceFailureException("Failed to create a requisition URL for the '" + foreignSource + "' foreign source.", e);
@@ -772,7 +772,7 @@ public class RequisitionRestService extends OnmsRestService {
                 setProperties(params, req);
                 debug("updateRequisition: Requisition with foreign source %s updated", foreignSource);
                 m_pendingForeignSourceRepository.save(req);
-                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getRequisition").build(foreignSource)).build();
+                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
                 // return Response.ok(req).build();
             }
             return Response.notModified(foreignSource).build();
@@ -804,7 +804,7 @@ public class RequisitionRestService extends OnmsRestService {
                     setProperties(params, node);
                     debug("updateNode: Node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
                     m_pendingForeignSourceRepository.save(req);
-                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getNode").build(foreignSource, foreignId)).build();
+                    return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNode").build(foreignSource, foreignId)).build();
                     // return Response.ok(node).build();
                 }
             }
@@ -840,7 +840,7 @@ public class RequisitionRestService extends OnmsRestService {
                         setProperties(params, iface);
                         debug("updateInterface: Interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
                         m_pendingForeignSourceRepository.save(req);
-                        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, ipAddress)).build();
+                        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getInterfaceForNode").build(foreignSource, foreignId, ipAddress)).build();
                         // return Response.ok(node).build();
                     }
                 }

@@ -203,7 +203,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackService.processAck(acknowledgement);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getAlarm").build(alarmId)).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getAlarm").build(alarmId)).build();
         } finally {
             writeUnlock();
         }
@@ -262,7 +262,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 }
                 m_ackService.processAck(acknowledgement);
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getAlarms").build()).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getAlarms").build()).build();
         } finally {
             writeUnlock();
         }
