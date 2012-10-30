@@ -57,10 +57,10 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
 
     /** The save button. */
     private final Button save;
-    
+
     /** The logger. */
     protected final Logger logger;
-    
+
     /** The file. */
     protected final File file;
 
@@ -69,12 +69,13 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
      *
      * @param file the file
      * @param logger the logger
+     * @param readOnly true, if you want to display a read only window.
      */
-    public FileEditorWindow(final File file, final Logger logger) {
+    public FileEditorWindow(final File file, final Logger logger, boolean readOnly) {
         this.file = file;
         this.logger = logger;
-        
-        setCaption("Edit MIB");
+
+        setCaption((readOnly ? "View" : "Edit") + " MIB");
         addStyleName(Runo.WINDOW_DIALOG);
         setModal(true);
         setClosable(false);
@@ -87,8 +88,9 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
         editor.setImmediate(false);
         editor.setSizeFull();
         editor.setRows(30);
+        editor.setReadOnly(readOnly);
 
-        cancel = new Button("Cancel");
+        cancel = new Button(readOnly ? "Close" : "Cancel");
         cancel.setImmediate(false);
         cancel.addListener(this);
         save = new Button("Save");
@@ -97,7 +99,8 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(cancel);
-        toolbar.addComponent(save);
+        if (!readOnly)
+            toolbar.addComponent(save);
 
         addComponent(editor);
         addComponent(toolbar);
@@ -111,15 +114,19 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
      */
     public void buttonClick(ClickEvent event) {
         if (event.getButton().equals(save)) {
-            editor.commit();
-            logger.info("The file " + file + " has been changed.");
+            if (editor.isReadOnly()) {
+                showNotification("Unsupported action for readOnly viewer.", Notification.TYPE_WARNING_MESSAGE);
+            } else {
+                editor.commit();
+                logger.info("The file " + file + " has been changed.");
+            }
         }
         if (event.getButton().equals(cancel)) {
-            logger.info("The file editing has been canceled.");
+            if (!editor.isReadOnly())
+                logger.info("The file editing has been canceled.");
             editor.discard();
         }
         close();
     }
-    
 
 }
