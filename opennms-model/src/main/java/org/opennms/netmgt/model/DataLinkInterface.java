@@ -43,22 +43,22 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name = "link")
 @Entity
 @Table(name = "datalinkinterface")
+@XmlAccessorType(XmlAccessType.NONE)
 public class DataLinkInterface  implements Serializable, Comparable<DataLinkInterface> {
-    private static final long serialVersionUID = 5241963830563150843L;
+    private static final long serialVersionUID = -3336726327359373609L;
 
     private Integer m_id;
     private OnmsNode m_node;
@@ -76,20 +76,16 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastpolltime", nullable=false)
     private Date m_lastPollTime;
+    @Column(name="source", nullable=false)
+    private String m_source = "linkd";
+
+    /** work around a marshalling issue by storing the OnmsNode nodeId **/
+    @Transient
+    private Integer m_nodeId = null;
 
     public DataLinkInterface() {
     }
 
-    /**
-     * <p>Constructor for DataLinkInterface.</p>
-     *
-     * @param nodeId a int.
-     * @param ifIndex a int.
-     * @param nodeParentId a int.
-     * @param parentIfIndex a int.
-     * @param status a {@link java.lang.String} object.
-     * @param lastPollTime a {@link java.util.Date} object.
-     */
     public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final String status, final Date lastPollTime) {
         m_node = node;
         m_ifIndex = ifIndex;
@@ -100,11 +96,6 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_linkTypeId = -1;
     }
 
-    /**
-     * Method id returns the id of this DataLinkInterface object.
-     *
-     * @return the Id (type Integer) of this DataLinkInterface object.
-     */
     @XmlTransient
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
@@ -113,25 +104,27 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return m_id;
     }
 
+    public void setId(final int id) {
+        m_id = id;
+    }
+
+    /**
+     * Get the ID as a string.  This exists only for XML serialization.
+     */
     @XmlID
     @XmlAttribute(name="id")
     @Transient
     public String getDataLinkInterfaceId() {
         return getId().toString();
     }
-    /**
-     * <p>Setter for the field <code>id</code>.</p>
-     *
-     * @param id a int.
-     */
-    public void setId(final int id) {
-        m_id = id;
+
+    public void setDataLinkInterfaceId(final String id) {
+        m_id = Integer.valueOf(id);
     }
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
-    @XmlElement(name="nodeId")
-    @XmlIDREF
+    @XmlTransient
     public OnmsNode getNode() {
         return m_node;
     }
@@ -140,116 +133,77 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_node = node;
     }
 
-    /**
-     * Method getIfIndex returns the ifIndex of this DataLinkInterface object.
-     *
-     * @return the ifIndex (type Integer) of this DataLinkInterface object.
-     */
-    
-    @XmlElement( name = "ifIndex" )
+    @Transient
+    @XmlElement(name="nodeId")
+    public Integer getNodeId() {
+        return m_node == null? m_nodeId : m_node.getId();
+    }
+
+    public void setNodeId(final Integer nodeId) {
+        m_nodeId = nodeId;
+    }
+
+    @XmlElement(name="ifIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
 
-    /**
-     * <p>Setter for the field <code>ifIndex</code>.</p>
-     *
-     * @param ifIndex a int.
-     */
-    public void setIfIndex(final int ifIndex) {
+    public void setIfIndex(final Integer ifIndex) {
         m_ifIndex = ifIndex;
     }
 
-    /**
-     * Method getNodeParentId returns the nodeParentId of this DataLinkInterface object.
-     *
-     * @return the nodeParentId (type Integer) of this DataLinkInterface object.
-     */
-    @XmlElement(name = "nodeParentId")
+    @XmlElement(name="nodeParentId")
     public Integer getNodeParentId() {
         return m_nodeParentId;
     }
 
-    /**
-     * <p>Setter for the field <code>nodeParentId</code>.</p>
-     *
-     * @param nodeParentId a int.
-     */
-    public void setNodeParentId(final int nodeParentId) {
+    public void setNodeParentId(final Integer nodeParentId) {
         m_nodeParentId = nodeParentId;
     }
 
-    /**
-     * Method getParentIfIndex returns the parentIfIndex of this DataLinkInterface object.
-     *
-     * @return the parentIfIndex (type Integer) of this DataLinkInterface object.
-     */
-    @XmlElement(name = "parentIfIndex")
+    @XmlElement(name="parentIfIndex")
     public Integer getParentIfIndex() {
         return m_parentIfIndex;
     }
 
-    /**
-     * <p>Setter for the field <code>parentIfIndex</code>.</p>
-     *
-     * @param parentIfIndex a int.
-     */
-    public void setParentIfIndex(final int parentIfIndex) {
+    public void setParentIfIndex(final Integer parentIfIndex) {
         m_parentIfIndex = parentIfIndex;
     }
 
-    /**
-     * Method getStatus returns the status of this DataLinkInterface object.
-     *
-     * @return the status (type String) of this DataLinkInterface object.
-     */
+    @XmlAttribute(name="status")
     public String getStatus() {
         return m_status;
     }
 
-    /**
-     * <p>Setter for the field <code>status</code>.</p>
-     *
-     * @param status a {@link java.lang.String} object.
-     */
     public void setStatus(final String status) {
         m_status = status;
     }
 
-    /**
-     * <p>Getter for the field <code>linkTypeId</code>.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
+    @XmlElement(name="linkTypeId")
     public Integer getLinkTypeId() {
         return m_linkTypeId;
     }
 
-    /**
-     * <p>Setter for the field <code>linkTypeId</code>.</p>
-     *
-     * @param linkTypeId a {@link java.lang.Integer} object.
-     */
     public void setLinkTypeId(final Integer linkTypeId) {
         m_linkTypeId = linkTypeId;
     }
 
-    /**
-     * Method getLastPollTime returns the lastPollTime of this DataLinkInterface object.
-     *
-     * @return the lastPollTime (type Date) of this DataLinkInterface object.
-     */
+    @XmlElement(name="lastPollTime")
     public Date getLastPollTime() {
         return m_lastPollTime;
     }
 
-    /**
-     * <p>Setter for the field <code>lastPollTime</code>.</p>
-     *
-     * @param lastPollTime a {@link java.util.Date} object.
-     */
     public void setLastPollTime(final Date lastPollTime) {
         m_lastPollTime = lastPollTime;
+    }
+    
+    @XmlAttribute(name="source")
+    public String getSource() {
+        return m_source;
+    }
+    
+    public void setSource(final String source) {
+        m_source = source;
     }
 
     /**
@@ -263,6 +217,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
             .append(getId(), o.getId())
             .append(getNode(), o.getNode())
             .append(getIfIndex(), o.getIfIndex())
+            .append(getSource(), o.getSource())
             .append(getNodeParentId(), o.getNodeParentId())
             .append(getParentIfIndex(), o.getParentIfIndex())
             .append(getStatus(), o.getStatus())
@@ -271,34 +226,4 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
             .toComparison();
     }
 
-    /**
-     * <p>hashCode</p>
-     *
-     * @return a int.
-     */
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .append(m_id)
-            .append(m_node)
-            .append(m_ifIndex)
-            .append(m_nodeParentId)
-            .append(m_parentIfIndex)
-            .append(m_status)
-            .append(m_lastPollTime)
-            .append(m_linkTypeId)
-            .toHashCode();
-    }
-    
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("id", m_id)
-            .append("node", m_node)
-            .append("ifIndex", m_ifIndex)
-            .append("nodeParentId", m_nodeParentId)
-            .append("parentIfIndex", m_parentIfIndex)
-            .append("status", m_status)
-            .append("linkTypeId", m_linkTypeId)
-            .append("lastPollTime", m_lastPollTime)
-            .toString();
-    }
 }

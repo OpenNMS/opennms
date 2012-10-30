@@ -1837,18 +1837,21 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#                      'X' - Admin Down
 --#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
+--#  source            : The source of the data link.  Defaults to 'linkd', but can be different
+--#                      when created from the ReST interface.
 --#
 --########################################################################
 
 create table datalinkinterface (
     id               integer default nextval('opennmsNxtId') not null,
-    nodeid	         integer not null,
+    nodeid           integer not null,
     ifindex          integer not null,
     nodeparentid     integer not null,
-	parentIfIndex    integer not null,
-    status	         char(1) not null,
+    parentIfIndex    integer not null,
+    status           char(1) not null,
     linkTypeId       integer,
     lastPollTime     timestamp not null,
+    source           varchar(64) not null default 'linkd',
 
     constraint pk_datalinkinterface primary key (id),
     constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
