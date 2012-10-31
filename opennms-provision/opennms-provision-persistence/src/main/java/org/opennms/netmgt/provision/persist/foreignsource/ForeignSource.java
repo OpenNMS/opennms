@@ -361,10 +361,6 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     public int compareTo(final ForeignSource other) {
         return new CompareToBuilder()
             .append(m_name, other.m_name)
-            .append(m_default, other.m_default)
-            .append(m_scanInterval, other.m_scanInterval)
-            .append(m_detectors, other.m_detectors)
-            .append(m_policies, other.m_policies)
             .toComparison();
     }
 }
