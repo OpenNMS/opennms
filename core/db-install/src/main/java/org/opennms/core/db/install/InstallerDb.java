@@ -65,6 +65,7 @@ import org.opennms.core.db.install.columnchanges.EventSourceReplacement;
 import org.opennms.core.db.install.columnchanges.FixedIntegerReplacement;
 import org.opennms.core.db.install.columnchanges.NextValReplacement;
 import org.opennms.core.db.install.columnchanges.RowHasBogusDataReplacement;
+import org.opennms.core.db.install.columnchanges.VarCharReplacement;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -2855,6 +2856,8 @@ public class InstallerDb {
         addColumnReplacement("stpnode.id", new DoNotAddColumnReplacement());
         addColumnReplacement("stpinterface.id", new DoNotAddColumnReplacement());
         addColumnReplacement("iprouteinterface.id", new DoNotAddColumnReplacement());
+        
+        addColumnReplacement("datalinkinterface.source", new VarCharReplacement("linkd"));
     }
     
     /**
