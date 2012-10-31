@@ -168,10 +168,14 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
         File file = new File(data[0]);
         stream.println(sev + ": " + message + ", Source: " + file.getName() + ", Row: " + data[1] + ", Col: " + data[2]);
         try {
+            if (!file.exists()) {
+                LogUtils.warnf(this, "File %s doesn't exist", file);
+                return;
+            }
             FileInputStream fs= new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(fs));
             int line = Integer.parseInt(data[1]);
-            for(int i = 1; i < line; i++)
+            for (int i = 1; i < line; i++)
                 br.readLine();
             stream.println(br.readLine());
             br.close();
