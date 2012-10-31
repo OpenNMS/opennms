@@ -17,3 +17,4 @@ build.properties
 .*launch
 nb-configuration.xml
 .idea
+features/topology-map/org.opennms.features.topology.app/www-test/
