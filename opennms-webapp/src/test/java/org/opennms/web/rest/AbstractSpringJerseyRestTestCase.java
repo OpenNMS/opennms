@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -238,6 +239,18 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     /**
      * @param url
+     * @param xml
+     * @param statusCode
+     */
+    protected MockHttpServletResponse sendPost(String url, String xml, int statusCode, final String expectedUrlSuffix) throws Exception {
+        final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
+        final String location = response.getHeader("Location").toString();
+        assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
+        return response;
+    }
+
+    /**
+     * @param url
      * @param formData
      */
     protected MockHttpServletResponse sendPut(String url, String formData) throws Exception {
@@ -251,6 +264,19 @@ public abstract class AbstractSpringJerseyRestTestCase {
      */
     protected MockHttpServletResponse sendPut(String url, String formData, int statusCode) throws Exception {
         return sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
+    }
+    
+    /**
+     * @param url
+     * @param formData
+     * @param statusCode
+     * @param expectedUrlSuffix
+     */
+    protected MockHttpServletResponse sendPut(String url, String formData, int statusCode, final String expectedUrlSuffix) throws Exception {
+        final MockHttpServletResponse response = sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
+        final String location = response.getHeader("Location").toString();
+        assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
+        return response;
     }
     
     /**
