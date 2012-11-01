@@ -105,10 +105,11 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
 	}
 
     @Override
-    public void deactivateIfOlderThan(final Timestamp scanTime) {
+    public void deactivateIfOlderThan(final Timestamp scanTime, String source) {
         // UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'
 
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.eq("source",source));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.eq("status", "A"));
 
@@ -119,10 +120,11 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     @Override
-    public void deleteIfOlderThan(final Timestamp scanTime) {
+    public void deleteIfOlderThan(final Timestamp scanTime, String source) {
         // DELETE datalinkinterface WHERE lastpolltime < ? AND status <> 'A'
 
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.eq("source",source));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
 
