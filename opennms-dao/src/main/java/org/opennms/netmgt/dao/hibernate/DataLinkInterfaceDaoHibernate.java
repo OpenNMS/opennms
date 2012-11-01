@@ -146,6 +146,20 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     @Override
+    public void setStatusForNode(final Integer nodeid, String source, final Character action) {
+        // UPDATE datalinkinterface set status = ? WHERE (nodeid = ? OR nodeparentid = ?) and source = ?
+        
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.and(Restrictions.eq("source",source),
+        		Restrictions.or(Restrictions.eq("node.id", nodeid), Restrictions.eq("nodeParentId", nodeid))));
+        
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus(String.valueOf(action));
+            saveOrUpdate(iface);
+        }
+    }
+
+    @Override
     public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final Character action) {
         // UPDATE datalinkinterface set status = ? WHERE (nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?)
 
@@ -169,4 +183,30 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
             saveOrUpdate(iface);
         }
     }
+    
+    @Override
+    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, String source, final Character action) {
+        // UPDATE datalinkinterface set status = ? WHERE source = ? and ((nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?))
+
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.and(Restrictions.eq("source",source),
+            Restrictions.or(
+                Restrictions.and(
+                    Restrictions.eq("node.id", nodeid),
+                    Restrictions.eq("ifIndex", ifIndex)
+                ),
+                Restrictions.and(
+                    Restrictions.eq("nodeParentId", nodeid),
+                    Restrictions.eq("parentIfIndex", ifIndex)
+                )
+            )
+        ));
+        
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus(String.valueOf(action));
+            saveOrUpdate(iface);
+        }
+    }
+
 }

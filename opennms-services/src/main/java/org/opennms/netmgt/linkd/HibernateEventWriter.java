@@ -340,7 +340,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	    m_ipRouteInterfaceDao.setStatusForNode(nodeid, action);
 	    m_stpNodeDao.setStatusForNode(nodeid, action);
 	    m_stpInterfaceDao.setStatusForNode(nodeid, action);
-	    m_dataLinkInterfaceDao.setStatusForNode(nodeid, action);
+	    m_dataLinkInterfaceDao.setStatusForNode(nodeid, getLinkd().getSource(), action);
 	}
 
 	@Override
@@ -352,7 +352,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	        m_atInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
 	        m_stpInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
 	        m_ipRouteInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
-	        m_dataLinkInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
+	        m_dataLinkInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, getLinkd().getSource(), action);
 	    }
 	}
 
