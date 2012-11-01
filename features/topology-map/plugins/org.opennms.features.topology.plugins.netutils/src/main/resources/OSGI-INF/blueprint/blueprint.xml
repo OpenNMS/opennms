@@ -38,41 +38,41 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.Operation" ref="pingOperation">
         <service-properties>
-            <entry key="operation.label" value="Ping?group=additions"/>
+            <entry key="operation.label" value="Ping"/>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="Utils"/>
+            <entry key="operation.contextMenuLocation" value=""/> <!-- SPC-360 -->
         </service-properties>
     </service>
     
 <!--     <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation"> -->
 <!--         <service-properties> -->
-<!--             <entry key="operation.label" value="Traceroute?group=additions"/> -->
+<!--             <entry key="operation.label" value="Traceroute"/> -->
 <!--             <entry key="operation.menuLocation" value="Device"/> -->
-<!--             <entry key="operation.contextMenuLocation" value="Utils"/> -->
+<!--             <entry key="operation.contextMenuLocation" value=""/> -->
 <!--         </service-properties> -->
 <!--     </service> -->
     
     <service interface="org.opennms.features.topology.api.Operation" ref="eventsAlarmsOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="Utils"/>
-            <entry key="operation.label" value="Events/Alarms?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>  <!-- SPC-360 -->
+            <entry key="operation.label" value="Events/Alarms"/>
         </service-properties>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" ref="nodeInfoOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="Utils"/>
-            <entry key="operation.label" value="Node Info?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>  <!-- SPC-360 -->
+            <entry key="operation.label" value="Node Info"/>
         </service-properties>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" ref="resourceGraphsOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="Utils"/>
-            <entry key="operation.label" value="Resource Graphs?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>  <!-- SPC-360 -->
+            <entry key="operation.label" value="Resource Graphs"/>
         </service-properties>
     </service>
     
