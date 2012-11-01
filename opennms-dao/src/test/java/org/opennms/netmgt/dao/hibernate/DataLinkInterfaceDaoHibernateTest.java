@@ -201,7 +201,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getIfIndex(), dli2.getIfIndex());
         assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
         assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());
-        assertEquals('D', dli2.getStatus());
+        assertEquals("D", dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
         assertEquals(dli.getSource(), "updatetest");
