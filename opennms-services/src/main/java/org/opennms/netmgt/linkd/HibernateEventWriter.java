@@ -329,8 +329,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             m_dataLinkInterfaceDao.saveOrUpdate(dli);
             LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);
         }
-        m_dataLinkInterfaceDao.deactivateIfOlderThan(now);
-        m_dataLinkInterfaceDao.deleteIfOlderThan(new Timestamp(now.getTime()-3*discoveryLink.getSnmpPollInterval()));
+        m_dataLinkInterfaceDao.deactivateIfOlderThan(now,getLinkd().getSource());
+        m_dataLinkInterfaceDao.deleteIfOlderThan(new Timestamp(now.getTime()-3*discoveryLink.getSnmpPollInterval()),getLinkd().getSource());
     }
 
 	@Override
@@ -340,7 +340,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	    m_ipRouteInterfaceDao.setStatusForNode(nodeid, action);
 	    m_stpNodeDao.setStatusForNode(nodeid, action);
 	    m_stpInterfaceDao.setStatusForNode(nodeid, action);
-	    m_dataLinkInterfaceDao.setStatusForNode(nodeid, action);
+	    m_dataLinkInterfaceDao.setStatusForNode(nodeid, getLinkd().getSource(), action);
 	}
 
 	@Override
@@ -352,7 +352,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	        m_atInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
 	        m_stpInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
 	        m_ipRouteInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
-	        m_dataLinkInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, action);
+	        m_dataLinkInterfaceDao.setStatusForNodeAndIfIndex(nodeid, ifIndex, getLinkd().getSource(), action);
 	    }
 	}
 

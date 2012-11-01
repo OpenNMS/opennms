@@ -105,10 +105,11 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
 	}
 
     @Override
-    public void deactivateIfOlderThan(final Timestamp scanTime) {
+    public void deactivateIfOlderThan(final Timestamp scanTime, String source) {
         // UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'
 
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.eq("source",source));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.eq("status", "A"));
 
@@ -119,10 +120,11 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     @Override
-    public void deleteIfOlderThan(final Timestamp scanTime) {
+    public void deleteIfOlderThan(final Timestamp scanTime, String source) {
         // DELETE datalinkinterface WHERE lastpolltime < ? AND status <> 'A'
 
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.eq("source",source));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
 
@@ -138,6 +140,20 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
         
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.or(Restrictions.eq("node.id", nodeid), Restrictions.eq("nodeParentId", nodeid)));
+        
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus(String.valueOf(action));
+            saveOrUpdate(iface);
+        }
+    }
+
+    @Override
+    public void setStatusForNode(final Integer nodeid, String source, final Character action) {
+        // UPDATE datalinkinterface set status = ? WHERE (nodeid = ? OR nodeparentid = ?) and source = ?
+        
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.and(Restrictions.eq("source",source),
+        		Restrictions.or(Restrictions.eq("node.id", nodeid), Restrictions.eq("nodeParentId", nodeid))));
         
         for (final DataLinkInterface iface : findMatching(criteria)) {
             iface.setStatus(String.valueOf(action));
@@ -169,4 +185,30 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
             saveOrUpdate(iface);
         }
     }
+    
+    @Override
+    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, String source, final Character action) {
+        // UPDATE datalinkinterface set status = ? WHERE source = ? and ((nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?))
+
+        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.and(Restrictions.eq("source",source),
+            Restrictions.or(
+                Restrictions.and(
+                    Restrictions.eq("node.id", nodeid),
+                    Restrictions.eq("ifIndex", ifIndex)
+                ),
+                Restrictions.and(
+                    Restrictions.eq("nodeParentId", nodeid),
+                    Restrictions.eq("parentIfIndex", ifIndex)
+                )
+            )
+        ));
+        
+        for (final DataLinkInterface iface : findMatching(criteria)) {
+            iface.setStatus(String.valueOf(action));
+            saveOrUpdate(iface);
+        }
+    }
+
 }

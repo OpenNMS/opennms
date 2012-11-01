@@ -269,6 +269,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     private boolean addDependencyToQueue(List<URL> queue) {
         final List<String> dependencies = new ArrayList<String>(missingDependencies);
+        boolean ok = true;
         for (String dependency : dependencies) {
             boolean found = false;
             for (String suffix : MIB_SUFFIXES) {
@@ -286,10 +287,10 @@ public class JsmiMibParser implements MibParser, Serializable {
             }
             if (!found) {
                 LogUtils.warnf(this, "Couldn't find dependency %s on %s", dependency, mibDirectory);
-                return false;
+                ok = false;
             }
         }
-        return true;
+        return ok;
     }
 
     /**

@@ -71,11 +71,16 @@ public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer
 
     DataLinkInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifindex);
 
-    void deactivateIfOlderThan(Timestamp now);
+    void deactivateIfOlderThan(Timestamp now, String source);
 
-    void deleteIfOlderThan(Timestamp now);
+    void deleteIfOlderThan(Timestamp now, String source);
 
     void setStatusForNode(Integer nodeid, Character action);
 
     void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
+    
+    void setStatusForNode(Integer nodeid, String source, Character action);
+
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, String source, Character action);
+
 }

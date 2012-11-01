@@ -996,4 +996,8 @@ public class Linkd extends AbstractServiceDaemon {
     public Map<String, List<AtInterface>> getAtInterfaces(String packageName) {
         return m_macToAtinterface.get(packageName);
     }
+
+	public String getSource() {
+		return "linkd";
+	}
 }

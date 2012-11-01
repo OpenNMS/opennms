@@ -111,4 +111,19 @@ public class SPC465 {
         }
     }
 
+    /**
+     * Test Juniper IF-MIB.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testJuniperIfMib() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "JUNIPER-IF-MIB.mib"))) {
+            Assert.fail("The JUNIPER-IF-MIB.mib must contain problems");
+        } else {
+            Assert.assertFalse(parser.getMissingDependencies().isEmpty());
+            Assert.assertEquals("[HCNUM-TC]", parser.getMissingDependencies().toString());
+        }
+    }
+
 }
