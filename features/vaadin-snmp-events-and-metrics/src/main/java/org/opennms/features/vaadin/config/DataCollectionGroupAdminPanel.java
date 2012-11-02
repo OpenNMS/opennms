@@ -134,20 +134,21 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                     getApplication().getMainWindow().showNotification("Please select a data collection group configuration file.");
                     return;
                 }
+                final File file = (File) dcGroupSource.getValue();
                 MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                                "Are you sure?",
                                                MessageBox.Icon.QUESTION,
-                                               "Do you really want to remove the file " + dcGroupSource.getValue() + "?<br/>This cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
+                                               "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
                 mb.addStyleName(Runo.WINDOW_DIALOG);
                 mb.show(new EventListener() {
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
-                            File file = (File) dcGroupSource.getValue();
                             LogUtils.infof(this, "deleting file %s", file);
                             if (file.delete()) {
                                 try {
+                                    // Updating datacollection-config.xml
                                     File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
                                     DatacollectionConfig config = JaxbUtils.unmarshal(DatacollectionConfig.class, configFile);
                                     boolean modified = false;
@@ -164,6 +165,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                         LogUtils.infof(this, "updating data colleciton configuration on %s.", configFile);
                                         JaxbUtils.marshal(config, new FileWriter(configFile));
                                     }
+                                    // Updating UI Components
                                     dcGroupSource.select(null);
                                     removeDataCollectionGroupPanel();
                                 } catch (Exception e) {
