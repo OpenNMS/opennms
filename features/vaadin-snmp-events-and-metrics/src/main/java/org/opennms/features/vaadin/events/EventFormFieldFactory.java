@@ -87,10 +87,14 @@ public final class EventFormFieldFactory implements FormFieldFactory {
             return descr;
         }
         if ("operinstruct".equals(propertyId)) {
-            final TextArea oper = new TextArea("Operator Instructions");
+            final TextArea oper = new TextArea("Operator Instructions") {
+                @Override
+                public Object getValue() { // This is because of the intern usage on Event.setOperInstruct()
+                    return super.getValue() == null ? "" : super.getValue();
+                }
+            };
             oper.setWidth("100%");
             oper.setRows(10);
-            oper.setRequired(false);
             oper.setNullRepresentation("");
             return oper;
         }
