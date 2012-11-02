@@ -219,7 +219,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             FileWriter writer = new FileWriter(file);
             JaxbUtils.marshal(dcGroup, writer);
             logger.info("Saving XML data into " + file.getAbsolutePath());
-            logger.warn("Remember to update datacollection-config.xml to include the group " + dcGroup.getName() + " and restart OpenNMS.");
+            logger.warn("Remember to update datacollection-config.xml to include the group " + dcGroup.getName() + " into an SNMP collection.");
             // Force reload datacollection-config.xml to be able to configure SNMP collections.
             try {
                 final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
