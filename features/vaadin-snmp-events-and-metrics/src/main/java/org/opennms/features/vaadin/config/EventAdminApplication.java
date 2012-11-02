@@ -113,11 +113,13 @@ public class EventAdminApplication extends Application {
         toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
 
         final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
+        final XmlFileContainer container = new XmlFileContainer(eventsDir, true);
+        container.addExcludeFile("default.events.xml"); // This is a protected file, should not be updated.
         final ComboBox eventSource = new ComboBox();
         toolbar.addComponent(eventSource);
         eventSource.setImmediate(true);
         eventSource.setNullSelectionAllowed(false);
-        eventSource.setContainerDataSource(new XmlFileContainer(eventsDir));
+        eventSource.setContainerDataSource(container);
         eventSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         eventSource.addListener(new ComboBox.ValueChangeListener() {
             @Override
