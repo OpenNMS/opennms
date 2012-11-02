@@ -53,6 +53,8 @@ public final class EventFormFieldFactory implements FormFieldFactory {
         if ("logmsgDest".equals(propertyId)) {
             final ComboBox dest = new ComboBox("Destination");
             dest.addItem("logndisplay");
+            dest.addItem("logonly");
+            dest.addItem("suppress");
             dest.addItem("donotpersist");
             dest.addItem("discardtraps");
             dest.setNullSelectionAllowed(false);
@@ -64,6 +66,7 @@ public final class EventFormFieldFactory implements FormFieldFactory {
             content.setWidth("100%");
             content.setRows(10);
             content.setRequired(true);
+            content.setNullRepresentation("");
             return content;
         }
         if ("severity".equals(propertyId)) {
@@ -80,7 +83,16 @@ public final class EventFormFieldFactory implements FormFieldFactory {
             descr.setWidth("100%");
             descr.setRows(10);
             descr.setRequired(true);
+            descr.setNullRepresentation("");
             return descr;
+        }
+        if ("operinstruct".equals(propertyId)) {
+            final TextArea oper = new TextArea("Operator Instructions");
+            oper.setWidth("100%");
+            oper.setRows(10);
+            oper.setRequired(false);
+            oper.setNullRepresentation("");
+            return oper;
         }
         if ("maskElements".equals(propertyId)) {
             final MaskElementField field = new MaskElementField();
