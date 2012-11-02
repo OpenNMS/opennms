@@ -28,20 +28,42 @@
 
 package org.opennms.features.topology.plugins.widget.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.ListSelect;
 
 public class SimpleViewContribution implements IViewContribution {
-
+    
+    private static final List<String> cities = Arrays.asList(new String[] {
+            "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo", "Paris",
+            "Stockholm" });
+    
+    @SuppressWarnings("serial")
     @Override
-    public Component getView(WidgetContext widgetContext) {
-        Label label = new Label("This is a simple widget component");
-        label.setHeight("50px");
-        return label;
+    public Component getView(final WidgetContext widgetContext) {
+        
+        ListSelect listSelect = new ListSelect("Select a city", cities);
+        listSelect.setHeight("100%");
+        listSelect.setWidth("100%");
+        listSelect.setImmediate(true);
+        listSelect.addListener(new ValueChangeListener() {
+            
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                widgetContext.getMainWindow().showNotification("" + event.getProperty());
+                
+            }
+        });
+        
+        return listSelect;
     }
 
     @Override

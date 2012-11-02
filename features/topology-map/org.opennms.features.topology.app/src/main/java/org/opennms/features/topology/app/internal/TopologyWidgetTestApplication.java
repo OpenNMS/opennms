@@ -76,6 +76,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private MenuBar m_menuBar;
 	private TopoContextMenu m_contextMenu;
 	private AbsoluteLayout m_layout;
+	private AbsoluteLayout m_rootLayout;
 	private IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
 	private WidgetManager m_treeWidgetManager;
@@ -98,12 +99,17 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	public void init() {
 	    setTheme("topo_default");
 	    
+	    m_rootLayout = new AbsoluteLayout();
+	    m_rootLayout.setSizeFull();
+	    
+	    m_window = new Window("OpenNMS Topology");
+        m_window.setContent(m_rootLayout);
+        setMainWindow(m_window);
+	    
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
-
-		m_window = new Window("OpenNMS Topology");
-		m_window.setContent(m_layout);
-		setMainWindow(m_window);
+		m_rootLayout.addComponent(m_layout);
+		
 
 		Refresher refresher = new Refresher();
 		refresher.setRefreshInterval(5000);
@@ -214,7 +220,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
 		m_commandManager.addCommandUpdateListener(this);
 
-
 		menuBarUpdated(m_commandManager);
 		if(m_widgetManager.widgetCount() != 0) {
 		    updateWidgetView(m_widgetManager);
@@ -259,7 +264,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             }
             
             m_layout.removeAllComponents();
-            m_layout.addComponent(m_menuBar);
             m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
             m_layout.requestRepaint();
         } else {
@@ -280,10 +284,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             m_viewContribLayout.addComponent(widgetManager.getTabSheet(this));
             
             m_layout.removeAllComponents();
-            m_layout.addComponent(m_menuBar);
             m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
             m_layout.requestRepaint();
             
+        }
+        
+        if(m_contextMenu != null && m_contextMenu.getParent() == null) {
+            getMainWindow().addComponent(m_contextMenu);
         }
     }
 
@@ -391,7 +398,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	@Override
 	public void menuBarUpdated(CommandManager commandManager) {
 		if(m_menuBar != null) {
-			m_layout.removeComponent(m_menuBar);
+			m_rootLayout.removeComponent(m_menuBar);
 		}
 
 		if(m_contextMenu != null) {
@@ -400,7 +407,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
 		m_menuBar.setWidth("100%");
-		m_layout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+		m_rootLayout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
 		getMainWindow().addComponent(m_contextMenu);
