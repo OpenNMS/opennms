@@ -47,7 +47,7 @@ public class RedoLayoutOperation implements Operation {
 
     @Override
     public boolean display(List<Object> targets, OperationContext operationContext) {
-        return true;
+        return targets != null && targets.size() == 1 && targets.get(0) == null;
     }
 
     @Override

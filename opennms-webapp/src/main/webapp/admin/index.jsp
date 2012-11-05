@@ -236,7 +236,9 @@
         </p>
               
 
-     <p><b>Manage thresholds</b>: Allows you to configure (add/remove/modify) thresholds. 
+     <p><b>Manage thresholds</b>: Allows you to configure (add/remove/modify) thresholds.</p>
+
+     <p><b>Send Event</b>: Allows you to build a specific event and send it to the system.</p>
 
         <p><b>Configure Notifications</b>: Create and manage notification escalation
             plans, called <em>destination paths</em>. A destination path is associated to

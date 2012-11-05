@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import com.vaadin.data.util.FilesystemContainer;
 
@@ -43,14 +44,8 @@ import com.vaadin.data.util.FilesystemContainer;
 @SuppressWarnings("serial")
 public class XmlFileContainer extends FilesystemContainer {
 
-    /**
-     * Instantiates a new XML file container.
-     *
-     * @param root the root
-     */
-    public XmlFileContainer(File root) {
-        super(root, "xml", true);
-    }
+    /** The exclude list. */
+    protected List<String> excludeList = new ArrayList<String>();
 
     /**
      * Instantiates a new XML file container.
@@ -71,10 +66,29 @@ public class XmlFileContainer extends FilesystemContainer {
         Iterator<File> it = files.iterator();
         while (it.hasNext()) {
             File f = it.next();
-            if (f.isDirectory())
+            if (f.isDirectory() || excludeList.contains(f.getName())) {
                 it.remove();
+            }
         }
         return Collections.unmodifiableCollection(files);
+    }
+
+    /**
+     * Adds the exclude file.
+     *
+     * @param excludeFile the exclude file
+     */
+    public void addExcludeFile(String excludeFile) {
+        excludeList.add(excludeFile);
+    }
+
+    /**
+     * Removes the exclude file.
+     *
+     * @param excludeFile the exclude file
+     */
+    public void removeExcludeFile(String excludeFile) {
+        excludeList.remove(excludeFile);
     }
 
 }

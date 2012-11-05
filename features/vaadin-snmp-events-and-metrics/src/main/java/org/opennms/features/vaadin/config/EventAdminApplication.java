@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.config;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
@@ -112,11 +113,13 @@ public class EventAdminApplication extends Application {
         toolbar.setComponentAlignment(comboLabel, Alignment.MIDDLE_LEFT);
 
         final File eventsDir = new File(ConfigFileConstants.getFilePathString(), "events");
+        final XmlFileContainer container = new XmlFileContainer(eventsDir, true);
+        container.addExcludeFile("default.events.xml"); // This is a protected file, should not be updated.
         final ComboBox eventSource = new ComboBox();
         toolbar.addComponent(eventSource);
         eventSource.setImmediate(true);
         eventSource.setNullSelectionAllowed(false);
-        eventSource.setContainerDataSource(new XmlFileContainer(eventsDir));
+        eventSource.setContainerDataSource(container);
         eventSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
         eventSource.addListener(new ComboBox.ValueChangeListener() {
             @Override
@@ -162,21 +165,25 @@ public class EventAdminApplication extends Application {
                     getMainWindow().showNotification("Please select an event configuration file.");
                     return;
                 }
+                final File file = (File) eventSource.getValue();
                 MessageBox mb = new MessageBox(getMainWindow(),
                                                "Are you sure?",
                                                MessageBox.Icon.QUESTION,
-                                               "Do you really want to remove the file " + eventSource.getValue() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
+                                               "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
                 mb.addStyleName(Runo.WINDOW_DIALOG);
                 mb.show(new EventListener() {
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
-                            File file = (File) eventSource.getValue();
+                            LogUtils.infof(this, "deleting file %s", file);
                             if (file.delete()) {
                                 try {
+                                    // Updating eventconf.xml
                                     boolean modified = false;
-                                    for (Iterator<String> it = eventConfDao.getRootEvents().getEventFileCollection().iterator(); it.hasNext();) {
+                                    File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+                                    Events config = JaxbUtils.unmarshal(Events.class, configFile);
+                                    for (Iterator<String> it = config.getEventFileCollection().iterator(); it.hasNext();) {
                                         String fileName = it.next();
                                         if (file.getAbsolutePath().contains(fileName)) {
                                             it.remove();
@@ -184,10 +191,11 @@ public class EventAdminApplication extends Application {
                                         }
                                     }
                                     if (modified) {
-                                        eventConfDao.saveCurrent();
+                                        JaxbUtils.marshal(config, new FileWriter(configFile));
                                         EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
                                         eventProxy.send(eb.getEvent());
                                     }
+                                    // Updating UI Components
                                     eventSource.select(null);
                                     if (layout.getComponentCount() > 1)
                                         layout.removeComponent(layout.getComponent(1));

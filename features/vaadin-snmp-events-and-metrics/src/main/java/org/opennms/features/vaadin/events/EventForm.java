@@ -63,13 +63,13 @@ public abstract class EventForm extends Form implements ClickListener {
         "logmsgDest",
         "severity",
         "alarmData",
+        "operinstruct",
         "maskElements",
         "maskVarbinds",
         "varbindsdecodeCollection"
         /*
          * Not Implemented:
          * 
-         * operinstruct
          * autoactionCollection (CustomField)
          * operactionCollection (CustomField)
          * correlation (CustomField)
