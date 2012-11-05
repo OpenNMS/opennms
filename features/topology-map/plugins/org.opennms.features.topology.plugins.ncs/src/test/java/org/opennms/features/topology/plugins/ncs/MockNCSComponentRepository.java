@@ -84,6 +84,12 @@ public class MockNCSComponentRepository implements NCSComponentRepository {
     }
 
     @Override
+    public List<NCSComponent> findByType(String type) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public NCSComponent findByTypeAndForeignIdentity(String type,
             String foreignSource, String foreignId) {
         // TODO Auto-generated method stub

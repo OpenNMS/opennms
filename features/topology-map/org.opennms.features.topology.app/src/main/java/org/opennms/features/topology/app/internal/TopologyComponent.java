@@ -39,10 +39,10 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.SelectionListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
@@ -62,11 +62,7 @@ import com.vaadin.ui.ClientWidget;
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 
-    public interface SelectionListener{
-        public void onSelectionUpdate(Container container);
-    }
-    
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 	
 	public class MapManager {
 

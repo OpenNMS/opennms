@@ -34,7 +34,6 @@ import org.opennms.netmgt.model.OnmsCriteria;
 
 public interface NCSComponentRepository {
 
-	   
     /**
      * This is used to lock the table in order to implement upsert type operations
      */
@@ -45,8 +44,6 @@ public interface NCSComponentRepository {
      * <p>initialize</p>
      *
      * @param obj a {@link java.lang.Object} object.
-     * @param <T> a T object.
-     * @param <K> a K object.
      */
     void initialize(Object obj);
 
@@ -69,8 +66,6 @@ public interface NCSComponentRepository {
 
     /**
      * <p>delete</p>
-     *
-     * @param entity a T object.
      */
     void delete(NCSComponent component);
 
@@ -99,49 +94,54 @@ public interface NCSComponentRepository {
     
     /**
      * <p>get</p>
-     *
-     * @param id a K object.
-     * @return a T object.
      */
     NCSComponent get(Long id);
 
     /**
      * <p>load</p>
-     *
-     * @param id a K object.
-     * @return a T object.
      */
     NCSComponent load(Long id);
 
     /**
      * <p>save</p>
-     *
-     * @param entity a T object.
      */
     void save(NCSComponent component);
 
     /**
      * <p>saveOrUpdate</p>
-     *
-     * @param entity a T object.
      */
     void saveOrUpdate(NCSComponent component);
 
     /**
      * <p>update</p>
-     *
-     * @param entity a T object.
      */
     void update(NCSComponent component);
-    
+
+	/**
+	 * @param type
+	 */
+	List<NCSComponent> findByType(String type);
+
+	/**
+	 * @param type
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	NCSComponent findByTypeAndForeignIdentity(String type, String foreignSource, String foreignId);
-	
+
+	/**
+	 * @param component
+	 */
 	List<NCSComponent> findComponentsThatDependOn(NCSComponent component);
-	
+
+	/**
+	 * @param attrKey
+	 * @param attrValue
+	 */
 	List<NCSComponent> findComponentsWithAttribute(String attrKey, String attrValue);
 
-
+	/**
+	 * @param nodeid
+	 */
 	List<NCSComponent> findComponentsByNodeId(int nodeid);
-
-
 }

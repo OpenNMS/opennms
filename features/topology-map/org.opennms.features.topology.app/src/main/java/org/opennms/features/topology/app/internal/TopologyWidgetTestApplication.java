@@ -37,10 +37,10 @@ import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.api.support.SelectionTree;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.features.topology.app.internal.ui.SelectionTree;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;

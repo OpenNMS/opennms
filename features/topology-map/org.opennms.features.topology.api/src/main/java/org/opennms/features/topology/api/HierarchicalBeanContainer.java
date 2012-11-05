@@ -40,6 +40,24 @@ public abstract class HierarchicalBeanContainer<K, T> extends BeanContainer<K,T>
 	}
 
 	/**
+	 * This is a naive implementation of this method that just checks the size of
+	 * the collection returned by {@link #getChildren(Object)}.
+	 */
+	@Override
+	public boolean hasChildren(Object key) {
+		return getChildren(key).size() > 0;
+	}
+
+	/**
+	 * This is a naive implementation of this method that just checks to see if
+	 * {@link #getParent(Object)} returns null.
+	 */
+	@Override
+	public boolean isRoot(Object key) {
+		return (getParent(key) == null);
+	}
+
+	/**
 	 * Expose {@link #fireItemSetChange()} as a public method.
 	 */
 	public void fireItemSetChange() {

@@ -42,6 +42,11 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 	}
 
 	@Override
+	public List<NCSComponent> findByType(String type) {
+		return find("from NCSComponent as ncs where ncs.type = ?", type);
+	}
+
+	@Override
 	public NCSComponent findByTypeAndForeignIdentity(String type, String foreignSource, String foreignId) {
 		return findUnique("from NCSComponent as ncs where ncs.type = ? and ncs.foreignSource = ? and ncs.foreignId = ?", type, foreignSource, foreignId);
 	}
