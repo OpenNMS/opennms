@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal.ui;
+package org.opennms.features.topology.api.support;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
-import org.opennms.features.topology.app.internal.TopologyComponent.SelectionListener;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;

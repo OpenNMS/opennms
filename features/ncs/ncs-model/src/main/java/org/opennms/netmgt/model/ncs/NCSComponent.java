@@ -83,6 +83,10 @@ public class NCSComponent {
 	    public NodeIdentification() {
 		}
 	    
+	    /**
+	     * @param nodeForeignSource
+	     * @param nodeForeignId
+	     */
 	    public NodeIdentification(String nodeForeignSource, String nodeForeignId) {
 	    	m_foreignSource = nodeForeignSource;
 	    	m_foreignId = nodeForeignId;
@@ -186,6 +190,11 @@ public class NCSComponent {
     @XmlTransient
 	private Set<NCSComponent> m_parents = new LinkedHashSet<NCSComponent>();
     
+    /**
+     * @param type
+     * @param foreignSource
+     * @param foreignId
+     */
     public NCSComponent(final String type, final String foreignSource, final String foreignId) {
     	this();
     	m_type = type;
@@ -285,11 +294,11 @@ public class NCSComponent {
 
 	@ManyToMany
 	@JoinTable(name="subcomponents", joinColumns = { @JoinColumn(name="subcomponent_id") }, inverseJoinColumns = { @JoinColumn(name="component_id") })
-	public Set<NCSComponent> getParentcomponents() {
+	public Set<NCSComponent> getParentComponents() {
 		return m_parents ;
 	}
 
-	public void setParentcomponents(final Set<NCSComponent> parents) {
+	public void setParentComponents(final Set<NCSComponent> parents) {
 		m_parents = parents;
 	}
 
@@ -311,6 +320,10 @@ public class NCSComponent {
 		getSubcomponents().remove(subComponent);
 	}
 	
+	/**
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	public NCSComponent getSubcomponent(String foreignSource, String foreignId) {
 		for(NCSComponent subcomponent : getSubcomponents()) {
 			if (subcomponent.hasIdentity(foreignSource, foreignId)) {
@@ -320,6 +333,10 @@ public class NCSComponent {
 		return null;
 	}
 	
+	/**
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	public boolean hasIdentity(String foreignSource, String foreignId) {
 		return m_foreignSource.equals(foreignSource) && m_foreignId.equals(foreignId);
 	}

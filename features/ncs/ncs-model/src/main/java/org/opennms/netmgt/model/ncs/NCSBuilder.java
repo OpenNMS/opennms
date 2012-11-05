@@ -36,61 +36,104 @@ public class NCSBuilder {
 	final private NCSBuilder m_parent;
 	final private NCSComponent m_component;
 	
+	/**
+	 * @param type
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	public NCSBuilder(String type, String foreignSource, String foreignId) {
 		this(null, new NCSComponent(type, foreignSource, foreignId));
 	}
 	
+	/**
+	 * @param parent
+	 * @param component
+	 */
 	public NCSBuilder(NCSBuilder parent, NCSComponent component) {
 		m_parent = parent;
 		m_component = component;
 	}
 	
+	/**
+	 * @param foreignSource
+	 */
 	public NCSBuilder setForeignSource(String foreignSource) {
 		m_component.setForeignSource(foreignSource);
 		return this;
 	}
 	
+	/**
+	 * @param foreignId
+	 */
 	public NCSBuilder setForeignId(String foreignId) {
 		m_component.setForeignId(foreignId);
 		return this;
 	}
 	
+	/**
+	 * @param nodeForeignSource
+	 * @param nodeForeignId
+	 */
 	public NCSBuilder setNodeIdentity(String nodeForeignSource, String nodeForeignId) {
 		m_component.setNodeIdentification(new NodeIdentification(nodeForeignSource, nodeForeignId));
 		return this;
 	}
 	
+	/**
+	 * @param type
+	 */
 	public NCSBuilder setType(String type) {
 		m_component.setType(type);
 		return this;
 	}
 	
+	/**
+	 * @param name
+	 */
 	public NCSBuilder setName(String name) {
 		m_component.setName(name);
 		return this;
 	}
 	
+	/**
+	 * @param upEventUei
+	 */
 	public NCSBuilder setUpEventUei(String upEventUei) {
 		m_component.setUpEventUei(upEventUei);
 		return this;
 	}
 
+	/**
+	 * @param downEventUei
+	 */
 	public NCSBuilder setDownEventUei(String downEventUei) {
 		m_component.setDownEventUei(downEventUei);
 		return this;
 	}
 
+	/**
+	 * @param key
+	 * @param value
+	 */
 	public NCSBuilder setAttribute(String key, String value) {
 		m_component.setAttribute(key, value);
 		return this;
 	}
 	
+	/**
+	 * @param requirements
+	 */
 	public NCSBuilder setDependenciesRequired(DependencyRequirements requirements)
 	{
 		m_component.setDependenciesRequired(requirements);
 		return this;
 	}
 
+	/**
+	 * @param type
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	public NCSBuilder pushComponent(String type, String foreignSource, String foreignId) {
 		NCSComponent sub = new NCSComponent(type, foreignSource, foreignId);
 		m_component.addSubcomponent(sub);
