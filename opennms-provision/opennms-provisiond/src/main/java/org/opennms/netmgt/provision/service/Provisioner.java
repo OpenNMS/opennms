@@ -185,7 +185,12 @@ public class Provisioner implements SpringServiceDaemon {
     @Override
     public void start() throws Exception {
         m_manager.initializeAdapters();
-        scheduleRescanForExistingNodes();
+        String enabled = System.getProperty("org.opennms.provisiond.scheduleRescanForExistingNodes", "true");
+        if (Boolean.valueOf(enabled)) {
+            scheduleRescanForExistingNodes();
+        } else {
+            log().warn("The schedule rescan for existing nodes is disabled.");
+        }
         m_importSchedule.start();
     }
 
