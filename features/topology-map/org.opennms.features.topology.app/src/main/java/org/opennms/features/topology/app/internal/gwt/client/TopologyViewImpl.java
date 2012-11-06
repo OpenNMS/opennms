@@ -1,6 +1,8 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
@@ -64,6 +66,36 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public void setViewRenderer(TopologyViewRenderer viewRenderer) {
         m_viewRenderer = viewRenderer;
+    }
+
+    @Override
+    public SVGElement getSVGElement() {
+        return m_svg.cast();
+    }
+
+    @Override
+    public SVGGElement getSVGViewPort() {
+        return m_svgViewPort.cast();
+    }
+
+    @Override
+    public Element getEdgeGroup() {
+        return m_edgeGroup;
+    }
+
+    @Override
+    public Element getVertexGroup() {
+        return m_vertexGroup;
+    }
+
+    @Override
+    public Element getReferenceViewPort() {
+        return m_referenceMapViewport;
+    }
+
+    @Override
+    public Element getMarqueeElement() {
+        return m_marquee;
     }
     
 

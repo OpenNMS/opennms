@@ -384,30 +384,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	@UiField
 	FlowPanel m_componentHolder;
 	
-	@UiField
-	Element m_svg;
-
-	@UiField
-	Element m_svgViewPort;
-
-	@UiField
-	Element m_edgeGroup;
-
-	@UiField
-	Element m_vertexGroup;
-
-	@UiField
-	Element m_referenceMap;
-
-	@UiField
-	Element m_referenceMapViewport;
-
-	@UiField
-	Element m_referenceMapBorder;
-	
-	@UiField
-	Element m_marquee;
-	
 	/**
 	 * This map contains captions and icon urls for actions like: * "33_c" ->
 	 * "Edit" * "33_i" -> "http://dom.com/edit.png"
@@ -438,9 +414,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	protected void onLoad() {
 		super.onLoad();
 		
-//		m_topologyView = new TopologyViewImpl();
-//		m_topologyView.setPresenter(this);
-//		m_componentHolder.add(m_topologyView.asWidget());
+		m_topologyView = new TopologyViewImpl();
+		m_topologyView.setPresenter(this);
+		m_componentHolder.add(m_topologyView.asWidget());
 		
 		sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
 		
@@ -448,7 +424,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
-		setupDragBehavior(m_svg, m_svgDragHandlerManager);
+		setupDragBehavior(getSVGElement(), m_svgDragHandlerManager);
 		
 		D3Behavior dragBehavior = new D3Behavior() {
 
@@ -465,11 +441,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 		};
 
-		m_graphDrawer = new GraphDrawer(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler(), edgeClickHandler());
-		m_graphDrawerNoTransition = new GraphDrawerNoTransition(m_graph, m_vertexGroup, m_edgeGroup, dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler(), edgeClickHandler());
+		m_graphDrawer = new GraphDrawer(m_graph, getVertexGroup(), getEdgeGroup(), dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler(), edgeClickHandler());
+		m_graphDrawerNoTransition = new GraphDrawerNoTransition(m_graph, getVertexGroup(), getEdgeGroup(), dragBehavior, vertexClickHandler(), vertexContextMenuHandler(), vertexTooltipHandler(), edgeContextHandler(), edgeToolTipHandler(), edgeClickHandler());
 	}
 
-
+    
 	private void setupDragBehavior(final Element panElem, final DragHandlerManager handlerManager) {
 	    
 		D3Drag d3Pan = D3.getDragBehavior();
@@ -567,7 +543,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     			break;
     			
     		case Event.ONCLICK:
-    		    if(event.getEventTarget().equals(m_svg)) {
+    		    if(event.getEventTarget().equals(getSVGElement())) {
     		        deselectAllItems(true);
     		    }
     		    break;
@@ -936,7 +912,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				 .scale(zoomFactor)
 				.translate(-p.getX(), -p.getY());
 		SVGMatrix ctm = g.getCTM().multiply(m);
-		D3.d3().select(m_svgViewPort).transition().duration(1000).attr("transform", matrixTransform(ctm));
+		D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", matrixTransform(ctm));
 
 	}
 
@@ -949,8 +925,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 	@Override
 	public SVGElement getSVGElement() {
-		return m_svg.cast();
+		return m_topologyView.getSVGElement();
 	}
+	
+	public Element getEdgeGroup() {
+        return m_topologyView.getEdgeGroup();
+    }
 
 	private void setCTM(SVGGElement elem, SVGMatrix matrix) {
 		elem.setAttribute("transform", matrixTransform(matrix));
@@ -985,17 +965,17 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	
     @Override
     public Element getVertexGroup() {
-        return m_vertexGroup;
+        return m_topologyView.getVertexGroup();
     }
 
     @Override
     public Element getReferenceViewPort() {
-        return m_referenceMapViewport;
+        return m_topologyView.getReferenceViewPort();
     }
 
     @Override
     public SVGGElement getSVGViewPort() {
-        return m_svgViewPort.cast();
+        return m_topologyView.getSVGViewPort();
     }
 
     @Override
@@ -1008,7 +988,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
     @Override
     public Element getMarqueeElement() {
-        return m_marquee;
+        return m_topologyView.getMarqueeElement();
+        //return m_marquee;
     }
 
     /**
