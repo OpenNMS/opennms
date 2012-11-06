@@ -81,6 +81,21 @@ public class D3 extends JavaScriptObject {
 		}
 		return this.attr(attrName, f);
     }-*/;
+    
+    public final native void timer(BooleanFunc func) /*-{
+        var f = function(){
+            return func.@org.opennms.features.topology.app.internal.gwt.client.d3.BooleanFunc::call()();
+        }
+        $wnd.d3.timer(f);
+    }-*/;
+    
+    public final native void timer() /*-{
+        $wnd.d3.timer(function() {
+            $wnd.console.log("timer tick");
+            return false;
+            
+        })
+    }-*/;
 
     public final native D3 selectAll(String selectionName) /*-{
         return this.selectAll(selectionName);
@@ -297,6 +312,8 @@ public class D3 extends JavaScriptObject {
         return this.data().length;
         
     }-*/;
+
+    
 
 
 }

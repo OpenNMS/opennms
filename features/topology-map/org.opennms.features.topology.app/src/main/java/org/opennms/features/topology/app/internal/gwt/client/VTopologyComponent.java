@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
+import org.opennms.features.topology.app.internal.gwt.client.d3.BooleanFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -250,8 +251,22 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers()).with(enterTransition());
 
 			//vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition());
+			
+			/****** Setup timer for all topology animations that are dependent on another property ******/
+			D3.d3().timer(new BooleanFunc() {
+                
+                @Override
+                public boolean call() {
+                    D3 viewPort = D3.d3().select(VTopologyComponent.this.getSVGViewPort());
+                    double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
+                    final double strokeWidth = 5 * (1/scale);
+                    D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", "" + strokeWidth);
+                    return false;
+                }
+            });
 
 		}
+		
 
 		protected D3Behavior enterTransition() {
 			return fadeIn(500, 1000);
@@ -345,7 +360,7 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 		}
 
 	}
-
+	
 	private static VTopologyComponentUiBinder uiBinder = GWT
 			.create(VTopologyComponentUiBinder.class);
 	
@@ -406,7 +421,6 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
-
 		m_graph = GWTGraph.create();
 	}
 
@@ -1122,25 +1136,19 @@ public class VTopologyComponent extends Composite implements Paintable, ActionOw
         double translateX = (svgCenterX - rect.getCenterX());
         double translateY = (svgCenterY - rect.getCenterY());
         
-      //transform="translate( -centerX*(factor-1), -centerY*(factor-1) ) scale(factor)
         final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
         SVGMatrix transform = svg.createSVGMatrix()
             .translate(translateX, translateY)
             .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
-            .scale(scale)
-            ;
+            .scale(scale);
                    
         String transformVal = matrixTransform(transform);
-        
-        final double strokeWidth = 5 * (1/scale);
-        //D3.d3().selectAll("line").style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
         
         D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
             
             @Override
             public void call() {
                 setMapScaleNow(scale);
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("opacity", "1").transition().duration(2000).style("stroke-width", "" + strokeWidth);
             }
         });
         
