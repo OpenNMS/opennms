@@ -54,6 +54,7 @@
 	<include file="1.11.1/AlarmNotes.xml"/>
 	<include file="1.11.3/changelog.xml"/>
 	<include file="space-integration/12.1/changelog.xml"/>
+	<include file="space-integration/12.3/changelog.xml"/>
 	<include file="1.11.4/changelog.xml"/>
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
