@@ -6,10 +6,10 @@ public interface VertexListener {
 	
 	public void vertexSetChanged(VertexProvider provider); 
 	
-	public void verticesAdded(VertexProvider provider, List<Vertex> vertices);
+	public void verticesAdded(VertexProvider provider, List<? extends Vertex> vertices);
 	
-	public void verticesUpdated(VertexProvider provider, List<Vertex> vertices);
+	public void verticesUpdated(VertexProvider provider, List<? extends Vertex> vertices);
 	
-	public void verticesRemoved(VertexProvider provider, List<Vertex> vertices);
+	public void verticesRemoved(VertexProvider provider, List<? extends Vertex> vertices);
 	
 }

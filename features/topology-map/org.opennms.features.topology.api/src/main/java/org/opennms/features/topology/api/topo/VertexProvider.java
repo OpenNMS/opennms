@@ -11,17 +11,17 @@ public interface VertexProvider {
 	
 	public Vertex getVertex(VertexRef reference);
 	
-	public List<Vertex> getVertices();
+	public List<? extends Vertex> getVertices();
 	
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references);
+	public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references);
 	
-	public List<Vertex> getRootGroup();
+	public List<? extends Vertex> getRootGroup();
 	
 	public boolean hasChildren(VertexRef group);
 	
 	public Vertex getParent(VertexRef vertex);
 	
-	public List<Vertex> getChildren(VertexRef group);
+	public List<? extends Vertex> getChildren(VertexRef group);
 	
 	public void addVertexListener(VertexListener vertexListener);
 	

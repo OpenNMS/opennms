@@ -11,9 +11,9 @@ public interface EdgeProvider {
 	
 	public Edge getEdge(EdgeRef reference);
 	
-	public List<Edge> getEdges();
+	public List<? extends Edge> getEdges();
 	
-	public List<Edge> getEdges(Collection<? extends EdgeRef> references);
+	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references);
 	
 	public void addEdgeListener(EdgeListener vertexListener);
 	

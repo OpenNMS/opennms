@@ -4,12 +4,12 @@ import java.util.List;
 
 public interface EdgeListener {
 	
-	public void edgeSetChanged(VertexProvider provider); 
+	public void edgeSetChanged(EdgeProvider provider); 
 	
-	public void edgeAdded(VertexProvider provider, List<Vertex> vertices);
+	public void edgesAdded(EdgeProvider provider, List<? extends Edge> edges);
 	
-	public void edgeUpdated(VertexProvider provider, List<Vertex> vertices);
+	public void edgesUpdated(EdgeProvider provider, List<? extends Edge> edges);
 	
-	public void edgeRemoved(VertexProvider provider, List<Vertex> vertices);
+	public void edgesRemoved(EdgeProvider provider, List<? extends Edge> edges);
 	
 }
