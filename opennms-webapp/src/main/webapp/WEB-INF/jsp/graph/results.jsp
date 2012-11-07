@@ -182,13 +182,11 @@
             </c:if>
         </h3>
 
-        <!-- NRTG Starter script -->
+        <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
             function nrtgPopUp(resourceId, report) {
-                window.open( 'nrt/starter?resourceId='+resourceId+'&report='+report, 'window'+resourceId+report, 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
+                window.open( getBaseHref() +'nrt/starter?resourceId='+resourceId+'&report='+report, '', 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
             }
-        </script>
-
 
         <c:choose>
             <c:when test="${param.zoom == 'true'}">
