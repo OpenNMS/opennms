@@ -28,7 +28,11 @@
 
 package org.opennms.web.controller.alarm;
 
+import java.util.List;
+
 import javax.servlet.ServletException;
+
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.slf4j.Logger;
@@ -99,11 +103,13 @@ public class AlarmDetailController extends MultiActionController {
     public ModelAndView detail(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
+        List<OnmsAcknowledgment> acknowledgments = null;
 
         // Try to parse alarm ID as string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("id");
             alarmId = Integer.parseInt(alarmIdString);
+            acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
 
             // Get alarm by ID
             m_alarm = m_webAlarmRepository.getAlarm(alarmId);
@@ -115,7 +121,10 @@ public class AlarmDetailController extends MultiActionController {
         }
 
         // return to view WEB-INF/jsp/alarm/detail.jsp
-        return new ModelAndView("alarm/detail", "alarm", m_alarm);
+        ModelAndView mv = new ModelAndView("alarm/detail");
+        mv.addObject("alarm", m_alarm);
+        mv.addObject("acknowledgments", acknowledgments);
+        return mv;
     }
 
     public ModelAndView clearSticky(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {

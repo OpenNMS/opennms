@@ -32,9 +32,11 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.opennms.core.utils.WebSecurityUtils,
+        import="java.util.List,
+        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
+        org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsSeverity,
         org.opennms.web.springframework.security.Authentication"
         %>
@@ -92,6 +94,8 @@
     if (alarm.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThanOrEqual(OnmsSeverity.CRITICAL)) {
         showClear = true;
     }
+
+    List<OnmsAcknowledgment> acks = (List<OnmsAcknowledgment>) request.getAttribute("acknowledgments");
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
@@ -120,8 +124,6 @@
             &nbsp;
             <% }%>
         </td>
-        <th width="100em">Acknowledged&nbsp;By</th>
-        <td class="divider" width="28%"><%=alarm.getAcknowledgeUser() != null ? alarm.getAcknowledgeUser() : "&nbsp;"%></td>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Last&nbsp;Event</th>
@@ -142,8 +144,6 @@
             &nbsp;
             <% }%>
         </td>
-        <th>Time&nbsp;Acknowledged</th>
-        <td><fmt:formatDate value="<%=alarm.getAcknowledgeTime()%>" type="BOTH" /></td>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>First&nbsp;Event</th>
@@ -165,13 +165,6 @@
             &nbsp;
             <% }%>
         </td>
-        <th>Ticket&nbsp;ID</th>
-        <td><% if (alarm.getTroubleTicket() == null) {%>
-            &nbsp;
-            <% } else {%>
-            <%= alarmTicketLink(alarm)%> 
-            <% }%>
-        </td>
     </tr> 
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Count</th>
@@ -184,6 +177,15 @@
             &nbsp;
             <% }%>
         </td>
+    </tr>
+    <tr class="<%=alarm.getSeverity().getLabel()%>">
+        <th>Ticket&nbsp;ID</th>
+        <td><% if (alarm.getTroubleTicket() == null) {%>
+            &nbsp;
+            <% } else {%>
+            <%= alarmTicketLink(alarm)%> 
+            <% }%>
+        </td>
         <th>Ticket&nbsp;State</th>
         <td><% if (alarm.getTroubleTicketState() == null) {%>
             &nbsp;
@@ -194,7 +196,7 @@
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Reduct.&nbsp;Key</th>
-        <td colspan="5">
+        <td colspan="3">
             <% if (alarm.getReductionKey() != null) {%>
             <%=alarm.getReductionKey()%>
             <% } else {%>
@@ -212,6 +214,23 @@
         <td><%=alarm.getLogMessage()%></td>
     </tr>
 </table>
+
+<% if (acks != null) {%>
+<table>
+    <tr class="<%=alarm.getSeverity().getLabel()%>">
+        <th>Acknowledged&nbsp;By</th>
+        <th>Acknowledged&nbsp;Type</th>
+        <th>Time&nbsp;Acknowledged</th>
+    </tr>
+    <% for (OnmsAcknowledgment ack : acks) {%>
+    <tr class="<%=alarm.getSeverity().getLabel()%>">
+        <td><%=ack.getAckUser()%></td>
+        <td><%=ack.getAckAction()%></td>
+        <td><%=ack.getAckTime()%></td>
+    </tr>
+    <% }%>
+</table>
+<% }%>
 
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">

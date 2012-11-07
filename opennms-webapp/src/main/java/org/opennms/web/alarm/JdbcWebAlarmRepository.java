@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.AlarmCriteria;
@@ -356,7 +357,11 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
         LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
     }
-    
+
+    public List<OnmsAcknowledgment> getAcknowledgments(int alarmId) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
         Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
