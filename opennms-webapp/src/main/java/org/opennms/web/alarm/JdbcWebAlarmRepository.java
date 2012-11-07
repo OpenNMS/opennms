@@ -29,6 +29,7 @@
 package org.opennms.web.alarm;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.*;
@@ -367,6 +368,10 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =? ", criteria);
         LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
+    }
+
+    public List<OnmsAcknowledgment> getAcknowledgments(int alarmId) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
     }
 
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {

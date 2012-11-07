@@ -33,7 +33,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
@@ -249,4 +252,15 @@ public class DaoWebAlarmRepositoryTest {
     public void testRepsoitoryWiredIn(){
         assertNotNull(m_alarmRepo);
     }
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testAcknowledgements(){
+        m_alarmRepo.acknowledgeAlarms(new int[] { 1 }, "agalue", new Date());
+        List<OnmsAcknowledgment> acks = m_alarmRepo.getAcknowledgments(1);
+        Assert.assertNotNull(acks);
+        Assert.assertEquals(1, acks.size());
+        Assert.assertEquals("agalue", acks.get(0).getAckUser());
+    }
+
 }
