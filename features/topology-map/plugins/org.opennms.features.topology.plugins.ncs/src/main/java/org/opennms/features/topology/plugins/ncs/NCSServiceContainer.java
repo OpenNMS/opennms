@@ -29,8 +29,10 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSComp
 		NCSComponent component = m_dao.load(id);
 		if ("Service".equals(component.getType())) {
 			return true;
+		/**
 		} else if ("ServiceElement".equals(component.getType())) {
 			return true;
+		*/
 		} else {
 			return false;
 		}
@@ -43,7 +45,12 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSComp
 		NCSComponent component = m_dao.load(id);
 		List<Long> retval = new ArrayList<Long>();
 		for (NCSComponent sub : component.getSubcomponents()) {
-			retval.add(sub.getId());
+			// Per talks with Paulo, only descend to the level of ServiceElement.
+			// ServiceElementComponents have no representation on the current map
+			// implementation.
+			if("ServiceElement".equals(component.getType())) {
+				retval.add(sub.getId());
+			}
 		}
 		return retval;
 	}

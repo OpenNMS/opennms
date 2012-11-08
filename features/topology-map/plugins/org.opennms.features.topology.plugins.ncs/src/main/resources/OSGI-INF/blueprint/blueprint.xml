@@ -3,6 +3,7 @@
 ">
 
 	<reference id="ncsComponentRepository" interface="org.opennms.netmgt.model.ncs.NCSComponentRepository" availability="mandatory" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
 	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 		<command name="ncs/listcomponents">
@@ -22,6 +23,8 @@
 	<bean id="ncsServiceTree" class="org.opennms.features.topology.plugins.ncs.NCSSelectionTree">
 		<description>This selection tree is a UI component for the NCS tree.</description>
 		<argument ref="ncsFilterableContainer" />
+		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
+		<property name="nodeDao" ref="nodeDao" />
 	</bean>
 
 	<service interface="org.opennms.features.topology.api.IViewContribution" ref="ncsServiceTree">
@@ -29,5 +32,9 @@
 		<service-properties>
 			<entry key="location" value="left"/>
 		</service-properties>
+	</service>
+
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsServiceTree">
+		<description>Also bind the selection tree UI as an EdgeProvider for the topology.</description>
 	</service>
 </blueprint>
