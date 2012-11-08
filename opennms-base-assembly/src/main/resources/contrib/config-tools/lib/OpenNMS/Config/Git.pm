@@ -519,7 +519,12 @@ sub save_changes_compared_to {
 			move($from, $to) or croak "Unable to copy $from to $to: $!";
 		}
 		try {
-			my $result = $self->_git()->command('checkout', $sha, $file);
+			# first, we check if the file is even in the pristine branch
+			my $result = $self->_git()->command('ls-tree', $sha, $file);
+			if ($result !~ /^[\r\n\s]*$/ms) {
+				# if so, check out the pristine version
+				$result = $self->_git()->command('checkout', $sha, $file);
+			}
 		} catch Git::Error::Command with {
 			my $E = shift;
 			croak "Failed to checkout $file from $sha: " . $E->stringify;

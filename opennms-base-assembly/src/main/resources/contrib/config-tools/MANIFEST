@@ -10,7 +10,8 @@ script/git-setup.pl
 script/opennms-pretrans.pl
 script/opennms-post.pl
 script/opennms-posttrans.pl
-t/01-OpenNMS-Config.pl 
+t/01-OpenNMS-Config.pl
+t/02-OpenNMS-Config-Git.pl
 t/10-basic-upgrades.t
 t/11-upgrade-with-second-dependency.t
 t/12-upgrade-with-foreign-package-with-no-pre-and-post.t
@@ -18,7 +19,6 @@ t/13-upgrade-from-release-1-through-release-4-with-foreign.t
 t/14-upgrade-from-unmanaged.t
 t/15-upgrade-from-unmanaged-with-config-changes.t
 t/common.pl
-t/git.t
 t/rpms/feature-a-0.9-1.spec
 t/rpms/feature-a-1.0-1.spec
 t/rpms/feature-a-1.0-2.spec

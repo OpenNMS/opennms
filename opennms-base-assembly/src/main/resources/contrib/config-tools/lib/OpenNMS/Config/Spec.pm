@@ -12,7 +12,6 @@ use File::Path;
 use File::Spec;
 use IO::Handle;
 
-use OpenNMS::Config::Home;
 use OpenNMS::Config::RPM;
 
 require Exporter;

@@ -14,7 +14,7 @@ sub build_rpm {
 	my $spec = OpenNMS::Config::Spec->new($specfile);
 
 	chomp(my $contents = read_file('MANIFEST'));
-	my @files = split(/\n/, $contents);
+	my @files = split(/[\s]*\n/, $contents);
 	print STDERR "\nfiles = " . join(', ', @files) . "\n";
 	system('tar', '-cvzf', 'target/perlfiles.tar.gz', @files) == 0 or croak "unable to build tarball: $!";
 	$spec->add_source("perlfiles.tar.gz", 'target/perlfiles.tar.gz');
@@ -33,7 +33,7 @@ sub assert_no_rpmnew {
 
 sub setup_rpmroot {
 
-	rmtree('target/rpmroot');
+	rmtree('target/rpmroot') unless (! -d 'target/rpmroot');
 	mkpath("target/rpmroot/etc/yum.repos.d");
 	mkpath('target/rpmroot/var/cache/yum');
 	system('rsync', '-avr', '/tmp/yumrepo/', 'target/rpmroot/var/cache/yum/');
@@ -64,6 +64,6 @@ mkpath('/tmp/yumrepo');
 if (-d 'target/rpmroot/var/cache/yum') {
 	system('rsync', '-avr', 'target/rpmroot/var/cache/yum/', '/tmp/yumrepo/');
 }
-rmtree("target");
+rmtree("target") unless (! -d 'target');
 
 1;

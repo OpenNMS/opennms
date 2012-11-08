@@ -45,7 +45,7 @@ $git->commit('add foo');
 $current_branch = $rawgit->command_oneline('branch');
 is($current_branch, '* master');
 
-rmtree($testdir);
+rmtree($testdir) unless (! -d $testdir);
 
 # try again, but with different authors and branch name
 $git->init(
@@ -85,7 +85,7 @@ is($git->get_index_status('bar.txt'), 'modified');
 $git->rm('bar.txt');
 is($git->get_index_status('bar.txt'), 'deleted');
 
-rmtree("target");
+rmtree('target') unless (! -d 'target');
 
 $git = OpenNMS::Config::Git->new("$testdir");
 $git->init(branch_name => 'pristine');
@@ -166,7 +166,7 @@ $git->commit_modifications('added a file, removed a file, modified a file');
 is(scalar(@changes), 0);
 
 sub create_runtime_test_env {
-	rmtree('target');
+	rmtree('target') unless (! -d 'target');
 	$git->init(
 		author_name => 'Horatio',
 		author_email => 'ho@rat.io',
