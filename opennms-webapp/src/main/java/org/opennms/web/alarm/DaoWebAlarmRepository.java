@@ -35,8 +35,10 @@ import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.MemoDao;
 import org.opennms.netmgt.model.*;
@@ -66,6 +68,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
     
     @Autowired
     AckService m_ackService;
+
+    @Autowired
+    AcknowledgmentDao m_ackDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -426,4 +431,14 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
             onmsAlarm.setReductionKeyMemo(null);
         }
     }
+
+    @Override
+    @Transactional
+    public List<OnmsAcknowledgment> getAcknowledgments(int alarmId) {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsAcknowledgment.class);
+        cb.eq("refId", alarmId);
+        cb.eq("ackType", AckType.ALARM);
+        return m_ackDao.findMatching(cb.toCriteria());
+    }
+
 }

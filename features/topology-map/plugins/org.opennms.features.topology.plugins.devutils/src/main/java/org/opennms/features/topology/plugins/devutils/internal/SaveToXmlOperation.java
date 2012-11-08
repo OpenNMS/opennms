@@ -45,30 +45,24 @@ import org.opennms.features.topology.api.TopologyProvider;
 
 public class SaveToXmlOperation implements Operation {
     
-    TopologyProvider m_topologyProvider;
-	
-    public SaveToXmlOperation(TopologyProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
     	
-    	
+    	TopologyProvider topologyProvider = operationContext.getGraphContainer().getDataSource();
     	
 		Map<Object, WrappedVertex> idMap = new HashMap<Object, WrappedVertex>();
 		
 		// first create all the vertices;
 		List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
-		for(Object vertexId : m_topologyProvider.getVertexIds()) {
-			WrappedVertex wrappedVertex = WrappedVertex.create(m_topologyProvider.getVertexItem(vertexId));
+		for(Object vertexId : topologyProvider.getVertexIds()) {
+			WrappedVertex wrappedVertex = WrappedVertex.create(topologyProvider.getVertexItem(vertexId));
 			vertices.add(wrappedVertex);
 			idMap.put(vertexId, wrappedVertex);
 		}
 		
 		// then set the parents for each
-		for(Object vertexId : m_topologyProvider.getVertexIds()) {
-			Object parentId = m_topologyProvider.getVertexContainer().getParent(vertexId);
+		for(Object vertexId : topologyProvider.getVertexIds()) {
+			Object parentId = topologyProvider.getVertexContainer().getParent(vertexId);
 			WrappedVertex vertex = idMap.get(vertexId);
 			WrappedVertex parent = idMap.get(parentId);
 			
@@ -77,9 +71,9 @@ public class SaveToXmlOperation implements Operation {
 		
 		// then create the edges
 		List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
-		for(Object edgeId : m_topologyProvider.getEdgeIds()) {
+		for(Object edgeId : topologyProvider.getEdgeIds()) {
 			
-			Collection<?> vertexIds = m_topologyProvider.getEndPointIdsForEdge(edgeId);
+			Collection<?> vertexIds = topologyProvider.getEndPointIdsForEdge(edgeId);
 			
 			Iterator<?> it = vertexIds.iterator();
 			
@@ -89,7 +83,7 @@ public class SaveToXmlOperation implements Operation {
 			WrappedVertex source = idMap.get(sourceId);
 			WrappedVertex target = idMap.get(targetId);
 			
-			edges.add(new WrappedEdge(m_topologyProvider.getEdgeItem(edgeId), source, target));
+			edges.add(new WrappedEdge(topologyProvider.getEdgeItem(edgeId), source, target));
 			
 
 		}

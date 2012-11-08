@@ -74,6 +74,7 @@ public class WebPlugin extends AbstractPlugin {
     static String DEFAULT_USER = "admin";
     static String DEFAULT_PASSWORD = "admin";
     static String DEFAULT_HTTP_STATUS_RANGE = "100-399";
+    static String DEFAULT_SCHEME = "http";
 
     /** {@inheritDoc} */
     @Override
@@ -98,7 +99,7 @@ public class WebPlugin extends AbstractPlugin {
 
         try {
             HttpGet getMethod = new HttpGet(URIUtils.createURI(
-                                                    null, 
+                                                    ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME), 
                                                     InetAddressUtils.str(address), 
                                                     ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
                                                     ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
@@ -108,7 +109,7 @@ public class WebPlugin extends AbstractPlugin {
             httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(map,"timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(map,"timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, ParameterMap.getKeyedString(map,"user-agent",DEFAULT_USER_AGENT));
-            httpClient.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(ParameterMap.getKeyedString(map,"virtual-host",null), ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT)));
+            getMethod.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(ParameterMap.getKeyedString(map,"virtual-host", InetAddressUtils.str(address)), ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT)));
 
             if(ParameterMap.getKeyedBoolean(map, "http-1.0", false)) {
                 httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_0);

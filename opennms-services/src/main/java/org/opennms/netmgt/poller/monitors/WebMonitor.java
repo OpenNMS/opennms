@@ -75,6 +75,7 @@ public class WebMonitor extends AbstractServiceMonitor {
     static String DEFAULT_USER = "admin";
     static String DEFAULT_PASSWORD = "admin";
     static String DEFAULT_HTTP_STATUS_RANGE = "100-399";
+    static String DEFAULT_SCHEME = "http";
 
     /** {@inheritDoc} */
     @Override
@@ -84,23 +85,25 @@ public class WebMonitor extends AbstractServiceMonitor {
 
         try {
             final String hostAddress = InetAddressUtils.str(svc.getAddress());
-			HttpGet getMethod = new HttpGet(URIUtils.createURI(
-                                                    null, 
-                                                    hostAddress, 
-                                                    ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
-                                                    ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
-                                                    null, 
-                                                    null
+
+            HttpGet getMethod = new HttpGet(URIUtils.createURI(
+                ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME), 
+                hostAddress, 
+                ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
+                ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
+                null, 
+                null
             ));
             httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));
-            httpClient.getParams().setParameter( CoreProtocolPNames.USER_AGENT, 
-                                                 ParameterMap.getKeyedString(map,"user-agent",DEFAULT_USER_AGENT));
-            httpClient.getParams().setParameter(ClientPNames.VIRTUAL_HOST,
-                                                new HttpHost(
-                                                             ParameterMap.getKeyedString(map,"virtual-host",null), 
-                                                             ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT)
-                                                )
+            httpClient.getParams().setParameter( CoreProtocolPNames.USER_AGENT, ParameterMap.getKeyedString(map,"user-agent",DEFAULT_USER_AGENT));
+
+            // Set the virtual host to the 'virtual-host' parameter or the host address if 'virtual-host' is not present
+            getMethod.getParams().setParameter(ClientPNames.VIRTUAL_HOST,
+                new HttpHost(
+                    ParameterMap.getKeyedString(map,"virtual-host", hostAddress), 
+                    ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT)
+                )
             );
 
             if(ParameterMap.getKeyedBoolean(map, "http-1.0", false)) {
