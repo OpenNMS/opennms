@@ -1,5 +1,7 @@
 package org.opennms.features.topology.app.internal.gwt.client.view;
 
+import org.opennms.features.topology.app.internal.gwt.client.GWTGraph;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 
@@ -9,10 +11,13 @@ import com.google.gwt.user.client.ui.Widget;
 public interface TopologyView<T> {
 
     public interface Presenter<T>{
+        void addGraphUpdateListener(GraphUpdateListener listener);
         T getViewRenderer();
+        void onContextMenu(Object element, int x, int y, String type);
+        void onMouseWheel();
+        void onBackgroundClick();
     }
     
-    void setViewRenderer(T viewRenderer);
     void setPresenter(Presenter<T> presenter);
     Widget asWidget();
     SVGElement getSVGElement();
@@ -21,4 +26,5 @@ public interface TopologyView<T> {
     Element getVertexGroup();
     Element getReferenceViewPort();
     Element getMarqueeElement();
+    void repaintNow(GWTGraph graph);
 }

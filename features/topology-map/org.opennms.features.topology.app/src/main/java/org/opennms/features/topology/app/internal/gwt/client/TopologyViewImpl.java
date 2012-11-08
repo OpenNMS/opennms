@@ -1,5 +1,6 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
@@ -7,12 +8,16 @@ import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.terminal.gwt.client.VTooltip;
 
-public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer> {
+public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
     private static TopologyViewImplUiBinder uiBinder = GWT.create(TopologyViewImplUiBinder.class);
 
@@ -21,7 +26,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
     
     private Presenter<TopologyViewRenderer> m_presenter;
-    private TopologyViewRenderer m_viewRenderer;
     
     @UiField
     Element m_svg;
@@ -46,6 +50,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     
     @UiField
     Element m_marquee;
+    
+    TopologyViewRenderer m_topologyViewRenderer;
 
     public TopologyViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -54,18 +60,15 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     protected void onLoad() {
         super.onLoad();
-        
+        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
+        m_topologyViewRenderer = m_presenter.getViewRenderer();
     }
 
 
     @Override
     public void setPresenter(Presenter<TopologyViewRenderer> presenter) {
         m_presenter = presenter;
-    }
-
-    @Override
-    public void setViewRenderer(TopologyViewRenderer viewRenderer) {
-        m_viewRenderer = viewRenderer;
+        m_presenter.addGraphUpdateListener(this);
     }
 
     @Override
@@ -97,6 +100,71 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     public Element getMarqueeElement() {
         return m_marquee;
     }
+
+    @Override
+    public void repaintNow(GWTGraph graph) {
+        m_presenter.getViewRenderer().draw(graph, this);
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        switch(DOM.eventGetType(event)) {
+            case Event.ONCONTEXTMENU:
+                
+                EventTarget target = event.getEventTarget();
+                
+                if (target.equals( getSVGElement() )) {
+                    m_presenter.onContextMenu(null, event.getClientX(), event.getClientY(), "map");
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                break;
+                
+            case Event.ONMOUSEDOWN:
     
+                break;
+    
+            case Event.ONMOUSEWHEEL:
+                double delta = event.getMouseWheelVelocityY() / 30.0;
+                double oldScale = 1; //m_scale;
+                final double newScale = oldScale + delta;
+                final int clientX = event.getClientX();
+                final int clientY = event.getClientY();
+                //broken now need to fix it
+                //          Command cmd = new Command() {
+                //                
+                //                public void execute() {
+                //                    m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
+                //                    m_client.updateVariable(m_paintableId, "clientX", clientX, false);
+                //                    m_client.updateVariable(m_paintableId, "clientY", clientY, false);
+                //                    
+                //                    m_client.sendPendingVariableChanges();
+                //                }
+                //            };
+                //            
+                //            if(BrowserInfo.get().isWebkit()) {
+                //                Scheduler.get().scheduleDeferred(cmd);
+                //            }else {
+                //                cmd.execute();
+                //            }
+    
+                break;
+                
+            case Event.ONCLICK:
+                if(event.getEventTarget().equals(getSVGElement())) {
+                    m_presenter.onBackgroundClick();
+                }
+                break;
+        }
+
+
+    }
+
+    @Override
+    public void onGraphUpdated(GWTGraph graph) {
+            m_presenter.getViewRenderer().draw(graph, this);
+    }
 
 }
