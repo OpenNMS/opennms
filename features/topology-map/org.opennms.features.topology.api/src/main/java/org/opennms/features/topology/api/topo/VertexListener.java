@@ -5,11 +5,6 @@ import java.util.List;
 public interface VertexListener {
 	
 	public void vertexSetChanged(VertexProvider provider); 
-	
-	public void verticesAdded(VertexProvider provider, List<? extends Vertex> vertices);
-	
-	public void verticesUpdated(VertexProvider provider, List<? extends Vertex> vertices);
-	
-	public void verticesRemoved(VertexProvider provider, List<? extends Vertex> vertices);
+	public void vertexSetChanged(VertexProvider provider, List<? extends Vertex> added, List<? extends Vertex> update, List<String> removedVertexIds); 
 	
 }
