@@ -1,0 +1,6 @@
+<Links>
+<Link>
+        <AEND deviceName="austin-mx80" interface="em0"/>
+        <ZEND deviceName="phoenix-mx80" interface="ge-1/0/0.217"/>
+</Link>
+</Links>
