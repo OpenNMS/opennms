@@ -671,7 +671,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         return selectedIds;
     }
-   
+
+    /**
+     * Add a listener that will listen for items to be selected in the UI.
+     */
     public void addSelectionListener(SelectionListener listener) {
         if(m_selectionListeners == null) {
             m_selectionListeners = new ArrayList<SelectionListener>();
@@ -679,7 +682,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         m_selectionListeners.add(listener);
     }
     
-    public void updateSelectionListeners() {
+    private void updateSelectionListeners() {
         for(SelectionListener listener : m_selectionListeners) {
             listener.onSelectionUpdate(m_graphContainer.getVertexContainer());
         }
