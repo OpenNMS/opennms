@@ -86,14 +86,14 @@
         <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface" /> 
       </ueiMatch>
       <ueiMatch>
-        <match type="regex" expression="BFD session for MPLS path  went down on LSP (.*)" default-parameter-mapping="false" /> 
+        <match type="regex" expression="BFD session for MPLS path (.*) went down on LSP (.*)" default-parameter-mapping="false" /> 
         <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_down</uei> 
-        <parameter-assignment matching-group="1" parameter-name="lspName" /> 
+        <parameter-assignment matching-group="2" parameter-name="lspName" /> 
       </ueiMatch>
      <ueiMatch>
-       <match type="regex" expression="BFD session for MPLS path  came up on LSP (.*)" default-parameter-mapping="false" /> 
+       <match type="regex" expression="BFD session for MPLS path (.*) came up on LSP (.*)" default-parameter-mapping="false" /> 
        <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_up</uei> 
-       <parameter-assignment matching-group="1" parameter-name="lspName" /> 
+       <parameter-assignment matching-group="2" parameter-name="lspName" /> 
      </ueiMatch>
      <ueiMatch>
             <match type="regex" expression=".*?foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
