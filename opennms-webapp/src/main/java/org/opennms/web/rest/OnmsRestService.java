@@ -31,6 +31,8 @@ package org.opennms.web.rest;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -39,6 +41,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.core.criteria.Criteria;
@@ -297,6 +301,25 @@ public class OnmsRestService {
             }
         }
         return result.toString();
+    }
+
+    protected static URI getRedirectUri(final UriInfo m_uriInfo, final Object... pathComponents) {
+        if (pathComponents != null && pathComponents.length == 0) {
+            final URI requestUri = m_uriInfo.getRequestUri();
+            try {
+                return new URI(requestUri.getScheme(), requestUri.getHost(), requestUri.getPath().replaceAll("/$", ""), null);
+            } catch (final URISyntaxException e) {
+                return requestUri;
+            }
+        } else {
+            UriBuilder builder = m_uriInfo.getRequestUriBuilder();
+            for (final Object component : pathComponents) {
+                if (component != null) {
+                    builder = builder.path(component.toString());
+                }
+            }
+            return builder.build();
+        }
     }
 
     /**

@@ -133,7 +133,7 @@ public class AssetRecordResource extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
             
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getAssetRecord").build(nodeCriteria)).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

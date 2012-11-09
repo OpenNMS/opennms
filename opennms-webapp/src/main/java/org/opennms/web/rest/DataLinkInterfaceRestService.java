@@ -121,7 +121,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
                 setProperties(params, iface);
                 LogUtils.debugf(this, "updateDataLinkInterface: DataLinkInterface with ID %s updated", linkId);
                 m_dataLinkInterfaceDao.saveOrUpdate(iface);
-                return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getLink").build(linkId)).build();
+                return Response.seeOther(getRedirectUri(m_uriInfo)).build();
             }
             return Response.notModified(linkId.toString()).build();
         } finally {
@@ -143,7 +143,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
             }
             LogUtils.debugf(this, "addOrReplaceDataLinkInterface: Adding data link interface %s", iface);
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getLink").build(iface.getId())).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, iface.getId())).build();
         } finally {
             writeUnlock();
         }

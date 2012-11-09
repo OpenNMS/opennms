@@ -53,34 +53,34 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	private DatabasePopulator m_databasePopulator;
+    private DatabasePopulator m_databasePopulator;
 
-	@Override
+    @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
-	}
+    }
 
-	@Test
-	public void testAlarms() throws Exception {
-		String xml = sendRequest(GET, "/alarms", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
-		assertTrue(xml.contains("This is a test alarm"));
+    @Test
+    public void testAlarms() throws Exception {
+        String xml = sendRequest(GET, "/alarms", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
 
-		xml = sendRequest(GET, "/alarms/1", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
-		assertTrue(xml.contains("This is a test alarm"));
-		assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));
-	}
+        xml = sendRequest(GET, "/alarms/1", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
+        assertTrue(xml.contains("This is a test alarm"));
+        assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));
+    }
 
     @Test
     public void testAlarmQueryByNode() throws Exception {
-		String xml = sendRequest(GET, "/alarms", parseParamData("nodeId=6&limit=1"), 200);
-		assertTrue(xml.contains("<alarms"));
-		xml = sendRequest(GET, "/alarms", parseParamData("node.id=6&limit=1"), 200);
-		assertTrue(xml.contains("<alarms"));
-		xml = sendRequest(GET, "/alarms", parseParamData("node.label=node1&limit=1"), 200);
-		assertTrue(xml.contains("node1"));
+        String xml = sendRequest(GET, "/alarms", parseParamData("nodeId=6&limit=1"), 200);
+        assertTrue(xml.contains("<alarms"));
+        xml = sendRequest(GET, "/alarms", parseParamData("node.id=6&limit=1"), 200);
+        assertTrue(xml.contains("<alarms"));
+        xml = sendRequest(GET, "/alarms", parseParamData("node.label=node1&limit=1"), 200);
+        assertTrue(xml.contains("node1"));
         xml = sendRequest(GET, "/alarms", parseParamData("ipInterface.ipAddress=192.168.1.2&limit=1"), 200);
         assertTrue(xml.contains("node1"));
     }
@@ -88,7 +88,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testAlarmQueryBySeverityEquals() throws Exception {
         String xml = null;
-        
+
         xml = sendRequest(GET, "/alarms", parseParamData("comparator=eq&severity=NORMAL&limit=1"), 200);
         assertTrue(xml.contains("This is a test alarm"));
 
@@ -123,61 +123,61 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, "/alarms", parseParamData("comparator=gt&severity=CLEARED&limit=1"), 200);
         assertTrue(xml.contains("This is a test alarm"));
     }
-    
+
     @Test
     public void testAlarmUpdates() throws Exception {
-    	createAlarm(OnmsSeverity.MAJOR);
+        createAlarm(OnmsSeverity.MAJOR);
 
-    	OnmsAlarm alarm = getLastAlarm();
-    	alarm.setAlarmAckTime(null);
-    	alarm.setAlarmAckUser(null);
-    	getAlarmDao().saveOrUpdate(alarm);
-    	final Integer alarmId = alarm.getId();
+        OnmsAlarm alarm = getLastAlarm();
+        alarm.setAlarmAckTime(null);
+        alarm.setAlarmAckUser(null);
+        getAlarmDao().saveOrUpdate(alarm);
+        final Integer alarmId = alarm.getId();
 
-    	sendPut("/alarms", "ack=true&alarmId=" + alarmId, 303);
-    	String xml = sendRequest(GET, "/alarms/" + alarmId, 200);
-    	assertTrue(xml.contains("ackUser>admin<"));
+        sendPut("/alarms", "ack=true&alarmId=" + alarmId, 303, "/alarms/" + alarmId);
+        String xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        assertTrue(xml.contains("ackUser>admin<"));
 
-    	sendPut("/alarms/" + alarmId, "clear=true", 303);
-    	xml = sendRequest(GET, "/alarms/" + alarmId, 200);
-    	assertTrue(xml.contains("severity=\"CLEARED\""));
-    	
-    	sendPut("/alarms/" + alarmId, "escalate=true", 303);
-    	xml = sendRequest(GET, "/alarms/" + alarmId, 200);
-    	assertTrue(xml.contains("severity=\"NORMAL\""));
-    	
-    	alarm = getLastAlarm();
-    	alarm.setSeverity(OnmsSeverity.MAJOR);
-    	alarm.setAlarmAckTime(null);
-    	alarm.setAlarmAckUser(null);
-    	getAlarmDao().saveOrUpdate(alarm);
+        sendPut("/alarms/" + alarmId, "clear=true", 303, "/alarms/" + alarmId);
+        xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        assertTrue(xml.contains("severity=\"CLEARED\""));
 
-    	MockUserPrincipal.setName("foo");
-    	Exception failure = null;
-    	try {
-    		sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 303);
-    	} catch (final IllegalArgumentException e) {
-    		failure = e;
-    	}
-    	// we should get an exception about users
-    	assertNotNull(failure);
+        sendPut("/alarms/" + alarmId, "escalate=true", 303, "/alarms/" + alarmId);
+        xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        assertTrue(xml.contains("severity=\"NORMAL\""));
+
+        alarm = getLastAlarm();
+        alarm.setSeverity(OnmsSeverity.MAJOR);
+        alarm.setAlarmAckTime(null);
+        alarm.setAlarmAckUser(null);
+        getAlarmDao().saveOrUpdate(alarm);
+
+        MockUserPrincipal.setName("foo");
+        Exception failure = null;
+        try {
+            sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 303, "/alarms/" + alarmId);
+        } catch (final IllegalArgumentException e) {
+            failure = e;
+        }
+        // we should get an exception about users
+        assertNotNull(failure);
     }
 
     private OnmsAlarm getLastAlarm() {
-    	final NavigableSet<OnmsAlarm> alarms = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
-			@Override
-			public int compare(final OnmsAlarm a, final OnmsAlarm b) {
-				return a.getId().compareTo(b.getId());
-			}
-    	});
-    	alarms.addAll(getAlarmDao().findAll());
-    	return alarms.last();
+        final NavigableSet<OnmsAlarm> alarms = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
+            @Override
+            public int compare(final OnmsAlarm a, final OnmsAlarm b) {
+                return a.getId().compareTo(b.getId());
+            }
+        });
+        alarms.addAll(getAlarmDao().findAll());
+        return alarms.last();
     }
 
     @Test
     public void testComplexQuery() throws Exception {
         String xml = null;
-        final Map<String,String> parameters = new HashMap<String,String>();
+        final Map<String, String> parameters = new HashMap<String, String>();
 
         createAlarm(OnmsSeverity.CRITICAL);
 
@@ -189,19 +189,21 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         parameters.put("orderBy", "lastEventTime");
         parameters.put("order", "desc");
 
-        // original requirements: http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq
+        // original requirements:
+        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq
 
-        // modified version: http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3D%20MAJOR
+        // modified version:
+        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3D%20MAJOR
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity = 3");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
         assertFalse(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        
+
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity >= 3");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
         assertTrue(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        
+
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity >= NORMAL");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
@@ -212,21 +214,25 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertFalse(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
         assertFalse(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
         assertTrue(xml.contains("count=\"0\""));
-        
-        // original requirements: http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq&ackUser=myuser&comparator=eq
-        
-        // acked - modified version: http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20%3D%20'admin'
+
+        // original requirements:
+        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq&ackUser=myuser&comparator=eq
+
+        // acked - modified version:
+        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20%3D%20'admin'
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity > MAJOR AND alarmAckUser = 'admin'");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         assertFalse(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
         assertTrue(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
-        
-        // unacked - modified version: http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
+
+        // unacked - modified version:
+        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity > MAJOR AND alarmAckUser IS NULL");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         assertTrue(xml.contains("count=\"0\""));
-        
-        // unacked - modified version: http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3C%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
+
+        // unacked - modified version:
+        // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3C%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity < MAJOR AND alarmAckUser IS NULL");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         assertTrue(xml.contains("<alarm severity=\"NORMAL\" id=\"1\""));
@@ -235,7 +241,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     private void createAlarm(final OnmsSeverity severity) {
         final OnmsEvent event = getEventDao().findAll().get(0);
-        
+
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         alarm.setUei(event.getEventUei());
@@ -254,7 +260,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
     }
-    
+
     private EventDao getEventDao() {
         return m_databasePopulator.getEventDao();
     }

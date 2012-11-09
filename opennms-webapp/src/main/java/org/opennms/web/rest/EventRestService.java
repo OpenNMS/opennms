@@ -236,7 +236,7 @@ public class EventRestService extends OnmsRestService {
                 throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processEventAck(event, ack);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getEvent").build(eventId)).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -270,7 +270,7 @@ public class EventRestService extends OnmsRestService {
             for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
                 processEventAck(event, ack);
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getEvents").build()).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

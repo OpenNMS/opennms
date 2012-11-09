@@ -66,7 +66,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains("<group><name>test</name>"));
 
-        sendPut("/groups/test", "comments=MONKEYS");
+        sendPut("/groups/test", "comments=MONKEYS", 303, "/groups/test");
 
         xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains(">MONKEYS<"));
@@ -107,7 +107,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
                 "<name>" + groupname + "</name>" +
                 "<comments>" + groupname + "</comments>" +
                 "</group>";
-        sendPost("/groups", group);
+        sendPost("/groups", group, 303, "/groups/" + groupname);
     }
     
 

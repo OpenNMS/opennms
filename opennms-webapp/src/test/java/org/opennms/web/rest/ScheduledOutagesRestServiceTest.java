@@ -175,7 +175,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 "<time begins='17-Feb-2012 19:20:00' ends='18-Feb-2012 22:30:00' />" +
                 "<node id='11' />" +
                 "</outage>";
-        sendPost(url, outage);
+        sendPost(url, outage, 303, "/sched-outages/test-outage");
     }
 
     @Test
