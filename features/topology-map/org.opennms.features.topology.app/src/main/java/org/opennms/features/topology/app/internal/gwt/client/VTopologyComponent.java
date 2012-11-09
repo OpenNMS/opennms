@@ -96,7 +96,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		protected D3Behavior enterTransition() {
 			return new D3Behavior() {
 
-				@Override
+				@Override 
 				public D3 run(D3 selection) {
 					return selection;
 				}
@@ -148,7 +148,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			m_clickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexClick)");
 			m_edgeClickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeClick)");
 			
-			m_contextMenuHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertextContextMenu)");
+			m_contextMenuHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexContextMenu)");
 			m_vertexTooltipHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexTooltip)");
 			
 			m_edgeContextHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeContextMenu)");
