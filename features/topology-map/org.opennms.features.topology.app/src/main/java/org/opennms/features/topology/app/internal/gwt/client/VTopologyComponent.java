@@ -402,7 +402,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(m_topologyView));
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(m_topologyView, m_serviceRegistry));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);

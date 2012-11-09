@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal.gwt.client.handler;
 import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
+import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -47,8 +48,8 @@ public class PanObject extends DragObject{
     private SVGMatrix m_stateTf;
 	private SVGPoint m_stateOrigin;
 
-	public PanObject(TopologyView<TopologyViewRenderer> topologyView) {
-		super(topologyView, topologyView.getSVGViewPort(), topologyView.getSVGElement(), D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME), null);
+	public PanObject(TopologyView<TopologyViewRenderer> topologyView, ServiceRegistry serviceRegistry) {
+		super(topologyView, topologyView.getSVGViewPort(), topologyView.getSVGElement(), D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME), serviceRegistry);
 
 		SVGGElement g = topologyView.getSVGViewPort().cast();
 		m_stateTf = g.getCTM().inverse();

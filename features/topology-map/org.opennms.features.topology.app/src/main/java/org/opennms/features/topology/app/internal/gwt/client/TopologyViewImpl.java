@@ -77,7 +77,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
 
     @Override
-    public Element getSVGElement() {
+    public SVGElement getSVGElement() {
         return m_svg.cast();
     }
 
