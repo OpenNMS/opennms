@@ -50,7 +50,7 @@ public class PanObject extends DragObject{
 	public PanObject(TopologyView<TopologyViewRenderer> topologyView) {
 		super(topologyView, topologyView.getSVGViewPort(), topologyView.getSVGElement(), D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME), null);
 
-		SVGGElement g = topologyView.getSVGViewPort();
+		SVGGElement g = topologyView.getSVGViewPort().cast();
 		m_stateTf = g.getCTM().inverse();
 
 		m_stateOrigin = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf); 

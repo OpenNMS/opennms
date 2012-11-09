@@ -764,7 +764,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	}
 
 	private void repaintScale(double oldScale, int clientX, int clientY) {
-		updateScale(oldScale, m_scale, m_topologyView.getSVGElement(), clientX, clientY);
+	    SVGElement svg = m_topologyView.getSVGElement().cast();
+		updateScale(oldScale, m_scale, svg, clientX, clientY);
 	}
 
 	private void setGraph(GWTGraph graph) {

@@ -77,7 +77,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
 
     @Override
-    public SVGElement getSVGElement() {
+    public Element getSVGElement() {
         return m_svg.cast();
     }
 
@@ -208,7 +208,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     @Override
     public void zoomToFit(final BoundingRect rect) {
-        SVGElement svg = getSVGElement();
+        SVGElement svg = getSVGElement().cast();
         final int svgWidth = svg.getParentElement().getOffsetWidth(); 
         final int svgHeight = svg.getParentElement().getOffsetHeight();
         

@@ -148,7 +148,7 @@ public class DragObject{
 	}-*/;
 
 	protected SVGPoint getEventPoint(NativeEvent event) {
-		SVGElement svg = getTopologyView().getSVGElement();
+		SVGElement svg = getTopologyView().getSVGElement().cast();
 		SVGPoint p = svg.createSVGPoint();
 		p.setX(event.getClientX());
 		p.setY(event.getClientY());

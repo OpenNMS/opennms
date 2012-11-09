@@ -89,7 +89,7 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
         if(!m_dragging) {
             m_dragging = true;
             
-            SVGElement svg = m_topologyView.getSVGElement();
+            SVGElement svg = m_topologyView.getSVGElement().cast();
             SVGMatrix rect = svg.getScreenCTM();
             
             m_offsetX = (int) rect.getE();

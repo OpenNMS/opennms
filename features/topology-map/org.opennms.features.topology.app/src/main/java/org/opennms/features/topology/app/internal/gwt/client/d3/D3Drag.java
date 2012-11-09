@@ -39,6 +39,8 @@ public class D3Drag extends JavaScriptObject {
     public final native D3Drag on(String event, Handler<?> handler) /*-{
         
         var f = function(d, i) {
+            $wnd.console.log("D is the data");
+            $wnd.console.log(d);
             return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler::call(Ljava/lang/Object;I)(d,i);
         }
     
