@@ -383,5 +383,10 @@ public class OnmsTopologyProvider implements TopologyProvider{
     public boolean containsVertexId(Object vertexId) {
         return m_vertexContainer.containsId(vertexId);
     }
+
+	@Override
+	public String getNamespace() {
+		return "node";
+	}
     
 }

@@ -40,6 +40,8 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
@@ -509,6 +511,7 @@ public class SimpleGraphContainer implements GraphContainer {
     private ElementHolder<GVertex> m_vertexHolder;
     private ElementHolder<GEdge> m_edgeHolder;
     private TopologyProvider m_topologyProvider;
+    private GraphProvider m_graphProvider;
     private GEdgeContainer m_edgeContainer;
     
 	public SimpleGraphContainer() {
@@ -576,6 +579,8 @@ public class SimpleGraphContainer implements GraphContainer {
 	public void setDataSource(TopologyProvider topologyProvider) {
 	    if (m_topologyProvider == topologyProvider) return;
 	    
+	    m_graphProvider = new TPGraphProvider(topologyProvider);
+	    
 	    m_topologyProvider = topologyProvider;
 	    
 	    m_vertexHolder.setContainer(m_topologyProvider.getVertexContainer());
@@ -588,6 +593,18 @@ public class SimpleGraphContainer implements GraphContainer {
 	    redoLayout();
 
 	}
+	
+	
+
+	@Override
+	public GraphProvider getBaseTopology() {
+		return m_graphProvider;
+	}
+
+	@Override
+	public void setBaseTopology(GraphProvider graphProvider) {
+		throw new UnsupportedOperationException("SimpleGraphContainer.setBaseTopology is not yet implemented.");
+	}
 
 	@Override
 	public VertexContainer<Object, GVertex> getVertexContainer() {
@@ -599,12 +616,10 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_edgeContainer;
 	}
 
-	@Override
 	public Collection<Object> getVertexIds() {
 		return m_vertexContainer.getItemIds();
 	}
 
-	@Override
 	public Collection<String> getEdgeIds() {
 		return m_edgeContainer.getItemIds();
 	}
@@ -695,17 +710,16 @@ public class SimpleGraphContainer implements GraphContainer {
         return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
     }
     
-    @Override
     public List<Object> getSelectedVertices() {
     	List<Object> targets = new ArrayList<Object>();
-	for (Object vId : getVertexIds()) {
-		Item vItem = getVertexItem(vId);
-		boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
-		if (selected) {
-			targets.add(vItem.getItemProperty("key").getValue());
-		}
-	}
-	return targets;
+    	for (Object vId : getVertexIds()) {
+    		Item vItem = getVertexItem(vId);
+    		boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
+    		if (selected) {
+    			targets.add(vItem.getItemProperty("key").getValue());
+    		}
+    	}
+    	return targets;
     }
 
 }

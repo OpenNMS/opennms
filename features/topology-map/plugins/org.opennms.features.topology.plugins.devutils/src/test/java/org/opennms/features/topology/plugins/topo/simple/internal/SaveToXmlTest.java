@@ -37,6 +37,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.plugins.devutils.internal.SaveToXmlOperation;
 
 import com.vaadin.data.Item;
@@ -115,21 +116,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public List<Object> getSelectedVertices() {
-						throw new UnsupportedOperationException("GraphContainer.getSelectedVertices is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getVertexIds() {
-						throw new UnsupportedOperationException("GraphContainer.getVertexIds is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getEdgeIds() {
-						throw new UnsupportedOperationException("GraphContainer.getEdgeIds is not yet implemented.");
-					}
-
-					@Override
 					public Item getVertexItem(Object vertexId) {
 						throw new UnsupportedOperationException("GraphContainer.getVertexItem is not yet implemented.");
 					}
@@ -162,6 +148,16 @@ public class SaveToXmlTest {
 					@Override
 					public void setDataSource(TopologyProvider topologyProvider) {
 						throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
+					}
+
+					@Override
+					public GraphProvider getBaseTopology() {
+						throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
+					}
+
+					@Override
+					public void setBaseTopology(GraphProvider graphProvider) {
+						throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
 					}
 					
 				};

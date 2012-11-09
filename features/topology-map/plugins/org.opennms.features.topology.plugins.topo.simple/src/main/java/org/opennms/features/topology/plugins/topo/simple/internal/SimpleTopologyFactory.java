@@ -63,7 +63,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 	}
 
 	@Override
-	public void updated(String pid, @SuppressWarnings("unchecked") Dictionary properties) throws ConfigurationException {
+	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
 		
 		try {
 			String location = (String)properties.get(TOPOLOGY_LOCATION);

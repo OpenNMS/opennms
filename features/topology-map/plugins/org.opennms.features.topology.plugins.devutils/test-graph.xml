@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<graph>
+<graph namespace="vertex">
     <vertex>
         <iconKey>server</iconKey>
         <id>v0</id>

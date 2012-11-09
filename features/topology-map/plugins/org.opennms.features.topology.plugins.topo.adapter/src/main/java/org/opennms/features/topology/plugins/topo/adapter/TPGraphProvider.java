@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.plugins.topo.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +46,6 @@ public class TPGraphProvider implements GraphProvider {
 		}
 	}
 	
-	private final String m_namespace;
 	private final TopologyProvider m_topoProvider;
 	
 	private final IdTracker m_vertexIdTracker;
@@ -57,8 +56,7 @@ public class TPGraphProvider implements GraphProvider {
 	private final EdgeItemFinder m_edgeItemFinder = new EdgeItemFinder();
 	private final Set<EdgeListener> m_edgeListeners = new CopyOnWriteArraySet<EdgeListener>();
 	
-	public TPGraphProvider(String namespace, TopologyProvider topoProvider) {
-		m_namespace = namespace;
+	public TPGraphProvider(TopologyProvider topoProvider) {
 		m_topoProvider = topoProvider;
 		m_vertexIdTracker = new IdTracker(m_topoProvider.getVertexIds());
 		m_edgeIdTracker = new IdTracker(m_topoProvider.getEdgeIds());
@@ -94,7 +92,7 @@ public class TPGraphProvider implements GraphProvider {
 
 	@Override
 	public String getNamespace() {
-		return m_namespace;
+		return m_topoProvider.getNamespace();
 	}
 	
 

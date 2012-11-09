@@ -38,12 +38,14 @@ import java.util.List;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
@@ -52,6 +54,8 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class SimpleTopologyProvider implements TopologyProvider, EditableTopologyProvider{
+	
+	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
     private final SimpleVertexContainer m_vertexContainer;
     private final BeanContainer<String, SimpleEdge> m_edgeContainer;
@@ -60,9 +64,11 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
     private int m_groupCounter = 0;
     
     private URL m_topologyLocation = null;
+
+	private String m_namespace;
     
     public SimpleTopologyProvider() {
-        LoggerFactory.getLogger(getClass()).debug("Creating a new SimpleTopologyProvider");
+        s_log.debug("Creating a new SimpleTopologyProvider");
         m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
@@ -72,7 +78,11 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         setTopologyLocation(defaultGraph);
     }
     
-    public URL getTopologyLocation() {
+    public String getNamespace() {
+    	return m_namespace;
+    }
+
+	public URL getTopologyLocation() {
 		return m_topologyLocation;
 	}
 
@@ -80,10 +90,10 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null) {
-			LoggerFactory.getLogger(getClass()).debug("Loading topology from " + m_topologyLocation);
+			s_log.debug("Loading topology from " + m_topologyLocation);
 			load(m_topologyLocation);
 		} else {
-			LoggerFactory.getLogger(getClass()).debug("Setting topology location to null");
+			s_log.debug("Setting topology location to null");
 			m_vertexContainer.removeAllItems();
 			m_edgeContainer.removeAllItems();
 		}
@@ -150,7 +160,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
-        LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
+        s_log.debug("Adding a vertex: {}", id);
         SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
         vertex.setIconKey("server");
         vertex.setLabel(label);
@@ -163,7 +173,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
-        LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupId);
+        s_log.debug("Adding a group: {}", groupId);
         SimpleVertex vertex = new SimpleGroup(groupId);
         vertex.setLabel(label);
         vertex.setIconKey(iconKey);
@@ -238,13 +248,19 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         @XmlElement(name="edge")
         List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
         
-        @SuppressWarnings("unused")
+        @XmlAttribute(name="namespace")
+        String m_namespace;
+        
+        @SuppressWarnings("unused") // except by JAXB
         public SimpleGraph() {}
 
-        public SimpleGraph(List<SimpleVertex> vertices, List<SimpleEdge> edges) {
+        public SimpleGraph(String namespace, List<SimpleVertex> vertices, List<SimpleEdge> edges) {
+        	m_namespace = namespace;
             m_vertices = vertices;
             m_edges = edges;
         }
+        
+        public String getNamespace() { return m_namespace; }
 
     }
     
@@ -256,7 +272,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         List<SimpleVertex> vertices = getBeans(m_vertexContainer);
         List<SimpleEdge> edges = getBeans(m_edgeContainer);
 
-        SimpleGraph graph = new SimpleGraph(vertices, edges);
+        SimpleGraph graph = new SimpleGraph(m_namespace, vertices, edges);
         
         JAXB.marshal(graph, new File(filename));
     }
@@ -269,6 +285,10 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         
         m_edgeContainer.removeAllItems();
         m_edgeContainer.addAll(graph.m_edges);
+        
+        if (graph.getNamespace() != null) {
+        	m_namespace = graph.getNamespace();
+        }
     }
 
     /* (non-Javadoc)

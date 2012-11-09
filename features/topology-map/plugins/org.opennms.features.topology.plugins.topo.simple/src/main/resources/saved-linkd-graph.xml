@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<graph>
+<graph namespace="node">
     <vertex>
         <iconKey>linkd-server</iconKey>
         <id>55</id>

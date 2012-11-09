@@ -1,23 +1,24 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.plugins.topo.adapter;
 
-import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.Edge;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
-class ItemVertex implements Vertex {
+class ItemEdge implements Edge {
 	
-	private static final String ICON_KEY = "iconKey";
 	private static final String LABEL = "label";
 	private static final String TOOLTIP_TEXT = "tooltipText";
 	private static final String STYLE_NAME = "styleName";
 
-	final String m_namespace;
-	final String m_id;
+	private final String m_namespace;
+	private final String m_id;
 	private final Object m_itemId;
 	private final ItemFinder m_itemFinder;
+	private ItemConnector m_source;
+	private ItemConnector m_target;
 
-	public ItemVertex(String namespace, String id, Object itemId, ItemFinder itemFinder) {
+	public ItemEdge(String namespace, String id, Object itemId, ItemFinder itemFinder) {
 		m_namespace = namespace;
 		m_id = id;
 		m_itemId = itemId;
@@ -32,6 +33,24 @@ class ItemVertex implements Vertex {
 	@Override
 	public String getId() {
 		return m_id;
+	}
+
+	@Override
+	public ItemConnector getSource() {
+		return m_source;
+	}
+	
+	public void setSource(ItemConnector source) {
+		m_source = source;
+	}
+
+	@Override
+	public ItemConnector getTarget() {
+		return m_target;
+	}
+	
+	public void setTarget(ItemConnector target) {
+		m_target = target;
 	}
 
 	@Override
@@ -55,16 +74,10 @@ class ItemVertex implements Vertex {
 	}
 
 	@Override
-	public String getIconKey() {
-        return (String) getItem().getItemProperty(ICON_KEY).getValue();
-	}
-
-	@Override
 	public String getStyleName() {
         Property styleProperty = getItem().getItemProperty(STYLE_NAME);
 		return styleProperty == null ? null : (String)styleProperty.getValue();
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -76,7 +89,6 @@ class ItemVertex implements Vertex {
 				+ ((m_namespace == null) ? 0 : m_namespace.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -99,4 +111,5 @@ class ItemVertex implements Vertex {
 			return false;
 		return true;
 	}
+
 }

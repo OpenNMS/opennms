@@ -71,7 +71,7 @@ public class TopologyComponentTest {
         
         EasyMock.replay(target);
         
-        TestTopologyProvider topoProvider = new TestTopologyProvider();
+        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         SimpleGraphContainer graphContainer = new SimpleGraphContainer();
         graphContainer.setDataSource(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -109,7 +109,7 @@ public class TopologyComponentTest {
         
         EasyMock.replay(target);
         
-        TestTopologyProvider topoProvider = new TestTopologyProvider();
+        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         SimpleGraphContainer graphContainer = new SimpleGraphContainer();
         graphContainer.setDataSource(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -144,7 +144,7 @@ public class TopologyComponentTest {
         
         EasyMock.replay(target);
         
-        TestTopologyProvider topoProvider = new TestTopologyProvider();
+        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         SimpleGraphContainer graphContainer = new SimpleGraphContainer();
         graphContainer.setDataSource(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -171,7 +171,7 @@ public class TopologyComponentTest {
     @Test
     @Ignore
     public void testTopologyComponentSendCorrectEdgeIds() throws PaintException {
-        TestTopologyProvider topoProvider = new TestTopologyProvider();
+        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         SimpleGraphContainer graphContainer = new SimpleGraphContainer();
         graphContainer.setDataSource(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);

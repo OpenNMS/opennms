@@ -43,13 +43,15 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class TestTopologyProvider implements TopologyProvider{
+	private final String m_namespace;
     private TestVertexContainer m_vertexContainer;
     private BeanContainer<String, TestEdge> m_edgeContainer;
     private int m_vertexCounter = 0;
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
     
-    public TestTopologyProvider() {
+    public TestTopologyProvider(String namespace) {
+    	m_namespace = namespace;
         m_vertexContainer = new TestVertexContainer();
         m_edgeContainer = new BeanContainer<String, TestEdge>(TestEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
@@ -247,6 +249,11 @@ public class TestTopologyProvider implements TopologyProvider{
     private void assertEdge(Object edgeId) {
         assertTrue(m_edgeContainer.containsId(edgeId));
     }
+
+	@Override
+	public String getNamespace() {
+		return m_namespace;
+	}
 
 
 

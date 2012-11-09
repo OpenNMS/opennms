@@ -50,6 +50,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.CreateGroupOperation;
@@ -126,17 +127,6 @@ public class SimpleTopologyProviderTest {
         }
 
         @Override
-        public Collection<?> getVertexIds() {
-            return null;
-        }
-
-        @Override
-        public Collection<?> getEdgeIds() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
         public Item getVertexItem(Object vertexId) {
             return m_vertContainer.getItem(vertexId);
         }
@@ -166,12 +156,6 @@ public class SimpleTopologyProviderTest {
         }
 
 	@Override
-	public List<Object> getSelectedVertices() {
-	    // TODO Auto-generated method stub
-	    return null;
-	}
-
-	@Override
 	public TopologyProvider getDataSource() {
 		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
 	}
@@ -179,6 +163,16 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public void setDataSource(TopologyProvider topologyProvider) {
 		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
+	}
+
+	@Override
+	public GraphProvider getBaseTopology() {
+		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
+	}
+
+	@Override
+	public void setBaseTopology(GraphProvider graphProvider) {
+		throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
 	}
         
     }

@@ -88,7 +88,7 @@ public class SaveToXmlOperation implements Operation {
 
 		}
 		
-		WrappedGraph graph = new WrappedGraph(vertices, edges);
+		WrappedGraph graph = new WrappedGraph(topologyProvider.getNamespace(), vertices, edges);
 		
         JAXB.marshal(graph, new File("/tmp/saved-graph.xml"));
 

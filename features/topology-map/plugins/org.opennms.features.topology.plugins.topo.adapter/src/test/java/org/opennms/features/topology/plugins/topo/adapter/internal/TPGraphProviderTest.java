@@ -10,6 +10,7 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 public class TPGraphProviderTest {
@@ -21,13 +22,13 @@ public class TPGraphProviderTest {
 	@Before
 	public void setUp() {
 		m_topoProvider = new SimpleTopologyProvider();
-		m_graphProvider = new TPGraphProvider("test", m_topoProvider);
+		m_graphProvider = new TPGraphProvider(m_topoProvider);
 	}
 
 	@Test
 	public void testVertices() {
 		Vertex vertex = m_graphProvider.getVertex("192.168.30.138");
-		assertEquals("test", vertex.getNamespace());
+		assertEquals("vmware", vertex.getNamespace());
 		assertEquals("192.168.30.138", vertex.getId());
 		assertEquals("Captn Crunch (192.168.30.138)", vertex.getLabel());
 		assertEquals("DATACENTER_ICON", vertex.getIconKey());
@@ -35,6 +36,8 @@ public class TPGraphProviderTest {
 		m_graphProvider.getRootGroup().contains(vertex);
 		
 		assertTrue(m_graphProvider.hasChildren(vertex));
+		
+		assertEquals("vmware", m_graphProvider.getNamespace());
 		
 	}
 	
@@ -49,18 +52,18 @@ public class TPGraphProviderTest {
 	@Test
 	public void testEdges() {
 		Edge edge = m_graphProvider.getEdge("192.168.30.138/host-52->network-30");
-		assertEquals("test", edge.getNamespace());
+		assertEquals("vmware", edge.getNamespace());
 		assertEquals("192.168.30.138/host-52->network-30", edge.getId());
 		
 		Vertex source = m_graphProvider.getVertex(edge.getSource().getVertex());
 		Vertex target = m_graphProvider.getVertex(edge.getTarget().getVertex());
 		
-		assertEquals("test", source.getNamespace());
+		assertEquals("vmware", source.getNamespace());
 		assertEquals("192.168.30.138/host-52", source.getId());
 		assertEquals("192.168.30.142", source.getLabel());
 		assertEquals("HOSTSYSTEM_ICON_UNKNOWN", source.getIconKey());
 		
-		assertEquals("test", source.getNamespace());
+		assertEquals("vmware", source.getNamespace());
 		assertEquals("192.168.30.138/network-30", target.getId());
 		assertEquals("VM Network", target.getLabel());
 		assertEquals("NETWORK_ICON", target.getIconKey());

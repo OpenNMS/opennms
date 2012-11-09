@@ -40,6 +40,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -124,17 +125,6 @@ public class OnmsTopologyProviderTest {
         }
 
         @Override
-        public Collection<?> getVertexIds() {
-            return null;
-        }
-
-        @Override
-        public Collection<?> getEdgeIds() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
         public Item getVertexItem(Object vertexId) {
             // TODO Auto-generated method stub
             return null;
@@ -165,12 +155,6 @@ public class OnmsTopologyProviderTest {
         }
 
 	@Override
-	public List<Object> getSelectedVertices() {
-	    // TODO Auto-generated method stub
-	    return null;
-	}
-
-	@Override
 	public TopologyProvider getDataSource() {
 		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
 	}
@@ -178,6 +162,16 @@ public class OnmsTopologyProviderTest {
 	@Override
 	public void setDataSource(TopologyProvider topologyProvider) {
 		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
+	}
+
+	@Override
+	public GraphProvider getBaseTopology() {
+		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
+	}
+
+	@Override
+	public void setBaseTopology(GraphProvider graphProvider) {
+		throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
 	}
 
     }

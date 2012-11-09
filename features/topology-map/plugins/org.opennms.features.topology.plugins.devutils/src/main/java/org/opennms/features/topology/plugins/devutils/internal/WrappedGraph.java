@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -50,11 +51,16 @@ class WrappedGraph {
     @XmlElement(name="edge")
     List<WrappedEdge> m_edges = new ArrayList<WrappedEdge>();
     
+    @XmlAttribute(name="namespace")
+    String m_namespace;
+    
     public WrappedGraph() {}
 
-    public WrappedGraph(List<WrappedVertex> vertices, List<WrappedEdge> edges) {
+    public WrappedGraph(String namespace, List<WrappedVertex> vertices, List<WrappedEdge> edges) {
+    	m_namespace = namespace;
         m_vertices = vertices;
         m_edges = edges;
     }
+    
 
 }
