@@ -178,7 +178,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getService").build(nodeCriteria, ipAddress, service.getServiceName())).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, service.getServiceName())).build();
         } finally {
             writeUnlock();
         }
@@ -217,7 +217,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             }
             log().debug("updateSservice: service " + service + " updated");
             m_serviceDao.saveOrUpdate(service);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getService").build(nodeCriteria, ipAddress, serviceName)).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

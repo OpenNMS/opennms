@@ -91,6 +91,12 @@
       <artifactId>app</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- topologyProvider to graphProvider adapter -->
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <!-- plugins -->
     <dependency>

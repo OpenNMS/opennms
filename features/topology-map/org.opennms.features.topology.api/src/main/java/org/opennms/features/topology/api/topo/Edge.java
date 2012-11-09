@@ -2,9 +2,9 @@ package org.opennms.features.topology.api.topo;
 
 public interface Edge extends EdgeRef {
 	
-	public ConnectorRef getSource();
+	public Connector getSource();
 	
-	public ConnectorRef getTarget();
+	public Connector getTarget();
 	
 	public String getLabel();
 	

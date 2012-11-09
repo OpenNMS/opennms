@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -124,7 +126,6 @@ public class AlarmRestService extends AlarmRestServiceBase {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
      */
     @GET
-    @Path("/")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public OnmsAlarmCollection getAlarms() {
@@ -203,7 +204,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackService.processAck(acknowledgement);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getAlarm").build(alarmId)).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -240,7 +241,8 @@ public class AlarmRestService extends AlarmRestServiceBase {
             formProperties.remove("ackUser");
             assertUserCredentials(ackUser);
 
-            for (final OnmsAlarm alarm : m_alarmDao.findMatching(builder.toCriteria())) {
+            final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
+            for (final OnmsAlarm alarm : alarms) {
                 final OnmsAcknowledgment acknowledgement = new OnmsAcknowledgment(alarm, ackUser);
                 acknowledgement.setAckAction(AckAction.UNSPECIFIED);
                 if (ackValue != null) {
@@ -262,7 +264,12 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 }
                 m_ackService.processAck(acknowledgement);
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getAlarms").build()).build();
+            
+            if (alarms.size() == 1) {
+                return Response.seeOther(getRedirectUri(m_uriInfo, alarms.get(0).getId())).build();
+            } else {
+                return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            }
         } finally {
             writeUnlock();
         }

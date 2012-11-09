@@ -37,6 +37,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
@@ -68,28 +69,35 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testAddGraph() throws Exception {
-        final Map<String,String> params = new HashMap<String,String>();
+        final Map<String, String> params = new HashMap<String, String>();
         params.put("title", "foo");
         params.put("reportName", "bar");
         params.put("resourceId", "baz");
-        sendRequest(PUT, "/ksc/0", params, 303);
+        sendRequest(PUT, "/ksc/0", params, 303, "/ksc/0");
 
         final String xml = slurp(m_configFile);
         assertTrue(xml.contains("title=\"foo\""));
     }
 
     private String slurp(final File file) throws Exception {
-        final Reader fileReader = new FileReader(file);
-        final BufferedReader reader = new BufferedReader(fileReader);
+        Reader fileReader = null;
+        BufferedReader reader = null;
 
-        final StringBuilder sb = new StringBuilder();
-        while (reader.ready()) {
-            final String line = reader.readLine();
-            System.err.println(line);
-            sb.append(line).append('\n');
+        try {
+            fileReader = new FileReader(file);
+            reader = new BufferedReader(fileReader);
+            final StringBuilder sb = new StringBuilder();
+            while (reader.ready()) {
+                final String line = reader.readLine();
+                System.err.println(line);
+                sb.append(line).append('\n');
+            }
+    
+            return sb.toString();
+        } finally {
+            IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(fileReader);
         }
-
-        return sb.toString();
     }
     
     /*

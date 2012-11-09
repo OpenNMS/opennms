@@ -100,16 +100,13 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
         config.setTimeout(1000);
         config.setCommunity("new");
         
-        putXmlObject(m_jaxbContext, url, 303, config);
-        
+        putXmlObject(m_jaxbContext, url, 303, config, "/snmpConfig/1.1.1.1");
         
         SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
         
         assertConfiguration(newConfig, 9161, 1, 1000, "new", "v2c");
         
         dumpConfig();
-        
-        
     }
     
     private void dumpConfig() throws Exception {

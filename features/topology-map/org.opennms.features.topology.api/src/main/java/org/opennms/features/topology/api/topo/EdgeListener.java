@@ -5,11 +5,5 @@ import java.util.List;
 public interface EdgeListener {
 	
 	public void edgeSetChanged(EdgeProvider provider); 
-	
-	public void edgesAdded(EdgeProvider provider, List<? extends Edge> edges);
-	
-	public void edgesUpdated(EdgeProvider provider, List<? extends Edge> edges);
-	
-	public void edgesRemoved(EdgeProvider provider, List<? extends Edge> edges);
-	
+	public void edgeSetChanged(EdgeProvider provider, List<? extends Edge> added, List<? extends Edge> updated, List<String> removedEdgeIds); 
 }

@@ -84,6 +84,11 @@
     </dependency>
     -->
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>ncs-model</artifactId>
       <scope>provided</scope>

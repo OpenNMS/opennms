@@ -37,24 +37,24 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class EventRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	private DatabasePopulator m_databasePopulator;
+    private DatabasePopulator m_databasePopulator;
 
-	@Override
+    @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
-	}
+    }
 
-	@Test
-	public void testBetween() throws Exception {
-		String xml;
-		xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z"), 200);
-		assertTrue(xml.contains("<createTime>"));
-		xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z&end=2010-01-01T01:00:00Z"), 200);
-		assertTrue(xml.contains("totalCount=\"0\""));
-		xml = sendRequest(GET, "/events/between", parseParamData("end=2010-01-01T01:00:00Z"), 200);
-		assertTrue(xml.contains("totalCount=\"0\""));
-	}
+    @Test
+    public void testBetween() throws Exception {
+        String xml;
+        xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z"), 200);
+        assertTrue(xml.contains("<createTime>"));
+        xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z&end=2010-01-01T01:00:00Z"), 200);
+        assertTrue(xml.contains("totalCount=\"0\""));
+        xml = sendRequest(GET, "/events/between", parseParamData("end=2010-01-01T01:00:00Z"), 200);
+        assertTrue(xml.contains("totalCount=\"0\""));
+    }
 }

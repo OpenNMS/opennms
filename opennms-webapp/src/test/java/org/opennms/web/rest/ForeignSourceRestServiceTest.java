@@ -53,12 +53,12 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         assertTrue(xml.contains("ICMP"));
         
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h");
+        sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));
         
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h");
+        sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
@@ -123,7 +123,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
                     "<policy name=\"all-ipinterfaces\" class=\"org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy\" />" +
                 "</policies>" +
             "</foreign-source>";
-        MockHttpServletResponse response = sendPost("/foreignSources", fs);
+        MockHttpServletResponse response = sendPost("/foreignSources", fs, 303, "/foreignSources/test");
         System.err.println("response = " + stringifyResponse(response));
     }
     

@@ -115,7 +115,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
                 "    <parentIfIndex>1</parentIfIndex>" +
                 "  </link>";
 
-        MockHttpServletResponse response = sendPost("/links", xml, 303);
+        MockHttpServletResponse response = sendPost("/links", xml, 303, null);
         assertTrue(response.getHeader("Location").toString().contains("opennms/rest/links/"));
         
         final String newXml = sendRequest(GET, "/links", 200);
@@ -129,8 +129,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
         assertTrue(xml.contains("<link "));
         assertTrue(xml.contains("source=\"linkd\""));
         
-        MockHttpServletResponse response = sendPut("/links/64", "source=monkey", 303);
-        assertTrue(response.getHeader("Location").toString().endsWith("opennms/rest/links/64"));
+        sendPut("/links/64", "source=monkey", 303, "/links/64");
         
         xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);

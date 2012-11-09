@@ -192,8 +192,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getIpInterface").build(nodeCriteria, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
-            // return Response.ok(ipInterface).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
         } finally {
             writeUnlock();
         }
@@ -235,8 +234,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             LogUtils.debugf(this, "updateIpInterface: ip interface %s updated", ipInterface);
             m_ipInterfaceDao.saveOrUpdate(ipInterface);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass(), "getIpInterface").build(nodeCriteria, ipAddress)).build();
-            // return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

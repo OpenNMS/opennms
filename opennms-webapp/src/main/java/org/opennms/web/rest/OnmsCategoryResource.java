@@ -151,7 +151,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             log().debug("addCategory: Adding category " + category + " to node " + nodeCriteria);
             node.addCategory(category);
             m_nodeDao.save(node);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getCategory").build(nodeCriteria, category.getName())).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, category.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -191,7 +191,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             }
             log().debug("updateCategory: category " + category + " updated");
             m_nodeDao.saveOrUpdate(node);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getCategory").build(nodeCriteria, categoryName)).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

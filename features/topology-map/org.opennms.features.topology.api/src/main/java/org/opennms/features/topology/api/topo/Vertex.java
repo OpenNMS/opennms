@@ -4,7 +4,7 @@ public interface Vertex extends VertexRef {
 	
 	String getLabel();
 	
-	String getToolipText();
+	String getTooltipText();
 	
 	String getIconKey();
 	
