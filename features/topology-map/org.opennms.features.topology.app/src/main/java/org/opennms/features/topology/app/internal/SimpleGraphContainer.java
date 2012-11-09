@@ -54,7 +54,14 @@ public class SimpleGraphContainer implements GraphContainer {
 
     public class GVertex {
         
-        private String m_key;
+        private static final String LEAF = "leaf";
+		private static final String ICON = "icon";
+		private static final String ICON_KEY = "iconKey";
+		private static final String LABEL = "label";
+		private static final String IP_ADDR = "ipAddr";
+		private static final String NODE_ID = "nodeID";
+		private static final String TOOLTIP_TEXT = "tooltipText";
+		private String m_key;
         private Object m_itemId;
         private Item m_item;
         private String m_groupKey;
@@ -113,7 +120,7 @@ public class SimpleGraphContainer implements GraphContainer {
         }
 
         public boolean isLeaf() {
-            return (Boolean) getItem().getItemProperty("leaf").getValue();
+            return (Boolean) getItem().getItemProperty(LEAF).getValue();
         }
 
         public int getX() {
@@ -141,49 +148,49 @@ public class SimpleGraphContainer implements GraphContainer {
         }
 
         public String getIcon() {
-            return (String) m_item.getItemProperty("icon").getValue();
+            return (String) m_item.getItemProperty(ICON).getValue();
         }
 
         public void setIcon(String icon) {
-            m_item.getItemProperty("icon").setValue(icon);
+            m_item.getItemProperty(ICON).setValue(icon);
         }
         
         public void setIconKey(String iconKey) {
-            m_item.getItemProperty("iconKey").setValue(iconKey);
+            m_item.getItemProperty(ICON_KEY).setValue(iconKey);
         }
         
         public String getIconKey() {
-            return (String) m_item.getItemProperty("iconKey").getValue();
+            return (String) m_item.getItemProperty(ICON_KEY).getValue();
         }
 
         public String getLabel() {
-            Property labelProperty = m_item.getItemProperty("label");
+            Property labelProperty = m_item.getItemProperty(LABEL);
 			String label = labelProperty == null ? "labels unsupported " : (String) labelProperty.getValue();
 			return label;
         }
 
         public void setLabel(String label) {
-            m_item.getItemProperty("label").setValue(label);
+            m_item.getItemProperty(LABEL).setValue(label);
         }
         
         public String getIpAddr() {
-            Property ipAddrProperty = m_item.getItemProperty("ipAddr");
+            Property ipAddrProperty = m_item.getItemProperty(IP_ADDR);
             String ipAddr = ipAddrProperty == null ? null : (String) ipAddrProperty.getValue();
             return ipAddr;
         }
         
         public void setIpAddr(String ipAddr) {
-            m_item.getItemProperty("ipAddr").setValue(ipAddr);
+            m_item.getItemProperty(IP_ADDR).setValue(ipAddr);
         }
         
         public int getNodeID() {
-            Property nodeIDProperty = m_item.getItemProperty("nodeID");
+            Property nodeIDProperty = m_item.getItemProperty(NODE_ID);
             int nodeID = (nodeIDProperty == null) ? 0 : (Integer) nodeIDProperty.getValue();
             return nodeID;
         }
         
         public void setNodeID(int nodeID) {
-            m_item.getItemProperty("nodeID").setValue(new Integer(nodeID));
+            m_item.getItemProperty(NODE_ID).setValue(new Integer(nodeID));
         }
 
         private GVertex getParent() {
@@ -198,8 +205,8 @@ public class SimpleGraphContainer implements GraphContainer {
         }
         
         public String getTooltipText() {
-            if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
-                return (String) m_item.getItemProperty("tooltipText").getValue();
+            if(m_item.getItemProperty(TOOLTIP_TEXT) != null && m_item.getItemProperty(TOOLTIP_TEXT).getValue() != null) {
+                return (String) m_item.getItemProperty(TOOLTIP_TEXT).getValue();
             }else {
                 return null;
             }
