@@ -357,7 +357,7 @@
                 <img style="vertical-align:middle" src="images/AlarmMemos/JournalMemo.png" width="20" height="20" 
                      title="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>
             </c:if>
-                
+
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>

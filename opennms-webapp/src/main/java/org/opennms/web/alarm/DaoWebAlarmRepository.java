@@ -28,11 +28,6 @@
 
 package org.opennms.web.alarm;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -50,6 +45,11 @@ import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p>DaoWebAlarmRepository class.</p>
@@ -359,6 +359,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     private ReductionKeyMemo mapOnmsMemoToReductionKeyMemo(OnmsMemo onmsMemo, String reductionKey) {
         ReductionKeyMemo reductionKeyMemo = new ReductionKeyMemo();
         mapOnmsMemoToMemo(onmsMemo, reductionKeyMemo);
@@ -366,6 +369,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         return reductionKeyMemo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     private Memo mapOnmsMemoToMemo(OnmsMemo onmsMemo, Memo memo) {
         if (onmsMemo != null && memo != null) {
             memo.setId(onmsMemo.getId());
@@ -377,6 +383,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         return memo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void updateStickyMemo(Integer alarmId, String body, String user) {
@@ -385,7 +394,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
             if (onmsAlarm.getStickyMemo() == null) {
                 onmsAlarm.setStickyMemo(new OnmsMemo());
                 onmsAlarm.getStickyMemo().setCreated(new Date());
-            } 
+            }
             onmsAlarm.getStickyMemo().setBody(body);
             onmsAlarm.getStickyMemo().setAuthor(user);
             onmsAlarm.getStickyMemo().setUpdated(new Date());
@@ -393,13 +402,16 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         }
     }
 
-    @Override    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @Transactional
     public void updateReductionKeyMemo(Integer alarmId, String body, String user) {
         OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
         if (onmsAlarm != null) {
             OnmsReductionKeyMemo memo = onmsAlarm.getReductionKeyMemo();
-            if(memo == null) {
+            if (memo == null) {
                 memo = new OnmsReductionKeyMemo();
                 memo.setCreated(new Date());
             }
@@ -412,6 +424,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void removeStickyMemo(Integer alarmId) {
@@ -419,9 +434,12 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         if (onmsAlarm != null) {
             m_memoDao.delete(onmsAlarm.getStickyMemo());
             onmsAlarm.setStickyMemo(null);
-        } 
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void removeReductionKeyMemo(int alarmId) {
@@ -440,5 +458,4 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         cb.eq("ackType", AckType.ALARM);
         return m_ackDao.findMatching(cb.toCriteria());
     }
-
 }
