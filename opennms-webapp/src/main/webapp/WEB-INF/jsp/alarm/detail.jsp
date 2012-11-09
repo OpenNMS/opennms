@@ -124,8 +124,6 @@
             &nbsp;
             <% }%>
         </td>
-        <th width="135em">Acknowledged&nbsp;By</th>
-        <td class="divider" width="28%"><%=alarm.getAcknowledgeUser() != null ? alarm.getAcknowledgeUser() : "&nbsp;"%></td>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Last&nbsp;Event</th>
