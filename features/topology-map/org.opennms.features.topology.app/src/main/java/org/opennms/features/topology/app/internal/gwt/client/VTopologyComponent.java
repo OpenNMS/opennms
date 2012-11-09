@@ -153,6 +153,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			
 			m_edgeContextHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeContextMenu)");
 			m_edgeToolTipHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeTooltip)");
+			
 		}
 
 		public void updateGraph(GWTGraph graph) {
@@ -238,19 +239,25 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			//vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition());
 			
+			
 			/****** Setup timer for all topology animations that are dependent on another property ******/
-			D3.d3().timer(new BooleanFunc() {
+            D3.d3().timer(new BooleanFunc() {
                 
                 @Override
                 public boolean call() {
                     D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
                     double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
                     final double strokeWidth = 5 * (1/scale);
-                    D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", "" + strokeWidth);
+                    
+                    if(Double.parseDouble(D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width").split("px")[0]) != strokeWidth) {
+                        D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", "" + strokeWidth);
+                    }else {
+                        consoleLog("stroke Width == strokeWidth");
+                    }
+                    
                     return false;
                 }
             });
-
 		}
 		
 

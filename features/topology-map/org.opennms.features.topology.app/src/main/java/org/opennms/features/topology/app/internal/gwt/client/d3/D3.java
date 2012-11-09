@@ -313,6 +313,10 @@ public class D3 extends JavaScriptObject {
         
     }-*/;
 
+    public final native String style(String style) /*-{
+        return this.style(style);
+    }-*/;
+
     
 
 
