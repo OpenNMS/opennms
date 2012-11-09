@@ -2,6 +2,7 @@ package org.opennms.features.topology.app.internal.gwt.client.view;
 
 import org.opennms.features.topology.app.internal.gwt.client.GWTGraph;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
+import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 
@@ -16,6 +17,7 @@ public interface TopologyView<T> {
         void onContextMenu(Object element, int x, int y, String type);
         void onMouseWheel();
         void onBackgroundClick();
+        void onScaleUpdate(double scale);
     }
     
     void setPresenter(Presenter<T> presenter);
@@ -27,4 +29,6 @@ public interface TopologyView<T> {
     Element getReferenceViewPort();
     Element getMarqueeElement();
     void repaintNow(GWTGraph graph);
+//    double getScaleFactor(final BoundingRect rect, final int svgWidth, final int svgHeight);
+    void zoomToFit(BoundingRect rect);
 }

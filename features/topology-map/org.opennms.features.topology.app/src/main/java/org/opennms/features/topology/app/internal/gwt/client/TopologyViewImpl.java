@@ -2,8 +2,13 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
+import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
+import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
@@ -165,6 +170,69 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public void onGraphUpdated(GWTGraph graph) {
             m_presenter.getViewRenderer().draw(graph, this);
+    }
+
+    void updateScale(double oldScale, double newScale, SVGElement svg, int cx, int cy) {
+        double zoomFactor = newScale/oldScale;
+    	
+        SVGGElement g = getSVGViewPort().cast();
+    
+    	if(cx == 0 ) {
+    		cx = (int) (Math.ceil(svg.getParentElement().getOffsetWidth() / 2.0) - 1);
+    	}
+    
+    	if(cy == 0) {
+    		cy = (int) (Math.ceil(svg.getParentElement().getOffsetHeight() / 2.0) -1);
+    	}
+    
+    	SVGPoint p = svg.createSVGPoint();
+    	p.setX(cx);
+    	p.setY(cy);
+    	p = p.matrixTransform(g.getCTM().inverse());
+    	SVGMatrix m = svg.createSVGMatrix()
+    			.translate(p.getX(),p.getY())
+    			 .scale(zoomFactor)
+    			.translate(-p.getX(), -p.getY());
+    	SVGMatrix ctm = g.getCTM().multiply(m);
+    	D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", matrixTransform(ctm));
+    }
+    
+    String matrixTransform(SVGMatrix matrix) {
+        return "matrix(" + matrix.getA() +
+                ", " + matrix.getB() +
+                ", " + matrix.getC() + 
+                ", " + matrix.getD() +
+                ", " + matrix.getE() + 
+                ", " + matrix.getF() + ")";
+    }
+
+    @Override
+    public void zoomToFit(final BoundingRect rect) {
+        SVGElement svg = getSVGElement();
+        final int svgWidth = svg.getParentElement().getOffsetWidth(); 
+        final int svgHeight = svg.getParentElement().getOffsetHeight();
+        
+        double svgCenterX = svgWidth/2;
+        double svgCenterY = svgHeight/2;
+        
+        double translateX = (svgCenterX - rect.getCenterX());
+        double translateY = (svgCenterY - rect.getCenterY());
+        
+        final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
+        SVGMatrix transform = svg.createSVGMatrix()
+            .translate(translateX, translateY)
+            .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
+            .scale(scale);
+                   
+        String transformVal = ((TopologyViewImpl)this).matrixTransform(transform);
+        
+        D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
+            
+            @Override
+            public void call() {
+                m_presenter.onScaleUpdate(scale);
+            }
+        });
     }
 
 }

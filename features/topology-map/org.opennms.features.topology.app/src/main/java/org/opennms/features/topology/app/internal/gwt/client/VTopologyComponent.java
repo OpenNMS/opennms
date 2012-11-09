@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.BooleanFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
@@ -56,8 +55,6 @@ import org.opennms.features.topology.app.internal.gwt.client.service.support.Def
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
@@ -376,6 +373,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     private boolean m_panToSelection = false;
     private boolean m_fitToView = false;
     private ServiceRegistry m_serviceRegistry;
+    private TopologyViewRenderer m_currentViewRender;
     
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
@@ -426,6 +424,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 		m_graphDrawer = new SVGGraphDrawer(dragBehavior, m_serviceRegistry);
 		m_graphDrawerNoTransition = new SVGGraphDrawerNoTransition(dragBehavior, m_serviceRegistry);
+		
+		setTopologyViewRenderer(m_graphDrawer);
 	}
 
     
@@ -455,29 +455,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 		D3 select = D3.d3().select(panElem);
 		select.call(d3Pan);
-	}
-
-	private void drawGraph(GWTGraph g, boolean now) {
-	    try {
-    		if(now) {  
-    			m_graphDrawerNoTransition.updateGraph(g);
-    		}else {
-    			m_graphDrawer.updateGraph(g);
-    		}
-	    } catch (Exception e) {
-	        GWT.log(e.toString());
-	    }
-		
-		final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
-		selectedVertices.each(new Handler<GWTVertex>() {
-
-            @Override
-            public void call(GWTVertex gwtVertex, int index) {
-                SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
-                vertex.getParentElement().appendChild(vertex);
-            }
-        });
-		
 	}
 
 	private void deselectAllItems(boolean immediate) {
@@ -792,64 +769,36 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 	private void setGraph(GWTGraph graph) {
 		m_graph = graph;
-		updateGraphUpdateListeners();
+		
 		if(isPanToSelection()) {
-		    repaintGraph();
 		    centerSelection(m_graph.getVertices(m_semanticZoomLevel));
 		} else if(isFitToView()) {
-		    repaintGraph();
 		    fitMapToView(m_graph.getVertices(m_semanticZoomLevel));
-		}else {
-		    repaintGraph();
 		}
+        	
+//		if(false) {  
+//    		setTopologyViewRenderer(m_graphDrawerNoTransition);
+//    	}else {
+    	    setTopologyViewRenderer(m_graphDrawer);
+    	//}
+    	
+        
+        final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+        selectedVertices.each(new Handler<GWTVertex>() {
+        
+            @Override
+            public void call(GWTVertex gwtVertex, int index) {
+                SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
+                vertex.getParentElement().appendChild(vertex);
+            }
+        });
 		
+        updateGraphUpdateListeners();
 	}
 
-    private void repaintGraph() {
-		drawGraph(m_graph, false);
-	}
+    private void updateScale(double oldScale, double newScale, SVGElement svg,int cx, int cy) {
+        ((TopologyViewImpl) m_topologyView).updateScale(oldScale, newScale, svg, cx, cy);
 
-	public void repaintGraphNow() {
-		drawGraph(m_graph, true);
-	}
-	
-	public void repaintNow() {
-	    repaintGraphNow();
-	}
-
-	private void updateScale(double oldScale, double newScale, SVGElement svg,int cx, int cy) {
-
-		double zoomFactor = newScale/oldScale;
-		SVGGElement g = m_topologyView.getSVGViewPort().cast();
-
-		if(cx == 0 ) {
-			cx = (int) (Math.ceil(svg.getParentElement().getOffsetWidth() / 2.0) - 1);
-		}
-
-		if(cy == 0) {
-			cy = (int) (Math.ceil(svg.getParentElement().getOffsetHeight() / 2.0) -1);
-		}
-
-		SVGPoint p = svg.createSVGPoint();
-		p.setX(cx);
-		p.setY(cy);
-		p = p.matrixTransform(g.getCTM().inverse());
-		SVGMatrix m = svg.createSVGMatrix()
-				.translate(p.getX(),p.getY())
-				 .scale(zoomFactor)
-				.translate(-p.getX(), -p.getY());
-		SVGMatrix ctm = g.getCTM().multiply(m);
-		D3.d3().select(m_topologyView.getSVGViewPort()).transition().duration(1000).attr("transform", matrixTransform(ctm));
-
-	}
-
-	private String matrixTransform(SVGMatrix matrix) {
-		return "matrix(" + matrix.getA() +
-				", " + matrix.getB() +
-				", " + matrix.getC() + 
-				", " + matrix.getD() +
-				", " + matrix.getE() + 
-				", " + matrix.getF() + ")";
 	}
 
 	public ApplicationConnection getClient() {
@@ -902,36 +851,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         centerD3Selection(vertexArray, true);
     }
     
-    private void zoomToFit(final BoundingRect rect) {
-        
-        SVGElement svg = m_topologyView.getSVGElement();
-        final int svgWidth = svg.getParentElement().getOffsetWidth(); 
-        final int svgHeight = svg.getParentElement().getOffsetHeight();
-        
-        double svgCenterX = svgWidth/2;
-        double svgCenterY = svgHeight/2;
-        
-        double translateX = (svgCenterX - rect.getCenterX());
-        double translateY = (svgCenterY - rect.getCenterY());
-        
-        final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
-        SVGMatrix transform = svg.createSVGMatrix()
-            .translate(translateX, translateY)
-            .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
-            .scale(scale);
-                   
-        String transformVal = matrixTransform(transform);
-        
-        D3.d3().select(m_topologyView.getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
-            
-            @Override
-            public void call() {
-                setMapScaleNow(scale);
-            }
-        });
-        
-    }
-    
     private void centerD3Selection(JsArray<GWTVertex> vertices, boolean fitToView) {
         
         final BoundingRect rect = new BoundingRect();
@@ -946,7 +865,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             }
         }
         
-        zoomToFit(rect);
+        m_topologyView.zoomToFit(rect);
     }
     
     private void setMapScaleNow(double scale) {
@@ -960,7 +879,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
     @Override
     public TopologyViewRenderer getViewRenderer() {
-        return (TopologyViewRenderer) m_graphDrawer;
+        return m_currentViewRender;
+    }
+    
+    private void setTopologyViewRenderer(TopologyViewRenderer viewRenderer) {
+        m_currentViewRender = viewRenderer;
     }
 
     @Override
@@ -987,6 +910,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         for(GraphUpdateListener listener : m_graphListenerList) {
             listener.onGraphUpdated( m_graph );
         }
+    }
+
+    @Override
+    public void onScaleUpdate(double scale) {
+        setMapScaleNow(scale);
     }
 
 }

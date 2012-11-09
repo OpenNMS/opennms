@@ -158,10 +158,8 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
                 
                 if(inSelection(elem)) {
                     vertex.setSelected(true);
-                    D3.d3().select(elem).style("stroke", "blue");
                 }else {
                     vertex.setSelected(false);
-                    D3.d3().select(elem).style("stroke", "none");
                 }
                 
             }
