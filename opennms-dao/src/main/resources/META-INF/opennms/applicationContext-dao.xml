@@ -78,6 +78,10 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
+  <bean id="memoDao" class="org.opennms.netmgt.dao.hibernate.MemoDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
   <bean id="assetRecordDao" class="org.opennms.netmgt.dao.hibernate.AssetRecordDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

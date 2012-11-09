@@ -28,22 +28,10 @@
 
 package org.opennms.web.alarm;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.alarm.filter.AlarmIdFilter;
-import org.opennms.web.alarm.filter.AlarmIdListFilter;
-import org.opennms.web.alarm.filter.AlarmTypeFilter;
-import org.opennms.web.alarm.filter.SeverityBetweenFilter;
-import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.*;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
 import org.opennms.web.filter.AndFilter;
@@ -53,14 +41,16 @@ import org.opennms.web.filter.OrFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>JdbcWebAlarmRepository class.</p>
@@ -70,10 +60,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @since 1.8.1
  */
 public class JdbcWebAlarmRepository implements WebAlarmRepository {
-    
+
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
-    
+
     private String getSql(final String selectClause, final AlarmCriteria criteria) {
         final StringBuilder buf = new StringBuilder(selectClause);
 
@@ -85,7 +75,8 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
                 if (first) {
                     buf.append(" WHERE ");
                     first = false;
-                } else {
+                }
+                else {
                     buf.append(" AND ");
                 }
             }
@@ -107,18 +98,19 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
 
             public void visitLimit(int limit, int offset) {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
-            } 
+            }
 
         });
 
         return buf.toString();
     }
-    
+
     private PreparedStatementSetter paramSetter(final AlarmCriteria criteria, final Object... args) {
         return new PreparedStatementSetter() {
             int paramIndex = 1;
+
             public void setValues(final PreparedStatement ps) throws SQLException {
-                for(Object arg : args) {
+                for (Object arg : args) {
                     ps.setObject(paramIndex, arg);
                     paramIndex++;
                 }
@@ -131,7 +123,39 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
             }
         };
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateStickyMemo(Integer alarmId, String body, String user) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateReductionKeyMemo(Integer alarmId, String body, String user) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeStickyMemo(Integer alarmId) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeReductionKeyMemo(int alarmId) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
+    }
+
     private static class AlarmMapper implements ParameterizedRowMapper<Alarm> {
         public Alarm mapRow(ResultSet rs, int rowNum) throws SQLException {
             Alarm alarm = new Alarm();
@@ -155,7 +179,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
             alarm.logMessage = rs.getString("logmsg");
             alarm.operatorInstruction = rs.getString("OperInstruct");
             alarm.troubleTicket = rs.getString("TTicketID");
-            
+
             Integer stateCode = (Integer) rs.getObject("TTicketState");
             for (TroubleTicketState state : TroubleTicketState.values()) {
                 if (stateCode != null && state.ordinal() == stateCode.intValue()) {
@@ -172,27 +196,32 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
 
             alarm.nodeLabel = rs.getString("nodeLabel");
             alarm.serviceName = rs.getString("serviceName");
-            
+
             return alarm;
-            
+
         }
-        
-        private Date getTimestamp(String field, ResultSet rs) throws SQLException{
-            if(rs.getTimestamp(field) != null){
+
+        private Date getTimestamp(String field, ResultSet rs) throws SQLException {
+            if (rs.getTimestamp(field) != null) {
                 return new Date(rs.getTimestamp(field).getTime());
-            }else{
+            }
+            else {
                 return null;
             }
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int countMatchingAlarms(AlarmCriteria criteria) {
         String sql = getSql("SELECT COUNT(ALARMID) as ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     public int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria) {
         String selectClause = "SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
@@ -208,143 +237,152 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
                 alarmCounts[severity] = alarmCount;
 
             }
-            
+
         });
-        
+
         return alarmCounts;
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     public Alarm getAlarm(int alarmId) {
         Alarm[] alarms = getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(alarmId)));
         if (alarms.length < 1) {
             return null;
-        } else {
+        }
+        else {
             return alarms[0];
         }
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     public Alarm[] getMatchingAlarms(AlarmCriteria criteria) {
         String sql = getSql("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getAlarms(sql, paramSetter(criteria));
     }
-    
 
     private Alarm[] getAlarms(String sql, PreparedStatementSetter setter) {
         List<Alarm> alarms = queryForList(sql, setter, new AlarmMapper());
         return alarms.toArray(new Alarm[0]);
     }
 
-    
     /**
      * <p>acknowledgeAlarms</p>
      *
-     * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
+     * @param alarmIds  an array of int.
+     * @param user      a {@link java.lang.String} object.
      * @param timestamp a java$util$Date object.
      */
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void acknowledgeMatchingAlarms(String user, Date timestamp, AlarmCriteria criteria) {
         String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? ", criteria);
         jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
     }
-    
+
     /**
      * <p>acknowledgeAll</p>
      *
-     * @param user a {@link java.lang.String} object.
+     * @param user      a {@link java.lang.String} object.
      * @param timestamp a java$util$Date object.
      */
     public void acknowledgeAll(String user, Date timestamp) {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user) {
         String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL ", criteria);
         jdbc().update(sql, paramSetter(criteria));
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     public void unacknowledgeAll(String user) {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL ");
     }
-    
+
     /**
      * <p>clearAlarms</p>
      *
      * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
+     * @param user     a {@link java.lang.String} object.
      */
-    public void clearAlarms(int[] alarmIds, String user){
+    public void clearAlarms(int[] alarmIds, String user) {
         clearAlarms(alarmIds, user, new Date());
     }
-    
+
     /**
      * <p>clearAlarms</p>
      *
-     * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
+     * @param alarmIds  an array of int.
+     * @param user      a {@link java.lang.String} object.
      * @param timestamp a java$util$Date object.
      */
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
-        if(alarmIds == null || user == null || timestamp == null){
+        if (alarmIds == null || user == null || timestamp == null) {
             throw new IllegalArgumentException("Cannot take null parameters");
         }
-        
+
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), new SeverityBetweenFilter(OnmsSeverity.NORMAL, OnmsSeverity.CRITICAL));
-        
+
         String sql = getSql("UPDATE ALARMS SET SEVERITY =?, ALARMTYPE =? ", criteria);
         LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), Alarm.RESOLUTION_TYPE));
-        
+
     }
-    
+
     /**
      * <p>escalateAlarms</p>
      *
-     * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
+     * @param alarmIds  an array of int.
+     * @param user      a {@link java.lang.String} object.
      * @param timestamp a java$util$Date object.
      */
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
         ConditionalFilter condFilter = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
         ConditionalFilter condFilter2 = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));
         ConditionalFilter orCondFilter = new OrFilter(condFilter, condFilter2);
-        
+
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
-        
+
         String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =? ", criteria);
         LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
     }
-    
+
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
         Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
     }
-    
+
     private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
         return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
     }
 
-
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
         return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
-    
+
     private JdbcOperations jdbc() {
         return m_simpleJdbcTemplate.getJdbcOperations();
     }
-
 }

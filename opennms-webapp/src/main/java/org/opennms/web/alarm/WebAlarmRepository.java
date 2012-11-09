@@ -145,4 +145,19 @@ public interface WebAlarmRepository {
      */
     public abstract void clearAlarms(int[] alamrIds, String user, Date timestamp);
 
+    /**
+     * Updates the StickyMemo of the alarm to persistence
+     * @param alarmId the alarmId of the alarm where the StickyMemo has to be persisted.
+     */
+    public void updateStickyMemo(Integer alarmId, String body, String user);
+
+    /**
+     * Updates the ReductionKeyMemo of the alarm to persistence.
+     * ReductionKeyMemo aka JournalMemo
+     */
+    public void updateReductionKeyMemo(Integer alarmId, String body, String user);
+
+    public void removeStickyMemo(Integer alarmId);
+
+    public void removeReductionKeyMemo(int alarmId);
 }

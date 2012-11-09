@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import javax.persistence.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,6 +43,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -133,7 +135,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /** nullable persistent field */
     private String m_tTicketId;
     
-      /** nullable persistent field */
+    /** nullable persistent field */
     private TroubleTicketState m_tTicketState;
 
     /** nullable persistent field */
@@ -180,8 +182,12 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     private int m_x733ProbableCause = 0;
     
-	private Map<String, String> m_details;
+    private Map<String, String> m_details;
 
+    private OnmsMemo m_stickyMemo;
+    
+    private OnmsReductionKeyMemo m_reductionKeyMemo;
+    
     /**
      * default constructor
      */
@@ -1027,7 +1033,29 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public void setIfIndex(Integer ifIndex) {
         m_ifIndex = ifIndex;
     }
+    
+    @ManyToOne
+    @JoinColumn(name="reductionKey", referencedColumnName="reductionkey", updatable=false, insertable=false)
+    @XmlElement(name="reductionKeyMemo")
+    public OnmsReductionKeyMemo getReductionKeyMemo() {
+        return m_reductionKeyMemo;
+    }
 
+    public void setReductionKeyMemo(OnmsReductionKeyMemo reductionKeyMemo) {
+        this.m_reductionKeyMemo = reductionKeyMemo;
+    }
+
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="stickymemo")
+    @XmlElement(name="stickyMemo")
+    public OnmsMemo getStickyMemo() {
+        return m_stickyMemo;
+    }
+
+    public void setStickyMemo(OnmsMemo stickyMemo) {
+        this.m_stickyMemo = stickyMemo;
+    }
+    
     /** {@inheritDoc} */
     public void acknowledge(String user) {
         if (m_alarmAckTime == null || m_alarmAckUser == null) {
