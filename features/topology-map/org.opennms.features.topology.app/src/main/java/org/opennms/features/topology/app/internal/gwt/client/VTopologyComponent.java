@@ -591,7 +591,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				    selection = D3.d3().select(Element.as(event.getEventTarget()).getParentElement());
 				}
 				
-				m_dragObject = new DragObject(VTopologyComponent.this.m_topologyView, draggableElement, m_topologyView.getSVGViewPort(), selection, m_serviceRegistry);
+				m_dragObject = new DragObject(VTopologyComponent.this.m_topologyView, draggableElement, m_topologyView.getSVGViewPort(), selection);
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
 			}
@@ -617,6 +617,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			public void call(GWTVertex vertex, int index) {
 
 				m_dragObject.move();
+				
+				for( GraphUpdateListener listener : m_graphListenerList) {
+				    listener.onGraphUpdated(m_graph);
+				}
+				
 				D3.getEvent().preventDefault();
 				D3.getEvent().stopPropagation();
 			}

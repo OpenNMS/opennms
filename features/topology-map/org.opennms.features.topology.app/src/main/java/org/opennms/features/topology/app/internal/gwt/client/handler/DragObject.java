@@ -28,17 +28,14 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.handler;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
-import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
@@ -61,10 +58,8 @@ public class DragObject{
 	private D3Transform m_transform;
 	private D3 m_selection;
 	private Map<String, Point> m_startPosition = new HashMap<String, Point>();
-	private Collection<GraphUpdateListener> m_graphUpdateListeners;
 
-	public DragObject(TopologyView<TopologyViewRenderer> svgTopologyMap, Element draggableElement, Element containerElement, D3 selection, ServiceRegistry serviceRegistry) {
-	    m_graphUpdateListeners = serviceRegistry.findProviders(GraphUpdateListener.class);
+	public DragObject(TopologyView<TopologyViewRenderer> svgTopologyMap, Element draggableElement, Element containerElement, D3 selection) {
 	    
 		m_svgTopologyMap = svgTopologyMap;
         m_draggableElement = draggableElement;
@@ -136,11 +131,6 @@ public class DragObject{
             }
         });
 	    
-	    if(m_graphUpdateListeners != null) {
-	        for(GraphUpdateListener listener : m_graphUpdateListeners) {
-	            
-	        }
-	    }
 	}
 	
 	public final native void consoleLog(Object object) /*-{

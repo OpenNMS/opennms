@@ -47,7 +47,7 @@ public class PanHandler implements DragBehaviorHandler{
     
     @Override
     public void onDragStart(Element elem) {
-        m_panObject = new PanObject(m_topologyView, m_serviceRegistry);
+        m_panObject = new PanObject(m_topologyView);
     }
 
     @Override
