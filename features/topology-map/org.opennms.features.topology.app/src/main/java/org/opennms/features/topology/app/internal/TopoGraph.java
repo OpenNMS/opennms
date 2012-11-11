@@ -36,22 +36,25 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.Item;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 
 
-public class Graph{
+public class TopoGraph{
 	
 	public static final String PROP_X = "x";
 	public static final String PROP_Y = "y";
 	public static final String PROP_ICON = "icon";
 	
-	private GraphContainer m_dataSource;
-	private ElementHolder<Vertex> m_vertexHolder;
-	private ElementHolder<Edge> m_edgeHolder;
+	private SimpleGraphContainer m_dataSource;
+	private ElementHolder<TopoVertex> m_vertexHolder;
+	private ElementHolder<TopoEdge> m_edgeHolder;
 
 	
-	public Graph(GraphContainer dataSource){
+	public TopoGraph(GraphContainer dataSource){
 		
 		if(dataSource == null) {
 			throw new NullPointerException("dataSource may not be null");
@@ -69,17 +72,17 @@ public class Graph{
 			return;
 		}
 		
-		m_dataSource = dataSource;
+		m_dataSource = (SimpleGraphContainer) dataSource;
 		
-		m_vertexHolder = new ElementHolder<Vertex>(m_dataSource.getVertexContainer(), "tcV") {
+		m_vertexHolder = new ElementHolder<TopoVertex>(m_dataSource.getVertexContainer(), "tcV") {
 
             @Override
-            List<Vertex> getElements() {
+            List<TopoVertex> getElements() {
                 return super.getElements();
             }
 
             @Override
-			protected Vertex update(Vertex element) {
+			protected TopoVertex update(TopoVertex element) {
 				Object groupId = m_dataSource.getVertexContainer().getParent(element.getItemId());
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				
@@ -89,19 +92,19 @@ public class Graph{
 			}
 
 			@Override
-			protected Vertex make(String key, Object itemId, Item item) {
+			protected TopoVertex make(String key, Object itemId, Item item) {
 				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
-				return new Vertex(key, itemId, item, groupKey, groupId);
+				return new TopoVertex(m_dataSource, key, itemId, groupKey, groupId);
 			}
 
 		};
 		
-		m_edgeHolder = new ElementHolder<Edge>(m_dataSource.getEdgeContainer(), "tcE") {
+		m_edgeHolder = new ElementHolder<TopoEdge>(m_dataSource.getEdgeContainer(), "tcE") {
 
 			@Override
-			protected Edge make(String key, Object itemId, Item item) {
+			protected TopoEdge make(String key, Object itemId, Item item) {
 
 				List<Object> endPoints = new ArrayList<Object>(m_dataSource.getEndPointIdsForEdge(itemId));
 
@@ -112,10 +115,10 @@ public class Graph{
 				Object sourceId = endPoints.get(0);
 				Object targetId = endPoints.get(1);
 				
-				Vertex source = m_vertexHolder.getElementByItemId(sourceId);
-				Vertex target = m_vertexHolder.getElementByItemId(targetId);
+				TopoVertex source = m_vertexHolder.getElementByItemId(sourceId);
+				TopoVertex target = m_vertexHolder.getElementByItemId(targetId);
 
-				return new Edge(key, itemId, item, source, target);
+				return new TopoEdge(key, itemId, item, source, target);
 			}
 
 		};
@@ -131,15 +134,15 @@ public class Graph{
 		return m_dataSource;
 	}
 
-	public List<Vertex> getVertices(){
+	public List<TopoVertex> getVertices(){
 		return m_vertexHolder.getElements();
 	}
 	
-	public List<Vertex> getLeafVertices(){
-		List<Vertex> elements = m_vertexHolder.getElements();
-		List<Vertex> leaves = new ArrayList<Vertex>(elements.size());
+	public List<TopoVertex> getLeafVertices(){
+		List<TopoVertex> elements = m_vertexHolder.getElements();
+		List<TopoVertex> leaves = new ArrayList<TopoVertex>(elements.size());
 		
-		for(Vertex v : elements) {
+		for(TopoVertex v : elements) {
 			if (v.isLeaf()) {
 				leaves.add(v);
 			}
@@ -148,24 +151,24 @@ public class Graph{
 		return leaves;
 	}
 	
-	public List<Edge> getEdges(){
+	public List<TopoEdge> getEdges(){
 		return m_edgeHolder.getElements();
 	}
 	
-	public Vertex getVertexByKey(String key) {
+	public TopoVertex getVertexByKey(String key) {
 		return m_vertexHolder.getElementByKey(key);
 	}
 	
-	public List<Edge> getEdgesForVertex(Vertex vertex){
+	public List<TopoEdge> getEdgesForVertex(TopoVertex vertex){
 		return m_edgeHolder.getElementsByItemIds(m_dataSource.getEdgeIdsForVertex(vertex.getItemId()));
 	}
 
-	public List<Edge> getEdgesForVertex(Vertex vertex, int semanticZoomLevel){
-		Vertex displayVertex = getDisplayVertex(vertex, semanticZoomLevel);
-		List<Edge> edges = getEdges(semanticZoomLevel);
-		List<Edge> visible = new ArrayList<Edge>(edges.size());
+	public List<TopoEdge> getEdgesForVertex(TopoVertex vertex, int semanticZoomLevel){
+		TopoVertex displayVertex = getDisplayVertex(vertex, semanticZoomLevel);
+		List<TopoEdge> edges = getEdges(semanticZoomLevel);
+		List<TopoEdge> visible = new ArrayList<TopoEdge>(edges.size());
 		
-		for(Edge e : edges) {
+		for(TopoEdge e : edges) {
 			
 			if (e.getSource() == displayVertex) {
 				visible.add(e);
@@ -178,36 +181,36 @@ public class Graph{
 		return visible;
 	}
 
-	public List<Vertex> getVertices(int semanticZoomLevel) {
-		List<Vertex> vertices = getLeafVertices();
-		Set<Vertex> visible = new LinkedHashSet<Vertex>();
+	public List<TopoVertex> getVertices(int semanticZoomLevel) {
+		List<TopoVertex> vertices = getLeafVertices();
+		Set<TopoVertex> visible = new LinkedHashSet<TopoVertex>();
 		
-		for(Vertex vertex : vertices) {
+		for(TopoVertex vertex : vertices) {
 			visible.add(getDisplayVertex(vertex, semanticZoomLevel));
 		}
 		
-		return new ArrayList<Vertex>(visible);
+		return new ArrayList<TopoVertex>(visible);
 	}
 
-	public Vertex getDisplayVertex(Vertex vertex, int semanticZoomLevel) {
+	public TopoVertex getDisplayVertex(TopoVertex vertex, int semanticZoomLevel) {
 		int szl = vertex.getSemanticZoomLevel();
 		if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
 			return vertex;
 		}else {
-			Vertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());
+			TopoVertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());
 			return getDisplayVertex(group, semanticZoomLevel);
 		}
 	}
 
-	public List<Edge> getEdges(int semanticZoomLevel) {
-		List<Edge> visible = new ArrayList<Edge>();
-		List<Edge> edges = getEdges();
+	public List<TopoEdge> getEdges(int semanticZoomLevel) {
+		List<TopoEdge> visible = new ArrayList<TopoEdge>();
+		List<TopoEdge> edges = getEdges();
 		
-		for(Edge edge : edges) {
-			Vertex source = edge.getSource();
-			Vertex target = edge.getTarget();
-			Vertex displaySource = getDisplayVertex(source, semanticZoomLevel);
-			Vertex displayTarget = getDisplayVertex(target, semanticZoomLevel);
+		for(TopoEdge edge : edges) {
+			TopoVertex source = edge.getSource();
+			TopoVertex target = edge.getTarget();
+			TopoVertex displaySource = getDisplayVertex(source, semanticZoomLevel);
+			TopoVertex displayTarget = getDisplayVertex(target, semanticZoomLevel);
 			
 			if(displaySource == displayTarget) {
 				//skip this one
@@ -215,7 +218,7 @@ public class Graph{
 				visible.add(edge);
 			}else {
 				
-				Edge displayEdge = new Edge("bogus", null, null, displaySource, displayTarget);
+				TopoEdge displayEdge = new TopoEdge("bogus", null, null, displaySource, displayTarget);
 				visible.add(displayEdge);
 			}
 		}
@@ -223,16 +226,38 @@ public class Graph{
 		return visible;
 	}
 
-	public Vertex getVertexByItemId(Object itemId) {
+	public TopoVertex getVertexByItemId(Object itemId) {
 		return m_vertexHolder.getElementByItemId(itemId);
 	}
 
-    public Edge getEdgeByItemId(String edgeItemId) {
+    public TopoEdge getEdgeByItemId(String edgeItemId) {
         return m_edgeHolder.getElementByItemId(edgeItemId);
     }
 
-    public Edge getEdgeByKey(String edgeKey) {
+    public TopoEdge getEdgeByKey(String edgeKey) {
         return m_edgeHolder.getElementByKey(edgeKey);
     }
+
+	void paint(PaintTarget target, IconRepositoryManager iconRepoManager) throws PaintException {
+		
+		target.startTag("graph");
+		
+		// first paint vertices and groups
+		for (TopoVertex vertex : getVertices()) {
+	    	vertex.paint(target, iconRepoManager);
+	    }
+
+		// then edges
+	    for(TopoEdge edge : getEdges()) {
+	    	edge.paint(target);
+	    }
+	    
+	    // set up the parent relationships last so the vertices can all be referenced on client
+	    for (TopoVertex vertex : getVertices()) {
+	    	vertex.paintParent(target);
+	    }
+	    
+	    target.endTag("graph");
+	}
 	
 }

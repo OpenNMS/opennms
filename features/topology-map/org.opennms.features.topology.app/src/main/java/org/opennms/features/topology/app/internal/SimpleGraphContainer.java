@@ -722,4 +722,63 @@ public class SimpleGraphContainer implements GraphContainer {
     	return targets;
     }
 
+    @Override
+    public int getX(Object itemId) {
+		return (Integer) getVertexItem(itemId).getItemProperty(TopoVertex.X_PROPERTY).getValue();
+	}
+
+    @Override
+    public int getY(Object itemId) {
+		return (Integer) getVertexItem(itemId).getItemProperty(TopoVertex.Y_PROPERTY).getValue();
+	}
+
+    @Override
+    public void setX(Object itemId, int x) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.X_PROPERTY).setValue(x);
+	}
+
+    @Override
+    public void setY(Object itemId, int y) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.Y_PROPERTY).setValue(y);
+	}
+
+    @Override
+    public void setSelected(Object itemId, boolean selected) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).setValue(selected);
+	}
+
+    @Override
+    public boolean isSelected(Object itemId) {
+		return (Boolean) getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).getValue();
+	}
+
+    @Override
+    public int getSemanticZoomLevel(Object itemId) {
+		Integer zoomLevel = (Integer) getVertexItem(itemId).getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL).getValue();
+	    return zoomLevel;
+	}
+
+	boolean isLeaf(Object itemId) {
+		Object value = getVertexItem(itemId).getItemProperty(TopoVertex.LEAF_PROPERTY).getValue();
+	    return (Boolean) value;
+	}
+
+	String getLabel(Object itemId) {
+		Property labelProperty = getVertexItem(itemId).getItemProperty(TopoVertex.LABEL_PROPERTY);
+		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
+		return label;
+	}
+
+	String getIconKey(Object itemId) {
+		return (String) getVertexItem(itemId).getItemProperty(TopoVertex.ICON_KEY).getValue();
+	}
+
+	String getTooltipText(Object itemId) {
+		if(getVertexItem(itemId).getItemProperty("tooltipText") != null && getVertexItem(itemId).getItemProperty("tooltipText").getValue() != null) {
+	        return (String) getVertexItem(itemId).getItemProperty("tooltipText").getValue();
+	    }else {
+	        return getLabel(itemId);
+	    }
+	}
+
 }

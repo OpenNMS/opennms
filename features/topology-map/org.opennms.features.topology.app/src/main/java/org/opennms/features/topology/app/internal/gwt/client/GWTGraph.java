@@ -140,6 +140,10 @@ public final class GWTGraph extends JavaScriptObject {
 	public final native GWTGroup getGroup(String groupKey) /*-{
 		return this.idToGMap[groupKey];
 	}-*/;
+	
+	public GWTVertex getVertex(String vertexKey) {
+		return get(vertexKey);
+	}
 
 
 	public JsArray<GWTVertex> getVertices(int semanticZoomLevel){

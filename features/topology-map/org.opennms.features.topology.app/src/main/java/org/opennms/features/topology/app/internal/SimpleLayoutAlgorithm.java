@@ -41,13 +41,13 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
      */
     public void updateLayout(GraphContainer graphContainer) {
     	int szl = graphContainer.getSemanticZoomLevel();
-    	Graph graph = new Graph(graphContainer);
+    	TopoGraph graph = new TopoGraph(graphContainer);
         int r = 100;
         int cx = 500;
         int cy = 500;
-        List<Vertex> vertices = graph.getVertices(szl);
+        List<TopoVertex> vertices = graph.getVertices(szl);
 		for(int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
+            TopoVertex vertex = vertices.get(i);
             LoggerFactory.getLogger(getClass()).debug("Laying out vertex: {}", vertex);
             if(i == 0) {
                 vertex.setX(cx);

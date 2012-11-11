@@ -33,7 +33,6 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArrayString;
 
 public final class GWTEdge extends JavaScriptObject {
     
@@ -50,21 +49,12 @@ public final class GWTEdge extends JavaScriptObject {
     }-*/;
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-        return {"id":id, "source":source, "target":target, "actions":[], "cssClass": "path", "linkNum":1, "tooltipText": ""};
+        return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": ""};
     }-*/;
 
     public final native String getId() /*-{
         return this.id;
     }-*/;
-    
-    private final native JsArrayString actionKeys() /*-{
-		return this.actions;
-	}-*/;
-
-    private final native JsArrayString actionKeys(JsArrayString keys) /*-{
-		this.actions = keys;
-		return this.actions;
-	}-*/;
     
     private final native boolean isSelected() /*-{
         return this.selected === undefined ? false : this.selected;
@@ -97,26 +87,6 @@ public final class GWTEdge extends JavaScriptObject {
     public final native String getTooltipText()/*-{
         return this.tooltipText;
     }-*/;
-
-	public void setActionKeys(String[] keys) {
-		JsArrayString actionKeys = actionKeys(newStringArray());
-		for(String key : keys) {
-			actionKeys.push(key);
-		}
-	}
-	
-	private JsArrayString newStringArray() {
-		return JsArrayString.createArray().<JsArrayString>cast();
-	}
-	
-	public String[] getActionKeys() {
-		JsArrayString actionKeys = actionKeys();
-		String[] keys = new String[actionKeys.length()];
-		for(int i = 0; i < keys.length; i++) {
-			keys[i] = actionKeys.get(i);
-		}
-		return keys;
-	}
 
     static Func<Integer, GWTEdge> getTargetY() {
         
