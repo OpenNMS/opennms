@@ -67,8 +67,6 @@ public class TopologyComponentTest {
         
         mockDefaultGraph(target);
         
-        mockActions(target);
-        
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
@@ -105,8 +103,6 @@ public class TopologyComponentTest {
         
         mockGraphTagEnd(target);
         
-        mockActions(target);
-        
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
@@ -139,8 +135,6 @@ public class TopologyComponentTest {
         mockEdge(target);
         
         mockGraphTagEnd(target);
-        
-        mockActions(target);
         
         EasyMock.replay(target);
         
@@ -238,7 +232,6 @@ public class TopologyComponentTest {
         }
         mockGraphTagEnd(target2);
         
-        mockActions(target2);
         EasyMock.replay(target2);
         
         topoComponent.paintContent(target2);
@@ -255,7 +248,6 @@ public class TopologyComponentTest {
         target.addAttribute(EasyMock.eq("iconUrl"), EasyMock.notNull(String.class));
         target.addAttribute("semanticZoomLevel", 0);
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
-        target.addAttribute(EasyMock.eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         
         
         target.endTag("group");
@@ -276,7 +268,6 @@ public class TopologyComponentTest {
         
         mockGraphTagEnd(target);
         
-        mockActions(target);
     }
 
     private void mockGroup(PaintTarget target) throws PaintException {
@@ -289,7 +280,6 @@ public class TopologyComponentTest {
         target.addAttribute("semanticZoomLevel", 0);
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
         target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
-        target.addAttribute(EasyMock.eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         
         
         target.endTag("group");
@@ -304,7 +294,6 @@ public class TopologyComponentTest {
         target.addAttribute("activeTool", "pan");
         target.addAttribute("panToSelection", false);
         target.addAttribute("fitToView", true);
-        target.addAttribute(EasyMock.eq("backgroundActions"), EasyMock.aryEq(new Object[0]));
     }
 
     private void mockDefaultGraph(PaintTarget target) throws PaintException {
@@ -326,11 +315,6 @@ public class TopologyComponentTest {
         target.startTag("graph");
     }
 
-    private void mockActions(PaintTarget target) throws PaintException {
-        target.startTag("actions");
-        target.endTag("actions");
-    }
-
     private void mockEdge(PaintTarget target) throws PaintException {
         target.startTag("edge");
         target.addAttribute(eq("key"), EasyMock.notNull(String.class));
@@ -339,7 +323,6 @@ public class TopologyComponentTest {
         target.addAttribute("selected", false);
         target.addAttribute(eq("cssClass"), EasyMock.notNull(String.class));
         target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
-        target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         target.endTag("edge");
     }
     
@@ -349,7 +332,6 @@ public class TopologyComponentTest {
         target.addAttribute("source", sourceId);
         target.addAttribute("target", targetId);
         target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
-        target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         target.endTag("edge");
     }
 
@@ -370,7 +352,6 @@ public class TopologyComponentTest {
         }
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
         target.addAttribute(EasyMock.eq("tooltipText"), EasyMock.notNull(String.class));
-        target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         
         target.endTag("vertex");
     }
@@ -386,7 +367,6 @@ public class TopologyComponentTest {
         target.addAttribute(EasyMock.eq("groupKey"), EasyMock.notNull(String.class));
         target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
         target.addAttribute(eq("label"), EasyMock.notNull(String.class));
-        target.addAttribute(eq("actionKeys"), EasyMock.aryEq(new Object[0]));
         
         target.endTag("vertex");
     }
