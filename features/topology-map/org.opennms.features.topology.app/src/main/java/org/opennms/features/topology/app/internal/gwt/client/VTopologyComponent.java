@@ -241,23 +241,23 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			
 			
 			/****** Setup timer for all topology animations that are dependent on another property ******/
-            D3.d3().timer(new BooleanFunc() {
-                
-                @Override
-                public boolean call() {
-                    D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
-                    double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
-                    final double strokeWidth = 5 * (1/scale);
-                    
-                    if(Double.parseDouble(D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width").split("px")[0]) != strokeWidth) {
-                        D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", "" + strokeWidth);
-                    }else {
-                        consoleLog("stroke Width == strokeWidth");
-                    }
-                    
-                    return false;
-                }
-            });
+//            D3.d3().timer(new BooleanFunc() {
+//                
+//                @Override
+//                public boolean call() {
+//                    D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
+//                    double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
+//                    final double strokeWidth = 5 * (1/scale);
+//                    
+//                    if(Double.parseDouble(D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width").split("px")[0]) != strokeWidth) {
+//                        D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", "" + strokeWidth);
+//                    }else {
+//                        consoleLog("stroke Width == strokeWidth");
+//                    }
+//                    
+//                    return false;
+//                }
+//            });
 		}
 		
 
