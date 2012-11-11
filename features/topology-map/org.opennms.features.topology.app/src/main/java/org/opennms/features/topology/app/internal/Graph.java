@@ -36,8 +36,11 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.Item;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 
 
 public class Graph{
@@ -234,5 +237,27 @@ public class Graph{
     public Edge getEdgeByKey(String edgeKey) {
         return m_edgeHolder.getElementByKey(edgeKey);
     }
+
+	void paint(PaintTarget target, IconRepositoryManager iconRepoManager) throws PaintException {
+		
+		target.startTag("graph");
+		
+		// first paint vertices and groups
+		for (Vertex vertex : getVertices()) {
+	    	vertex.paint(target, iconRepoManager);
+	    }
+
+		// then edges
+	    for(Edge edge : getEdges()) {
+	    	edge.paint(target);
+	    }
+	    
+	    // set up the parent relationships last so the vertices can all be referenced on client
+	    for (Vertex vertex : getVertices()) {
+	    	vertex.paintParent(target);
+	    }
+	    
+	    target.endTag("graph");
+	}
 	
 }

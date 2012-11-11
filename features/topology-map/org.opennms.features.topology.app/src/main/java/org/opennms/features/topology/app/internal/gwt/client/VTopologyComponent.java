@@ -714,8 +714,15 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				GWTGroup parentGroup = graphConverted.getGroup(parentKey);
 
 				group.setParent(parentGroup);
-			}
 
+			}else if(child.getTag().equals("vertexParent")) {
+				String vertexKey = child.getStringAttribute("key");
+				String parentKey = child.getStringAttribute("parentKey");
+				GWTVertex vertex = graphConverted.getVertex(vertexKey);
+				GWTGroup parentGroup = graphConverted.getGroup(parentKey);
+
+				vertex.setParent(parentGroup);
+			}
 		}
 
 		setGraph(graphConverted);

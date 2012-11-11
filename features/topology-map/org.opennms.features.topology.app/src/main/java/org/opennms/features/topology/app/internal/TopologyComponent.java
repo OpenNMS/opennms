@@ -48,7 +48,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
-import com.vaadin.terminal.KeyMapper;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -84,11 +83,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
     }
     
-	private KeyMapper m_actionMapper;
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
     private Graph m_graph;
-	private List<Action.Handler> m_actionHandlers = new ArrayList<Action.Handler>();
 	private MapManager m_mapManager = new MapManager();
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
@@ -150,75 +147,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
         
-		m_actionMapper = new KeyMapper();
-
-        target.startTag("graph");
-        for (Vertex group : getGraph().getVertices()) {
-        	if (!group.isLeaf()) {
-        		target.startTag("group");
-        		target.addAttribute("key", group.getKey());
-        		target.addAttribute("x", group.getX());
-        		target.addAttribute("y", group.getY());
-        		target.addAttribute("selected", group.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(group.getIconKey()));
-        		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
-        		target.addAttribute("label", group.getLabel());
-        		target.addAttribute("tooltipText", group.getTooltipText());
-        		target.endTag("group");
-
-        	}
-        }
-        
-        
-        for(Vertex vert : getGraph().getVertices()) {
-        	if (vert.isLeaf()) {
-        		target.startTag("vertex");
-        		target.addAttribute("key", vert.getKey());
-        		target.addAttribute("x", vert.getX());
-        		target.addAttribute("y", vert.getY());
-        		target.addAttribute("selected", vert.isSelected());
-        		target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vert.getIconKey()));
-        		target.addAttribute("semanticZoomLevel", vert.getSemanticZoomLevel());
-        		if (vert.getGroupId() != null) {
-        			target.addAttribute("groupKey", vert.getGroupKey());
-        		}
-        		target.addAttribute("label", vert.getLabel());
-        		target.addAttribute("tooltipText", vert.getTooltipText());
-        		target.endTag("vertex");
-        	}
-        }
-        
-        for(Edge edge : getGraph().getEdges()) {
-        	target.startTag("edge");
-        	target.addAttribute("key", edge.getKey());
-        	target.addAttribute("source", edge.getSource().getKey());
-        	target.addAttribute("target", edge.getTarget().getKey());
-        	target.addAttribute("selected", edge.isSelected());
-        	target.addAttribute("cssClass", edge.getCssClass());
-        	target.addAttribute("tooltipText", edge.getTooltipText());
-        	target.endTag("edge");
-        }
-        
-        for (Vertex group : getGraph().getVertices()) {
-        	if (!group.isLeaf()) {
-        		if (group.getGroupId() != null) {
-        			target.startTag("groupParent");
-        			target.addAttribute("key", group.getKey());
-        			target.addAttribute("parentKey", group.getGroupKey());
-        			
-        			target.endTag("groupParent");
-        		}
-        	}
-        }
-        
-       
-        
-        target.endTag("graph");
+		getGraph().paint(target, m_iconRepoManager);
         
         
     }
 
-    public boolean isFitToView() {
+	public boolean isFitToView() {
         return m_fitToView;
     }
     
@@ -278,21 +212,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
             }
             
             bulkMultiSelectVertex(vertexIds);
-        }
-        
-        if(variables.containsKey("action")) {
-        	String value = (String) variables.get("action");
-        	String[] data = value.split(",");
-        	String targetId = data[0];
-        	String actionKey = data[1];
-        	
-        	Vertex vertex = getGraph().getVertexByKey(targetId);
-        	Action action = (Action) m_actionMapper.get(actionKey);
-        	
-        	for(Handler handler : m_actionHandlers) {
-        		handler.handleAction(action, this, vertex == null ? null : vertex.getItemId());
-        	}
-        	
         }
         
         if(variables.containsKey("updatedVertex")) {
@@ -485,12 +404,9 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 
 	public void addActionHandler(Handler actionHandler) {
-		m_actionHandlers.add(actionHandler);
 	}
 	
 	public void removeActionHandler(Handler actionHandler) {
-		m_actionHandlers.remove(actionHandler);
-		
 	}
 	
 	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
