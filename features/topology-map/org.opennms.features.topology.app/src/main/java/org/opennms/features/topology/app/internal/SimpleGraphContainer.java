@@ -754,9 +754,16 @@ public class SimpleGraphContainer implements GraphContainer {
 
     @Override
     public int getSemanticZoomLevel(Object itemId) {
-		Integer zoomLevel = (Integer) getVertexItem(itemId).getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL).getValue();
+		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
+		Property itemProperty = vertexItem.getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL);
+		Integer zoomLevel = (Integer) itemProperty.getValue();
 	    return zoomLevel;
 	}
+    
+    @Override
+    public Object getGroupId(Object itemId) {
+    	return getVertexItem(itemId).getBean().getGroupKey();
+    }
 
 	boolean isLeaf(Object itemId) {
 		Object value = getVertexItem(itemId).getItemProperty(TopoVertex.LEAF_PROPERTY).getValue();
@@ -780,5 +787,30 @@ public class SimpleGraphContainer implements GraphContainer {
 	        return getLabel(itemId);
 	    }
 	}
+	
+	@Override
+	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
+
+		int szl = getSemanticZoomLevel(vertexId);
+
+		if(getGroupId(vertexId) == null || szl <= semanticZoomLevel) {
+			return vertexId;
+		}else {
+			return getDisplayVertexId(getGroupId(vertexId), semanticZoomLevel);
+		}
+	}
+
+	@Override
+	public Collection<Object> getDisplayVertices(int semanticZoomLevel) {
+		Set<Object> visibleVertexIds = new LinkedHashSet<Object>();
+		for(Object itemId : getVertexIds()) {
+			if (isLeaf(itemId)) {
+				Object displayItemId = getDisplayVertexId(itemId, semanticZoomLevel);
+				visibleVertexIds.add(displayItemId);
+			}
+		}
+		return visibleVertexIds;
+	}
+
 
 }

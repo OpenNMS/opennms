@@ -30,7 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -63,8 +63,10 @@ public class TopoGraph{
 		
 	}
 	
+	public SimpleGraphContainer getGraphContainer() { return m_dataSource; }
+	
 	public int getSemanticZoomLevel() {
-		return m_dataSource.getSemanticZoomLevel();
+		return getGraphContainer().getSemanticZoomLevel();
 	}
 	
 	public void setDataSource(GraphContainer dataSource) {
@@ -181,43 +183,29 @@ public class TopoGraph{
 		return visible;
 	}
 
-	public List<TopoVertex> getVertices(int semanticZoomLevel) {
-		List<TopoVertex> vertices = getLeafVertices();
-		Set<TopoVertex> visible = new LinkedHashSet<TopoVertex>();
-		
-		for(TopoVertex vertex : vertices) {
-			visible.add(getDisplayVertex(vertex, semanticZoomLevel));
-		}
-		
-		return new ArrayList<TopoVertex>(visible);
-	}
-
 	public TopoVertex getDisplayVertex(TopoVertex vertex, int semanticZoomLevel) {
-		int szl = vertex.getSemanticZoomLevel();
-		if(vertex.getGroupId() == null || szl <= semanticZoomLevel) {
-			return vertex;
-		}else {
-			TopoVertex group = m_vertexHolder.getElementByKey(vertex.getGroupKey());
-			return getDisplayVertex(group, semanticZoomLevel);
-		}
+		Object vertexId = m_dataSource.getDisplayVertexId(vertex.getItemId(), semanticZoomLevel);
+		return m_vertexHolder.getElementByItemId(vertexId);
 	}
+	
 
 	public List<TopoEdge> getEdges(int semanticZoomLevel) {
 		List<TopoEdge> visible = new ArrayList<TopoEdge>();
 		List<TopoEdge> edges = getEdges();
 		
 		for(TopoEdge edge : edges) {
-			TopoVertex source = edge.getSource();
-			TopoVertex target = edge.getTarget();
-			TopoVertex displaySource = getDisplayVertex(source, semanticZoomLevel);
-			TopoVertex displayTarget = getDisplayVertex(target, semanticZoomLevel);
+			Object sourceId = edge.getSource().getItemId();
+			Object targetId = edge.getTarget().getItemId();
+			Object displaySourceId = getGraphContainer().getDisplayVertexId(sourceId, semanticZoomLevel);
+			Object displayTargetId = getGraphContainer().getDisplayVertexId(targetId, semanticZoomLevel);
 			
-			if(displaySource == displayTarget) {
+			if(displaySourceId.equals(displayTargetId)) {
 				//skip this one
-			}else if(displaySource == source && displayTarget == target) {
+			}else if(displaySourceId.equals(sourceId) && displayTargetId.equals(targetId)) {
 				visible.add(edge);
 			}else {
-				
+				TopoVertex displaySource = m_vertexHolder.getElementByItemId(displaySourceId);
+				TopoVertex displayTarget = m_vertexHolder.getElementByItemId(displayTargetId);
 				TopoEdge displayEdge = new TopoEdge("bogus", null, null, displaySource, displayTarget);
 				visible.add(displayEdge);
 			}

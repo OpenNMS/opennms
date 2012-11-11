@@ -11,8 +11,8 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 	@Override
 	abstract public void updateLayout(GraphContainer graph);
 
-	protected Dimension selectLayoutSize(TopoGraph g) {
-		int vertexCount = g.getVertices(g.getSemanticZoomLevel()).size();
+	protected Dimension selectLayoutSize(GraphContainer g) {
+		int vertexCount = g.getDisplayVertices(g.getSemanticZoomLevel()).size();
 		
 		 double height = .75*Math.sqrt(vertexCount)*ELBOW_ROOM;
 		 double width = height*16/9;

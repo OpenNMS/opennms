@@ -209,6 +209,21 @@ public class OnmsTopologyProviderTest {
 		throw new UnsupportedOperationException("GraphContainer.setSelected is not yet implemented.");
 	}
 
+	@Override
+	public Object getGroupId(Object vertexId) {
+		throw new UnsupportedOperationException("GraphContainer.getGroupId is not yet implemented.");
+	}
+
+	@Override
+	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
+		throw new UnsupportedOperationException("GraphContainer.getDisplayVertexId is not yet implemented.");
+	}
+
+	@Override
+	public Collection<Object> getDisplayVertices(int semanticZoomLevel) {
+		throw new UnsupportedOperationException("GraphContainer.getDisplayVertices is not yet implemented.");
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{

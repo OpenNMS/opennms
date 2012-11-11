@@ -55,6 +55,8 @@ public interface GraphContainer extends DisplayState {
     
     public void setBaseTopology(GraphProvider graphProvider);
     
+    public Object getGroupId(Object vertexId);
+    
     public int getX(Object vertexId);
     
     public void setX(Object vertexId, int x);
@@ -69,7 +71,11 @@ public interface GraphContainer extends DisplayState {
     
     public void setSelected(Object vertexId, boolean selected);
     
-    @Deprecated
+	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
+
+	public Collection<Object> getDisplayVertices(int semanticZoomLevel);
+	
+	@Deprecated
     public TopologyProvider getDataSource();
 
     @Deprecated

@@ -72,7 +72,7 @@ public class TopoVertex implements Paintable {
 	}
 	
 	public Object getGroupId() {
-		return m_groupId;
+		return getGraphContainer().getGroupId(getItemId());
 	}
 	
 	public boolean isLeaf() {
@@ -174,7 +174,7 @@ public class TopoVertex implements Paintable {
 		}
 	}
 
-	private SimpleGraphContainer getGraphContainer() {
+	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
 	}
 

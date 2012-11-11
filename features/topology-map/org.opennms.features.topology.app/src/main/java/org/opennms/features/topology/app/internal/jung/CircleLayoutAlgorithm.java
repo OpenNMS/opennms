@@ -31,32 +31,31 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
-import org.opennms.features.topology.app.internal.TopoVertex;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
 public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-	public void updateLayout(GraphContainer graph) {
+	public void updateLayout(final GraphContainer graph) {
 		
 		TopoGraph g = new TopoGraph(graph);
 		
 		int szl = g.getSemanticZoomLevel();
 		
 		
-		SparseGraph<TopoVertex, TopoEdge> jungGraph = new SparseGraph<TopoVertex, TopoEdge>();
+		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
+
+		Collection<Object> vertices = g.getGraphContainer().getDisplayVertices(szl);
 		
-		
-		List<TopoVertex> vertices = g.getVertices(szl);
-		
-		for(TopoVertex v : vertices) {
+		for(Object v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
@@ -67,17 +66,17 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 		
 
-		CircleLayout<TopoVertex, TopoEdge> layout = new CircleLayout<TopoVertex, TopoEdge>(jungGraph);
-		layout.setInitializer(new Transformer<TopoVertex, Point2D>() {
-			public Point2D transform(TopoVertex v) {
-				return new Point(v.getX(), v.getY());
+		CircleLayout<Object, TopoEdge> layout = new CircleLayout<Object, TopoEdge>(jungGraph);
+		layout.setInitializer(new Transformer<Object, Point2D>() {
+			public Point2D transform(Object v) {
+				return new Point(graph.getX(v), graph.getY(v));
 			}
 		});
-		layout.setSize(selectLayoutSize(g));
+		layout.setSize(selectLayoutSize(graph));
 		
-		for(TopoVertex v : vertices) {
-			v.setX((int)layout.getX(v));
-			v.setY((int)layout.getY(v));
+		for(Object v : vertices) {
+			graph.setX(v, (int)layout.getX(v));
+			graph.setY(v, (int)layout.getY(v));
 		}
 		
 		
@@ -86,8 +85,8 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 	}
 
 	@Override
-	protected Dimension selectLayoutSize(TopoGraph g) {
-		int vertexCount = g.getVertices(g.getSemanticZoomLevel()).size();
+	protected Dimension selectLayoutSize(GraphContainer g) {
+		int vertexCount = g.getDisplayVertices(g.getSemanticZoomLevel()).size();
 		
 		int spacing = ELBOW_ROOM/5;
 

@@ -30,32 +30,31 @@ package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
-import org.opennms.features.topology.app.internal.TopoVertex;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
 public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-	public void updateLayout(GraphContainer graph) {
+	public void updateLayout(final GraphContainer graph) {
 		
 		TopoGraph g = new TopoGraph(graph);
 		
 		int szl = g.getSemanticZoomLevel();
 		
 		
-		SparseGraph<TopoVertex, TopoEdge> jungGraph = new SparseGraph<TopoVertex, TopoEdge>();
-		
-		
-		List<TopoVertex> vertices = g.getVertices(szl);
-		
-		for(TopoVertex v : vertices) {
+		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
+
+		Collection<Object> vertices = g.getGraphContainer().getDisplayVertices(szl);
+
+		for(Object v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
@@ -66,22 +65,22 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 		
 
-		FRLayout<TopoVertex, TopoEdge> layout = new FRLayout<TopoVertex, TopoEdge>(jungGraph);
-		layout.setInitializer(new Transformer<TopoVertex, Point2D>() {
-			public Point2D transform(TopoVertex v) {
-				return new Point(v.getX(), v.getY());
+		FRLayout<Object, TopoEdge> layout = new FRLayout<Object, TopoEdge>(jungGraph);
+		layout.setInitializer(new Transformer<Object, Point2D>() {
+			public Point2D transform(Object v) {
+				return new Point(graph.getX(v), graph.getY(v));
 			}
 		});
-		layout.setSize(selectLayoutSize(g));
+		layout.setSize(selectLayoutSize(graph));
 		
 		while(!layout.done()) {
 			layout.step();
 		}
 		
 		
-		for(TopoVertex v : vertices) {
-			v.setX((int)layout.getX(v));
-			v.setY((int)layout.getY(v));
+		for(Object v : vertices) {
+			graph.setX(v, (int)layout.getX(v));
+			graph.setY(v, (int)layout.getY(v));
 		}
 		
 		
