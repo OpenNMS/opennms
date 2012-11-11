@@ -53,7 +53,7 @@ public class TopologyComponentTest {
             super(dataSource);
         }
         
-        public Graph getGraph() {
+        public TopoGraph getGraph() {
             return super.getGraph();
         }
         
@@ -174,12 +174,12 @@ public class TopologyComponentTest {
         graphContainer.setDataSource(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         topoComponent.setIconRepoManager(new IconRepositoryManager());
-        Graph graph = topoComponent.getGraph();
+        TopoGraph graph = topoComponent.getGraph();
         
-        List<Edge> edges = graph.getEdges();
+        List<TopoEdge> edges = graph.getEdges();
         assertEquals(1, edges.size());
         
-        Edge edge = edges.get(0);
+        TopoEdge edge = edges.get(0);
         
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
         
@@ -210,14 +210,14 @@ public class TopologyComponentTest {
         
         mockGraphTagStart(target2);
        
-        for(Vertex g : graph.getVertices()) {
+        for(TopoVertex g : graph.getVertices()) {
             if (!g.isLeaf()) {
                 String key = g.getKey();
                 mockGroupWithKey(target2, key);
             }
         }
         
-        for(Vertex v : graph.getVertices()) {
+        for(TopoVertex v : graph.getVertices()) {
             if (v.isLeaf()) {
                 String key = v.getKey();
                 mockVertexWithKey(target2, key);
@@ -225,11 +225,11 @@ public class TopologyComponentTest {
         }
         
         Map<Object, String> verticesKeyMapper = new HashMap<Object, String>();
-        for(Vertex v : graph.getVertices()) {
+        for(TopoVertex v : graph.getVertices()) {
             verticesKeyMapper.put(v.getItemId(), v.getKey());
         }
         
-        for(Edge e: graph.getEdges()) {
+        for(TopoEdge e: graph.getEdges()) {
             String sourceKey = verticesKeyMapper.get(e.getSource().getItemId());
             String targetKey = verticesKeyMapper.get(e.getTarget().getItemId());
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);

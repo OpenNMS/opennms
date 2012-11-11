@@ -32,16 +32,16 @@ import com.vaadin.data.Item;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 
-public class Edge{
+public class TopoEdge{
     
     public static final String SELECTED_PROPERTY = "selected";
 	private String m_key;
 	private Object m_itemId;
 	private Item m_item;
-	private Vertex m_source;
-	private Vertex m_target;
+	private TopoVertex m_source;
+	private TopoVertex m_target;
 
-	public Edge(String key, Object itemId, Item item, Vertex source, Vertex target) {; 
+	public TopoEdge(String key, Object itemId, Item item, TopoVertex source, TopoVertex target) {; 
 		m_key = key;
 		m_itemId = itemId;
 		m_item = item;
@@ -49,7 +49,7 @@ public class Edge{
 		m_target = target;
 	}
 
-	public Vertex getSource(){
+	public TopoVertex getSource(){
 		return m_source;
 	}
 	
@@ -77,7 +77,7 @@ public class Edge{
 		return m_itemId;
 	}
 	
-	public Vertex getTarget(){
+	public TopoVertex getTarget(){
 		return m_target;
 	}
 	

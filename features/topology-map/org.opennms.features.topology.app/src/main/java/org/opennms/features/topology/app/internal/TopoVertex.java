@@ -39,7 +39,7 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
-public class Vertex implements Paintable {
+public class TopoVertex implements Paintable {
     
     public static final String LEAF_PROPERTY = "leaf";
     public static final String X_PROPERTY = "x";
@@ -57,7 +57,7 @@ public class Vertex implements Paintable {
 	private Object m_groupId;
 	private String m_groupKey;
 	
-	public Vertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
+	public TopoVertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
 		m_key = key;
 		m_itemId = itemId;
 		m_item = item;

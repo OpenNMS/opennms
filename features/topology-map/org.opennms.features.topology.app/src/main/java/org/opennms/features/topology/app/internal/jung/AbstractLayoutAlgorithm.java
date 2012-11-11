@@ -4,14 +4,14 @@ import java.awt.Dimension;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
-import org.opennms.features.topology.app.internal.Graph;
+import org.opennms.features.topology.app.internal.TopoGraph;
 
 public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
 
 	@Override
 	abstract public void updateLayout(GraphContainer graph);
 
-	protected Dimension selectLayoutSize(Graph g) {
+	protected Dimension selectLayoutSize(TopoGraph g) {
 		int vertexCount = g.getVertices(g.getSemanticZoomLevel()).size();
 		
 		 double height = .75*Math.sqrt(vertexCount)*ELBOW_ROOM;

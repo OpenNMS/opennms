@@ -318,7 +318,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 
                 String filterString = (String) filterField.getValue();
                 if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
-                    container.addContainerFilter(Vertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                    container.addContainerFilter(TopoVertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
                     filterBtn.setCaption("Clear");
                 } else {
                     filterField.setValue("");
@@ -359,7 +359,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		tree.setMultiSelect(true);
         
 		tree.setImmediate(true);
-		tree.setItemCaptionPropertyId(Vertex.LABEL_PROPERTY);
+		tree.setItemCaptionPropertyId(TopoVertex.LABEL_PROPERTY);
 		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
 			tree.expandItemsRecursively(it.next());
 		}

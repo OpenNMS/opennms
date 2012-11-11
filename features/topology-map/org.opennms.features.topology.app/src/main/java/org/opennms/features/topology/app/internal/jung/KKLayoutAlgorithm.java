@@ -34,9 +34,9 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.Edge;
-import org.opennms.features.topology.app.internal.Graph;
-import org.opennms.features.topology.app.internal.Vertex;
+import org.opennms.features.topology.app.internal.TopoEdge;
+import org.opennms.features.topology.app.internal.TopoGraph;
+import org.opennms.features.topology.app.internal.TopoVertex;
 
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -45,30 +45,30 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(GraphContainer graph) {
 		
-		Graph g = new Graph(graph);
+		TopoGraph g = new TopoGraph(graph);
 		
 		int szl = g.getSemanticZoomLevel();
 		
 		
-		SparseGraph<Vertex, Edge> jungGraph = new SparseGraph<Vertex, Edge>();
+		SparseGraph<TopoVertex, TopoEdge> jungGraph = new SparseGraph<TopoVertex, TopoEdge>();
 		
 		
-		List<Vertex> vertices = g.getVertices(szl);
+		List<TopoVertex> vertices = g.getVertices(szl);
 		
-		for(Vertex v : vertices) {
+		for(TopoVertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
-		List<Edge> edges = g.getEdges(szl);
+		List<TopoEdge> edges = g.getEdges(szl);
 		
-		for(Edge e : edges) {
+		for(TopoEdge e : edges) {
 			jungGraph.addEdge(e, e.getSource(), e.getTarget());
 		}
 		
 
-		KKLayout<Vertex, Edge> layout = new KKLayout<Vertex, Edge>(jungGraph);
-		layout.setInitializer(new Transformer<Vertex, Point2D>() {
-			public Point2D transform(Vertex v) {
+		KKLayout<TopoVertex, TopoEdge> layout = new KKLayout<TopoVertex, TopoEdge>(jungGraph);
+		layout.setInitializer(new Transformer<TopoVertex, Point2D>() {
+			public Point2D transform(TopoVertex v) {
 				return new Point(v.getX(), v.getY());
 			}
 		});
@@ -79,7 +79,7 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 		
 		
-		for(Vertex v : vertices) {
+		for(TopoVertex v : vertices) {
 			v.setX((int)layout.getX(v));
 			v.setY((int)layout.getY(v));
 		}
