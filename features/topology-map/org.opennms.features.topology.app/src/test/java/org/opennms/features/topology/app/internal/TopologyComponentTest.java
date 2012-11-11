@@ -230,9 +230,9 @@ public class TopologyComponentTest {
         }
         
         for(Edge e: graph.getEdges()) {
-            String sourceKey = verticesKeyMapper.get(edge.getSource().getItemId());
-            String targetKey = verticesKeyMapper.get(edge.getTarget().getItemId());
-            mockEdgeWithKeys(target2, edge.getKey(), sourceKey, targetKey);
+            String sourceKey = verticesKeyMapper.get(e.getSource().getItemId());
+            String targetKey = verticesKeyMapper.get(e.getTarget().getItemId());
+            mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);
         }
         mockGraphTagEnd(target2);
         
