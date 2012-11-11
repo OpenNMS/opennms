@@ -655,9 +655,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			if(child.getTag().equals("group")) {
 				GWTGroup group = GWTGroup.create(child.getStringAttribute("key"), child.getIntAttribute("x"), child.getIntAttribute("y"));
 				boolean booleanAttribute = child.getBooleanAttribute("selected");
-				String[] actionKeys = child.getStringArrayAttribute("actionKeys");
-
-				group.setActionKeys(actionKeys);
 
 				group.setSelected(booleanAttribute);
 				group.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
@@ -677,10 +674,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 				GWTVertex vertex = GWTVertex.create(child.getStringAttribute("key"), child.getIntAttribute("x"), child.getIntAttribute("y"));
 				boolean selected = child.getBooleanAttribute("selected");
-				String[] actionKeys = child.getStringArrayAttribute("actionKeys");
 				vertex.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
-
-				vertex.setActionKeys(actionKeys);
 
 				if(child.hasAttribute("groupKey")) {
 					String groupKey = child.getStringAttribute("groupKey");
@@ -707,8 +701,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), source, graphConverted.findVertexById( child.getStringAttribute("target") ));
 				boolean selected = child.getBooleanAttribute("selected");
 				String cssClass = child.getStringAttribute("cssClass");
-				String[] actionKeys = child.getStringArrayAttribute("actionKeys");
-				edge.setActionKeys(actionKeys);
 				edge.setSelected(selected);
 				edge.setCssClass(cssClass);
 				String ttText = child.getStringAttribute("tooltipText");

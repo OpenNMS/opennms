@@ -30,12 +30,8 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
@@ -154,23 +150,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
         
-        Set<Action> actions = new HashSet<Action>();
 		m_actionMapper = new KeyMapper();
 
-		List<String> bgActionList = new ArrayList<String>();
-		Object t = null;
-		Object s = null;
-		List<Handler> actionHandlers = m_actionHandlers;
-		List<Action> bgSortingList = sortActionHandlers(actionHandlers, t, s);
-		for(Action action : bgSortingList) {
-		    bgActionList.add(m_actionMapper.key(action));
-		    actions.add(action);
-		}
-		
-		
-		target.addAttribute("backgroundActions", bgActionList.toArray());
-		
-		
         target.startTag("graph");
         for (Vertex group : getGraph().getVertices()) {
         	if (!group.isLeaf()) {
@@ -183,16 +164,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		target.addAttribute("semanticZoomLevel", group.getSemanticZoomLevel());
         		target.addAttribute("label", group.getLabel());
         		target.addAttribute("tooltipText", group.getTooltipText());
-
-        		List<String> groupActionList = new ArrayList<String>();
-        		List<Action> groupSortedList = sortActionHandlers(m_actionHandlers, group.getGroupId(), null); 
-        		for(Action action : groupSortedList) {
-        		    groupActionList.add(m_actionMapper.key(action));
-        		    actions.add(action);
-        		}
-        		
-    		    
-        		target.addAttribute("actionKeys", groupActionList.toArray());
         		target.endTag("group");
 
         	}
@@ -213,16 +184,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         		}
         		target.addAttribute("label", vert.getLabel());
         		target.addAttribute("tooltipText", vert.getTooltipText());
-
-        		List<String> vertActionList = new ArrayList<String>();
-        		List<Action> vertActionSortedList = sortActionHandlers(m_actionHandlers, vert.getItemId(), null);
-        		
-        		for(Action action : vertActionSortedList) {
-        		    vertActionList.add(m_actionMapper.key(action));
-        		    actions.add(action);
-        		}
-        		
-        		target.addAttribute("actionKeys", vertActionList.toArray());
         		target.endTag("vertex");
         	}
         }
@@ -235,15 +196,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         	target.addAttribute("selected", edge.isSelected());
         	target.addAttribute("cssClass", edge.getCssClass());
         	target.addAttribute("tooltipText", edge.getTooltipText());
-
-    		List<String> edgeActionList = new ArrayList<String>();
-    		List<Action> edgeSortedActionList = sortActionHandlers(m_actionHandlers, edge.getItemId(), null);
-    		for(Action action : edgeSortedActionList) {
-    		    edgeActionList.add(m_actionMapper.key(action));
-    		    actions.add(action);
-    		}
-    		
-        	target.addAttribute("actionKeys", edgeActionList.toArray());
         	target.endTag("edge");
         }
         
@@ -264,26 +216,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         target.endTag("graph");
         
         
-        
-		target.startTag("actions");
-
-		// send available actions
-		for(Action action : actions) {
-			target.startTag("action");
-			target.addAttribute("key", m_actionMapper.key(action));
-			if (action.getCaption() != null) {
-				target.addAttribute("caption", action.getCaption());
-			}
-			if (action.getIcon() != null) {
-				target.addAttribute("icon", action.getIcon());
-			}
-			target.endTag("action");
-		}
-
-		
-		target.endTag("actions");
-
-        
     }
 
     public boolean isFitToView() {
@@ -302,28 +234,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         return m_panToSelection;
     }
 
-    private List<Action> sortActionHandlers(List<Handler> actionHandlers, Object target, Object sender) {
-        List<Action> sortingList = new ArrayList<Action>();
-        for(Action.Handler handler : actionHandlers) {
-			Action[] bgActions = handler.getActions(target, sender);
-			for(Action action : bgActions) {
-			    sortingList.add(action);
-			}
-		}
-		sortActions(sortingList);
-        return sortingList;
-    }
-
-    private void sortActions(List<Action> bgActions) {
-        Collections.sort(bgActions, new Comparator<Action>() {
-
-            @Override
-            public int compare(Action o1, Action o2) {
-                return o1.getCaption().compareTo(o2.getCaption());
-            }
-        });
-    }
-    
     /**
      * Main vaadin method for receiving communication from the Front End
      * 
