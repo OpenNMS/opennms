@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.BooleanFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
+import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
 import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
@@ -229,36 +229,33 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.with(updateTransition()).call(GWTEdge.draw()).attr("opacity", 1);
+			edgeSelection.with(updateTransition()).call(GWTEdge.draw()).attr("opacity", 1)
+			    .transition().styleTween("stroke-width", edgeStrokeWidthTween(topologyView));
 
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
 
 			//Enters
-			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers()).with(enterTransition());
+			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers()).with(enterTransition())
+			    .transition().styleTween("stroke-width", edgeStrokeWidthTween(topologyView));
 
 			//vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition());
 			
-			
-			/****** Setup timer for all topology animations that are dependent on another property ******/
-            D3.d3().timer(new BooleanFunc() {
-                
+		}
+
+        private Tween<Double, GWTEdge> edgeStrokeWidthTween(final TopologyView<TopologyViewRenderer> topologyView) {
+            return new Tween<Double, GWTEdge>() {
+
                 @Override
-                public boolean call() {
+                public Double call(GWTEdge edge, int index, String a) {
                     D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
                     double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
                     final double strokeWidth = 5 * (1/scale);
-                    
-                    if(Double.parseDouble(D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width").split("px")[0]) != strokeWidth) {
-                        D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", "" + strokeWidth);
-                    }else {
-                        consoleLog("stroke Width == strokeWidth");
-                    }
-                    
-                    return false;
+                    return strokeWidth;
                 }
-            });
-		}
+                
+            };
+        }
 		
 
 		protected D3Behavior enterTransition() {

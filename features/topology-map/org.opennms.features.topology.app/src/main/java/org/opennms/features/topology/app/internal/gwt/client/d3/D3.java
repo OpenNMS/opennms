@@ -132,6 +132,13 @@ public class D3 extends JavaScriptObject {
     public final native D3 transition() /*-{
         return this.transition();
     }-*/;
+    
+    public final native D3 styleTween(String name, Tween<?, ?> t) /*-{
+        function tween(d, i, a){
+            return $wnd.d3.interpolate(a, t.@org.opennms.features.topology.app.internal.gwt.client.d3.Tween::call(Ljava/lang/Object;ILjava/lang/String;)(d,i,a));
+        }
+        return this.styleTween(name, tween);
+    }-*/;
 
     public final native D3 duration(int duration) /*-{
         return this.duration(duration);
@@ -317,7 +324,6 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
-    
 
 
 }
