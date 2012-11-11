@@ -55,6 +55,20 @@ public interface GraphContainer extends DisplayState {
     
     public void setBaseTopology(GraphProvider graphProvider);
     
+    public int getX(Object vertexId);
+    
+    public void setX(Object vertexId, int x);
+    
+    public int getY(Object vertexId);
+    
+    public void setY(Object vertexId, int y);
+    
+    public int getSemanticZoomLevel(Object vertexId);
+    
+    public boolean isSelected(Object vertexId);
+    
+    public void setSelected(Object vertexId, boolean selected);
+    
     @Deprecated
     public TopologyProvider getDataSource();
 

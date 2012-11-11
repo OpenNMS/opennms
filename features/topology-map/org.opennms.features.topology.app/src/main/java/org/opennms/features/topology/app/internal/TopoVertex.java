@@ -28,11 +28,11 @@
 
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.google.gwt.user.client.Window;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -48,19 +48,17 @@ public class TopoVertex implements Paintable {
     public static final String SELECTED_PROPERTY = "selected";
     public static final String ICON_PROPERTY = "icon";
     public static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
-    private static final Object IP_ADDRESS_PROPERTY = "ipAddr";
-    private static final Object NODE_ID = "nodeID";
-    private static final String ICON_KEY = "iconKey";
+    static final String ICON_KEY = "iconKey";
 	private String m_key;
 	private Object m_itemId;
-	private Item m_item;
 	private Object m_groupId;
 	private String m_groupKey;
+	private SimpleGraphContainer m_graphContainer;
 	
-	public TopoVertex(String key, Object itemId, Item item, String groupKey, Object groupId) {
+	public TopoVertex(GraphContainer graphContainer, String key, Object itemId, String groupKey, Object groupId) {
+		setGraphContainer((SimpleGraphContainer) graphContainer);
 		m_key = key;
-		m_itemId = itemId;
-		m_item = item;
+		setItemId(itemId);
 		m_groupKey = groupKey;
 		m_groupId = groupId;
 	}
@@ -78,28 +76,27 @@ public class TopoVertex implements Paintable {
 	}
 	
 	public boolean isLeaf() {
-		Object value = m_item.getItemProperty(LEAF_PROPERTY).getValue();
-        return (Boolean) value;
+		return getGraphContainer().isLeaf(getItemId());
 	}
-	
+
 	public int getX() {
-		return (Integer) m_item.getItemProperty(X_PROPERTY).getValue();
+		return getGraphContainer().getX(getItemId());
 		
-	};
-	
-	public int getY(){
-		return (Integer) m_item.getItemProperty(Y_PROPERTY).getValue();
 	}
-	
+
+	public int getY(){
+		return getGraphContainer().getY(getItemId());
+	}
+
 	public void setX(int x) {
-		m_item.getItemProperty(X_PROPERTY).setValue(x);
+		getGraphContainer().setX(getItemId(), x);
     }
 
-    public void setY(int y) {
-    	m_item.getItemProperty(Y_PROPERTY).setValue(y);
+	public void setY(int y) {
+    	getGraphContainer().setY(getItemId(), y);
     }
-    
-    public String toString() {
+
+	public String toString() {
     	return "v" + getItemId() + "(" + getX()  + "," + getY() + "):" + (isSelected() ? "selected" : "unselected");
     }
 
@@ -108,46 +105,27 @@ public class TopoVertex implements Paintable {
     }
 
 	public void setSelected(boolean selected) {
-		m_item.getItemProperty(SELECTED_PROPERTY).setValue(selected);
+		getGraphContainer().setSelected(getItemId(), selected);
+	}
+
+	public boolean isSelected() {
+		return getGraphContainer().isSelected(getItemId());
+	}
+
+	public Item getItem() {
+		return getGraphContainer().getVertexItem(getItemId());
 	}
 	
-	public boolean isSelected() {
-		return (Boolean) m_item.getItemProperty(SELECTED_PROPERTY).getValue();
-	}
-
-	public Object getItem() {
-		return m_item;
-	}
-    
-    public String getIconUrl() {
-        return (String) m_item.getItemProperty(ICON_PROPERTY).getValue();
-    }
-
 	public String getKey() {
 		return m_key;
 	}
 	
 	public int getSemanticZoomLevel() {
-		Integer zoomLevel = (Integer) m_item.getItemProperty(SEMANTIC_ZOOM_LEVEL).getValue();
-        return zoomLevel;
+		return getGraphContainer().getSemanticZoomLevel(getItemId());
 	}
-	
+
 	public String getLabel() {
-		Property labelProperty = m_item.getItemProperty(LABEL_PROPERTY);
-		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
-		return label;
-	}
-	
-	public String getIpAddr() {
-	    Property ipAddrProperty = m_item.getItemProperty(IP_ADDRESS_PROPERTY);
-	    String ipAddr = ipAddrProperty == null ? "127.0.0.1" : (String)ipAddrProperty.getValue();
-	    return ipAddr;
-	}
-	
-	public int getNodeID() {
-		Property nodeIDProperty = m_item.getItemProperty(NODE_ID);
-		int nodeID = nodeIDProperty == null ? -1 : (Integer)nodeIDProperty.getValue();
-		return nodeID;
+		return getGraphContainer().getLabel(getItemId());
 	}
 
 	public void setGroupId(Object groupId) {
@@ -159,18 +137,13 @@ public class TopoVertex implements Paintable {
 	}
 
     public String getIconKey() {
-        return (String) m_item.getItemProperty(ICON_KEY).getValue();
+        return getGraphContainer().getIconKey(getItemId());
     }
 
-    public String getTooltipText() {
-        if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
-            return (String) m_item.getItemProperty("tooltipText").getValue();
-        }else {
-            return getLabel();
-        }
-        
+	public String getTooltipText() {
+        return getGraphContainer().getTooltipText(getItemId());
     }
-    
+
 	private String vertexTag() {
 		return isLeaf() ? "vertex" : "group";
 	}
@@ -199,6 +172,18 @@ public class TopoVertex implements Paintable {
 			target.addAttribute("parentKey", getGroupKey());
 			target.endTag(vertexParentTag());
 		}
+	}
+
+	private SimpleGraphContainer getGraphContainer() {
+		return m_graphContainer;
+	}
+
+	private void setGraphContainer(SimpleGraphContainer graphContainer) {
+		m_graphContainer = graphContainer;
+	}
+
+	private void setItemId(Object itemId) {
+		m_itemId = itemId;
 	}
 
 }

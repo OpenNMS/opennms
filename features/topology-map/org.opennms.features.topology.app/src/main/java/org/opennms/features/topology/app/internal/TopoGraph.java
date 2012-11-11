@@ -49,7 +49,7 @@ public class TopoGraph{
 	public static final String PROP_Y = "y";
 	public static final String PROP_ICON = "icon";
 	
-	private GraphContainer m_dataSource;
+	private SimpleGraphContainer m_dataSource;
 	private ElementHolder<TopoVertex> m_vertexHolder;
 	private ElementHolder<TopoEdge> m_edgeHolder;
 
@@ -72,7 +72,7 @@ public class TopoGraph{
 			return;
 		}
 		
-		m_dataSource = dataSource;
+		m_dataSource = (SimpleGraphContainer) dataSource;
 		
 		m_vertexHolder = new ElementHolder<TopoVertex>(m_dataSource.getVertexContainer(), "tcV") {
 
@@ -96,7 +96,7 @@ public class TopoGraph{
 				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
-				return new TopoVertex(key, itemId, item, groupKey, groupId);
+				return new TopoVertex(m_dataSource, key, itemId, groupKey, groupId);
 			}
 
 		};

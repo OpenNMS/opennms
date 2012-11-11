@@ -159,6 +159,41 @@ public class SaveToXmlTest {
 					public void setBaseTopology(GraphProvider graphProvider) {
 						throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
 					}
+
+					@Override
+					public int getX(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getX is not yet implemented.");
+					}
+
+					@Override
+					public void setX(Object vertexId, int x) {
+						throw new UnsupportedOperationException("GraphContainer.setX is not yet implemented.");
+					}
+
+					@Override
+					public int getY(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getY is not yet implemented.");
+					}
+
+					@Override
+					public void setY(Object vertexId, int y) {
+						throw new UnsupportedOperationException("GraphContainer.setY is not yet implemented.");
+					}
+
+					@Override
+					public int getSemanticZoomLevel(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getSemanticZoomLevel is not yet implemented.");
+					}
+
+					@Override
+					public boolean isSelected(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.isSelected is not yet implemented.");
+					}
+
+					@Override
+					public void setSelected(Object vertexId, boolean selected) {
+						throw new UnsupportedOperationException("GraphContainer.setSelected is not yet implemented.");
+					}
 					
 				};
 			}
