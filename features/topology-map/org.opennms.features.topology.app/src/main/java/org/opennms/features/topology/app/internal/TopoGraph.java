@@ -120,7 +120,7 @@ public class TopoGraph{
 				TopoVertex source = m_vertexHolder.getElementByItemId(sourceId);
 				TopoVertex target = m_vertexHolder.getElementByItemId(targetId);
 
-				return new TopoEdge(key, itemId, item, source, target);
+				return new TopoEdge(m_dataSource, key, itemId, item, sourceId, source, targetId, target);
 			}
 
 		};
@@ -172,9 +172,9 @@ public class TopoGraph{
 		
 		for(TopoEdge e : edges) {
 			
-			if (e.getSource() == displayVertex) {
+			if (e.getSource().equals(displayVertex)) {
 				visible.add(e);
-			} else if (e.getTarget() == displayVertex) {
+			} else if (e.getTarget().equals(displayVertex)) {
 				visible.add(e);
 			}
 			
@@ -206,7 +206,7 @@ public class TopoGraph{
 			}else {
 				TopoVertex displaySource = m_vertexHolder.getElementByItemId(displaySourceId);
 				TopoVertex displayTarget = m_vertexHolder.getElementByItemId(displayTargetId);
-				TopoEdge displayEdge = new TopoEdge("bogus", null, null, displaySource, displayTarget);
+				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus", null, null, displaySourceId, displaySource, displayTargetId, displayTarget);
 				visible.add(displayEdge);
 			}
 		}

@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 
 import java.util.Collection;
-import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -200,12 +199,12 @@ public class OnmsTopologyProviderTest {
 	}
 
 	@Override
-	public boolean isSelected(Object vertexId) {
+	public boolean isVertexSelected(Object vertexId) {
 		throw new UnsupportedOperationException("GraphContainer.isSelected is not yet implemented.");
 	}
 
 	@Override
-	public void setSelected(Object vertexId, boolean selected) {
+	public void setVertexSelected(Object vertexId, boolean selected) {
 		throw new UnsupportedOperationException("GraphContainer.setSelected is not yet implemented.");
 	}
 
@@ -255,7 +254,7 @@ public class OnmsTopologyProviderTest {
 	}
 
 	@Override
-	public void selectVertices(List<?> itemIds) {
+	public void selectVertices(Collection<?> itemIds) {
 		throw new UnsupportedOperationException("GraphContainer.selectVertices is not yet implemented.");
 	}
 
@@ -272,6 +271,21 @@ public class OnmsTopologyProviderTest {
 	@Override
 	public boolean containsEdgeId(Object edgeId) {
 		throw new UnsupportedOperationException("GraphContainer.containsEdgeId is not yet implemented.");
+	}
+
+	@Override
+	public void deselectAll() {
+		throw new UnsupportedOperationException("GraphContainer.deselectAll is not yet implemented.");
+	}
+
+	@Override
+	public boolean isEdgeSelected(Object edgeId) {
+		throw new UnsupportedOperationException("GraphContainer.isEdgeSelected is not yet implemented.");
+	}
+
+	@Override
+	public void setEdgeSelected(Object edgeId, boolean selected) {
+		throw new UnsupportedOperationException("GraphContainer.setEdgeSelected is not yet implemented.");
 	}
 
     }

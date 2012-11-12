@@ -99,7 +99,7 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
         Collection<?> itemIds = graphContainer.getVertexIds();
         
         for(Object itemId : itemIds) {
-        	if (graphContainer.isSelected(itemId)) {
+        	if (graphContainer.isVertexSelected(itemId)) {
                 select(itemId);
             } else {
                 unselect(itemId);

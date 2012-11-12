@@ -56,7 +56,7 @@ public class TopoVertex implements Paintable {
 	private SimpleGraphContainer m_graphContainer;
 	
 	public TopoVertex(GraphContainer graphContainer, String key, Object itemId, String groupKey, Object groupId) {
-		setGraphContainer((SimpleGraphContainer) graphContainer);
+		m_graphContainer = (SimpleGraphContainer) graphContainer;
 		m_key = key;
 		setItemId(itemId);
 		m_groupKey = groupKey;
@@ -105,11 +105,11 @@ public class TopoVertex implements Paintable {
     }
 
 	public void setSelected(boolean selected) {
-		getGraphContainer().setSelected(getItemId(), selected);
+		getGraphContainer().setVertexSelected(getItemId(), selected);
 	}
 
 	public boolean isSelected() {
-		return getGraphContainer().isSelected(getItemId());
+		return getGraphContainer().isVertexSelected(getItemId());
 	}
 
 	public Item getItem() {
@@ -176,10 +176,6 @@ public class TopoVertex implements Paintable {
 
 	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
-	}
-
-	private void setGraphContainer(SimpleGraphContainer graphContainer) {
-		m_graphContainer = graphContainer;
 	}
 
 	private void setItemId(Object itemId) {

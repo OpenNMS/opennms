@@ -54,7 +54,7 @@ public class GetInfoOperation implements Operation {
     @Override
     public boolean enabled(List<Object> targets,
             OperationContext operationContext) {
-        return targets == null || operationContext.getGraphContainer().getEdgeContainer().containsId(targets);
+        return targets == null || operationContext.getGraphContainer().containsEdgeId(targets);
     }
 
     @Override

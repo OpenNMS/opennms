@@ -719,7 +719,7 @@ public class SimpleGraphContainer implements GraphContainer {
     	List<Object> selectedVertices = new ArrayList<Object>();
     	
     	for(Object itemId : getVertexIds()) {
-    		if (isSelected(itemId)) {
+    		if (isVertexSelected(itemId)) {
     			selectedVertices.add(itemId);
     		}
     	}
@@ -752,12 +752,12 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
     @Override
-    public void setSelected(Object itemId, boolean selected) {
+    public void setVertexSelected(Object itemId, boolean selected) {
 		getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).setValue(selected);
 	}
 
     @Override
-    public boolean isSelected(Object itemId) {
+    public boolean isVertexSelected(Object itemId) {
 		return (Boolean) getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).getValue();
 	}
 
@@ -838,13 +838,13 @@ public class SimpleGraphContainer implements GraphContainer {
 
 	@Override
 	public void toggleSelectForVertexAndChildren(Object itemId) {
-		boolean selected = isSelected(itemId);
-		setSelected(itemId, !selected);
+		boolean selected = isVertexSelected(itemId);
+		setVertexSelected(itemId, !selected);
 		
 		if(hasChildren(itemId)) {
 		    Collection<?> children = getChildren(itemId);
 		    for( Object childId : children) {
-		        setSelected(childId, true);
+		        setVertexSelected(childId, true);
 		    }
 		}
 		
@@ -853,15 +853,27 @@ public class SimpleGraphContainer implements GraphContainer {
 
 	@Override
 	public void toggleSelectedVertex(Object itemId) {
-		boolean selected = isSelected(itemId);
-		setSelected(itemId, !selected);
+		boolean selected = isVertexSelected(itemId);
+		setVertexSelected(itemId, !selected);
 	}
 
 	@Override
-	public void selectVertices(List<?> itemIds) {
+	public void selectVertices(Collection<?> itemIds) {
 		for(Object itemId : itemIds) {
-			setSelected(itemId, true);
+			setVertexSelected(itemId, true);
 	    }
+	}
+	
+	@Override
+	public void deselectAll() {
+		for(Object vertexId : getVertexIds()) {
+			setVertexSelected(vertexId, false);
+		}
+		
+		for(Object edgeId : getEdgeIds()) {
+			setEdgeSelected(edgeId, false);
+		}
+		
 	}
 	
 	@Override
@@ -874,6 +886,18 @@ public class SimpleGraphContainer implements GraphContainer {
 	public boolean containsEdgeId(Object edgeId) {
 		return getEdgeContainer().containsId(edgeId);
 	}
+
+	@Override
+	public boolean isEdgeSelected(Object edgeId) {
+		return (Boolean) getEdgeItem(edgeId).getItemProperty(TopoEdge.SELECTED_PROPERTY).getValue();
+	}
+
+	@Override
+	public void setEdgeSelected(Object edgeId, boolean selected) {
+		getEdgeItem(edgeId).getItemProperty(TopoEdge.SELECTED_PROPERTY).setValue(selected);
+	}
+	
+	
 
 
 }

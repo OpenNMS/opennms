@@ -29,7 +29,6 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.opennms.features.topology.api.topo.GraphProvider;
 
@@ -68,9 +67,13 @@ public interface GraphContainer extends DisplayState {
     
     public int getSemanticZoomLevel(Object vertexId);
     
-    public boolean isSelected(Object vertexId);
+    public boolean isVertexSelected(Object vertexId);
     
-    public void setSelected(Object vertexId, boolean selected);
+    public void setVertexSelected(Object vertexId, boolean selected);
+    
+    public boolean isEdgeSelected(Object edgeId);
+    
+    public void setEdgeSelected(Object edgeId, boolean selected);
     
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
 
@@ -94,12 +97,15 @@ public interface GraphContainer extends DisplayState {
 
 	public void toggleSelectedVertex(Object itemId);
 
-	public void selectVertices(List<?> itemIds);
+	public void selectVertices(Collection<?> itemIds);
 
 	public Collection<?> getSelectedVertices();
 
 	public boolean containsVertexId(Object vertexId);
 	
 	public boolean containsEdgeId(Object edgeId);
+
+	void deselectAll();
+	
 
 }

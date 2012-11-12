@@ -189,8 +189,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
         
         if(variables.containsKey("deselectAllItems")) {
-            deselectAllEdges();
-            deselectAllVertices();
+            deselectAll();
             requestRepaint();
             updateSelectionListeners();
         }
@@ -270,6 +269,10 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         updateMenuItems();
     }
 
+	private void deselectAll() {
+		m_graphContainer.deselectAll();
+	}
+
     private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
         m_scaleUpdateFromUI  = scaleUpdateFromUI;
     }
@@ -299,8 +302,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	}
 	
 	private void singleSelectEdge(String edgeId) {
-	    deselectAllVertices();
-	    deselectAllEdges();
+	    deselectAll();
 	    
 	    if(edgeId.isEmpty()) {
 	        requestRepaint();
@@ -309,15 +311,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	    }
 	}
 
-    private void deselectAllEdges() {
-        for(TopoEdge edge : getGraph().getEdges()) {
-	        edge.setSelected(false);
-	    }
-    }
-	
     private void singleSelectVertex(String vertexKey) {
-        deselectAllEdges();
-        deselectAllVertices();
+        deselectAll();
         
         if(vertexKey.isEmpty()) {
             requestRepaint();
@@ -326,19 +321,12 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
     }
 
-    private void deselectAllVertices() {
-        for(TopoVertex vertex : getGraph().getVertices()) {
-            vertex.setSelected(false);
-        }
-    }
-    
     public void selectVerticesByItemId(Collection<Object> itemIds) {
-        deselectAllVertices();
+    	
+        deselectAll();
         
-        for(Object itemId : itemIds) {
-            toggleSelectVertexByItemId(itemId);
-        }
-        
+        m_graphContainer.selectVertices(itemIds);
+
         if(itemIds.size() > 0) {
             setPanToSelection(true);
             requestRepaint();
