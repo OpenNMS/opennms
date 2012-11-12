@@ -266,14 +266,4 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
         Assert.assertEquals("agalue", acks.get(0).getAckUser());
     }
 
-    @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testAcknowledgements(){
-        m_alarmRepo.acknowledgeAlarms(new int[] { 1 }, "agalue", new Date());
-        List<OnmsAcknowledgment> acks = m_alarmRepo.getAcknowledgments(1);
-        Assert.assertNotNull(acks);
-        Assert.assertEquals(1, acks.size());
-        Assert.assertEquals("agalue", acks.get(0).getAckUser());
-    }
-
 }
