@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -195,11 +196,11 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
         
         if(variables.containsKey("clickedVertex")) {
-        	String vertexId = (String) variables.get("clickedVertex");
+        	String vertexKey = (String) variables.get("clickedVertex");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
-        	    multiSelectVertex(vertexId);
+        	    multiSelectVertex(vertexKey);
         	}else {
-        	    singleSelectVertex(vertexId);
+        	    singleSelectVertex(vertexKey);
         	}
         	
             updateSelectionListeners();
@@ -314,14 +315,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	    }
     }
 	
-    private void singleSelectVertex(String vertexId) {
+    private void singleSelectVertex(String vertexKey) {
         deselectAllEdges();
         deselectAllVertices();
         
-        if(vertexId.isEmpty()) {
+        if(vertexKey.isEmpty()) {
             requestRepaint();
         } else {
-            toggleSelectedVertex(vertexId);
+            toggleSelectedVertex(vertexKey);
         }
     }
 
@@ -346,48 +347,36 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     
     /**
      * Select multiple vertices at a time
-     * @param vertexIds
+     * @param vertexKeys
      */
-    private void bulkMultiSelectVertex(String[] vertexIds) {
-        for(String vertexId : vertexIds) {
-            TopoVertex vertex = getGraph().getVertexByKey((String)vertexId);
-            vertex.setSelected(true);
-        }
+    private void bulkMultiSelectVertex(String[] vertexKeys) {
+    	
+    	List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
+    	
+		m_graphContainer.selectVertices(itemIds);
         
         requestRepaint();
     }
-    
-    private void multiSelectVertex(String vertexId) {
-        toggleSelectedVertex(vertexId);
-    }
 
-    private void toggleSelectedVertex(String vertexId) {
-		TopoVertex vertex = getGraph().getVertexByKey(vertexId);
-		if(vertex != null) {
-		    vertex.setSelected(!vertex.isSelected());
-		}
+	private void multiSelectVertex(String vertexKey) {
+        toggleSelectedVertex(vertexKey);
+    }
+    
+    private void toggleSelectedVertex(String vertexKey) {
+		Object itemId = getGraph().getVertexByKey(vertexKey).getItemId();
+
+		m_graphContainer.toggleSelectForVertexAndChildren(itemId);
 		
-		if(m_graphContainer.getVertexContainer().hasChildren(vertex.getItemId())) {
-		    Collection<?> children = m_graphContainer.getVertexContainer().getChildren(vertex.getItemId());
-		    for( Object childId : children) {
-		        TopoVertex v = getGraph().getVertexByItemId(childId);
-		        v.setSelected(true);
-		    }
-		}
-		
-		m_graphContainer.getVertexContainer().fireItemSetChange();
 		setFitToView(false);
 		requestRepaint();
 	}
-    
-    private void toggleSelectVertexByItemId(Object itemId) {
-        TopoVertex vertex = getGraph().getVertexByItemId(itemId);
-        vertex.setSelected(!vertex.isSelected());
-        
+
+	private void toggleSelectVertexByItemId(Object itemId) {
+        m_graphContainer.toggleSelectedVertex(itemId);
         requestRepaint();
     }
-    
-    private void toggleSelectedEdge(String edgeItemId) {
+
+	private void toggleSelectedEdge(String edgeItemId) {
         TopoEdge edge = getGraph().getEdgeByKey(edgeItemId);
         edge.setSelected(!edge.isSelected());
         
@@ -486,7 +475,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
     public Collection<?> getItemIdsForSelectedVertices() {
-        Collection<?> vItemIds = m_graphContainer.getVertexContainer().getItemIds();
+        Collection<?> vItemIds = m_graphContainer.getVertexIds();
         List<Object> selectedIds = new ArrayList<Object>(); 
         
         for(Object itemId : vItemIds) {
@@ -510,7 +499,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     
     private void updateSelectionListeners() {
         for(SelectionListener listener : m_selectionListeners) {
-            listener.onSelectionUpdate(m_graphContainer.getVertexContainer());
+            listener.onSelectionUpdate(m_graphContainer);
         }
     }
 

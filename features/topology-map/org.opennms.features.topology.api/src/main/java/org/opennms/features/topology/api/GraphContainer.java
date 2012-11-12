@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.features.topology.api.topo.GraphProvider;
 
@@ -80,5 +81,25 @@ public interface GraphContainer extends DisplayState {
 
     @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
+
+	public Collection<?> getVertexIds();
+
+	public boolean hasChildren(Object itemId);
+
+	public Collection<?> getChildren(Object itemId);
+
+	Object getParentId(Object itemId);
+
+	public void toggleSelectForVertexAndChildren(Object itemId);
+
+	public void toggleSelectedVertex(Object itemId);
+
+	public void selectVertices(List<?> itemIds);
+
+	public Collection<?> getSelectedVertices();
+
+	public boolean containsVertexId(Object vertexId);
+	
+	public boolean containsEdgeId(Object edgeId);
 
 }

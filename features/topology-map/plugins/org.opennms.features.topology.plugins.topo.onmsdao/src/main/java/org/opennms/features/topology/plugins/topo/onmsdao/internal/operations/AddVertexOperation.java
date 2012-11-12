@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
@@ -57,10 +58,10 @@ public class AddVertexOperation implements Operation{
         
         Object itemId = targets.size() == 1 ? targets.get(0) : null;
         
-        return itemId == null || operationContext.getGraphContainer().getVertexContainer().containsId(itemId);
+        return itemId == null || operationContext.getGraphContainer().containsVertexId(itemId);
     }
 
-    @Override
+	@Override
     public String getId() {
         return null;
     }
@@ -81,7 +82,7 @@ public class AddVertexOperation implements Operation{
         Object vertexId = targets.isEmpty() ? null : targets.get(0);
         String icon = getIcon();
         if (vertexId == null) {
-            if (operationContext.getGraphContainer().getVertexContainer().containsId(Constants.CENTER_VERTEX_ID)) {
+            if (operationContext.getGraphContainer().containsVertexId(Constants.CENTER_VERTEX_ID)) {
             	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON, operationContext.getGraphContainer());
             }
             else {

@@ -143,6 +143,14 @@ public abstract class ElementHolder<T> {
         return elements;
 	}
 	
+	public List<?> getItemsIdsForKeys(Collection<String> keys) {
+		List<Object> itemIds = new ArrayList<Object>(keys.size());
+		for(String key : keys) {
+			itemIds.add(m_elementKey2ItemId.get(key));
+		}
+		return itemIds;
+	}
+	
 	public List<T> getElementsByItemIds(Collection<?> itemIds) {
 		List<T> elements = new ArrayList<T>(itemIds.size());
 		

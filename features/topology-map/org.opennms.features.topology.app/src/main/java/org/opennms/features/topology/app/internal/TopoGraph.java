@@ -85,7 +85,7 @@ public class TopoGraph{
 
             @Override
 			protected TopoVertex update(TopoVertex element) {
-				Object groupId = m_dataSource.getVertexContainer().getParent(element.getItemId());
+				Object groupId = m_dataSource.getParentId(element.getItemId());
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				
 				element.setGroupId(groupId);
@@ -95,7 +95,7 @@ public class TopoGraph{
 
 			@Override
 			protected TopoVertex make(String key, Object itemId, Item item) {
-				Object groupId = m_dataSource.getVertexContainer().getParent(itemId);
+				Object groupId = m_dataSource.getParentId(itemId);
 				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
 				return new TopoVertex(m_dataSource, key, itemId, groupKey, groupId);
@@ -246,6 +246,10 @@ public class TopoGraph{
 	    }
 	    
 	    target.endTag("graph");
+	}
+
+	public List<?> getVertexItemIdsForKeys(List<String> vertexKeys) {
+		return m_vertexHolder.getItemsIdsForKeys(vertexKeys);
 	}
 	
 }

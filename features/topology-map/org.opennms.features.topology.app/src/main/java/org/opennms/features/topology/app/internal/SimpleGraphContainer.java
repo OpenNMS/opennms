@@ -699,9 +699,13 @@ public class SimpleGraphContainer implements GraphContainer {
         LoggerFactory.getLogger(getClass()).debug("redoLayout()");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
-            getVertexContainer().fireItemSetChange();
+            fireChange();
         }
     }
+
+	public void fireChange() {
+		getVertexContainer().fireItemSetChange();
+	}
 
 
     @Override
@@ -710,16 +714,17 @@ public class SimpleGraphContainer implements GraphContainer {
         return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
     }
     
+    @Override
     public List<Object> getSelectedVertices() {
-    	List<Object> targets = new ArrayList<Object>();
-    	for (Object vId : getVertexIds()) {
-    		Item vItem = getVertexItem(vId);
-    		boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
-    		if (selected) {
-    			targets.add(vItem.getItemProperty("key").getValue());
+    	List<Object> selectedVertices = new ArrayList<Object>();
+    	
+    	for(Object itemId : getVertexIds()) {
+    		if (isSelected(itemId)) {
+    			selectedVertices.add(itemId);
     		}
     	}
-    	return targets;
+    	
+    	return selectedVertices;
     }
 
     @Override
@@ -814,6 +819,60 @@ public class SimpleGraphContainer implements GraphContainer {
 			}
 		}
 		return visibleVertexIds;
+	}
+
+	@Override
+	public Object getParentId(Object itemId) {
+		return getVertexContainer().getParent(itemId);
+	}
+
+	@Override
+	public Collection<?> getChildren(Object itemId) {
+		return getVertexContainer().getChildren(itemId);
+	}
+
+	@Override
+	public boolean hasChildren(Object itemId) {
+		return getVertexContainer().hasChildren(itemId);
+	}
+
+	@Override
+	public void toggleSelectForVertexAndChildren(Object itemId) {
+		boolean selected = isSelected(itemId);
+		setSelected(itemId, !selected);
+		
+		if(hasChildren(itemId)) {
+		    Collection<?> children = getChildren(itemId);
+		    for( Object childId : children) {
+		        setSelected(childId, true);
+		    }
+		}
+		
+		fireChange();
+	}
+
+	@Override
+	public void toggleSelectedVertex(Object itemId) {
+		boolean selected = isSelected(itemId);
+		setSelected(itemId, !selected);
+	}
+
+	@Override
+	public void selectVertices(List<?> itemIds) {
+		for(Object itemId : itemIds) {
+			setSelected(itemId, true);
+	    }
+	}
+	
+	@Override
+	public boolean containsVertexId(Object vertexId) {
+		return getVertexContainer().containsId(vertexId);
+	}
+
+
+	@Override
+	public boolean containsEdgeId(Object edgeId) {
+		return getEdgeContainer().containsId(edgeId);
 	}
 
 

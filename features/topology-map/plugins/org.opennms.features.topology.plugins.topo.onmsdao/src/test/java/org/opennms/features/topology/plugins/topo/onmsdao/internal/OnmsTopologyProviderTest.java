@@ -224,6 +224,56 @@ public class OnmsTopologyProviderTest {
 		throw new UnsupportedOperationException("GraphContainer.getDisplayVertices is not yet implemented.");
 	}
 
+	@Override
+	public Collection<?> getVertexIds() {
+		throw new UnsupportedOperationException("GraphContainer.getVertexIds is not yet implemented.");
+	}
+
+	@Override
+	public boolean hasChildren(Object itemId) {
+		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
+	}
+
+	@Override
+	public Collection<?> getChildren(Object itemId) {
+		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
+	}
+
+	@Override
+	public Object getParentId(Object itemId) {
+		throw new UnsupportedOperationException("GraphContainer.getParentId is not yet implemented.");
+	}
+
+	@Override
+	public void toggleSelectForVertexAndChildren(Object itemId) {
+		throw new UnsupportedOperationException("GraphContainer.toggleSelectForVertexAndChildren is not yet implemented.");
+	}
+
+	@Override
+	public void toggleSelectedVertex(Object itemId) {
+		throw new UnsupportedOperationException("GraphContainer.toggleSelectedVertex is not yet implemented.");
+	}
+
+	@Override
+	public void selectVertices(List<?> itemIds) {
+		throw new UnsupportedOperationException("GraphContainer.selectVertices is not yet implemented.");
+	}
+
+	@Override
+	public Collection<?> getSelectedVertices() {
+		throw new UnsupportedOperationException("GraphContainer.getSelectedVertices is not yet implemented.");
+	}
+
+	@Override
+	public boolean containsVertexId(Object vertexId) {
+		throw new UnsupportedOperationException("GraphContainer.containsVertexId is not yet implemented.");
+	}
+
+	@Override
+	public boolean containsEdgeId(Object edgeId) {
+		throw new UnsupportedOperationException("GraphContainer.containsEdgeId is not yet implemented.");
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{

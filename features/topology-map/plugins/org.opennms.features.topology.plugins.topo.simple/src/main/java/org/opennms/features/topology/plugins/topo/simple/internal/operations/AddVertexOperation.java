@@ -56,7 +56,7 @@ public class AddVertexOperation implements Operation{
     	if(targets.size() > 1) return false;
         
         Object itemId = targets.size() == 1 ? targets.get(0) : null;
-        return itemId == null || operationContext.getGraphContainer().getVertexContainer().containsId(itemId);
+        return itemId == null || operationContext.getGraphContainer().containsVertexId(itemId);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class AddVertexOperation implements Operation{
         Object vertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(vertexKey);
         String icon = getIconKey();
         if (vertexId == null) {
-            if (operationContext.getGraphContainer().getVertexContainer().containsId(Constants.CENTER_VERTEX_ID)) {
+            if (operationContext.getGraphContainer().containsVertexId(Constants.CENTER_VERTEX_ID)) {
             	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON_KEY, operationContext.getGraphContainer());
             }
             else {
