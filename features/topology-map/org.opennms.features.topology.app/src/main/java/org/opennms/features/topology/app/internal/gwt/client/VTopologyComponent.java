@@ -770,10 +770,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	 */
 	private void setGraph(GWTGraph graph) {
 		m_graph = graph;
-		
+		updateGraphUpdateListeners();
 		if(isPanToSelection()) {
 		    centerSelection(m_graph.getVertices(m_semanticZoomLevel));
-		} else if(isFitToView()){ 
+		} else { // if(isFitToView())
 		    fitMapToView(m_graph.getVertices(m_semanticZoomLevel));
 		}
         
@@ -792,7 +792,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             }
         });
 		
-        updateGraphUpdateListeners();
+        
 	}
 
     private void updateScale(double oldScale, double newScale, int cx,int cy) {
