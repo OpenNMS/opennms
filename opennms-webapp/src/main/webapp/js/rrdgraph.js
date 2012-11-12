@@ -1870,7 +1870,7 @@ var RRDGraph = window['RRDGraph'] = {};
   window['RRDGraph']['init'] = function (selector, config_str) {
     var result = [];
     d3.selectAll(selector).each(function () {
-      var src = parseSrc(this.dataset.src);
+      var src = parseSrc(this.getAttribute('data-src'));
       var element = this;
 
       var config;
