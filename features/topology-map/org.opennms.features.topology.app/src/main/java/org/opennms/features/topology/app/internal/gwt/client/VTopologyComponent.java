@@ -849,7 +849,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             GWTVertex vertex = vertices.get(i);
             
             if(fitToView || vertex.isSelected()) {
-                consoleLog("Vertex label: " + vertex.getLabel() + " isVertexSelected: " + vertex.isSelected() + " fitToView: " + fitToView);
                 double vertexX = vertex.getX();
                 double vertexY = vertex.getY();
                 rect.addPoint(new Point(vertexX, vertexY));

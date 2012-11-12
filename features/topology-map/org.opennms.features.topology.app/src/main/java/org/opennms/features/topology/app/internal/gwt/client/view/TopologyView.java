@@ -29,6 +29,5 @@ public interface TopologyView<T> {
     Element getReferenceViewPort();
     Element getMarqueeElement();
     void repaintNow(GWTGraph graph);
-//    double getScaleFactor(final BoundingRect rect, final int svgWidth, final int svgHeight);
     void zoomToFit(BoundingRect rect);
 }
