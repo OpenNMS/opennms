@@ -599,17 +599,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		};
 	}
 
-	public static final native void eval(JavaScriptObject elem) /*-{
-        $wnd.console.log($wnd.eval(elem));
-    }-*/;
-
-	public static final native void typeof(Element elem) /*-{
-        $wnd.console.log("typeof: " + typeof(elem));
-    }-*/;
-
-	private static final native void consoleLog(Object message) /*-{
-        $wnd.console.log(message);
-    }-*/;
+	
 
 	private Handler<GWTVertex> vertexDragHandler() {
 		return new Handler<GWTVertex>() {
@@ -617,6 +607,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			public void call(GWTVertex vertex, int index) {
 
 				m_dragObject.move();
+				
+				if(getViewRenderer() == m_graphDrawer) {
+				    m_currentViewRender = m_graphDrawerNoTransition;
+				}
 				
 				for( GraphUpdateListener listener : m_graphListenerList) {
 				    listener.onGraphUpdated(m_graph);
@@ -900,11 +894,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
 
     @Override
-    public void onMouseWheel() {
-        
-    }
-
-    @Override
     public void onContextMenu(Object target, int x, int y, String type) {
         showContextMenu(target, x, y, type);
     }
@@ -924,5 +913,23 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     public void onScaleUpdate(double scale) {
         setMapScaleNow(scale);
     }
+    
+    @Override
+    public void onMouseWheel() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public static final native void eval(JavaScriptObject elem) /*-{
+        $wnd.console.log($wnd.eval(elem));
+    }-*/;
+
+	public static final native void typeof(Element elem) /*-{
+        $wnd.console.log("typeof: " + typeof(elem));
+    }-*/;
+
+	private static final native void consoleLog(Object message) /*-{
+        $wnd.console.log(message);
+    }-*/;
 
 }

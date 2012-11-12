@@ -172,9 +172,11 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
             m_presenter.getViewRenderer().draw(graph, this);
     }
 
-    void updateScale(double oldScale, double newScale, SVGElement svg, int cx, int cy) {
+    void updateScale(double oldScale, double newScale, SVGElement x, int cx, int cy) {
+        // TODO: There is a calculation error in this code somewhere, it doesn't get the correct scale
         double zoomFactor = newScale/oldScale;
     	
+        SVGElement svg = getSVGElement();
         SVGGElement g = getSVGViewPort().cast();
     
     	if(cx == 0 ) {
@@ -194,7 +196,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     			 .scale(zoomFactor)
     			.translate(-p.getX(), -p.getY());
     	SVGMatrix ctm = g.getCTM().multiply(m);
-    	D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", matrixTransform(ctm));
+    	String tempM = matrixTransform(ctm);
+    	D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", tempM);
     }
     
     String matrixTransform(SVGMatrix matrix) {
