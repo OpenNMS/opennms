@@ -14,7 +14,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
     </bean>
     
-    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="onmsTopologyProvider"/>
+    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="onmsTopologyProvider">
+        <service-properties>
+            <entry key="label" value="Hierarchical Map"/>
+        </service-properties>
+    </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
@@ -32,7 +36,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Connect"/>
-            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.ConnectOperation">
             <argument ref="onmsTopologyProvider"/>
@@ -43,7 +46,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Create Group"/>
-            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.CreateGroupOperation">
             <argument ref="onmsTopologyProvider"/>
@@ -64,7 +66,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Remove Vertex"/>
-            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.RemoveVertexOperation">
             <argument ref="onmsTopologyProvider"/>
@@ -75,7 +76,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Reset"/>
-            <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.onmsdao.internal.operations.ResetOperation">
             <argument ref="onmsTopologyProvider"/>
