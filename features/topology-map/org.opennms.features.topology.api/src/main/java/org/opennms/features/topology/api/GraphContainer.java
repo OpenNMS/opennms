@@ -73,7 +73,7 @@ public interface GraphContainer extends DisplayState {
     
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
 
-	public Collection<Object> getDisplayVertices(int semanticZoomLevel);
+	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel);
 	
 	@Deprecated
     public TopologyProvider getDataSource();

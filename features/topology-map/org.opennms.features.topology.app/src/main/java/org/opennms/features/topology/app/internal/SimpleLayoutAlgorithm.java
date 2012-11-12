@@ -50,7 +50,7 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
         int r = 100;
         int cx = 500;
         int cy = 500;
-		Collection<Object> vertices = graphContainer.getDisplayVertices(szl);
+		Collection<Object> vertices = graphContainer.getDisplayVertexIds(szl);
 		int i = 0;
 		for(Object vertexId : vertices) {
             s_log.debug("Laying out vertex id : {}", vertexId);

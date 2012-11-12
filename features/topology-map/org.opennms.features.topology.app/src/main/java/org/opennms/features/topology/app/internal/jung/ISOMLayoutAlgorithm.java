@@ -52,7 +52,7 @@ public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
 
-		Collection<Object> vertices = g.getGraphContainer().getDisplayVertices(szl);
+		Collection<Object> vertices = g.getGraphContainer().getDisplayVertexIds(szl);
 		
 		for(Object v : vertices) {
 			jungGraph.addVertex(v);
@@ -61,7 +61,7 @@ public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		List<TopoEdge> edges = g.getEdges(szl);
 		
 		for(TopoEdge e : edges) {
-			jungGraph.addEdge(e, e.getSource(), e.getTarget());
+			jungGraph.addEdge(e, e.getSource().getItemId(), e.getTarget().getItemId());
 		}
 		
 

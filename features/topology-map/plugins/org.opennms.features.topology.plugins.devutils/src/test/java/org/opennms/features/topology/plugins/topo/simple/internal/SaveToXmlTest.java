@@ -207,7 +207,7 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public Collection<Object> getDisplayVertices(
+					public Collection<Object> getDisplayVertexIds(
 							int semanticZoomLevel) {
 						throw new UnsupportedOperationException("GraphContainer.getDisplayVertices is not yet implemented.");
 					}

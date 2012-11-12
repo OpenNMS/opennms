@@ -619,7 +619,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	public Collection<Object> getVertexIds() {
 		return m_vertexContainer.getItemIds();
 	}
-
+	
 	public Collection<String> getEdgeIds() {
 		return m_edgeContainer.getItemIds();
 	}
@@ -724,7 +724,11 @@ public class SimpleGraphContainer implements GraphContainer {
 
     @Override
     public int getX(Object itemId) {
-		return (Integer) getVertexItem(itemId).getItemProperty(TopoVertex.X_PROPERTY).getValue();
+		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
+		if (vertexItem == null) throw new NullPointerException("vertexItem "+ itemId +" is null");
+		Property itemProperty = vertexItem.getItemProperty(TopoVertex.X_PROPERTY);
+		if (itemProperty == null) throw new NullPointerException("X property is null");
+		return (Integer) itemProperty.getValue();
 	}
 
     @Override
@@ -801,7 +805,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	@Override
-	public Collection<Object> getDisplayVertices(int semanticZoomLevel) {
+	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel) {
 		Set<Object> visibleVertexIds = new LinkedHashSet<Object>();
 		for(Object itemId : getVertexIds()) {
 			if (isLeaf(itemId)) {

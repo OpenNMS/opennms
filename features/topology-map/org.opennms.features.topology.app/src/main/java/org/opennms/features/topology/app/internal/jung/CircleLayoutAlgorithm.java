@@ -53,7 +53,7 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
 
-		Collection<Object> vertices = g.getGraphContainer().getDisplayVertices(szl);
+		Collection<Object> vertices = g.getGraphContainer().getDisplayVertexIds(szl);
 		
 		for(Object v : vertices) {
 			jungGraph.addVertex(v);
@@ -62,7 +62,7 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		List<TopoEdge> edges = g.getEdges(szl);
 		
 		for(TopoEdge e : edges) {
-			jungGraph.addEdge(e, e.getSource(), e.getTarget());
+			jungGraph.addEdge(e, e.getSource().getItemId(), e.getTarget().getItemId());
 		}
 		
 
@@ -86,7 +86,7 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
 	protected Dimension selectLayoutSize(GraphContainer g) {
-		int vertexCount = g.getDisplayVertices(g.getSemanticZoomLevel()).size();
+		int vertexCount = g.getDisplayVertexIds(g.getSemanticZoomLevel()).size();
 		
 		int spacing = ELBOW_ROOM/5;
 

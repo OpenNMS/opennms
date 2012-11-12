@@ -220,7 +220,7 @@ public class OnmsTopologyProviderTest {
 	}
 
 	@Override
-	public Collection<Object> getDisplayVertices(int semanticZoomLevel) {
+	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel) {
 		throw new UnsupportedOperationException("GraphContainer.getDisplayVertices is not yet implemented.");
 	}
 
