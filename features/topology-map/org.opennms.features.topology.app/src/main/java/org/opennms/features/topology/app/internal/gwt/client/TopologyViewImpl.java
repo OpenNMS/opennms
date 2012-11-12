@@ -57,6 +57,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     Element m_marquee;
     
     TopologyViewRenderer m_topologyViewRenderer;
+    
 
     public TopologyViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -67,6 +68,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         super.onLoad();
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
         m_topologyViewRenderer = m_presenter.getViewRenderer();
+        
     }
 
 
@@ -172,32 +174,37 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
             m_presenter.getViewRenderer().draw(graph, this);
     }
 
-    void updateScale(double oldScale, double newScale, SVGElement x, int cx, int cy) {
-        // TODO: There is a calculation error in this code somewhere, it doesn't get the correct scale
-        double zoomFactor = newScale/oldScale;
-    	
-        SVGElement svg = getSVGElement();
-        SVGGElement g = getSVGViewPort().cast();
-    
-    	if(cx == 0 ) {
-    		cx = (int) (Math.ceil(svg.getParentElement().getOffsetWidth() / 2.0) - 1);
-    	}
-    
-    	if(cy == 0) {
-    		cy = (int) (Math.ceil(svg.getParentElement().getOffsetHeight() / 2.0) -1);
-    	}
-    
-    	SVGPoint p = svg.createSVGPoint();
-    	p.setX(cx);
-    	p.setY(cy);
-    	p = p.matrixTransform(g.getCTM().inverse());
-    	SVGMatrix m = svg.createSVGMatrix()
-    			.translate(p.getX(),p.getY())
-    			 .scale(zoomFactor)
-    			.translate(-p.getX(), -p.getY());
-    	SVGMatrix ctm = g.getCTM().multiply(m);
-    	String tempM = matrixTransform(ctm);
-    	D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", tempM);
+    void updateScale(double oldScale, double newScale, int cx, int cy) {
+        if(oldScale > 0) {
+            double zoomFactor = newScale/oldScale;
+        	
+            SVGElement svg = getSVGElement();
+            SVGGElement g = getSVGViewPort().cast();
+        
+        	if(cx == 0 ) {
+        		cx = (int) (Math.ceil(svg.getParentElement().getOffsetWidth() / 2.0) - 1);
+        	}
+        
+        	if(cy == 0) {
+        		cy = (int) (Math.ceil(svg.getParentElement().getOffsetHeight() / 2.0) -1);
+        	}
+        
+        	SVGPoint p = svg.createSVGPoint();
+        	p.setX(cx);
+        	p.setY(cy);
+        	String gCTM = matrixTransform(g.getCTM());
+        	String gCTMInverse = matrixTransform(g.getCTM().inverse());
+        	p = p.matrixTransform(g.getCTM().inverse());
+        	double x2 = p.getX();
+        	double y2 = p.getY();
+        	SVGMatrix m = svg.createSVGMatrix()
+        			.translate(x2,y2)
+        			 .scale(zoomFactor)
+        			.translate(-x2, -y2);
+        	SVGMatrix ctm = g.getCTM().multiply(m);
+        	String tempM = matrixTransform(ctm);
+        	D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", tempM);
+        }
     }
     
     String matrixTransform(SVGMatrix matrix) {
