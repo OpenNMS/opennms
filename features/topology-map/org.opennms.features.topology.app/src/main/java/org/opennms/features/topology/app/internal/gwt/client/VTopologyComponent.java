@@ -378,6 +378,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
+    private boolean m_fitToView;
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -634,7 +635,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		setScale(uidl.getDoubleAttribute("scale"), uidl.getIntAttribute("clientX"), uidl.getIntAttribute("clientY"));
 		setSemanticZoomLevel(uidl.getIntAttribute("semanticZoomLevel"));
 		setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
-		//setFitToView(uidl.getBooleanAttribute("fitToView"));
+		setFitToView(uidl.getBooleanAttribute("fitToView"));
 		setActiveTool(uidl.getStringAttribute("activeTool"));
 
 		UIDL graph = uidl.getChildByTagName("graph");
@@ -722,7 +723,15 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		
 	}
 
-	private void setActiveTool(String toolname) {
+	private void setFitToView(boolean bool) {
+	    m_fitToView = bool;
+    }
+	
+	private boolean isFitToView() {
+	    return m_fitToView;
+	}
+
+    private void setActiveTool(String toolname) {
 	    if(toolname.equals("pan")) {
 	        m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 	        m_topologyView.getSVGElement().getStyle().setCursor(Cursor.MOVE);
@@ -764,11 +773,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		
 		if(isPanToSelection()) {
 		    centerSelection(m_graph.getVertices(m_semanticZoomLevel));
-		} else { 
+		} else if(isFitToView()){ 
 		    fitMapToView(m_graph.getVertices(m_semanticZoomLevel));
 		}
         
-		//Set the ViewRenderer to the Animated on if it isn't already
+		//Set the ViewRenderer to the Animated one if it isn't already
 		if(getViewRenderer() != m_graphDrawer) {
 		    setTopologyViewRenderer(m_graphDrawer);
 		}
