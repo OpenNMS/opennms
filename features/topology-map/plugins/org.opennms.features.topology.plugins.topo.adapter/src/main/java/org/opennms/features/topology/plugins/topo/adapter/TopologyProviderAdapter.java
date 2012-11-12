@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.plugins.topo.adapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -37,19 +36,9 @@ public class TopologyProviderAdapter {
     		properties.put(entry.getKey(), entry.getValue().toString());
     	}
     	
-    	String namespace = properties.getProperty(NAMESPACE);
-    	if (namespace == null) {
-    		namespace = properties.getProperty(LABEL);
-    	}
+    	TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
     	
-    	properties.put(NAMESPACE, namespace);
-
-    	TPGraphProvider graphProvider = new TPGraphProvider(namespace, topologyProvider);
-    	
-    	ServiceRegistration reg = m_bundleContext.registerService(new String[] {
-    			VertexProvider.class.getName(),
-    			EdgeProvider.class.getName()
-    	}, graphProvider, properties);
+    	ServiceRegistration reg = m_bundleContext.registerService(GraphProvider.class.getName(), graphProvider, properties);
     	
     	m_registrations.put(topologyProvider, reg);
     }

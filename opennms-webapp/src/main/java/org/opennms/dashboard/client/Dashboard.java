@@ -163,10 +163,9 @@ public class Dashboard implements EntryPoint, ErrorHandler {
      */
     public void add(Widget widget, String elementId) {
         RootPanel panel = RootPanel.get(elementId);
-        if (panel == null) {
-            throw new IllegalArgumentException("element with id '"+elementId+"' not found!");
+        if (panel != null) {
+            panel.add(widget);
         }
-        panel.add(widget);
     }
 
     /** {@inheritDoc} */

@@ -4,11 +4,10 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -94,13 +93,13 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
      * When a user clicks on a vertex or edge in the UI, update the selection in the tree view.
      */
     @Override
-    public void onSelectionUpdate(Container container) {
+    public void onSelectionUpdate(GraphContainer graphContainer) {
         m_itemClicked = false;
-        Collection<?> itemIds = container.getItemIds();
+        
+        Collection<?> itemIds = graphContainer.getVertexIds();
         
         for(Object itemId : itemIds) {
-            Item item = container.getItem(itemId);
-            if((Boolean) item.getItemProperty("selected").getValue()) {
+        	if (graphContainer.isVertexSelected(itemId)) {
                 select(itemId);
             } else {
                 unselect(itemId);

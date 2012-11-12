@@ -29,15 +29,15 @@
 package org.opennms.features.topology.app.internal.gwt.client.handler;
 
 import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
-import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
+import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 
 public class PanObject extends DragObject{
@@ -47,10 +47,10 @@ public class PanObject extends DragObject{
     private SVGMatrix m_stateTf;
 	private SVGPoint m_stateOrigin;
 
-	public PanObject(SVGTopologyMap svgTopologyMap, Element draggableElement, Element containerElement) {
-		super(svgTopologyMap, draggableElement, containerElement, D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME));
+	public PanObject(TopologyView<TopologyViewRenderer> topologyView) {
+		super(topologyView, topologyView.getSVGViewPort(), topologyView.getSVGElement(), D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME));
 
-		SVGGElement g = draggableElement.cast();
+		SVGGElement g = topologyView.getSVGViewPort().cast();
 		m_stateTf = g.getCTM().inverse();
 
 		m_stateOrigin = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf); 
@@ -83,16 +83,6 @@ public class PanObject extends DragObject{
 				", " + m.getF() + ")";
 		
 		getDraggableElement().setAttribute("transform", matrixTransform);
-//
-//		//Updating the reference map
-//		//TODO: this needs to be reworked a little its off
-//		double viewPortWidth = (getContainerElement().getOffsetWidth() / m.getA()) * 0.4;
-//		double viewPortHeight = (getContainerElement().getOffsetHeight() / m.getA()) * 0.4;
-//		
-//		getSvgTopologyMap().getReferenceViewPort().setAttribute("width", "" + viewPortWidth);
-//		getSvgTopologyMap().getReferenceViewPort().setAttribute("height", "" + viewPortHeight);
-//		getSvgTopologyMap().getReferenceViewPort().setAttribute("x", "" + (-boundaryX * 0.4));
-//		getSvgTopologyMap().getReferenceViewPort().setAttribute("y", "" + (-boundaryY * 0.4));
 	}
 
 	private double calculateBoundsY(double mapHeight, int offsetHeight,

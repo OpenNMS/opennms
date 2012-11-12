@@ -1,24 +1,23 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.plugins.topo.adapter;
 
-import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
-class ItemEdge implements Edge {
+class ItemVertex implements Vertex {
 	
+	private static final String ICON_KEY = "iconKey";
 	private static final String LABEL = "label";
 	private static final String TOOLTIP_TEXT = "tooltipText";
 	private static final String STYLE_NAME = "styleName";
 
-	private final String m_namespace;
-	private final String m_id;
+	final String m_namespace;
+	final String m_id;
 	private final Object m_itemId;
 	private final ItemFinder m_itemFinder;
-	private ItemConnector m_source;
-	private ItemConnector m_target;
 
-	public ItemEdge(String namespace, String id, Object itemId, ItemFinder itemFinder) {
+	public ItemVertex(String namespace, String id, Object itemId, ItemFinder itemFinder) {
 		m_namespace = namespace;
 		m_id = id;
 		m_itemId = itemId;
@@ -33,24 +32,6 @@ class ItemEdge implements Edge {
 	@Override
 	public String getId() {
 		return m_id;
-	}
-
-	@Override
-	public ItemConnector getSource() {
-		return m_source;
-	}
-	
-	public void setSource(ItemConnector source) {
-		m_source = source;
-	}
-
-	@Override
-	public ItemConnector getTarget() {
-		return m_target;
-	}
-	
-	public void setTarget(ItemConnector target) {
-		m_target = target;
 	}
 
 	@Override
@@ -74,10 +55,16 @@ class ItemEdge implements Edge {
 	}
 
 	@Override
+	public String getIconKey() {
+        return (String) getItem().getItemProperty(ICON_KEY).getValue();
+	}
+
+	@Override
 	public String getStyleName() {
         Property styleProperty = getItem().getItemProperty(STYLE_NAME);
 		return styleProperty == null ? null : (String)styleProperty.getValue();
 	}
+
 
 	@Override
 	public int hashCode() {
@@ -89,6 +76,7 @@ class ItemEdge implements Edge {
 				+ ((m_namespace == null) ? 0 : m_namespace.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -111,5 +99,4 @@ class ItemEdge implements Edge {
 			return false;
 		return true;
 	}
-
 }

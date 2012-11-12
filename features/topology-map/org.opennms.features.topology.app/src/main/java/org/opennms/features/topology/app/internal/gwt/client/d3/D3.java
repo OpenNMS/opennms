@@ -81,6 +81,21 @@ public class D3 extends JavaScriptObject {
 		}
 		return this.attr(attrName, f);
     }-*/;
+    
+    public final native void timer(BooleanFunc func) /*-{
+        var f = function(){
+            return func.@org.opennms.features.topology.app.internal.gwt.client.d3.BooleanFunc::call()();
+        }
+        $wnd.d3.timer(f);
+    }-*/;
+    
+    public final native void timer() /*-{
+        $wnd.d3.timer(function() {
+            $wnd.console.log("timer tick");
+            return false;
+            
+        })
+    }-*/;
 
     public final native D3 selectAll(String selectionName) /*-{
         return this.selectAll(selectionName);
@@ -116,6 +131,13 @@ public class D3 extends JavaScriptObject {
 
     public final native D3 transition() /*-{
         return this.transition();
+    }-*/;
+    
+    public final native D3 styleTween(String name, Tween<?, ?> t) /*-{
+        function tween(d, i, a){
+            return $wnd.d3.interpolate(a, t.@org.opennms.features.topology.app.internal.gwt.client.d3.Tween::call(Ljava/lang/Object;ILjava/lang/String;)(d,i,a));
+        }
+        return this.styleTween(name, tween);
     }-*/;
 
     public final native D3 duration(int duration) /*-{
@@ -297,6 +319,11 @@ public class D3 extends JavaScriptObject {
         return this.data().length;
         
     }-*/;
+
+    public final native String style(String style) /*-{
+        return this.style(style);
+    }-*/;
+
 
 
 }

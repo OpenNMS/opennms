@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<graph>
+<graph namespace="vertex">
     <vertex>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png</icon>
         <id>v0</id>

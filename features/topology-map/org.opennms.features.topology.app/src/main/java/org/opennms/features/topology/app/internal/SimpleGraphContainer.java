@@ -40,6 +40,8 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
@@ -509,6 +511,7 @@ public class SimpleGraphContainer implements GraphContainer {
     private ElementHolder<GVertex> m_vertexHolder;
     private ElementHolder<GEdge> m_edgeHolder;
     private TopologyProvider m_topologyProvider;
+    private GraphProvider m_graphProvider;
     private GEdgeContainer m_edgeContainer;
     
 	public SimpleGraphContainer() {
@@ -576,6 +579,8 @@ public class SimpleGraphContainer implements GraphContainer {
 	public void setDataSource(TopologyProvider topologyProvider) {
 	    if (m_topologyProvider == topologyProvider) return;
 	    
+	    m_graphProvider = new TPGraphProvider(topologyProvider);
+	    
 	    m_topologyProvider = topologyProvider;
 	    
 	    m_vertexHolder.setContainer(m_topologyProvider.getVertexContainer());
@@ -588,6 +593,18 @@ public class SimpleGraphContainer implements GraphContainer {
 	    redoLayout();
 
 	}
+	
+	
+
+	@Override
+	public GraphProvider getBaseTopology() {
+		return m_graphProvider;
+	}
+
+	@Override
+	public void setBaseTopology(GraphProvider graphProvider) {
+		throw new UnsupportedOperationException("SimpleGraphContainer.setBaseTopology is not yet implemented.");
+	}
 
 	@Override
 	public VertexContainer<Object, GVertex> getVertexContainer() {
@@ -599,12 +616,10 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_edgeContainer;
 	}
 
-	@Override
 	public Collection<Object> getVertexIds() {
 		return m_vertexContainer.getItemIds();
 	}
-
-	@Override
+	
 	public Collection<String> getEdgeIds() {
 		return m_edgeContainer.getItemIds();
 	}
@@ -684,9 +699,13 @@ public class SimpleGraphContainer implements GraphContainer {
         LoggerFactory.getLogger(getClass()).debug("redoLayout()");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
-            getVertexContainer().fireItemSetChange();
+            fireChange();
         }
     }
+
+	public void fireChange() {
+		getVertexContainer().fireItemSetChange();
+	}
 
 
     @Override
@@ -697,15 +716,188 @@ public class SimpleGraphContainer implements GraphContainer {
     
     @Override
     public List<Object> getSelectedVertices() {
-    	List<Object> targets = new ArrayList<Object>();
-	for (Object vId : getVertexIds()) {
-		Item vItem = getVertexItem(vId);
-		boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
-		if (selected) {
-			targets.add(vItem.getItemProperty("key").getValue());
+    	List<Object> selectedVertices = new ArrayList<Object>();
+    	
+    	for(Object itemId : getVertexIds()) {
+    		if (isVertexSelected(itemId)) {
+    			selectedVertices.add(itemId);
+    		}
+    	}
+    	
+    	return selectedVertices;
+    }
+
+    @Override
+    public int getX(Object itemId) {
+		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
+		if (vertexItem == null) throw new NullPointerException("vertexItem "+ itemId +" is null");
+		Property itemProperty = vertexItem.getItemProperty(TopoVertex.X_PROPERTY);
+		if (itemProperty == null) throw new NullPointerException("X property is null");
+		return (Integer) itemProperty.getValue();
+	}
+
+    @Override
+    public int getY(Object itemId) {
+		return (Integer) getVertexItem(itemId).getItemProperty(TopoVertex.Y_PROPERTY).getValue();
+	}
+
+    @Override
+    public void setX(Object itemId, int x) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.X_PROPERTY).setValue(x);
+	}
+
+    @Override
+    public void setY(Object itemId, int y) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.Y_PROPERTY).setValue(y);
+	}
+
+    @Override
+    public void setVertexSelected(Object itemId, boolean selected) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).setValue(selected);
+	}
+
+    @Override
+    public boolean isVertexSelected(Object itemId) {
+		return (Boolean) getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).getValue();
+	}
+
+    @Override
+    public int getSemanticZoomLevel(Object itemId) {
+		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
+		Property itemProperty = vertexItem.getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL);
+		Integer zoomLevel = (Integer) itemProperty.getValue();
+	    return zoomLevel;
+	}
+    
+    @Override
+    public Object getGroupId(Object itemId) {
+    	return getVertexItem(itemId).getBean().getGroupKey();
+    }
+
+	boolean isLeaf(Object itemId) {
+		Object value = getVertexItem(itemId).getItemProperty(TopoVertex.LEAF_PROPERTY).getValue();
+	    return (Boolean) value;
+	}
+
+	String getLabel(Object itemId) {
+		Property labelProperty = getVertexItem(itemId).getItemProperty(TopoVertex.LABEL_PROPERTY);
+		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
+		return label;
+	}
+
+	String getIconKey(Object itemId) {
+		return (String) getVertexItem(itemId).getItemProperty(TopoVertex.ICON_KEY).getValue();
+	}
+
+	String getTooltipText(Object itemId) {
+		if(getVertexItem(itemId).getItemProperty("tooltipText") != null && getVertexItem(itemId).getItemProperty("tooltipText").getValue() != null) {
+	        return (String) getVertexItem(itemId).getItemProperty("tooltipText").getValue();
+	    }else {
+	        return getLabel(itemId);
+	    }
+	}
+	
+	@Override
+	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
+
+		int szl = getSemanticZoomLevel(vertexId);
+
+		if(getGroupId(vertexId) == null || szl <= semanticZoomLevel) {
+			return vertexId;
+		}else {
+			return getDisplayVertexId(getGroupId(vertexId), semanticZoomLevel);
 		}
 	}
-	return targets;
-    }
+
+	@Override
+	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel) {
+		Set<Object> visibleVertexIds = new LinkedHashSet<Object>();
+		for(Object itemId : getVertexIds()) {
+			if (isLeaf(itemId)) {
+				Object displayItemId = getDisplayVertexId(itemId, semanticZoomLevel);
+				visibleVertexIds.add(displayItemId);
+			}
+		}
+		return visibleVertexIds;
+	}
+
+	@Override
+	public Object getParentId(Object itemId) {
+		return getVertexContainer().getParent(itemId);
+	}
+
+	@Override
+	public Collection<?> getChildren(Object itemId) {
+		return getVertexContainer().getChildren(itemId);
+	}
+
+	@Override
+	public boolean hasChildren(Object itemId) {
+		return getVertexContainer().hasChildren(itemId);
+	}
+
+	@Override
+	public void toggleSelectForVertexAndChildren(Object itemId) {
+		boolean selected = isVertexSelected(itemId);
+		setVertexSelected(itemId, !selected);
+		
+		if(hasChildren(itemId)) {
+		    Collection<?> children = getChildren(itemId);
+		    for( Object childId : children) {
+		        setVertexSelected(childId, true);
+		    }
+		}
+		
+		fireChange();
+	}
+
+	@Override
+	public void toggleSelectedVertex(Object itemId) {
+		boolean selected = isVertexSelected(itemId);
+		setVertexSelected(itemId, !selected);
+	}
+
+	@Override
+	public void selectVertices(Collection<?> itemIds) {
+		for(Object itemId : itemIds) {
+			setVertexSelected(itemId, true);
+	    }
+	}
+	
+	@Override
+	public void deselectAll() {
+		for(Object vertexId : getVertexIds()) {
+			setVertexSelected(vertexId, false);
+		}
+		
+		for(Object edgeId : getEdgeIds()) {
+			setEdgeSelected(edgeId, false);
+		}
+		
+	}
+	
+	@Override
+	public boolean containsVertexId(Object vertexId) {
+		return getVertexContainer().containsId(vertexId);
+	}
+
+
+	@Override
+	public boolean containsEdgeId(Object edgeId) {
+		return getEdgeContainer().containsId(edgeId);
+	}
+
+	@Override
+	public boolean isEdgeSelected(Object edgeId) {
+		return (Boolean) getEdgeItem(edgeId).getItemProperty(TopoEdge.SELECTED_PROPERTY).getValue();
+	}
+
+	@Override
+	public void setEdgeSelected(Object edgeId, boolean selected) {
+		getEdgeItem(edgeId).getItemProperty(TopoEdge.SELECTED_PROPERTY).setValue(selected);
+	}
+	
+	
+
 
 }

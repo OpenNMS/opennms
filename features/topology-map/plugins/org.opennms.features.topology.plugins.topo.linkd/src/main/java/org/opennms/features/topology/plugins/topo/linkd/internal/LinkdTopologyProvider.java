@@ -667,6 +667,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }
+
+	@Override
+	public String getNamespace() {
+		return "node";
+	}
     
     
 }

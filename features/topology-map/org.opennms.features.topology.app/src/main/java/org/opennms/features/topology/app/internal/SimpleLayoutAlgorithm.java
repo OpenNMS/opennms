@@ -28,30 +28,35 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
+	
+	private static final Logger s_log = LoggerFactory.getLogger(SimpleLayoutAlgorithm.class);
 
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.topology.LayoutAlgorithm#updateLayout(org.opennms.features.vaadin.topology.Graph)
      */
     public void updateLayout(GraphContainer graphContainer) {
     	int szl = graphContainer.getSemanticZoomLevel();
-    	Graph graph = new Graph(graphContainer);
+    	TopoGraph graph = new TopoGraph(graphContainer);
         int r = 100;
         int cx = 500;
         int cy = 500;
-        List<Vertex> vertices = graph.getVertices(szl);
-		for(int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
-            LoggerFactory.getLogger(getClass()).debug("Laying out vertex: {}", vertex);
-            if(i == 0) {
-                vertex.setX(cx);
-                vertex.setY(cy);
+		Collection<Object> vertices = graphContainer.getDisplayVertexIds(szl);
+		int i = 0;
+		for(Object vertexId : vertices) {
+            s_log.debug("Laying out vertex id : {}", vertexId);
+			if(i == 0) {
+            	graphContainer.setX(vertexId, cx);
+            	graphContainer.setY(vertexId, cy);
             }else {
     	        int n = i - 1;
     	        double a = (2*Math.PI)/(vertices.size() -1);
@@ -59,9 +64,10 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
     	        int x = (int) (r * Math.cos(n*a) + cx);
     	        int y = (int) (r * Math.sin(n*a) + cy);
     	        
-    	        vertex.setX(x);
-    	        vertex.setY(y);
+    	        graphContainer.setX(vertexId, x);
+    	        graphContainer.setY(vertexId, y);
             }
+			i++;
         }
     }
     

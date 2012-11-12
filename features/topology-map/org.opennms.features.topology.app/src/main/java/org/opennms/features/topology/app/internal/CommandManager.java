@@ -345,18 +345,6 @@ public class CommandManager {
 		return m_subMenuGroupOrder;
 	}
 
-	private List<Object> getSelectedVertices(final OperationContext operationContext) {
-		List<Object> targets = new ArrayList<Object>();
-		for (Object vId : operationContext.getGraphContainer().getVertexIds()) {
-			Item vItem = operationContext.getGraphContainer().getVertexItem(vId);
-			boolean selected = (Boolean) vItem.getItemProperty("selected").getValue();
-			if (selected) {
-				targets.add(vItem.getItemProperty("key").getValue());
-			}
-		}
-		return targets;
-	}
-
 	public void updateMenuItem(MenuItem menuItem, SimpleGraphContainer graphContainer, Window mainWindow) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());

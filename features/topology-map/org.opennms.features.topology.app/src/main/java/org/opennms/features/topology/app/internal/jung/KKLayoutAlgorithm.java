@@ -30,58 +30,57 @@ package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.Edge;
-import org.opennms.features.topology.app.internal.Graph;
-import org.opennms.features.topology.app.internal.Vertex;
+import org.opennms.features.topology.app.internal.TopoEdge;
+import org.opennms.features.topology.app.internal.TopoGraph;
+import org.opennms.features.topology.app.internal.TopoVertex;
 
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
 public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-	public void updateLayout(GraphContainer graph) {
+	public void updateLayout(final GraphContainer graph) {
 		
-		Graph g = new Graph(graph);
+		TopoGraph g = new TopoGraph(graph);
 		
 		int szl = g.getSemanticZoomLevel();
 		
+		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
+
+		Collection<Object> vertices = g.getGraphContainer().getDisplayVertexIds(szl);
 		
-		SparseGraph<Vertex, Edge> jungGraph = new SparseGraph<Vertex, Edge>();
-		
-		
-		List<Vertex> vertices = g.getVertices(szl);
-		
-		for(Vertex v : vertices) {
+		for(Object v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
-		List<Edge> edges = g.getEdges(szl);
+		List<TopoEdge> edges = g.getEdges(szl);
 		
-		for(Edge e : edges) {
-			jungGraph.addEdge(e, e.getSource(), e.getTarget());
+		for(TopoEdge e : edges) {
+			jungGraph.addEdge(e, e.getSource().getItemId(), e.getTarget().getItemId());
 		}
 		
 
-		KKLayout<Vertex, Edge> layout = new KKLayout<Vertex, Edge>(jungGraph);
-		layout.setInitializer(new Transformer<Vertex, Point2D>() {
-			public Point2D transform(Vertex v) {
-				return new Point(v.getX(), v.getY());
+		KKLayout<Object, TopoEdge> layout = new KKLayout<Object, TopoEdge>(jungGraph);
+		layout.setInitializer(new Transformer<Object, Point2D>() {
+			public Point2D transform(Object v) {
+				return new Point(graph.getX(v), graph.getY(v));
 			}
 		});
-		layout.setSize(selectLayoutSize(g));
+		layout.setSize(selectLayoutSize(graph));
 		
 		while(!layout.done()) {
 			layout.step();
 		}
 		
 		
-		for(Vertex v : vertices) {
-			v.setX((int)layout.getX(v));
-			v.setY((int)layout.getY(v));
+		for(Object v : vertices) {
+			graph.setX(v, (int)layout.getX(v));
+			graph.setY(v, (int)layout.getY(v));
 		}
 		
 		

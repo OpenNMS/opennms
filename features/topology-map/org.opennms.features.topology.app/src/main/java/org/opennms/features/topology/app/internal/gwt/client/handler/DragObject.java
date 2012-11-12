@@ -32,12 +32,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
-import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
+import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
@@ -49,7 +50,7 @@ public class DragObject{
 	/**
      * 
      */
-    private final SVGTopologyMap m_svgTopologyMap;
+    private final TopologyView<TopologyViewRenderer> m_svgTopologyMap;
     private Element m_containerElement;
 	private Element m_draggableElement;
 	private int m_startX;
@@ -58,8 +59,8 @@ public class DragObject{
 	private D3 m_selection;
 	private Map<String, Point> m_startPosition = new HashMap<String, Point>();
 
-	public DragObject(SVGTopologyMap svgTopologyMap, Element draggableElement, Element containerElement, D3 selection) {
-
+	public DragObject(TopologyView<TopologyViewRenderer> svgTopologyMap, Element draggableElement, Element containerElement, D3 selection) {
+	    
 		m_svgTopologyMap = svgTopologyMap;
         m_draggableElement = draggableElement;
 		m_containerElement = containerElement;
@@ -75,7 +76,7 @@ public class DragObject{
         });
 		
 		//User m_vertexgroup because this is what we scale instead of every vertex element
-		m_transform = D3.getTransform(D3.d3().select(getSvgTopologyMap().getVertexGroup()).attr("transform"));
+		m_transform = D3.getTransform(D3.d3().select(getTopologyView().getVertexGroup()).attr("transform"));
 		
 		JsArrayInteger position = D3.getMouse(containerElement);
 		m_startX = (int) (position.get(0) / m_transform.getScale().get(0));
@@ -112,7 +113,11 @@ public class DragObject{
 	    
 	    final int deltaX = getCurrentX() - getStartX();
 	    final int deltaY = getCurrentY() - getStartY();
+	    consoleLog("deltaX: " + deltaX);
+	    consoleLog("deltaY: " + deltaY);
 	    
+	    consoleLog("m_selection: ");
+	    consoleLog(m_selection);
 	    m_selection.each(new Handler<GWTVertex>() {
 
             @Override
@@ -126,19 +131,21 @@ public class DragObject{
             }
         });
 	    
-	    
-		getSvgTopologyMap().repaintNow();
 	}
+	
+	public final native void consoleLog(Object object) /*-{
+	    $wnd.console.log(object);
+	}-*/;
 
 	protected SVGPoint getEventPoint(NativeEvent event) {
-		SVGElement svg = getSvgTopologyMap().getSVGElement();
+		SVGElement svg = getTopologyView().getSVGElement().cast();
 		SVGPoint p = svg.createSVGPoint();
 		p.setX(event.getClientX());
 		p.setY(event.getClientY());
 		return p;
 	}
 
-    public SVGTopologyMap getSvgTopologyMap() {
+    public TopologyView<TopologyViewRenderer> getTopologyView() {
         return m_svgTopologyMap;
     }
 

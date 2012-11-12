@@ -15,7 +15,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
             <entry key="operation.label" value="Save Topology to XML"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.devutils.internal.SaveToXmlOperation">
-			<argument ref="topologyProvider" />
         </bean>
     </service>
 

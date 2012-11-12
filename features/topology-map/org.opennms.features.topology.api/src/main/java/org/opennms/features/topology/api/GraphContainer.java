@@ -29,7 +29,9 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
-import java.util.List;
+
+import org.opennms.features.topology.api.topo.GraphProvider;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 
@@ -38,12 +40,6 @@ public interface GraphContainer extends DisplayState {
     public VertexContainer<?, ?> getVertexContainer();
 
     public BeanContainer<?, ?> getEdgeContainer();
-
-    public List<Object> getSelectedVertices();
-
-    public Collection<?> getVertexIds();
-
-    public Collection<?> getEdgeIds();
 
     public Item getVertexItem(Object vertexId);
 
@@ -54,9 +50,62 @@ public interface GraphContainer extends DisplayState {
     public Collection<?> getEdgeIdsForVertex(Object vertexId);
 
     public Object getVertexItemIdForVertexKey(Object key);
+    
+    public GraphProvider getBaseTopology();
+    
+    public void setBaseTopology(GraphProvider graphProvider);
+    
+    public Object getGroupId(Object vertexId);
+    
+    public int getX(Object vertexId);
+    
+    public void setX(Object vertexId, int x);
+    
+    public int getY(Object vertexId);
+    
+    public void setY(Object vertexId, int y);
+    
+    public int getSemanticZoomLevel(Object vertexId);
+    
+    public boolean isVertexSelected(Object vertexId);
+    
+    public void setVertexSelected(Object vertexId, boolean selected);
+    
+    public boolean isEdgeSelected(Object edgeId);
+    
+    public void setEdgeSelected(Object edgeId, boolean selected);
+    
+	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
 
+	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel);
+	
+	@Deprecated
     public TopologyProvider getDataSource();
 
+    @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
+
+	public Collection<?> getVertexIds();
+
+	public boolean hasChildren(Object itemId);
+
+	public Collection<?> getChildren(Object itemId);
+
+	Object getParentId(Object itemId);
+
+	public void toggleSelectForVertexAndChildren(Object itemId);
+
+	public void toggleSelectedVertex(Object itemId);
+
+	public void selectVertices(Collection<?> itemIds);
+
+	public Collection<?> getSelectedVertices();
+
+	public boolean containsVertexId(Object vertexId);
+	
+	public boolean containsEdgeId(Object edgeId);
+
+	void deselectAll();
+	
 
 }

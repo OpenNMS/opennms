@@ -35,7 +35,6 @@ import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker
 import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker.LoadTrackerHandler;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.DOM;
@@ -97,7 +96,7 @@ public class GWTVertex extends JavaScriptObject {
 	}-*/;
     
     public static native GWTVertex create(String id, int x, int y) /*-{
-        return {"id":id, "x":x, "y":y, "selected":false, "actions":[], "iconUrl":"", "semanticZoomLevel":0, "group":null};
+        return {"id":id, "x":x, "y":y, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null};
     }-*/;
 
     public final native void setX(int newX) /*-{
@@ -108,15 +107,6 @@ public class GWTVertex extends JavaScriptObject {
         this.y = newY;
     }-*/;
     
-    public final native JsArrayString actionKeys() /*-{
-    	return this.actions;
-    }-*/;
-    
-    public final native JsArrayString actionKeys(JsArrayString keys) /*-{
-    	this.actions = keys;
-    	return this.actions;
-    }-*/;
-    
     public final String getTooltipText() {
         return getLabel();
     }
@@ -125,26 +115,6 @@ public class GWTVertex extends JavaScriptObject {
     public final native int getSemanticZoomLevel() /*-{
 		return this.semanticZoomLevel;
 	}-*/;
-    
-	public final void setActionKeys(String[] keys) {
-    	JsArrayString actionKeys = actionKeys(newStringArray());
-    	for(String key : keys) {
-    		actionKeys.push(key);
-    	}
-    }
-
-	private JsArrayString newStringArray() {
-		return JsArrayString.createArray().<JsArrayString>cast();
-	}
-    
-    public final String[] getActionKeys() {
-    	JsArrayString actionKeys = actionKeys();
-    	String[] keys = new String[actionKeys.length()];
-    	for(int i = 0; i < keys.length; i++) {
-    		keys[i] = actionKeys.get(i);
-    	}
-    	return keys;
-    }
     
     public final native String getIconUrl() /*-{
         return this.iconUrl;

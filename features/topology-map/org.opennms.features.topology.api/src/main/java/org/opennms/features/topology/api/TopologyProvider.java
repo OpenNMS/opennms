@@ -62,4 +62,6 @@ public interface TopologyProvider {
 
     Collection<?> getEndPointIdsForEdge(Object edgeId);
 
+	String getNamespace();
+
 }

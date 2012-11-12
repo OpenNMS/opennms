@@ -26,10 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.simple.internal;
+package org.opennms.features.topology.plugins.devutils.internal;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
@@ -37,7 +36,8 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
-import org.opennms.features.topology.plugins.devutils.internal.SaveToXmlOperation;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -115,21 +115,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public List<Object> getSelectedVertices() {
-						throw new UnsupportedOperationException("GraphContainer.getSelectedVertices is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getVertexIds() {
-						throw new UnsupportedOperationException("GraphContainer.getVertexIds is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getEdgeIds() {
-						throw new UnsupportedOperationException("GraphContainer.getEdgeIds is not yet implemented.");
-					}
-
-					@Override
 					public Item getVertexItem(Object vertexId) {
 						throw new UnsupportedOperationException("GraphContainer.getVertexItem is not yet implemented.");
 					}
@@ -162,6 +147,133 @@ public class SaveToXmlTest {
 					@Override
 					public void setDataSource(TopologyProvider topologyProvider) {
 						throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
+					}
+
+					@Override
+					public GraphProvider getBaseTopology() {
+						throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
+					}
+
+					@Override
+					public void setBaseTopology(GraphProvider graphProvider) {
+						throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
+					}
+
+					@Override
+					public int getX(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getX is not yet implemented.");
+					}
+
+					@Override
+					public void setX(Object vertexId, int x) {
+						throw new UnsupportedOperationException("GraphContainer.setX is not yet implemented.");
+					}
+
+					@Override
+					public int getY(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getY is not yet implemented.");
+					}
+
+					@Override
+					public void setY(Object vertexId, int y) {
+						throw new UnsupportedOperationException("GraphContainer.setY is not yet implemented.");
+					}
+
+					@Override
+					public int getSemanticZoomLevel(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getSemanticZoomLevel is not yet implemented.");
+					}
+
+					@Override
+					public boolean isVertexSelected(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.isSelected is not yet implemented.");
+					}
+
+					@Override
+					public void setVertexSelected(Object vertexId, boolean selected) {
+						throw new UnsupportedOperationException("GraphContainer.setSelected is not yet implemented.");
+					}
+
+					@Override
+					public Object getGroupId(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.getGroupId is not yet implemented.");
+					}
+
+					@Override
+					public Object getDisplayVertexId(Object vertexId,
+							int semanticZoomLevel) {
+						throw new UnsupportedOperationException("GraphContainer.getDisplayVertexId is not yet implemented.");
+					}
+
+					@Override
+					public Collection<Object> getDisplayVertexIds(
+							int semanticZoomLevel) {
+						throw new UnsupportedOperationException("GraphContainer.getDisplayVertices is not yet implemented.");
+					}
+
+					@Override
+					public Collection<?> getVertexIds() {
+						throw new UnsupportedOperationException("GraphContainer.getVertexIds is not yet implemented.");
+					}
+
+					@Override
+					public boolean hasChildren(Object itemId) {
+						throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
+					}
+
+					@Override
+					public Collection<?> getChildren(Object itemId) {
+						throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
+					}
+
+					@Override
+					public Object getParentId(Object itemId) {
+						throw new UnsupportedOperationException("GraphContainer.getParentId is not yet implemented.");
+					}
+
+					@Override
+					public void toggleSelectForVertexAndChildren(Object itemId) {
+						throw new UnsupportedOperationException("GraphContainer.toggleSelectForVertexAndChildren is not yet implemented.");
+					}
+
+					@Override
+					public void toggleSelectedVertex(Object itemId) {
+						throw new UnsupportedOperationException("GraphContainer.toggleSelectedVertex is not yet implemented.");
+					}
+
+					@Override
+					public void selectVertices(Collection<?> itemIds) {
+						throw new UnsupportedOperationException("GraphContainer.selectVertices is not yet implemented.");
+					}
+
+					@Override
+					public Collection<?> getSelectedVertices() {
+						throw new UnsupportedOperationException("GraphContainer.getSelectedVertices is not yet implemented.");
+					}
+
+					@Override
+					public boolean containsVertexId(Object vertexId) {
+						throw new UnsupportedOperationException("GraphContainer.containsVertexId is not yet implemented.");
+					}
+
+					@Override
+					public boolean containsEdgeId(Object edgeId) {
+						throw new UnsupportedOperationException("GraphContainer.containsEdgeId is not yet implemented.");
+					}
+
+					@Override
+					public void deselectAll() {
+						throw new UnsupportedOperationException("GraphContainer.deselectAll is not yet implemented.");
+					}
+
+					@Override
+					public boolean isEdgeSelected(Object edgeId) {
+						throw new UnsupportedOperationException("GraphContainer.isEdgeSelected is not yet implemented.");
+					}
+
+					@Override
+					public void setEdgeSelected(Object edgeId, boolean selected) {
+						throw new UnsupportedOperationException("GraphContainer.setEdgeSelected is not yet implemented.");
 					}
 					
 				};

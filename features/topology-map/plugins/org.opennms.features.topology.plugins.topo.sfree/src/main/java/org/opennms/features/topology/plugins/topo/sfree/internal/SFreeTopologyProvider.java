@@ -217,4 +217,9 @@ public class SFreeTopologyProvider implements TopologyProvider {
         return item == null ? null : item.getBean();
     }
 
+	@Override
+	public String getNamespace() {
+		return "vertex"; 
+	}
+
 }

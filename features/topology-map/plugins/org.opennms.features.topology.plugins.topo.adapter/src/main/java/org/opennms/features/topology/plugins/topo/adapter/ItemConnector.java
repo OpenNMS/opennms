@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.plugins.topo.adapter;
 
 import org.opennms.features.topology.api.topo.Connector;
 

@@ -7,7 +7,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
 ">
 
-	<bean id="topologyProviderAdapter" class="org.opennms.features.topology.plugins.topo.adapter.internal.TopologyProviderAdapter">
+	<bean id="topologyProviderAdapter" class="org.opennms.features.topology.plugins.topo.adapter.TopologyProviderAdapter">
 		<property name="bundleContext" ref="blueprintBundleContext" />
 	</bean>
 

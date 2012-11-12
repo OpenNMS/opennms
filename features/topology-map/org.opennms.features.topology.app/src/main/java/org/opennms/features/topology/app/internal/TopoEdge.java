@@ -28,26 +28,44 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Item;
+import org.opennms.features.topology.api.GraphContainer;
 
-public class Edge{
+import com.vaadin.data.Item;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+
+public class TopoEdge{
     
     public static final String SELECTED_PROPERTY = "selected";
-	private String m_key;
-	private Object m_itemId;
-	private Item m_item;
-	private Vertex m_source;
-	private Vertex m_target;
+	private final String m_key;
+	private final Object m_itemId;
+	private final Item m_item;
+	private final Object m_sourceId;
+	private final TopoVertex m_source;
+	private final Object m_targetId;
+	private final TopoVertex m_target;
+	private final SimpleGraphContainer m_graphContainer;
 
-	public Edge(String key, Object itemId, Item item, Vertex source, Vertex target) {; 
+	public TopoEdge(SimpleGraphContainer graphContainer, String key, Object itemId, Item item, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
+		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
 		m_item = item;
+		m_sourceId = sourceId;
 		m_source = source;
+		m_targetId = targetId;
 		m_target = target;
 	}
+	
+	public SimpleGraphContainer getGraphContainer() {
+		return m_graphContainer;
+	}
 
-	public Vertex getSource(){
+	public Object getSourceId() {
+		return m_sourceId;
+	}
+
+	public TopoVertex getSource(){
 		return m_source;
 	}
 	
@@ -56,26 +74,30 @@ public class Edge{
 	}
 
 	public int getX1(){
-		return getSource().getX();
+		return m_graphContainer.getX(getSourceId());
 	}
 	
 	public int getX2(){
-		return getTarget().getX();
+		return m_graphContainer.getX(getTargetId());
 	}
 	
 	public int getY1(){
-		return getSource().getY();
+		return m_graphContainer.getY(getSourceId());
 	}
-	
+
 	public int getY2(){
-		return getTarget().getY();
+		return m_graphContainer.getY(getTargetId());
 	}
-	
+
 	public Object getItemId() {
 		return m_itemId;
 	}
 	
-	public Vertex getTarget(){
+	public Object getTargetId() {
+		return m_targetId;
+	}
+	
+	public TopoVertex getTarget(){
 		return m_target;
 	}
 	
@@ -84,27 +106,38 @@ public class Edge{
 	    return "Edge :: source: " + getSource() + " target: " + getTarget();
 	}
 
-	public Object getItem() {
+	public Item getItem() {
 		return m_item;
 	}
 
     public String getTooltipText() {
-        if(m_item.getItemProperty("tooltipText") != null && m_item.getItemProperty("tooltipText").getValue() != null) {
-            return (String) m_item.getItemProperty("tooltipText").getValue();
+        if(getItem().getItemProperty("tooltipText") != null && getItem().getItemProperty("tooltipText").getValue() != null) {
+            return (String) getItem().getItemProperty("tooltipText").getValue();
         }else {
             return getSource().getLabel() + " :: " + getTarget().getLabel();
         }
     }
 
     public void setSelected(boolean selected) {
-        m_item.getItemProperty(SELECTED_PROPERTY).setValue(selected);
+        getItem().getItemProperty(SELECTED_PROPERTY).setValue(selected);
     }
 
     public boolean isSelected() {
-        return (Boolean) m_item.getItemProperty(SELECTED_PROPERTY).getValue();
+        return (Boolean) getItem().getItemProperty(SELECTED_PROPERTY).getValue();
     }
     
     public String getCssClass() {
         return isSelected() ? "path selected" : "path"; 
     }
+
+	void paint(PaintTarget target) throws PaintException {
+		target.startTag("edge");
+		target.addAttribute("key", getKey());
+		target.addAttribute("source", getSource().getKey());
+		target.addAttribute("target", getTarget().getKey());
+		target.addAttribute("selected", isSelected());
+		target.addAttribute("cssClass", getCssClass());
+		target.addAttribute("tooltipText", getTooltipText());
+		target.endTag("edge");
+	}
 }
