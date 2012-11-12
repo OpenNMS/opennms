@@ -1,0 +1,94 @@
+package org.opennms.netmgt.correlation.ncs;
+
+import function org.opennms.core.utils.InetAddressUtils.addr;
+import function org.opennms.core.utils.InetAddressUtils.str;
+
+import java.util.Date;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.model.ncs.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.drools.spi.KnowledgeHelper;
+import org.opennms.netmgt.correlation.ncs.NCSCorrelationService;
+import org.opennms.netmgt.correlation.ncs.NCSCorrelationService.AttrParmMap;
+
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.opennms.netmgt.correlation.ncs.NCSCorrelationService correlationService;
+
+
+
+rule "The system power supply failed"
+	salience 100
+when
+	$e : Event( uei matches ".*jmfcPowerSupplyFailure" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e /* no attributes */);
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentDownEvent( c, $e ) );
+	}
+end
+
+rule "The system power supply is restored"
+	salience 100
+when
+	$e : Event( uei matches ".*jmfcPowerSupplyOk" )
+then
+	retract( $e );
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e /* no attribures */);
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new ComponentUpEvent( c, $e ) );
+	}
+end
+
+
+
+function void println(Object msg)
+{
+	System.err.println(new Date() + " : " + msg);
+}
+
+function AttrParmMap map( String attrName, int parmIndex )
+{
+	return new AttrParmMap(attrName, parmIndex);	
+}
+
+function void sendImpactedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e )
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentImpacted", "Component Correlator" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e)
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentResolved", "Component Correlator" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+
+
