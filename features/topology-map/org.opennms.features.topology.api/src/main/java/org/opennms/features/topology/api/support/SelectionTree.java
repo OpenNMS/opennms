@@ -1,11 +1,12 @@
 package org.opennms.features.topology.api.support;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.WidgetContext;
 
 import com.vaadin.data.Property;
@@ -46,6 +47,9 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
     public SelectionTree(FilterableHierarchicalContainer container) {
         super(null, container);
         
+        
+        // this is sent whenever the set of selected items changes
+        // either programatically or via clicking 
         this.addListener(new ValueChangeListener() {
             
             @Override
@@ -93,18 +97,20 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
      * When a user clicks on a vertex or edge in the UI, update the selection in the tree view.
      */
     @Override
-    public void onSelectionUpdate(GraphContainer graphContainer) {
+    public void onSelectionUpdate(SelectionManager selectionManager) {
         m_itemClicked = false;
         
-        Collection<?> itemIds = graphContainer.getVertexIds();
+        setValue(selectionManager.getSelectedVertices());
         
-        for(Object itemId : itemIds) {
-        	if (graphContainer.isVertexSelected(itemId)) {
-                select(itemId);
-            } else {
-                unselect(itemId);
-            }
-        }
+//        Collection<?> itemIds = getItemIds();
+//        
+//        for(Object itemId : itemIds) {
+//        	if (selectionManager.isVertexSelected(itemId)) {
+//                select(itemId);
+//            } else {
+//                unselect(itemId);
+//            }
+//        }
     }
 
     private Set<Object> getSelectedItemIds(Set<Object> selectedIds) {

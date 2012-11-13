@@ -34,6 +34,7 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.topo.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
      */
     public void updateLayout(GraphContainer graphContainer) {
     	int szl = graphContainer.getSemanticZoomLevel();
-    	TopoGraph graph = new TopoGraph(graphContainer);
+    	Graph graph = graphContainer.getGraph();
         int r = 100;
         int cx = 500;
         int cy = 500;

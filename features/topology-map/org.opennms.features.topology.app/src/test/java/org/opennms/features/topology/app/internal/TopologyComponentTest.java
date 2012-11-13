@@ -49,7 +49,7 @@ public class TopologyComponentTest {
     private class TestTopologyComponent extends TopologyComponent{
         private static final long serialVersionUID = -442669265971260461L;
         
-        public TestTopologyComponent(GraphContainer dataSource) {
+        public TestTopologyComponent(SimpleGraphContainer dataSource) {
             super(dataSource);
         }
         
@@ -79,7 +79,7 @@ public class TopologyComponentTest {
         EasyMock.verify(target);
     }
 
-    private TopologyComponent getTopologyComponent(GraphContainer dataSource) {
+    private TopologyComponent getTopologyComponent(SimpleGraphContainer dataSource) {
         TopologyComponent topologyComponent = new TopologyComponent(dataSource);
         topologyComponent.setIconRepoManager(new IconRepositoryManager());
         return topologyComponent;
