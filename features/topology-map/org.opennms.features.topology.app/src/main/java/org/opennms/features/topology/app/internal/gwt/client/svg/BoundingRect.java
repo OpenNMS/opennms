@@ -66,5 +66,9 @@ public class BoundingRect {
             m_bottomRight = new Point(Math.max(m_bottomRight.getX(), point.getX()), Math.max(m_bottomRight.getY(), point.getY()));
         }
     }
+    
+    public boolean isEmpty() {
+        return m_bottomRight == null && m_topLeft == null;
+    }
 
 }
