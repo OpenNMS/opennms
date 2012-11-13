@@ -97,7 +97,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private boolean m_fitToView = true;
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
-    private List<SelectionListener> m_selectionListeners;
 
 	public TopologyComponent(GraphContainer dataSource) {
 		setGraph(new TopoGraph(dataSource));
@@ -323,12 +322,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         vertex.setSelected(selected);
     }
     
-	private void clearAllVertexSelections() {
-	    for(TopoVertex vertex : getGraph().getVertices()) {
-	        vertex.setSelected(false);
-	    }
-	}
-	
 	public void selectVerticesByItemId(Collection<Object> itemIds) {
     	
         deselectAll();
@@ -341,21 +334,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         }
     }
     
-    /**
-     * Select multiple vertices at a time
-     * @param vertexKeys
-     */
-    private void bulkMultiSelectVertex(String[] vertexKeys) {
-    	
-    	List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
-    	
-    	Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
-    	
-		getSelectionManager().selectVertices(itemIds);
-        
-        requestRepaint();
-    }
-
 	private void addVerticesToSelection(String... vertexKeys) {
 		
 		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
@@ -364,14 +342,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		getSelectionManager().selectVertices(vertexIds);
     }
     
-    private void toggleSelectedEdge(String edgeKey) {
-        Object edgeId = getGraph().getEdgeByKey(edgeKey).getItemId();
-
-        getSelectionManager().toggleSelectedEdge(edgeId);
-        
-        requestRepaint();
-    }
-
 	protected void setScale(double scale){
 	    m_scale.setValue(scale);
     }

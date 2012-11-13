@@ -517,7 +517,7 @@ public class SimpleGraphContainer implements GraphContainer {
     private GEdgeContainer m_edgeContainer;
     
 	public SimpleGraphContainer() {
-		m_selectionManager = new DefaultSelectionManager(this);
+		m_selectionManager = new DefaultSelectionManager();
 		m_zoomLevelProperty = new MethodProperty<Integer>(Integer.class, this, "getSemanticZoomLevel", "setSemanticZoomLevel");
 		m_scaleProperty = new MethodProperty<Double>(Double.class, this, "getScale", "setScale");
 		

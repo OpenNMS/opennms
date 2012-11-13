@@ -119,10 +119,6 @@ public class TopoEdge{
         }
     }
 
-    public void setSelected(boolean selected) {
-        getSelectionManager().setEdgeSelected(m_itemId, selected);
-    }
-
     private SelectionManager getSelectionManager() {
 		return m_graphContainer.getSelectionManager();
 	}
