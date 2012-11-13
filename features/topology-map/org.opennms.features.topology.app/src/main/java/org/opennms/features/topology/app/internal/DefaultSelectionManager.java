@@ -2,13 +2,17 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.SelectionManager;
 
 public class DefaultSelectionManager implements SelectionManager {
 
 	private final SimpleGraphContainer m_simpleGraphContainer;
+	private final Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
 
 	public DefaultSelectionManager(SimpleGraphContainer simpleGraphContainer) {
 		m_simpleGraphContainer = simpleGraphContainer;
@@ -48,18 +52,23 @@ public class DefaultSelectionManager implements SelectionManager {
 	}
 
 	@Override
-	public void toggleSelectForVertexAndChildren(Object itemId) {
-		toggleSelectedVertex(itemId);
+	public void selectVertexAndChildren(Object itemId) {
+		selectVertexAndChildren(itemId, new HashSet<Object>());
+		
+	}
+
+	private void selectVertexAndChildren(Object itemId, Set<Object> selected) {
+		setVertexSelected(itemId, true);
+		selected.add(itemId);
 
 		if(m_simpleGraphContainer.hasChildren(itemId)) {
 		    Collection<?> children = m_simpleGraphContainer.getChildren(itemId);
 		    for( Object childId : children) {
-		        setVertexSelected(childId, true);
+		    	if (!selected.contains(childId)) {
+		    		selectVertexAndChildren(childId, selected);
+		    	}
 		    }
 		}
-		
-		// TODO: this is a selection change
-		m_simpleGraphContainer.fireChange();
 	}
 
 	@Override
@@ -73,10 +82,18 @@ public class DefaultSelectionManager implements SelectionManager {
 		for(Object itemId : itemIds) {
 			setVertexSelected(itemId, true);
 		}
+		
+		fireSelectionChanged();
 	}
 
 	@Override
 	public void deselectAll() {
+		doDeselectAll();
+		
+		fireSelectionChanged();
+	}
+
+	private void doDeselectAll() {
 		for(Object vertexId : m_simpleGraphContainer.getVertexIds()) {
 			setVertexSelected(vertexId, false);
 		}
@@ -90,6 +107,46 @@ public class DefaultSelectionManager implements SelectionManager {
 	public void toggleSelectedEdge(Object edgeId) {
 		boolean selected = isEdgeSelected(edgeId);
 		setEdgeSelected(edgeId, !selected);
+	}
+
+	@Override
+	public void selectVerticesAndChildren(Set<Object> itemIds) {
+		Set<Object> selected = new HashSet<Object>();
+
+		for(Object itemId : itemIds) {
+			selectVertexAndChildren(itemId, selected);
+		}
+	}
+	
+	@Override
+	public void setSelectedVertices(Collection<?> vertexIds) {
+		doDeselectAll();
+		
+		selectVertices(vertexIds);
+	}
+	
+	void fireSelectionChanged() {
+		for(SelectionListener listener : m_listeners) {
+			listener.selectionChanged(this);
+		}
+	}
+	
+	public void addSelectionListener(SelectionListener listener) {
+		m_listeners.add(listener);
+	}
+	
+	public void removeSelectionListener(SelectionListener listener) {
+		m_listeners.remove(listener);
+	}
+
+	public void setSelectedEdges(Collection<?> edgeIds) {
+		doDeselectAll();
+		
+		for(Object edgeId : edgeIds) {
+			setEdgeSelected(edgeId, true);
+		}
+		
+		fireSelectionChanged();
 	}
 
 }

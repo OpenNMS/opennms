@@ -831,6 +831,25 @@ public class SimpleGraphContainer implements GraphContainer {
 	public boolean containsEdgeId(Object edgeId) {
 		return getEdgeContainer().containsId(edgeId);
 	}
+	
+	@Override
+	public Collection<?> getVertexForest(Collection<?> vertexIds) {
+		Set<Object> processed = new LinkedHashSet<Object>();
+		for(Object vertexId : vertexIds) {
+			addTreeToSet(vertexId, processed);
+		}
+		return processed;
+	}
+	
+	public void addTreeToSet(Object vertexId, Set<Object> processed) {
+		processed.add(vertexId);
+
+		for(Object childId : getChildren(vertexId)) {
+			if (!processed.contains(childId)) {
+				addTreeToSet(childId, processed);
+			}
+		}
+	}
 
 	@Deprecated
     public boolean isVertexSelected(Object itemId) {

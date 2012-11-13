@@ -521,6 +521,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             @Override
             public void call(GWTEdge edge, int index) {
                 m_client.updateVariable(m_paintableId, "clickedEdge", edge.getId(), true);
+                D3.getEvent().preventDefault();
+                D3.getEvent().stopPropagation();
             }
 	        
 	    };
@@ -530,8 +532,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		return new D3Events.Handler<GWTVertex>(){
 
 			public void call(GWTVertex vertex, int index) {
+				NativeEvent event = D3.getEvent();
 				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
-				m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
+				
+				event.preventDefault();
+				event.stopPropagation();
 
 				m_client.sendPendingVariableChanges();
 				
@@ -559,9 +565,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                 });
 			    
 			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
-			        if(!D3.getEvent().getShiftKey()) {
-			            deselectAllItems(false);
-			        }
+			        //if(!D3.getEvent().getShiftKey()) {
+			        //    deselectAllItems(false);
+			        //}
 			    }
 			    
 			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
@@ -887,7 +893,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
     @Override
     public void onBackgroundClick() {
-        deselectAllItems(true);
+        m_client.updateVariable(m_paintableId, "clickedBackground", true, true);
     }
 
     @Override

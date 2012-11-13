@@ -90,4 +90,7 @@ public interface GraphContainer extends DisplayState {
 	public boolean containsEdgeId(Object edgeId);
 
 	public SelectionManager getSelectionManager();
+	
+	// returns a list containing all of the passed in vertices and their children grandchildren etc.
+	public Collection<?> getVertexForest(Collection<?> vertexIds);
 }
