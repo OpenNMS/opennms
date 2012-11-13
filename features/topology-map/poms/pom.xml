@@ -16,16 +16,6 @@
 
   <packaging>pom</packaging>
 
-  <properties>
-    <gwt.version>2.3.0</gwt.version>
-    <gwt.plugin.version>2.2.0</gwt.plugin.version>
-    <jung.version>2.0.1</jung.version>
-    <junit.version>4.8.2</junit.version>
-    <vaadin.version>6.8.1</vaadin.version>
-    <validation.api.version>1.0.0.GA</validation.api.version>
-    <pax.vaadin.version>0.1.0-ONMS-20120906</pax.vaadin.version>
-  </properties>
-
   <modules>
     <module>wrappers</module>
     <module>compiled</module>
@@ -103,90 +93,9 @@
         <type>pom</type>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>provision</artifactId>
-        <version>1.11.4-SNAPSHOT</version>
+        <version>${project.version}</version>
         <scope>provided</scope>
         <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <version>${gwt.version}</version>
-        <scope>provided</scope>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin</artifactId>
-        <version>${vaadin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${validation.api.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${validation.api.version}</version>
-        <classifier>sources</classifier>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-api</artifactId>
-        <version>${jung.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-graph-impl</artifactId>
-        <version>${jung.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-algorithms</artifactId>
-        <version>${jung.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-visualization</artifactId>
-        <version>${jung.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.vaadin</groupId>
-        <artifactId>service</artifactId>
-        <version>${pax.vaadin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
-        <version>4.2.0</version>
-        <scope>provided</scope>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.compendium</artifactId>
-        <version>4.2.0</version>
-        <scope>provided</scope>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.enterprise</artifactId>
-        <version>4.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.karaf.shell</groupId>

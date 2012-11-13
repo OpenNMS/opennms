@@ -249,7 +249,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>2.3.0-1</version>
+        <version>${gwtPluginVersion}</version>
         <dependencies>
           <dependency>
             <groupId>com.google.gwt</groupId>
@@ -785,6 +785,7 @@
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <gwtVersion>2.3.0</gwtVersion>
+    <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jaxbVersion>2.1.7</jaxbVersion>
     <jettyVersion>7.5.4.v20111024</jettyVersion>
@@ -805,6 +806,12 @@
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
     <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
+
+    <!-- moved here from topology features -->
+    <jungVersion>2.0.1</jungVersion>
+    <vaadinVersion>6.8.2</vaadinVersion>
+    <paxVaadinVersion>0.1.0-ONMS-20120906</paxVaadinVersion>
+
   </properties>
 
   <profiles>
@@ -2086,6 +2093,28 @@
         <version>1.0</version>
       </dependency>
       <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${gwtVersion}</version>
+        <scope>provided</scope>
+        <optional>true</optional>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwtVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin</artifactId>
+        <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.vaadin</groupId>
+        <artifactId>service</artifactId>
+        <version>${paxVaadinVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>net.sf.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>2.3</version>
@@ -2095,6 +2124,26 @@
         <artifactId>json-lib</artifactId>
         <version>2.2.2</version>
         <classifier>jdk15</classifier>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-api</artifactId>
+        <version>${jungVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-graph-impl</artifactId>
+        <version>${jungVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-algorithms</artifactId>
+        <version>${jungVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-visualization</artifactId>
+        <version>${jungVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
@@ -2197,6 +2246,17 @@
         <version>2.5</version>
       </dependency>
       <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>1.0.0.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>1.0.0.GA</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>99.99.99-use-opennms-jaxb</version>
@@ -2279,6 +2339,11 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
+        <version>${osgiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.enterprise</artifactId>
         <version>${osgiVersion}</version>
       </dependency>
       <dependency>
