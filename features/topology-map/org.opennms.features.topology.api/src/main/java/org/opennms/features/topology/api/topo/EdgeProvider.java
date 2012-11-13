@@ -11,8 +11,14 @@ public interface EdgeProvider {
 	
 	public Edge getEdge(EdgeRef reference);
 	
+	/**
+	 * Return an immutable list of all edges.
+	 */
 	public List<? extends Edge> getEdges();
 	
+	/**
+	 * Return an immutable list of all edges that match this set of references.
+	 */
 	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references);
 	
 	public void addEdgeListener(EdgeListener vertexListener);
