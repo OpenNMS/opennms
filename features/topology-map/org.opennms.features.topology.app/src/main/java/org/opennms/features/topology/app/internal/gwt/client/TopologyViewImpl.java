@@ -218,31 +218,33 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     @Override
     public void zoomToFit(final BoundingRect rect) {
-        SVGElement svg = getSVGElement().cast();
-        final int svgWidth = svg.getParentElement().getOffsetWidth(); 
-        final int svgHeight = svg.getParentElement().getOffsetHeight();
-        
-        double svgCenterX = svgWidth/2;
-        double svgCenterY = svgHeight/2;
-        
-        double translateX = (svgCenterX - rect.getCenterX());
-        double translateY = (svgCenterY - rect.getCenterY());
-        
-        final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
-        SVGMatrix transform = svg.createSVGMatrix()
-            .translate(translateX, translateY)
-            .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
-            .scale(scale);
-                   
-        String transformVal = ((TopologyViewImpl)this).matrixTransform(transform);
-        
-        D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
+        if(!rect.isEmpty()) {
+            SVGElement svg = getSVGElement().cast();
+            final int svgWidth = svg.getParentElement().getOffsetWidth(); 
+            final int svgHeight = svg.getParentElement().getOffsetHeight();
             
-            @Override
-            public void call() {
-                m_presenter.onScaleUpdate(scale);
-            }
-        });
+            double svgCenterX = svgWidth/2;
+            double svgCenterY = svgHeight/2;
+            
+            double translateX = (svgCenterX - rect.getCenterX());
+            double translateY = (svgCenterY - rect.getCenterY());
+            
+            final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
+            SVGMatrix transform = svg.createSVGMatrix()
+                .translate(translateX, translateY)
+                .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
+                .scale(scale);
+                       
+            String transformVal = ((TopologyViewImpl)this).matrixTransform(transform);
+            
+            D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
+                
+                @Override
+                public void call() {
+                    m_presenter.onScaleUpdate(scale);
+                }
+            });
+        }
     }
 
 }
