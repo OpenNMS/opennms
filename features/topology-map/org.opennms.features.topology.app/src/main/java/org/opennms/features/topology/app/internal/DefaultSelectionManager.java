@@ -131,14 +131,17 @@ public class DefaultSelectionManager implements SelectionManager {
 		}
 	}
 	
+	@Override
 	public void addSelectionListener(SelectionListener listener) {
 		m_listeners.add(listener);
 	}
 	
+	@Override
 	public void removeSelectionListener(SelectionListener listener) {
 		m_listeners.remove(listener);
 	}
 
+	@Override
 	public void setSelectedEdges(Collection<?> edgeIds) {
 		doDeselectAll();
 		

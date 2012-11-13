@@ -286,8 +286,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 	    getSelectionManager().setSelectedVertices(vertexIds);
 	}
 
-	private DefaultSelectionManager getSelectionManager() {
-		return (DefaultSelectionManager) m_graphContainer.getSelectionManager();
+	private SelectionManager getSelectionManager() {
+		return m_graphContainer.getSelectionManager();
 	}
 
 	private void selectEdge(String edgeKey) {

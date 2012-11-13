@@ -36,4 +36,6 @@ public interface SelectionManager {
 	public void addSelectionListener(SelectionListener listener);
 	
 	public void removeSelectionListener(SelectionListener listener);
+
+	public void setSelectedEdges(Collection<?> singleton);
 }
