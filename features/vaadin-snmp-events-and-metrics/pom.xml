@@ -19,8 +19,6 @@
     <bundle.symbolicName>org.opennms.features.vaadin-snmp-events-and-metrics</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>6.8.2</vaadin.version>
-    <pax.vaadin.version>0.1.0-ONMS-20120906</pax.vaadin.version>
     <jsmiparser.version>0.12</jsmiparser.version>
     <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
     <vaadin.messagebox.version>1.1.1</vaadin.messagebox.version>
@@ -97,7 +95,6 @@
     <dependency>
       <groupId>org.ops4j.pax.vaadin</groupId>
       <artifactId>service</artifactId>
-      <version>${pax.vaadin.version}</version>
     </dependency>
     <dependency> <!-- Required by pax/vaadin -->
       <groupId>javax.servlet</groupId>
@@ -110,7 +107,6 @@
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin</artifactId>
-      <version>${vaadin.version}</version>
     </dependency>
     <dependency>
       <groupId>org.vaadin.addons</groupId>

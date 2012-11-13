@@ -13,9 +13,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>6.7.1</vaadin.version>
-    <gwt.version>2.3.0</gwt.version>
-    <gwt.plugin.version>2.2.0</gwt.plugin.version>
   </properties>
 
   <build>
@@ -67,7 +64,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt.plugin.version}</version>
+        <version>${gwtPluginVersion}</version>
         <configuration>
           <!-- if you don't specify any modules, the plugin will find them -->
           <!-- <modules> <module>org.opennms.features.vaadin.topology.gwt.MyWidgetSet</module> </modules> -->
@@ -95,12 +92,12 @@
           <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -244,47 +241,39 @@
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin</artifactId>
-      <version>${vaadin.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
 	</dependency>
 	<dependency>
 	  <groupId>net.sf.jung</groupId>
 	  <artifactId>jung-graph-impl</artifactId>
-	  <version>2.0.1</version>
 	</dependency>
 	<dependency>
 	  <groupId>net.sf.jung</groupId>
 	  <artifactId>jung-algorithms</artifactId>
-	  <version>2.0.1</version>
 	</dependency>
 	<dependency>
 	  <groupId>net.sf.jung</groupId>
 	  <artifactId>jung-visualization</artifactId>
-	  <version>2.0.1</version>
 	</dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-    
   </dependencies>
 
 </project>

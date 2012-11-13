@@ -66,6 +66,23 @@
             <artifactId>org.apache.felix.http.api</artifactId>
             <version>${felix.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-dependencies</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-test-dependencies</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

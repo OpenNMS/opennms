@@ -30,7 +30,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt.plugin.version}</version>
+        <version>${gwtPluginVersion}</version>
         <configuration>
           <!-- <modules> <module>org.opennms.features.topology.app.internal.gwt.MyWidgetSet</module> </modules> -->
           <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
@@ -48,12 +48,12 @@
           <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
           </dependency>
         </dependencies>
       </plugin>

@@ -120,7 +120,7 @@ public class TopoGraph{
 				TopoVertex source = m_vertexHolder.getElementByItemId(sourceId);
 				TopoVertex target = m_vertexHolder.getElementByItemId(targetId);
 
-				return new TopoEdge(m_dataSource, key, itemId, item, sourceId, source, targetId, target);
+				return new TopoEdge(m_dataSource, key, itemId, sourceId, source, targetId, target);
 			}
 
 		};
@@ -206,7 +206,7 @@ public class TopoGraph{
 			}else {
 				TopoVertex displaySource = m_vertexHolder.getElementByItemId(displaySourceId);
 				TopoVertex displayTarget = m_vertexHolder.getElementByItemId(displayTargetId);
-				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus", null, null, displaySourceId, displaySource, displayTargetId, displayTarget);
+				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus", null, displaySourceId, displaySource, displayTargetId, displayTarget);
 				visible.add(displayEdge);
 			}
 		}
