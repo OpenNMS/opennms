@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -185,16 +186,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public boolean isVertexSelected(Object vertexId) {
-						throw new UnsupportedOperationException("GraphContainer.isSelected is not yet implemented.");
-					}
-
-					@Override
-					public void setVertexSelected(Object vertexId, boolean selected) {
-						throw new UnsupportedOperationException("GraphContainer.setSelected is not yet implemented.");
-					}
-
-					@Override
 					public Object getGroupId(Object vertexId) {
 						throw new UnsupportedOperationException("GraphContainer.getGroupId is not yet implemented.");
 					}
@@ -232,26 +223,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public void toggleSelectForVertexAndChildren(Object itemId) {
-						throw new UnsupportedOperationException("GraphContainer.toggleSelectForVertexAndChildren is not yet implemented.");
-					}
-
-					@Override
-					public void toggleSelectedVertex(Object itemId) {
-						throw new UnsupportedOperationException("GraphContainer.toggleSelectedVertex is not yet implemented.");
-					}
-
-					@Override
-					public void selectVertices(Collection<?> itemIds) {
-						throw new UnsupportedOperationException("GraphContainer.selectVertices is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getSelectedVertices() {
-						throw new UnsupportedOperationException("GraphContainer.getSelectedVertices is not yet implemented.");
-					}
-
-					@Override
 					public boolean containsVertexId(Object vertexId) {
 						throw new UnsupportedOperationException("GraphContainer.containsVertexId is not yet implemented.");
 					}
@@ -262,18 +233,8 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public void deselectAll() {
-						throw new UnsupportedOperationException("GraphContainer.deselectAll is not yet implemented.");
-					}
-
-					@Override
-					public boolean isEdgeSelected(Object edgeId) {
-						throw new UnsupportedOperationException("GraphContainer.isEdgeSelected is not yet implemented.");
-					}
-
-					@Override
-					public void setEdgeSelected(Object edgeId, boolean selected) {
-						throw new UnsupportedOperationException("GraphContainer.setEdgeSelected is not yet implemented.");
+					public SelectionManager getSelectionManager() {
+						throw new UnsupportedOperationException("GraphContainer.getSelectionManager is not yet implemented.");
 					}
 					
 				};

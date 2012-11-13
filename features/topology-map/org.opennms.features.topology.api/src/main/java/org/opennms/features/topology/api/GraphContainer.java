@@ -67,14 +67,6 @@ public interface GraphContainer extends DisplayState {
     
     public int getSemanticZoomLevel(Object vertexId);
     
-    public boolean isVertexSelected(Object vertexId);
-    
-    public void setVertexSelected(Object vertexId, boolean selected);
-    
-    public boolean isEdgeSelected(Object edgeId);
-    
-    public void setEdgeSelected(Object edgeId, boolean selected);
-    
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
 
 	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel);
@@ -93,19 +85,9 @@ public interface GraphContainer extends DisplayState {
 
 	Object getParentId(Object itemId);
 
-	public void toggleSelectForVertexAndChildren(Object itemId);
-
-	public void toggleSelectedVertex(Object itemId);
-
-	public void selectVertices(Collection<?> itemIds);
-
-	public Collection<?> getSelectedVertices();
-
 	public boolean containsVertexId(Object vertexId);
 	
 	public boolean containsEdgeId(Object edgeId);
 
-	void deselectAll();
-	
-
+	public SelectionManager getSelectionManager();
 }

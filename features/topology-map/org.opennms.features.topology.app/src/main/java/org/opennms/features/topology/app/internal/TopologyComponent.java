@@ -270,7 +270,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
 	private void deselectAll() {
-		m_graphContainer.deselectAll();
+		m_graphContainer.getSelectionManager().deselectAll();
 	}
 
     private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
@@ -325,7 +325,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     	
         deselectAll();
         
-        m_graphContainer.selectVertices(itemIds);
+        m_graphContainer.getSelectionManager().selectVertices(itemIds);
 
         if(itemIds.size() > 0) {
             setPanToSelection(true);
@@ -341,7 +341,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     	
     	List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
     	
-		m_graphContainer.selectVertices(itemIds);
+		m_graphContainer.getSelectionManager().selectVertices(itemIds);
         
         requestRepaint();
     }
@@ -353,25 +353,20 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private void toggleSelectedVertex(String vertexKey) {
 		Object itemId = getGraph().getVertexByKey(vertexKey).getItemId();
 
-		m_graphContainer.toggleSelectForVertexAndChildren(itemId);
+		m_graphContainer.getSelectionManager().toggleSelectForVertexAndChildren(itemId);
 		
 		setFitToView(false);
 		requestRepaint();
 	}
 
-	private void toggleSelectVertexByItemId(Object itemId) {
-        m_graphContainer.toggleSelectedVertex(itemId);
-        requestRepaint();
-    }
+	private void toggleSelectedEdge(String edgeKey) {
+        Object edgeId = getGraph().getEdgeByKey(edgeKey).getItemId();
 
-	private void toggleSelectedEdge(String edgeItemId) {
-        TopoEdge edge = getGraph().getEdgeByKey(edgeItemId);
-        edge.setSelected(!edge.isSelected());
+        m_graphContainer.getSelectionManager().toggleSelectedEdge(edgeId);
         
         requestRepaint();
     }
 
-    
 	protected void setScale(double scale){
 	    m_scale.setValue(scale);
     }

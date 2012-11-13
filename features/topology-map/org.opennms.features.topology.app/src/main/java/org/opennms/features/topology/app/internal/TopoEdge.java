@@ -28,8 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.GraphContainer;
-
 import com.vaadin.data.Item;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -39,18 +37,16 @@ public class TopoEdge{
     public static final String SELECTED_PROPERTY = "selected";
 	private final String m_key;
 	private final Object m_itemId;
-	private final Item m_item;
 	private final Object m_sourceId;
 	private final TopoVertex m_source;
 	private final Object m_targetId;
 	private final TopoVertex m_target;
 	private final SimpleGraphContainer m_graphContainer;
 
-	public TopoEdge(SimpleGraphContainer graphContainer, String key, Object itemId, Item item, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
+	public TopoEdge(SimpleGraphContainer graphContainer, String key, Object itemId, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
-		m_item = item;
 		m_sourceId = sourceId;
 		m_source = source;
 		m_targetId = targetId;
@@ -107,23 +103,26 @@ public class TopoEdge{
 	}
 
 	public Item getItem() {
-		return m_item;
+		return m_graphContainer.getEdgeItem(m_itemId);
 	}
 
+	@Deprecated
     public String getTooltipText() {
-        if(getItem().getItemProperty("tooltipText") != null && getItem().getItemProperty("tooltipText").getValue() != null) {
-            return (String) getItem().getItemProperty("tooltipText").getValue();
+        SimpleGraphContainer graphContainer = m_graphContainer;
+		Item item = graphContainer.getEdgeItem(m_itemId);
+		if(item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
+            return (String) item.getItemProperty("tooltipText").getValue();
         }else {
             return getSource().getLabel() + " :: " + getTarget().getLabel();
         }
     }
 
     public void setSelected(boolean selected) {
-        getItem().getItemProperty(SELECTED_PROPERTY).setValue(selected);
+        m_graphContainer.getSelectionManager().setEdgeSelected(m_itemId, selected);
     }
 
     public boolean isSelected() {
-        return (Boolean) getItem().getItemProperty(SELECTED_PROPERTY).getValue();
+    	return m_graphContainer.getSelectionManager().isEdgeSelected(m_itemId);
     }
     
     public String getCssClass() {
