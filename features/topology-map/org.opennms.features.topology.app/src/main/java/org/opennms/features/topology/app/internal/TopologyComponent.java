@@ -97,8 +97,8 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private String m_activeTool = "pan";
     private List<SelectionListener> m_selectionListeners;
 
-	public TopologyComponent(SimpleGraphContainer dataSource) {
-		setGraph(dataSource.getGraph());
+	public TopologyComponent(GraphContainer dataSource) {
+		setGraph(new TopoGraph(dataSource));
 		m_graphContainer = dataSource;
 		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
 		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
@@ -270,7 +270,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     }
 
 	private void deselectAll() {
-		m_graphContainer.getSelectionManager().deselectAll();
+		m_graphContainer.deselectAll();
 	}
 
     private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
@@ -325,7 +325,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     	
         deselectAll();
         
-        m_graphContainer.getSelectionManager().selectVertices(itemIds);
+        m_graphContainer.selectVertices(itemIds);
 
         if(itemIds.size() > 0) {
             setPanToSelection(true);
@@ -341,7 +341,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     	
     	List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
     	
-		m_graphContainer.getSelectionManager().selectVertices(itemIds);
+		m_graphContainer.selectVertices(itemIds);
         
         requestRepaint();
     }
@@ -353,14 +353,21 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private void toggleSelectedVertex(String vertexKey) {
 		Object itemId = getGraph().getVertexByKey(vertexKey).getItemId();
 
-		m_graphContainer.getSelectionManager().toggleSelectForVertexAndChildren(itemId);
+		m_graphContainer.toggleSelectForVertexAndChildren(itemId);
 		
 		setFitToView(false);
 		requestRepaint();
 	}
 
+	private void toggleSelectVertexByItemId(Object itemId) {
+        m_graphContainer.toggleSelectedVertex(itemId);
+        requestRepaint();
+    }
+
 	private void toggleSelectedEdge(String edgeItemId) {
-		m_graphContainer.getSelectionManager().toggleSelectedEdge(edgeItemId);
+        TopoEdge edge = getGraph().getEdgeByKey(edgeItemId);
+        edge.setSelected(!edge.isSelected());
+        
         requestRepaint();
     }
 
@@ -480,7 +487,7 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     
     private void updateSelectionListeners() {
         for(SelectionListener listener : m_selectionListeners) {
-            listener.onSelectionUpdate(m_graphContainer.getSelectionManager());
+            listener.onSelectionUpdate(m_graphContainer);
         }
     }
 

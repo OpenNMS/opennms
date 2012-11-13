@@ -105,11 +105,11 @@ public class TopoVertex implements Paintable {
     }
 
 	public void setSelected(boolean selected) {
-		getGraphContainer().getSelectionManager().setVertexSelected(getItemId(), selected);
+		getGraphContainer().setVertexSelected(getItemId(), selected);
 	}
 
 	public boolean isSelected() {
-		return getGraphContainer().getSelectionManager().isVertexSelected(getItemId());
+		return getGraphContainer().isVertexSelected(getItemId());
 	}
 
 	public Item getItem() {

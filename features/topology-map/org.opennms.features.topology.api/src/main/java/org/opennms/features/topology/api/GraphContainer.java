@@ -30,7 +30,6 @@ package org.opennms.features.topology.api;
 
 import java.util.Collection;
 
-import org.opennms.features.topology.api.topo.Graph;
 import org.opennms.features.topology.api.topo.GraphProvider;
 
 import com.vaadin.data.Item;
@@ -38,46 +37,53 @@ import com.vaadin.data.util.BeanContainer;
 
 public interface GraphContainer extends DisplayState {
 
-	public VertexContainer<?, ?> getVertexContainer();
+    public VertexContainer<?, ?> getVertexContainer();
 
-	public BeanContainer<?, ?> getEdgeContainer();
+    public BeanContainer<?, ?> getEdgeContainer();
 
-	public Item getVertexItem(Object vertexId);
+    public Item getVertexItem(Object vertexId);
 
-	public Item getEdgeItem(Object edgeId);
+    public Item getEdgeItem(Object edgeId);
 
-	public Collection<?> getEndPointIdsForEdge(Object edgeId);
+    public Collection<?> getEndPointIdsForEdge(Object edgeId);
 
-	public Collection<?> getEdgeIdsForVertex(Object vertexId);
+    public Collection<?> getEdgeIdsForVertex(Object vertexId);
 
-	public Object getVertexItemIdForVertexKey(Object key);
-
-	public GraphProvider getBaseTopology();
-
-	public void setBaseTopology(GraphProvider graphProvider);
-
-	public Object getGroupId(Object vertexId);
-
-	public int getX(Object vertexId);
-
-	public void setX(Object vertexId, int x);
-
-	public int getY(Object vertexId);
-
-	public void setY(Object vertexId, int y);
-
-	public int getSemanticZoomLevel(Object vertexId);
-
-
+    public Object getVertexItemIdForVertexKey(Object key);
+    
+    public GraphProvider getBaseTopology();
+    
+    public void setBaseTopology(GraphProvider graphProvider);
+    
+    public Object getGroupId(Object vertexId);
+    
+    public int getX(Object vertexId);
+    
+    public void setX(Object vertexId, int x);
+    
+    public int getY(Object vertexId);
+    
+    public void setY(Object vertexId, int y);
+    
+    public int getSemanticZoomLevel(Object vertexId);
+    
+    public boolean isVertexSelected(Object vertexId);
+    
+    public void setVertexSelected(Object vertexId, boolean selected);
+    
+    public boolean isEdgeSelected(Object edgeId);
+    
+    public void setEdgeSelected(Object edgeId, boolean selected);
+    
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
 
 	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel);
-
+	
 	@Deprecated
-	public TopologyProvider getDataSource();
+    public TopologyProvider getDataSource();
 
-	@Deprecated
-	public void setDataSource(TopologyProvider topologyProvider);
+    @Deprecated
+    public void setDataSource(TopologyProvider topologyProvider);
 
 	public Collection<?> getVertexIds();
 
@@ -87,12 +93,19 @@ public interface GraphContainer extends DisplayState {
 
 	Object getParentId(Object itemId);
 
-	public boolean containsVertexId(Object vertexId);
+	public void toggleSelectForVertexAndChildren(Object itemId);
 
+	public void toggleSelectedVertex(Object itemId);
+
+	public void selectVertices(Collection<?> itemIds);
+
+	public Collection<?> getSelectedVertices();
+
+	public boolean containsVertexId(Object vertexId);
+	
 	public boolean containsEdgeId(Object edgeId);
 
-	public Graph getGraph();
-
-	public SelectionManager getSelectionManager();
+	void deselectAll();
+	
 
 }

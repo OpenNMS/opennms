@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
 
@@ -46,7 +45,7 @@ public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(final GraphContainer graph) {
 		
-		TopoGraph g = (TopoGraph) graph.getGraph();
+		TopoGraph g = new TopoGraph(graph);
 		
 		int szl = g.getSemanticZoomLevel();
 		

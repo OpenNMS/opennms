@@ -3,7 +3,7 @@
  */
 package org.opennms.features.topology.api.support;
 
-import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.GraphContainer;
 
 
 /**
@@ -11,5 +11,5 @@ import org.opennms.features.topology.api.SelectionManager;
  * indicate that the user has selected a vertex or edge in the graph.
  */
 public interface SelectionListener{
-    public void onSelectionUpdate(SelectionManager selectionManager);
+    public void onSelectionUpdate(GraphContainer graphContainer);
 }

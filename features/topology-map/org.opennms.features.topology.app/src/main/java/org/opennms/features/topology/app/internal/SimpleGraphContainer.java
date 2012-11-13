@@ -38,7 +38,6 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -514,11 +513,8 @@ public class SimpleGraphContainer implements GraphContainer {
     private TopologyProvider m_topologyProvider;
     private GraphProvider m_graphProvider;
     private GEdgeContainer m_edgeContainer;
-	private final DefaultSelectionManager m_selectionManager;
     
 	public SimpleGraphContainer() {
-		m_selectionManager = new DefaultSelectionManager(this);
-
 		m_zoomLevelProperty = new MethodProperty<Integer>(Integer.class, this, "getSemanticZoomLevel", "setSemanticZoomLevel");
 		m_scaleProperty = new MethodProperty<Double>(Double.class, this, "getScale", "setScale");
 		
@@ -719,6 +715,19 @@ public class SimpleGraphContainer implements GraphContainer {
     }
     
     @Override
+    public List<Object> getSelectedVertices() {
+    	List<Object> selectedVertices = new ArrayList<Object>();
+    	
+    	for(Object itemId : getVertexIds()) {
+    		if (isVertexSelected(itemId)) {
+    			selectedVertices.add(itemId);
+    		}
+    	}
+    	
+    	return selectedVertices;
+    }
+
+    @Override
     public int getX(Object itemId) {
 		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
 		if (vertexItem == null) throw new NullPointerException("vertexItem "+ itemId +" is null");
@@ -740,6 +749,16 @@ public class SimpleGraphContainer implements GraphContainer {
     @Override
     public void setY(Object itemId, int y) {
 		getVertexItem(itemId).getItemProperty(TopoVertex.Y_PROPERTY).setValue(y);
+	}
+
+    @Override
+    public void setVertexSelected(Object itemId, boolean selected) {
+		getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).setValue(selected);
+	}
+
+    @Override
+    public boolean isVertexSelected(Object itemId) {
+		return (Boolean) getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).getValue();
 	}
 
     @Override
@@ -817,7 +836,47 @@ public class SimpleGraphContainer implements GraphContainer {
 		return getVertexContainer().hasChildren(itemId);
 	}
 
-    @Override
+	@Override
+	public void toggleSelectForVertexAndChildren(Object itemId) {
+		boolean selected = isVertexSelected(itemId);
+		setVertexSelected(itemId, !selected);
+		
+		if(hasChildren(itemId)) {
+		    Collection<?> children = getChildren(itemId);
+		    for( Object childId : children) {
+		        setVertexSelected(childId, true);
+		    }
+		}
+		
+		fireChange();
+	}
+
+	@Override
+	public void toggleSelectedVertex(Object itemId) {
+		boolean selected = isVertexSelected(itemId);
+		setVertexSelected(itemId, !selected);
+	}
+
+	@Override
+	public void selectVertices(Collection<?> itemIds) {
+		for(Object itemId : itemIds) {
+			setVertexSelected(itemId, true);
+	    }
+	}
+	
+	@Override
+	public void deselectAll() {
+		for(Object vertexId : getVertexIds()) {
+			setVertexSelected(vertexId, false);
+		}
+		
+		for(Object edgeId : getEdgeIds()) {
+			setEdgeSelected(edgeId, false);
+		}
+		
+	}
+	
+	@Override
 	public boolean containsVertexId(Object vertexId) {
 		return getVertexContainer().containsId(vertexId);
 	}
@@ -828,34 +887,14 @@ public class SimpleGraphContainer implements GraphContainer {
 		return getEdgeContainer().containsId(edgeId);
 	}
 
-    @Deprecated
-    public void setVertexSelected(Object itemId, boolean selected) {
-		getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).setValue(selected);
-	}
-
-    @Deprecated
-    public boolean isVertexSelected(Object itemId) {
-		return (Boolean) getVertexItem(itemId).getItemProperty(TopoVertex.SELECTED_PROPERTY).getValue();
-	}
-
-    @Deprecated
+	@Override
 	public boolean isEdgeSelected(Object edgeId) {
 		return (Boolean) getEdgeItem(edgeId).getItemProperty(TopoEdge.SELECTED_PROPERTY).getValue();
 	}
 
-    @Deprecated
+	@Override
 	public void setEdgeSelected(Object edgeId, boolean selected) {
 		getEdgeItem(edgeId).getItemProperty(TopoEdge.SELECTED_PROPERTY).setValue(selected);
-	}
-
-	public TopoGraph getGraph() {
-		TopoGraph g = new TopoGraph(this);
-		return g;
-	}
-
-	@Override
-	public SelectionManager getSelectionManager() {
-		return m_selectionManager;
 	}
 	
 	
