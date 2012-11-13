@@ -16,41 +16,38 @@
  */
 package org.opennms.container.web.felix.base.internal.handler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.osgi.service.http.HttpContext;
 
-final class ServletHandlerRequest
-    extends HttpServletRequestWrapper
-{
+final class ServletHandlerRequest extends HttpServletRequestWrapper {
     private final String alias;
+
     private String contextPath;
+
     private String pathInfo;
+
     private boolean pathInfoCalculated = false;
 
-    public ServletHandlerRequest(HttpServletRequest req, String alias)
-    {
+    public ServletHandlerRequest(HttpServletRequest req, String alias) {
         super(req);
         this.alias = alias;
     }
 
     @Override
-    public String getAuthType()
-    {
+    public String getAuthType() {
         String authType = (String) getAttribute(HttpContext.AUTHENTICATION_TYPE);
 
         if (authType == null) {
             authType = super.getAuthType();
         }
-        
+
         return authType;
     }
 
     @Override
-    public String getContextPath()
-    {
+    public String getContextPath() {
         /*
          * FELIX-2030 Calculate the context path for the Http Service
          * registered servlets from the container context and servlet paths
@@ -60,7 +57,8 @@ final class ServletHandlerRequest
             String servlet = super.getServletPath();
             if (servlet.startsWith(alias)) {
                 servlet = servlet.substring(alias.length());
-                if ("/".equals(servlet)) servlet = "";
+                if ("/".equals(servlet))
+                    servlet = "";
             }
             if (context.length() == 0) {
                 contextPath = servlet;
@@ -75,8 +73,7 @@ final class ServletHandlerRequest
     }
 
     @Override
-    public String getPathInfo()
-    {
+    public String getPathInfo() {
         if (!this.pathInfoCalculated) {
             this.pathInfo = calculatePathInfo();
             this.pathInfoCalculated = true;
@@ -86,19 +83,17 @@ final class ServletHandlerRequest
     }
 
     @Override
-    public String getPathTranslated()
-    {
+    public String getPathTranslated() {
         String info = getPathInfo();
         if (info != null) {
-            info = getRealPath(info); 
+            info = getRealPath(info);
         }
 
         return info;
     }
 
     @Override
-    public String getRemoteUser()
-    {
+    public String getRemoteUser() {
         String remoteUser = (String) getAttribute(HttpContext.REMOTE_USER);
 
         if (remoteUser == null) {
@@ -109,8 +104,7 @@ final class ServletHandlerRequest
     }
 
     @Override
-    public String getServletPath()
-    {
+    public String getServletPath() {
         String path = this.alias;
         if ("/".equals(path)) {
             path = "";
@@ -119,21 +113,18 @@ final class ServletHandlerRequest
         return path;
     }
 
-    private String calculatePathInfo()
-    {
+    private String calculatePathInfo() {
         /*
-         * The pathInfo from the servlet container is
-         *       servletAlias + pathInfo
-         * where pathInfo is either an empty string (in which case the
-         * client directly requested the servlet) or starts with a slash
-         * (in which case the client requested a child of the servlet).
-         *
-         * Note, the servlet container pathInfo may also be null if the
-         * servlet is registered as the root servlet
+         * The pathInfo from the servlet container is servletAlias + pathInfo
+         * where pathInfo is either an empty string (in which case the client
+         * directly requested the servlet) or starts with a slash (in which
+         * case the client requested a child of the servlet). Note, the
+         * servlet container pathInfo may also be null if the servlet is
+         * registered as the root servlet
          */
 
-        String pathInfo = super.getPathInfo() == null? super.getServletPath() : super.getPathInfo();
-          
+        String pathInfo = super.getPathInfo() == null ? super.getServletPath() : super.getPathInfo();
+
         if (pathInfo != null) {
             // cut off alias of this servlet (if not the root servlet)
             if (!"/".equals(alias)) {
