@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -72,6 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Ignore
 public class LinkdNms10205bTest extends LinkdNms10205bNetworkBuilder implements InitializingBean {
 
     @Autowired

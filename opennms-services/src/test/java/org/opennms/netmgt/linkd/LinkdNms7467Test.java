@@ -46,6 +46,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.hibernate.criterion.Restrictions;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -91,6 +92,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Ignore
 public class LinkdNms7467Test extends LinkdNms7467NetworkBuilder implements InitializingBean {
 
     @Autowired
