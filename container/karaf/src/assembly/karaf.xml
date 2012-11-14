@@ -26,6 +26,7 @@
                     <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
                     <exclude>**/custom.properties</exclude>
                     <exclude>**/org.apache.karaf.features.cfg</exclude>
+                    <exclude>**/org.apache.karaf.management.cfg</exclude>
                 </excludes>
             </unpackOptions>
         </dependencySet>
