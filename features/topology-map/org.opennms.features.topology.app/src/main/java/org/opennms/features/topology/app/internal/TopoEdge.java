@@ -31,8 +31,6 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.SelectionManager;
 
 import com.vaadin.data.Item;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 
 public class TopoEdge{
     
@@ -127,14 +125,8 @@ public class TopoEdge{
         return getSelectionManager().isEdgeSelected(m_itemId) ? "path selected" : "path"; 
     }
 
-	void paint(PaintTarget target) throws PaintException {
-		target.startTag("edge");
-		target.addAttribute("key", getKey());
-		target.addAttribute("source", getSource().getKey());
-		target.addAttribute("target", getTarget().getKey());
-		target.addAttribute("selected", getSelectionManager().isEdgeSelected(m_itemId));
-		target.addAttribute("cssClass", getCssClass());
-		target.addAttribute("tooltipText", getTooltipText());
-		target.endTag("edge");
+	public void visit(GraphVisitor visitor) throws Exception {
+		visitor.visitEdge(this);
+		visitor.completeEdge(this);
 	}
 }

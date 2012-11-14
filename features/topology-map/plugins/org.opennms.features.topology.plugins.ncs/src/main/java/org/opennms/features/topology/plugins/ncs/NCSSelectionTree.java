@@ -1,22 +1,44 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.api.support.SelectionTree;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
-public class NCSSelectionTree extends SelectionTree implements EdgeProvider {
+public class NCSSelectionTree extends SelectionTree {
 
 	private static final long serialVersionUID = 8778577903128733601L;
 
@@ -51,56 +73,14 @@ public class NCSSelectionTree extends SelectionTree implements EdgeProvider {
 	}
 
 	@Override
-	public void addEdgeListener(EdgeListener vertexListener) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Edge getEdge(String id) {
-		return m_edges.get(id);
-	}
-
-	@Override
-	public Edge getEdge(EdgeRef reference) {
-		return getEdge(reference.getId());
-	}
-
-	@Override
-	public List<? extends Edge> getEdges() {
-		return Collections.list(Collections.enumeration(m_edges.values()));
-	}
-
-	@Override
-	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references) {
-		List<Edge> retval = new ArrayList<Edge>();
-		for (EdgeRef reference : references) {
-			Edge edge = getEdge(reference);
-			if (edge != null) {
-				retval.add(edge);
-			}
-		}
-		return retval;
-	}
-	
-	@Override
-	public void select(Object itemId){
+	public void select(Object itemId) {
 		// TODO: Create edge references that correspond to the selected items
 		super.select(itemId);
 	}
 
 	@Override
-	public void unselect(Object itemId){
+	public void unselect(Object itemId) {
 		// TODO: Remove edge references that correspond to the unselected items
 		super.unselect(itemId);
-	}
-
-	@Override
-	public String getNamespace() {
-		return "ncs";
-	}
-
-	@Override
-	public void removeEdgeListener(EdgeListener vertexListener) {
-		throw new UnsupportedOperationException();
 	}
 }

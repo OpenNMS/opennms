@@ -159,8 +159,14 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
-        
-		getGraph().paint(target, m_iconRepoManager);
+		GraphVisitor painter = new GraphPainter(m_graphContainer, m_iconRepoManager, target);
+
+		TopoGraph r = getGraph();
+		try {
+			r.visit(painter);
+		} catch(Exception e) {
+			throw new PaintException(e.getMessage());
+		}
         
         
     }
