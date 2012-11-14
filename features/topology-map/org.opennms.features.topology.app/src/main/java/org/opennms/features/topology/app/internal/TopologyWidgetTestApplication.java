@@ -37,7 +37,6 @@ import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
-import org.opennms.features.topology.api.support.SelectionTree;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -70,7 +69,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     
 	private Window m_window;
 	private TopologyComponent m_topologyComponent;
-	private SelectionTree m_tree;
+	private VertexSelectionTree m_tree;
 	private SimpleGraphContainer m_graphContainer;
 	private CommandManager m_commandManager;
 	private MenuBar m_menuBar;
@@ -348,10 +347,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         return absLayout;
     }
 
-    private SelectionTree createTree() {
+    private VertexSelectionTree createTree() {
 	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		final SelectionTree tree = new SelectionTree(container) {
+		final VertexSelectionTree tree = new VertexSelectionTree(container, m_graphContainer) {
 			public String getTitle() {
 				return "Nodes";
 			}
@@ -364,7 +363,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			tree.expandItemsRecursively(it.next());
 		}
 		
-		m_topologyComponent.addSelectionListener(tree);
+		m_graphContainer.getSelectionManager().addSelectionListener(tree);
 		return tree;
 	}
 

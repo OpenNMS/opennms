@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.Collections;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -105,7 +107,7 @@ public class TopoVertex implements Paintable {
     }
 
 	public void setSelected(boolean selected) {
-		getGraphContainer().getSelectionManager().setVertexSelected(getItemId(), selected);
+		getGraphContainer().getSelectionManager().selectVertices(Collections.singleton(getItemId()));
 	}
 
 	public boolean isSelected() {

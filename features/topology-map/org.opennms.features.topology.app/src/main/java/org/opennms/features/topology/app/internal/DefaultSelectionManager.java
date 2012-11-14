@@ -2,70 +2,52 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.SelectionManager;
 
 public class DefaultSelectionManager implements SelectionManager {
 
-	private final SimpleGraphContainer m_simpleGraphContainer;
+	private final Set<Object> m_selectedVertices = new HashSet<Object>();
+	private final Set<Object> m_selectedEdges = new HashSet<Object>();
+	private final Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
 
-	public DefaultSelectionManager(SimpleGraphContainer simpleGraphContainer) {
-		m_simpleGraphContainer = simpleGraphContainer;
+	public DefaultSelectionManager() {
 	}
 
 	@Override
 	public boolean isVertexSelected(Object itemId) {
-		return m_simpleGraphContainer.isVertexSelected(itemId);
+		return m_selectedVertices.contains(itemId);
 	}
 
-	@Override
-	public void setVertexSelected(Object itemId, boolean selected) {
-		m_simpleGraphContainer.setVertexSelected(itemId, selected);
+	private void setVertexSelected(Object itemId, boolean selected) {
+		if (selected) {
+			m_selectedVertices.add(itemId);
+		} else {
+			m_selectedVertices.remove(itemId);
+		}
+			
 	}
 
 	@Override
 	public boolean isEdgeSelected(Object edgeId) {
-		return m_simpleGraphContainer.isEdgeSelected(edgeId);
+		return m_selectedEdges.contains(edgeId);
 	}
 
-	@Override
 	public void setEdgeSelected(Object edgeId, boolean selected) {
-		m_simpleGraphContainer.setEdgeSelected(edgeId, selected);
+		if (selected) {
+			m_selectedEdges.add(edgeId);
+		} else {
+			m_selectedEdges.remove(edgeId);
+		}
 	}
 
 	@Override
 	public List<Object> getSelectedVertices() {
-		List<Object> selectedVertices = new ArrayList<Object>();
-		
-		for(Object itemId : m_simpleGraphContainer.getVertexIds()) {
-			if (isVertexSelected(itemId)) {
-				selectedVertices.add(itemId);
-			}
-		}
-		
-		return selectedVertices;
-	}
-
-	@Override
-	public void toggleSelectForVertexAndChildren(Object itemId) {
-		toggleSelectedVertex(itemId);
-
-		if(m_simpleGraphContainer.hasChildren(itemId)) {
-		    Collection<?> children = m_simpleGraphContainer.getChildren(itemId);
-		    for( Object childId : children) {
-		        setVertexSelected(childId, true);
-		    }
-		}
-		
-		// TODO: this is a selection change
-		m_simpleGraphContainer.fireChange();
-	}
-
-	@Override
-	public void toggleSelectedVertex(Object itemId) {
-		boolean selected = isVertexSelected(itemId);
-		setVertexSelected(itemId, !selected);
+		return new ArrayList<Object>(m_selectedVertices);
 	}
 
 	@Override
@@ -73,23 +55,54 @@ public class DefaultSelectionManager implements SelectionManager {
 		for(Object itemId : itemIds) {
 			setVertexSelected(itemId, true);
 		}
+		
+		fireSelectionChanged();
 	}
 
 	@Override
 	public void deselectAll() {
-		for(Object vertexId : m_simpleGraphContainer.getVertexIds()) {
-			setVertexSelected(vertexId, false);
-		}
+		doDeselectAll();
 		
-		for(Object edgeId : m_simpleGraphContainer.getEdgeIds()) {
-			setEdgeSelected(edgeId, false);
-		}
+		fireSelectionChanged();
+	}
+
+	private void doDeselectAll() {
+		m_selectedEdges.clear();
+		m_selectedVertices.clear();
 	}
 
 	@Override
-	public void toggleSelectedEdge(Object edgeId) {
-		boolean selected = isEdgeSelected(edgeId);
-		setEdgeSelected(edgeId, !selected);
+	public void setSelectedVertices(Collection<?> vertexIds) {
+		doDeselectAll();
+		
+		selectVertices(vertexIds);
+	}
+	
+	@Override
+	public void setSelectedEdges(Collection<?> edgeIds) {
+		doDeselectAll();
+		
+		for(Object edgeId : edgeIds) {
+			setEdgeSelected(edgeId, true);
+		}
+		
+		fireSelectionChanged();
 	}
 
+	@Override
+	public void addSelectionListener(SelectionListener listener) {
+		m_listeners.add(listener);
+	}
+	
+	@Override
+	public void removeSelectionListener(SelectionListener listener) {
+		m_listeners.remove(listener);
+	}
+
+	void fireSelectionChanged() {
+		for(SelectionListener listener : m_listeners) {
+			listener.selectionChanged(this);
+		}
+	}
+	
 }

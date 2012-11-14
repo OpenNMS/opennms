@@ -250,6 +250,11 @@ public class SimpleTopologyProviderTest {
 	public SelectionManager getSelectionManager() {
 		throw new UnsupportedOperationException("GraphContainer.getSelectionManager is not yet implemented.");
 	}
+
+	@Override
+	public Collection<?> getVertexForest(Collection<?> vertexIds) {
+		throw new UnsupportedOperationException("GraphContainer.getVertexForest is not yet implemented.");
+	}
         
     }
     
