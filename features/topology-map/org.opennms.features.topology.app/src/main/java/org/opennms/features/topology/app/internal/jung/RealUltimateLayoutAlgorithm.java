@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
 
@@ -46,9 +47,9 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-	public void updateLayout(GraphContainer graph) {
+	public void updateLayout(GraphContainer graphContainer) {
 		
-		TopoGraph g = new TopoGraph(graph);
+		TopoGraph g = getGraph((SimpleGraphContainer) graphContainer);
 		
 		int szl = g.getSemanticZoomLevel();
 		
@@ -67,15 +68,19 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 			jungGraph.addEdge(e, e.getSource().getItemId(), e.getTarget().getItemId());
 		}
 		
-		Dimension size = selectLayoutSize(graph);
+		Dimension size = selectLayoutSize(graphContainer);
 		Dimension paddedSize = new Dimension((int)(size.getWidth()*.75), (int)(size.getHeight()*75));
 		
-		doISOMLayout(graph, jungGraph, size);
-		doSpringLayout(graph, jungGraph, size, LAYOUT_REPULSION);
-		doFRLayout(graph, jungGraph, paddedSize, (int)(size.getWidth()/8), (int)(size.getHeight()/8));
-		doSpringLayout(graph, jungGraph, size, LAYOUT_REPULSION);
+		doISOMLayout(graphContainer, jungGraph, size);
+		doSpringLayout(graphContainer, jungGraph, size, LAYOUT_REPULSION);
+		doFRLayout(graphContainer, jungGraph, paddedSize, (int)(size.getWidth()/8), (int)(size.getHeight()/8));
+		doSpringLayout(graphContainer, jungGraph, size, LAYOUT_REPULSION);
 
 		
+	}
+
+	private TopoGraph getGraph(SimpleGraphContainer graphContainer) {
+		return graphContainer.getGraph();
 	}
 
 	private void doSpringLayout(final GraphContainer graph, SparseGraph<Object, TopoEdge> jungGraph, Dimension size, int repulsion) {

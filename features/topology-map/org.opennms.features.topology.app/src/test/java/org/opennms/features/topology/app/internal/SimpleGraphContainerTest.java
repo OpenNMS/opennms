@@ -48,8 +48,7 @@ public class SimpleGraphContainerTest {
 
     @Test
     public void testSimpleGraphContainer() {
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topoProvider());
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider());
         Collection<Object> vertexIds = graphContainer.getVertexIds();
         Collection<String> edgeIds = graphContainer.getEdgeIds();
         
@@ -71,9 +70,8 @@ public class SimpleGraphContainerTest {
     
     @Test
     public void testGraph() {
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topoProvider());
-        TopoGraph graph = new TopoGraph(graphContainer);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider());
+        TopoGraph graph = graphContainer.getGraph();
         
         List<TopoVertex> vertices = graph.getVertices();
         assertEquals(2, vertices.size());
@@ -91,8 +89,7 @@ public class SimpleGraphContainerTest {
         topologyProvider.setParent("v0", groupId);
         topologyProvider.setParent("v1", groupId);
         
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -113,7 +110,7 @@ public class SimpleGraphContainerTest {
         }
         
         
-        TopoGraph graph = new TopoGraph(graphContainer);
+        TopoGraph graph = graphContainer.getGraph();
         
         List<TopoVertex> vertices = graph.getVertices();
         assertEquals(3, vertices.size());
@@ -140,8 +137,7 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -179,8 +175,7 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
@@ -240,12 +235,12 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
-        final TopoGraph graph = new TopoGraph(graphContainer);
+
+        final TopoGraph graph = graphContainer.getGraph();
         
         graphContainer.getVertexContainer().addListener(new ItemSetChangeListener() {
             
@@ -314,12 +309,11 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
-        TopoGraph graph = new TopoGraph(graphContainer);
+        TopoGraph graph = graphContainer.getGraph();
         List<TopoVertex> vertices = graph.getVertices();
         assertEquals(2, vertices.size());
         
@@ -353,8 +347,7 @@ public class SimpleGraphContainerTest {
         TestVertex targetVertex = testEdge.getTarget();
         
         
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         
         GVertex sourceGVertex = findGVertexWithToprId(graphContainer, sourceVertex.getId());
         GVertex targetGVertex = findGVertexWithToprId(graphContainer, targetVertex.getId());
@@ -415,9 +408,8 @@ public class SimpleGraphContainerTest {
         TestVertex targetTestVertex = testEdge.getTarget();
         
         
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
-        TopoGraph graph = new TopoGraph(graphContainer);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        TopoGraph graph = graphContainer.getGraph();
         
         TopoVertex sourceVertex = findVertexWithToprId(graph, graphContainer, sourceTestVertex.getId());
         TopoVertex targetVertex = findVertexWithToprId(graph, graphContainer, targetTestVertex.getId());
@@ -463,12 +455,11 @@ public class SimpleGraphContainerTest {
         TestTopologyProvider topologyProvider = topoProvider();
      
         //Setup the graphcontainer
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topologyProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
-        TopoGraph graph = new TopoGraph(graphContainer);
+        TopoGraph graph = graphContainer.getGraph();
         List<TopoVertex> vertices = graph.getVertices();
         
         assertEquals(2, vertices.size());

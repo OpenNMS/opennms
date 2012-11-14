@@ -106,27 +106,32 @@ public class TopoEdge{
 		return m_graphContainer.getEdgeItem(m_itemId);
 	}
 
-	@Deprecated
     public String getTooltipText() {
         SimpleGraphContainer graphContainer = m_graphContainer;
-		Item item = graphContainer.getEdgeItem(m_itemId);
+		Object edgeId = m_itemId;
+		return getEdgeTooltipText(graphContainer, edgeId);
+    }
+    
+    private String getEdgeTooltipText(SimpleGraphContainer graphContainer,	Object edgeId) {
+		Item item = graphContainer.getEdgeItem(edgeId);
 		if(item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
             return (String) item.getItemProperty("tooltipText").getValue();
         }else {
             return getSource().getLabel() + " :: " + getTarget().getLabel();
         }
-    }
+	}
 
     private SelectionManager getSelectionManager() {
 		return m_graphContainer.getSelectionManager();
 	}
     
+    
     public String getCssClass() {
-        return getSelectionManager().isEdgeSelected(m_itemId) ? "path selected" : "path"; 
+    	return getSelectionManager().isEdgeSelected(m_itemId) ? getStyleName()+" selected" : getStyleName(); 
     }
 
-	public void visit(GraphVisitor visitor) throws Exception {
-		visitor.visitEdge(this);
-		visitor.completeEdge(this);
+	public String getStyleName() {
+		return "path";
 	}
+
 }

@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.SelectionManager;
 
 import com.vaadin.data.Item;
@@ -50,7 +51,7 @@ public class TopoGraph{
 	private ElementHolder<TopoEdge> m_edgeHolder;
 
 	
-	public TopoGraph(GraphContainer dataSource){
+	public TopoGraph(GraphContainer dataSource){	
 		
 		if(dataSource == null) {
 			throw new NullPointerException("dataSource may not be null");
@@ -227,11 +228,15 @@ public class TopoGraph{
     	visitor.visitGraph(this);
     	
     	for(TopoVertex vertex : getVertices()) {
-    		vertex.visit(visitor);
+    		visitor.visitVertex(vertex);
     	}
     	
     	for(TopoEdge edge : getEdges()) {
-    		edge.visit(visitor);
+    		visitor.visitEdge(edge);
+    	}
+    	
+    	for(TopoVertex vertex : getVertices()) {
+    		visitor.completeVertex(vertex);
     	}
     	
     	visitor.completeGraph(this);
@@ -244,6 +249,10 @@ public class TopoGraph{
 
 	SelectionManager getSelectionManager() {
 		return m_dataSource.getSelectionManager();
+	}
+
+	public Layout getLayout() {
+		return m_dataSource.getLayout();
 	}
 	
 }
