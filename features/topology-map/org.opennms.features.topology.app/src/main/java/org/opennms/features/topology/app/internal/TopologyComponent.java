@@ -327,18 +327,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         vertex.setSelected(selected);
     }
     
-	public void selectVerticesByItemId(Collection<Object> itemIds) {
-    	
-        deselectAll();
-        
-        getSelectionManager().selectVertices(itemIds);
-
-        if(itemIds.size() > 0) {
-            setPanToSelection(true);
-            requestRepaint();
-        }
-    }
-    
 	private void addVerticesToSelection(String... vertexKeys) {
 		
 		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
