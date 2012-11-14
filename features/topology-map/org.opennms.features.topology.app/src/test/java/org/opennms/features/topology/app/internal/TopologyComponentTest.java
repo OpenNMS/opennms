@@ -49,7 +49,7 @@ public class TopologyComponentTest {
     private class TestTopologyComponent extends TopologyComponent{
         private static final long serialVersionUID = -442669265971260461L;
         
-        public TestTopologyComponent(GraphContainer dataSource) {
+        public TestTopologyComponent(SimpleGraphContainer dataSource) {
             super(dataSource);
         }
         
@@ -70,8 +70,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topoProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoComponent.paintContent(target);
@@ -79,7 +78,7 @@ public class TopologyComponentTest {
         EasyMock.verify(target);
     }
 
-    private TopologyComponent getTopologyComponent(GraphContainer dataSource) {
+    private TopologyComponent getTopologyComponent(SimpleGraphContainer dataSource) {
         TopologyComponent topologyComponent = new TopologyComponent(dataSource);
         topologyComponent.setIconRepoManager(new IconRepositoryManager());
         return topologyComponent;
@@ -106,8 +105,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topoProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoProvider.addVertex();
@@ -142,20 +140,19 @@ public class TopologyComponentTest {
         
         EasyMock.replay(target);
         
-        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topoProvider);
+        TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
-        Collection<?> vertIds = topoProvider.getVertexIds();
+        Collection<?> vertIds = topologyProvider.getVertexIds();
         
-        Object groupId = topoProvider.addGroup("GroupIcon.jpg");
+        Object groupId = topologyProvider.addGroup("GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
-            BeanItem<TestVertex> beanItem = topoProvider.getVertexItem(vertId);
+            BeanItem<TestVertex> beanItem = topologyProvider.getVertexItem(vertId);
             TestVertex v = beanItem.getBean();
             if(v.isLeaf()) {
-                topoProvider.setParent(vertId, groupId);
+                topologyProvider.setParent(vertId, groupId);
             }
             
         }
@@ -170,8 +167,7 @@ public class TopologyComponentTest {
     @Ignore
     public void testTopologyComponentSendCorrectEdgeIds() throws PaintException {
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer();
-        graphContainer.setDataSource(topoProvider);
+        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         topoComponent.setIconRepoManager(new IconRepositoryManager());
         TopoGraph graph = topoComponent.getGraph();

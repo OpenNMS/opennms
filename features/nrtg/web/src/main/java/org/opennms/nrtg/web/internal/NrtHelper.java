@@ -20,14 +20,14 @@
  */
 package org.opennms.nrtg.web.internal;
 
-import org.opennms.netmgt.model.PrefabGraph;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.opennms.netmgt.model.PrefabGraph;
 
 /**
  * @author Markus@OpenNMS.org
@@ -41,7 +41,7 @@ public class NrtHelper {
             "LINE",
             "GPRINT");
 
-    public String cleanUpRrdGraphStringForWebUi(final PrefabGraph prefabGraph) {
+    public String cleanUpRrdGraphStringForWebUi(final PrefabGraph prefabGraph, final Map<String,String> externalPropertyAttributes, final Map<String,String> stringPropertyAttributes) {
         String graphString = prefabGraph.getCommand();
 
         //Overwrite height and width by cinematic ration 1x2.40
@@ -62,10 +62,18 @@ public class NrtHelper {
         // Escaping quotes in javascript in java
         graphString = graphString.replace("\"", "\\\\\"");
 
+        for (final String key : externalPropertyAttributes.keySet()) {
+            graphString = graphString.replace("{" + key + "}", externalPropertyAttributes.get(key));
+        }
+
+        for (final String key : stringPropertyAttributes.keySet()) {
+            graphString = graphString.replace("{" + key + "}", stringPropertyAttributes.get(key));
+        }
+
         return graphString;
     }
 
-    public String generateJsMappingObject(String rrdCommand, Map<String, String> rrdGraphAttributesToMetricIds) {
+    public String generateJsMappingObject(String rrdCommand, final Map<String, String> rrdGraphAttributesToMetricIds) {
         final StringBuilder stringBuilder = new StringBuilder();
         final String command = rrdCommand;
 
@@ -77,9 +85,11 @@ public class NrtHelper {
             rrdFileMapping.put(matcher.group(2), matcher.group(1));
         }
 
-        for (Map.Entry entry : rrdGraphAttributesToMetricIds.entrySet()) {
-            stringBuilder.append(String.format("'%s': '%s:%s', \n", entry.getValue(), rrdFileMapping.get(entry.getKey()), entry.getKey()));
+        for (final Map.Entry<String,String> entry : rrdGraphAttributesToMetricIds.entrySet()) {
+            final String row = String.format("'%s': '%s:%s', \n", entry.getValue(), rrdFileMapping.get(entry.getKey()), entry.getKey());
+            stringBuilder.append(row);
         }
+
         return stringBuilder.toString().substring(0,stringBuilder.toString().length() - ", \n".length());
     }
 }

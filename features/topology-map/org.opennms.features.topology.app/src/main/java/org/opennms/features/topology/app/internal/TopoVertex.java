@@ -32,13 +32,9 @@ import java.util.Collections;
 
 import org.opennms.features.topology.api.GraphContainer;
 
-import com.google.gwt.user.client.Window;
 import com.vaadin.data.Item;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
 
-public class TopoVertex implements Paintable {
+public class TopoVertex {
     
     public static final String LEAF_PROPERTY = "leaf";
     public static final String X_PROPERTY = "x";
@@ -99,10 +95,6 @@ public class TopoVertex implements Paintable {
     	return "v" + getItemId() + "(" + getX()  + "," + getY() + "):" + (isSelected() ? "selected" : "unselected");
     }
 
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        Window.alert("getting Update from Server");
-    }
-
 	public void setSelected(boolean selected) {
 		getGraphContainer().getSelectionManager().selectVertices(Collections.singleton(getItemId()));
 	}
@@ -140,7 +132,7 @@ public class TopoVertex implements Paintable {
     }
 
 	public String getTooltipText() {
-        return getGraphContainer().getTooltipText(getItemId());
+        return getGraphContainer().getVertexTooltipText(getItemId());
     }
 
 	String vertexTag() {
@@ -157,11 +149,6 @@ public class TopoVertex implements Paintable {
 
 	private void setItemId(Object itemId) {
 		m_itemId = itemId;
-	}
-
-	public void visit(GraphVisitor visitor) throws Exception {
-		visitor.visitVertex(this);
-		visitor.completeVertex(this);
 	}
 
 }

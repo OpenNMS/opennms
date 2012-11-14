@@ -1,6 +1,5 @@
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.topo.Vertex;
 
 public interface GraphVisitor {
 	

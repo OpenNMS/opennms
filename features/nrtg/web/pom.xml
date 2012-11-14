@@ -72,7 +72,6 @@
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>spring-dependencies</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>

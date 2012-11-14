@@ -34,6 +34,8 @@ import java.util.List;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
@@ -87,8 +89,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
-		m_graphContainer = new SimpleGraphContainer();
-		m_graphContainer.setDataSource(topologyProvider);
+		m_graphContainer = new SimpleGraphContainer(topologyProvider);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}
@@ -117,6 +118,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer);
+		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
+            
+            @Override
+            public void selectionChanged(SelectionManager selectionManager) {
+                m_topologyComponent.requestRepaint();
+            }
+        });
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);

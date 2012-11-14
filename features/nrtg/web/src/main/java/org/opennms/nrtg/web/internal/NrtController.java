@@ -20,6 +20,22 @@
  */
 package org.opennms.nrtg.web.internal;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpSession;
+
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -34,13 +50,6 @@ import org.opennms.nrtg.api.model.DefaultCollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * @author Markus Neumann
@@ -117,11 +126,11 @@ public class NrtController {
         modelAndView.addObject("graphDescription", prefabGraph.getDescription());
 
         NrtHelper nrtHelper = new NrtHelper();
-        modelAndView.addObject("rrdGraphString", nrtHelper.cleanUpRrdGraphStringForWebUi(prefabGraph));
+        modelAndView.addObject("rrdGraphString", nrtHelper.cleanUpRrdGraphStringForWebUi(prefabGraph, getRequiredExternalPropertyAttributes(reportResource, prefabGraph), getRequiredStringPropertyAttributes(reportResource, prefabGraph)));
 
         Set<RrdGraphAttribute> relevantRrdGraphAttributes = getRequiredRrdGraphAttributes(reportResource, prefabGraph);
         Map<String, String> rrdGraphAttributesMetaData = getMetaDataForReport(relevantRrdGraphAttributes);
-        Map<String, String> rrdGraphAttributesToMetricIds = getRrdGraphAttributsToMetricIds(rrdGraphAttributesMetaData);
+        Map<String, String> rrdGraphAttributesToMetricIds = getRrdGraphAttributesToMetricIds(rrdGraphAttributesMetaData);
 
         modelAndView.addObject("metricsMapping", nrtHelper.generateJsMappingObject(prefabGraph.getCommand(), rrdGraphAttributesToMetricIds));
 
@@ -240,11 +249,6 @@ public class NrtController {
         return collectionJobs;
     }
 
-    /**
-     * <p>getRequiredRrGraphdAttributes</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     public Set<RrdGraphAttribute> getRequiredRrdGraphAttributes(OnmsResource reportResource, PrefabGraph prefabGraph) {
         Map<String, RrdGraphAttribute> available = reportResource.getRrdGraphAttributes();
         Set<RrdGraphAttribute> reqAttrs = new LinkedHashSet<RrdGraphAttribute>();
@@ -257,7 +261,35 @@ public class NrtController {
         return reqAttrs;
     }
 
-    private Map<String, String> getRrdGraphAttributsToMetricIds(Map<String, String> onmsResourceNamesToMetaDataLines) {
+    public Map<String,String> getRequiredExternalPropertyAttributes(final OnmsResource reportResource, final PrefabGraph prefabGraph) {
+        final Map<String,String> attributes = reportResource.getExternalValueAttributes();
+        if (attributes == null) return Collections.emptyMap();
+
+        final Map<String,String> reqAttributes = new HashMap<String,String>();
+        for (final String attrName : prefabGraph.getExternalValues()) {
+            if (attributes.containsKey(attrName)) {
+                reqAttributes.put(attrName, attributes.get(attrName));
+            }
+        }
+        
+        return reqAttributes;
+    }
+
+    public Map<String,String> getRequiredStringPropertyAttributes(final OnmsResource reportResource, final PrefabGraph prefabGraph) {
+        final Map<String,String> attributes = reportResource.getStringPropertyAttributes();
+        if (attributes == null) return Collections.emptyMap();
+
+        final Map<String,String> reqAttributes = new HashMap<String,String>();
+        for (final String attrName : prefabGraph.getPropertiesValues()) {
+            if (attributes.containsKey(attrName)) {
+                reqAttributes.put(attrName, attributes.get(attrName));
+            }
+        }
+        
+        return reqAttributes;
+    }
+
+    private Map<String, String> getRrdGraphAttributesToMetricIds(Map<String, String> onmsResourceNamesToMetaDataLines) {
         Map<String, String> rrdGraphAttributesToMetricIds = new HashMap<String, String>();
         for (String onmsResouceName : onmsResourceNamesToMetaDataLines.keySet()) {
             String rrdGraphAttributeName = onmsResouceName.toString().substring(onmsResouceName.lastIndexOf(".") +1);
@@ -266,7 +298,7 @@ public class NrtController {
         return rrdGraphAttributesToMetricIds;
     }
     
-    private Map<String, String> getMetaDataForReport(Set<RrdGraphAttribute> rrdGraphAttributes) {
+    private Map<String, String> getMetaDataForReport(final Set<RrdGraphAttribute> rrdGraphAttributes) {
         Map<String, String> metaData = new HashMap<String, String>();
 
         logger.debug("getMetaDataForReport: " + rrdGraphAttributes);
@@ -304,9 +336,10 @@ public class NrtController {
                 }
             }
         }
+        
         return metaData;
     }
-    
+
     private final String PROTOCOLDELIMITER = "_";
     private final String METRICID_DELIMITER = "=";
     

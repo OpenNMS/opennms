@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
 import org.opennms.features.topology.app.internal.TopoVertex;
@@ -44,9 +45,9 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-	public void updateLayout(final GraphContainer graph) {
+	public void updateLayout(final GraphContainer graphContainer) {
 		
-		TopoGraph g = new TopoGraph(graph);
+		TopoGraph g = getGraph((SimpleGraphContainer) graphContainer);
 		
 		int szl = g.getSemanticZoomLevel();
 		
@@ -68,10 +69,10 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		KKLayout<Object, TopoEdge> layout = new KKLayout<Object, TopoEdge>(jungGraph);
 		layout.setInitializer(new Transformer<Object, Point2D>() {
 			public Point2D transform(Object v) {
-				return new Point(graph.getX(v), graph.getY(v));
+				return new Point(graphContainer.getX(v), graphContainer.getY(v));
 			}
 		});
-		layout.setSize(selectLayoutSize(graph));
+		layout.setSize(selectLayoutSize(graphContainer));
 		
 		while(!layout.done()) {
 			layout.step();
@@ -79,13 +80,17 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		
 		for(Object v : vertices) {
-			graph.setX(v, (int)layout.getX(v));
-			graph.setY(v, (int)layout.getY(v));
+			graphContainer.setX(v, (int)layout.getX(v));
+			graphContainer.setY(v, (int)layout.getY(v));
 		}
 		
 		
 		
 		
+	}
+
+	private TopoGraph getGraph(final SimpleGraphContainer graphContainer) {
+		return graphContainer.getGraph();
 	}
 
 }
