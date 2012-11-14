@@ -57,7 +57,7 @@ import com.vaadin.ui.ClientWidget;
 
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
+public class TopologyComponent extends AbstractComponent implements ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
 	
@@ -301,10 +301,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	}
 
-	private void deselectAll() {
-		getSelectionManager().deselectAll();
-	}
-
     private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
         m_scaleUpdateFromUI  = scaleUpdateFromUI;
     }
@@ -343,12 +339,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		return m_graph;
 	}
 
-	public void addActionHandler(Handler actionHandler) {
-	}
-	
-	public void removeActionHandler(Handler actionHandler) {
-	}
-	
 	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
         m_menuItemStateListener.add(listener);
     }

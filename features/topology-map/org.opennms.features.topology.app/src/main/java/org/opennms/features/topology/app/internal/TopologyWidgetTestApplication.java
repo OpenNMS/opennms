@@ -224,7 +224,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
 		m_treeMapSplitPanel.setSizeFull();
 
-		m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
 		m_commandManager.addCommandUpdateListener(this);
 
 		menuBarUpdated(m_commandManager);

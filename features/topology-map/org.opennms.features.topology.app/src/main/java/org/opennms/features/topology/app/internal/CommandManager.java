@@ -227,49 +227,12 @@ public class CommandManager {
 		}
 	}
 
-	void addActionHandlers(TopologyComponent topologyComponent,
-			SimpleGraphContainer graphContainer, Window mainWindow) {
-		topologyComponent.addActionHandler(new ActionHandler(
-				new DefaultOperationContext(mainWindow, graphContainer)));
-	}
-
 	public List<Command> getHistoryList() {
 		return m_commandHistoryList;
 	}
 
 	public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
 		return m_commandToOperationMap.get(command);
-	}
-
-	private class ActionHandler implements Action.Handler {
-		SimpleGraphContainer m_graphContainer;
-		Window m_mainWindow;
-		private DefaultOperationContext m_operationContext;
-
-		public ActionHandler(DefaultOperationContext operationContext) {
-			m_operationContext = operationContext;
-		}
-
-		public Action[] getActions(Object target, Object sender) {
-			List<Action> actionList = new ArrayList<Action>();
-			for (Command command : m_commandList) {
-				if (command.isAction()
-						&& command.appliesToTarget(target, m_operationContext)) {
-					actionList.add(command.getAction());
-				}
-			}
-			return actionList.toArray(new Action[actionList.size()]);
-		}
-
-		public void handleAction(Action action, Object sender, Object target) {
-			if (action instanceof Command) {
-				Command command = (Command) action;
-				command.doCommand(target, m_operationContext);
-
-				m_commandHistoryList.add(command);
-				updateMenuItemListeners();
-			}
-		}
 	}
 
 	public void onBind(Command command) {
