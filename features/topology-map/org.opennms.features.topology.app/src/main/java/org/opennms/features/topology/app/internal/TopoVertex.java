@@ -31,12 +31,9 @@ package org.opennms.features.topology.app.internal;
 import java.util.Collections;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.google.gwt.user.client.Window;
 import com.vaadin.data.Item;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -146,34 +143,12 @@ public class TopoVertex implements Paintable {
         return getGraphContainer().getTooltipText(getItemId());
     }
 
-	private String vertexTag() {
+	String vertexTag() {
 		return isLeaf() ? "vertex" : "group";
 	}
 
-	public void paint(PaintTarget target, IconRepositoryManager iconRepoManager) throws PaintException {
-		target.startTag(vertexTag());
-		target.addAttribute("key", getKey());
-		target.addAttribute("x", getX());
-		target.addAttribute("y", getY());
-		target.addAttribute("selected", isSelected());
-		target.addAttribute("iconUrl", iconRepoManager.findIconUrlByKey(getIconKey()));
-		target.addAttribute("semanticZoomLevel", getSemanticZoomLevel());
-		target.addAttribute("label", getLabel());
-		target.addAttribute("tooltipText", getTooltipText());
-		target.endTag(vertexTag());
-	}
-
-	private String vertexParentTag() {
+	String vertexParentTag() {
 		return isLeaf() ? "vertexParent" : "groupParent";
-	}
-
-	public void paintParent(PaintTarget target) throws PaintException {
-		if (getGroupId() != null) {
-			target.startTag(vertexParentTag());
-			target.addAttribute("key", getKey());
-			target.addAttribute("parentKey", getGroupKey());
-			target.endTag(vertexParentTag());
-		}
 	}
 
 	public SimpleGraphContainer getGraphContainer() {
@@ -182,6 +157,11 @@ public class TopoVertex implements Paintable {
 
 	private void setItemId(Object itemId) {
 		m_itemId = itemId;
+	}
+
+	public void visit(GraphVisitor visitor) throws Exception {
+		visitor.visitVertex(this);
+		visitor.completeVertex(this);
 	}
 
 }

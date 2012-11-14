@@ -30,17 +30,13 @@ package org.opennms.features.topology.app.internal;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.api.SelectionManager;
 
 import com.vaadin.data.Item;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 
 
 public class TopoGraph{
@@ -225,31 +221,29 @@ public class TopoGraph{
     public TopoEdge getEdgeByKey(String edgeKey) {
         return m_edgeHolder.getElementByKey(edgeKey);
     }
-
-	void paint(PaintTarget target, IconRepositoryManager iconRepoManager) throws PaintException {
-		
-		target.startTag("graph");
-		
-		// first paint vertices and groups
-		for (TopoVertex vertex : getVertices()) {
-	    	vertex.paint(target, iconRepoManager);
-	    }
-
-		// then edges
-	    for(TopoEdge edge : getEdges()) {
-	    	edge.paint(target);
-	    }
-	    
-	    // set up the parent relationships last so the vertices can all be referenced on client
-	    for (TopoVertex vertex : getVertices()) {
-	    	vertex.paintParent(target);
-	    }
-	    
-	    target.endTag("graph");
-	}
+    
+    public void visit(GraphVisitor visitor) throws Exception {
+    	
+    	visitor.visitGraph(this);
+    	
+    	for(TopoVertex vertex : getVertices()) {
+    		vertex.visit(visitor);
+    	}
+    	
+    	for(TopoEdge edge : getEdges()) {
+    		edge.visit(visitor);
+    	}
+    	
+    	visitor.completeGraph(this);
+    	
+    }
 
 	public List<?> getVertexItemIdsForKeys(List<String> vertexKeys) {
 		return m_vertexHolder.getItemsIdsForKeys(vertexKeys);
+	}
+
+	SelectionManager getSelectionManager() {
+		return m_dataSource.getSelectionManager();
 	}
 	
 }

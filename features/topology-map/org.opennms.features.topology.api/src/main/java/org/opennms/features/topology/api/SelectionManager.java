@@ -10,15 +10,15 @@ public interface SelectionManager {
 
 	public void deselectAll();
 
-	public void setSelectedVertices(Collection<?> vertices);
+	public void setSelectedVertices(Collection<?> vertexIds);
 	
-	public void selectVertices(Collection<?> itemIds);
+	public void selectVertices(Collection<?> vertexIds);
 
-	public void setSelectedEdges(Collection<?> singleton);
+	public void setSelectedEdges(Collection<?> edgeIds);
 
-	public boolean isVertexSelected(Object itemId);
+	public boolean isVertexSelected(Object vertexId);
 	
-	public boolean isEdgeSelected(Object itemId);
+	public boolean isEdgeSelected(Object edgeId);
 	
 	public Collection<?> getSelectedVertices();
 
