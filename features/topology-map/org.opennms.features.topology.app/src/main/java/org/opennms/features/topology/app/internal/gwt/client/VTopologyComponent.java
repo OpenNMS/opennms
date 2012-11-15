@@ -201,9 +201,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			.attr("transform", new Func<String, GWTVertex>() {
 
 				public String call(GWTVertex vertex, int index) {
-					GWTVertex displayVertex = vertex.getDisplayVertex(m_oldSemanticZoomLevel);
-
-					return "translate(" + displayVertex.getX() + "," +  displayVertex.getY() + ")";
+					return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
 				}
 
 			}).attr("opacity", 1);
@@ -219,9 +217,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			}).attr("transform", new Func<String, GWTVertex>(){
 
 				public String call(GWTVertex vertex, int index) {
-					GWTVertex displayVertex = vertex.getDisplayVertex(m_semanticZoomLevel);
-
-					return "translate(" + displayVertex.getX() + "," +  displayVertex.getY() + ")";
+					return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
 				}
 
 			}).attr("opacity", 0).remove();
@@ -307,30 +303,35 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 		private D3 getVertexSelection(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView) {
 			D3 vertexGroup = D3.d3().select( topologyView.getVertexGroup() );
-            return vertexGroup.selectAll(GWTVertex.VERTEX_CLASS_NAME)
-					.data(graph.getVertices(m_semanticZoomLevel), new Func<String, GWTVertex>() {
+            Func<String, GWTVertex> vertexIdentifierFunction = new Func<String, GWTVertex>() {
 
-						public String call(GWTVertex param, int index) {
-							return "" + param.getId();
-						}
+				public String call(GWTVertex param, int index) {
+					return "" + param.getId();
+				}
 
-					});
+			};
+			return vertexGroup.selectAll(GWTVertex.VERTEX_CLASS_NAME)
+					.data(graph.getVertices(), vertexIdentifierFunction);
+//			return vertexGroup.selectAll(GWTVertex.VERTEX_CLASS_NAME)
+//					.data(graph.getVertices(m_semanticZoomLevel), vertexIdentifierFunction);
 		}
 
 		private D3 getEdgeSelection(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView) {
 			D3 edgeGroup = D3.d3().select(topologyView.getEdgeGroup());
-            return edgeGroup.selectAll(GWTEdge.SVG_EDGE_ELEMENT)
-					.data(graph.getEdges(m_semanticZoomLevel), new Func<String, GWTEdge>() {
+            Func<String, GWTEdge> edgeIdentifierFunction = new Func<String, GWTEdge>() {
 
-						public String call(GWTEdge edge, int index) {
-						    if(m_client.getTooltipTitleInfo(VTopologyComponent.this, edge) == null) {
-						        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
-						    }
-							String edgeId = edge.getId();
-							return edgeId;
-						}
+				public String call(GWTEdge edge, int index) {
+				    if(m_client.getTooltipTitleInfo(VTopologyComponent.this, edge) == null) {
+				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
+				    }
+					String edgeId = edge.getId();
+					return edgeId;
+				}
 
-					});
+			};
+			return edgeGroup.selectAll(GWTEdge.SVG_EDGE_ELEMENT).data(graph.getEdges(), edgeIdentifierFunction);
+//			return edgeGroup.selectAll(GWTEdge.SVG_EDGE_ELEMENT)
+//						.data(graph.getEdges(m_semanticZoomLevel), edgeIdentifierFunction);
 		}
 
 		public Handler<GWTEdge> getEdgeContextHandler() {
@@ -671,9 +672,17 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				}
 
 			}else if(child.getTag().equals("vertex")) {
+				String vertexKey = child.getStringAttribute("key");
+				consoleLog("UIDL vertex: " + vertexKey);
 
-				GWTVertex vertex = GWTVertex.create(child.getStringAttribute("key"), child.getIntAttribute("x"), child.getIntAttribute("y"));
+				GWTVertex vertex = GWTVertex.create(vertexKey, child.getIntAttribute("x"), child.getIntAttribute("y"));
+				
+				vertex.setInitialX(child.getIntAttribute("initialX"));
+				vertex.setInitialY(child.getIntAttribute("initialY"));
+				
 				boolean selected = child.getBooleanAttribute("selected");
+				vertex.setSelected(selected);
+
 				vertex.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
 
 				if(child.hasAttribute("groupKey")) {
@@ -682,7 +691,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 					vertex.setParent(group);
 				}
 
-				vertex.setSelected(selected);
 				vertex.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
 
 				if (child.hasAttribute("label")) {
@@ -697,8 +705,14 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				}
 				
 			}else if(child.getTag().equals("edge")) {
-				GWTVertex source = graphConverted.findVertexById(child.getStringAttribute("source"));
-				GWTEdge edge = GWTEdge.create(child.getStringAttribute("key"), source, graphConverted.findVertexById( child.getStringAttribute("target") ));
+				String edgeKey = child.getStringAttribute("key");
+				String sourceKey = child.getStringAttribute("source");
+				String targetKey = child.getStringAttribute("target");
+				consoleLog("UIDL edge: " + edgeKey + "(" + sourceKey +"," + targetKey +")");
+				
+				GWTVertex source = graphConverted.findVertexById(sourceKey);
+				GWTVertex target = graphConverted.findVertexById( targetKey );
+				GWTEdge edge = GWTEdge.create(edgeKey, source, target);
 				boolean selected = child.getBooleanAttribute("selected");
 				String cssClass = child.getStringAttribute("cssClass");
 				edge.setSelected(selected);

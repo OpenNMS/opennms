@@ -164,8 +164,10 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 
 		try {
 			graph.visit(painter);
-		} catch(Exception e) {
-			throw new PaintException(e.getMessage());
+		} catch(PaintException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
         
         

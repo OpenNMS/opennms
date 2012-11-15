@@ -114,7 +114,7 @@ public class TopoEdge{
     
     private String getEdgeTooltipText(SimpleGraphContainer graphContainer,	Object edgeId) {
 		Item item = graphContainer.getEdgeItem(edgeId);
-		if(item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
+		if(item != null && item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
             return (String) item.getItemProperty("tooltipText").getValue();
         }else {
             return getSource().getLabel() + " :: " + getTarget().getLabel();

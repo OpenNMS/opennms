@@ -55,14 +55,6 @@ public class GWTVertex extends JavaScriptObject {
         return this.id;
     }-*/;
     
-    public final native int getX()/*-{
-        return this.x;
-    }-*/;
-    
-    public final native int getY()/*-{
-        return this.y;
-    }-*/;
-    
     public final native void setSelected(boolean selected) /*-{
         this.selected = selected;
     }-*/;
@@ -96,8 +88,16 @@ public class GWTVertex extends JavaScriptObject {
 	}-*/;
     
     public static native GWTVertex create(String id, int x, int y) /*-{
-        return {"id":id, "x":x, "y":y, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null};
+        return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null};
     }-*/;
+
+    public final native int getX()/*-{
+    	return this.x;
+	}-*/;
+
+    public final native int getY()/*-{
+    	return this.y;
+	}-*/;
 
     public final native void setX(int newX) /*-{
         this.x = newX;
@@ -107,6 +107,22 @@ public class GWTVertex extends JavaScriptObject {
         this.y = newY;
     }-*/;
     
+    public final native int getInitialX()/*-{
+    	return this.initialX;
+	}-*/;
+
+    public final native int getInitialY()/*-{
+    	return this.initialY;
+	}-*/;
+
+    public final native void setInitialX(int initialX) /*-{
+    	this.initialX = initialX;
+	}-*/;
+
+    public final native void setInitialY(int initialY) /*-{
+    	this.initialY = initialY;
+	}-*/;
+
     public final String getTooltipText() {
         return getLabel();
     }
@@ -270,7 +286,7 @@ public class GWTVertex extends JavaScriptObject {
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
                 
-                ImageElement img = DOM.createImg().cast();
+                //ImageElement img = DOM.createImg().cast();
                 
                 D3 circleSelection = vertex.append("circle");
                 D3 bgImage = vertex.append("svg:image");
@@ -308,12 +324,12 @@ public class GWTVertex extends JavaScriptObject {
 	}-*/;
 
 	public final GWTVertex getDisplayVertex(int semanticZoomLevel) {
-		
-		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
-			return this;
-		}else {
-			return getParent().getDisplayVertex(semanticZoomLevel);
-		}
+		return this;
+		//if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
+		//	return this;
+		//}else {
+		//	return getParent().getDisplayVertex(semanticZoomLevel);
+		//}
 		
 	}
 }

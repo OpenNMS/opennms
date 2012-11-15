@@ -225,16 +225,20 @@ public class TopoGraph implements Graph {
     	visitor.visitGraph(this);
     	
     	for(TopoVertex vertex : getVertices()) {
-    		visitor.visitVertex(vertex);
+    		if (vertex.getSemanticZoomLevel() == getSemanticZoomLevel() ||
+    		    (vertex.getSemanticZoomLevel() < getSemanticZoomLevel() && vertex.isLeaf())
+    			) {
+    			visitor.visitVertex(vertex);
+    		}
     	}
     	
-    	for(TopoEdge edge : getEdges()) {
+    	for(TopoEdge edge : getEdges(getSemanticZoomLevel())) {
     		visitor.visitEdge(edge);
     	}
     	
-    	for(TopoVertex vertex : getVertices()) {
-    		visitor.completeVertex(vertex);
-    	}
+    	//or(TopoVertex vertex : getVertices()) {
+    	//	visitor.completeVertex(vertex);
+    	//}
     	
     	visitor.completeGraph(this);
     	
