@@ -7,6 +7,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -27,41 +28,50 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	@Override
-	public void visitGraph(TopoGraph graph) throws Exception {
+	public void visitGraph(TopoGraph graph) throws PaintException {
 		m_target.startTag("graph");
 	}
 
 	@Override
-	public void visitVertex(TopoVertex vertex) throws Exception {
+	public void visitVertex(TopoVertex vertex) throws PaintException {
 		paintVertex(vertex);
 	}
 
 	@Override
-	public void visitEdge(TopoEdge edge) throws Exception {
+	public void visitEdge(TopoEdge edge) throws PaintException {
 		paintEdge(edge);
 	}
 
 	@Override
-	public void completeVertex(TopoVertex vertex) throws Exception {
+	public void completeVertex(TopoVertex vertex) throws PaintException {
 		paintParent(vertex);
 	}
 
 	@Override
-	public void completeGraph(TopoGraph graph) throws Exception {
+	public void completeGraph(TopoGraph graph) throws PaintException {
 		m_target.endTag("graph");
 	}
 
 	private void paintVertex(TopoVertex vertex) throws PaintException {
 		m_target.startTag(getVertexTag(vertex));
 		m_target.addAttribute("key", getKey(vertex));
+		m_target.addAttribute("initialX", getInitialX(vertex));
+		m_target.addAttribute("initialY", getInitialY(vertex));
 		m_target.addAttribute("x", getX(vertex));
 		m_target.addAttribute("y", getY(vertex));
 		m_target.addAttribute("selected", isSelected(vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
-		m_target.addAttribute("semanticZoomLevel", getSemanticZoomLevel(vertex));
 		m_target.addAttribute("label", vertex.getLabel());
 		m_target.addAttribute("tooltipText", vertex.getTooltipText());
 		m_target.endTag(getVertexTag(vertex));
+	}
+
+	private int getInitialY(TopoVertex vertex) {
+		return (int)(Math.random()*1000);
+	}
+
+	private int getInitialX(TopoVertex vertex) {
+		return (int)(Math.random()*1000);
 	}
 
 	private int getSemanticZoomLevel(TopoVertex vertex) {
@@ -122,7 +132,8 @@ public class GraphPainter extends BaseGraphVisitor {
 
 
 	private String getVertexTag(TopoVertex vertex) {
-		return m_graphContainer.hasChildren(getVertexId(vertex)) ? "group" : "vertex";
+		return "vertex";
+		//return m_graphContainer.hasChildren(getVertexId(vertex)) ? "group" : "vertex";
 	}
 
 	private int getX(TopoVertex vertex) {

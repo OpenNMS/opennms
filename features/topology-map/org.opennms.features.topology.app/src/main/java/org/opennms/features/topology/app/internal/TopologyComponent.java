@@ -97,7 +97,7 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     private String m_activeTool = "pan";
 
 	public TopologyComponent(SimpleGraphContainer dataSource) {
-		setGraph(new TopoGraph(dataSource));
+		setGraph(dataSource.getCompleteGraph());
 		
 		m_graphContainer = dataSource;
 
@@ -164,8 +164,10 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 
 		try {
 			graph.visit(painter);
-		} catch(Exception e) {
-			throw new PaintException(e.getMessage());
+		} catch(PaintException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
         
         
@@ -295,6 +297,14 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 		return m_graphContainer.getSelectionManager();
 	}
 
+	private void addVerticesToSelection(String... vertexKeys) {
+		
+		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
+		
+		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
+		getSelectionManager().selectVertices(vertexIds);
+    }
+    
 	private void selectEdge(String edgeKey) {
 		Object edgeId = getGraph().getEdgeByKey(edgeKey).getItemId();
 		
@@ -324,14 +334,6 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         vertex.setSelected(selected);
     }
     
-	private void addVerticesToSelection(String... vertexKeys) {
-		
-		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
-		
-		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
-		getSelectionManager().selectVertices(vertexIds);
-    }
-    
 	protected void setScale(double scale){
 	    m_scale.setValue(scale);
     }
@@ -340,6 +342,10 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 		return m_graph;
 	}
 
+	private void setGraph(TopoGraph graph) {
+		m_graph = graph;
+	}
+	
 	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
         m_menuItemStateListener.add(listener);
     }
@@ -354,18 +360,12 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 	    }
 	}
 
-	private void setGraph(TopoGraph graph) {
-		m_graph = graph;
-	}
-	
 	public void containerItemSetChange(ItemSetChangeEvent event) {
-		getGraph().update();
 		setFitToView(true);
 		requestRepaint();
 	}
 
 	public void containerPropertySetChange(PropertySetChangeEvent event) {
-		getGraph().update();
 		requestRepaint();
 	}
 
@@ -406,17 +406,5 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         }
     }
 
-    public Collection<?> getItemIdsForSelectedVertices() {
-        Collection<?> vItemIds = m_graphContainer.getVertexIds();
-        List<Object> selectedIds = new ArrayList<Object>(); 
-        
-        for(Object itemId : vItemIds) {
-            if(getGraph().getVertexByItemId(itemId).isSelected()) {
-                selectedIds.add(itemId);
-            }
-        }
-        
-        return selectedIds;
-    }
 
 }

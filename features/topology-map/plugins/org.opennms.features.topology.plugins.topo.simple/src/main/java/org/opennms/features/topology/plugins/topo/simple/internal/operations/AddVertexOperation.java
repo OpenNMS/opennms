@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;

@@ -330,6 +330,9 @@ public class SimpleGraphContainer implements GraphContainer {
             m_edgeHolder.update();
             removeAllItems();
             addAll(m_edgeHolder.getElements());
+            if (m_graph != null) {
+            	m_graph.update();
+            }
             fireContainerPropertySetChange();
         }
 
@@ -339,6 +342,9 @@ public class SimpleGraphContainer implements GraphContainer {
             m_edgeHolder.update();
             removeAllItems();
             addAll(m_edgeHolder.getElements());
+            if (m_graph != null) {
+            	m_graph.update();
+            }
             fireItemSetChange();
         }
         
@@ -891,9 +897,16 @@ public class SimpleGraphContainer implements GraphContainer {
 		return new DefaultLayout(this);
 	}
 	
-	public TopoGraph getGraph() {
+	@Override
+	public TopoGraph getCompleteGraph() {
 		return m_graph;
 	}
+
+	@Override
+	public Graph getGraph() {
+		return m_graph;
+	}
+
 	
 	
 

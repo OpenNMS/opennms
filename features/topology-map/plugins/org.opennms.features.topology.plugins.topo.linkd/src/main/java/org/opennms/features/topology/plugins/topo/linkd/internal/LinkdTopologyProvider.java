@@ -43,8 +43,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.TopologyProvider;
-
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -54,8 +54,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
-//import org.springframework.transaction.annotation.Transactional;
-//import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -64,7 +62,6 @@ import com.vaadin.data.util.BeanItem;
 public class LinkdTopologyProvider implements TopologyProvider {
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
-    public static final String ROOT_GROUP_ID = "Network";
     
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "";
@@ -413,7 +410,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 log("loadtopology: found vertex: " + vertex.getId());
                 if (vertex.isRoot()) {
                     if (!vertex.isLeaf())
-                        setParent(vertex.getId(), ROOT_GROUP_ID);
+                        setParent(vertex.getId(), Constants.ROOT_GROUP_ID);
                 } else {
                     setParent(vertex.getId(), vertex.getParent().getId());
                 }

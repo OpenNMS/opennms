@@ -200,7 +200,7 @@ public class TopoGraph implements Graph {
 			}else {
 				TopoVertex displaySource = m_vertexHolder.getElementByItemId(displaySourceId);
 				TopoVertex displayTarget = m_vertexHolder.getElementByItemId(displayTargetId);
-				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus", null, displaySourceId, displaySource, displayTargetId, displayTarget);
+				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus:"+displaySourceId+":"+displayTargetId, null, displaySourceId, displaySource, displayTargetId, displayTarget);
 				visible.add(displayEdge);
 			}
 		}
@@ -225,16 +225,20 @@ public class TopoGraph implements Graph {
     	visitor.visitGraph(this);
     	
     	for(TopoVertex vertex : getVertices()) {
-    		visitor.visitVertex(vertex);
+    		if (vertex.getSemanticZoomLevel() == getSemanticZoomLevel() ||
+    		    (vertex.getSemanticZoomLevel() < getSemanticZoomLevel() && vertex.isLeaf())
+    			) {
+    			visitor.visitVertex(vertex);
+    		}
     	}
     	
-    	for(TopoEdge edge : getEdges()) {
+    	for(TopoEdge edge : getEdges(getSemanticZoomLevel())) {
     		visitor.visitEdge(edge);
     	}
     	
-    	for(TopoVertex vertex : getVertices()) {
-    		visitor.completeVertex(vertex);
-    	}
+    	//or(TopoVertex vertex : getVertices()) {
+    	//	visitor.completeVertex(vertex);
+    	//}
     	
     	visitor.completeGraph(this);
     	

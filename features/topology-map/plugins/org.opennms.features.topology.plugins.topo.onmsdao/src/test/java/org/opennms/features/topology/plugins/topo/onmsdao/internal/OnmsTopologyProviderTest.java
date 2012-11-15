@@ -259,6 +259,11 @@ public class OnmsTopologyProviderTest {
 		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
 	}
 
+	@Override
+	public Graph getCompleteGraph() {
+		throw new UnsupportedOperationException("GraphContainer.getCompleteGraph is not yet implemented.");
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{

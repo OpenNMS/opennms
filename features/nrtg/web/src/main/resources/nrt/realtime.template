@@ -7,7 +7,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 
         <!-- jquery include -->
-        <script type="text/javascript" src="/opennms/js/jquery/jquery.js"></script>
+        <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
 
         <!-- Amq includes -->
         <script type="text/javascript" src="/opennms/js/amq_jquery_adapter.js"></script>
@@ -61,14 +61,22 @@
         var refreshTimerJob = {
             // submits the AJAX collection job request and requeues the timer.
             submitJob: function() {
-                $.get("/opennms/nrt/starter","poll=true&nrtCollectionTaskId="+collectionTaskId,function (messages) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/opennms/nrt/starter',
+                    cache: false,
+                    data: {
+                        poll: 'true',
+                        nrtCollectionTaskId: collectionTaskId
+                    },
+                    success: function (messages) {
                     if (messages != null && messages != '') {
                         $("#debug_messages").html(messages);
                         var result = $.parseJSON(messages);
-                        var measurementSets = result['measurement_sets']
+                        var measurementSets = result['measurement_sets'];
                         //var messagesArray = eval(messages);
 
-                        for(var x=0;x<measurementSets.length;x++) {
+                        for(var x=0; x < measurementSets.length; x++) {
                             var measurementSet = measurementSets[x];
 
                             if (!(measurementSet instanceof Array)) {
@@ -91,7 +99,7 @@
                                 };
 
                                 if (temp.metricType == "counter32" || temp.metricType == "counter64") {
-                                    // first counterMetric ever? Build arrays for merticId and values
+                                    // first counterMetric ever? Build arrays for metricId and values
                                     if (counterMetrics == null) {
                                         counterMetrics = new Array();
                                         counterMetricsValues = new Array();
@@ -137,7 +145,7 @@
                             dataCollector.push(measurementSet);
                         }
                     }
-                });
+                }});
                 this.timeoutID = setTimeout(function(){refreshTimerJob.submitJob()}, this.jobPublishingInterval);
                 debug_jobrequest_sent++;
                 document.getElementById('debug_jobrequest_sent').innerHTML = debug_jobrequest_sent;

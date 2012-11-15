@@ -68,6 +68,21 @@
           </restriction>
         </simpleType>
       </attribute>    
+
+      <attribute default="false" name="useCriteriaFilters" use="optional">
+        <annotation>
+          <documentation>Flag which indicates if the filters defined on packages and interface
+          criterias must be used to select the SNMP interfaces to be tracked by the poller
+          instead of do this selection through requisition policies.
+          </documentation>
+        </annotation>
+ 
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>    
     </complexType>
   </element>
 

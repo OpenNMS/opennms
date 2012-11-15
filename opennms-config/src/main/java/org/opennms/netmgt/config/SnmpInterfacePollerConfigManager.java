@@ -594,5 +594,14 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     public String getService() {
         return getConfiguration().getService();
     }
-    
+
+    /**
+     * <p>useCriteriaFilters</p>
+     *
+     * @return a boolean.
+     */
+    public boolean useCriteriaFilters() {
+        return Boolean.parseBoolean(getConfiguration().getUseCriteriaFilters());
+    }
+
 }
