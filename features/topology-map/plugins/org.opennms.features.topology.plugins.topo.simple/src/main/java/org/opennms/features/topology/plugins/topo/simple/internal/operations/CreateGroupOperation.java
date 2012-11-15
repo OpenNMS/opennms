@@ -35,59 +35,106 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
-public class CreateGroupOperation implements Constants, Operation{
-    
-    
+
+public class CreateGroupOperation implements Constants, Operation {
+
+	public static final String PARAMETER_GROUP_LABEL = "groupLabel";
+
 	TopologyProvider m_topologyProvider;
-    
-    public CreateGroupOperation(TopologyProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-    
-    @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
-        
-        GraphContainer graphContainer = operationContext.getGraphContainer();
-        
-        Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
-        
-        
-//        for(Object itemId : targets) {
-//            m_topologyProvider.setParent(itemId, groupId);
-//        }
-        
-        
-        Object parentGroup = null;
-        for(Object key : targets) {
-            Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
-            Object parent = m_topologyProvider.getVertexContainer().getParent(vertexId);
-            if (parentGroup == null) {
-            	parentGroup = parent;
-            } else if (parentGroup != parent) {
-            	parentGroup = ROOT_GROUP_ID;
-            }
-            m_topologyProvider.setParent(vertexId, groupId);
-        }
 
-        
-        m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
-        
-        return null;
-    }
+	public CreateGroupOperation(TopologyProvider topologyProvider) {
+		m_topologyProvider = topologyProvider;
+	}
 
-    @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
-        return true;
-    }
+	@Override
+	public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
 
-    @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
-        return targets.size() > 0;
-    }
+		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-    @Override
-    public String getId() {
-        return null;
-    }
+		final Window window = operationContext.getMainWindow();
+
+		final Window groupNamePrompt = new Window();
+		groupNamePrompt.setModal(false);
+
+		// Define the fields for the form
+		final PropertysetItem item = new PropertysetItem();
+		item.addItemProperty("Group Label", new ObjectProperty<String>(null, String.class));
+		Form promptForm = new Form() {
+
+			private static final long serialVersionUID = 2067414790743946906L;
+
+			@Override
+			public void commit() {
+				super.commit();
+				String groupLabel = (String)getField("Group Label").getValue();
+
+				Object groupId = m_topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
+
+				/*
+				for(Object itemId : targets) {
+					m_topologyProvider.setParent(itemId, groupId);
+				}
+				*/
+
+				Object parentGroup = null;
+				for(Object key : targets) {
+					Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
+					Object parent = m_topologyProvider.getVertexContainer().getParent(vertexId);
+					if (parentGroup == null) {
+						parentGroup = parent;
+					} else if (parentGroup != parent) {
+						parentGroup = ROOT_GROUP_ID;
+					}
+					m_topologyProvider.setParent(vertexId, groupId);
+				}
+
+				m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+			}
+		};
+		// Buffer changes to the datasource
+		promptForm.setWriteThrough(false);
+		promptForm.setItemDataSource(item);
+		promptForm.getFooter().addComponent(new Button("OK", promptForm, "commit"));
+		Button cancel = new Button("Cancel");
+		cancel.addListener(new ClickListener() {
+
+			private static final long serialVersionUID = -5262757138997825298L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Close the prompt window
+				window.removeWindow(groupNamePrompt);
+				return;
+			}
+		});
+		promptForm.getFooter().addComponent(cancel);
+		groupNamePrompt.addComponent(promptForm);
+
+		window.addWindow(groupNamePrompt);
+
+		return null;
+	}
+
+	@Override
+	public boolean display(List<Object> targets, OperationContext operationContext) {
+		return true;
+	}
+
+	@Override
+	public boolean enabled(List<Object> targets, OperationContext operationContext) {
+		return targets.size() > 0;
+	}
+
+	@Override
+	public String getId() {
+		return null;
+	}
 }

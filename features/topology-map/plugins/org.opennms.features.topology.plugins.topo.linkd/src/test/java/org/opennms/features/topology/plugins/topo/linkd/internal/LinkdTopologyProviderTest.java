@@ -105,7 +105,7 @@ public class LinkdTopologyProviderTest {
 
 	@Test 
 	public void testAddGroup() {
-	    Object parentId = m_topologyProvider.addGroup(LinkdTopologyProvider.GROUP_ICON_KEY);
+	    Object parentId = m_topologyProvider.addGroup("Linkd Group", LinkdTopologyProvider.GROUP_ICON_KEY);
 	    Assert.assertEquals(true, m_topologyProvider.getVertexContainer().containsId(parentId));
 	}
 }

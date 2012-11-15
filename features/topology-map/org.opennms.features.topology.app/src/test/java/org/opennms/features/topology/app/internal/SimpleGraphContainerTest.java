@@ -85,7 +85,7 @@ public class SimpleGraphContainerTest {
     public void testGroupingVertices() {
         TestTopologyProvider topologyProvider = topoProvider();
         
-        Object groupId = topologyProvider.addGroup("groupIcon.jpg");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "groupIcon.jpg");
         topologyProvider.setParent("v0", groupId);
         topologyProvider.setParent("v1", groupId);
         
@@ -150,7 +150,7 @@ public class SimpleGraphContainerTest {
         Object vertId2 = topologyProvider.addVertex();
         assertEquals(4, gcIds.size());
        
-        Object groupId = topologyProvider.addGroup("iconofgroup.jpg");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "iconofgroup.jpg");
         assertEquals(5, graphContainer.getVertexIds().size());
         
         topologyProvider.setParent(vertId, groupId);
@@ -198,7 +198,7 @@ public class SimpleGraphContainerTest {
         assertEquals(2, eventsReceived.get());
         eventsReceived.set(0);
        
-        Object groupId = topologyProvider.addGroup("iconofgroup.jpg");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "iconofgroup.jpg");
         assertEquals(5, graphContainer.getVertexIds().size());
         assertEquals(2, eventsReceived.get());
         eventsReceived.set(0);
@@ -261,7 +261,7 @@ public class SimpleGraphContainerTest {
         TopoVertex v2 = graph.getVertexByItemId(findByItemId(graphContainer, vertId2));
         assertNotNull(v2);
         
-        Object groupId = topologyProvider.addGroup("iconofgroup.jpg");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "iconofgroup.jpg");
         assertEquals(5, graphContainer.getVertexIds().size());
         TopoVertex g = graph.getVertexByItemId(findByItemId(graphContainer, groupId));
         assertNotNull(g);
@@ -360,7 +360,7 @@ public class SimpleGraphContainerTest {
         assertEquals(targetGVertex.getKey(), gEdge.getTarget().getKey());
         
         
-        Object groupId = topologyProvider.addGroup("iconGroup.png");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "iconGroup.png");
         topologyProvider.setParent(sourceVertex.getId(), groupId);
         topologyProvider.setParent(targetVertex.getId(), groupId);
         
@@ -425,7 +425,7 @@ public class SimpleGraphContainerTest {
         assertEquals(targetVertex.getKey(), edge.getTarget().getKey());
         
         
-        Object groupId = topologyProvider.addGroup("iconGroup.png");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "iconGroup.png");
         topologyProvider.setParent(sourceTestVertex.getId(), groupId);
         topologyProvider.setParent(targetTestVertex.getId(), groupId);
         

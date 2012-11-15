@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.support.FilterableHierarchicalContainer
 import org.opennms.features.topology.api.support.SelectionTree;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class NCSSelectionTree extends SelectionTree {
@@ -44,8 +45,7 @@ public class NCSSelectionTree extends SelectionTree {
 
 	private NCSComponentRepository m_dao;
 	private NodeDao m_nodeDao;
-
-	private Map<String,Edge> m_edges = new HashMap<String,Edge>();
+	private EdgeProviderMapImpl m_edges = new EdgeProviderMapImpl();
 
 	public NCSSelectionTree(FilterableHierarchicalContainer container) {
 		super(container);
@@ -68,13 +68,19 @@ public class NCSSelectionTree extends SelectionTree {
 	}
 
 	@Override
-	public String getTitle() {
-		return "Services";
-	}
-
-	@Override
 	public void select(Object itemId) {
 		// TODO: Create edge references that correspond to the selected items
+		NCSComponent comp = m_dao.get((Long)itemId);
+		Long parentId = (Long)getParent(itemId);
+		for (Object peerKey : getChildren(parentId)) {
+			if (peerKey.equals(itemId)) {
+				continue;
+			} else if (isSelected(parentId)) {
+				// create edge between node and peer
+			} else if (isSelected(peerKey)) {
+				// create edge between node and peer
+			}
+		}
 		super.select(itemId);
 	}
 

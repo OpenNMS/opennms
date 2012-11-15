@@ -156,6 +156,8 @@ abstract public class TestVertex {
 			return false;
 		return true;
 	}
-	
-	
+
+	public void setLabel(String label) {
+		// Ignore the label
+	}
 }
