@@ -200,7 +200,7 @@ public class TopoGraph implements Graph {
 			}else {
 				TopoVertex displaySource = m_vertexHolder.getElementByItemId(displaySourceId);
 				TopoVertex displayTarget = m_vertexHolder.getElementByItemId(displayTargetId);
-				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus", null, displaySourceId, displaySource, displayTargetId, displayTarget);
+				TopoEdge displayEdge = new TopoEdge(m_dataSource, "bogus:"+displaySourceId+":"+displayTargetId, null, displaySourceId, displaySource, displayTargetId, displayTarget);
 				visible.add(displayEdge);
 			}
 		}

@@ -40,6 +40,10 @@ public final class GWTEdge extends JavaScriptObject {
     
     protected GWTEdge() {};
     
+    public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
+    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": ""};
+	}-*/;
+
     public final native GWTVertex getSource() /*-{
         return this.source;
     }-*/;
@@ -48,10 +52,6 @@ public final class GWTEdge extends JavaScriptObject {
         return this.target;
     }-*/;
     
-    public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-        return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": ""};
-    }-*/;
-
     public final native String getId() /*-{
         return this.id;
     }-*/;
@@ -88,26 +88,6 @@ public final class GWTEdge extends JavaScriptObject {
         return this.tooltipText;
     }-*/;
 
-    static Func<Integer, GWTEdge> getTargetY() {
-        
-        return new Func<Integer, GWTEdge>(){
-    
-            public Integer call(GWTEdge datum, int index) {
-                return datum.getTarget().getY();
-            }
-        };
-    }
-
-    static Func<Integer, GWTEdge> getSourceY() {
-        
-        return new Func<Integer, GWTEdge>(){
-    
-            public Integer call(GWTEdge datum, int index) {
-                return datum.getSource().getY();
-            }
-        };
-    }
-
     public static final native void consoleLog(Object obj)/*-{
         $wnd.console.log(obj);
     }-*/;
@@ -129,12 +109,6 @@ public final class GWTEdge extends JavaScriptObject {
             public String call(GWTEdge edge, int index) {
                 GWTVertex source = edge.getSource();
 				GWTVertex target = edge.getTarget();
-				consoleLog("Edge " + edge.getId());
-				consoleLog(edge);
-            	consoleLog("Source for edge " + edge.getId());
-            	consoleLog(source);
-            	consoleLog("Target for edge " + edge.getId());
-            	consoleLog(target);
 				int dx = Math.abs(target.getX() - source.getX());
                 int dy = Math.abs(target.getY() - source.getY());
                 int dr = edge.getLinkNum() > 1 ? (Math.max(dx, dy) * 10) / edge.getLinkNum() : 0;

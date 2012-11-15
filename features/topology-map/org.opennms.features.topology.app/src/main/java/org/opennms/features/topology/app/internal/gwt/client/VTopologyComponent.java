@@ -225,7 +225,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			//Updates
 			edgeSelection.with(updateTransition()).call(GWTEdge.draw()).attr("opacity", 1)
-			    .transition().styleTween("stroke-width", edgeStrokeWidthTween(topologyView));
+			    //.transition().styleTween("stroke-width", edgeStrokeWidthTween(topologyView))
+			    ;
 
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
@@ -645,35 +646,17 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		setFitToView(uidl.getBooleanAttribute("fitToView"));
 		setActiveTool(uidl.getStringAttribute("activeTool"));
 
-		UIDL graph = uidl.getChildByTagName("graph");
-		Iterator<?> children = graph.getChildIterator();
+		UIDL graphUIDL = uidl.getChildByTagName("graph");
+		Iterator<?> children = graphUIDL.getChildIterator();
 
-		GWTGraph graphConverted = GWTGraph.create();
+		GWTGraph graph = GWTGraph.create();
 		GWTVertex.setBackgroundImage(client.translateVaadinUri("theme://images/vertex_circle_selector.png"));
 		while(children.hasNext()) {
 			UIDL child = (UIDL) children.next();
 
-			if(child.getTag().equals("group")) {
-				GWTGroup group = GWTGroup.create(child.getStringAttribute("key"), child.getIntAttribute("x"), child.getIntAttribute("y"));
-				boolean booleanAttribute = child.getBooleanAttribute("selected");
-
-				group.setSelected(booleanAttribute);
-				group.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
-				group.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
-
-				if (child.hasAttribute("label")) {
-					group.setLabel(child.getStringAttribute("label"));
-				}
-				graphConverted.addGroup(group);
-
-				if(m_client != null) {
-					TooltipInfo ttInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
-					m_client.registerTooltip(this, group, ttInfo);
-				}
-
-			}else if(child.getTag().equals("vertex")) {
+			if(child.getTag().equals("vertex")) {
 				String vertexKey = child.getStringAttribute("key");
-				consoleLog("UIDL vertex: " + vertexKey);
+				//consoleLog("UIDL vertex: " + vertexKey);
 
 				GWTVertex vertex = GWTVertex.create(vertexKey, child.getIntAttribute("x"), child.getIntAttribute("y"));
 				
@@ -683,21 +666,13 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				boolean selected = child.getBooleanAttribute("selected");
 				vertex.setSelected(selected);
 
-				vertex.setSemanticZoomLevel(child.getIntAttribute("semanticZoomLevel"));
-
-				if(child.hasAttribute("groupKey")) {
-					String groupKey = child.getStringAttribute("groupKey");
-					GWTGroup group = graphConverted.getGroup(groupKey);
-					vertex.setParent(group);
-				}
-
-				vertex.setIcon(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
+				vertex.setIconUrl(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
 
 				if (child.hasAttribute("label")) {
 					vertex.setLabel(child.getStringAttribute("label"));
 				}
 
-				graphConverted.addVertex(vertex);
+				graph.addVertex(vertex);
 
 				if(m_client != null) {
 					TooltipInfo ttInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
@@ -708,10 +683,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				String edgeKey = child.getStringAttribute("key");
 				String sourceKey = child.getStringAttribute("source");
 				String targetKey = child.getStringAttribute("target");
-				consoleLog("UIDL edge: " + edgeKey + "(" + sourceKey +"," + targetKey +")");
+				//consoleLog("UIDL edge: " + edgeKey + "(" + sourceKey +"," + targetKey +")");
 				
-				GWTVertex source = graphConverted.findVertexById(sourceKey);
-				GWTVertex target = graphConverted.findVertexById( targetKey );
+				GWTVertex source = graph.findVertexById(sourceKey);
+				GWTVertex target = graph.findVertexById( targetKey );
 				GWTEdge edge = GWTEdge.create(edgeKey, source, target);
 				boolean selected = child.getBooleanAttribute("selected");
 				String cssClass = child.getStringAttribute("cssClass");
@@ -719,27 +694,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				edge.setCssClass(cssClass);
 				String ttText = child.getStringAttribute("tooltipText");
 				edge.setTooltipText(ttText);
-				graphConverted.addEdge(edge);
+				graph.addEdge(edge);
 
-			}else if(child.getTag().equals("groupParent")) {
-				String groupKey = child.getStringAttribute("key");
-				String parentKey = child.getStringAttribute("parentKey");
-				GWTGroup group = graphConverted.getGroup(groupKey);
-				GWTGroup parentGroup = graphConverted.getGroup(parentKey);
-
-				group.setParent(parentGroup);
-
-			}else if(child.getTag().equals("vertexParent")) {
-				String vertexKey = child.getStringAttribute("key");
-				String parentKey = child.getStringAttribute("parentKey");
-				GWTVertex vertex = graphConverted.getVertex(vertexKey);
-				GWTGroup parentGroup = graphConverted.getGroup(parentKey);
-
-				vertex.setParent(parentGroup);
 			}
 		}
 
-		setGraph(graphConverted);
+		setGraph(graph);
 		
 	}
 
@@ -792,9 +752,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_graph = graph;
 		updateGraphUpdateListeners();
 		if(isPanToSelection()) {
-		    centerSelection(m_graph.getVertices(m_semanticZoomLevel));
+		    centerSelection(m_graph.getVertices());
 		} else { // if(isFitToView())
-		    fitMapToView(m_graph.getVertices(m_semanticZoomLevel));
+		    fitMapToView(m_graph.getVertices());
 		}
         
 		//Set the ViewRenderer to the Animated one if it isn't already

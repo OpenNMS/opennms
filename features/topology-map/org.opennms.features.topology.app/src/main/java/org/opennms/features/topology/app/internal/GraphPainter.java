@@ -61,7 +61,6 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("y", getY(vertex));
 		m_target.addAttribute("selected", isSelected(vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
-		m_target.addAttribute("semanticZoomLevel", getSemanticZoomLevel(vertex));
 		m_target.addAttribute("label", vertex.getLabel());
 		m_target.addAttribute("tooltipText", vertex.getTooltipText());
 		m_target.endTag(getVertexTag(vertex));

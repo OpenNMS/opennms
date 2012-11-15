@@ -36,8 +36,6 @@ import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
 
 public class GWTVertex extends JavaScriptObject {
@@ -51,6 +49,10 @@ public class GWTVertex extends JavaScriptObject {
     
     protected GWTVertex() {};
     
+    public static native GWTVertex create(String id, int x, int y) /*-{
+    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null};
+	}-*/;
+
     public final native String getId()/*-{
         return this.id;
     }-*/;
@@ -87,10 +89,6 @@ public class GWTVertex extends JavaScriptObject {
     	return this.nodeID;
 	}-*/;
     
-    public static native GWTVertex create(String id, int x, int y) /*-{
-        return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null};
-    }-*/;
-
     public final native int getX()/*-{
     	return this.x;
 	}-*/;
@@ -128,15 +126,11 @@ public class GWTVertex extends JavaScriptObject {
     }
     
     
-    public final native int getSemanticZoomLevel() /*-{
-		return this.semanticZoomLevel;
-	}-*/;
-    
     public final native String getIconUrl() /*-{
         return this.iconUrl;
     }-*/;
     
-    public final native void setIcon(String iconUrl) /*-{
+    public final native void setIconUrl(String iconUrl) /*-{
         this.iconUrl = iconUrl;
     }-*/;
 
@@ -160,7 +154,6 @@ public class GWTVertex extends JavaScriptObject {
     }
     
     protected static Func<String, GWTVertex> getClassName() {
-        // TODO Auto-generated method stub
         return new Func<String, GWTVertex>(){
 
             @Override
@@ -183,8 +176,8 @@ public class GWTVertex extends JavaScriptObject {
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
     
-    		public String call(GWTVertex datum, int index) {
-    			return "translate( " + datum.getX() + "," + datum.getY() + ")";
+    		public String call(GWTVertex vertex, int index) {
+    			return "translate( " + vertex.getX() + "," + vertex.getY() + ")";
     		}
     		
     	};
@@ -259,6 +252,17 @@ public class GWTVertex extends JavaScriptObject {
     	};
     }
     
+    static Func<String, GWTVertex> iconUrl() {
+    	return new Func<String, GWTVertex>() {
+
+			@Override
+			public String call(GWTVertex datum, int index) {
+				return datum.getIconUrl();
+			}
+    		
+    	};
+    }
+    
     public static D3Behavior draw() {
         return new D3Behavior() {
 
@@ -295,11 +299,13 @@ public class GWTVertex extends JavaScriptObject {
                 D3 textSelection = vertex.append("text");
                 
                 imageSelection.attr("xlink:href", loadIconAndSize(bgImage, imageSelection, circleSelection, textSelection));
-//                      .attr("x", "-24px")
-//                      .attr("y", "-24px")
-//                      .attr("width", "48px")
-//                      .attr("height", "48px");
                 
+//                imageSelection.attr("xlink:href", iconUrl())
+//                	.attr("x", "-24px")
+//                	.attr("y", "-24px")
+//                	.attr("width", "48px")
+//                	.attr("height", "48px");
+
                 vertex.call(draw());
                 
                 return vertex;
@@ -311,25 +317,4 @@ public class GWTVertex extends JavaScriptObject {
         $wnd.console.log(doc)
     }-*/;
     
-	public final native void setParent(GWTGroup group) /*-{
-		this.group = group;
-	}-*/;
-	
-	public final native GWTGroup getParent() /*-{
-		return this.group;
-	}-*/;
-
-	public final native void setSemanticZoomLevel(int semanticZoomLevel) /*-{
-		this.semanticZoomLevel = semanticZoomLevel;
-	}-*/;
-
-	public final GWTVertex getDisplayVertex(int semanticZoomLevel) {
-		return this;
-		//if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
-		//	return this;
-		//}else {
-		//	return getParent().getDisplayVertex(semanticZoomLevel);
-		//}
-		
-	}
 }
