@@ -217,6 +217,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Delete Group"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.DeleteGroupOperation">
+            <argument ref="topologyProvider"/>
+        </bean>
+    </service>
 
     <!-- removed for SPC-247
     <service interface="org.opennms.features.topology.api.Operation" >

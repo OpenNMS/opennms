@@ -64,7 +64,10 @@ public class CreateGroupOperation implements Constants, Operation {
 		final Window window = operationContext.getMainWindow();
 
 		final Window groupNamePrompt = new Window();
-		groupNamePrompt.setModal(false);
+		groupNamePrompt.setModal(true);
+		groupNamePrompt.setResizable(false);
+		groupNamePrompt.setHeight("180px");
+		groupNamePrompt.setWidth("300px");
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
@@ -105,6 +108,8 @@ public class CreateGroupOperation implements Constants, Operation {
 
 				// Save the topology
 				m_topologyProvider.save(null);
+
+				graphContainer.redoLayout();
 			}
 		};
 		// Buffer changes to the datasource
