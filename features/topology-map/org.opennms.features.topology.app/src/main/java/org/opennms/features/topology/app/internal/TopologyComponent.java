@@ -38,6 +38,7 @@ import java.util.Map;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -95,18 +96,18 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
 
-	public TopologyComponent(GraphContainer dataSource) {
+	public TopologyComponent(SimpleGraphContainer dataSource) {
 		setGraph(new TopoGraph(dataSource));
 		
 		m_graphContainer = dataSource;
 
-//		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
-//			
-//			@Override
-//			public void selectionChanged(SelectionManager selectionManager) {
-//				requestRepaint();
-//			}
-//		});
+		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void selectionChanged(SelectionManager selectionManager) {
+				requestRepaint();
+			}
+		});
 
 		
 		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
@@ -156,11 +157,13 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
-		GraphVisitor painter = new GraphPainter(m_graphContainer, m_iconRepoManager, target);
+        
+		TopoGraph graph = getGraph();
 
-		TopoGraph r = getGraph();
+		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, target);
+
 		try {
-			r.visit(painter);
+			graph.visit(painter);
 		} catch(Exception e) {
 			throw new PaintException(e.getMessage());
 		}

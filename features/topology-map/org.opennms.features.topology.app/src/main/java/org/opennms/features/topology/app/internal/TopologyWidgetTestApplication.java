@@ -118,13 +118,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer);
-		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
-            
-            @Override
-            public void selectionChanged(SelectionManager selectionManager) {
-                m_topologyComponent.requestRepaint();
-            }
-        });
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
