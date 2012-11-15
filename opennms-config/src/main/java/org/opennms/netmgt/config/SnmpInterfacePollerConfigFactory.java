@@ -229,4 +229,5 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }
+
 }

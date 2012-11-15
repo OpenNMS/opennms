@@ -56,6 +56,12 @@ public interface SnmpInterfacePollerConfig {
      */
     public int getThreads();
     /**
+     * <p>useCriteriaFilters</p>
+     *
+     * @return a boolean.
+     */
+    public boolean useCriteriaFilters();
+    /**
      * <p>getService</p>
      *
      * @return a {@link java.lang.String} object.

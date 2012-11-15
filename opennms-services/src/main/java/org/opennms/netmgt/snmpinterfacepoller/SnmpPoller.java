@@ -250,7 +250,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
             if (pkgName != null) {
                 log().debug("Scheduling snmppolling for node: " + nodeid +" ip address: " + ipaddress + " - Found package interface with name: " + pkgName);
                 scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,pkgName), pkgName);
-            } else {
+            } else if (!getPollerConfig().useCriteriaFilters()) {
                 log().debug("No SNMP Poll Package found for node: " + nodeid +" ip address: " + ipaddress + ". - Scheduling according with default interval");
                 scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, "null"), "null");
             }
@@ -297,15 +297,15 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 log().debug("package interface status: Off");
             }
         }
-        
-        log().debug("excluding criteria used for default polling: " + excludingCriteria);
-        PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface("null", excludingCriteria, 
+        if (!getPollerConfig().useCriteriaFilters()) {
+            log().debug("excluding criteria used for default polling: " + excludingCriteria);
+            PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface("null", excludingCriteria, 
                 false, -1, false, -1, false, -1, false, -1);
 
-         node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
+            node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 
-         getNetwork().schedule(node,getPollerConfig().getInterval(),getScheduler());
-        
+            getNetwork().schedule(node,getPollerConfig().getInterval(),getScheduler());
+        }
     }
     
     private void createScheduler() {
