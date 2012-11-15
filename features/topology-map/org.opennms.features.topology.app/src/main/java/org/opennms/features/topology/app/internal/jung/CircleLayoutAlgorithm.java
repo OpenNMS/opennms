@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
 
@@ -48,12 +49,13 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		TopoGraph g = (TopoGraph) graphContainer.getGraph();
 		
-		int szl = g.getSemanticZoomLevel();
+		int szl = graphContainer.getSemanticZoomLevel();
 		
+		final Layout graphLayout = g.getLayout();
 		
 		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
 
-		Collection<Object> vertices = g.getGraphContainer().getDisplayVertexIds(szl);
+		Collection<Object> vertices = graphContainer.getDisplayVertexIds(szl);
 		
 		for(Object v : vertices) {
 			jungGraph.addVertex(v);
@@ -69,14 +71,14 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		CircleLayout<Object, TopoEdge> layout = new CircleLayout<Object, TopoEdge>(jungGraph);
 		layout.setInitializer(new Transformer<Object, Point2D>() {
 			public Point2D transform(Object v) {
-				return new Point(graphContainer.getX(v), graphContainer.getY(v));
+				return new Point(graphLayout.getX(v), graphLayout.getY(v));
 			}
 		});
 		layout.setSize(selectLayoutSize(graphContainer));
 		
 		for(Object v : vertices) {
-			graphContainer.setX(v, (int)layout.getX(v));
-			graphContainer.setY(v, (int)layout.getY(v));
+			graphLayout.setX(v, (int)layout.getX(v));
+			graphLayout.setY(v, (int)layout.getY(v));
 		}
 		
 		

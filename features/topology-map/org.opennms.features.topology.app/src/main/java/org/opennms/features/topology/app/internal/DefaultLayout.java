@@ -16,8 +16,18 @@ public class DefaultLayout implements Layout {
 	}
 
 	@Override
+	public void setX(Object vertexId, int x) {
+		m_simpleGraphContainer.setX(vertexId, x);
+	}
+
+	@Override
 	public int getY(Object vertexId) {
 		return m_simpleGraphContainer.getY(vertexId);
+	}
+
+	@Override
+	public void setY(Object vertexId, int y) {
+		m_simpleGraphContainer.setY(vertexId, y);
 	}
 
 }
