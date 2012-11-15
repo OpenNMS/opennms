@@ -384,9 +384,9 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 */
 
     @Override
-    public Object addGroup(String groupIconKey) {
+    public Object addGroup(String groupLabel, String groupIconKey) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
+        addGroup(nextGroupId, groupIconKey, groupLabel);
         return nextGroupId;
     }
 

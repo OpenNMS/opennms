@@ -174,9 +174,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     @Override
-    public Object addGroup(String groupIconKey) {
+    public Object addGroup(String groupName, String groupIconKey) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIconKey, "Group " + nextGroupId);
+        addGroup(nextGroupId, groupIconKey, groupName);
         return nextGroupId;
     }
 

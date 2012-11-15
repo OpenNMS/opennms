@@ -38,7 +38,7 @@ public interface TopologyProvider {
 
     void setParent(Object vertexId, Object parentId);
 
-    Object addGroup(String groupIcon);
+    Object addGroup(String groupLabel, String groupIcon);
 
     boolean containsVertexId(Object vertexId);
 

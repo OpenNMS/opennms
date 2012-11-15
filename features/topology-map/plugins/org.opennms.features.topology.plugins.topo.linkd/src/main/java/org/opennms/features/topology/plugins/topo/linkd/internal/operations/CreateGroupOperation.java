@@ -51,7 +51,7 @@ public class CreateGroupOperation implements Operation {
             
             GraphContainer graphContainer = operationContext.getGraphContainer();
             
-            Object groupId = m_topologyProvider.addGroup(GROUP_ICON_KEY);
+            Object groupId = m_topologyProvider.addGroup("Linkd Group", GROUP_ICON_KEY);
             Object parentGroup = null;
             for(Object target : targets) {
                 Object vertexId = graphContainer.getVertexItemIdForVertexKey(target);

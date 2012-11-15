@@ -33,7 +33,7 @@ public class SFreeTopologyProvider implements TopologyProvider {
 	}
 
 	@Override
-	public Object addGroup(String groupIcon) {
+	public Object addGroup(String groupName, String groupIcon) {
 		return null;
 	}
 

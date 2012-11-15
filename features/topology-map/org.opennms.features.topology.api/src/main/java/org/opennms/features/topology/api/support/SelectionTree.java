@@ -15,7 +15,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial", "unchecked"})
-public abstract class SelectionTree extends Tree implements SelectionListener, IViewContribution {
+public abstract class SelectionTree extends Tree implements SelectionListener {
 
     private static class TreeItemClickTracker{
         
@@ -154,13 +154,5 @@ public abstract class SelectionTree extends Tree implements SelectionListener, I
     @Override
     public FilterableHierarchicalContainer getContainerDataSource() {
         return (FilterableHierarchicalContainer)super.getContainerDataSource();
-    }
-
-    @Override
-    public abstract String getTitle();
-
-    @Override
-    public Component getView(WidgetContext widgetContext) {
-        return this;
     }
 }

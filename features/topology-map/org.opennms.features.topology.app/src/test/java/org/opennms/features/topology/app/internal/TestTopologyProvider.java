@@ -99,18 +99,19 @@ public class TestTopologyProvider implements TopologyProvider{
     }
 
     @Override
-    public Object addGroup(String groupIcon) {
+    public Object addGroup(String groupLabel, String groupIcon) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIcon);
+        addGroup(nextGroupId, groupIcon, groupLabel);
         return nextGroupId;
     }
 
-    private Item addGroup(String groupId, String groupIcon) {
+    private Item addGroup(String groupId, String groupIcon, String groupLabel) {
         if(m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         TestVertex vertex = new TestGroup(groupId);
         vertex.setIcon(groupIcon);
+        vertex.setLabel(groupLabel);
         return m_vertexContainer.addBean(vertex);
     }
 

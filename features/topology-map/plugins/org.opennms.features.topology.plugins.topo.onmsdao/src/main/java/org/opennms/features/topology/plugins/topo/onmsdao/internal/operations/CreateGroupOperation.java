@@ -47,7 +47,7 @@ public class CreateGroupOperation implements Constants, Operation{
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         
-        Object groupId = m_topologyProvider.addGroup(GROUP_ICON);
+        Object groupId = m_topologyProvider.addGroup("Group", GROUP_ICON);
         
         m_topologyProvider.setParent(groupId, ROOT_GROUP_ID);
         

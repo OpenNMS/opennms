@@ -146,7 +146,7 @@ public class TopologyComponentTest {
         
         Collection<?> vertIds = topologyProvider.getVertexIds();
         
-        Object groupId = topologyProvider.addGroup("GroupIcon.jpg");
+        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
             BeanItem<TestVertex> beanItem = topologyProvider.getVertexItem(vertId);
@@ -191,7 +191,7 @@ public class TopologyComponentTest {
         
         Collection<?> vertIds = topoProvider.getVertexIds();
         
-        Object groupId = topoProvider.addGroup("GroupIcon.jpg");
+        Object groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
             TestVertex v = (TestVertex) ((BeanItem<TestVertex>) topoProvider.getVertexItem(vertId)).getBean();
