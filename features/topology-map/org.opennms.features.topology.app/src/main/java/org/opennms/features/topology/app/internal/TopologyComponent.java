@@ -358,16 +358,6 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 		m_graph = graph;
 	}
 	
-	public void setContainerDataSource(GraphContainer graphContainer) {
-		getGraph().setDataSource(graphContainer);
-		m_graphContainer = graphContainer;
-		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
-		
-		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
-	}
-
 	public void containerItemSetChange(ItemSetChangeEvent event) {
 		getGraph().update();
 		setFitToView(true);

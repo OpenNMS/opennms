@@ -61,13 +61,13 @@ public class TopoGraph implements Graph {
 		
 	}
 	
-	public SimpleGraphContainer getGraphContainer() { return m_dataSource; }
+	private SimpleGraphContainer getGraphContainer() { return m_dataSource; }
 	
-	public int getSemanticZoomLevel() {
+	private int getSemanticZoomLevel() {
 		return getGraphContainer().getSemanticZoomLevel();
 	}
 	
-	public void setDataSource(GraphContainer dataSource) {
+	private void setDataSource(GraphContainer dataSource) {
 		if(dataSource == m_dataSource) {
 			return;
 		}
@@ -130,10 +130,6 @@ public class TopoGraph implements Graph {
 		m_edgeHolder.update();
 	}
 
-	public DisplayState getDataSource() {
-		return m_dataSource;
-	}
-
 	public List<TopoVertex> getVertices(){
 		return m_vertexHolder.getElements();
 	}
@@ -159,11 +155,11 @@ public class TopoGraph implements Graph {
 		return m_vertexHolder.getElementByKey(key);
 	}
 	
-	public List<TopoEdge> getEdgesForVertex(TopoVertex vertex){
+	private List<TopoEdge> getEdgesForVertex(TopoVertex vertex){
 		return m_edgeHolder.getElementsByItemIds(m_dataSource.getEdgeIdsForVertex(vertex.getItemId()));
 	}
 
-	public List<TopoEdge> getEdgesForVertex(TopoVertex vertex, int semanticZoomLevel){
+	private List<TopoEdge> getEdgesForVertex(TopoVertex vertex, int semanticZoomLevel){
 		TopoVertex displayVertex = getDisplayVertex(vertex, semanticZoomLevel);
 		List<TopoEdge> edges = getEdges(semanticZoomLevel);
 		List<TopoEdge> visible = new ArrayList<TopoEdge>(edges.size());
@@ -181,7 +177,7 @@ public class TopoGraph implements Graph {
 		return visible;
 	}
 
-	public TopoVertex getDisplayVertex(TopoVertex vertex, int semanticZoomLevel) {
+	private TopoVertex getDisplayVertex(TopoVertex vertex, int semanticZoomLevel) {
 		Object vertexId = m_dataSource.getDisplayVertexId(vertex.getItemId(), semanticZoomLevel);
 		return m_vertexHolder.getElementByItemId(vertexId);
 	}
@@ -216,7 +212,7 @@ public class TopoGraph implements Graph {
 		return m_vertexHolder.getElementByItemId(itemId);
 	}
 
-    public TopoEdge getEdgeByItemId(String edgeItemId) {
+    private TopoEdge getEdgeByItemId(String edgeItemId) {
         return m_edgeHolder.getElementByItemId(edgeItemId);
     }
 
@@ -248,10 +244,7 @@ public class TopoGraph implements Graph {
 		return m_vertexHolder.getItemsIdsForKeys(vertexKeys);
 	}
 
-	SelectionManager getSelectionManager() {
-		return m_dataSource.getSelectionManager();
-	}
-
+	@Override
 	public Layout getLayout() {
 		return m_dataSource.getLayout();
 	}
