@@ -79,8 +79,10 @@ public interface GraphContainer extends DisplayState {
 
 	public Collection<?> getVertexIds();
 	
+	public Graph getCompleteGraph();
+	
 	public Graph getGraph();
-
+	
 	public boolean hasChildren(Object itemId);
 
 	public Collection<?> getChildren(Object itemId);

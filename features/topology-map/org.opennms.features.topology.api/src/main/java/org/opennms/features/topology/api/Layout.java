@@ -1,7 +1,9 @@
 package org.opennms.features.topology.api;
 
-public interface Layout {
+import org.opennms.features.topology.api.topo.VertexRef;
 
+public interface Layout {
+	
 	int getX(Object vertexId);
 
 	void setX(Object vertexId, int x);

@@ -260,6 +260,11 @@ public class SimpleTopologyProviderTest {
 	public Graph getGraph() {
 		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
 	}
+
+	@Override
+	public Graph getCompleteGraph() {
+		throw new UnsupportedOperationException("GraphContainer.getCompleteGraph is not yet implemented.");
+	}
         
     }
     

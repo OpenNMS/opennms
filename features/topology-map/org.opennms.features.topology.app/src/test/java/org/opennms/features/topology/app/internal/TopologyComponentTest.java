@@ -53,10 +53,6 @@ public class TopologyComponentTest {
             super(dataSource);
         }
         
-        public TopoGraph getGraph() {
-            return super.getGraph();
-        }
-        
     }
     
     @Test
