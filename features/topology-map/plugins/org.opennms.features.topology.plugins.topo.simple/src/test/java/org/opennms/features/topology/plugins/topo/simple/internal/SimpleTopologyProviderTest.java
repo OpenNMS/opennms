@@ -45,6 +45,7 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
@@ -254,6 +255,11 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public Collection<?> getVertexForest(Collection<?> vertexIds) {
 		throw new UnsupportedOperationException("GraphContainer.getVertexForest is not yet implemented.");
+	}
+
+	@Override
+	public Graph getGraph() {
+		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
 	}
         
     }

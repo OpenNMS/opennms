@@ -118,13 +118,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer);
-		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
-            
-            @Override
-            public void selectionChanged(SelectionManager selectionManager) {
-                m_topologyComponent.requestRepaint();
-            }
-        });
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
@@ -224,7 +217,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
 		m_treeMapSplitPanel.setSizeFull();
 
-		m_commandManager.addActionHandlers(m_topologyComponent, m_graphContainer, getMainWindow());
 		m_commandManager.addCommandUpdateListener(this);
 
 		menuBarUpdated(m_commandManager);

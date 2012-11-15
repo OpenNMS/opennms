@@ -163,6 +163,22 @@
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
+
+    <!-- these are required in order to ensure that the TopologyComponent class can load to it can be checked for annotations -->
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
     
   </dependencies>
   

@@ -15,9 +15,9 @@ public class GraphPainter extends BaseGraphVisitor {
 	private final PaintTarget m_target;
 	private final Layout m_layout;
 
-	GraphPainter(GraphContainer graphContainer, IconRepositoryManager iconRepoManager, PaintTarget target) {
+	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, PaintTarget target) {
 		m_graphContainer = graphContainer;
-		m_layout = ((SimpleGraphContainer)graphContainer).getGraph().getLayout();
+		m_layout = layout;
 		m_iconRepoManager = iconRepoManager;
 		m_target = target;
 	}

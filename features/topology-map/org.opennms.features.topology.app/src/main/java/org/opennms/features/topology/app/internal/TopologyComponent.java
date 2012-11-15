@@ -38,6 +38,7 @@ import java.util.Map;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -48,8 +49,6 @@ import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.Action;
-import com.vaadin.event.Action.Handler;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -57,7 +56,7 @@ import com.vaadin.ui.ClientWidget;
 
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements Action.Container, ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
+public class TopologyComponent extends AbstractComponent implements ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
 	
@@ -97,18 +96,18 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
 
-	public TopologyComponent(GraphContainer dataSource) {
+	public TopologyComponent(SimpleGraphContainer dataSource) {
 		setGraph(new TopoGraph(dataSource));
 		
 		m_graphContainer = dataSource;
 
-//		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
-//			
-//			@Override
-//			public void selectionChanged(SelectionManager selectionManager) {
-//				requestRepaint();
-//			}
-//		});
+		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void selectionChanged(SelectionManager selectionManager) {
+				requestRepaint();
+			}
+		});
 
 		
 		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
@@ -158,11 +157,13 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
-		GraphVisitor painter = new GraphPainter(m_graphContainer, m_iconRepoManager, target);
+        
+		TopoGraph graph = getGraph();
 
-		TopoGraph r = getGraph();
+		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, target);
+
 		try {
-			r.visit(painter);
+			graph.visit(painter);
 		} catch(Exception e) {
 			throw new PaintException(e.getMessage());
 		}
@@ -301,10 +302,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 
 	}
 
-	private void deselectAll() {
-		getSelectionManager().deselectAll();
-	}
-
     private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
         m_scaleUpdateFromUI  = scaleUpdateFromUI;
     }
@@ -327,18 +324,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
         vertex.setSelected(selected);
     }
     
-	public void selectVerticesByItemId(Collection<Object> itemIds) {
-    	
-        deselectAll();
-        
-        getSelectionManager().selectVertices(itemIds);
-
-        if(itemIds.size() > 0) {
-            setPanToSelection(true);
-            requestRepaint();
-        }
-    }
-    
 	private void addVerticesToSelection(String... vertexKeys) {
 		
 		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
@@ -355,12 +340,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		return m_graph;
 	}
 
-	public void addActionHandler(Handler actionHandler) {
-	}
-	
-	public void removeActionHandler(Handler actionHandler) {
-	}
-	
 	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
         m_menuItemStateListener.add(listener);
     }
@@ -379,16 +358,6 @@ public class TopologyComponent extends AbstractComponent implements Action.Conta
 		m_graph = graph;
 	}
 	
-	public void setContainerDataSource(GraphContainer graphContainer) {
-		getGraph().setDataSource(graphContainer);
-		m_graphContainer = graphContainer;
-		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
-		
-		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
-	}
-
 	public void containerItemSetChange(ItemSetChangeEvent event) {
 		getGraph().update();
 		setFitToView(true);

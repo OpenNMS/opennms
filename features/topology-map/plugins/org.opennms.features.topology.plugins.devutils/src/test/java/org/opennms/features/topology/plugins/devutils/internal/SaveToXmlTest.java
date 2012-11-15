@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.devutils.internal;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
@@ -240,6 +241,11 @@ public class SaveToXmlTest {
 					@Override
 					public Collection<?> getVertexForest(Collection<?> vertexIds) {
 						throw new UnsupportedOperationException("GraphContainer.getVertexForest is not yet implemented.");
+					}
+
+					@Override
+					public Graph getGraph() {
+						throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
 					}
 					
 				};
