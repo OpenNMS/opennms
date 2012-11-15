@@ -41,6 +41,11 @@ class ItemVertex implements Vertex {
 		return label;
     }
 
+	@Override
+    public void setLabel(String label) {
+		throw new UnsupportedOperationException(this.getClass().getName() + ".setLabel() is unsupported");
+    }
+
 	private Item getItem() {
 		return m_itemFinder.getItem(m_itemId);
 	}

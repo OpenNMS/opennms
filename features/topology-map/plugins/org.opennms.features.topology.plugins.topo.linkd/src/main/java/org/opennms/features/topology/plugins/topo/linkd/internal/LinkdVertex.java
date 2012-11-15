@@ -35,7 +35,9 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
-abstract public class LinkdVertex {
+import org.opennms.features.topology.api.topo.Vertex;
+
+ public abstract class LinkdVertex implements Vertex {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -129,6 +131,7 @@ abstract public class LinkdVertex {
 		m_selected = selected;
 	}
 
+	@Override
 	public String getIconKey() {
 		return m_iconKey;
 	}
@@ -145,6 +148,7 @@ abstract public class LinkdVertex {
 	
 	}
 
+	@Override
 	public String getLabel() {
 		return m_label;
 	}
@@ -216,6 +220,7 @@ abstract public class LinkdVertex {
 
 	}
 
+	@Override
     public String getTooltipText() {
         return m_tooltipText;
     }
@@ -227,5 +232,15 @@ abstract public class LinkdVertex {
     public int getNodeID() {
         return 0;
     }
-	
+
+	@Override
+	public String getStyleName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNamespace() {
+		return "linkd";
+	}
 }

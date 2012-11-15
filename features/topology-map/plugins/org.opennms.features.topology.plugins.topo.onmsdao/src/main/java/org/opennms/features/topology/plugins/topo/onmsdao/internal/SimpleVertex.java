@@ -31,7 +31,9 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class SimpleVertex {
+import org.opennms.features.topology.api.topo.Vertex;
+
+public abstract class SimpleVertex implements Vertex {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -114,6 +116,9 @@ abstract public class SimpleVertex {
 		m_selected = selected;
 	}
 
+	/**
+	 * @deprecated Use {@link #getIconKey()} instead
+	 */
 	public String getIcon() {
 		return m_icon;
 	}
@@ -175,6 +180,37 @@ abstract public class SimpleVertex {
 		}
 
 	}
-	
-	
+
+	@Override
+	public String getIconKey() {
+		return getIcon();
+	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTooltipText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLabel(String label) {
+		throw new UnsupportedOperationException(this.getClass().getName() + ".setLabel() not implemented");
+	}
+
+	@Override
+	public String getNamespace() {
+		return "onmsdao";
+	}
 }

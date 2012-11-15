@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
@@ -45,11 +46,11 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 
-public class CreateGroupOperation implements Constants, Operation {
+public class RenameGroupOperation implements Constants, Operation {
 
 	public TopologyProvider m_topologyProvider;
 
-	public CreateGroupOperation(TopologyProvider topologyProvider) {
+	public RenameGroupOperation(TopologyProvider topologyProvider) {
 		m_topologyProvider = topologyProvider;
 	}
 
@@ -63,7 +64,7 @@ public class CreateGroupOperation implements Constants, Operation {
 
 		final Window window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Create Group");
+		final Window groupNamePrompt = new Window("Rename Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
 		groupNamePrompt.setHeight("180px");
@@ -77,34 +78,19 @@ public class CreateGroupOperation implements Constants, Operation {
 
 		final Form promptForm = new Form() {
 
-			private static final long serialVersionUID = 2067414790743946906L;
+			private static final long serialVersionUID = 9202531175744361407L;
 
 			@Override
 			public void commit() {
 				super.commit();
 				String groupLabel = (String)getField("Group Label").getValue();
 
-				Object groupId = m_topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
+				//Object parentKey = targets.get(0);
+				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
+				Object parentId = targets.get(0);
+				Vertex parent = graphContainer.getVertexContainer().getItem(parentId).getBean();
 
-				/*
-				for(Object itemId : targets) {
-					m_topologyProvider.setParent(itemId, groupId);
-				}
-				 */
-
-				Object parentGroup = null;
-				for(Object key : targets) {
-					Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
-					Object parent = m_topologyProvider.getVertexContainer().getParent(vertexId);
-					if (parentGroup == null) {
-						parentGroup = parent;
-					} else if (parentGroup != parent) {
-						parentGroup = ROOT_GROUP_ID;
-					}
-					m_topologyProvider.setParent(vertexId, groupId);
-				}
-
-				m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+				parent.setLabel(groupLabel);
 
 				// Save the topology
 				m_topologyProvider.save(null);
@@ -157,11 +143,11 @@ public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		return targets.size() > 0;
+		return targets != null && targets.size() == 1 && targets.get(0) != null;
 	}
 
 	@Override
 	public String getId() {
-		return null;
+		return "RenameGroup";
 	}
 }

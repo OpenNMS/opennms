@@ -35,8 +35,10 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.features.topology.api.topo.Vertex;
 
-abstract public class TestVertex {
+
+public abstract class TestVertex implements Vertex {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -115,6 +117,7 @@ abstract public class TestVertex {
 	    m_iconKey = key;
 	}
 	
+	@Override
 	public String getIconKey() {
 	    return m_iconKey;
 	}
@@ -159,5 +162,28 @@ abstract public class TestVertex {
 
 	public void setLabel(String label) {
 		// Ignore the label
+	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTooltipText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNamespace() {
+		return "test";
 	}
 }

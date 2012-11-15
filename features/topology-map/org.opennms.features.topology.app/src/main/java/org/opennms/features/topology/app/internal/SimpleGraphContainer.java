@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ import com.vaadin.data.util.MethodProperty;
 
 public class SimpleGraphContainer implements GraphContainer {
 
-    public class GVertex {
+    public class GVertex implements Vertex {
         
         private static final String LEAF = "leaf";
 		private static final String ICON = "icon";
@@ -164,6 +165,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_item.getItemProperty(ICON_KEY).setValue(iconKey);
         }
         
+        @Override
         public String getIconKey() {
             return (String) m_item.getItemProperty(ICON_KEY).getValue();
         }
@@ -216,6 +218,23 @@ public class SimpleGraphContainer implements GraphContainer {
                 return null;
             }
         }
+
+		@Override
+		public String getStyleName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getId() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getNamespace() {
+			return "gvertex";
+		}
 
     }
     
@@ -762,9 +781,13 @@ public class SimpleGraphContainer implements GraphContainer {
     @Override
     public int getSemanticZoomLevel(Object itemId) {
 		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
-		Property itemProperty = vertexItem.getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL);
-		Integer zoomLevel = (Integer) itemProperty.getValue();
-	    return zoomLevel;
+		if (vertexItem == null) {
+			return 0;
+		} else {
+    		Property itemProperty = vertexItem.getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL);
+    		Integer zoomLevel = (Integer) itemProperty.getValue();
+    	    return zoomLevel;
+		}
 	}
     
     @Override
