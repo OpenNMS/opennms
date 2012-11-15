@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
@@ -251,6 +252,11 @@ public class OnmsTopologyProviderTest {
 	@Override
 	public Collection<?> getVertexForest(Collection<?> vertexIds) {
 		throw new UnsupportedOperationException("GraphContainer.getVertexForest is not yet implemented.");
+	}
+
+	@Override
+	public Graph getGraph() {
+		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
 	}
 
     }

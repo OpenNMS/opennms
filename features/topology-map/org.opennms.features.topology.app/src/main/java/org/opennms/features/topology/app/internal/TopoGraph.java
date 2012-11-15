@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.SelectionManager;
@@ -40,7 +41,7 @@ import org.opennms.features.topology.api.SelectionManager;
 import com.vaadin.data.Item;
 
 
-public class TopoGraph{
+public class TopoGraph implements Graph {
 	
 	public static final String PROP_X = "x";
 	public static final String PROP_Y = "y";

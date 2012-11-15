@@ -78,6 +78,8 @@ public interface GraphContainer extends DisplayState {
     public void setDataSource(TopologyProvider topologyProvider);
 
 	public Collection<?> getVertexIds();
+	
+	public Graph getGraph();
 
 	public boolean hasChildren(Object itemId);
 

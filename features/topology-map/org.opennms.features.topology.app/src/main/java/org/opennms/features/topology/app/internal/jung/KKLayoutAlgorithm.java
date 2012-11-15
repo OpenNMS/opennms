@@ -35,10 +35,8 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
-import org.opennms.features.topology.app.internal.TopoVertex;
 
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -47,7 +45,7 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(final GraphContainer graphContainer) {
 		
-		TopoGraph g = getGraph((SimpleGraphContainer) graphContainer);
+		TopoGraph g = (TopoGraph) graphContainer.getGraph();
 		
 		int szl = g.getSemanticZoomLevel();
 		
@@ -87,10 +85,6 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		
 		
-	}
-
-	private TopoGraph getGraph(final SimpleGraphContainer graphContainer) {
-		return graphContainer.getGraph();
 	}
 
 }

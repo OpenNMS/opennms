@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 import org.opennms.features.topology.app.internal.TopoEdge;
 import org.opennms.features.topology.app.internal.TopoGraph;
 
@@ -49,7 +48,7 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(GraphContainer graphContainer) {
 		
-		TopoGraph g = getGraph((SimpleGraphContainer) graphContainer);
+		TopoGraph g = (TopoGraph) graphContainer.getGraph();
 		
 		int szl = g.getSemanticZoomLevel();
 		
@@ -77,10 +76,6 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		doSpringLayout(graphContainer, jungGraph, size, LAYOUT_REPULSION);
 
 		
-	}
-
-	private TopoGraph getGraph(SimpleGraphContainer graphContainer) {
-		return graphContainer.getGraph();
 	}
 
 	private void doSpringLayout(final GraphContainer graph, SparseGraph<Object, TopoEdge> jungGraph, Dimension size, int repulsion) {
