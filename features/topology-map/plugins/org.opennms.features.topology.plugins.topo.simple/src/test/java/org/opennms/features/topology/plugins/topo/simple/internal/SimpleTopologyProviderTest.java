@@ -31,8 +31,6 @@ package org.opennms.features.topology.plugins.topo.simple.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.GROUP_ICON_KEY;
-import static org.opennms.features.topology.plugins.topo.simple.internal.operations.Constants.SERVER_ICON_KEY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
@@ -56,7 +55,6 @@ import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
-import org.opennms.features.topology.plugins.topo.simple.internal.operations.CreateGroupOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
 import com.vaadin.data.Item;
@@ -321,8 +319,8 @@ public class SimpleTopologyProviderTest {
 		String vertexC = (String) topologyProvider.addVertex(100, 150);
 		String vertexD = (String) topologyProvider.addVertex(150, 100);
 		String vertexE = (String) topologyProvider.addVertex(200, 200);
-		String group1 = (String) topologyProvider.addGroup("Group 1", GROUP_ICON_KEY);
-		String group2 = (String) topologyProvider.addGroup("Group 2", GROUP_ICON_KEY);
+		String group1 = (String) topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
+		String group2 = (String) topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
 		topologyProvider.getVertexContainer().setParent(vertexA, group1);
 		topologyProvider.getVertexContainer().setParent(vertexB, group1);
 		topologyProvider.getVertexContainer().setParent(vertexC, group2);
@@ -357,7 +355,7 @@ public class SimpleTopologyProviderTest {
 	    List<Object> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
-	    AddVertexOperation addOperation = new AddVertexOperation(GROUP_ICON_KEY, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(Constants.GROUP_ICON_KEY, m_topologyProvider);
 	    addOperation.execute(targets, operationContext);
 	    
 	    Collection<?> vertIds =  m_topologyProvider.getVertexIds();
@@ -385,7 +383,7 @@ public class SimpleTopologyProviderTest {
 	    targets.add("1");
 	    
 	    OperationContext operationContext = getOperationContext(graphContainer);
-	    AddVertexOperation addOperation = new AddVertexOperation(SERVER_ICON_KEY, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(Constants.SERVER_ICON_KEY, m_topologyProvider);
         addOperation.execute(targets, operationContext);
 	    
         Collection<?> vertIds = m_topologyProvider.getVertexIds();
@@ -442,6 +440,9 @@ public class SimpleTopologyProviderTest {
         
     }
     
+    /**
+     * TODO Refactor this test into the app bundle.
+     */
     @Test
     @Ignore("Since this operation is now interactive, we need to change this unit test")
     public void testCreateGroupOperation() {
@@ -455,6 +456,7 @@ public class SimpleTopologyProviderTest {
         
         EasyMock.replay(graphContainer);
         
+        /*
         CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
         groupOperation.execute(Arrays.asList((Object)"1", (Object)"2"), getOperationContext(graphContainer));
         
@@ -462,9 +464,10 @@ public class SimpleTopologyProviderTest {
         SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
         assertEquals(2, parent.getMembers().size());
         
-        m_topologyProvider.addGroup("Test Group", GROUP_ICON_KEY);
+        m_topologyProvider.addGroup("Test Group", Constants.GROUP_ICON_KEY);
         
         EasyMock.verify(graphContainer);
+        */
     }
     
     @Test

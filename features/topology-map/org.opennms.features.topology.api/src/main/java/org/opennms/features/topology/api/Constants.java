@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.simple.internal.operations;
+package org.opennms.features.topology.api;
 
 public interface Constants {
     public static final String CENTER_VERTEX_ID = "center";

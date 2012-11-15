@@ -207,6 +207,17 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.RedoLayoutOperation"/>
     </service>
     
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Create Group"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation">
+            <argument ref="topologyProvider"/>
+        </bean>
+    </service>
+    
+
     <!-- removed for SPC-247
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>

@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.simple.internal.operations;
+package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
@@ -46,9 +47,7 @@ import com.vaadin.ui.Button.ClickListener;
 
 public class CreateGroupOperation implements Constants, Operation {
 
-	public static final String PARAMETER_GROUP_LABEL = "groupLabel";
-
-	TopologyProvider m_topologyProvider;
+	public TopologyProvider m_topologyProvider;
 
 	public CreateGroupOperation(TopologyProvider topologyProvider) {
 		m_topologyProvider = topologyProvider;
@@ -56,6 +55,9 @@ public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
 	public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+		if (targets == null || targets.isEmpty()) {
+			return null;
+		}
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
@@ -66,8 +68,11 @@ public class CreateGroupOperation implements Constants, Operation {
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
-		item.addItemProperty("Group Label", new ObjectProperty<String>(null, String.class));
-		Form promptForm = new Form() {
+		item.addItemProperty("Group Label", new ObjectProperty<String>("", String.class));
+
+		// TODO Add validator for groupname value
+
+		final Form promptForm = new Form() {
 
 			private static final long serialVersionUID = 2067414790743946906L;
 
@@ -82,7 +87,7 @@ public class CreateGroupOperation implements Constants, Operation {
 				for(Object itemId : targets) {
 					m_topologyProvider.setParent(itemId, groupId);
 				}
-				*/
+				 */
 
 				Object parentGroup = null;
 				for(Object key : targets) {
@@ -97,25 +102,42 @@ public class CreateGroupOperation implements Constants, Operation {
 				}
 
 				m_topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+
+				// Save the topology
+				m_topologyProvider.save(null);
 			}
 		};
 		// Buffer changes to the datasource
 		promptForm.setWriteThrough(false);
 		promptForm.setItemDataSource(item);
-		promptForm.getFooter().addComponent(new Button("OK", promptForm, "commit"));
+
+		Button ok = new Button("OK");
+		ok.addListener(new ClickListener() {
+
+			private static final long serialVersionUID = 7388841001913090428L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				promptForm.commit();
+				// Close the prompt window
+				window.removeWindow(groupNamePrompt);
+			}
+		});
+		promptForm.getFooter().addComponent(ok);
+
 		Button cancel = new Button("Cancel");
 		cancel.addListener(new ClickListener() {
 
-			private static final long serialVersionUID = -5262757138997825298L;
+			private static final long serialVersionUID = 8780989646038333243L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// Close the prompt window
 				window.removeWindow(groupNamePrompt);
-				return;
 			}
 		});
 		promptForm.getFooter().addComponent(cancel);
+
 		groupNamePrompt.addComponent(promptForm);
 
 		window.addWindow(groupNamePrompt);
