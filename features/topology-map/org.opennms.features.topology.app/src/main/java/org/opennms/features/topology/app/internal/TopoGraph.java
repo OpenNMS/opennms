@@ -89,7 +89,7 @@ public class TopoGraph implements Graph {
 			@Override
 			protected TopoVertex make(String key, Object itemId, Item item) {
 				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
-				return new TopoVertex(m_dataSource, key, itemId);
+				return new TopoVertex(m_dataSource, key, itemId, item);
 			}
 
 		};

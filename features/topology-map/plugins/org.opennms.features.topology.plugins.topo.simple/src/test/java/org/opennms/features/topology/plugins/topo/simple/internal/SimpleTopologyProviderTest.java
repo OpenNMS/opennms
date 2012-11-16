@@ -86,13 +86,12 @@ public class SimpleTopologyProviderTest {
         }
         
         @Override
-        public Integer getSemanticZoomLevel() {
-            // TODO Auto-generated method stub
-            return null;
+        public int getSemanticZoomLevel() {
+        	return 0;
         }
 
         @Override
-        public void setSemanticZoomLevel(Integer level) {
+        public void setSemanticZoomLevel(int level) {
             // TODO Auto-generated method stub
             
         }
@@ -113,12 +112,6 @@ public class SimpleTopologyProviderTest {
         public void redoLayout() {
             // TODO Auto-generated method stub
             
-        }
-
-        @Override
-        public Property getProperty(String property) {
-            // TODO Auto-generated method stub
-            return null;
         }
 
         @Override
@@ -296,6 +289,16 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public void setCriteria(String namespace, Criteria critiera) {
 		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
+	}
+
+	@Override
+	public double getScale() {
+		throw new UnsupportedOperationException("DisplayState.getScale is not yet implemented.");
+	}
+
+	@Override
+	public void setScale(double scale) {
+		throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
 	}
 
     }

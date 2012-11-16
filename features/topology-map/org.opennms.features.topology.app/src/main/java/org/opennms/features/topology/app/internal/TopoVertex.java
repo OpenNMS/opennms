@@ -43,12 +43,14 @@ public class TopoVertex implements Vertex {
 	
     private final String m_key;
 	private final Object m_itemId;
+	private final Item m_item;
 	private final GraphContainer m_graphContainer;
 	
-	public TopoVertex(GraphContainer graphContainer, String key, Object itemId) {
+	public TopoVertex(GraphContainer graphContainer, String key, Object itemId, Item item) {
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
+		m_item = item;
 	}
 	
 	public Object getItemId() {
@@ -77,7 +79,7 @@ public class TopoVertex implements Vertex {
 	}
 
 	public Item getItem() {
-		return getGraphContainer().getVertexItem(getItemId());
+		return m_item;
 	}
 	
 	public String getKey() {

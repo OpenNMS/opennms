@@ -31,7 +31,6 @@ package org.opennms.features.topology.app.internal;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
@@ -44,6 +43,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -119,13 +119,15 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer);
+		BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(m_graphContainer);
+		final Property scale = item.getItemProperty("scale");
+
+		m_topologyComponent = new TopologyComponent(m_graphContainer, scale);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
 		
-		final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		final Slider slider = new Slider(0, 4);
 		slider.setPropertyDataSource(scale);
 		slider.setResolution(2);
@@ -139,7 +141,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		scale.setValue(1.0);
 		slider.setImmediate(true);
 
-		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
+		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");
 
 		Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));

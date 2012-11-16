@@ -81,12 +81,12 @@ public class SaveToXmlTest {
 				return new GraphContainer() {
 
 					@Override
-					public Integer getSemanticZoomLevel() {
+					public int getSemanticZoomLevel() {
 						throw new UnsupportedOperationException("DisplayState.getSemanticZoomLevel is not yet implemented.");
 					}
 
 					@Override
-					public void setSemanticZoomLevel(Integer level) {
+					public void setSemanticZoomLevel(int level) {
 						throw new UnsupportedOperationException("DisplayState.setSemanticZoomLevel is not yet implemented.");
 					}
 
@@ -104,11 +104,6 @@ public class SaveToXmlTest {
 					@Override
 					public void redoLayout() {
 						throw new UnsupportedOperationException("DisplayState.redoLayout is not yet implemented.");
-					}
-
-					@Override
-					public Property getProperty(String property) {
-						throw new UnsupportedOperationException("DisplayState.getProperty is not yet implemented.");
 					}
 
 					@Override
@@ -282,6 +277,16 @@ public class SaveToXmlTest {
 					@Override
 					public void setCriteria(String namespace, Criteria critiera) {
 						throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
+					}
+
+					@Override
+					public double getScale() {
+						throw new UnsupportedOperationException("DisplayState.getScale is not yet implemented.");
+					}
+
+					@Override
+					public void setScale(double scale) {
+						throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
 					}
 
 					

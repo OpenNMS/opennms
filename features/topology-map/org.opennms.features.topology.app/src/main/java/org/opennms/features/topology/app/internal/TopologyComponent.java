@@ -52,6 +52,7 @@ import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -99,7 +100,7 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
 
-	public TopologyComponent(GraphContainer dataSource) {
+	public TopologyComponent(GraphContainer dataSource, Property scale) {
 		setGraph(dataSource.getGraph());
 		
 		m_graphContainer = dataSource;
@@ -119,9 +120,8 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
 		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
 		
-		Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		setScaleDataSource(scale);
-		
+				
 	}
 	
 	private void setScaleDataSource(Property scale) {

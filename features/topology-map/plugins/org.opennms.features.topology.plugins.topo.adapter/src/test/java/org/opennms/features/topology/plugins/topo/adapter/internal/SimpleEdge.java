@@ -3,6 +3,9 @@ package org.opennms.features.topology.plugins.topo.adapter.internal;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Edge;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
+
 public class SimpleEdge implements Edge {
 	
 	private final String m_namespace;
@@ -77,6 +80,11 @@ public class SimpleEdge implements Edge {
 
 	public void setStyleName(String styleName) {
 		m_styleName = styleName;
+	}
+
+	@Override
+	public Item getItem() {
+		return new BeanItem<SimpleEdge>(this);
 	}
 
 }

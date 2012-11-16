@@ -72,6 +72,7 @@ public class SimpleGraphContainer implements GraphContainer {
     private static final String TOOLTIP_TEXT = "tooltipText";
 	private static final String X_PROPERTY = "x";
 	private static final String Y_PROPERTY = "y";
+	private static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
 
     public class GVertex {
         
@@ -513,9 +514,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	private LayoutAlgorithm m_layoutAlgorithm;
 	private double m_scale = 1;
 	private int m_semanticZoomLevel;
-	private MethodProperty<Integer> m_zoomLevelProperty;
-	private MethodProperty<Double> m_scaleProperty;
-	
+
     private GVertexContainer m_vertexContainer;
     
     private ElementHolder<GVertex> m_vertexHolder;
@@ -526,8 +525,6 @@ public class SimpleGraphContainer implements GraphContainer {
     
 	public SimpleGraphContainer(TopologyProvider topologyProvider) {
 		m_selectionManager = new DefaultSelectionManager();
-		m_zoomLevelProperty = new MethodProperty<Integer>(Integer.class, this, "getSemanticZoomLevel", "setSemanticZoomLevel");
-		m_scaleProperty = new MethodProperty<Double>(Double.class, this, "getScale", "setScale");
 		
 		m_vertexHolder = new ElementHolder<GVertex>("gcV") {
 			
@@ -671,25 +668,14 @@ public class SimpleGraphContainer implements GraphContainer {
 	    return Arrays.asList(new String[] {"semanticZoomLevel", "scale"});
 	}
 
-	@Override
-	public Property getProperty(String propertyId) {
-	    if(propertyId.equals("semanticZoomLevel")) {
-	        return m_zoomLevelProperty;
-	    }else if(propertyId.equals("scale")) {
-	        return m_scaleProperty;
-	    }
-		return null;
-	}
-
-
     @Override
-    public Integer getSemanticZoomLevel() {
+    public int getSemanticZoomLevel() {
         return m_semanticZoomLevel;
     }
 
 
     @Override
-    public void setSemanticZoomLevel(Integer level) {
+    public void setSemanticZoomLevel(int level) {
         m_semanticZoomLevel = level;
     }
 
@@ -706,13 +692,14 @@ public class SimpleGraphContainer implements GraphContainer {
         return m_layoutAlgorithm;
     }
 
-    public Double getScale() {
+    public double getScale() {
         return m_scale;
     }
     
-    public void setScale(Double scale) {
+    public void setScale(double scale) {
         m_scale = scale;
     }
+    
     @Override
     public void redoLayout() {
         LoggerFactory.getLogger(getClass()).debug("redoLayout()");

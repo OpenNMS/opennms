@@ -2,6 +2,9 @@ package org.opennms.features.topology.plugins.topo.adapter.internal;
 
 import org.opennms.features.topology.api.topo.Vertex;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
+
 public class SimpleVertex implements Vertex {
 	
 	private final String m_namespace;
@@ -34,6 +37,11 @@ public class SimpleVertex implements Vertex {
 	@Override
 	public Object getItemId() {
 		return getNamespace()+":"+getId();
+	}
+
+	@Override
+	public Item getItem() {
+		return new BeanItem<SimpleVertex>(this);
 	}
 
 	public String getTooltpText() {
