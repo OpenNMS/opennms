@@ -31,4 +31,5 @@ class ItemConnector implements Connector {
 	public ItemVertex getVertex() {
 		return m_vertex;
 	}
+
 }

@@ -28,9 +28,7 @@
 
 package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.topo.Vertex;
-
-public abstract class VertexContainer<K, T extends Vertex> extends HierarchicalBeanContainer<K,T> {
+public abstract class VertexContainer<K, T> extends HierarchicalBeanContainer<K,T> {
     private static final long serialVersionUID = 1801742257915036973L;
 
     public VertexContainer(Class<? super T> type) {

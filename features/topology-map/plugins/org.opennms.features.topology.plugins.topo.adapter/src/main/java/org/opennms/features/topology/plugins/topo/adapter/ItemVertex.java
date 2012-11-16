@@ -33,7 +33,17 @@ class ItemVertex implements Vertex {
 	public String getId() {
 		return m_id;
 	}
+	
+	@Override
+	public Object getItemId() {
+		return m_itemId;
+	}
 
+
+	@Override
+	public String getKey() {
+		return getNamespace()+":"+getId();
+	}
 	@Override
     public String getLabel() {
         Property labelProperty = getItem().getItemProperty(LABEL);

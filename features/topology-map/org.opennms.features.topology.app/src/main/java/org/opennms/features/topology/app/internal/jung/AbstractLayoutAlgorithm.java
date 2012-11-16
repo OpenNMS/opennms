@@ -12,7 +12,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 	abstract public void updateLayout(GraphContainer graph);
 
 	protected Dimension selectLayoutSize(GraphContainer g) {
-		int vertexCount = g.getDisplayVertexIds(g.getSemanticZoomLevel()).size();
+		int vertexCount = g.getGraph().getDisplayVertices().size();
 		
 		 double height = .75*Math.sqrt(vertexCount)*ELBOW_ROOM;
 		 double width = height*16/9;

@@ -2,9 +2,11 @@ package org.opennms.features.topology.api.topo;
 
 public interface Vertex extends VertexRef {
 	
-	String getLabel();
+	String getKey();
 	
-	void setLabel(String label);
+	Object getItemId();
+	
+	String getLabel();
 	
 	String getTooltipText();
 	

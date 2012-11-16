@@ -38,7 +38,10 @@ import java.util.Map;
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.util.BeanItem;
@@ -46,15 +49,7 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 
 public class TopologyComponentTest {
-    private class TestTopologyComponent extends TopologyComponent{
-        private static final long serialVersionUID = -442669265971260461L;
-        
-        public TestTopologyComponent(SimpleGraphContainer dataSource) {
-            super(dataSource);
-        }
-        
-    }
-    
+
     @Test
     public void testTopologyComponentGraph() throws PaintException {
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
@@ -166,12 +161,12 @@ public class TopologyComponentTest {
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         topoComponent.setIconRepoManager(new IconRepositoryManager());
-        TopoGraph graph = topoComponent.getGraph();
+        Graph graph = topoComponent.getGraph();
         
-        List<TopoEdge> edges = graph.getEdges();
+        Collection<? extends Edge> edges = graph.getDisplayEdges();
         assertEquals(1, edges.size());
         
-        TopoEdge edge = edges.get(0);
+        Edge edge = edges.iterator().next();
         
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
         
@@ -202,28 +197,21 @@ public class TopologyComponentTest {
         
         mockGraphTagStart(target2);
        
-        for(TopoVertex g : graph.getVertices()) {
-            if (!g.isLeaf()) {
-                String key = g.getKey();
-                mockGroupWithKey(target2, key);
-            }
-        }
-        
-        for(TopoVertex v : graph.getVertices()) {
-            if (v.isLeaf()) {
-                String key = v.getKey();
-                mockVertexWithKey(target2, key);
-            }
+        for(Vertex v : graph.getDisplayVertices()) {
+        	String key = v.getKey();
+        	mockVertexWithKey(target2, key);
         }
         
         Map<Object, String> verticesKeyMapper = new HashMap<Object, String>();
-        for(TopoVertex v : graph.getVertices()) {
+        for(Vertex v : graph.getDisplayVertices()) {
             verticesKeyMapper.put(v.getItemId(), v.getKey());
         }
         
-        for(TopoEdge e: graph.getEdges()) {
-            String sourceKey = verticesKeyMapper.get(e.getSource().getItemId());
-            String targetKey = verticesKeyMapper.get(e.getTarget().getItemId());
+        for(Edge e: graph.getDisplayEdges()) {
+        	Vertex sourceV = graphContainer.getVertex(e.getSource().getVertex());
+        	Vertex targetV = graphContainer.getVertex(e.getTarget().getVertex());
+            String sourceKey = verticesKeyMapper.get(sourceV.getItemId());
+            String targetKey = verticesKeyMapper.get(targetV.getItemId());
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);
         }
         mockGraphTagEnd(target2);

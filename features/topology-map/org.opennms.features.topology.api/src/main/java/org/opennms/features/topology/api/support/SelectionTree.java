@@ -4,18 +4,13 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.WidgetContext;
-
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial", "unchecked"})
-public abstract class SelectionTree extends Tree implements SelectionListener {
+public abstract class SelectionTree extends Tree {
 
     private static class TreeItemClickTracker{
         
@@ -87,24 +82,6 @@ public abstract class SelectionTree extends Tree implements SelectionListener {
                 
             }
         });
-    }
-
-    /**
-     * When a user clicks on a vertex or edge in the UI, update the selection in the tree view.
-     */
-    @Override
-    public void onSelectionUpdate(GraphContainer graphContainer) {
-        m_itemClicked = false;
-        
-        Collection<?> itemIds = graphContainer.getVertexIds();
-        
-        for(Object itemId : itemIds) {
-        	if (graphContainer.getSelectionManager().isVertexSelected(itemId)) {
-                select(itemId);
-            } else {
-                unselect(itemId);
-            }
-        }
     }
 
     private Set<Object> getSelectedItemIds(Set<Object> selectedIds) {

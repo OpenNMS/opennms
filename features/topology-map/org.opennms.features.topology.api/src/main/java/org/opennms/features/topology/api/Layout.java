@@ -4,12 +4,12 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface Layout {
 	
-	int getX(Object vertexId);
+	int getVertexX(VertexRef v);
 
-	void setX(Object vertexId, int x);
+	int getVertexY(VertexRef v);
 
-	int getY(Object vertexId);
+	void setVertexX(VertexRef v, int x);
 
-	void setY(Object vertexId, int y);
+	void setVertexY(VertexRef v, int y);
 
 }

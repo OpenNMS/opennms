@@ -33,6 +33,16 @@ public class SimpleEdge implements Edge {
 	}
 
 	@Override
+	public Object getItemId() {
+		return getNamespace()+":"+getId();
+	}
+
+
+	@Override
+	public String getKey() {
+		return getNamespace()+":"+getId();
+	}
+	@Override
 	public Connector getSource() {
 		return m_source;
 	}

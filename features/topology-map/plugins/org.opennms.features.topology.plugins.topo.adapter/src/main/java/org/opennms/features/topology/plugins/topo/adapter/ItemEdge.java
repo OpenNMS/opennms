@@ -34,6 +34,11 @@ class ItemEdge implements Edge {
 	public String getId() {
 		return m_id;
 	}
+	
+	@Override
+	public Object getItemId() {
+		return m_itemId;
+	}
 
 	@Override
 	public ItemConnector getSource() {
@@ -110,6 +115,11 @@ class ItemEdge implements Edge {
 		} else if (!m_namespace.equals(other.m_namespace))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String getKey() {
+		return getNamespace()+":"+getId();
 	}
 
 }

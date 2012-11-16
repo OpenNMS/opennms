@@ -52,7 +52,11 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
@@ -177,26 +181,6 @@ public class SimpleTopologyProviderTest {
 	}
 
 	@Override
-	public int getX(Object vertexId) {
-		throw new UnsupportedOperationException("GraphContainer.getX is not yet implemented.");
-	}
-
-	@Override
-	public void setX(Object vertexId, int x) {
-		throw new UnsupportedOperationException("GraphContainer.setX is not yet implemented.");
-	}
-
-	@Override
-	public int getY(Object vertexId) {
-		throw new UnsupportedOperationException("GraphContainer.getY is not yet implemented.");
-	}
-
-	@Override
-	public void setY(Object vertexId, int y) {
-		throw new UnsupportedOperationException("GraphContainer.setY is not yet implemented.");
-	}
-
-	@Override
 	public int getSemanticZoomLevel(Object vertexId) {
 		throw new UnsupportedOperationException("GraphContainer.getSemanticZoomLevel is not yet implemented.");
 	}
@@ -209,16 +193,6 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
 		throw new UnsupportedOperationException("GraphContainer.getDisplayVertexId is not yet implemented.");
-	}
-
-	@Override
-	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel) {
-		throw new UnsupportedOperationException("GraphContainer.getDisplayVertices is not yet implemented.");
-	}
-
-	@Override
-	public Collection<?> getVertexIds() {
-		throw new UnsupportedOperationException("GraphContainer.getVertexIds is not yet implemented.");
 	}
 
 	@Override
@@ -264,6 +238,41 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public Graph getCompleteGraph() {
 		throw new UnsupportedOperationException("GraphContainer.getCompleteGraph is not yet implemented.");
+	}
+
+	@Override
+	public int getVertexX(VertexRef vertexId) {
+		throw new UnsupportedOperationException("GraphContainer.getVertexX is not yet implemented.");
+	}
+
+	@Override
+	public void setVertexX(VertexRef vertexId, int x) {
+		throw new UnsupportedOperationException("GraphContainer.setVertexX is not yet implemented.");
+	}
+
+	@Override
+	public int getVertexY(VertexRef vertexId) {
+		throw new UnsupportedOperationException("GraphContainer.getVertexY is not yet implemented.");
+	}
+
+	@Override
+	public void setVertexY(VertexRef vertexId, int y) {
+		throw new UnsupportedOperationException("GraphContainer.setVertexY is not yet implemented.");
+	}
+
+	@Override
+	public Vertex getParent(VertexRef child) {
+		throw new UnsupportedOperationException("GraphContainer.getParent is not yet implemented.");
+	}
+
+	@Override
+	public Vertex getVertex(VertexRef ref) {
+		throw new UnsupportedOperationException("GraphContainer.getVertex is not yet implemented.");
+	}
+
+	@Override
+	public Edge getEdge(EdgeRef ref) {
+		throw new UnsupportedOperationException("GraphContainer.getEdge is not yet implemented.");
 	}
         
     }

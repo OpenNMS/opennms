@@ -32,11 +32,10 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.GraphVisitor;
 
 import com.vaadin.data.Item;
 
@@ -47,9 +46,10 @@ public class TopoGraph implements Graph {
 	public static final String PROP_Y = "y";
 	public static final String PROP_ICON = "icon";
 	
-	private SimpleGraphContainer m_dataSource;
+	private GraphContainer m_dataSource;
 	private ElementHolder<TopoVertex> m_vertexHolder;
 	private ElementHolder<TopoEdge> m_edgeHolder;
+	private Layout m_layout;
 
 	
 	public TopoGraph(GraphContainer dataSource){	
@@ -61,7 +61,7 @@ public class TopoGraph implements Graph {
 		
 	}
 	
-	private SimpleGraphContainer getGraphContainer() { return m_dataSource; }
+	private GraphContainer getGraphContainer() { return m_dataSource; }
 	
 	private int getSemanticZoomLevel() {
 		return getGraphContainer().getSemanticZoomLevel();
@@ -72,7 +72,7 @@ public class TopoGraph implements Graph {
 			return;
 		}
 		
-		m_dataSource = (SimpleGraphContainer) dataSource;
+		m_dataSource = dataSource;
 		
 		m_vertexHolder = new ElementHolder<TopoVertex>(m_dataSource.getVertexContainer(), "tcV") {
 
@@ -83,20 +83,13 @@ public class TopoGraph implements Graph {
 
             @Override
 			protected TopoVertex update(TopoVertex element) {
-				Object groupId = m_dataSource.getParentId(element.getItemId());
-				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
-				
-				element.setGroupId(groupId);
-				element.setGroupKey(groupKey);
 				return element;
 			}
 
 			@Override
 			protected TopoVertex make(String key, Object itemId, Item item) {
-				Object groupId = m_dataSource.getParentId(itemId);
-				String groupKey = groupId == null ? null : getKeyForItemId(groupId);
 				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
-				return new TopoVertex(m_dataSource, key, itemId, groupKey, groupId);
+				return new TopoVertex(m_dataSource, key, itemId);
 			}
 
 		};
@@ -122,6 +115,8 @@ public class TopoGraph implements Graph {
 			}
 
 		};
+		
+		m_layout = new DefaultLayout(dataSource);
 		
 		
 	}
@@ -155,41 +150,13 @@ public class TopoGraph implements Graph {
 		return m_vertexHolder.getElementByKey(key);
 	}
 	
-	private List<TopoEdge> getEdgesForVertex(TopoVertex vertex){
-		return m_edgeHolder.getElementsByItemIds(m_dataSource.getEdgeIdsForVertex(vertex.getItemId()));
-	}
-
-	private List<TopoEdge> getEdgesForVertex(TopoVertex vertex, int semanticZoomLevel){
-		TopoVertex displayVertex = getDisplayVertex(vertex, semanticZoomLevel);
-		List<TopoEdge> edges = getEdges(semanticZoomLevel);
-		List<TopoEdge> visible = new ArrayList<TopoEdge>(edges.size());
-		
-		for(TopoEdge e : edges) {
-			
-			if (e.getSource().equals(displayVertex)) {
-				visible.add(e);
-			} else if (e.getTarget().equals(displayVertex)) {
-				visible.add(e);
-			}
-			
-		}
-
-		return visible;
-	}
-
-	private TopoVertex getDisplayVertex(TopoVertex vertex, int semanticZoomLevel) {
-		Object vertexId = m_dataSource.getDisplayVertexId(vertex.getItemId(), semanticZoomLevel);
-		return m_vertexHolder.getElementByItemId(vertexId);
-	}
-	
-
 	public List<TopoEdge> getEdges(int semanticZoomLevel) {
 		List<TopoEdge> visible = new ArrayList<TopoEdge>();
 		List<TopoEdge> edges = getEdges();
 		
 		for(TopoEdge edge : edges) {
-			Object sourceId = edge.getSource().getItemId();
-			Object targetId = edge.getTarget().getItemId();
+			Object sourceId = edge.getSourceVertex().getItemId();
+			Object targetId = edge.getTargetVertex().getItemId();
 			Object displaySourceId = getGraphContainer().getDisplayVertexId(sourceId, semanticZoomLevel);
 			Object displayTargetId = getGraphContainer().getDisplayVertexId(targetId, semanticZoomLevel);
 			
@@ -212,10 +179,6 @@ public class TopoGraph implements Graph {
 		return m_vertexHolder.getElementByItemId(itemId);
 	}
 
-    private TopoEdge getEdgeByItemId(String edgeItemId) {
-        return m_edgeHolder.getElementByItemId(edgeItemId);
-    }
-
     public TopoEdge getEdgeByKey(String edgeKey) {
         return m_edgeHolder.getElementByKey(edgeKey);
     }
@@ -224,25 +187,35 @@ public class TopoGraph implements Graph {
     	
     	visitor.visitGraph(this);
     	
-    	for(TopoVertex vertex : getVertices()) {
-    		if (vertex.getSemanticZoomLevel() == getSemanticZoomLevel() ||
-    		    (vertex.getSemanticZoomLevel() < getSemanticZoomLevel() && vertex.isLeaf())
-    			) {
-    			visitor.visitVertex(vertex);
-    		}
+    	for(TopoVertex vertex : getDisplayVertices()) {
+    		visitor.visitVertex(vertex);
     	}
-    	
-    	for(TopoEdge edge : getEdges(getSemanticZoomLevel())) {
+
+    	for(TopoEdge edge : getDisplayEdges()) {
     		visitor.visitEdge(edge);
     	}
-    	
-    	//or(TopoVertex vertex : getVertices()) {
-    	//	visitor.completeVertex(vertex);
-    	//}
     	
     	visitor.completeGraph(this);
     	
     }
+
+    @Override
+	public List<TopoEdge> getDisplayEdges() {
+		return getEdges(getSemanticZoomLevel());
+	}
+
+    @Override
+	public List<TopoVertex> getDisplayVertices() {
+		List <TopoVertex> displayVertices = new ArrayList<TopoVertex>();
+    	for(TopoVertex vertex : getVertices()) {
+    		if (vertex.getSemanticZoomLevel() == getSemanticZoomLevel() ||
+    		    (vertex.getSemanticZoomLevel() < getSemanticZoomLevel() && vertex.isLeaf())
+    			) {
+    			displayVertices.add(vertex);
+    		}
+    	}
+		return displayVertices;
+	}
 
 	public List<?> getVertexItemIdsForKeys(List<String> vertexKeys) {
 		return m_vertexHolder.getItemsIdsForKeys(vertexKeys);
@@ -250,7 +223,8 @@ public class TopoGraph implements Graph {
 
 	@Override
 	public Layout getLayout() {
-		return m_dataSource.getLayout();
+		return m_layout;
 	}
+
 	
 }

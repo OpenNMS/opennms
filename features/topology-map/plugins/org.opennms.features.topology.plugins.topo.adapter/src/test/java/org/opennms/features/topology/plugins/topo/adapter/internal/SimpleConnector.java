@@ -41,5 +41,4 @@ public class SimpleConnector implements Connector {
 		return m_vertex;
 	}
 
-
 }

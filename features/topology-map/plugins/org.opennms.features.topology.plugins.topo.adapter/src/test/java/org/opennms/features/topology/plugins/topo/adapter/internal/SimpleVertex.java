@@ -26,6 +26,16 @@ public class SimpleVertex implements Vertex {
 		return m_id;
 	}
 
+	@Override
+	public String getKey() {
+		return getNamespace()+":"+getId();
+	}
+	
+	@Override
+	public Object getItemId() {
+		return getNamespace()+":"+getId();
+	}
+
 	public String getTooltpText() {
 		return m_tooltpText;
 	}

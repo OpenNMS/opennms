@@ -30,9 +30,12 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,29 +47,30 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
      * @see org.opennms.features.vaadin.topology.LayoutAlgorithm#updateLayout(org.opennms.features.vaadin.topology.Graph)
      */
     public void updateLayout(GraphContainer graphContainer) {
-    	int szl = graphContainer.getSemanticZoomLevel();
+
+    	Graph g = graphContainer.getGraph();
     	
-    	Layout layout = graphContainer.getGraph().getLayout();
+		Layout layout = g.getLayout();
 
         int r = 100;
         int cx = 500;
         int cy = 500;
-		Collection<Object> vertices = graphContainer.getDisplayVertexIds(szl);
+        
 		int i = 0;
-		for(Object vertexId : vertices) {
-            s_log.debug("Laying out vertex id : {}", vertexId);
+		for(Vertex vertex : g.getDisplayVertices()) {
+            s_log.debug("Laying out vertex id : {}", vertex);
 			if(i == 0) {
-				layout.setX(vertexId, cx);
-				layout.setY(vertexId, cy);
+				layout.setVertexX(vertex, cx);
+				layout.setVertexY(vertex, cy);
             }else {
     	        int n = i - 1;
-    	        double a = (2*Math.PI)/(vertices.size() -1);
+    	        double a = (2*Math.PI)/(g.getDisplayVertices().size() -1);
     	        
     	        int x = (int) (r * Math.cos(n*a) + cx);
     	        int y = (int) (r * Math.sin(n*a) + cy);
     	        
-    	        layout.setX(vertexId, x);
-    	        layout.setY(vertexId, y);
+    	        layout.setVertexX(vertex, x);
+    	        layout.setVertexY(vertex, y);
             }
 			i++;
         }

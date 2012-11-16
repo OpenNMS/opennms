@@ -21,4 +21,5 @@ public class SimpleVertexRef implements VertexRef {
 	public String getId() {
 		return m_id;
 	}
+
 }

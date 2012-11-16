@@ -1,33 +1,35 @@
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class DefaultLayout implements Layout {
 
-	private SimpleGraphContainer m_simpleGraphContainer;
+	private GraphContainer m_graphContainer;
 
-	public DefaultLayout(SimpleGraphContainer simpleGraphContainer) {
-		m_simpleGraphContainer = simpleGraphContainer;
+	public DefaultLayout(GraphContainer graphContainer) {
+		m_graphContainer = graphContainer;
 	}
 
 	@Override
-	public int getX(Object vertexId) {
-		return m_simpleGraphContainer.getX(vertexId);
+	public int getVertexX(VertexRef v) {
+		return m_graphContainer.getVertexX(v);
 	}
 
 	@Override
-	public void setX(Object vertexId, int x) {
-		m_simpleGraphContainer.setX(vertexId, x);
+	public int getVertexY(VertexRef v) {
+		return m_graphContainer.getVertexY(v);
 	}
 
 	@Override
-	public int getY(Object vertexId) {
-		return m_simpleGraphContainer.getY(vertexId);
+	public void setVertexX(VertexRef v, int x) {
+		m_graphContainer.setVertexX(v, x);
 	}
 
 	@Override
-	public void setY(Object vertexId, int y) {
-		m_simpleGraphContainer.setY(vertexId, y);
+	public void setVertexY(VertexRef v, int y) {
+		m_graphContainer.setVertexY(v, y);
 	}
 
 }

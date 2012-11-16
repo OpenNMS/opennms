@@ -28,13 +28,8 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.api.support.SelectionTree;
-import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
@@ -89,4 +84,5 @@ public class NCSSelectionTree extends SelectionTree {
 		// TODO: Remove edge references that correspond to the unselected items
 		super.unselect(itemId);
 	}
+
 }

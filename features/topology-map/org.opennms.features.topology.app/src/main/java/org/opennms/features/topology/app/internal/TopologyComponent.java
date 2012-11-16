@@ -29,16 +29,19 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionManager.SelectionListener;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -86,7 +89,7 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
-    private TopoGraph m_graph;
+    private Graph m_graph;
 	private MapManager m_mapManager = new MapManager();
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
@@ -96,8 +99,8 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
 
-	public TopologyComponent(SimpleGraphContainer dataSource) {
-		setGraph(dataSource.getCompleteGraph());
+	public TopologyComponent(GraphContainer dataSource) {
+		setGraph(dataSource.getGraph());
 		
 		m_graphContainer = dataSource;
 
@@ -158,7 +161,7 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
         
-		TopoGraph graph = getGraph();
+		Graph graph = getGraph();
 
 		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, target);
 
@@ -269,26 +272,37 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         if(variables.containsKey("contextMenu")) {
             Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
             
-            String type = (String) props.get("type");
             
             int x = (Integer) props.get("x");
             int y = (Integer) props.get("y");
-            Object itemId = (Object)props.get("target");
+            
+            String type = (String) props.get("type");
 
+            Object target = null;
             if (type.toLowerCase().equals("vertex")) {
-	                TopoVertex vertex = getGraph().getVertexByKey((String)itemId);
-	                itemId = vertex.getItemId();
+            	String targetKey = (String)props.get("target");
+            	Vertex vertex = getGraph().getVertexByKey(targetKey);
+            	target = vertex.getItemId();
+            } else if (type.toLowerCase().equals("edge")) {
+            	String targetKey = (String)props.get("target");
+            	Edge edge = getGraph().getEdgeByKey(targetKey);
+            	target = edge.getItemId();
             }
 
-            getContextMenuHandler().show(itemId, x, y);
+            getContextMenuHandler().show(target, x, y);
         }
         
         updateMenuItems();
     }
 
 	private void selectVertices(String... vertexKeys) {
-		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
-	    Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
+		List<Object> itemIds = new ArrayList<Object>(vertexKeys.length);
+		
+		for(String vertexKey : vertexKeys) {
+			itemIds.add(getGraph().getVertexByKey(vertexKey).getItemId());
+		}
+
+		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
 
 	    getSelectionManager().setSelectedVertices(vertexIds);
 	}
@@ -298,17 +312,21 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 	}
 
 	private void addVerticesToSelection(String... vertexKeys) {
+		List<Object> itemIds = new ArrayList<Object>(vertexKeys.length);
 		
-		List<?> itemIds = getGraph().getVertexItemIdsForKeys(Arrays.asList(vertexKeys));
+		for(String vertexKey : vertexKeys) {
+			itemIds.add(getGraph().getVertexByKey(vertexKey).getItemId());
+		}
 		
 		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
+		
 		getSelectionManager().selectVertices(vertexIds);
     }
     
 	private void selectEdge(String edgeKey) {
-		Object edgeId = getGraph().getEdgeByKey(edgeKey).getItemId();
+		Edge edge = getGraph().getEdgeByKey(edgeKey);
 		
-		getSelectionManager().setSelectedEdges(Collections.singleton(edgeId));
+		getSelectionManager().setSelectedEdges(Collections.singleton(edge.getItemId()));
 
 	}
 
@@ -328,21 +346,27 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
         boolean selected = vertexProps[3].split(",")[1].equals("true");
         
-        TopoVertex vertex = getGraph().getVertexByKey(id);
-        vertex.setX(x);
-        vertex.setY(y);
-        vertex.setSelected(selected);
+        Vertex vertex = getGraph().getVertexByKey(id);
+        
+        getGraph().getLayout().setVertexX(vertex, x);
+        getGraph().getLayout().setVertexY(vertex, y);
+
+        if (selected) {
+        	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));
+        } else {
+        	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));
+        }
     }
     
 	protected void setScale(double scale){
 	    m_scale.setValue(scale);
     }
     
-    protected TopoGraph getGraph() {
+    protected Graph getGraph() {
 		return m_graph;
 	}
 
-	private void setGraph(TopoGraph graph) {
+	private void setGraph(Graph graph) {
 		m_graph = graph;
 	}
 	

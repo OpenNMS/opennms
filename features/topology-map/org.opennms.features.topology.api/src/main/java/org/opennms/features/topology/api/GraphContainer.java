@@ -30,7 +30,11 @@ package org.opennms.features.topology.api;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
@@ -57,28 +61,30 @@ public interface GraphContainer extends DisplayState {
     
     public Object getGroupId(Object vertexId);
     
-    public int getX(Object vertexId);
+    public Vertex getParent(VertexRef child);
     
-    public void setX(Object vertexId, int x);
+    public Vertex getVertex(VertexRef ref);
     
-    public int getY(Object vertexId);
+    public Edge getEdge(EdgeRef ref);
     
-    public void setY(Object vertexId, int y);
+    public int getVertexX(VertexRef vertexId);
+    
+    public void setVertexX(VertexRef vertexId, int x);
+    
+    public int getVertexY(VertexRef vertexId);
+    
+    public void setVertexY(VertexRef vertexId, int y);
     
     public int getSemanticZoomLevel(Object vertexId);
     
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
 
-	public Collection<Object> getDisplayVertexIds(int semanticZoomLevel);
-	
 	@Deprecated
     public TopologyProvider getDataSource();
 
     @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
 
-	public Collection<?> getVertexIds();
-	
 	public Graph getCompleteGraph();
 	
 	public Graph getGraph();

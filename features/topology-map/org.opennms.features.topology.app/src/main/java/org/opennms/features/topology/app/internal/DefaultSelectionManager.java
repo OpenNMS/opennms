@@ -10,7 +10,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.SelectionManager;
 
 public class DefaultSelectionManager implements SelectionManager {
-
 	private final Set<Object> m_selectedVertices = new HashSet<Object>();
 	private final Set<Object> m_selectedEdges = new HashSet<Object>();
 	private final Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
@@ -58,6 +57,16 @@ public class DefaultSelectionManager implements SelectionManager {
 		
 		fireSelectionChanged();
 	}
+
+	@Override
+	public void deselectVertices(Collection<?> itemIds) {
+		for(Object itemId : itemIds) {
+			setVertexSelected(itemId, false);
+		}
+		
+		fireSelectionChanged();
+	}
+
 
 	@Override
 	public void deselectAll() {
