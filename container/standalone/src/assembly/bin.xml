@@ -12,7 +12,7 @@
 
         <!-- Expanded Karaf Standard Distribution -->
         <fileSet>
-            <directory>target/dependencies/apache-karaf-${karaf.version}</directory>
+            <directory>target/dependencies/apache-karaf-${karafVersion}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
                 <exclude>**/demos/**</exclude>
@@ -33,7 +33,7 @@
 
         <!-- Copy over bin/* separately to get the correct file mode -->
         <fileSet>
-            <directory>target/dependencies/apache-karaf-${karaf.version}</directory>
+            <directory>target/dependencies/apache-karaf-${karafVersion}</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>bin/admin</include>
@@ -65,7 +65,7 @@
 
     <files>
         <file>
-            <source>${basedir}/target/dependencies/apache-karaf-${karaf.version}/bin/karaf</source>
+            <source>${basedir}/target/dependencies/apache-karaf-${karafVersion}/bin/karaf</source>
             <outputDirectory>/bin/</outputDirectory>
             <destName>opennms</destName>
             <fileMode>0755</fileMode>

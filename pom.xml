@@ -790,6 +790,7 @@
     <jaxbVersion>2.1.7</jaxbVersion>
     <jettyVersion>7.5.4.v20111024</jettyVersion>
     <karafVersion>2.2.7</karafVersion>
+    <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
     <log4jVersion>1.2.16</log4jVersion>
     <minaVersion>2.0.4</minaVersion>

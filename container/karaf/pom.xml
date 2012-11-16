@@ -24,19 +24,19 @@
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karaf.version}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.boot</artifactId>
-            <version>${karaf.version}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>apache-karaf</artifactId>
             <type>zip</type>
             <scope>provided</scope>
-            <version>${karaf.version}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>

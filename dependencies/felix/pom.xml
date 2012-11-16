@@ -10,44 +10,41 @@
   <artifactId>felix-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Apache Felix Dependencies</name>
-  <properties>
-    <version>2.2.0</version>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.api</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.base</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.bridge</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.bundle</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.jetty</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.proxy</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.http.whiteboard</artifactId>
-      <version>${version}</version>
+      <version>${felixVersion}</version>
     </dependency>
   </dependencies>
 </project>
