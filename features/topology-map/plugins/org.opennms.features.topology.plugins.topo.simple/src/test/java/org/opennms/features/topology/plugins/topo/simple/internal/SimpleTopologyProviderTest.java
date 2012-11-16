@@ -294,10 +294,10 @@ public class SimpleTopologyProviderTest {
 	}
 
 	@Override
-	public void setCriteria(String namespace) {
+	public void setCriteria(String namespace, Criteria critiera) {
 		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
 	}
-        
+
     }
     
     private class TestOperationContext implements OperationContext{

@@ -966,9 +966,10 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	@Override
-	public void setCriteria(String namespace) {
+	public void setCriteria(String namespace, Criteria critiera) {
 		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
 	}
+
 	
 
 
