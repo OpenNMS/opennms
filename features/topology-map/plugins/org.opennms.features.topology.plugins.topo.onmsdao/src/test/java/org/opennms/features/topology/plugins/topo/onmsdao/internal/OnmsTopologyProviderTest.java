@@ -274,6 +274,18 @@ public class OnmsTopologyProviderTest {
 		throw new UnsupportedOperationException("GraphContainer.getEdge is not yet implemented.");
 	}
 
+	@Override
+	public void setVertexItemProperty(Object itemId, String propertyName,
+			Object value) {
+		throw new UnsupportedOperationException("GraphContainer.setVertexItemProperty is not yet implemented.");
+	}
+
+	@Override
+	public <T> T getVertexItemProperty(Object itemId, String propertyName,
+			T defaultValue) {
+		throw new UnsupportedOperationException("GraphContainer.getVertexItemProperty is not yet implemented.");
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{

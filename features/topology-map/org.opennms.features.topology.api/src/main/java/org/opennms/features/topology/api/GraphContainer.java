@@ -103,4 +103,9 @@ public interface GraphContainer extends DisplayState {
 	
 	// returns a list containing all of the passed in vertices and their children grandchildren etc.
 	public Collection<?> getVertexForest(Collection<?> vertexIds);
+	
+    public void setVertexItemProperty(Object itemId, String propertyName, Object value);
+
+	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue);
+
 }

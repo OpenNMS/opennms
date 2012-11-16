@@ -746,13 +746,26 @@ public class SimpleGraphContainer implements GraphContainer {
 
     @Override
     public int getSemanticZoomLevel(Object itemId) {
-		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
+		return getVertexItemProperty(itemId, SEMANTIC_ZOOM_LEVEL, Integer.valueOf(0));
+	}
+    
+    @Override
+    public void setVertexItemProperty(Object itemId, String propertyName, Object value) {
+    	getVertexItem(itemId).getItemProperty(propertyName).setValue(value);
+    }
+
+    @Override
+	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue) {
+		Item vertexItem = getVertexItem(itemId);
 		if (vertexItem == null) {
-			return 0;
+			return defaultValue;
 		} else {
-    		Property itemProperty = vertexItem.getItemProperty(TopoVertex.SEMANTIC_ZOOM_LEVEL);
-    		Integer zoomLevel = (Integer) itemProperty.getValue();
-    	    return zoomLevel;
+			Property itemProperty = vertexItem.getItemProperty(propertyName);
+    		return itemProperty == null 
+    				? defaultValue
+    				: itemProperty.getValue() == null
+    				? defaultValue
+    				: (T)itemProperty.getValue();
 		}
 	}
     

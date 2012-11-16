@@ -51,9 +51,12 @@ class ItemVertex implements Vertex {
 		return label;
     }
 
-	@Override
     public void setLabel(String label) {
-		throw new UnsupportedOperationException(this.getClass().getName() + ".setLabel() is unsupported");
+        Property labelProperty = getItem().getItemProperty(LABEL);
+        if (labelProperty != null && !labelProperty.isReadOnly()) {
+        	labelProperty.setValue(label);
+        }
+
     }
 
 	private Item getItem() {

@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.opennms.features.topology.api.topo.Vertex;
 
 
-public abstract class SimpleVertex implements Vertex {
+public abstract class SimpleVertex {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -214,17 +214,6 @@ public abstract class SimpleVertex implements Vertex {
         return m_tooltipText;
     }
 
-	@Override
-	public String getStyleName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getNamespace() {
-		return "simple";
-	}
-	
 //	public int getSemanticZoomLevel() {
 //		return m_semanticZoomLevel >= 0
 //				? m_semanticZoomLevel

@@ -37,6 +37,7 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -88,9 +89,8 @@ public class RenameGroupOperation implements Constants, Operation {
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
 				Object parentId = targets.get(0);
-				Vertex parent = graphContainer.getVertexContainer().getItem(parentId).getBean();
-
-				parent.setLabel(groupLabel);
+				
+				graphContainer.setVertexItemProperty(parentId, "label", groupLabel);
 
 				// Save the topology
 				m_topologyProvider.save(null);
