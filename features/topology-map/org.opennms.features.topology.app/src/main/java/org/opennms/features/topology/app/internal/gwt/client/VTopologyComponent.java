@@ -403,6 +403,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		
 		m_topologyView = new TopologyViewImpl();
 		m_topologyView.setPresenter(this);
+		m_componentHolder.setSize("100%", "100%");
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
