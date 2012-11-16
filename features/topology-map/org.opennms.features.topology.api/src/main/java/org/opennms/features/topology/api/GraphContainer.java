@@ -111,6 +111,6 @@ public interface GraphContainer extends DisplayState {
 	
 	public Criteria getCriteria(String namespace);
 	
-	public void setCriteria(String namespace);
+	public void setCriteria(String namespace, Criteria critiera);
 
 }
