@@ -34,10 +34,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -48,12 +45,6 @@ import com.vaadin.ui.Button.ClickListener;
 
 
 public class RenameGroupOperation implements Constants, Operation {
-
-	public TopologyProvider m_topologyProvider;
-
-	public RenameGroupOperation(TopologyProvider topologyProvider) {
-		m_topologyProvider = topologyProvider;
-	}
 
 	@Override
 	public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
@@ -93,7 +84,7 @@ public class RenameGroupOperation implements Constants, Operation {
 				graphContainer.setVertexItemProperty(parentId, "label", groupLabel);
 
 				// Save the topology
-				m_topologyProvider.save(null);
+				graphContainer.getDataSource().save(null);
 
 				graphContainer.redoLayout();
 			}

@@ -33,16 +33,9 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 
 
 public class DeleteGroupOperation implements Operation {
-
-	public TopologyProvider m_topologyProvider;
-
-	public DeleteGroupOperation(TopologyProvider topologyProvider) {
-		m_topologyProvider = topologyProvider;
-	}
 
 	@Override
 	public Undoer execute(List<Object> targets, OperationContext operationContext) {
@@ -56,14 +49,14 @@ public class DeleteGroupOperation implements Operation {
 
 		Object parentKey = targets.get(0);
 		Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
-		Object grandParentId = m_topologyProvider.getVertexContainer().getParent(parentId);
+		Object grandParentId = graphContainer.getVertexContainer().getParent(parentId);
 		// Detach all children from the group
-		for (Object childId : m_topologyProvider.getVertexContainer().getChildren(parentId)) {
+		for (Object childId : operationContext.getGraphContainer().getVertexContainer().getChildren(parentId)) {
 			// Attach the children to their grandparent (which can be null)
-			m_topologyProvider.setParent(childId, grandParentId);
+			graphContainer.getDataSource().setParent(childId, grandParentId);
 		}
 		// Remove the group from the topology
-		m_topologyProvider.getVertexContainer().removeItem(parentId);
+		graphContainer.getVertexContainer().removeItem(parentId);
 
 		graphContainer.redoLayout();
 		return null;

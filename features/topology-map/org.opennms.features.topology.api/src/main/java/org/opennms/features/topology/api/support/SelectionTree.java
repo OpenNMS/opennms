@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.opennms.features.topology.api.GraphContainer;
+
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -37,6 +39,7 @@ public abstract class SelectionTree extends Tree {
     
     private final TreeItemClickTracker m_treeItemClickTracker = new TreeItemClickTracker();
     private boolean m_itemClicked = false;
+    protected GraphContainer m_graphContainer;
     
     public SelectionTree(FilterableHierarchicalContainer container) {
         super(null, container);
@@ -131,5 +134,9 @@ public abstract class SelectionTree extends Tree {
     @Override
     public FilterableHierarchicalContainer getContainerDataSource() {
         return (FilterableHierarchicalContainer)super.getContainerDataSource();
+    }
+
+    public void setGraphContainer(GraphContainer graphContainer) {
+        m_graphContainer = graphContainer;
     }
 }

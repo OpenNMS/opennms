@@ -43,9 +43,11 @@
 		</service-properties>
 	</service>
 
-<!--
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsServiceTree">
-		<description>Also bind the selection tree UI as an EdgeProvider for the topology.</description>
-	</service>
--->
+	<bean id="ncsEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSEdgeProvider">
+		<description>This EdgeProvider exposes edges between nodes that are implied by NCSComponents.</description>
+		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
+		<property name="nodeDao" ref="nodeDao" />
+	</bean>
+
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
 </blueprint>
