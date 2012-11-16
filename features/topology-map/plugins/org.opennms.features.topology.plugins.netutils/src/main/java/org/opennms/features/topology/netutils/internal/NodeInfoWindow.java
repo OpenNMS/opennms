@@ -62,8 +62,13 @@ public class NodeInfoWindow extends Window {
      * @throws MalformedURLException
      */
     public NodeInfoWindow(final Node node, final URL nodeURL) throws MalformedURLException{
-        
-        nodeInfoBrowser = new Embedded("", new ExternalResource(nodeURL));
+
+        if(null != nodeURL && nodeURL.toString().indexOf(":9443") > 0){
+        	String url = nodeURL.toString().substring(nodeURL.toString().indexOf(":9443")+5);
+        	nodeInfoBrowser = new Embedded("", new ExternalResource(url));
+        } else {
+        	nodeInfoBrowser = new Embedded("", new ExternalResource(nodeURL));
+        }
 
         String label = node == null? "" : node.getLabel();
         /*Sets up window settings*/

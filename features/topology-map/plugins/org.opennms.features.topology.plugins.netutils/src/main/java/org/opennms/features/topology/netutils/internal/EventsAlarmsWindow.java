@@ -31,6 +31,7 @@ package org.opennms.features.topology.netutils.internal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -64,8 +65,20 @@ public class EventsAlarmsWindow extends Window {
 	 * @throws MalformedURLException
 	 */
 	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) throws MalformedURLException {
-		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
-		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
+		
+        if(null != eventsURL && eventsURL.toString().indexOf(":9443") > 0){
+        	String url = eventsURL.toString().substring(eventsURL.toString().indexOf(":9443")+5);
+        	eventsBrowser = new Embedded("", new ExternalResource(url));
+        } else {
+        	eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
+        }
+    	
+        if(null != alarmsURL && alarmsURL.toString().indexOf(":9443") > 0){
+        	String url = alarmsURL.toString().substring(alarmsURL.toString().indexOf(":9443")+5);
+        	alarmsBrowser = new Embedded("", new ExternalResource(url));
+        } else {
+        	alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
+        }
 		
 		String label = node == null? "" : node.getLabel();
 		/*Sets up window settings*/

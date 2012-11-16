@@ -63,7 +63,12 @@ public class ResourceGraphsWindow extends Window {
 	 */
 	public ResourceGraphsWindow(final Node node, final URL nodeURL) throws MalformedURLException{
 		
-		rgBrowser = new Embedded("", new ExternalResource(nodeURL));
+		if(null != nodeURL && nodeURL.toString().indexOf(":9443") > 0){
+        	String url = nodeURL.toString().substring(nodeURL.toString().indexOf(":9443")+5);
+        	rgBrowser = new Embedded("", new ExternalResource(url));
+        } else {
+        	rgBrowser = new Embedded("", new ExternalResource(nodeURL));
+        }
 		
 		String label = node == null? "" : node.getLabel();
 		/*Sets up window settings*/

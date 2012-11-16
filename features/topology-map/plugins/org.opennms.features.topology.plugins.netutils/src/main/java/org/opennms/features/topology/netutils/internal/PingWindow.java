@@ -237,7 +237,12 @@ public class PingWindow extends Window{
 			 * the needed update.
 			 */
 			resultsBrowser.setVisible(false); 
-			resultsBrowser.setSource(new ExternalResource(url));
+			if(url.toString().indexOf(":9443") > 0){
+	        	String urlStr = url.toString().substring(url.toString().indexOf(":9443")+5);
+	        	resultsBrowser.setSource(new ExternalResource(urlStr));
+	        } else {
+	        	resultsBrowser.setSource(new ExternalResource(url));
+	        }
 			resultsBrowser.setVisible(true);
 		}
 	}
