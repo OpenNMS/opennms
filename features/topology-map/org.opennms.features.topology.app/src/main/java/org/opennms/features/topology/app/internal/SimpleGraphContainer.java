@@ -459,6 +459,11 @@ public class SimpleGraphContainer implements GraphContainer {
             }
             updateAll(newVertices);
             addAll(newContainerVertices);
+
+            if (m_graph != null) {
+            	m_graph.update();
+            }
+
             fireItemSetChange();
         }
 
@@ -494,6 +499,9 @@ public class SimpleGraphContainer implements GraphContainer {
             m_vertexHolder.update();
             removeAllItems();
             addAll(m_vertexHolder.getElements());
+            if (m_graph != null) {
+            	m_graph.update();
+            }
             fireContainerPropertySetChange();
         }
         

@@ -111,24 +111,28 @@ public class TopologyComponentTest {
     public void testTopologyComponentGraphUpdateGroup() throws PaintException {
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
         
+        // Initial set up has only the group vertex
         mockInitialSetup(target);
         
         mockGraphTagStart(target);
         
-        mockGroup(target);
-        
-        mockVertex(target, 1);
-        
-        mockVertex(target, 1);
-        
-        mockEdge(target);
-        
-        mockVertexParent(target);
-        
-        mockVertexParent(target);
+        mockVertex(target);
         
         mockGraphTagEnd(target);
         
+        // the set the zoomlevel to 1 and we should see two vertices and an edge
+        mockGraphAttrs(target, 1, false);
+        
+        mockGraphTagStart(target);
+        
+        mockVertex(target);
+        
+        mockVertex(target);
+        
+        mockEdge(target);
+
+        mockGraphTagEnd(target);
+
         EasyMock.replay(target);
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
@@ -147,6 +151,10 @@ public class TopologyComponentTest {
             }
             
         }
+        
+        topoComponent.paintContent(target);
+        
+        graphContainer.setSemanticZoomLevel(1);
         
         topoComponent.paintContent(target);
         
@@ -269,15 +277,18 @@ public class TopologyComponentTest {
         target.endTag("group");
     }
     
-
     private void mockInitialSetup(PaintTarget target) throws PaintException {
+    	mockGraphAttrs(target, 0, true);
+    }
+    
+    private void mockGraphAttrs(PaintTarget target, int semanticZoomLevel, boolean fitToView) throws PaintException {
         target.addAttribute("scale", 1.0);
         target.addAttribute("clientX", 0);
         target.addAttribute("clientY", 0);
-        target.addAttribute("semanticZoomLevel", 0);
+        target.addAttribute("semanticZoomLevel", semanticZoomLevel);
         target.addAttribute("activeTool", "pan");
         target.addAttribute("panToSelection", false);
-        target.addAttribute("fitToView", true);
+        target.addAttribute("fitToView", fitToView);
     }
 
     private void mockDefaultGraph(PaintTarget target) throws PaintException {
@@ -320,17 +331,14 @@ public class TopologyComponentTest {
     }
 
     private void mockVertex(PaintTarget target) throws PaintException {
-        mockVertex(target, 0);
-    }
-    
-    private void mockVertex(PaintTarget target, int semanticZoomLevel) throws PaintException {
         target.startTag("vertex");
         target.addAttribute(EasyMock.eq("key"), EasyMock.notNull(String.class));
+        target.addAttribute(eq("initialX"), EasyMock.anyInt());
+        target.addAttribute(eq("initialY"), EasyMock.anyInt());
         target.addAttribute(eq("x"), EasyMock.anyInt());
         target.addAttribute(eq("y"), EasyMock.anyInt());
         target.addAttribute(eq("selected"), EasyMock.anyBoolean());
         target.addAttribute(eq("iconUrl"), EasyMock.notNull(String.class));
-        target.addAttribute("semanticZoomLevel", semanticZoomLevel);
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
         target.addAttribute(EasyMock.eq("tooltipText"), EasyMock.notNull(String.class));
         

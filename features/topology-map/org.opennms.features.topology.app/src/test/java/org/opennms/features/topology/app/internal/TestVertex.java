@@ -46,6 +46,7 @@ public abstract class TestVertex {
 	TestGroup m_parent = null;
 	List<TestEdge> m_edges = new ArrayList<TestEdge>();
 	String m_iconKey = "";
+	private String m_label;
 	
 	public TestVertex() {}
 	
@@ -159,13 +160,12 @@ public abstract class TestVertex {
 		return true;
 	}
 
-	public void setLabel(String label) {
-		// Ignore the label
-	}
-
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return m_label;
+	}
+	
+	public void setLabel(String label) {
+		m_label = label;
 	}
 
 	public String getTooltipText() {

@@ -59,12 +59,14 @@ public class TestTopologyProvider implements TopologyProvider{
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
         v1.setIcon("icon.jpg");
+        v1.setLabel("a leaf");
         
         Item beanItem = m_vertexContainer.addBean(v1);
         
         String vId2 = getNextVertexId();
         TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
         v2.setIcon("icon.jpg");
+        v2.setLabel("another leaf");
         Item beanItem2 = m_vertexContainer.addBean(v2);
         
         String edgeId = getNextEdgeId();
@@ -77,6 +79,7 @@ public class TestTopologyProvider implements TopologyProvider{
         String id = getNextVertexId();
         TestVertex vert = new TestLeafVertex(id, 0, 0);
         vert.setIcon("icon.jpb");
+        vert.setLabel("a vertex");
         m_vertexContainer.addBean(vert);
         return id;
         
@@ -142,6 +145,7 @@ public class TestTopologyProvider implements TopologyProvider{
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
         v1.setIcon("icon.jpg");
+        v1.setLabel("a leaf vertex");
         
         vertices.add(v1);
         //Item beanItem = m_vertexContainer.addBean(v1);
@@ -149,6 +153,7 @@ public class TestTopologyProvider implements TopologyProvider{
         String vId2 = getNextVertexId();
         TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
         v2.setIcon("icon.jpg");
+        v2.setLabel("another leaf");
         vertices.add(v2);
         //Item beanItem2 = m_vertexContainer.addBean(v2);
         
