@@ -1,5 +1,6 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleGraphBuilder {
@@ -16,6 +17,12 @@ public class SimpleGraphBuilder {
 	public SimpleGraphBuilder vertex(String id) {
 		m_currentVertex = new SimpleVertex(ns(), id);
 		m_graphProvider.add(m_currentVertex);
+		return this;
+	}
+	
+	public SimpleGraphBuilder parent(String parentId) {
+		Vertex parent = m_graphProvider.getVertex(parentId);
+		m_graphProvider.setParent(m_currentVertex, parent);
 		return this;
 	}
 	

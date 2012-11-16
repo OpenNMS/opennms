@@ -59,7 +59,7 @@ class ItemVertex implements Vertex {
 
     }
 
-	private Item getItem() {
+	public Item getItem() {
 		return m_itemFinder.getItem(m_itemId);
 	}
 

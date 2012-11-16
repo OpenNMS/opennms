@@ -65,7 +65,7 @@ class ItemEdge implements Edge {
 		return label;
     }
 
-	private Item getItem() {
+	public Item getItem() {
 		return m_itemFinder.getItem(m_itemId);
 	}
 

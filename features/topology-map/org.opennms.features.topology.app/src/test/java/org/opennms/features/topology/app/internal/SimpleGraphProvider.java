@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
 import java.util.List;
@@ -68,6 +68,10 @@ public class SimpleGraphProvider implements GraphProvider {
 
 	public void add(List<SimpleVertex> vertices) {
 		m_vertices.add(vertices);
+	}
+	
+	public void setParent(SimpleVertex child, VertexRef parent) {
+		m_vertices.setParent(child, parent);
 	}
 
 	@Override

@@ -1,9 +1,10 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ public class SimpleVertexProvider implements VertexProvider {
 	final String m_namespace;
 	final Map<String, SimpleVertex> m_vertexMap = new LinkedHashMap<String, SimpleVertex>();
 	final Set<VertexListener> m_listeners = new CopyOnWriteArraySet<VertexListener>();
+	final Map<VertexRef, VertexRef> m_parents= new HashMap<VertexRef, VertexRef>();
+	final Map<VertexRef, List<VertexRef>> m_children = new HashMap<VertexRef, List<VertexRef>>();
 	
 	public SimpleVertexProvider(String namespace) {
 		m_namespace = namespace;
@@ -71,22 +74,41 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public List<? extends Vertex> getRootGroup() {
-		throw new UnsupportedOperationException("VertexProvider.getRootGroup is not yet implemented.");
+		List<SimpleVertex> rootGroup = new ArrayList<SimpleVertex>(); 
+		for(SimpleVertex vertex : m_vertexMap.values()) {
+			if (getParent(vertex) == null) {
+				rootGroup.add(vertex);
+			}
+		}
+		return rootGroup;
 	}
 
 	@Override
 	public boolean hasChildren(VertexRef group) {
-		throw new UnsupportedOperationException("VertexProvider.hasChildren is not yet implemented.");
+		return m_children.containsKey(group);
 	}
 
 	@Override
 	public Vertex getParent(VertexRef vertex) {
-		throw new UnsupportedOperationException("VertexProvider.getParent is not yet implemented.");
+		VertexRef parentRef = m_parents.get(vertex);
+		return parentRef == null ? null : getSimpleVertex(parentRef);
+	}
+	
+	public void setParent(VertexRef child, VertexRef parent) {
+		m_parents.put(child, parent);
+		
+		List<VertexRef> children = m_children.get(parent);
+		if (children == null) {
+			children = new ArrayList<VertexRef>();
+			m_children.put(parent, children);
+		}
+		children.add(child);
 	}
 
 	@Override
 	public List<? extends Vertex> getChildren(VertexRef group) {
-		throw new UnsupportedOperationException("VertexProvider.getChildren is not yet implemented.");
+		List<VertexRef> children = m_children.get(group);
+		return children == null ? Collections.<SimpleVertex>emptyList() : getVertices(children);
 	}
 	
 	private void fireVertexSetChanged() {
