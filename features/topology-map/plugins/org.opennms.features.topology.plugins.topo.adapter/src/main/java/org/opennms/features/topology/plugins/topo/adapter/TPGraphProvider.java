@@ -7,10 +7,13 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Ref;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -288,6 +291,16 @@ public class TPGraphProvider implements GraphProvider {
 			listener.edgeSetChanged(this, getEdges(changes.getAddedIds()), getEdges(changes.getUpdatedIds()), changes.getRemovedIds());
 		}
 
+	}
+
+	@Override
+	public List<? extends Vertex> getVertices(Criteria criteria) {
+		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
+	}
+
+	@Override
+	public List<? extends Edge> getEdges(Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
 	}
 
 

@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -949,6 +950,16 @@ public class SimpleGraphContainer implements GraphContainer {
 		} else {
 			return findEdge(ref);
 		}
+	}
+
+	@Override
+	public Criteria getCriteria(String namespace) {
+		throw new UnsupportedOperationException("GraphContainer.getCriteria is not yet implemented.");
+	}
+
+	@Override
+	public void setCriteria(String namespace) {
+		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
 	}
 	
 

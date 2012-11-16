@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
@@ -59,5 +60,10 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	@Override
 	public void removeEdgeListener(EdgeListener vertexListener) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<? extends Edge> getEdges(Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
 	}
 }

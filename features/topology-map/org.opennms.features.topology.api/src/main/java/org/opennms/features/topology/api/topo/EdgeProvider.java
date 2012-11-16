@@ -12,6 +12,11 @@ public interface EdgeProvider {
 	public Edge getEdge(EdgeRef reference);
 	
 	/**
+	 * Return an immutable list of edges that match the criteria.
+	 */
+	public List<? extends Edge> getEdges(Criteria criteria);
+	
+	/**
 	 * Return an immutable list of all edges.
 	 */
 	public List<? extends Edge> getEdges();

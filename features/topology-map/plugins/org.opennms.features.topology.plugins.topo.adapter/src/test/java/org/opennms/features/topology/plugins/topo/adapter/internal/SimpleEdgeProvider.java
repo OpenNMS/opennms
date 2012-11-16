@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
@@ -134,6 +135,11 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	
 	public void remove(SimpleEdge... edges) {
 		remove(Arrays.asList(edges));
+	}
+
+	@Override
+	public List<? extends Edge> getEdges(Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
 	}
 
 }

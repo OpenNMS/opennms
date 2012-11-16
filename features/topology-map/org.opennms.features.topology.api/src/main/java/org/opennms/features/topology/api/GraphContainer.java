@@ -30,6 +30,7 @@ package org.opennms.features.topology.api;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -107,5 +108,9 @@ public interface GraphContainer extends DisplayState {
     public void setVertexItemProperty(Object itemId, String propertyName, Object value);
 
 	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue);
+	
+	public Criteria getCriteria(String namespace);
+	
+	public void setCriteria(String namespace);
 
 }

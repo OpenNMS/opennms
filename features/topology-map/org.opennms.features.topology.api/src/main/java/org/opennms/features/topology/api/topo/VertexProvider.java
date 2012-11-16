@@ -11,6 +11,11 @@ public interface VertexProvider {
 	
 	public Vertex getVertex(VertexRef reference);
 	
+	/**
+	 * Return an immutable list of vertices that match the criteria.
+	 */
+	public List<? extends Vertex> getVertices(Criteria criteria);
+
 	public List<? extends Vertex> getVertices();
 	
 	public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references);

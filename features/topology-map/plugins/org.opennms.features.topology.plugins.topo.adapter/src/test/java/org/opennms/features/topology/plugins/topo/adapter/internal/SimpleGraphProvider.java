@@ -3,6 +3,7 @@ package org.opennms.features.topology.plugins.topo.adapter.internal;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -143,6 +144,16 @@ public class SimpleGraphProvider implements GraphProvider {
 
 	public void remove(SimpleEdge... edges) {
 		m_edges.remove(edges);
+	}
+
+	@Override
+	public List<? extends Vertex> getVertices(Criteria criteria) {
+		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
+	}
+
+	@Override
+	public List<? extends Edge> getEdges(Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
 	}
 
 

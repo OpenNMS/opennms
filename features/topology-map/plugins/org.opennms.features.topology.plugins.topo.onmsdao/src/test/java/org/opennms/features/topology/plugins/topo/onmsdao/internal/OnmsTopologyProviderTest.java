@@ -41,6 +41,7 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -284,6 +285,16 @@ public class OnmsTopologyProviderTest {
 	public <T> T getVertexItemProperty(Object itemId, String propertyName,
 			T defaultValue) {
 		throw new UnsupportedOperationException("GraphContainer.getVertexItemProperty is not yet implemented.");
+	}
+
+	@Override
+	public Criteria getCriteria(String namespace) {
+		throw new UnsupportedOperationException("GraphContainer.getCriteria is not yet implemented.");
+	}
+
+	@Override
+	public void setCriteria(String namespace) {
+		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
 	}
 
     }

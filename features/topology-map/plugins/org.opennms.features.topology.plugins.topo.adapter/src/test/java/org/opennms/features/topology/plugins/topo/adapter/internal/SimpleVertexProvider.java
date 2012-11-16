@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -154,6 +155,11 @@ public class SimpleVertexProvider implements VertexProvider {
 	
 	public void remove(SimpleVertex... vertices) {
 		remove(Arrays.asList(vertices));
+	}
+
+	@Override
+	public List<? extends Vertex> getVertices(Criteria criteria) {
+		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
 	}
 
 }
