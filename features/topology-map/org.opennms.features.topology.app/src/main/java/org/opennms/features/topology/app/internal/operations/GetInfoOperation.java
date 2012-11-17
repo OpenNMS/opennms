@@ -32,13 +32,14 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.ui.Window;
 
 public class GetInfoOperation implements Operation {
 
     @Override
-    public Undoer execute(List<Object> targets,
+    public Undoer execute(List<VertexRef> targets,
             OperationContext operationContext) {
         Window mainWindow = operationContext.getMainWindow();
         
@@ -47,12 +48,12 @@ public class GetInfoOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets,
+    public boolean enabled(List<VertexRef> targets,
             OperationContext operationContext) {
         return targets == null || operationContext.getGraphContainer().containsEdgeId(targets);
     }

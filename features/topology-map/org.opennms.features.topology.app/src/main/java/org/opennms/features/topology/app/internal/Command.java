@@ -28,16 +28,17 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.List;
+
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.event.Action;
 
 public interface Command {
 
-    public abstract boolean appliesToTarget(Object target, OperationContext operationContext);
-
-    public abstract void doCommand(Object target, OperationContext operationContext);
+    public abstract void doCommand(List<VertexRef> target, OperationContext operationContext);
 
     public abstract void undoCommand();
 

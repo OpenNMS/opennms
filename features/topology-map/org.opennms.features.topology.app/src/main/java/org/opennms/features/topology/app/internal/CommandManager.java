@@ -41,6 +41,7 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
@@ -100,7 +101,7 @@ public class CommandManager {
 			//TODO: Do some implementation here for execute
 			if (operation != null) {
 				TopoContextMenu source = (TopoContextMenu)event.getSource();
-				operation.execute(Arrays.asList(source.getTarget()), m_opContext);
+				operation.execute(asVertexList(source.getTarget()), m_opContext);
 			}
 		}
 		
@@ -210,7 +211,7 @@ public class CommandManager {
 		return new MenuBar.Command() {
 
 			public void menuSelected(MenuItem selectedItem) {
-				List<Object> targets = new ArrayList<Object>(graphContainer.getSelectionManager().getSelectedVertices());
+				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
 				DefaultOperationContext context = (DefaultOperationContext) operationContext;
 				context.setChecked(selectedItem.isChecked());
@@ -315,7 +316,7 @@ public class CommandManager {
 		
 		//Check for null because separators have no Operation
 		if(operation != null) {
-    		List<Object> selectedVertices = new ArrayList<Object>(graphContainer.getSelectionManager().getSelectedVertices());
+    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 			boolean visibility = operation.display(selectedVertices, operationContext);
     		menuItem.setVisible(visibility);
     		boolean enabled = operation.enabled(selectedVertices, operationContext);
@@ -337,9 +338,13 @@ public class CommandManager {
         ContextMenuItem ctxMenuItem = contextItem.getItem();
         Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
      
-        List<Object> targets = Arrays.asList(target);
+        List<VertexRef> targets = asVertexList(target);
         ctxMenuItem.setVisible(operation.display(targets, operationContext));
         ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));   
     }
+
+	private List<VertexRef> asVertexList(Object target) {
+		return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
+	}
 
 }

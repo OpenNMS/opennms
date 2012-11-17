@@ -43,6 +43,7 @@ import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -277,12 +278,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             Object target = null;
             if (type.toLowerCase().equals("vertex")) {
             	String targetKey = (String)props.get("target");
-            	Vertex vertex = getGraph().getVertexByKey(targetKey);
-            	target = vertex.getItemId();
+            	target = getGraph().getVertexByKey(targetKey);
             } else if (type.toLowerCase().equals("edge")) {
             	String targetKey = (String)props.get("target");
-            	Edge edge = getGraph().getEdgeByKey(targetKey);
-            	target = edge.getItemId();
+            	target = getGraph().getEdgeByKey(targetKey);
             }
 
             getContextMenuHandler().show(target, x, y);
@@ -292,15 +291,15 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
 	private void selectVertices(String... vertexKeys) {
-		List<Object> itemIds = new ArrayList<Object>(vertexKeys.length);
+		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);
 		
 		for(String vertexKey : vertexKeys) {
-			itemIds.add(getGraph().getVertexByKey(vertexKey).getItemId());
+			vertexRefs.add(getGraph().getVertexByKey(vertexKey));
 		}
 
-		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
+		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
 
-	    getSelectionManager().setSelectedVertices(vertexIds);
+	    getSelectionManager().setSelectedVertexRefs(vertexTrees);
 	}
 
 	private SelectionManager getSelectionManager() {
@@ -308,21 +307,21 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	}
 
 	private void addVerticesToSelection(String... vertexKeys) {
-		List<Object> itemIds = new ArrayList<Object>(vertexKeys.length);
+		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);
 		
 		for(String vertexKey : vertexKeys) {
-			itemIds.add(getGraph().getVertexByKey(vertexKey).getItemId());
+			vertexRefs.add(getGraph().getVertexByKey(vertexKey));
 		}
+
+		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
 		
-		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
-		
-		getSelectionManager().selectVertices(vertexIds);
+		getSelectionManager().selectVertexRefs(vertexTrees);
     }
     
 	private void selectEdge(String edgeKey) {
 		Edge edge = getGraph().getEdgeByKey(edgeKey);
 		
-		getSelectionManager().setSelectedEdges(Collections.singleton(edge.getItemId()));
+		getSelectionManager().setSelectedEdgeRefs(Collections.singleton(edge));
 
 	}
 
@@ -347,9 +346,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         getGraph().getLayout().setLocation(vertex, x, y);
 
         if (selected) {
-        	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));
+        	getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
         } else {
-        	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));
+        	getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
         }
     }
     

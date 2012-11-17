@@ -552,7 +552,7 @@ public class SimpleGraphContainer implements GraphContainer {
             protected GVertex make(String key, Object itemId, Item item) {
                 Object groupId = m_topologyProvider.getVertexContainer().getParent(itemId);
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
-                // System.out.println("GVertex Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
+                //System.err.printf("GVertex Make Call :: Parent of itemId: %s with key %s groupId: %s groupKey %s\n" + key, itemId, key, groupId, groupKey);
                 GVertex gVertex = new GVertex(key, itemId, item, groupKey, groupId);
                 return gVertex;
             }
@@ -846,6 +846,25 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 	
 	@Override
+	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
+		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
+		for(VertexRef vertexRef : vertexRefs) {
+			addRefTreeToSet(vertexRef, processed);
+		}
+		return processed;
+	}
+	
+	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
+		processed.add(vertexId);
+
+		for(VertexRef childId : getChildren(vertexId)) {
+			if (!processed.contains(childId)) {
+				addRefTreeToSet(childId, processed);
+			}
+		}
+	}
+
+	@Override
 	public Collection<?> getVertexForest(Collection<?> vertexIds) {
 		Set<Object> processed = new LinkedHashSet<Object>();
 		for(Object vertexId : vertexIds) {
@@ -977,6 +996,44 @@ public class SimpleGraphContainer implements GraphContainer {
 	@Override
 	public void removeChangeListener(ChangeListener listener) {
 		m_listeners.remove(listener);
+	}
+
+	@Override
+	public Collection<? extends Vertex> getVertices() {
+		return m_graph.getVertices();
+	}
+
+	@Override
+	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
+		TopoVertex v = m_graph.getVertex(vRef);
+		Collection<?> childIds = getChildren(v.getItemId());
+		
+		List<TopoVertex> children = new ArrayList<TopoVertex>(childIds.size());
+		for(Object childId : childIds) {
+			TopoVertex child = m_graph.getVertexByItemId(childId);
+			if (child != null) {
+				children.add(child);
+			}
+		}
+		return children;
+	}
+
+	@Override
+	public Collection<? extends Vertex> getRootGroup() {
+		List<TopoVertex> rootGroup = new ArrayList<TopoVertex>();
+		
+		for(TopoVertex v : m_graph.getVertices()) {
+			if (getParent(v) == null) {
+				rootGroup.add(v);
+			}
+		}
+		
+		return rootGroup;
+	}
+
+	@Override
+	public boolean hasChildren(VertexRef vRef) {
+		return !getChildren(vRef).isEmpty();
 	}
 
 	

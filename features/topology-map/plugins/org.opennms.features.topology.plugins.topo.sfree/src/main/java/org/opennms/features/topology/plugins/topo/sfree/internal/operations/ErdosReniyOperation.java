@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider;
 
 public class ErdosReniyOperation implements Operation {
@@ -44,7 +45,7 @@ public class ErdosReniyOperation implements Operation {
     }
 
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
             m_topologyProvider.load(SFreeTopologyProvider.ERDOS_RENIS);
             if (operationContext != null && operationContext.getGraphContainer() != null) {
                 operationContext.getGraphContainer().redoLayout();
@@ -53,12 +54,12 @@ public class ErdosReniyOperation implements Operation {
     }
 
 	@Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
     	return true;
     }
 

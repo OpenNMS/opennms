@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
@@ -48,7 +49,7 @@ import com.vaadin.ui.Button.ClickListener;
 public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
-	public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
 		if (targets == null || targets.isEmpty()) {
 			return null;
 		}
@@ -145,12 +146,12 @@ public class CreateGroupOperation implements Constants, Operation {
 	}
 
 	@Override
-	public boolean display(List<Object> targets, OperationContext operationContext) {
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
 		return true;
 	}
 
 	@Override
-	public boolean enabled(List<Object> targets, OperationContext operationContext) {
+	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
 		return targets.size() > 0;
 	}
 

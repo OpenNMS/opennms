@@ -56,6 +56,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
@@ -233,6 +234,32 @@ public class SimpleTopologyProviderTest {
 		
 	}
 
+	@Override
+	public Collection<? extends Vertex> getVertices() {
+		throw new UnsupportedOperationException("GraphContainer.getVertices is not yet implemented.");
+	}
+
+	@Override
+	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
+		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
+	}
+
+	@Override
+	public Collection<? extends Vertex> getRootGroup() {
+		throw new UnsupportedOperationException("GraphContainer.getRootGroup is not yet implemented.");
+	}
+
+	@Override
+	public boolean hasChildren(VertexRef vRef) {
+		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
+	}
+
+	@Override
+	public Collection<VertexRef> getVertexRefForest(
+			Collection<? extends VertexRef> vertexRefs) {
+		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{
@@ -324,7 +351,7 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void testAddVertexWithOperation() {
 	    
-	    List<Object> targets = Collections.emptyList();
+	    List<VertexRef> targets = Collections.emptyList();
 	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
 	    
 	    AddVertexOperation addOperation = new AddVertexOperation(Constants.GROUP_ICON_KEY, m_topologyProvider);
@@ -341,7 +368,7 @@ public class SimpleTopologyProviderTest {
 		m_topologyProvider.resetContainer();
 
 		//Add existing vertex
-        Object vertexId = addVertexToTopr();
+        VertexRef vertexRef = addVertexToTopr();
 	    
 	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
 	    
@@ -350,8 +377,8 @@ public class SimpleTopologyProviderTest {
 	    EasyMock.replay(graphContainer);
 	    
 	    
-	    List<Object> targets = new ArrayList<Object>();
-	    targets.add("1");
+	    List<VertexRef> targets = new ArrayList<VertexRef>();
+	    targets.add(vertexRef);
 	    
 	    OperationContext operationContext = getOperationContext(graphContainer);
 	    AddVertexOperation addOperation = new AddVertexOperation(Constants.SERVER_ICON_KEY, m_topologyProvider);
@@ -401,11 +428,11 @@ public class SimpleTopologyProviderTest {
     	
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
-        Object vertexId = addVertexToTopr();
+        VertexRef vertexRef = addVertexToTopr();
         
         OperationContext operationContext = getOperationContext(graphContainer);
         RemoveVertexOperation removeOperation = new RemoveVertexOperation(m_topologyProvider);
-        removeOperation.execute(Arrays.asList(vertexId), operationContext);
+        removeOperation.execute(Arrays.asList(vertexRef), operationContext);
         
         assertEquals(0, m_topologyProvider.getVertexIds().size());
         
@@ -440,8 +467,8 @@ public class SimpleTopologyProviderTest {
     
     @Test
     public void testTopoProviderSetParent() {
-        Object vertexId1 = addVertexToTopr();
-        Object vertexId2 = addVertexToTopr();
+        VertexRef vertexId1 = addVertexToTopr();
+        VertexRef vertexId2 = addVertexToTopr();
         
         final AtomicInteger eventsReceived = new AtomicInteger(0);
         
@@ -457,8 +484,8 @@ public class SimpleTopologyProviderTest {
         assertEquals(1, eventsReceived.get());
         eventsReceived.set(0);
         
-        m_topologyProvider.setParent(vertexId1, groupId);
-        m_topologyProvider.setParent(vertexId2, groupId);
+        m_topologyProvider.setParent(vertexId1.getId(), groupId);
+        m_topologyProvider.setParent(vertexId2.getId(), groupId);
         
         assertEquals(2, eventsReceived.get());
     }
@@ -468,16 +495,16 @@ public class SimpleTopologyProviderTest {
     	
 		m_topologyProvider.resetContainer();
 
-        Object vertexId1 = addVertexToTopr();
-        Object vertexId2 = addVertexToTopr();
+        VertexRef vertexId1 = addVertexToTopr();
+        VertexRef vertexId2 = addVertexToTopr();
         
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
         EasyMock.replay(graphContainer);
         
-        List<Object> targets = new ArrayList<Object>();
-        targets.add("1");
-        targets.add("2");
+        List<VertexRef> targets = new ArrayList<VertexRef>();
+        targets.add(vertexId1);
+        targets.add(vertexId2);
         
         ConnectOperation connectOperation = new ConnectOperation(m_topologyProvider);
         connectOperation.execute(targets, getOperationContext(graphContainer));
@@ -491,8 +518,8 @@ public class SimpleTopologyProviderTest {
             SimpleLeafVertex target = (SimpleLeafVertex) edgeItem.getItemProperty("target").getValue();
             assertNotNull(source);
             assertNotNull(target);
-            assertEquals(vertexId1, source.getId());
-            assertEquals(vertexId2, target.getId());
+            assertEquals(vertexId1.getId(), source.getId());
+            assertEquals(vertexId2.getId(), target.getId());
         }
         
         EasyMock.verify(graphContainer);
@@ -503,8 +530,9 @@ public class SimpleTopologyProviderTest {
         return new TestOperationContext(mockedContainer);
     }
 	
-	private Object addVertexToTopr() {
-	    return m_topologyProvider.addVertex(0, 0);
+	private VertexRef addVertexToTopr() {
+	    String id = m_topologyProvider.addVertex(0, 0);
+	    return new LWVertexRef(m_topologyProvider.getNamespace(), id);
     }
 
 }

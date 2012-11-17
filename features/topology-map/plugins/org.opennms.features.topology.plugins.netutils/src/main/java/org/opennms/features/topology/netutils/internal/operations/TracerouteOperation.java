@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.TracerouteWindow;
 
@@ -39,7 +40,7 @@ public class TracerouteOperation extends AbstractOperation {
 
     private String tracerouteURL;
 
-    public boolean display(final List<Object> targets, final  OperationContext operationContext) {
+    public boolean display(final List<VertexRef> targets, final  OperationContext operationContext) {
         String ipAddr = "";
 
         if (targets != null) {
@@ -56,7 +57,7 @@ public class TracerouteOperation extends AbstractOperation {
         return super.display(targets, operationContext);
     }
 
-    public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         String ipAddr = "";
         String label = "";
         int nodeID = -1;

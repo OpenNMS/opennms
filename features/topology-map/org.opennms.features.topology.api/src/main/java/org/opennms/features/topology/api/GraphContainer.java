@@ -45,7 +45,15 @@ public interface GraphContainer extends DisplayState {
 		public void graphChanged(GraphContainer graphContainer);
 	}
 
-    public GraphProvider getBaseTopology();
+	public Collection<? extends Vertex> getVertices();
+
+	public Collection<? extends Vertex> getChildren(VertexRef vRef);
+
+	public Collection<? extends Vertex> getRootGroup();
+
+	public boolean hasChildren(VertexRef vRef);
+
+	public GraphProvider getBaseTopology();
     
     public void setBaseTopology(GraphProvider graphProvider);
     
@@ -55,7 +63,6 @@ public interface GraphContainer extends DisplayState {
     
     public Edge getEdge(EdgeRef ref);
     
-
 	public Criteria getCriteria(String namespace);
 	
 	public void setCriteria(Criteria critiera);
@@ -67,6 +74,9 @@ public interface GraphContainer extends DisplayState {
 	public Graph getGraph();
 	
 	public SelectionManager getSelectionManager();
+	
+	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs);
+
 
 	// These will work the GraphProvider in the future
 	@Deprecated
@@ -92,5 +102,9 @@ public interface GraphContainer extends DisplayState {
     public void setVertexItemProperty(Object itemId, String propertyName, Object value);
 
 	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue);
+
+
+
+
 	
 }

@@ -35,7 +35,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -317,7 +316,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
             @Override
             public void buttonClick(ClickEvent event) {
-                FilterableHierarchicalContainer container = m_tree.getContainerDataSource();
+            	GCFilterableContainer container = m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
                 
                 String filterString = (String) filterField.getValue();
@@ -353,23 +352,21 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
     private VertexSelectionTree createTree() {
-	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
+	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		@SuppressWarnings("serial")
-		final VertexSelectionTree tree = new VertexSelectionTree(container, m_graphContainer) {
-			public String getTitle() {
-				return "Nodes";
-			}
-		};
+		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
 		tree.setMultiSelect(true);
-        
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
+
 		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-			tree.expandItemsRecursively(it.next());
+			Object item = it.next();
+			//System.err.println("Expanding " + item);
+			tree.expandItemsRecursively(item);
 		}
 		
 		m_graphContainer.getSelectionManager().addSelectionListener(tree);
+
 		return tree;
 	}
 

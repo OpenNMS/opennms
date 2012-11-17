@@ -114,7 +114,7 @@ public class TopoEdge implements Edge {
     
     
     public String getCssClass() {
-    	return getSelectionManager().isEdgeSelected(m_itemId) ? getStyleName()+" selected" : getStyleName(); 
+    	return getSelectionManager().isEdgeRefSelected(this) ? getStyleName()+" selected" : getStyleName(); 
     }
 
 	public String getStyleName() {

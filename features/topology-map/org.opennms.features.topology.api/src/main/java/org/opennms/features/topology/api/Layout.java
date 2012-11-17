@@ -1,6 +1,5 @@
 package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface Layout {

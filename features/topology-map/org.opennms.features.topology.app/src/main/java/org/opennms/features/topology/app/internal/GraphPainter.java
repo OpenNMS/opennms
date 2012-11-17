@@ -82,11 +82,11 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private boolean isSelected(Vertex vertex) {
-		return getSelectionManager().isVertexSelected(vertex.getItemId());
+		return getSelectionManager().isVertexRefSelected(vertex);
 	}
 
 	private boolean isSelected(Edge edge) {
-		return getSelectionManager().isEdgeSelected(edge.getItemId());
+		return getSelectionManager().isEdgeRefSelected(edge);
 	}
 
 }

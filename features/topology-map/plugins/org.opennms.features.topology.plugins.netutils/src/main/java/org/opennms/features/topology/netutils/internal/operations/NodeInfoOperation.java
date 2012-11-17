@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.NodeInfoWindow;
 
@@ -40,7 +41,7 @@ public class NodeInfoOperation extends AbstractOperation {
     private String m_nodePageURL;
     private String m_nodeListURL;
 
-    public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         String label = "";
         int nodeID = -1;
 
@@ -76,7 +77,7 @@ public class NodeInfoOperation extends AbstractOperation {
     }
     
     @Override
-    public boolean display(final List<Object> targets, final OperationContext operationContext) {
+    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
         if(targets != null && targets.size() > 0 && targets.get(0) != null) {
             return true;
         }else {

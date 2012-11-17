@@ -61,7 +61,7 @@ public class VEProviderGraphContainerTest {
 	}
 
 	@Test
-	public void test() {
+	public void testContainer() {
 			
 		m_graphContainer.getGraph();
 		

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.event.Action;
 
@@ -75,38 +76,13 @@ public class OperationCommand extends Action implements Command  {
     }
     
     /* (non-Javadoc)
-     * @see org.opennms.features.topology.app.internal.Command#appliesToTarget(java.lang.Object, org.opennms.features.topology.app.internal.SimpleGraphContainer)
-     */
-    @Override
-    public boolean appliesToTarget(Object target, OperationContext operationContext) {
-        return m_operation.enabled(asList(target), operationContext);
-    }
-    
-    /* (non-Javadoc)
      * @see org.opennms.features.topology.app.internal.Command#doCommand(java.lang.Object, org.opennms.features.topology.app.internal.SimpleGraphContainer, com.vaadin.ui.Window, org.opennms.features.topology.app.internal.CommandManager)
      */
     @Override
-    public void doCommand(Object target, OperationContext operationContext) {
-        m_operation.execute(asList(target), operationContext);
+    public void doCommand(List<VertexRef> targets, OperationContext operationContext) {
+        m_operation.execute(targets, operationContext);
     }
 	
-	private List<Object> asList(Object target) {
-	    if(target != null) {
-    	    if(target instanceof Collection<?>) {
-                return new ArrayList<Object>( (Collection<?>) target);
-            }
-            
-            if(target instanceof Object[]) {
-                return  Arrays.asList( (Object[]) target);
-            }
-            
-            return Collections.singletonList(target);
-	    }else {
-	        return Collections.emptyList();
-	    }
-        
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.features.topology.app.internal.Command#undoCommand()
      */

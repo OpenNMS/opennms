@@ -35,6 +35,7 @@ import java.util.List;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Item;
 
@@ -126,6 +127,19 @@ public class TopoGraph implements Graph {
 
 	public List<TopoVertex> getVertices(){
 		return m_vertexHolder.getElements();
+	}
+	
+	private boolean eq(VertexRef a, VertexRef b) {
+		return a.getNamespace().equals(b.getNamespace()) && a.getId().equals(b.getId());
+	}
+	
+	public TopoVertex getVertex(VertexRef ref) {
+		for(TopoVertex v : getVertices()) {
+			if (eq(v, ref)) {
+				return v;
+			}
+		}
+		return null;
 	}
 	
 	public List<TopoVertex> getLeafVertices(){

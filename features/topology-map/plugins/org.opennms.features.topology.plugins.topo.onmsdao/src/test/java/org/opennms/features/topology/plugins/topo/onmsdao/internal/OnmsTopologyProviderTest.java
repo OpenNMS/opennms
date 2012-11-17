@@ -229,6 +229,32 @@ public class OnmsTopologyProviderTest {
 		
 	}
 
+	@Override
+	public Collection<? extends Vertex> getVertices() {
+		throw new UnsupportedOperationException("GraphContainer.getVertices is not yet implemented.");
+	}
+
+	@Override
+	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
+		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
+	}
+
+	@Override
+	public Collection<? extends Vertex> getRootGroup() {
+		throw new UnsupportedOperationException("GraphContainer.getRootGroup is not yet implemented.");
+	}
+
+	@Override
+	public boolean hasChildren(VertexRef vRef) {
+		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
+	}
+
+	@Override
+	public Collection<VertexRef> getVertexRefForest(
+			Collection<? extends VertexRef> vertexRefs) {
+		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
+	}
+
 
     }
     

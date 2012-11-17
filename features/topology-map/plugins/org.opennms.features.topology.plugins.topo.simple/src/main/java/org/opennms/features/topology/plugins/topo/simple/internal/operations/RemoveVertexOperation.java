@@ -34,6 +34,7 @@ import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 
@@ -46,14 +47,16 @@ public class RemoveVertexOperation implements Operation {
     }
     
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         DisplayState graphContainer = operationContext.getGraphContainer();
         
         if (targets == null) {
             LoggerFactory.getLogger(getClass()).debug("need to handle selection!!!");
         } else {
-            for(Object target : targets) {
-                m_topologyProvider.removeVertex(target);
+            for(VertexRef target : targets) {
+            	if (m_topologyProvider.getNamespace().equals(target.getNamespace())) {
+            		m_topologyProvider.removeVertex(target.getId());
+            	}
             }
             
             
@@ -63,12 +66,12 @@ public class RemoveVertexOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
             for(Object target : targets) {
                 if(!m_topologyProvider.containsVertexId(target)) return false;

@@ -33,12 +33,13 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 
 public class DeleteGroupOperation implements Operation {
 
 	@Override
-	public Undoer execute(List<Object> targets, OperationContext operationContext) {
+	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
 		if (targets == null || targets.isEmpty()) {
 			return null;
 		}
@@ -63,12 +64,12 @@ public class DeleteGroupOperation implements Operation {
 	}
 
 	@Override
-	public boolean display(List<Object> targets, OperationContext operationContext) {
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
 		return true;
 	}
 
 	@Override
-	public boolean enabled(List<Object> targets, OperationContext operationContext) {
+	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
 		return targets != null && targets.size() == 1 && targets.get(0) != null;
 	}
 
