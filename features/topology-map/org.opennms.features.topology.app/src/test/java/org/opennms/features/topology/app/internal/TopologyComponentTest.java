@@ -211,16 +211,11 @@ public class TopologyComponentTest {
         	mockVertexWithKey(target2, key);
         }
         
-        Map<Object, String> verticesKeyMapper = new HashMap<Object, String>();
-        for(Vertex v : graph.getDisplayVertices()) {
-            verticesKeyMapper.put(v.getItemId(), v.getKey());
-        }
-        
         for(Edge e: graph.getDisplayEdges()) {
         	Vertex sourceV = graphContainer.getVertex(e.getSource().getVertex());
         	Vertex targetV = graphContainer.getVertex(e.getTarget().getVertex());
-            String sourceKey = verticesKeyMapper.get(sourceV.getItemId());
-            String targetKey = verticesKeyMapper.get(targetV.getItemId());
+            String sourceKey = sourceV.getKey();
+            String targetKey = targetV.getKey();
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);
         }
         mockGraphTagEnd(target2);

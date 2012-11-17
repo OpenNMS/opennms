@@ -5,6 +5,13 @@ import java.util.List;
 
 public interface EdgeProvider {
 
+	/**
+	 * A string used to identify references belonging to this provider
+	 * 
+	 * May only container characters that make for a reasonable java identifier
+	 * such as letters digits and underscore (no colons, periods, commans etc.)
+	 * 
+	 */
 	public String getNamespace();
 	
 	public Edge getEdge(String id);

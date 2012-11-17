@@ -63,11 +63,6 @@ public class NCSEdgeProvider implements EdgeProvider {
 		}
 
 		@Override
-		public Object getItemId() {
-			return getKey();
-		}
-
-		@Override
 		public String getKey() {
 			return getNamespace() + ":" + getId();
 		}
@@ -159,7 +154,6 @@ public class NCSEdgeProvider implements EdgeProvider {
 			return null;
 		}
 
-		@Override
 		public Object getItemId() {
 			return getId();
 		}

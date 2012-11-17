@@ -929,9 +929,9 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	@Override
-	public Vertex getVertex(VertexRef ref) {
-		if (ref instanceof Vertex) {
-			return (Vertex)ref;
+	public TopoVertex getVertex(VertexRef ref) {
+		if (ref instanceof TopoVertex) {
+			return (TopoVertex)ref;
 		} else {
 			return findVertex(ref);
 		}
@@ -941,8 +941,8 @@ public class SimpleGraphContainer implements GraphContainer {
 		return a.getNamespace().equals(b.getNamespace()) && a.getId().equals(b.getId());
 	}
 	
-	private Vertex findVertexByItemId(Object itemId) {
-		for(Vertex vertex : m_graph.getVertices()) {
+	private TopoVertex findVertexByItemId(Object itemId) {
+		for(TopoVertex vertex : m_graph.getVertices()) {
 			if (itemId.equals(vertex.getItemId())) {
 				return vertex;
 			}
@@ -950,8 +950,8 @@ public class SimpleGraphContainer implements GraphContainer {
 		return null;
 	}
 
-	private Vertex findVertex(VertexRef ref) {
-		for(Vertex vertex : m_graph.getVertices()) {
+	private TopoVertex findVertex(VertexRef ref) {
+		for(TopoVertex vertex : m_graph.getVertices()) {
 			if (refEquals(ref, vertex)) {
 				return vertex;
 			}

@@ -14,7 +14,6 @@ import org.opennms.features.topology.api.HierarchicalBeanContainer;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
-import org.opennms.features.topology.api.support.VertexProviderFilterableHierarchicalContainer;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer;
@@ -74,7 +73,6 @@ public class FilterableHeirarchicalContainerTest {
     
     
     private FilterableHierarchicalContainer m_container;
-    private VertexProviderFilterableHierarchicalContainer m_topologyProvidercontainer;
     
     HierarchicalBeanContainer<String, Vertex> m_beanContainer;
     VertexProvider m_vertexProvider;
@@ -94,22 +92,21 @@ public class FilterableHeirarchicalContainerTest {
     @Test
     public void testFilterableHeirarchicalContainer() {
         FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_beanContainer);
-        VertexProviderFilterableHierarchicalContainer vertexContainer = new VertexProviderFilterableHierarchicalContainer(m_vertexProvider);
         
-        assertNotNull(vertexContainer.getItemIds());
-        assertEquals(2, vertexContainer.getItemIds().size());
+        assertNotNull(container.getItemIds());
+        assertEquals(2, container.getItemIds().size());
         
-        Collection<?> itemIds = vertexContainer.getItemIds();
+        Collection<?> itemIds = container.getItemIds();
         assertEquals(2, itemIds.size());
         String firstItem = (String) itemIds.iterator().next();
-        assertEquals("v1", vertexContainer.getContainerProperty(firstItem, "id").getValue());
-        assertEquals(String.class, vertexContainer.getType("id"));
-        assertEquals(String.class, vertexContainer.getType("label"));
+        assertEquals("v1", container.getContainerProperty(firstItem, "id").getValue());
+        assertEquals(String.class, container.getType("id"));
+        assertEquals(String.class, container.getType("label"));
         
-        assertEquals(2, vertexContainer.rootItemIds().size());
-        assertTrue(vertexContainer.isRoot("v1"));
+        assertEquals(2, container.rootItemIds().size());
+        assertTrue(container.isRoot("v1"));
         
-        Collection<?> propertyIds = vertexContainer.getContainerPropertyIds();
+        Collection<?> propertyIds = container.getContainerPropertyIds();
         assertEquals(2, propertyIds.size());
         Iterator it = propertyIds.iterator();
         assertEquals("id", it.next());

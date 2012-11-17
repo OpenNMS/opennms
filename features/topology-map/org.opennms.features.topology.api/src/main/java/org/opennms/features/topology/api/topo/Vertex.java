@@ -6,8 +6,6 @@ public interface Vertex extends VertexRef {
 	
 	String getKey();
 	
-	Object getItemId();
-	
 	Item getItem();
 	
 	String getLabel();

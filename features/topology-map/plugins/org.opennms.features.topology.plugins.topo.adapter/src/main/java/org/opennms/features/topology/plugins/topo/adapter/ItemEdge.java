@@ -35,7 +35,6 @@ class ItemEdge implements Edge {
 		return m_id;
 	}
 	
-	@Override
 	public Object getItemId() {
 		return m_itemId;
 	}

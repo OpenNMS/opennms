@@ -64,11 +64,6 @@ public class VEProviderGraphContainer implements GraphContainer {
         }
 
         @Override
-        public Object getItemId() {
-            return getKey();
-        }
-
-        @Override
         public Item getItem() {
             return new BeanItem<PseudoEdge>(this);
         }

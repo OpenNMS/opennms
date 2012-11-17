@@ -5,6 +5,13 @@ import java.util.List;
 
 public interface VertexProvider {
 	
+	/**
+	 * A string used to identify references belonging to this provider
+	 * 
+	 * May only container characters that make for a reasonable java identifier
+	 * such as letters digits and underscore (no colons, periods, commans etc.)
+	 * 
+	 */
 	public String getNamespace();
 	
 	public Vertex getVertex(String id);
@@ -28,7 +35,7 @@ public interface VertexProvider {
 	
 	public Vertex getParent(VertexRef vertex);
 	
-	public List<? extends Vertex> getChildren(VertexRef group);
+    public List<? extends Vertex> getChildren(VertexRef group);
 	
 	public void addVertexListener(VertexListener vertexListener);
 	

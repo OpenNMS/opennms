@@ -6,8 +6,6 @@ public interface Edge extends EdgeRef {
 	
 	String getKey();
 	
-	public Object getItemId();
-	
 	public Item getItem();
 	
 	public Connector getSource();

@@ -25,7 +25,7 @@ public class SimpleVertexBuilder {
 	}
 	
 	public SimpleVertexBuilder vTooltip(String tooltipText) {
-		m_currentVertex.setTooltpText(tooltipText);
+		m_currentVertex.setTooltipText(tooltipText);
 		return this;
 	}
 	

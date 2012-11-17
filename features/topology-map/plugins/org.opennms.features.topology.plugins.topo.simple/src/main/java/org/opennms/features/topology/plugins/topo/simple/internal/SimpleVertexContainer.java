@@ -103,7 +103,7 @@ public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex>
 		throw new UnsupportedOperationException("this operation is not allowed");
 	}
 
-	public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
+	public boolean setParent(Object itemId, Object newParentId) {
 		if (!containsId(itemId)) return false;
 		
 		SimpleVertex v  = getItem(itemId).getBean();
