@@ -60,17 +60,15 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
 		for(Vertex vertex : g.getDisplayVertices()) {
             s_log.debug("Laying out vertex id : {}", vertex);
 			if(i == 0) {
-				layout.setVertexX(vertex, cx);
-				layout.setVertexY(vertex, cy);
+				layout.setLocation(vertex, cx, cy);
             }else {
     	        int n = i - 1;
     	        double a = (2*Math.PI)/(g.getDisplayVertices().size() -1);
     	        
     	        int x = (int) (r * Math.cos(n*a) + cx);
     	        int y = (int) (r * Math.sin(n*a) + cy);
-    	        
-    	        layout.setVertexX(vertex, x);
-    	        layout.setVertexY(vertex, y);
+
+    	        layout.setLocation(vertex, x, y);
             }
 			i++;
         }

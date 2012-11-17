@@ -647,7 +647,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_vertexContainer;
 	}
 
-	@Override
 	public BeanContainer<String,GEdge> getEdgeContainer() {
 		return m_edgeContainer;
 	}
@@ -865,7 +864,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
 
-	@Override
 	public TopoGraph getCompleteGraph() {
 		return m_graph;
 	}

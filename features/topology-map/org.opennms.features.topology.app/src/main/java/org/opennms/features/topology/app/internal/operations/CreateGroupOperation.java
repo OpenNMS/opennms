@@ -34,6 +34,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
@@ -77,7 +78,8 @@ public class CreateGroupOperation implements Constants, Operation {
 				super.commit();
 				String groupLabel = (String)getField("Group Label").getValue();
 
-				Object groupId = graphContainer.getDataSource().addGroup(groupLabel, GROUP_ICON_KEY);
+				TopologyProvider topologyProvider = graphContainer.getDataSource();
+				Object groupId = topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
 
 				/*
 				for(Object itemId : targets) {
@@ -87,19 +89,19 @@ public class CreateGroupOperation implements Constants, Operation {
 
 				Object parentGroup = null;
 				for(Object vertexId : targets) {
-					Object parent = graphContainer.getVertexContainer().getParent(vertexId);
+					Object parent = topologyProvider.getVertexContainer().getParent(vertexId);
 					if (parentGroup == null) {
 						parentGroup = parent;
 					} else if (parentGroup != parent) {
 						parentGroup = ROOT_GROUP_ID;
 					}
-					graphContainer.getDataSource().setParent(vertexId, groupId);
+					topologyProvider.setParent(vertexId, groupId);
 				}
 
-				graphContainer.getDataSource().setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+				topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
 
 				// Save the topology
-				graphContainer.getDataSource().save(null);
+				topologyProvider.save(null);
 
 				graphContainer.redoLayout();
 			}

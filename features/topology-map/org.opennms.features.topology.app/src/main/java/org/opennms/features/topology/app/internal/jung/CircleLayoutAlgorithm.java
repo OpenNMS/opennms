@@ -66,16 +66,11 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 
 		CircleLayout<VertexRef, Edge> layout = new CircleLayout<VertexRef, Edge>(jungGraph);
-		layout.setInitializer(new Transformer<VertexRef, Point2D>() {
-			public Point2D transform(VertexRef v) {
-				return new Point(graphLayout.getVertexX(v), graphLayout.getVertexY(v));
-			}
-		});
+		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(selectLayoutSize(graphContainer));
 		
 		for(VertexRef v : vertices) {
-			graphLayout.setVertexX(v, (int)layout.getX(v));
-			graphLayout.setVertexY(v, (int)layout.getY(v));
+			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
 		
 		

@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer {
@@ -276,12 +275,6 @@ public class VEProviderGraphContainer implements GraphContainer {
     }
 
     @Override
-    public BeanContainer<?, ?> getEdgeContainer() {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getEdgeContainer is not yet implemented.");
-    }
-
-    @Override
     public Item getVertexItem(Object vertexId) {
         throw new UnsupportedOperationException(
                 "VEProviderGraphContainer.getVertexItem is not yet implemented.");
@@ -390,30 +383,6 @@ public class VEProviderGraphContainer implements GraphContainer {
     }
 
     @Override
-    public int getVertexX(VertexRef vertexId) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertexX is not yet implemented.");
-    }
-
-    @Override
-    public void setVertexX(VertexRef vertexId, int x) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.setVertexX is not yet implemented.");
-    }
-
-    @Override
-    public int getVertexY(VertexRef vertexId) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertexY is not yet implemented.");
-    }
-
-    @Override
-    public void setVertexY(VertexRef vertexId, int y) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.setVertexY is not yet implemented.");
-    }
-
-    @Override
     public TopologyProvider getDataSource() {
         throw new UnsupportedOperationException(
                 "VEProviderGraphContainer.getDataSource is not yet implemented.");
@@ -423,12 +392,6 @@ public class VEProviderGraphContainer implements GraphContainer {
     public void setDataSource(TopologyProvider topologyProvider) {
         throw new UnsupportedOperationException(
                 "VEProviderGraphContainer.setDataSource is not yet implemented.");
-    }
-
-    @Override
-    public Graph getCompleteGraph() {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getCompleteGraph is not yet implemented.");
     }
 
     @Override

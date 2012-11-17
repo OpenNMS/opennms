@@ -119,7 +119,6 @@ public class SimpleTopologyProviderTest {
             return m_vertContainer;
         }
 
-        @Override
         public BeanContainer<?, ?> getEdgeContainer() {
             // TODO Auto-generated method stub
             return null;
@@ -173,31 +172,6 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public Graph getGraph() {
 		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
-	}
-
-	@Override
-	public Graph getCompleteGraph() {
-		throw new UnsupportedOperationException("GraphContainer.getCompleteGraph is not yet implemented.");
-	}
-
-	@Override
-	public int getVertexX(VertexRef vertexId) {
-		throw new UnsupportedOperationException("GraphContainer.getVertexX is not yet implemented.");
-	}
-
-	@Override
-	public void setVertexX(VertexRef vertexId, int x) {
-		throw new UnsupportedOperationException("GraphContainer.setVertexX is not yet implemented.");
-	}
-
-	@Override
-	public int getVertexY(VertexRef vertexId) {
-		throw new UnsupportedOperationException("GraphContainer.getVertexY is not yet implemented.");
-	}
-
-	@Override
-	public void setVertexY(VertexRef vertexId, int y) {
-		throw new UnsupportedOperationException("GraphContainer.setVertexY is not yet implemented.");
 	}
 
 	@Override

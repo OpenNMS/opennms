@@ -344,8 +344,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         
         Vertex vertex = getGraph().getVertexByKey(id);
         
-        getGraph().getLayout().setVertexX(vertex, x);
-        getGraph().getLayout().setVertexY(vertex, y);
+        getGraph().getLayout().setLocation(vertex, x, y);
 
         if (selected) {
         	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));

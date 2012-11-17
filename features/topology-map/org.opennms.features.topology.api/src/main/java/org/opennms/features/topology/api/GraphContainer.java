@@ -38,17 +38,12 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanContainer;
 
 public interface GraphContainer extends DisplayState {
 	
 	public interface ChangeListener {
 		public void graphChanged(GraphContainer graphContainer);
 	}
-
-    public VertexContainer<?, ?> getVertexContainer();
-
-    public BeanContainer<?, ?> getEdgeContainer();
 
     public GraphProvider getBaseTopology();
     
@@ -60,14 +55,7 @@ public interface GraphContainer extends DisplayState {
     
     public Edge getEdge(EdgeRef ref);
     
-    public int getVertexX(VertexRef vertexId);
-    
-    public void setVertexX(VertexRef vertexId, int x);
-    
-    public int getVertexY(VertexRef vertexId);
-    
-    public void setVertexY(VertexRef vertexId, int y);
-    
+
 	public Criteria getCriteria(String namespace);
 	
 	public void setCriteria(Criteria critiera);
@@ -76,26 +64,29 @@ public interface GraphContainer extends DisplayState {
 	
 	public void removeChangeListener(ChangeListener listener);
 
+	public Graph getGraph();
+	
+	public SelectionManager getSelectionManager();
+
+	// These will work the GraphProvider in the future
 	@Deprecated
     public TopologyProvider getDataSource();
 
     @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
 
-	public Graph getCompleteGraph();
-	
-	public Graph getGraph();
-	
+	// replace these with a way to determine vertex or edge from ref once selection is refs rather than itemIds
 	public boolean containsVertexId(Object vertexId);
 	
 	public boolean containsEdgeId(Object edgeId);
 
-	public SelectionManager getSelectionManager();
-	
-	// returns a list containing all of the passed in vertices and their children grandchildren etc.
+	// THIS ONE WILL SWITCH TO TAKE REFS RATHER THAN itemIds
+    // returns a list containing all of the passed in vertices and their children grandchildren etc.
 	public Collection<?> getVertexForest(Collection<?> vertexIds);
 	
-	
+	// TRYING TO GET RID OF THE ONES BELOW HERE
+    public VertexContainer<?, ?> getVertexContainer();
+
     public Item getVertexItem(Object vertexId);
 
     public void setVertexItemProperty(Object itemId, String propertyName, Object value);

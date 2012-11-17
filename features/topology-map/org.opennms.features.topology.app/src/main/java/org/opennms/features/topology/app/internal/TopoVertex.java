@@ -61,22 +61,9 @@ public class TopoVertex implements Vertex {
 		return !getGraphContainer().hasChildren(getItemId());
 	}
 
-	private int getX() {
-		return getGraphContainer().getVertexX(this);
-		
-	}
-
-	private int getY(){
-		return getGraphContainer().getVertexY(this);
-	}
-
 	public String toString() {
-    	return "v" + getItemId() + "(" + getX()  + "," + getY() + "):" + (isSelected() ? "selected" : "unselected");
+    	return "v" + getItemId();
     }
-
-	private boolean isSelected() {
-		return getGraphContainer().getSelectionManager().isVertexSelected(getItemId());
-	}
 
 	public Item getItem() {
 		return m_item;

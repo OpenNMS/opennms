@@ -3,15 +3,14 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Layout.Point;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -38,12 +37,14 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	@Override
 	public void visitVertex(Vertex vertex) throws PaintException {
+		Point initialLocation = m_layout.getInitialLocation(vertex);
+		Point location = m_layout.getLocation(vertex);
 		m_target.startTag("vertex");
 		m_target.addAttribute("key", vertex.getKey());
-		m_target.addAttribute("initialX", getInitialX(vertex));
-		m_target.addAttribute("initialY", getInitialY(vertex));
-		m_target.addAttribute("x", getX(vertex));
-		m_target.addAttribute("y", getY(vertex));
+		m_target.addAttribute("initialX", initialLocation.getX());
+		m_target.addAttribute("initialY", initialLocation.getY());
+		m_target.addAttribute("x", location.getX());
+		m_target.addAttribute("y", location.getY());
 		m_target.addAttribute("selected", isSelected(vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		m_target.addAttribute("label", vertex.getLabel());
@@ -68,14 +69,6 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.endTag("graph");
 	}
 
-	private int getInitialX(Vertex vertex) {
-		return m_layout.getInitialX(vertex);
-	}
-
-	private int getInitialY(Vertex vertex) {
-		return m_layout.getInitialY(vertex);
-	}
-
 	private String getSourceKey(Edge edge) {
 		return m_graphContainer.getVertex(edge.getSource().getVertex()).getKey();
 	}
@@ -94,15 +87,6 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	private boolean isSelected(Edge edge) {
 		return getSelectionManager().isEdgeSelected(edge.getItemId());
-	}
-
-
-	private int getX(Vertex vertex) {
-		return m_layout.getVertexX(vertex);
-	}
-
-	private int getY(Vertex vertex) {
-		return m_layout.getVertexY(vertex);
 	}
 
 }

@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 
