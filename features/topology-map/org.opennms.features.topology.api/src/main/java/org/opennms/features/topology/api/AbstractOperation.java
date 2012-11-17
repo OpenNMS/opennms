@@ -36,20 +36,20 @@ public abstract class AbstractOperation implements Operation {
     public abstract String getId();
 
     protected static String getLabelValue(final OperationContext operationContext, final Object target) {
-        return getVertexPropertyValue(operationContext, target, "label", String.class);
+        return getPropertyValue(getVertexItem(operationContext, target), "label", String.class);
     }
 
     protected static String getIpAddrValue(final OperationContext operationContext, final Object target) {
-        return getVertexPropertyValue(operationContext, target, "ipAddr", String.class);
+        return getPropertyValue(getVertexItem(operationContext, target), "ipAddr", String.class);
     }
 
     protected static Integer getNodeIdValue(final OperationContext operationContext, final Object target) {
-        return getVertexPropertyValue(operationContext, target, "nodeID", Integer.class);
+        return getPropertyValue(getVertexItem(operationContext, target), "nodeID", Integer.class);
     }
 
-    protected static <T> T getVertexPropertyValue(final OperationContext operationContext, final Object target, final Object id, final Class<T> clazz) {
-        return getPropertyValue(operationContext.getGraphContainer().getVertexItem(target), id, clazz);
-    }
+	protected static Item getVertexItem(final OperationContext operationContext, final Object target) {
+		return operationContext.getGraphContainer().getVertexItem(target);
+	}
 
     @SuppressWarnings("unchecked")
     protected static <T> T getPropertyValue(final Item item, final Object id, final Class<T> clazz) {
