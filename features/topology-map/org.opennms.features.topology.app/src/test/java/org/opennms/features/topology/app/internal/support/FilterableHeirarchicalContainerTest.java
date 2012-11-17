@@ -19,7 +19,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer;
 import org.opennms.features.topology.app.internal.TestTopologyProvider;
-import org.opennms.features.topology.app.internal.TopoVertex;
 import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 
 
@@ -90,8 +89,6 @@ public class FilterableHeirarchicalContainerTest {
         m_beanContainer.setBeanIdProperty("id");
         m_vertexProvider = new TPGraphProvider(m_topologyProvider);
         
-        m_beanContainer.addBean(new TopoVertex(m_graphContainer, "key1", null));
-        m_beanContainer.addBean(new TopoVertex(m_graphContainer, "key2", null));
     }
     
     @Test
@@ -99,7 +96,6 @@ public class FilterableHeirarchicalContainerTest {
         FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_beanContainer);
         VertexProviderFilterableHierarchicalContainer vertexContainer = new VertexProviderFilterableHierarchicalContainer(m_vertexProvider);
         
-        assertEquals(2, container.getItemIds().size());
         assertNotNull(vertexContainer.getItemIds());
         assertEquals(2, vertexContainer.getItemIds().size());
         
