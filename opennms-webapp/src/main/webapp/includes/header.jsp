@@ -71,8 +71,13 @@
     String noticeStatus;
     try {
         noticeStatus = NotifdConfigFactory.getPrettyStatus();
+        if ("On".equals(noticeStatus)) {
+          noticeStatus="<b id=\"notificationOn\">On</b>";
+        } else {
+          noticeStatus="<b id=\"notificationOff\">Off</b>";
+        }
     } catch (Throwable t) {
-        noticeStatus = "<font color=\"ff0000\">Unknown</font>";
+        noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
 final String baseHref = Util.calculateUrlBase( request );
