@@ -37,6 +37,7 @@ import java.util.Map;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
@@ -60,7 +61,7 @@ import com.vaadin.ui.ClientWidget;
 
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
+public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
 	
@@ -113,12 +114,7 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 			}
 		});
 
-		
-		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
-		
-		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
+		m_graphContainer.addChangeListener(this);
 		
 		setScaleDataSource(scale);
 				
@@ -384,12 +380,8 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 	    }
 	}
 
-	public void containerItemSetChange(ItemSetChangeEvent event) {
+	public void graphChanged(GraphContainer container) {
 		setFitToView(true);
-		requestRepaint();
-	}
-
-	public void containerPropertySetChange(PropertySetChangeEvent event) {
 		requestRepaint();
 	}
 

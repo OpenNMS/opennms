@@ -41,26 +41,18 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 
 public interface GraphContainer extends DisplayState {
+	
+	public interface ChangeListener {
+		public void graphChanged(GraphContainer graphContainer);
+	}
 
     public VertexContainer<?, ?> getVertexContainer();
 
     public BeanContainer<?, ?> getEdgeContainer();
 
-    public Item getVertexItem(Object vertexId);
-
-    public Item getEdgeItem(Object edgeId);
-
-    public Collection<?> getEndPointIdsForEdge(Object edgeId);
-
-    public Collection<?> getEdgeIdsForVertex(Object vertexId);
-
-    public Object getVertexItemIdForVertexKey(Object key);
-    
     public GraphProvider getBaseTopology();
     
     public void setBaseTopology(GraphProvider graphProvider);
-    
-    public Object getGroupId(Object vertexId);
     
     public Vertex getParent(VertexRef child);
     
@@ -76,9 +68,13 @@ public interface GraphContainer extends DisplayState {
     
     public void setVertexY(VertexRef vertexId, int y);
     
-    public int getSemanticZoomLevel(Object vertexId);
-    
-	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
+	public Criteria getCriteria(String namespace);
+	
+	public void setCriteria(Criteria critiera);
+	
+	public void addChangeListener(ChangeListener listener);
+	
+	public void removeChangeListener(ChangeListener listener);
 
 	@Deprecated
     public TopologyProvider getDataSource();
@@ -90,12 +86,6 @@ public interface GraphContainer extends DisplayState {
 	
 	public Graph getGraph();
 	
-	public boolean hasChildren(Object itemId);
-
-	public Collection<?> getChildren(Object itemId);
-
-	Object getParentId(Object itemId);
-
 	public boolean containsVertexId(Object vertexId);
 	
 	public boolean containsEdgeId(Object edgeId);
@@ -105,12 +95,11 @@ public interface GraphContainer extends DisplayState {
 	// returns a list containing all of the passed in vertices and their children grandchildren etc.
 	public Collection<?> getVertexForest(Collection<?> vertexIds);
 	
+	
+    public Item getVertexItem(Object vertexId);
+
     public void setVertexItemProperty(Object itemId, String propertyName, Object value);
 
 	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue);
 	
-	public Criteria getCriteria(String namespace);
-	
-	public void setCriteria(String namespace, Criteria critiera);
-
 }

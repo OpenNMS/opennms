@@ -46,13 +46,13 @@ public class TopoGraph implements Graph {
 	public static final String PROP_Y = "y";
 	public static final String PROP_ICON = "icon";
 	
-	private GraphContainer m_dataSource;
+	private SimpleGraphContainer m_dataSource;
 	private ElementHolder<TopoVertex> m_vertexHolder;
 	private ElementHolder<TopoEdge> m_edgeHolder;
 	private Layout m_layout;
 
 	
-	public TopoGraph(GraphContainer dataSource){	
+	public TopoGraph(SimpleGraphContainer dataSource){	
 		
 		if(dataSource == null) {
 			throw new NullPointerException("dataSource may not be null");
@@ -61,13 +61,13 @@ public class TopoGraph implements Graph {
 		
 	}
 	
-	private GraphContainer getGraphContainer() { return m_dataSource; }
+	private SimpleGraphContainer getGraphContainer() { return m_dataSource; }
 	
 	private int getSemanticZoomLevel() {
 		return getGraphContainer().getSemanticZoomLevel();
 	}
 	
-	private void setDataSource(GraphContainer dataSource) {
+	private void setDataSource(SimpleGraphContainer dataSource) {
 		if(dataSource == m_dataSource) {
 			return;
 		}

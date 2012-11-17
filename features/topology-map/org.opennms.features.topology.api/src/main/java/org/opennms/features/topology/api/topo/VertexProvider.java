@@ -11,6 +11,8 @@ public interface VertexProvider {
 	
 	public Vertex getVertex(VertexRef reference);
 	
+	public int getSemanticZoomLevel(VertexRef vertex);
+	
 	/**
 	 * Return an immutable list of vertices that match the criteria.
 	 */

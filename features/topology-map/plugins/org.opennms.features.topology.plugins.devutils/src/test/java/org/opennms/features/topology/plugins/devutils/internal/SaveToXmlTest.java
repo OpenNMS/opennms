@@ -122,26 +122,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public Item getEdgeItem(Object edgeId) {
-						throw new UnsupportedOperationException("GraphContainer.getEdgeItem is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getEndPointIdsForEdge(Object edgeId) {
-						throw new UnsupportedOperationException("GraphContainer.getEndPointIdsForEdge is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getEdgeIdsForVertex(Object vertexId) {
-						throw new UnsupportedOperationException("GraphContainer.getEdgeIdsForVertex is not yet implemented.");
-					}
-
-					@Override
-					public Object getVertexItemIdForVertexKey(Object key) {
-						throw new UnsupportedOperationException("GraphContainer.getVertexItemIdForVertexKey is not yet implemented.");
-					}
-
-					@Override
 					public TopologyProvider getDataSource() {
 						return simpleTopo;
 					}
@@ -159,37 +139,6 @@ public class SaveToXmlTest {
 					@Override
 					public void setBaseTopology(GraphProvider graphProvider) {
 						throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
-					}
-
-					@Override
-					public int getSemanticZoomLevel(Object vertexId) {
-						throw new UnsupportedOperationException("GraphContainer.getSemanticZoomLevel is not yet implemented.");
-					}
-
-					@Override
-					public Object getGroupId(Object vertexId) {
-						throw new UnsupportedOperationException("GraphContainer.getGroupId is not yet implemented.");
-					}
-
-					@Override
-					public Object getDisplayVertexId(Object vertexId,
-							int semanticZoomLevel) {
-						throw new UnsupportedOperationException("GraphContainer.getDisplayVertexId is not yet implemented.");
-					}
-
-					@Override
-					public boolean hasChildren(Object itemId) {
-						throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getChildren(Object itemId) {
-						throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
-					}
-
-					@Override
-					public Object getParentId(Object itemId) {
-						throw new UnsupportedOperationException("GraphContainer.getParentId is not yet implemented.");
 					}
 
 					@Override
@@ -243,11 +192,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public Vertex getParent(VertexRef child) {
-						throw new UnsupportedOperationException("GraphContainer.getParent is not yet implemented.");
-					}
-
-					@Override
 					public Vertex getVertex(VertexRef ref) {
 						throw new UnsupportedOperationException("GraphContainer.getVertex is not yet implemented.");
 					}
@@ -275,7 +219,7 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public void setCriteria(String namespace, Criteria critiera) {
+					public void setCriteria(Criteria critiera) {
 						throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
 					}
 
@@ -287,6 +231,24 @@ public class SaveToXmlTest {
 					@Override
 					public void setScale(double scale) {
 						throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
+					}
+
+					@Override
+					public Vertex getParent(VertexRef child) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public void addChangeListener(ChangeListener listener) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void removeChangeListener(ChangeListener listener) {
+						// TODO Auto-generated method stub
+						
 					}
 
 					

@@ -130,30 +130,6 @@ public class SimpleTopologyProviderTest {
             return m_vertContainer.getItem(vertexId);
         }
 
-        @Override
-        public Item getEdgeItem(Object edgeId) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Collection<?> getEndPointIdsForEdge(Object edgeId) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Collection<?> getEdgeIdsForVertex(Object vertexId) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Object getVertexItemIdForVertexKey(Object key) {
-            Item vertexItem = getVertexItem(key);
-            return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
-        }
-
 	@Override
 	public TopologyProvider getDataSource() {
 		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
@@ -172,36 +148,6 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public void setBaseTopology(GraphProvider graphProvider) {
 		throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
-	}
-
-	@Override
-	public int getSemanticZoomLevel(Object vertexId) {
-		throw new UnsupportedOperationException("GraphContainer.getSemanticZoomLevel is not yet implemented.");
-	}
-
-	@Override
-	public Object getGroupId(Object vertexId) {
-		throw new UnsupportedOperationException("GraphContainer.getGroupId is not yet implemented.");
-	}
-
-	@Override
-	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
-		throw new UnsupportedOperationException("GraphContainer.getDisplayVertexId is not yet implemented.");
-	}
-
-	@Override
-	public boolean hasChildren(Object itemId) {
-		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
-	}
-
-	@Override
-	public Collection<?> getChildren(Object itemId) {
-		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
-	}
-
-	@Override
-	public Object getParentId(Object itemId) {
-		throw new UnsupportedOperationException("GraphContainer.getParentId is not yet implemented.");
 	}
 
 	@Override
@@ -287,7 +233,7 @@ public class SimpleTopologyProviderTest {
 	}
 
 	@Override
-	public void setCriteria(String namespace, Criteria critiera) {
+	public void setCriteria(Criteria critiera) {
 		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
 	}
 
@@ -299,6 +245,18 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public void setScale(double scale) {
 		throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
+	}
+
+	@Override
+	public void addChangeListener(ChangeListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeChangeListener(ChangeListener listener) {
+		// TODO Auto-generated method stub
+		
 	}
 
     }
@@ -413,7 +371,6 @@ public class SimpleTopologyProviderTest {
 	    
 	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
 	    
-	    EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("1")).andReturn(vertexId);
 	    graphContainer.redoLayout();
 	    
 	    EasyMock.replay(graphContainer);
@@ -491,9 +448,6 @@ public class SimpleTopologyProviderTest {
         
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
-        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("1")).andReturn(vertexId);
-        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("2")).andReturn(vertexId2);
-        
         EasyMock.replay(graphContainer);
         
         /*
@@ -544,9 +498,6 @@ public class SimpleTopologyProviderTest {
         Object vertexId2 = addVertexToTopr();
         
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-        
-        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("1")).andReturn(vertexId1);
-        EasyMock.expect(graphContainer.getVertexItemIdForVertexKey("2")).andReturn(vertexId2);
         
         EasyMock.replay(graphContainer);
         

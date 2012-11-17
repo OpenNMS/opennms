@@ -86,8 +86,7 @@ public class CreateGroupOperation implements Constants, Operation {
 				 */
 
 				Object parentGroup = null;
-				for(Object key : targets) {
-					Object vertexId = graphContainer.getVertexItemIdForVertexKey(key);
+				for(Object vertexId : targets) {
 					Object parent = graphContainer.getVertexContainer().getParent(vertexId);
 					if (parentGroup == null) {
 						parentGroup = parent;

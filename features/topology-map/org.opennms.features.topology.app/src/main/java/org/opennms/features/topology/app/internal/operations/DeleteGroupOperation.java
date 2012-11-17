@@ -47,9 +47,9 @@ public class DeleteGroupOperation implements Operation {
 		
 		// TODO: Add a confirmation dialog before the group is deleted
 
-		Object parentKey = targets.get(0);
-		Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
+		Object parentId = targets.get(0);
 		Object grandParentId = graphContainer.getVertexContainer().getParent(parentId);
+
 		// Detach all children from the group
 		for (Object childId : operationContext.getGraphContainer().getVertexContainer().getChildren(parentId)) {
 			// Attach the children to their grandparent (which can be null)

@@ -1,5 +1,6 @@
 package org.opennms.features.topology.api;
 
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface Layout {
@@ -11,5 +12,9 @@ public interface Layout {
 	void setVertexX(VertexRef v, int x);
 
 	void setVertexY(VertexRef v, int y);
+
+	int getInitialX(VertexRef vertexRef);
+
+	int getInitialY(VertexRef vertexRef);
 
 }

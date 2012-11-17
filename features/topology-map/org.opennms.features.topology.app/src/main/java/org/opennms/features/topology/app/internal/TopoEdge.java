@@ -46,9 +46,9 @@ public class TopoEdge implements Edge {
 	private final TopoVertex m_source;
 	private final Object m_targetId;
 	private final TopoVertex m_target;
-	private final GraphContainer m_graphContainer;
+	private final SimpleGraphContainer m_graphContainer;
 
-	public TopoEdge(GraphContainer graphContainer, String key, Object itemId, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
+	public TopoEdge(SimpleGraphContainer graphContainer, String key, Object itemId, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
@@ -58,7 +58,7 @@ public class TopoEdge implements Edge {
 		m_target = target;
 	}
 	
-	public GraphContainer getGraphContainer() {
+	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
 	}
 
@@ -99,7 +99,7 @@ public class TopoEdge implements Edge {
         return getEdgeTooltipText(m_graphContainer, m_itemId);
     }
     
-    private String getEdgeTooltipText(GraphContainer graphContainer,	Object edgeId) {
+    private String getEdgeTooltipText(SimpleGraphContainer graphContainer,	Object edgeId) {
 		Item item = graphContainer.getEdgeItem(edgeId);
 		if(item != null && item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
             return (String) item.getItemProperty("tooltipText").getValue();

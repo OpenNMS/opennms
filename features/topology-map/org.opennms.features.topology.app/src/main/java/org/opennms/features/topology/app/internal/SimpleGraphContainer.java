@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.util.BeanContainer;
@@ -523,6 +525,8 @@ public class SimpleGraphContainer implements GraphContainer {
     private GraphProvider m_graphProvider;
     private GEdgeContainer m_edgeContainer;
     
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+    
 	public SimpleGraphContainer(TopologyProvider topologyProvider) {
 		m_selectionManager = new DefaultSelectionManager();
 		
@@ -607,6 +611,22 @@ public class SimpleGraphContainer implements GraphContainer {
 	    m_graph = new TopoGraph(this);
 	    
 	    redoLayout();
+	    
+	    m_vertexContainer.addListener(new ItemSetChangeListener() {
+			
+			@Override
+			public void containerItemSetChange(ItemSetChangeEvent event) {
+				SimpleGraphContainer.this.fireChange();
+			}
+		});
+	    
+	    m_edgeContainer.addListener(new ItemSetChangeListener() {
+			
+			@Override
+			public void containerItemSetChange(ItemSetChangeEvent event) {
+				SimpleGraphContainer.this.fireChange();
+			}
+		});
 
 	}
 	
@@ -645,12 +665,10 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_vertexContainer.getItem(vertexId);
 	}
 
-	@Override
 	public BeanItem<GEdge> getEdgeItem(Object edgeId) {
 		return m_edgeContainer.getItem(edgeId); 
 	}
 	
-	@Override
 	public Collection<String> getEndPointIdsForEdge(Object key) {
 	        if (key == null) return Collections.emptyList();
 		GEdge edge = m_edgeHolder.getElementByKey(key.toString());
@@ -658,7 +676,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		return Arrays.asList(edge.getSource().getKey(), edge.getTarget().getKey());
 	}
 
-	@Override
 	public Collection<String> getEdgeIdsForVertex(Object vertexKey) {
 	    GVertex vertex = m_vertexHolder.getElementByKey(vertexKey.toString());
 	    return m_edgeHolder.getKeysByItemId(m_topologyProvider.getEdgeIdsForVertex(vertex.getItemId()));
@@ -710,11 +727,12 @@ public class SimpleGraphContainer implements GraphContainer {
     }
 
 	public void fireChange() {
-		getVertexContainer().fireItemSetChange();
+		for(ChangeListener listener : m_listeners) {
+			listener.graphChanged(this);
+		}
 	}
 
 
-    @Override
     public Object getVertexItemIdForVertexKey(Object key) {
         Item vertexItem = getVertexItem(key);
         return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
@@ -740,7 +758,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		getVertexItem(itemId).getItemProperty(Y_PROPERTY).setValue(y);
 	}
 
-    @Override
     public int getSemanticZoomLevel(Object itemId) {
 		return getVertexItemProperty(itemId, SEMANTIC_ZOOM_LEVEL, Integer.valueOf(0));
 	}
@@ -765,7 +782,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
     
-    @Override
     public Object getGroupId(Object itemId) {
     	return getVertexItem(itemId).getBean().getGroupKey();
     }
@@ -793,7 +809,6 @@ public class SimpleGraphContainer implements GraphContainer {
 	    }
 	}
 	
-	@Override
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
 
 		int szl = getSemanticZoomLevel(vertexId);
@@ -805,17 +820,17 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
 
-	@Override
+
 	public Object getParentId(Object itemId) {
 		return getVertexContainer().getParent(itemId);
 	}
 
-	@Override
+
 	public Collection<?> getChildren(Object itemId) {
 		return getVertexContainer().getChildren(itemId);
 	}
 
-	@Override
+
 	public boolean hasChildren(Object itemId) {
 		return getVertexContainer().hasChildren(itemId);
 	}
@@ -890,7 +905,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
 
-	@Override
 	public Vertex getParent(VertexRef childRef) {
 		Object childId = getItemId(childRef);
 		Object parentId = getParentId(childId);
@@ -953,8 +967,18 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	@Override
-	public void setCriteria(String namespace, Criteria critiera) {
+	public void setCriteria(Criteria critiera) {
 		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
+	}
+
+	@Override
+	public void addChangeListener(ChangeListener listener) {
+		m_listeners.add(listener);
+	}
+
+	@Override
+	public void removeChangeListener(ChangeListener listener) {
+		m_listeners.remove(listener);
 	}
 
 	

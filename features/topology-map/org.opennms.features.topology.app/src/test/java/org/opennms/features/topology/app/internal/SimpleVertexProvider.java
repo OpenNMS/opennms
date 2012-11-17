@@ -184,4 +184,10 @@ public class SimpleVertexProvider implements VertexProvider {
 		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
 	}
 
+    @Override
+    public int getSemanticZoomLevel(VertexRef vertex) {
+    	Vertex parent = getParent(vertex);
+    	return parent == null ? 0 : 1 + getSemanticZoomLevel(parent);
+    }
+
 }

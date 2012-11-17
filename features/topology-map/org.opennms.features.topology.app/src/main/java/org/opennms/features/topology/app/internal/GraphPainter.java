@@ -69,13 +69,11 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private int getInitialX(Vertex vertex) {
-		Vertex parent = m_graphContainer.getParent(vertex);
-		return parent == null ? (int)(Math.random()*1000) : m_graphContainer.getVertexX(parent);
+		return m_layout.getInitialX(vertex);
 	}
 
 	private int getInitialY(Vertex vertex) {
-		Vertex parent = m_graphContainer.getParent(vertex);
-		return parent == null ? (int)(Math.random()*1000) : m_graphContainer.getVertexY(parent);
+		return m_layout.getInitialY(vertex);
 	}
 
 	private String getSourceKey(Edge edge) {

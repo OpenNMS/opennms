@@ -160,5 +160,10 @@ public class SimpleGraphProvider implements GraphProvider {
 		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
 	}
 
+	@Override
+	public int getSemanticZoomLevel(VertexRef vertex) {
+		return m_vertices.getSemanticZoomLevel(vertex);
+	}
+
 
 }

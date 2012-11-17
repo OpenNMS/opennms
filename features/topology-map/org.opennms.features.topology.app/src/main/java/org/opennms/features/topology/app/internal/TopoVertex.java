@@ -44,9 +44,9 @@ public class TopoVertex implements Vertex {
     private final String m_key;
 	private final Object m_itemId;
 	private final Item m_item;
-	private final GraphContainer m_graphContainer;
+	private final SimpleGraphContainer m_graphContainer;
 	
-	public TopoVertex(GraphContainer graphContainer, String key, Object itemId, Item item) {
+	public TopoVertex(SimpleGraphContainer graphContainer, String key, Object itemId, Item item) {
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
@@ -109,7 +109,7 @@ public class TopoVertex implements Vertex {
 				: (String)(tooltipTextProperty.getValue());
 	}
 
-	public GraphContainer getGraphContainer() {
+	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
 	}
 

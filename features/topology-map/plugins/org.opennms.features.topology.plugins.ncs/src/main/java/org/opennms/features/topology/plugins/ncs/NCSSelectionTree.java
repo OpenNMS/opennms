@@ -83,7 +83,7 @@ public class NCSSelectionTree extends SelectionTree {
 	@Override
 	public void select(Object itemId) {
 		m_currentCriteria.add((Long)itemId);
-		m_graphContainer.setCriteria("ncs", m_currentCriteria);
+		m_graphContainer.setCriteria(m_currentCriteria);
 
 		/*
 		// TODO: Create edge references that correspond to the selected items
@@ -105,7 +105,7 @@ public class NCSSelectionTree extends SelectionTree {
 	@Override
 	public void unselect(Object itemId) {
 		m_currentCriteria.remove((Long)itemId);
-		m_graphContainer.setCriteria("ncs", m_currentCriteria);
+		m_graphContainer.setCriteria(m_currentCriteria);
 
 		// TODO: Remove edge references that correspond to the unselected items
 

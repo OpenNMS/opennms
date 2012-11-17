@@ -45,9 +45,9 @@ public class ConnectOperation implements Operation {
     @Override
     public Undoer execute(List<Object> targets, OperationContext operationContext) {
         if(targets != null && targets.size() > 1) {
-            Object sourceVertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(targets.get(0));//(String)endPoints.get(0);
-            Object targetVertextId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(targets.get(1)); //(String)endPoints.get(1);
-            m_topologyProvider.connectVertices(sourceVertexId, targetVertextId);
+            Object sourceVertexId = targets.get(0);
+            Object targetVertexId = targets.get(1);
+            m_topologyProvider.connectVertices(sourceVertexId, targetVertexId);
         }
         return null;
     }

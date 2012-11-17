@@ -28,8 +28,6 @@
 
 package org.opennms.features.topology.api;
 
-import com.vaadin.data.Property;
-
 public interface DisplayState {
     
     public abstract int getSemanticZoomLevel();
