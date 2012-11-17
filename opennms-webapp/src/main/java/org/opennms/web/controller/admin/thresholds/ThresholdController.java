@@ -711,7 +711,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/list");
 
-        Map<String, Group> groupMap = new HashMap<String, Group>();
+        Map<String, Group> groupMap = new TreeMap<String, Group>();
         for (String aName : configFactory.getGroupNames()) {
             groupMap.put(aName, configFactory.getGroup(aName));
         }
