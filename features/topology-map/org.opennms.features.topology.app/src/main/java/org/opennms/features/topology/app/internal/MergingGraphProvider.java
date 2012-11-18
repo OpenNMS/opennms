@@ -75,11 +75,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	public void addVertexProvider(VertexProvider vertexProvider) {
 		VertexProvider oldProvider = m_vertexProviders.put(vertexProvider.getNamespace(), vertexProvider);
 	
-		oldProvider.removeVertexListener(this);
+		if (oldProvider != null) { oldProvider.removeVertexListener(this); }
 		vertexProvider.addVertexListener(this);
 
 		String ns = m_baseGraphProvider.getNamespace();
-		if (oldProvider.contributesTo(ns) || vertexProvider.contributesTo(ns)) {
+		if ((oldProvider != null && oldProvider.contributesTo(ns)) || vertexProvider.contributesTo(ns)) {
 			fireVertexChanged();
 		}
 
@@ -87,6 +87,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 
 	public void removeVertexProvider(VertexProvider vertexProvider) {
 		VertexProvider oldProvider = m_vertexProviders.remove(vertexProvider.getNamespace());
+		
+		if (oldProvider == null) { return; }
 		
 		oldProvider.removeVertexListener(this);
 		if (oldProvider.contributesTo(m_baseGraphProvider.getNamespace())) {
@@ -97,11 +99,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	public void addEdgeProvider(EdgeProvider edgeProvider) {
 		EdgeProvider oldProvider = m_edgeProviders.put(edgeProvider.getNamespace(), edgeProvider);
 
-		oldProvider.removeEdgeListener(this);
+		if (oldProvider != null) { oldProvider.removeEdgeListener(this); }
+
 		edgeProvider.addEdgeListener(this);
 
 		String ns = m_baseGraphProvider.getNamespace();
-		if (oldProvider.contributesTo(ns) || edgeProvider.contributesTo(ns)) {
+		if ((oldProvider != null && oldProvider.contributesTo(ns)) || edgeProvider.contributesTo(ns)) {
 			fireEdgeChanged();
 		}
 	}
@@ -109,6 +112,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	public void removeEdgeProvider(EdgeProvider edgeProvider) {
 		EdgeProvider oldProvider = m_edgeProviders.remove(edgeProvider.getNamespace());
 
+		if (oldProvider == null) { return; }
+		
 		oldProvider.removeEdgeListener(this);
 		if (oldProvider.contributesTo(m_baseGraphProvider.getNamespace())) {
 			fireEdgeChanged();

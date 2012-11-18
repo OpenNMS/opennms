@@ -2,18 +2,33 @@ package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.LWEdgeRef;
+import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class VEProviderGraphContainerTest {
 
 	private SimpleGraphProvider m_graphProvider;
 	private SimpleEdgeProvider m_edgeProvider;
 	private GraphContainer m_graphContainer;
+	private Set<VertexRef> m_expectedVertices = new HashSet<VertexRef>();
+	private Map<VertexRef, String> m_expectedVertexStyles = new HashMap<VertexRef, String>();
+	private Set<EdgeRef> m_expectedEdges = new HashSet<EdgeRef>();
+	private Map<EdgeRef, String> m_expectedEdgeStyles = new HashMap<EdgeRef, String>();
 
 	
 	@Before
@@ -34,8 +49,9 @@ public class VEProviderGraphContainerTest {
 			.get();
 
 		m_edgeProvider = new SimpleEdgeBuilder("ncs", "nodes")
-			.edge("ncs1", "nodes", "v1", "nodes", "v3")
-			.edge("ncs2", "nodes", "v2", "nodes", "v4")
+			.edge("ncs1", "nodes", "v1", "nodes", "v3").label("ncsedge1").styleName("ncs edge")
+			.edge("ncs2", "nodes", "v2", "nodes", "v4").label("ncsedge2").styleName("ncs edge")
+			.edge("ncs3", "nodes", "v1", "nodes", "v2").label("ncsedge3").styleName("ncs edge")
 			.get();
 		
 		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider);
@@ -60,12 +76,100 @@ public class VEProviderGraphContainerTest {
 	}
 
 	@Test
-	public void testContainer() {
+	public void testContainer() throws Exception {
 			
-		m_graphContainer.getGraph();
+		Graph graph = m_graphContainer.getGraph();
+	
+		expectVertex("nodes", "g0", "vertex");
 		
+		graph.visit(verifier());
 		
+		verify();
 		
+		reset();
+		
+		m_graphContainer.setSemanticZoomLevel(1);
+		
+		expectVertex("nodes", "g1", "vertex");
+		expectVertex("nodes", "g2", "vertex");
+		expectEdge("pseudo-nodes", "<nodes:g1>-<nodes:g2>", "edge");
+		
+		graph = m_graphContainer.getGraph();
+		
+		graph.visit(verifier());
+		
+		verify();
+		
+		reset();
+		
+		m_graphContainer.setCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
+		
+		expectVertex("nodes", "g1", "vertex");
+		expectVertex("nodes", "g2", "vertex");
+		expectEdge("pseudo-nodes", "<nodes:g1>-<nodes:g2>", "edge");
+		expectEdge("pseudo-ncs", "<nodes:g1>-<nodes:g2>", "ncs edge");
+
+		graph = m_graphContainer.getGraph();
+		
+		graph.visit(verifier());
+		
+		verify();
+		
+		reset();
+
 	}
+	
+	private void verify() {
+		if (!m_expectedVertices.isEmpty()) {
+			fail("Expected Vertices not seen: " + m_expectedVertices);
+		}
+		
+		if (!m_expectedEdges.isEmpty()) {
+			fail("Expected Edges not seen: " + m_expectedEdges);
+		}
+	}
+	
+	private GraphVisitor verifier() {
+		return new BaseGraphVisitor() {
+			
+			@Override
+			public void visitVertex(Vertex vertex) {
+				assertTrue("Unexpected vertex " + vertex + " encountered!", m_expectedVertices.contains(vertex));
+				m_expectedVertices.remove(vertex);
+				assertEquals("Unexpected style for vertex " + vertex, m_expectedVertexStyles.get(vertex), vertex.getStyleName());
+			}
+			
+			@Override
+			public void visitEdge(Edge edge) {
+				assertTrue("Unexpected edge " + edge + " encountered!", m_expectedEdges.contains(edge));
+				m_expectedEdges.remove(edge);
+				assertEquals("Unexpected style for edge " + edge, m_expectedEdgeStyles.get(edge), edge.getStyleName());
+			}
+			
+		};
+	}
+	
+	
+
+	private void expectVertex(String namespace, String vertexId, String styles) {
+		LWVertexRef vertexRef = new LWVertexRef(namespace, vertexId);
+		m_expectedVertices.add(vertexRef);
+		m_expectedVertexStyles.put(vertexRef, styles);
+	}
+	
+	private void expectEdge(String namespace, String edgeId, String styles) {
+		LWEdgeRef edgeRef = new LWEdgeRef(namespace, edgeId);
+		m_expectedEdges.add(edgeRef);
+		m_expectedEdgeStyles.put(edgeRef, styles);
+	}
+	
+	private void reset() {
+		m_expectedVertices.clear();
+		m_expectedEdges.clear();
+		m_expectedVertexStyles.clear();
+		m_expectedEdgeStyles.clear();
+	}
+	
+	
 
 }

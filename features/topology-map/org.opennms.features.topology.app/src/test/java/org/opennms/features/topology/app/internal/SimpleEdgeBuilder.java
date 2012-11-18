@@ -1,5 +1,6 @@
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleEdgeBuilder {
@@ -21,8 +22,8 @@ public class SimpleEdgeBuilder {
 	
 	public SimpleEdgeBuilder edge(String id, String srcNs, String srcId, String tgtNs, String tgtId) {
 		
-		VertexRef srcVertex = new SimpleVertexRef(srcNs, srcId);
-		VertexRef tgtVertex = new SimpleVertexRef(tgtNs, tgtId);
+		VertexRef srcVertex = new LWVertexRef(srcNs, srcId);
+		VertexRef tgtVertex = new LWVertexRef(tgtNs, tgtId);
 		
 		SimpleConnector source = new SimpleConnector(ns(), srcId+"-"+id+"-connector", srcVertex);
 		SimpleConnector target = new SimpleConnector(ns(), tgtId+"-"+id+"-connector", tgtVertex);

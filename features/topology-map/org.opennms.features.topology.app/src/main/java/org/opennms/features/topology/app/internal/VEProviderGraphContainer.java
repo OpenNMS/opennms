@@ -15,6 +15,7 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -36,30 +37,24 @@ import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener {
     
-    public class PseudoEdge implements Edge {
+    public class PseudoEdge extends AbstractEdge {
 
-        private String m_namespace;
-        private String m_id;
+        private String m_styleName;
         private Vertex m_source;
         private Vertex m_target;
         
-        public PseudoEdge(String namespace, String id, Vertex source, Vertex target) {
-        	m_namespace = namespace;
-        	m_id = id;
+        public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
+        	super(namespace, id);
+        	m_styleName = styleName;
             m_source = source;
             m_target = target;
         }
 
         @Override
-        public String getId() {
-            return m_id;
+        public String getStyleName() {
+            return m_styleName;
         }
-
-        @Override
-        public String getNamespace() {
-            return m_namespace;
-        }
-
+        
         @Override
         public String getKey() {
             return getNamespace()+":" + getId();
@@ -134,11 +129,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             return getLabel();
         }
 
-        @Override
-        public String getStyleName() {
-            return "edge";
-        }
-        
     }
 
     public class VEGraph implements Graph {
@@ -330,7 +320,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			} else {
 				// we may need to create a pseudo edge to represent this edge
 				String pseudoId = pseudoId(displaySource, displayTarget);
-				PseudoEdge pEdge = new PseudoEdge("pseudo", pseudoId, displaySource, displayTarget);
+				PseudoEdge pEdge = new PseudoEdge("pseudo-"+e.getNamespace(), pseudoId, e.getStyleName(), displaySource, displayTarget);
 				displayEdges.add(pEdge);
 			}
     	}
@@ -342,7 +332,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
 	private String pseudoId(VertexRef displaySource, VertexRef displayTarget) {
-		return "<"+displaySource.getNamespace()+":"+displaySource.getId()+">-<"+displayTarget.getNamespace()+":"+displayTarget.getId()+">";
+		String sourceId = displaySource.getNamespace()+":"+displaySource.getId();
+		String targetId = displayTarget.getNamespace() + ":" + displayTarget.getId();
+		
+		String a = sourceId.compareTo(targetId) < 0 ? sourceId : targetId;
+		String b = sourceId.compareTo(targetId) < 0 ? targetId : sourceId;
+
+		return "<" + a + ">-<" + b + ">";
 	}
     
     private boolean refEquals(VertexRef a, VertexRef b) {

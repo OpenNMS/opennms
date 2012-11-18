@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
@@ -47,14 +46,9 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Container.PropertySetChangeEvent;
-import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;

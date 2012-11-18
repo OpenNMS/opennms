@@ -17,4 +17,7 @@ public class LWEdgeRef extends LWRef implements EdgeRef {
 		}
 		return false;
 	}
+
+	@Override
+	public String toString() { return "EdgeRef:"+getNamespace()+":"+getId(); } 
 }

@@ -56,4 +56,6 @@ public class SimpleEdge extends AbstractEdge {
 		m_styleName = styleName;
 	}
 
+	@Override
+	public String toString() { return "Edge:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
 }

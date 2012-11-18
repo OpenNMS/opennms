@@ -57,4 +57,6 @@ public abstract class AbstractVertex implements Vertex {
 					
 	}
 
+	@Override
+	public String toString() { return "Vertex:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
 }

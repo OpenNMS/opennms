@@ -19,5 +19,7 @@ public class LWVertexRef extends LWRef implements VertexRef {
 	}
 
 	
+	@Override
+	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
 
 }

@@ -55,5 +55,8 @@ public abstract class AbstractEdge implements Edge {
 		return getNamespace().equals(e.getNamespace()) && getId().equals(e.getId());
 					
 	}
+	
+	@Override
+	public String toString() { return "Edge:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
 
 }

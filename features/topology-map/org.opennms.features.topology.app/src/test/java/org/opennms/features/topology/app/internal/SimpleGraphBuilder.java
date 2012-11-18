@@ -1,5 +1,6 @@
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -50,12 +51,12 @@ public class SimpleGraphBuilder {
 		
 		VertexRef srcVertex = m_graphProvider.getVertex(ns(), srcId);
 		if (srcVertex == null) {
-			srcVertex = new SimpleVertexRef(ns(), srcId);
+			srcVertex = new LWVertexRef(ns(), srcId);
 		}
 		
 		VertexRef tgtVertex = m_graphProvider.getVertex(ns(), tgtId);
 		if (tgtVertex == null) {
-			tgtVertex = new SimpleVertexRef(ns(), tgtId);
+			tgtVertex = new LWVertexRef(ns(), tgtId);
 		}
 		
 		

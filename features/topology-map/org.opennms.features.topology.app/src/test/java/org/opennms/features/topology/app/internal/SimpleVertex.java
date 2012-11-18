@@ -48,5 +48,8 @@ public class SimpleVertex extends AbstractVertex {
 	public void setStyleName(String styleName) {
 		m_styleName = styleName;
 	}
+	
+	@Override
+	public String toString() { return "Vertex:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
 
 }
