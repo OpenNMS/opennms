@@ -97,6 +97,11 @@ public class TPGraphProvider implements GraphProvider {
     public String getNamespace() {
         return m_topoProvider.getNamespace();
     }
+    
+    @Override
+    public boolean contributesTo(String namespace) {
+    	return false;
+    }
 
     private ItemVertex getVertex(String id) {
         Object itemId = m_vertexIdTracker.getItemId(id);
@@ -307,6 +312,13 @@ public class TPGraphProvider implements GraphProvider {
     }
 
     @Override
+    public int getSemanticZoomLevel(VertexRef vertexRef) {
+        ItemVertex vertex = getVertex(vertexRef);
+        ItemVertex parent = getParent(vertex);
+        return parent == null ? 0 : getSemanticZoomLevel(parent)+1;
+    }
+
+    @Override
     public List<? extends Vertex> getVertices(Criteria criteria) {
         throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
     }
@@ -316,11 +328,10 @@ public class TPGraphProvider implements GraphProvider {
         throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
     }
 
-    @Override
-    public int getSemanticZoomLevel(VertexRef vertexRef) {
-        ItemVertex vertex = getVertex(vertexRef);
-        return vertex.getSemanticZoomLevel();
-    }
+	@Override
+	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
+	}
 
 
 }

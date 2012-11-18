@@ -36,24 +36,15 @@ class LWRef implements Ref {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		LWRef other = (LWRef) obj;
-		if (m_id == null) {
-			if (other.m_id != null)
-				return false;
-		} else if (!m_id.equals(other.m_id))
-			return false;
-		if (m_namespace == null) {
-			if (other.m_namespace != null)
-				return false;
-		} else if (!m_namespace.equals(other.m_namespace))
-			return false;
-		return true;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (!(obj instanceof Ref)) return false;
+
+		Ref ref = (Ref)obj;
+		
+		return getNamespace().equals(ref.getNamespace()) && getId().equals(ref.getId());
+
 	}
 
 }

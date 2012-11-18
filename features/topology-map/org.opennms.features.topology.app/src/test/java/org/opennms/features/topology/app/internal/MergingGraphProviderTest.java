@@ -2,18 +2,21 @@ package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.LWEdgeRef;
+import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 
-public class VEProviderGraphContainerTest {
+public class MergingGraphProviderTest {
 
 	private SimpleGraphProvider m_graphProvider;
 	private SimpleEdgeProvider m_edgeProvider;
-	private GraphContainer m_graphContainer;
+	private MergingGraphProvider m_mergedProvider;
 
 	
 	@Before
@@ -27,21 +30,20 @@ public class VEProviderGraphContainerTest {
 			.vertex("g2").parent("g0").vLabel("group2").vIconKey("group").vTooltip("group 2").vStyleName("vertex")
 			.vertex("v3").parent("g2").vLabel("vertex3").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
 			.vertex("v4").parent("g2").vLabel("vertex4").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
-			.edge("e1", "v1", "v2").eStyleName("edge")
-			.edge("e2", "v2", "v3").eStyleName("edge")
-			.edge("e3", "v3", "v4").eStyleName("edge")
-			.edge("e4", "v4", "v1").eStyleName("edge")
+			.edge("e1", "v1", "v2").eLabel("edge1").eStyleName("edge")
+			.edge("e2", "v2", "v3").eLabel("edge2").eStyleName("edge")
+			.edge("e3", "v3", "v4").eLabel("edge3").eStyleName("edge")
+			.edge("e4", "v4", "v1").eLabel("edge4").eStyleName("edge")
 			.get();
 
 		m_edgeProvider = new SimpleEdgeBuilder("ncs", "nodes")
-			.edge("ncs1", "nodes", "v1", "nodes", "v3")
-			.edge("ncs2", "nodes", "v2", "nodes", "v4")
+			.edge("ncs1", "nodes", "v1", "nodes", "v3").label("ncsedge1")
+			.edge("ncs2", "nodes", "v2", "nodes", "v4").label("ncsedge2")
 			.get();
 		
-		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider);
-		graphContainer.addEdgeProvider(m_edgeProvider);
-		
-		m_graphContainer = graphContainer;
+		m_mergedProvider = new MergingGraphProvider(m_graphProvider);
+		m_mergedProvider.addEdgeProvider(m_edgeProvider);
+
 	}
 	
 	@Test
@@ -60,12 +62,32 @@ public class VEProviderGraphContainerTest {
 	}
 
 	@Test
-	public void testContainer() {
-			
-		m_graphContainer.getGraph();
-		
-		
-		
+	public void testGetVertex() {
+		assertEquals("vertex1", m_mergedProvider.getVertex("nodes", "v1").getLabel());
+		assertEquals("vertex2", m_mergedProvider.getVertex(new LWVertexRef("nodes", "v2")).getLabel());
 	}
 
+	@Test
+	public void testGetEdge() {
+		assertEquals("edge1", m_mergedProvider.getEdge("nodes", "e1").getLabel());
+		assertEquals("ncsedge2", m_mergedProvider.getEdge(new LWEdgeRef("ncs", "ncs2")).getLabel());
+	}
+	
+	@Test
+	public void testGetEdges() {
+		// with no criteria set.. just base edges
+		List<? extends Edge> edges = m_mergedProvider.getEdges();
+		
+		assertEquals(4, edges.size());
+		assertEquals(m_graphProvider.getEdges(), edges);
+		
+		// set a criteria now and get some ncs edges
+		m_mergedProvider.setCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge2"));
+		
+		edges = m_mergedProvider.getEdges();
+
+		assertEquals(5, edges.size());
+		assertTrue(edges.contains(new LWEdgeRef("ncs", "ncs2")));
+		
+	}
 }

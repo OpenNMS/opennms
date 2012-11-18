@@ -1,9 +1,11 @@
 package org.opennms.features.topology.plugins.topo.adapter;
 
+import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Edge;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 class ItemEdge implements Edge {
 	
@@ -17,6 +19,19 @@ class ItemEdge implements Edge {
 	private final ItemFinder m_itemFinder;
 	private ItemConnector m_source;
 	private ItemConnector m_target;
+
+	public class Defaults implements Edge {
+		public Object getItemId() { return ItemEdge.this.getItemId(); }
+		@Override public String getId() { return ItemEdge.this.getId(); }
+		@Override public String getNamespace() { return ItemEdge.this.getNamespace(); }
+		@Override public String getKey() { return ItemEdge.this.getKey(); }
+		@Override public Item getItem() { return ItemEdge.this.getItem(); }
+		@Override public Connector getSource() { return ItemEdge.this.getSource(); }
+		@Override public Connector getTarget() { return ItemEdge.this.getTarget(); }
+		@Override public String getLabel() { return "label not provided"; }
+		@Override public String getTooltipText() { return ""; }
+		@Override public String getStyleName() { return getNamespace() + " edge"; };
+	}
 
 	public ItemEdge(String namespace, String id, Object itemId, ItemFinder itemFinder) {
 		m_namespace = namespace;
@@ -65,7 +80,7 @@ class ItemEdge implements Edge {
     }
 
 	public Item getItem() {
-		return m_itemFinder.getItem(m_itemId);
+		return new ChainedItem(m_itemFinder.getItem(m_itemId), new BeanItem<Defaults>(new Defaults()));
 	}
 
 	@Override

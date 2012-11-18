@@ -146,14 +146,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
     </service>
     
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.label" value="Get Info?group=additions"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.GetInfoOperation"/>
-    </service>
-    
     <!--
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>

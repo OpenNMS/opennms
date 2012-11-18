@@ -293,9 +293,19 @@ public class NCSEdgeProvider implements EdgeProvider {
 	public String getNamespace() {
 		return "ncs";
 	}
+	
+	@Override
+	public boolean contributesTo(String namespace) {
+		return "nodes".equals(namespace);
+	}
 
 	@Override
 	public void removeEdgeListener(EdgeListener vertexListener) {
 		// TODO: Implement me
+	}
+
+	@Override
+	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
 	}
 }

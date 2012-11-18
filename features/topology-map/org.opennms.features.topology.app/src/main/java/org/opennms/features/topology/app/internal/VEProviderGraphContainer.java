@@ -3,10 +3,9 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -16,25 +15,26 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
-public class VEProviderGraphContainer implements GraphContainer {
+public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener {
     
     public class PseudoEdge implements Edge {
 
@@ -44,6 +44,8 @@ public class VEProviderGraphContainer implements GraphContainer {
         private Vertex m_target;
         
         public PseudoEdge(String namespace, String id, Vertex source, Vertex target) {
+        	m_namespace = namespace;
+        	m_id = id;
             m_source = source;
             m_target = target;
         }
@@ -143,17 +145,18 @@ public class VEProviderGraphContainer implements GraphContainer {
     	
     	private final Collection<? extends Vertex> m_displayVertices;
     	private final Collection<? extends Edge> m_displayEdges;
+    	private final Layout m_layout;
     	
         public VEGraph(Collection<? extends Vertex> displayVertices,
 				Collection<? extends Edge> displayEdges) {
 			m_displayVertices = displayVertices;
 			m_displayEdges = displayEdges;
+			m_layout = new DefaultLayout(VEProviderGraphContainer.this);
 		}
 
 		@Override
         public Layout getLayout() {
-            throw new UnsupportedOperationException(
-                    "VEGraph.getLayout is not yet implemented.");
+			return m_layout;
         }
 
         @Override
@@ -208,15 +211,24 @@ public class VEProviderGraphContainer implements GraphContainer {
 
     private int m_semanticZoomLevel = 0;
     private double m_scale = 1.0;
-    private LayoutAlgorithm m_layoutAlgorithm = new FRLayoutAlgorithm();
-
-    private GraphProvider m_baseGraphProvider;
-    private final Map<String, VertexProvider> m_vertexProviders = new HashMap<String, VertexProvider>();
-    private final Map<String, EdgeProvider> m_edgeProviders = new HashMap<String, EdgeProvider>();
-    private final Map<String, Criteria> m_criteria = new HashMap<String, Criteria>();
+    private LayoutAlgorithm m_layoutAlgorithm;
+    private SelectionManager m_selectionManager = new DefaultSelectionManager(); 
+    
+    private MergingGraphProvider m_mergedGraphProvider;
+    private TopologyProvider m_dataSource;
 
     private VEGraph m_graph;
-
+    
+    public VEProviderGraphContainer(TopologyProvider dataSource) {
+    	this(new TPGraphProvider(dataSource));
+    	m_dataSource = dataSource;
+	}
+    
+    public VEProviderGraphContainer(GraphProvider graphProvider) {
+    	m_mergedGraphProvider = new MergingGraphProvider(graphProvider);
+    	rebuildGraph();
+    }
+    
 	private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
 
     @Override
@@ -255,55 +267,39 @@ public class VEProviderGraphContainer implements GraphContainer {
         s_log.debug("redoLayout()");
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
-            fireChange();
+            fireGraphChanged();
         }
-    }
-
-    private void fireChange() {
-        throw new UnsupportedOperationException("VEProviderGraphContainer.fireChange is not yet implemented.");
-    }
-
-    @Override
-    public VertexContainer<?, ?> getVertexContainer() {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertexContainer is not yet implemented.");
-    }
-
-    @Override
-    public Item getVertexItem(Object vertexId) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertexItem is not yet implemented.");
     }
 
     @Override
     public GraphProvider getBaseTopology() {
-        return m_baseGraphProvider;
+        return m_mergedGraphProvider;
     }
 
     @Override
     public void setBaseTopology(GraphProvider graphProvider) {
-        m_baseGraphProvider = graphProvider;
+        m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
         rebuildGraph();
     }
 
     
     public void addVertexProvider(VertexProvider vertexProvider) {
-        m_vertexProviders.put(vertexProvider.getNamespace(), vertexProvider);
+        m_mergedGraphProvider.addVertexProvider(vertexProvider);
         rebuildGraph();
     }
 
     public void removeVertexProvider(VertexProvider vertexProvider) {
-        m_vertexProviders.remove(vertexProvider.getNamespace());
+        m_mergedGraphProvider.removeVertexProvider(vertexProvider);
         rebuildGraph();
     }
 
     public void addEdgeProvider(EdgeProvider edgeProvider) {
-        m_edgeProviders.put(edgeProvider.getNamespace(), edgeProvider);
+        m_mergedGraphProvider.addEdgeProvider(edgeProvider);
         rebuildGraph();
     }
 
     public void removeEdgeProvider(EdgeProvider edgeProvider) {
-        m_edgeProviders.remove(edgeProvider.getNamespace());
+    	m_mergedGraphProvider.removeEdgeProvider(edgeProvider);
         rebuildGraph();
     }
 
@@ -311,16 +307,16 @@ public class VEProviderGraphContainer implements GraphContainer {
     	
     	List<Vertex> displayVertices = new ArrayList<Vertex>();
     	
-    	for(Vertex v : m_baseGraphProvider.getVertices()) {
-    		int vzl = m_baseGraphProvider.getSemanticZoomLevel(v);
-    		if (vzl == getSemanticZoomLevel() || (vzl < getSemanticZoomLevel() && !m_baseGraphProvider.hasChildren(v))) {
+    	for(Vertex v : m_mergedGraphProvider.getVertices()) {
+    		int vzl = m_mergedGraphProvider.getSemanticZoomLevel(v);
+    		if (vzl == getSemanticZoomLevel() || (vzl < getSemanticZoomLevel() && !m_mergedGraphProvider.hasChildren(v))) {
     			displayVertices.add(v);
 			}
     	}
     	
     	Set<Edge> displayEdges = new HashSet<Edge>(); 
     	
-    	for(Edge e : m_baseGraphProvider.getEdges()) {
+    	for(Edge e : m_mergedGraphProvider.getEdges()) {
     		VertexRef source = e.getSource().getVertex();
     		VertexRef target = e.getTarget().getVertex();
 
@@ -355,11 +351,11 @@ public class VEProviderGraphContainer implements GraphContainer {
     
     private Vertex getDisplayVertex(VertexRef vertexRef) {
     	int szl = getSemanticZoomLevel();
-    	int vzl = m_baseGraphProvider.getSemanticZoomLevel(vertexRef);
-    	if (vzl == szl || (vzl < szl && !m_baseGraphProvider.hasChildren(vertexRef))) {
-    		return m_baseGraphProvider.getVertex(vertexRef);
+    	int vzl = m_mergedGraphProvider.getSemanticZoomLevel(vertexRef);
+    	if (vzl == szl || (vzl < szl && !m_mergedGraphProvider.hasChildren(vertexRef))) {
+    		return m_mergedGraphProvider.getVertex(vertexRef);
     	} else {
-    		Vertex parent = m_baseGraphProvider.getParent(vertexRef);
+    		Vertex parent = m_mergedGraphProvider.getParent(vertexRef);
     		return getDisplayVertex(parent);
     	}
     }
@@ -367,26 +363,24 @@ public class VEProviderGraphContainer implements GraphContainer {
 
     @Override
     public Vertex getVertex(VertexRef ref) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertex is not yet implemented.");
+    	return m_mergedGraphProvider.getVertex(ref);
     }
 
     @Override
     public Edge getEdge(EdgeRef ref) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getEdge is not yet implemented.");
+    	return m_mergedGraphProvider.getEdge(ref);
     }
 
     @Override
     public TopologyProvider getDataSource() {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getDataSource is not yet implemented.");
+    	return m_dataSource;
     }
 
     @Override
     public void setDataSource(TopologyProvider topologyProvider) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.setDataSource is not yet implemented.");
+    	m_dataSource = topologyProvider;
+    	TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
+    	m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
     }
 
     @Override
@@ -395,58 +389,24 @@ public class VEProviderGraphContainer implements GraphContainer {
     }
 
     @Override
-    public boolean containsVertexId(Object vertexId) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.containsVertexId is not yet implemented.");
-    }
-
-    @Override
-    public boolean containsEdgeId(Object edgeId) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.containsEdgeId is not yet implemented.");
-    }
-
-    @Override
     public SelectionManager getSelectionManager() {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getSelectionManager is not yet implemented.");
-    }
-
-    @Override
-    public Collection<?> getVertexForest(Collection<?> vertexIds) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertexForest is not yet implemented.");
-    }
-
-    @Override
-    public void setVertexItemProperty(Object itemId, String propertyName,
-            Object value) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.setVertexItemProperty is not yet implemented.");
-    }
-
-    @Override
-    public <T> T getVertexItemProperty(Object itemId, String propertyName,
-            T defaultValue) {
-        throw new UnsupportedOperationException(
-                "VEProviderGraphContainer.getVertexItemProperty is not yet implemented.");
+    	return m_selectionManager;
     }
 
     @Override
     public Criteria getCriteria(String namespace) {
-        return m_criteria.get(namespace);
+    	return m_mergedGraphProvider.getCriteria(namespace);
     }
 
     @Override
     public void setCriteria(Criteria criteria) {
-        m_criteria.put(criteria.getNamespace(), criteria);
+    	m_mergedGraphProvider.setCriteria(criteria);
         rebuildGraph();
     }
 
 	@Override
 	public Vertex getParent(VertexRef child) {
-		// TODO Auto-generated method stub
-		return null;
+		return m_mergedGraphProvider.getParent(child);
 	}
 	
 	private void fireGraphChanged() {
@@ -467,29 +427,67 @@ public class VEProviderGraphContainer implements GraphContainer {
 
 	@Override
 	public Collection<? extends Vertex> getVertices() {
-		throw new UnsupportedOperationException("GraphContainer.getVertices is not yet implemented.");
+		return m_mergedGraphProvider.getVertices();
 	}
 
 	@Override
 	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
-		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
+		return m_mergedGraphProvider.getChildren(vRef);
 	}
 
 	@Override
 	public Collection<? extends Vertex> getRootGroup() {
-		throw new UnsupportedOperationException("GraphContainer.getRootGroup is not yet implemented.");
+		return m_mergedGraphProvider.getRootGroup();
 	}
 
 	@Override
 	public boolean hasChildren(VertexRef vRef) {
-		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
+		return m_mergedGraphProvider.hasChildren(vRef);
 	}
 
 	@Override
-	public Collection<VertexRef> getVertexRefForest(
-			Collection<? extends VertexRef> vertexRefs) {
-		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
+	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
+		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
+		for(VertexRef vertexRef : vertexRefs) {
+			addRefTreeToSet(vertexRef, processed);
+		}
+		return processed;
 	}
+	
+	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
+		processed.add(vertexId);
+
+		for(VertexRef childId : getChildren(vertexId)) {
+			if (!processed.contains(childId)) {
+				addRefTreeToSet(childId, processed);
+			}
+		}
+	}
+
+	@Override
+	public void edgeSetChanged(EdgeProvider provider) {
+		rebuildGraph();
+	}
+
+	@Override
+	public void edgeSetChanged(EdgeProvider provider,
+			List<? extends Edge> added, List<? extends Edge> updated,
+			List<String> removedEdgeIds) {
+		rebuildGraph();
+	}
+
+	@Override
+	public void vertexSetChanged(VertexProvider provider) {
+		rebuildGraph();
+	}
+
+	@Override
+	public void vertexSetChanged(VertexProvider provider,
+			List<? extends Vertex> added, List<? extends Vertex> update,
+			List<String> removedVertexIds) {
+		rebuildGraph();
+	}
+
 
 
 }

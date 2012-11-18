@@ -14,9 +14,21 @@ public interface EdgeProvider {
 	 */
 	public String getNamespace();
 	
+	/**
+	 * This boolean returns true if the edges in this provider are intended
+	 * to contribute to or overlay another namespace 
+
+	 * @param namespace the namespace of a provider
+	 * @return true if this provider contributes the the given namespace, false other.  Should 
+	 * return false for passing its own namepace. A provider doesn't contribute to itself    
+	 */
+	public boolean contributesTo(String namespace);
+
 	public Edge getEdge(String namespace, String id);
 	
 	public Edge getEdge(EdgeRef reference);
+	
+	public boolean matches(EdgeRef edgeRef, Criteria criteria);
 	
 	/**
 	 * Return an immutable list of edges that match the criteria.

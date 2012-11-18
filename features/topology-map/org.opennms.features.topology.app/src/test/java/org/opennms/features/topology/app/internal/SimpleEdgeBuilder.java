@@ -7,6 +7,10 @@ public class SimpleEdgeBuilder {
 	SimpleEdgeProvider m_edgeProvider;
 	SimpleEdge m_currentEdge;
 	
+	public SimpleEdgeBuilder(String namespace, String contributesTo) {
+		this(new SimpleEdgeProvider(namespace, contributesTo));
+	}
+	
 	public SimpleEdgeBuilder(String namespace) {
 		this(new SimpleEdgeProvider(namespace));
 	}

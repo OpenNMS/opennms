@@ -107,16 +107,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public VertexContainer<?, ?> getVertexContainer() {
-						throw new UnsupportedOperationException("GraphContainer.getVertexContainer is not yet implemented.");
-					}
-
-					@Override
-					public Item getVertexItem(Object vertexId) {
-						throw new UnsupportedOperationException("GraphContainer.getVertexItem is not yet implemented.");
-					}
-
-					@Override
 					public TopologyProvider getDataSource() {
 						return simpleTopo;
 					}
@@ -137,23 +127,8 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public boolean containsVertexId(Object vertexId) {
-						throw new UnsupportedOperationException("GraphContainer.containsVertexId is not yet implemented.");
-					}
-
-					@Override
-					public boolean containsEdgeId(Object edgeId) {
-						throw new UnsupportedOperationException("GraphContainer.containsEdgeId is not yet implemented.");
-					}
-
-					@Override
 					public SelectionManager getSelectionManager() {
 						throw new UnsupportedOperationException("GraphContainer.getSelectionManager is not yet implemented.");
-					}
-
-					@Override
-					public Collection<?> getVertexForest(Collection<?> vertexIds) {
-						throw new UnsupportedOperationException("GraphContainer.getVertexForest is not yet implemented.");
 					}
 
 					@Override
@@ -169,18 +144,6 @@ public class SaveToXmlTest {
 					@Override
 					public Edge getEdge(EdgeRef ref) {
 						throw new UnsupportedOperationException("GraphContainer.getEdge is not yet implemented.");
-					}
-
-					@Override
-					public void setVertexItemProperty(Object itemId,
-							String propertyName, Object value) {
-						throw new UnsupportedOperationException("GraphContainer.setVertexItemProperty is not yet implemented.");
-					}
-
-					@Override
-					public <T> T getVertexItemProperty(Object itemId,
-							String propertyName, T defaultValue) {
-						throw new UnsupportedOperationException("GraphContainer.getVertexItemProperty is not yet implemented.");
 					}
 
 					@Override

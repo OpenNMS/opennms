@@ -89,7 +89,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
-		m_graphContainer = new SimpleGraphContainer(topologyProvider);
+		m_graphContainer = new VEProviderGraphContainer(topologyProvider);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}

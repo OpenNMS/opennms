@@ -47,7 +47,7 @@ public class NodeInfoOperation extends AbstractOperation {
 
         try {
             if (targets != null) {
-                for (final Object target : targets) {
+                for (final VertexRef target : targets) {
                     final String labelValue = getLabelValue(operationContext, target);
                     final Integer nodeValue = getNodeIdValue(operationContext, target);
 

@@ -83,6 +83,11 @@ public class SimpleGraphProvider implements GraphProvider {
 	public String getNamespace() {
 		return m_vertices.getNamespace();
 	}
+	
+	@Override
+	public boolean contributesTo(String namespace) {
+		return false;
+	}
 
 	@Override
 	public List<? extends Vertex> getRootGroup() {
@@ -163,6 +168,11 @@ public class SimpleGraphProvider implements GraphProvider {
 	@Override
 	public int getSemanticZoomLevel(VertexRef vertex) {
 		return m_vertices.getSemanticZoomLevel(vertex);
+	}
+
+	@Override
+	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
 	}
 
 

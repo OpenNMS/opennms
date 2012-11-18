@@ -642,7 +642,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		throw new UnsupportedOperationException("SimpleGraphContainer.setBaseTopology is not yet implemented.");
 	}
 
-	@Override
 	public VertexContainer<Object, GVertex> getVertexContainer() {
 		return m_vertexContainer;
 	}
@@ -659,7 +658,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_edgeContainer.getItemIds();
 	}
 
-	@Override
 	public BeanItem<GVertex> getVertexItem(Object vertexId) {
 		return m_vertexContainer.getItem(vertexId);
 	}
@@ -761,12 +759,10 @@ public class SimpleGraphContainer implements GraphContainer {
 		return getVertexItemProperty(itemId, SEMANTIC_ZOOM_LEVEL, Integer.valueOf(0));
 	}
     
-    @Override
     public void setVertexItemProperty(Object itemId, String propertyName, Object value) {
     	getVertexItem(itemId).getItemProperty(propertyName).setValue(value);
     }
 
-    @Override
 	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue) {
 		Item vertexItem = getVertexItem(itemId);
 		if (vertexItem == null) {
@@ -834,13 +830,11 @@ public class SimpleGraphContainer implements GraphContainer {
 		return getVertexContainer().hasChildren(itemId);
 	}
 
-	@Override
 	public boolean containsVertexId(Object vertexId) {
 		return getVertexContainer().containsId(vertexId);
 	}
 
 
-	@Override
 	public boolean containsEdgeId(Object edgeId) {
 		return getEdgeContainer().containsId(edgeId);
 	}
@@ -860,25 +854,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		for(VertexRef childId : getChildren(vertexId)) {
 			if (!processed.contains(childId)) {
 				addRefTreeToSet(childId, processed);
-			}
-		}
-	}
-
-	@Override
-	public Collection<?> getVertexForest(Collection<?> vertexIds) {
-		Set<Object> processed = new LinkedHashSet<Object>();
-		for(Object vertexId : vertexIds) {
-			addTreeToSet(vertexId, processed);
-		}
-		return processed;
-	}
-	
-	public void addTreeToSet(Object vertexId, Set<Object> processed) {
-		processed.add(vertexId);
-
-		for(Object childId : getChildren(vertexId)) {
-			if (!processed.contains(childId)) {
-				addTreeToSet(childId, processed);
 			}
 		}
 	}

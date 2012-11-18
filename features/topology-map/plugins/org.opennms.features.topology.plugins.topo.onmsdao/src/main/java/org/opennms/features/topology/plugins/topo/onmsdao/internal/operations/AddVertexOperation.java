@@ -57,9 +57,7 @@ public class AddVertexOperation implements Operation{
     public boolean enabled(List<VertexRef> targets,OperationContext operationContext) {
         if(targets.size() > 1) return false;
         
-        Object itemId = targets.size() == 1 ? targets.get(0) : null;
-        
-        return itemId == null || operationContext.getGraphContainer().containsVertexId(itemId);
+        return true;
     }
 
 	@Override
@@ -79,24 +77,24 @@ public class AddVertexOperation implements Operation{
     }
 
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        LoggerFactory.getLogger(getClass()).debug("execute()");
-        Object vertexId = targets.isEmpty() ? null : targets.get(0);
-        String icon = getIcon();
-        if (vertexId == null) {
-            if (operationContext.getGraphContainer().containsVertexId(Constants.CENTER_VERTEX_ID)) {
-            	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON, operationContext.getGraphContainer());
-            }
-            else {
-                Object vertId = m_topologyProvider.addVertex(-1,50, 50, Constants.SERVER_ICON);
-                m_topologyProvider.setParent(vertId, Constants.ROOT_GROUP_ID);
-                
-            }
-        } else {
-            
-            connectNewVertex(vertexId.toString(), icon, operationContext.getGraphContainer());
-        }
-        operationContext.getGraphContainer().redoLayout();
-        
+//        LoggerFactory.getLogger(getClass()).debug("execute()");
+//        Object vertexId = targets.isEmpty() ? null : targets.get(0);
+//        String icon = getIcon();
+//        if (vertexId == null) {
+//            if (operationContext.getGraphContainer().containsVertexId(Constants.CENTER_VERTEX_ID)) {
+//            	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON, operationContext.getGraphContainer());
+//            }
+//            else {
+//                Object vertId = m_topologyProvider.addVertex(-1,50, 50, Constants.SERVER_ICON);
+//                m_topologyProvider.setParent(vertId, Constants.ROOT_GROUP_ID);
+//                
+//            }
+//        } else {
+//            
+//            connectNewVertex(vertexId.toString(), icon, operationContext.getGraphContainer());
+//        }
+//        operationContext.getGraphContainer().redoLayout();
+//        
         return null;
     }
     

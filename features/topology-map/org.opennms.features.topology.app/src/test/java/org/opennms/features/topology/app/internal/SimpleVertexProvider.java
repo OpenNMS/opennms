@@ -33,6 +33,11 @@ public class SimpleVertexProvider implements VertexProvider {
 	public String getNamespace() {
 		return m_namespace;
 	}
+	
+	@Override
+	public boolean contributesTo(String namespace) {
+		return false;
+	}
 
 	@Override
 	public Vertex getVertex(String namespace, String id) {

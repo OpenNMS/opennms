@@ -34,8 +34,11 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -80,14 +83,22 @@ public class RenameGroupOperation implements Constants, Operation {
 
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
-				Object parentId = targets.get(0);
+				VertexRef parentId = targets.get(0);
+				Vertex parentVertex = parentId == null ? null : graphContainer.getVertex(parentId);
+				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
 				
-				graphContainer.setVertexItemProperty(parentId, "label", groupLabel);
+				if (parentItem != null) {
 
-				// Save the topology
-				graphContainer.getDataSource().save(null);
+					Property property = parentItem.getItemProperty("label");
+					if (property != null && !property.isReadOnly()) {
+						property.setValue(groupLabel);
 
-				graphContainer.redoLayout();
+						// Save the topology
+						graphContainer.getDataSource().save(null);
+
+						graphContainer.redoLayout();
+					}
+				}
 			}
 		};
 		// Buffer changes to the datasource

@@ -13,6 +13,16 @@ public interface VertexProvider {
 	 * 
 	 */
 	public String getNamespace();
+	
+	/**
+	 * This boolean returns true if the vertices in this provider are intended
+	 * to contribute to or overlay another namespace 
+
+	 * @param namespace the namespace of a provider
+	 * @return true if this provider contributes the the given namespace, false other.  Should 
+	 * return false for passing its own namepace. A provider doesn't contribute to itself    
+	 */
+	public boolean contributesTo(String namespace);
 
 	public Vertex getVertex(String namespace, String id);
 	

@@ -23,7 +23,7 @@ public abstract class AbstractOperation implements Operation {
     @Override
     public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
         if (targets == null || targets.size() < 2) {
-            for (final Object target : targets) {
+            for (final VertexRef target : targets) {
                 final Integer nodeValue = getNodeIdValue(operationContext, target);
                 if (nodeValue != null && nodeValue > 0) {
                     return true;
@@ -36,20 +36,20 @@ public abstract class AbstractOperation implements Operation {
     @Override
     public abstract String getId();
 
-    protected static String getLabelValue(final OperationContext operationContext, final Object target) {
+    protected static String getLabelValue(final OperationContext operationContext, final VertexRef target) {
         return getPropertyValue(getVertexItem(operationContext, target), "label", String.class);
     }
 
-    protected static String getIpAddrValue(final OperationContext operationContext, final Object target) {
+    protected static String getIpAddrValue(final OperationContext operationContext, final VertexRef target) {
         return getPropertyValue(getVertexItem(operationContext, target), "ipAddr", String.class);
     }
 
-    protected static Integer getNodeIdValue(final OperationContext operationContext, final Object target) {
+    protected static Integer getNodeIdValue(final OperationContext operationContext, final VertexRef target) {
         return getPropertyValue(getVertexItem(operationContext, target), "nodeID", Integer.class);
     }
 
-	protected static Item getVertexItem(final OperationContext operationContext, final Object target) {
-		return operationContext.getGraphContainer().getVertexItem(target);
+	protected static Item getVertexItem(final OperationContext operationContext, final VertexRef target) {
+		return operationContext.getGraphContainer().getVertex(target).getItem();
 	}
 
     @SuppressWarnings("unchecked")

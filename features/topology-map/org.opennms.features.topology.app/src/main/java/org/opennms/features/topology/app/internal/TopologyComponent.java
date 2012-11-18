@@ -379,6 +379,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	}
 
 	public void graphChanged(GraphContainer container) {
+		setGraph(container.getGraph());
 		setFitToView(true);
 		requestRepaint();
 	}

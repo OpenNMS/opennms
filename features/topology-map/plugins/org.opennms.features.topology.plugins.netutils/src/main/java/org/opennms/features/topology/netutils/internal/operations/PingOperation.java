@@ -46,7 +46,7 @@ public class PingOperation extends AbstractOperation {
 	    int nodeID = -1;
 
             if (targets != null) {
-                for (final Object target : targets) {
+                for (final VertexRef target : targets) {
                     final String addrValue = getIpAddrValue(operationContext, target);
                     final String labelValue = getLabelValue(operationContext, target);
                     final Integer nodeValue = getNodeIdValue(operationContext, target);

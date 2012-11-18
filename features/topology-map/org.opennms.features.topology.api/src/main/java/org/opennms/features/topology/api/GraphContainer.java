@@ -85,26 +85,4 @@ public interface GraphContainer extends DisplayState {
     @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
 
-	// replace these with a way to determine vertex or edge from ref once selection is refs rather than itemIds
-	public boolean containsVertexId(Object vertexId);
-	
-	public boolean containsEdgeId(Object edgeId);
-
-	// THIS ONE WILL SWITCH TO TAKE REFS RATHER THAN itemIds
-    // returns a list containing all of the passed in vertices and their children grandchildren etc.
-	public Collection<?> getVertexForest(Collection<?> vertexIds);
-	
-	// TRYING TO GET RID OF THE ONES BELOW HERE
-    public VertexContainer<?, ?> getVertexContainer();
-
-    public Item getVertexItem(Object vertexId);
-
-    public void setVertexItemProperty(Object itemId, String propertyName, Object value);
-
-	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue);
-
-
-
-
-	
 }

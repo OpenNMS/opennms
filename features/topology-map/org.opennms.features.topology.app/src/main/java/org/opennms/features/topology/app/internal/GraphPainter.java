@@ -48,8 +48,14 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("selected", isSelected(vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		m_target.addAttribute("label", vertex.getLabel());
-		m_target.addAttribute("tooltipText", vertex.getTooltipText());
+		m_target.addAttribute("tooltipText", getTooltipText(vertex));
 		m_target.endTag("vertex");
+	}
+
+	private String getTooltipText(Vertex vertex) {
+		String tooltipText = vertex.getTooltipText();
+		tooltipText = tooltipText != null ? tooltipText : vertex.getLabel();
+		return tooltipText != null ? tooltipText : "";
 	}
 
 	@Override
@@ -60,8 +66,15 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("target", getTargetKey(edge));
 		m_target.addAttribute("selected", isSelected(edge));
 		m_target.addAttribute("cssClass", getStyleName(edge));
-		m_target.addAttribute("tooltipText", edge.getTooltipText());
+		m_target.addAttribute("tooltipText", getTooltipText(edge));
 		m_target.endTag("edge");
+	}
+
+	private String getTooltipText(Edge edge) {
+		String tooltipText = edge.getTooltipText();
+		tooltipText = tooltipText != null ? tooltipText : edge.getLabel();
+		tooltipText = tooltipText != null ? tooltipText : "";
+		return tooltipText;
 	}
 
 	@Override
