@@ -25,9 +25,13 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public Edge getEdge(String id) {
+	private Edge getEdge(String id) {
 		return m_edges.get(id);
+	}
+	
+	@Override
+	public Edge getEdge(String namespace, String id) {
+		return getEdge(id);
 	}
 
 	@Override

@@ -220,7 +220,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public Edge getEdge(String id) {
+	public Edge getEdge(String namespace, String id) {
 		throw new UnsupportedOperationException("Not implemented");
 	}
 

@@ -35,8 +35,11 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public Vertex getVertex(String id) {
-		return m_vertexMap.get(id);
+	public Vertex getVertex(String namespace, String id) {
+		if (getNamespace().equals(namespace)) {
+			return m_vertexMap.get(id);
+		}
+		return null;
 	}
 
 	@Override

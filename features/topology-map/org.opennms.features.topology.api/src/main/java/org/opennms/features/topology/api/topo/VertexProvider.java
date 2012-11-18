@@ -13,8 +13,8 @@ public interface VertexProvider {
 	 * 
 	 */
 	public String getNamespace();
-	
-	public Vertex getVertex(String id);
+
+	public Vertex getVertex(String namespace, String id);
 	
 	public Vertex getVertex(VertexRef reference);
 	

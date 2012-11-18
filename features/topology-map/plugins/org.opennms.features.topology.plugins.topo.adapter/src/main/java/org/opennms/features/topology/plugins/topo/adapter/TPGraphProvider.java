@@ -98,16 +98,20 @@ public class TPGraphProvider implements GraphProvider {
         return m_topoProvider.getNamespace();
     }
 
-
-    @Override
-    public ItemVertex getVertex(String id) {
+    private ItemVertex getVertex(String id) {
         Object itemId = m_vertexIdTracker.getItemId(id);
         return new ItemVertex(getNamespace(), id, itemId, m_vertexItemFinder);
+    }
+    
+    @Override
+    public ItemVertex getVertex(String namespace, String id) {
+    	if (!isInNamespace(namespace)) return null;
+    	return getVertex(id);
     }
 
     @Override
     public ItemVertex getVertex(VertexRef reference) {
-        if (!isInNamespace(reference));
+        if (!isInNamespace(reference)) return null;
 
         return getVertex(reference.getId());
     }
@@ -167,10 +171,14 @@ public class TPGraphProvider implements GraphProvider {
     private void assertInNamespace(Ref ref) {
         if (!isInNamespace(ref)) throw new IllegalArgumentException(String.format("reference with id %s in namespace %s but provider in namespace %s", ref.getId(), ref.getNamespace(), getNamespace()));
     }
-
+    
     private boolean isInNamespace(Ref group) {
-        return getNamespace().equals(group.getNamespace());
+        return isInNamespace(group.getNamespace());
     }
+
+	private boolean isInNamespace(String namespace) {
+		return getNamespace().equals(namespace);
+	}
 
     @Override
     public ItemVertex getParent(VertexRef vertex) {
@@ -208,9 +216,14 @@ public class TPGraphProvider implements GraphProvider {
     }
 
     @Override
-    public ItemEdge getEdge(String x) {
-        return getEdgeForItemId(m_edgeIdTracker.getItemId(x));
+    public ItemEdge getEdge(String namespace, String id) {
+    	if (!isInNamespace(namespace)) return null;
+        return getEdge(id);
     }
+
+	private ItemEdge getEdge(String id) {
+		return getEdgeForItemId(m_edgeIdTracker.getItemId(id));
+	}
 
     private ItemEdge getEdgeForItemId(Object itemId) {
         String id = m_edgeIdTracker.getId(itemId);

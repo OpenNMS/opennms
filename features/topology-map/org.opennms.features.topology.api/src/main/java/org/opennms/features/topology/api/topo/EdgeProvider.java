@@ -14,7 +14,7 @@ public interface EdgeProvider {
 	 */
 	public String getNamespace();
 	
-	public Edge getEdge(String id);
+	public Edge getEdge(String namespace, String id);
 	
 	public Edge getEdge(EdgeRef reference);
 	

@@ -21,7 +21,7 @@ public class SimpleGraphBuilder {
 	}
 	
 	public SimpleGraphBuilder parent(String parentId) {
-		Vertex parent = m_graphProvider.getVertex(parentId);
+		Vertex parent = m_graphProvider.getVertex(ns(), parentId);
 		m_graphProvider.setParent(m_currentVertex, parent);
 		return this;
 	}
@@ -48,12 +48,12 @@ public class SimpleGraphBuilder {
 	
 	public SimpleGraphBuilder edge(String id, String srcId, String tgtId) {
 		
-		VertexRef srcVertex = m_graphProvider.getVertex(srcId);
+		VertexRef srcVertex = m_graphProvider.getVertex(ns(), srcId);
 		if (srcVertex == null) {
 			srcVertex = new SimpleVertexRef(ns(), srcId);
 		}
 		
-		VertexRef tgtVertex = m_graphProvider.getVertex(tgtId);
+		VertexRef tgtVertex = m_graphProvider.getVertex(ns(), tgtId);
 		if (tgtVertex == null) {
 			tgtVertex = new SimpleVertexRef(ns(), tgtId);
 		}

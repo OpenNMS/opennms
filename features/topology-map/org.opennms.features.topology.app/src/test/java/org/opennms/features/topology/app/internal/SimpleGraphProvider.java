@@ -23,8 +23,8 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public Vertex getVertex(String id) {
-		return m_vertices.getVertex(id);
+	public Vertex getVertex(String namespace, String id) {
+		return m_vertices.getVertex(namespace, id);
 	}
 
 	@Override
@@ -108,8 +108,8 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public Edge getEdge(String id) {
-		return m_edges.getEdge(id);
+	public Edge getEdge(String namespace, String id) {
+		return m_edges.getEdge(namespace, id);
 	}
 
 	@Override

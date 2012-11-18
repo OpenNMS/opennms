@@ -31,9 +31,13 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		return m_namespace;
 	}
 
-	@Override
-	public Edge getEdge(String id) {
+	private Edge getEdge(String id) {
 		return m_edgeMap.get(id);
+	}
+	
+	@Override
+	public Edge getEdge(String namespace, String id) {
+		return getEdge(id);
 	}
 
 	@Override
