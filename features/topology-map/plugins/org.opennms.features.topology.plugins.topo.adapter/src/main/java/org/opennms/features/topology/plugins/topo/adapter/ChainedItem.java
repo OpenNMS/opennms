@@ -19,7 +19,7 @@ public class ChainedItem implements Item {
 
 	@Override
 	public Property getItemProperty(Object id) {
-		Property property = m_item.getItemProperty(id);
+		Property property = m_item == null ? null : m_item.getItemProperty(id);
 		return property != null ? property : m_next.getItemProperty(id);
 	}
 
