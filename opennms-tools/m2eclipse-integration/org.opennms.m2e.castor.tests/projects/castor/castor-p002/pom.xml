@@ -16,7 +16,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>1.10.7</version>
+        <version>1.10.8-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
