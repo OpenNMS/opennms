@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 public class AddVertexOperation implements Operation{
@@ -48,16 +49,14 @@ public class AddVertexOperation implements Operation{
     }
     
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets,OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets,OperationContext operationContext) {
     	if(targets.size() > 1) return false;
-        
-        Object itemId = targets.size() == 1 ? targets.get(0) : null;
-        return itemId == null || operationContext.getGraphContainer().containsVertexId(itemId);
+        return true;
     }
 
     @Override
@@ -76,13 +75,12 @@ public class AddVertexOperation implements Operation{
         return m_iconKey;
     }
 
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         LoggerFactory.getLogger(getClass()).debug("execute()");
-        Object vertexKey = targets.isEmpty() ? null : targets.get(0);
-        Object vertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(vertexKey);
+        Object vertexId = targets.isEmpty() ? null : targets.get(0).getId();
         String icon = getIconKey();
         if (vertexId == null) {
-            if (operationContext.getGraphContainer().containsVertexId(Constants.CENTER_VERTEX_ID)) {
+            if (operationContext.getGraphContainer().getDataSource().containsVertexId(Constants.CENTER_VERTEX_ID)) {
             	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON_KEY, operationContext.getGraphContainer());
             }
             else {

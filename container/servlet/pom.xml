@@ -28,13 +28,13 @@
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karaf.version}</version>
+            <version>${karafVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.proxy</artifactId>
-            <version>${felix.version}</version>
+            <version>${felixVersion}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

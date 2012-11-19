@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GEdge;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GVertex;
 
@@ -115,7 +116,7 @@ public class SimpleGraphContainerTest {
         List<TopoVertex> vertices = graph.getVertices();
         assertEquals(3, vertices.size());
         for(TopoVertex v : vertices) {
-            if(v.getGroupId() == null) {
+            if( graphContainer.getGroupId( v.getItemId() ) == null) {
                 assertEquals(0, v.getSemanticZoomLevel());
             }else {
                 assertEquals(1, v.getSemanticZoomLevel());
@@ -268,11 +269,11 @@ public class SimpleGraphContainerTest {
         
         topologyProvider.setParent(vertId, groupId);
         v = graph.getVertexByItemId(findByItemId(graphContainer, vertId));
-        assertEquals( g.getItemId(), v.getGroupId());
+        assertEquals( g.getItemId(), graphContainer.getGroupId( v.getItemId() ));
         
         topologyProvider.setParent(vertId2, groupId);
         v2 = graph.getVertexByItemId(findByItemId(graphContainer, vertId2));
-        assertEquals( g.getItemId(), v2.getGroupId());
+        assertEquals( g.getItemId(), graphContainer.getGroupId( v2.getItemId() ));
         
         Collection<Object> vertexKeys = graphContainer.getVertexIds();
         for(Object vertexKey : vertexKeys) {
@@ -417,12 +418,12 @@ public class SimpleGraphContainerTest {
         TopoEdge edge = findEdgeWithToprId(graph, graphContainer, testEdge.getId());
         
         assertNotNull(edge);
-        assertNotNull(edge.getSource());
-        assertNotNull(edge.getTarget());
-        assertEquals(sourceVertex.getItemId(), edge.getSource().getItemId());
-        assertEquals(targetVertex.getItemId(), edge.getTarget().getItemId());
-        assertEquals(sourceVertex.getKey(), edge.getSource().getKey());
-        assertEquals(targetVertex.getKey(), edge.getTarget().getKey());
+        assertNotNull(edge.getSourceVertex());
+        assertNotNull(edge.getTargetVertex());
+        assertEquals(sourceVertex.getItemId(), edge.getSourceVertex().getItemId());
+        assertEquals(targetVertex.getItemId(), edge.getTargetVertex().getItemId());
+        assertEquals(sourceVertex.getKey(), edge.getSourceVertex().getKey());
+        assertEquals(targetVertex.getKey(), edge.getTargetVertex().getKey());
         
         
         Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "iconGroup.png");
@@ -443,10 +444,10 @@ public class SimpleGraphContainerTest {
         
         edge = findEdgeWithToprId(graph, graphContainer, testEdge.getId());
      
-        assertEquals(sourceVertex.getItemId(), edge.getSource().getItemId());
-        assertEquals(targetVertex.getItemId(), edge.getTarget().getItemId());
-        assertEquals(sourceVertex.getKey(), edge.getSource().getKey());
-        assertEquals(targetVertex.getKey(), edge.getTarget().getKey());
+        assertEquals(sourceVertex.getItemId(), edge.getSourceVertex().getItemId());
+        assertEquals(targetVertex.getItemId(), edge.getTargetVertex().getItemId());
+        assertEquals(sourceVertex.getKey(), edge.getSourceVertex().getKey());
+        assertEquals(targetVertex.getKey(), edge.getTargetVertex().getKey());
         
     }
     

@@ -18,6 +18,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="topologyProvider"/>
+        <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
@@ -91,6 +92,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
+    <bean id="providerManager" class="org.opennms.features.topology.app.internal.ProviderManager" />
+    
+    <reference-list interface="org.opennms.features.topology.api.topo.EdgeProvider" availability="optional">
+        <reference-listener bind-method="onEdgeProviderBind" unbind-method="onEdgeProviderUnbind" ref="providerManager"/>
+    </reference-list>
+
+    <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
+        <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
+    </reference-list>
+
     <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     
@@ -144,14 +155,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="FR Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.label" value="Get Info?group=additions"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.GetInfoOperation"/>
     </service>
     
     <!--
@@ -212,20 +215,25 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Create Group"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation">
-            <argument ref="topologyProvider"/>
-        </bean>
+        <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation"/>
     </service>
     
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Edit"/>
+            <entry key="operation.label" value="Rename Group"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RenameGroupOperation"/>
+    </service>
+
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
             <entry key="operation.label" value="Delete Group"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.DeleteGroupOperation">
-            <argument ref="topologyProvider"/>
-        </bean>
+        <bean class="org.opennms.features.topology.app.internal.operations.DeleteGroupOperation"/>
     </service>
 
     <!-- removed for SPC-247

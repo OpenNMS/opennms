@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.plugins.ncs;
 
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
@@ -48,7 +48,9 @@ public class SelectionTreeFactory implements IViewContribution {
 	@Override
 	public SelectionTree getView(WidgetContext widgetContext) {
 		// Get the component by asking the blueprint container to instantiate a prototype bean 
-		return (SelectionTree)m_container.getComponentInstance(m_beanName);
+		SelectionTree tree = (SelectionTree)m_container.getComponentInstance(m_beanName);
+		tree.setGraphContainer(widgetContext.getGraphContainer());
+		return tree;
 	}
 
 	/**

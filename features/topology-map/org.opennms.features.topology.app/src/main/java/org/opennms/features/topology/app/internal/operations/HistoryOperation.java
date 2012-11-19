@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.Command;
 import org.opennms.features.topology.app.internal.CommandManager;
 
@@ -47,7 +48,7 @@ public class HistoryOperation implements Operation {
     }
     
     @Override
-    public Undoer execute(List<Object> targets,
+    public Undoer execute(List<VertexRef> targets,
             OperationContext operationContext) {
         Window mainWindow = operationContext.getMainWindow();
         CommandManager commandManager = m_commandManager;
@@ -64,12 +65,12 @@ public class HistoryOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 

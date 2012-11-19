@@ -31,8 +31,9 @@ package org.opennms.features.topology.plugins.topo.sfree.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.Vertex;
 
-abstract public class SimpleVertex {
+public abstract class SimpleVertex  {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -203,6 +204,7 @@ abstract public class SimpleVertex {
     public String getTooltipText() {
         return m_tooltipText;
     }
+
 	
 //	public int getSemanticZoomLevel() {
 //		return m_semanticZoomLevel >= 0

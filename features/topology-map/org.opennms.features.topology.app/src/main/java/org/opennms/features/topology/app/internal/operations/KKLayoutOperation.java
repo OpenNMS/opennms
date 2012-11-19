@@ -33,13 +33,14 @@ import java.util.List;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm;
 
 
 public class KKLayoutOperation implements CheckedOperation {
 
     @Override
-    public Undoer execute(List<Object> targets,
+    public Undoer execute(List<VertexRef> targets,
             OperationContext operationContext) {
         DisplayState graphContainer = operationContext.getGraphContainer();
         
@@ -48,12 +49,12 @@ public class KKLayoutOperation implements CheckedOperation {
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
@@ -63,7 +64,7 @@ public class KKLayoutOperation implements CheckedOperation {
     }
 
     @Override
-    public boolean isChecked(List<Object> targets, OperationContext operationContext) {
+    public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
         if(operationContext.getGraphContainer().getLayoutAlgorithm() instanceof KKLayoutAlgorithm) {
             return true;
         }

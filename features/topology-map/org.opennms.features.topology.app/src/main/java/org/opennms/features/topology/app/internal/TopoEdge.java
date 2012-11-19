@@ -28,11 +28,16 @@
 
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.Connector;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Item;
 
-public class TopoEdge{
+public class TopoEdge implements Edge {
     
     public static final String SELECTED_PROPERTY = "selected";
 	private final String m_key;
@@ -61,28 +66,12 @@ public class TopoEdge{
 		return m_sourceId;
 	}
 
-	public TopoVertex getSource(){
+	public TopoVertex getSourceVertex(){
 		return m_source;
 	}
 	
 	public String getKey() {
 		return m_key;
-	}
-
-	public int getX1(){
-		return m_graphContainer.getX(getSourceId());
-	}
-	
-	public int getX2(){
-		return m_graphContainer.getX(getTargetId());
-	}
-	
-	public int getY1(){
-		return m_graphContainer.getY(getSourceId());
-	}
-
-	public int getY2(){
-		return m_graphContainer.getY(getTargetId());
 	}
 
 	public Object getItemId() {
@@ -93,13 +82,13 @@ public class TopoEdge{
 		return m_targetId;
 	}
 	
-	public TopoVertex getTarget(){
+	public TopoVertex getTargetVertex(){
 		return m_target;
 	}
 	
 	@Override
 	public String toString() {
-	    return "Edge :: source: " + getSource() + " target: " + getTarget();
+	    return "Edge :: source: " + getSourceVertex() + " target: " + getTargetVertex();
 	}
 
 	public Item getItem() {
@@ -107,9 +96,7 @@ public class TopoEdge{
 	}
 
     public String getTooltipText() {
-        SimpleGraphContainer graphContainer = m_graphContainer;
-		Object edgeId = m_itemId;
-		return getEdgeTooltipText(graphContainer, edgeId);
+        return getEdgeTooltipText(m_graphContainer, m_itemId);
     }
     
     private String getEdgeTooltipText(SimpleGraphContainer graphContainer,	Object edgeId) {
@@ -117,7 +104,7 @@ public class TopoEdge{
 		if(item != null && item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
             return (String) item.getItemProperty("tooltipText").getValue();
         }else {
-            return getSource().getLabel() + " :: " + getTarget().getLabel();
+            return getSourceVertex().getLabel() + " :: " + getTargetVertex().getLabel();
         }
 	}
 
@@ -127,11 +114,80 @@ public class TopoEdge{
     
     
     public String getCssClass() {
-    	return getSelectionManager().isEdgeSelected(m_itemId) ? getStyleName()+" selected" : getStyleName(); 
+    	return getSelectionManager().isEdgeRefSelected(this) ? getStyleName()+" selected" : getStyleName(); 
     }
 
 	public String getStyleName() {
 		return "path";
+	}
+
+	@Override
+	public String getNamespace() {
+		return "nodes";
+	}
+
+	@Override
+	public String getId() {
+		return getKey();
+	}
+
+	@Override
+	public String getLabel() {
+		return getSourceVertex().getLabel() + " :: " + getTargetVertex().getLabel();
+	}
+
+	@Override
+	public Connector getSource() {
+		return new Connector() {
+
+			@Override
+			public String getNamespace() {
+				return TopoEdge.this.getNamespace();
+			}
+
+			@Override
+			public String getId() {
+				return TopoEdge.this.getId()+":source";
+			}
+
+			@Override
+			public EdgeRef getEdge() {
+				return TopoEdge.this;
+			}
+
+			@Override
+			public VertexRef getVertex() {
+				return TopoEdge.this.getSourceVertex();
+			}
+
+		};
+	}
+
+	@Override
+	public Connector getTarget() {
+		return new Connector() {
+
+			@Override
+			public String getNamespace() {
+				return TopoEdge.this.getNamespace();
+			}
+
+			@Override
+			public String getId() {
+				return TopoEdge.this.getId()+":target";
+			}
+
+			@Override
+			public EdgeRef getEdge() {
+				return TopoEdge.this;
+			}
+
+			@Override
+			public VertexRef getVertex() {
+				return TopoEdge.this.getTargetVertex();
+			}
+
+		};
 	}
 
 }

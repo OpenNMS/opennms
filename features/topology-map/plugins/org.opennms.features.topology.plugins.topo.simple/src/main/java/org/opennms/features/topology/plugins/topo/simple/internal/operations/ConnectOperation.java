@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class ConnectOperation implements Operation {
 
@@ -43,22 +44,27 @@ public class ConnectOperation implements Operation {
     }
     
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
-        if(targets != null && targets.size() > 1) {
-            Object sourceVertexId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(targets.get(0));//(String)endPoints.get(0);
-            Object targetVertextId = operationContext.getGraphContainer().getVertexItemIdForVertexKey(targets.get(1)); //(String)endPoints.get(1);
-            m_topologyProvider.connectVertices(sourceVertexId, targetVertextId);
-        }
-        return null;
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    	String ns = m_topologyProvider.getNamespace();
+    	if(targets != null && targets.size() > 1) {
+    		VertexRef sourceRef = targets.get(0);
+    		VertexRef targetRef = targets.get(1);
+    		if (ns.equals(sourceRef.getNamespace()) && ns.equals(targetRef.getNamespace()))  {
+    			Object sourceVertexId = sourceRef.getId();
+    			Object targetVertexId = targetRef.getId();
+    			m_topologyProvider.connectVertices(sourceVertexId, targetVertexId);
+    		}
+    	}
+    	return null;
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return targets.size() == 2;
     }
 

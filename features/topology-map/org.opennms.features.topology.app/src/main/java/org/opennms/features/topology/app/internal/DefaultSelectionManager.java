@@ -2,58 +2,68 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class DefaultSelectionManager implements SelectionManager {
-
-	private final Set<Object> m_selectedVertices = new HashSet<Object>();
-	private final Set<Object> m_selectedEdges = new HashSet<Object>();
+	private final Set<VertexRef> m_selectedVertices = new HashSet<VertexRef>();
+	private final Set<EdgeRef> m_selectedEdges = new HashSet<EdgeRef>();
 	private final Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
 
 	public DefaultSelectionManager() {
 	}
 
 	@Override
-	public boolean isVertexSelected(Object itemId) {
-		return m_selectedVertices.contains(itemId);
+	public boolean isVertexRefSelected(VertexRef vertexRef) {
+		return m_selectedVertices.contains(vertexRef);
 	}
 
-	private void setVertexSelected(Object itemId, boolean selected) {
+	private void setVertexRefSelected(VertexRef ref, boolean selected) {
 		if (selected) {
-			m_selectedVertices.add(itemId);
+			m_selectedVertices.add(ref);
 		} else {
-			m_selectedVertices.remove(itemId);
-		}
-			
-	}
-
-	@Override
-	public boolean isEdgeSelected(Object edgeId) {
-		return m_selectedEdges.contains(edgeId);
-	}
-
-	public void setEdgeSelected(Object edgeId, boolean selected) {
-		if (selected) {
-			m_selectedEdges.add(edgeId);
-		} else {
-			m_selectedEdges.remove(edgeId);
+			m_selectedVertices.remove(ref);
 		}
 	}
 
 	@Override
-	public List<Object> getSelectedVertices() {
-		return new ArrayList<Object>(m_selectedVertices);
+	public boolean isEdgeRefSelected(EdgeRef edgeRef) {
+		return m_selectedEdges.contains(edgeRef);
+	}
+
+	private void setEdgeRefSelected(EdgeRef edgeRef, boolean selected) {
+		if (selected) {
+			m_selectedEdges.add(edgeRef);
+		} else {
+			m_selectedEdges.remove(edgeRef);
+		}
 	}
 
 	@Override
-	public void selectVertices(Collection<?> itemIds) {
-		for(Object itemId : itemIds) {
-			setVertexSelected(itemId, true);
+	public Collection<VertexRef> getSelectedVertexRefs() {
+		return Collections.unmodifiableSet(m_selectedVertices);
+	}
+	
+	@Override
+	public void selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
+		for(VertexRef vertexRef : vertexRefs) {
+			setVertexRefSelected(vertexRef, true);
+		}
+		
+		fireSelectionChanged();
+	}
+
+	@Override
+	public void deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
+		for(VertexRef vertexRef : vertexRefs) {
+			setVertexRefSelected(vertexRef, false);
 		}
 		
 		fireSelectionChanged();
@@ -72,18 +82,18 @@ public class DefaultSelectionManager implements SelectionManager {
 	}
 
 	@Override
-	public void setSelectedVertices(Collection<?> vertexIds) {
+	public void setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs) {
 		doDeselectAll();
 		
-		selectVertices(vertexIds);
+		selectVertexRefs(vertexRefs);
 	}
-	
+
 	@Override
-	public void setSelectedEdges(Collection<?> edgeIds) {
+	public void setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs) {
 		doDeselectAll();
 		
-		for(Object edgeId : edgeIds) {
-			setEdgeSelected(edgeId, true);
+		for(EdgeRef edgeRef : edgeRefs) {
+			setEdgeRefSelected(edgeRef, true);
 		}
 		
 		fireSelectionChanged();
@@ -104,5 +114,5 @@ public class DefaultSelectionManager implements SelectionManager {
 			listener.selectionChanged(this);
 		}
 	}
-	
+
 }

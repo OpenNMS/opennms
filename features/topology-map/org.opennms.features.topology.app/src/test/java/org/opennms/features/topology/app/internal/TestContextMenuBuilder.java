@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 
 import com.vaadin.event.Action;
@@ -73,14 +74,7 @@ public class TestContextMenuBuilder {
 		return new Command() {
 
 			@Override
-			public boolean appliesToTarget(Object target,
-					OperationContext operationContext) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void doCommand(Object target,
+			public void doCommand(List<VertexRef> targets,
 					OperationContext operationContext) {
 				// TODO Auto-generated method stub
 				
@@ -121,21 +115,21 @@ public class TestContextMenuBuilder {
 				return new Operation() {
 
                     @Override
-                    public Undoer execute(List<Object> targets,
+                    public Undoer execute(List<VertexRef> targets,
                             OperationContext operationContext) {
                         // TODO Auto-generated method stub
                         return null;
                     }
 
                     @Override
-                    public boolean display(List<Object> targets,
+                    public boolean display(List<VertexRef> targets,
                             OperationContext operationContext) {
                         // TODO Auto-generated method stub
                         return false;
                     }
 
                     @Override
-                    public boolean enabled(List<Object> targets,
+                    public boolean enabled(List<VertexRef> targets,
                             OperationContext operationContext) {
                         // TODO Auto-generated method stub
                         return false;

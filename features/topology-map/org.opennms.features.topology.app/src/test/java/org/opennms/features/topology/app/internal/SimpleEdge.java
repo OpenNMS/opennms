@@ -1,12 +1,10 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
-import org.opennms.features.topology.api.topo.Edge;
 
-public class SimpleEdge implements Edge {
+public class SimpleEdge extends AbstractEdge {
 	
-	private final String m_namespace;
-	private final String m_id;
 	private final Connector m_source;
 	private final Connector m_target;
 	
@@ -16,20 +14,9 @@ public class SimpleEdge implements Edge {
 	
 
 	public SimpleEdge(String namespace, String id, Connector source, Connector target) {
-		m_namespace = namespace;
-		m_id = id;
+		super(namespace, id);
 		m_source = source;
 		m_target = target;
-	}
-
-	@Override
-	public String getNamespace() {
-		return m_namespace;
-	}
-
-	@Override
-	public String getId() {
-		return m_id;
 	}
 
 	@Override
@@ -69,4 +56,6 @@ public class SimpleEdge implements Edge {
 		m_styleName = styleName;
 	}
 
+	@Override
+	public String toString() { return "Edge:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
 }

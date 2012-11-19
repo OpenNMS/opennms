@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
@@ -17,22 +18,69 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 
 public class SimpleEdgeProvider implements EdgeProvider {
 	
+	private static abstract class MatchingCriteria implements Criteria {
+		
+		private String m_namespace;
+		
+		public MatchingCriteria(String namespace) {
+			m_namespace = namespace;
+		}
+
+		@Override
+		public ElementType getType() {
+			return ElementType.EDGE;
+		}
+
+		@Override
+		public String getNamespace() {
+			return m_namespace;
+		}
+		
+		public abstract boolean matches(Edge edge);
+		
+	}
+	
+	public static Criteria labelMatches(String namespace, final String regex) {
+		return new MatchingCriteria(namespace) {
+			
+			@Override
+			public boolean matches(Edge edge) {
+				return edge.getLabel().matches(regex);
+			}
+		}; 
+	}
+	
 	final String m_namespace;
 	final Map<String, SimpleEdge> m_edgeMap = new LinkedHashMap<String, SimpleEdge>();
 	final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
+	final String m_contributesTo;
+	
+	public SimpleEdgeProvider(String namespace, String contributesTo) {
+		m_namespace = namespace;
+		m_contributesTo = contributesTo;
+	}
 	
 	public SimpleEdgeProvider(String namespace) {
-		m_namespace = namespace;
+		this(namespace, null);
 	}
 
 	@Override
 	public String getNamespace() {
 		return m_namespace;
 	}
-
+	
 	@Override
-	public Edge getEdge(String id) {
+	public boolean contributesTo(String namespace) {
+		return m_contributesTo != null && m_contributesTo.equals(namespace);
+	}
+	
+	private Edge getEdge(String id) {
 		return m_edgeMap.get(id);
+	}
+	
+	@Override
+	public Edge getEdge(String namespace, String id) {
+		return getEdge(id);
 	}
 
 	@Override
@@ -134,6 +182,28 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	
 	public void remove(SimpleEdge... edges) {
 		remove(Arrays.asList(edges));
+	}
+
+	@Override
+	public List<? extends Edge> getEdges(Criteria c) {
+		MatchingCriteria criteria = (MatchingCriteria) c;
+		
+		List<Edge> edges = new ArrayList<Edge>();
+		
+		for(Edge e : getEdges()) {
+			if (criteria.matches(e)) {
+				edges.add(e);
+			}
+		}
+		return edges;
+
+	}
+
+	@Override
+	public boolean matches(EdgeRef edgeRef, Criteria c) {
+		MatchingCriteria criteria = (MatchingCriteria)c;
+		
+		return criteria.matches(getEdge(edgeRef));
 	}
 
 }

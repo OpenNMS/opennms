@@ -667,7 +667,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
 	@Override
 	public String getNamespace() {
-		return "node";
+		return "nodes";
 	}
     
     

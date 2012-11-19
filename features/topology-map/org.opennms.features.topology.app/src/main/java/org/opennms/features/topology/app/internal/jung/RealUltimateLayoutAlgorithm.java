@@ -32,13 +32,15 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.app.internal.TopoEdge;
-import org.opennms.features.topology.app.internal.TopoGraph;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
@@ -49,24 +51,22 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(GraphContainer graphContainer) {
 		
-		TopoGraph g = (TopoGraph) graphContainer.getGraph();
-		
-		int szl = graphContainer.getSemanticZoomLevel();
+		Graph g = graphContainer.getGraph();
 		
 		final Layout graphLayout = g.getLayout();
 		
-		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
+		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
-		Collection<Object> vertices = graphContainer.getDisplayVertexIds(szl);		
+		Collection<? extends Vertex> vertices = g.getDisplayVertices();
 		
-		for(Object v : vertices) {
+		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
-		List<TopoEdge> edges = g.getEdges(szl);
+		Collection<? extends Edge> edges = g.getDisplayEdges();
 		
-		for(TopoEdge e : edges) {
-			jungGraph.addEdge(e, e.getSource().getItemId(), e.getTarget().getItemId());
+		for(Edge e : edges) {
+			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
 		
 		Dimension size = selectLayoutSize(graphContainer);
@@ -80,13 +80,9 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 	}
 
-	private void doSpringLayout(final Layout graphLayout, SparseGraph<Object, TopoEdge> jungGraph, Dimension size, int repulsion) {
-		SpringLayout<Object, TopoEdge> layout = new SpringLayout<Object, TopoEdge>(jungGraph);
-		layout.setInitializer(new Transformer<Object, Point2D>() {
-			public Point2D transform(Object v) {
-				return new Point(graphLayout.getX(v), graphLayout.getY(v));
-			}
-		});
+	private void doSpringLayout(final Layout graphLayout, SparseGraph<VertexRef, EdgeRef> jungGraph, Dimension size, int repulsion) {
+		SpringLayout<VertexRef, EdgeRef> layout = new SpringLayout<VertexRef, EdgeRef>(jungGraph);
+		layout.setInitializer(initializer(graphLayout));
 		
 		layout.setSize(size);
 		layout.setRepulsionRange(repulsion);
@@ -97,19 +93,14 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 			count++;
 		}
 		
-		for(Object v : jungGraph.getVertices()) {
-			graphLayout.setX(v, (int)layout.getX(v));
-			graphLayout.setY(v, (int)layout.getY(v));
+		for(VertexRef v : jungGraph.getVertices()) {
+			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
 	}
 	
-	private void doFRLayout(final Layout graphLayout, SparseGraph<Object, TopoEdge> jungGraph, Dimension size, final int xOffset, final int yOffset) {
-		FRLayout<Object, TopoEdge> layout = new FRLayout<Object, TopoEdge>(jungGraph);
-		layout.setInitializer(new Transformer<Object, Point2D>() {
-			public Point2D transform(Object v) {
-				return new Point(graphLayout.getX(v)-xOffset, graphLayout.getY(v)-yOffset);
-			}
-		});
+	private void doFRLayout(final Layout graphLayout, SparseGraph<VertexRef, EdgeRef> jungGraph, Dimension size, final int xOffset, final int yOffset) {
+		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<VertexRef, EdgeRef>(jungGraph);
+		layout.setInitializer(initializer(graphLayout, xOffset, yOffset));
 		layout.setSize(size);
 		
 		while(!layout.done()) {
@@ -117,20 +108,15 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 		
 		
-		for(Object v : jungGraph.getVertices()) {
-			graphLayout.setX(v, (int)layout.getX(v)+xOffset);
-			graphLayout.setY(v, (int)layout.getY(v)+yOffset);
+		for(VertexRef v : jungGraph.getVertices()) {
+			graphLayout.setLocation(v, (int)layout.getX(v)+xOffset, (int)layout.getY(v)+yOffset);
 		}
 		
 	}
 
-	private void doISOMLayout(final Layout graphLayout, SparseGraph<Object, TopoEdge> jungGraph, Dimension size) {
-		ISOMLayout<Object, TopoEdge> layout = new ISOMLayout<Object, TopoEdge>(jungGraph);
-		layout.setInitializer(new Transformer<Object, Point2D>() {
-			public Point2D transform(Object v) {
-				return new Point(graphLayout.getX(v), graphLayout.getY(v));
-			}
-		});
+	private void doISOMLayout(final Layout graphLayout, SparseGraph<VertexRef, EdgeRef> jungGraph, Dimension size) {
+		ISOMLayout<VertexRef, EdgeRef> layout = new ISOMLayout<VertexRef, EdgeRef>(jungGraph);
+		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(size);
 		
 		while(!layout.done()) {
@@ -138,9 +124,8 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 		
 		
-		for(Object v : jungGraph.getVertices()) {
-			graphLayout.setX(v, (int)layout.getX(v));
-			graphLayout.setY(v, (int)layout.getY(v));
+		for(VertexRef v : jungGraph.getVertices()) {
+			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
 		
 	}

@@ -38,7 +38,10 @@ import java.util.Map;
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.util.BeanItem;
@@ -46,15 +49,7 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 
 public class TopologyComponentTest {
-    private class TestTopologyComponent extends TopologyComponent{
-        private static final long serialVersionUID = -442669265971260461L;
-        
-        public TestTopologyComponent(SimpleGraphContainer dataSource) {
-            super(dataSource);
-        }
-        
-    }
-    
+
     @Test
     public void testTopologyComponentGraph() throws PaintException {
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
@@ -75,7 +70,8 @@ public class TopologyComponentTest {
     }
 
     private TopologyComponent getTopologyComponent(SimpleGraphContainer dataSource) {
-        TopologyComponent topologyComponent = new TopologyComponent(dataSource);
+    	BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(dataSource);
+        TopologyComponent topologyComponent = new TopologyComponent(dataSource, item.getItemProperty("scale"));
         topologyComponent.setIconRepoManager(new IconRepositoryManager());
         return topologyComponent;
     }
@@ -116,24 +112,28 @@ public class TopologyComponentTest {
     public void testTopologyComponentGraphUpdateGroup() throws PaintException {
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
         
+        // Initial set up has only the group vertex
         mockInitialSetup(target);
         
         mockGraphTagStart(target);
         
-        mockGroup(target);
-        
-        mockVertex(target, 1);
-        
-        mockVertex(target, 1);
-        
-        mockEdge(target);
-        
-        mockVertexParent(target);
-        
-        mockVertexParent(target);
+        mockVertex(target);
         
         mockGraphTagEnd(target);
         
+        // the set the zoomlevel to 1 and we should see two vertices and an edge
+        mockGraphAttrs(target, 1, false);
+        
+        mockGraphTagStart(target);
+        
+        mockVertex(target);
+        
+        mockVertex(target);
+        
+        mockEdge(target);
+
+        mockGraphTagEnd(target);
+
         EasyMock.replay(target);
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
@@ -155,6 +155,10 @@ public class TopologyComponentTest {
         
         topoComponent.paintContent(target);
         
+        graphContainer.setSemanticZoomLevel(1);
+        
+        topoComponent.paintContent(target);
+        
         EasyMock.verify(target);
         
     }
@@ -166,12 +170,12 @@ public class TopologyComponentTest {
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         topoComponent.setIconRepoManager(new IconRepositoryManager());
-        TopoGraph graph = topoComponent.getGraph();
+        Graph graph = topoComponent.getGraph();
         
-        List<TopoEdge> edges = graph.getEdges();
+        Collection<? extends Edge> edges = graph.getDisplayEdges();
         assertEquals(1, edges.size());
         
-        TopoEdge edge = edges.get(0);
+        Edge edge = edges.iterator().next();
         
         PaintTarget target = EasyMock.createMock(PaintTarget.class);
         
@@ -202,28 +206,16 @@ public class TopologyComponentTest {
         
         mockGraphTagStart(target2);
        
-        for(TopoVertex g : graph.getVertices()) {
-            if (!g.isLeaf()) {
-                String key = g.getKey();
-                mockGroupWithKey(target2, key);
-            }
+        for(Vertex v : graph.getDisplayVertices()) {
+        	String key = v.getKey();
+        	mockVertexWithKey(target2, key);
         }
         
-        for(TopoVertex v : graph.getVertices()) {
-            if (v.isLeaf()) {
-                String key = v.getKey();
-                mockVertexWithKey(target2, key);
-            }
-        }
-        
-        Map<Object, String> verticesKeyMapper = new HashMap<Object, String>();
-        for(TopoVertex v : graph.getVertices()) {
-            verticesKeyMapper.put(v.getItemId(), v.getKey());
-        }
-        
-        for(TopoEdge e: graph.getEdges()) {
-            String sourceKey = verticesKeyMapper.get(e.getSource().getItemId());
-            String targetKey = verticesKeyMapper.get(e.getTarget().getItemId());
+        for(Edge e: graph.getDisplayEdges()) {
+        	Vertex sourceV = graphContainer.getVertex(e.getSource().getVertex());
+        	Vertex targetV = graphContainer.getVertex(e.getTarget().getVertex());
+            String sourceKey = sourceV.getKey();
+            String targetKey = targetV.getKey();
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);
         }
         mockGraphTagEnd(target2);
@@ -281,15 +273,18 @@ public class TopologyComponentTest {
         target.endTag("group");
     }
     
-
     private void mockInitialSetup(PaintTarget target) throws PaintException {
+    	mockGraphAttrs(target, 0, true);
+    }
+    
+    private void mockGraphAttrs(PaintTarget target, int semanticZoomLevel, boolean fitToView) throws PaintException {
         target.addAttribute("scale", 1.0);
         target.addAttribute("clientX", 0);
         target.addAttribute("clientY", 0);
-        target.addAttribute("semanticZoomLevel", 0);
+        target.addAttribute("semanticZoomLevel", semanticZoomLevel);
         target.addAttribute("activeTool", "pan");
         target.addAttribute("panToSelection", false);
-        target.addAttribute("fitToView", true);
+        target.addAttribute("fitToView", fitToView);
     }
 
     private void mockDefaultGraph(PaintTarget target) throws PaintException {
@@ -332,17 +327,14 @@ public class TopologyComponentTest {
     }
 
     private void mockVertex(PaintTarget target) throws PaintException {
-        mockVertex(target, 0);
-    }
-    
-    private void mockVertex(PaintTarget target, int semanticZoomLevel) throws PaintException {
         target.startTag("vertex");
         target.addAttribute(EasyMock.eq("key"), EasyMock.notNull(String.class));
+        target.addAttribute(eq("initialX"), EasyMock.anyInt());
+        target.addAttribute(eq("initialY"), EasyMock.anyInt());
         target.addAttribute(eq("x"), EasyMock.anyInt());
         target.addAttribute(eq("y"), EasyMock.anyInt());
         target.addAttribute(eq("selected"), EasyMock.anyBoolean());
         target.addAttribute(eq("iconUrl"), EasyMock.notNull(String.class));
-        target.addAttribute("semanticZoomLevel", semanticZoomLevel);
         target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
         target.addAttribute(EasyMock.eq("tooltipText"), EasyMock.notNull(String.class));
         

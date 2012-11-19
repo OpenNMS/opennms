@@ -34,6 +34,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 
 public class ResetOperation implements Constants, Operation {
@@ -45,7 +46,7 @@ public class ResetOperation implements Constants, Operation {
     }
 
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         
         m_topologyProvider.resetContainer();
         Object groupId = m_topologyProvider.addGroup("Group", GROUP_ICON_KEY);
@@ -55,12 +56,12 @@ public class ResetOperation implements Constants, Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 

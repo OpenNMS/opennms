@@ -31,14 +31,10 @@ package org.opennms.features.topology.app.internal;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -46,6 +42,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -69,10 +66,13 @@ import com.vaadin.ui.Window;
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext {
     
     
+	private static final long serialVersionUID = 1L;
+
+	private static final String LABEL_PROPERTY = "label";
 	private Window m_window;
 	private TopologyComponent m_topologyComponent;
 	private VertexSelectionTree m_tree;
-	private SimpleGraphContainer m_graphContainer;
+	private GraphContainer m_graphContainer;
 	private CommandManager m_commandManager;
 	private MenuBar m_menuBar;
 	private TopoContextMenu m_contextMenu;
@@ -86,15 +86,16 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
     
-	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
+	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
-		m_graphContainer = new SimpleGraphContainer(topologyProvider);
+		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}
 
 
+	@SuppressWarnings("serial")
 	@Override
 	public void init() {
 	    setTheme("topo_default");
@@ -117,13 +118,15 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer);
+		BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(m_graphContainer);
+		final Property scale = item.getItemProperty("scale");
+
+		m_topologyComponent = new TopologyComponent(m_graphContainer, scale);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
 		
-		final Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		final Slider slider = new Slider(0, 4);
 		slider.setPropertyDataSource(scale);
 		slider.setResolution(2);
@@ -137,7 +140,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		scale.setValue(1.0);
 		slider.setImmediate(true);
 
-		final Property zoomLevel = m_graphContainer.getProperty(DisplayState.SEMANTIC_ZOOM_LEVEL);
+		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");
 
 		Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
@@ -299,7 +302,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
      * 
      * @return
      */
-    private Layout createWestLayout() {
+    @SuppressWarnings("serial")
+	private Layout createWestLayout() {
         m_tree = createTree();
         
         
@@ -312,12 +316,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
             @Override
             public void buttonClick(ClickEvent event) {
-                FilterableHierarchicalContainer container = m_tree.getContainerDataSource();
+            	GCFilterableContainer container = m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
                 
                 String filterString = (String) filterField.getValue();
                 if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
-                    container.addContainerFilter(TopoVertex.LABEL_PROPERTY, (String) filterField.getValue(), true, false);
+                    container.addContainerFilter(LABEL_PROPERTY, (String) filterField.getValue(), true, false);
                     filterBtn.setCaption("Clear");
                 } else {
                     filterField.setValue("");
@@ -348,22 +352,21 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
     private VertexSelectionTree createTree() {
-	    final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
+	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		final VertexSelectionTree tree = new VertexSelectionTree(container, m_graphContainer) {
-			public String getTitle() {
-				return "Nodes";
-			}
-		};
+		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
 		tree.setMultiSelect(true);
-        
 		tree.setImmediate(true);
-		tree.setItemCaptionPropertyId(TopoVertex.LABEL_PROPERTY);
+		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
+
 		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-			tree.expandItemsRecursively(it.next());
+			Object item = it.next();
+			//System.err.println("Expanding " + item);
+			tree.expandItemsRecursively(item);
 		}
 		
 		m_graphContainer.getSelectionManager().addSelectionListener(tree);
+
 		return tree;
 	}
 

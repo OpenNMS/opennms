@@ -30,6 +30,8 @@ package org.opennms.features.topology.api;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.VertexRef;
+
 public interface Operation {
     
     public final static String OPERATION_MENU_LOCATION = "operation.menuLocation";
@@ -40,8 +42,8 @@ public interface Operation {
         public void undo(OperationContext operationContext);
     }
     
-    public Undoer execute(List<Object> targets, OperationContext operationContext);
-    public boolean display(List<Object> targets, OperationContext operationContext);
-    public boolean enabled(List<Object> targets, OperationContext operationContext);
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext);
+    public boolean display(List<VertexRef> targets, OperationContext operationContext);
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext);
     public String getId();
 }

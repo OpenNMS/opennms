@@ -35,7 +35,9 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
-abstract public class LinkdVertex {
+import org.opennms.features.topology.api.topo.Vertex;
+
+ public abstract class LinkdVertex  {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -227,5 +229,5 @@ abstract public class LinkdVertex {
     public int getNodeID() {
         return 0;
     }
-	
+
 }

@@ -1,8 +1,9 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -22,8 +23,8 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public Vertex getVertex(String id) {
-		return m_vertices.getVertex(id);
+	public Vertex getVertex(String namespace, String id) {
+		return m_vertices.getVertex(namespace, id);
 	}
 
 	@Override
@@ -68,6 +69,10 @@ public class SimpleGraphProvider implements GraphProvider {
 	public void add(List<SimpleVertex> vertices) {
 		m_vertices.add(vertices);
 	}
+	
+	public void setParent(SimpleVertex child, VertexRef parent) {
+		m_vertices.setParent(child, parent);
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -77,6 +82,11 @@ public class SimpleGraphProvider implements GraphProvider {
 	@Override
 	public String getNamespace() {
 		return m_vertices.getNamespace();
+	}
+	
+	@Override
+	public boolean contributesTo(String namespace) {
+		return false;
 	}
 
 	@Override
@@ -103,8 +113,8 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public Edge getEdge(String id) {
-		return m_edges.getEdge(id);
+	public Edge getEdge(String namespace, String id) {
+		return m_edges.getEdge(namespace, id);
 	}
 
 	@Override
@@ -143,6 +153,26 @@ public class SimpleGraphProvider implements GraphProvider {
 
 	public void remove(SimpleEdge... edges) {
 		m_edges.remove(edges);
+	}
+
+	@Override
+	public List<? extends Vertex> getVertices(Criteria criteria) {
+		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
+	}
+
+	@Override
+	public List<? extends Edge> getEdges(Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
+	}
+
+	@Override
+	public int getSemanticZoomLevel(VertexRef vertex) {
+		return m_vertices.getSemanticZoomLevel(vertex);
+	}
+
+	@Override
+	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
 	}
 
 

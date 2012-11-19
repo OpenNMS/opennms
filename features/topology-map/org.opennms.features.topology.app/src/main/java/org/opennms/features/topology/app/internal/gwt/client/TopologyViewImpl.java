@@ -19,6 +19,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
@@ -56,6 +57,9 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @UiField
     Element m_marquee;
     
+    @UiField
+    HTMLPanel m_widgetContainer;
+    
     TopologyViewRenderer m_topologyViewRenderer;
     
 
@@ -66,6 +70,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     protected void onLoad() {
         super.onLoad();
+        m_widgetContainer.setSize("100%", "100%");
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
         m_topologyViewRenderer = m_presenter.getViewRenderer();
         

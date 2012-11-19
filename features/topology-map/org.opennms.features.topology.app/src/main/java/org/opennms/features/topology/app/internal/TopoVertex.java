@@ -28,83 +28,45 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.Collections;
-
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 
-public class TopoVertex {
+public class TopoVertex implements Vertex {
     
-    public static final String LEAF_PROPERTY = "leaf";
-    public static final String X_PROPERTY = "x";
-    public static final String Y_PROPERTY = "y";
     public static final String LABEL_PROPERTY = "label";
-    public static final String SELECTED_PROPERTY = "selected";
-    public static final String ICON_PROPERTY = "icon";
+    public static final String TOOLTIP_TEXT = "tooltipText";
     public static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
-    static final String ICON_KEY = "iconKey";
-	private String m_key;
-	private Object m_itemId;
-	private Object m_groupId;
-	private String m_groupKey;
-	private SimpleGraphContainer m_graphContainer;
+    public static final String ICON_KEY = "iconKey";
 	
-	public TopoVertex(GraphContainer graphContainer, String key, Object itemId, String groupKey, Object groupId) {
-		m_graphContainer = (SimpleGraphContainer) graphContainer;
+    private final String m_key;
+	private final Object m_itemId;
+	private final Item m_item;
+	private final SimpleGraphContainer m_graphContainer;
+	
+	public TopoVertex(SimpleGraphContainer graphContainer, String key, Object itemId, Item item) {
+		m_graphContainer = graphContainer;
 		m_key = key;
-		setItemId(itemId);
-		m_groupKey = groupKey;
-		m_groupId = groupId;
+		m_itemId = itemId;
+		m_item = item;
 	}
 	
 	public Object getItemId() {
 		return m_itemId;
 	}
 	
-	public String getGroupKey() {
-		return m_groupKey;
-	}
-	
-	public Object getGroupId() {
-		return getGraphContainer().getGroupId(getItemId());
-	}
-	
 	public boolean isLeaf() {
-		return getGraphContainer().isLeaf(getItemId());
+		return !getGraphContainer().hasChildren(getItemId());
 	}
-
-	public int getX() {
-		return getGraphContainer().getX(getItemId());
-		
-	}
-
-	public int getY(){
-		return getGraphContainer().getY(getItemId());
-	}
-
-	public void setX(int x) {
-		getGraphContainer().setX(getItemId(), x);
-    }
-
-	public void setY(int y) {
-    	getGraphContainer().setY(getItemId(), y);
-    }
 
 	public String toString() {
-    	return "v" + getItemId() + "(" + getX()  + "," + getY() + "):" + (isSelected() ? "selected" : "unselected");
+    	return "v" + getItemId();
     }
 
-	public void setSelected(boolean selected) {
-		getGraphContainer().getSelectionManager().selectVertices(Collections.singleton(getItemId()));
-	}
-
-	public boolean isSelected() {
-		return getGraphContainer().getSelectionManager().isVertexSelected(getItemId());
-	}
-
 	public Item getItem() {
-		return getGraphContainer().getVertexItem(getItemId());
+		return m_item;
 	}
 	
 	public String getKey() {
@@ -116,39 +78,41 @@ public class TopoVertex {
 	}
 
 	public String getLabel() {
-		return getGraphContainer().getLabel(getItemId());
+		Property labelProperty = getItem().getItemProperty(LABEL_PROPERTY);
+		return labelProperty == null ? "no such label" : (String)(labelProperty.getValue());
 	}
 
-	public void setGroupId(Object groupId) {
-		m_groupId = groupId;
-	}
-
-	public void setGroupKey(String groupKey) {
-		m_groupKey = groupKey;
-	}
-
-    public String getIconKey() {
-        return getGraphContainer().getIconKey(getItemId());
+	public String getIconKey() {
+		Property iconKeyProperty = getItem().getItemProperty(ICON_KEY);
+		return iconKeyProperty == null ? null : (String)(iconKeyProperty.getValue());
     }
 
 	public String getTooltipText() {
-        return getGraphContainer().getVertexTooltipText(getItemId());
-    }
-
-	String vertexTag() {
-		return isLeaf() ? "vertex" : "group";
-	}
-
-	String vertexParentTag() {
-		return isLeaf() ? "vertexParent" : "groupParent";
+		Property tooltipTextProperty = getItem().getItemProperty(TOOLTIP_TEXT);
+		return tooltipTextProperty == null 
+				? getLabel() 
+				: tooltipTextProperty.getValue() == null
+				? getLabel()
+				: (String)(tooltipTextProperty.getValue());
 	}
 
 	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
 	}
 
-	private void setItemId(Object itemId) {
-		m_itemId = itemId;
+	@Override
+	public String getNamespace() {
+		return "nodes";
+	}
+
+	@Override
+	public String getId() {
+		return getKey();
+	}
+
+	@Override
+	public String getStyleName() {
+		return "vertex";
 	}
 
 }

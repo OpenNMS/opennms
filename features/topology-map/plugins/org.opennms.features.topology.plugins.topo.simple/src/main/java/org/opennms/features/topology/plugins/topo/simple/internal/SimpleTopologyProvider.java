@@ -353,7 +353,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addVertex(int, int)
 	 */
     @Override
-	public Object addVertex(int x, int y) {
+	public String addVertex(int x, int y) {
         String nextVertexId = getNextVertexId();
 //        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1", -1);
         /* 

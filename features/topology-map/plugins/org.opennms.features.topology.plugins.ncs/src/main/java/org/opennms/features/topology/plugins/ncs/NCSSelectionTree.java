@@ -28,24 +28,36 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
-import org.opennms.features.topology.api.support.SelectionTree;
-import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class NCSSelectionTree extends SelectionTree {
 
 	private static final long serialVersionUID = 8778577903128733601L;
 
+	public static class NCSSelectionTreeCriteria extends ArrayList<Long> implements Criteria {
+
+		private static final long serialVersionUID = 5833460704861282509L;
+
+		@Override
+		public String getNamespace() {
+			return "ncs";
+		}
+
+		@Override
+		public ElementType getType() {
+			return ElementType.EDGE;
+		}
+	}
+
 	private NCSComponentRepository m_dao;
 	private NodeDao m_nodeDao;
-	private EdgeProviderMapImpl m_edges = new EdgeProviderMapImpl();
+	private final NCSSelectionTreeCriteria m_currentCriteria = new NCSSelectionTreeCriteria();
+	//private EdgeProviderMapImpl m_edges = new EdgeProviderMapImpl();
 
 	public NCSSelectionTree(FilterableHierarchicalContainer container) {
 		super(container);
@@ -69,6 +81,10 @@ public class NCSSelectionTree extends SelectionTree {
 
 	@Override
 	public void select(Object itemId) {
+		m_currentCriteria.add((Long)itemId);
+		m_graphContainer.setCriteria(m_currentCriteria);
+
+		/*
 		// TODO: Create edge references that correspond to the selected items
 		NCSComponent comp = m_dao.get((Long)itemId);
 		Long parentId = (Long)getParent(itemId);
@@ -81,12 +97,18 @@ public class NCSSelectionTree extends SelectionTree {
 				// create edge between node and peer
 			}
 		}
+		*/
 		super.select(itemId);
 	}
 
 	@Override
 	public void unselect(Object itemId) {
+		m_currentCriteria.remove((Long)itemId);
+		m_graphContainer.setCriteria(m_currentCriteria);
+
 		// TODO: Remove edge references that correspond to the unselected items
+
 		super.unselect(itemId);
 	}
+
 }

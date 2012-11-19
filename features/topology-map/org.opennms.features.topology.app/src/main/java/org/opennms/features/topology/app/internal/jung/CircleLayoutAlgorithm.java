@@ -32,13 +32,14 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.app.internal.TopoEdge;
-import org.opennms.features.topology.app.internal.TopoGraph;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -47,38 +48,29 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	public void updateLayout(final GraphContainer graphContainer) {
 		
-		TopoGraph g = (TopoGraph) graphContainer.getGraph();
-		
-		int szl = graphContainer.getSemanticZoomLevel();
+		Graph g = graphContainer.getGraph();
 		
 		final Layout graphLayout = g.getLayout();
 		
-		SparseGraph<Object, TopoEdge> jungGraph = new SparseGraph<Object, TopoEdge>();
+		SparseGraph<VertexRef, Edge> jungGraph = new SparseGraph<VertexRef, Edge>();
 
-		Collection<Object> vertices = graphContainer.getDisplayVertexIds(szl);
+		Collection<? extends Vertex> vertices = g.getDisplayVertices();
 		
-		for(Object v : vertices) {
+		for(VertexRef v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
-		List<TopoEdge> edges = g.getEdges(szl);
-		
-		for(TopoEdge e : edges) {
-			jungGraph.addEdge(e, e.getSource().getItemId(), e.getTarget().getItemId());
+		for(Edge e : g.getDisplayEdges()) {
+			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
 		
 
-		CircleLayout<Object, TopoEdge> layout = new CircleLayout<Object, TopoEdge>(jungGraph);
-		layout.setInitializer(new Transformer<Object, Point2D>() {
-			public Point2D transform(Object v) {
-				return new Point(graphLayout.getX(v), graphLayout.getY(v));
-			}
-		});
+		CircleLayout<VertexRef, Edge> layout = new CircleLayout<VertexRef, Edge>(jungGraph);
+		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(selectLayoutSize(graphContainer));
 		
-		for(Object v : vertices) {
-			graphLayout.setX(v, (int)layout.getX(v));
-			graphLayout.setY(v, (int)layout.getY(v));
+		for(VertexRef v : vertices) {
+			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
 		
 		
@@ -88,7 +80,7 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
 	protected Dimension selectLayoutSize(GraphContainer g) {
-		int vertexCount = g.getDisplayVertexIds(g.getSemanticZoomLevel()).size();
+		int vertexCount = g.getGraph().getDisplayVertices().size();
 		
 		int spacing = ELBOW_ROOM/5;
 

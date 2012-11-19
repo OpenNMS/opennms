@@ -33,11 +33,19 @@ div.v-button-down .v-button-wrap{
 	padding: 7px 4px 0 1px;
 }
 
-.path {
+.edge {
 	stroke: #ccc;
 }
 
-.path.selected {
+.edge.selected {
+	stroke: #00ffff;
+}
+
+.edge.ncs {
+	stroke: #b80404;
+}
+
+.edge.ncs.selected {
 	stroke: #00ffff;
 }
 

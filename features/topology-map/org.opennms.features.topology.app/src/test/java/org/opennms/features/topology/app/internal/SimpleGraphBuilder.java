@@ -1,5 +1,7 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.topo.LWVertexRef;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleGraphBuilder {
@@ -19,13 +21,19 @@ public class SimpleGraphBuilder {
 		return this;
 	}
 	
+	public SimpleGraphBuilder parent(String parentId) {
+		Vertex parent = m_graphProvider.getVertex(ns(), parentId);
+		m_graphProvider.setParent(m_currentVertex, parent);
+		return this;
+	}
+	
 	public SimpleGraphBuilder vLabel(String label) {
 		m_currentVertex.setLabel(label);
 		return this;
 	}
 	
 	public SimpleGraphBuilder vTooltip(String tooltipText) {
-		m_currentVertex.setTooltpText(tooltipText);
+		m_currentVertex.setTooltipText(tooltipText);
 		return this;
 	}
 	
@@ -41,14 +49,14 @@ public class SimpleGraphBuilder {
 	
 	public SimpleGraphBuilder edge(String id, String srcId, String tgtId) {
 		
-		VertexRef srcVertex = m_graphProvider.getVertex(srcId);
+		VertexRef srcVertex = m_graphProvider.getVertex(ns(), srcId);
 		if (srcVertex == null) {
-			srcVertex = new SimpleVertexRef(ns(), srcId);
+			srcVertex = new LWVertexRef(ns(), srcId);
 		}
 		
-		VertexRef tgtVertex = m_graphProvider.getVertex(tgtId);
+		VertexRef tgtVertex = m_graphProvider.getVertex(ns(), tgtId);
 		if (tgtVertex == null) {
-			tgtVertex = new SimpleVertexRef(ns(), tgtId);
+			tgtVertex = new LWVertexRef(ns(), tgtId);
 		}
 		
 		

@@ -1,13 +1,16 @@
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Layout.Point;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -28,128 +31,75 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	@Override
-	public void visitGraph(TopoGraph graph) throws PaintException {
+	public void visitGraph(Graph graph) throws PaintException {
 		m_target.startTag("graph");
 	}
 
 	@Override
-	public void visitVertex(TopoVertex vertex) throws PaintException {
-		paintVertex(vertex);
-	}
-
-	@Override
-	public void visitEdge(TopoEdge edge) throws PaintException {
-		paintEdge(edge);
-	}
-
-	@Override
-	public void completeVertex(TopoVertex vertex) throws PaintException {
-		paintParent(vertex);
-	}
-
-	@Override
-	public void completeGraph(TopoGraph graph) throws PaintException {
-		m_target.endTag("graph");
-	}
-
-	private void paintVertex(TopoVertex vertex) throws PaintException {
-		m_target.startTag(getVertexTag(vertex));
-		m_target.addAttribute("key", getKey(vertex));
-		m_target.addAttribute("initialX", getInitialX(vertex));
-		m_target.addAttribute("initialY", getInitialY(vertex));
-		m_target.addAttribute("x", getX(vertex));
-		m_target.addAttribute("y", getY(vertex));
+	public void visitVertex(Vertex vertex) throws PaintException {
+		Point initialLocation = m_layout.getInitialLocation(vertex);
+		Point location = m_layout.getLocation(vertex);
+		m_target.startTag("vertex");
+		m_target.addAttribute("key", vertex.getKey());
+		m_target.addAttribute("initialX", initialLocation.getX());
+		m_target.addAttribute("initialY", initialLocation.getY());
+		m_target.addAttribute("x", location.getX());
+		m_target.addAttribute("y", location.getY());
 		m_target.addAttribute("selected", isSelected(vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		m_target.addAttribute("label", vertex.getLabel());
-		m_target.addAttribute("tooltipText", vertex.getTooltipText());
-		m_target.endTag(getVertexTag(vertex));
+		m_target.addAttribute("tooltipText", getTooltipText(vertex));
+		m_target.endTag("vertex");
 	}
 
-	private int getInitialY(TopoVertex vertex) {
-		return (int)(Math.random()*1000);
+	private String getTooltipText(Vertex vertex) {
+		String tooltipText = vertex.getTooltipText();
+		tooltipText = tooltipText != null ? tooltipText : vertex.getLabel();
+		return tooltipText != null ? tooltipText : "";
 	}
 
-	private int getInitialX(TopoVertex vertex) {
-		return (int)(Math.random()*1000);
-	}
-
-	private int getSemanticZoomLevel(TopoVertex vertex) {
-		return vertex.getSemanticZoomLevel();
-	}
-
-	private void paintEdge(TopoEdge edge) throws PaintException {
+	@Override
+	public void visitEdge(Edge edge) throws PaintException {
 		m_target.startTag("edge");
-		m_target.addAttribute("key", getKey(edge));
+		m_target.addAttribute("key", edge.getKey());
 		m_target.addAttribute("source", getSourceKey(edge));
 		m_target.addAttribute("target", getTargetKey(edge));
 		m_target.addAttribute("selected", isSelected(edge));
 		m_target.addAttribute("cssClass", getStyleName(edge));
-		m_target.addAttribute("tooltipText", edge.getTooltipText());
+		m_target.addAttribute("tooltipText", getTooltipText(edge));
 		m_target.endTag("edge");
 	}
 
-	private String getKey(TopoEdge edge) {
-		return edge.getKey();
+	private String getTooltipText(Edge edge) {
+		String tooltipText = edge.getTooltipText();
+		tooltipText = tooltipText != null ? tooltipText : edge.getLabel();
+		tooltipText = tooltipText != null ? tooltipText : "";
+		return tooltipText;
 	}
 
-	private String getTargetKey(TopoEdge edge) {
-		return edge.getTarget().getKey();
+	@Override
+	public void completeGraph(Graph graph) throws PaintException {
+		m_target.endTag("graph");
 	}
 
-	private String getSourceKey(TopoEdge edge) {
-		return edge.getSource().getKey();
+	private String getSourceKey(Edge edge) {
+		return m_graphContainer.getVertex(edge.getSource().getVertex()).getKey();
 	}
 
-	private void paintParent(TopoVertex vertex) throws PaintException {
-		if (vertex.getGroupId() != null) {
-			m_target.startTag(getVertexParentTag(vertex));
-			m_target.addAttribute("key", getKey(vertex));
-			m_target.addAttribute("parentKey", getParentKey(vertex));
-			m_target.endTag(getVertexParentTag(vertex));
-		}
+	private String getTargetKey(Edge edge) {
+		return m_graphContainer.getVertex(edge.getTarget().getVertex()).getKey();
 	}
 
-	private String getParentKey(TopoVertex vertex) {
-		return vertex.getGroupKey();
-	}
-
-	private String getKey(TopoVertex vertex) {
-		return vertex.getKey();
-	}
-
-	private String getStyleName(TopoEdge edge) {
+	private String getStyleName(Edge edge) {
 		return isSelected(edge) ? edge.getStyleName()+" selected" : edge.getStyleName();
 	}
 
-	private boolean isSelected(TopoVertex vertex) {
-		return getSelectionManager().isVertexSelected(getVertexId(vertex));
+	private boolean isSelected(Vertex vertex) {
+		return getSelectionManager().isVertexRefSelected(vertex);
 	}
 
-	private boolean isSelected(TopoEdge edge) {
-		return getSelectionManager().isEdgeSelected(edge.getItemId());
-	}
-
-
-	private String getVertexTag(TopoVertex vertex) {
-		return "vertex";
-		//return m_graphContainer.hasChildren(getVertexId(vertex)) ? "group" : "vertex";
-	}
-
-	private int getX(TopoVertex vertex) {
-		return m_layout.getX(getVertexId(vertex));
-	}
-
-	private int getY(TopoVertex vertex) {
-		return m_layout.getY(getVertexId(vertex));
-	}
-
-	private String getVertexParentTag(TopoVertex vertex) {
-		return m_graphContainer.hasChildren(getVertexId(vertex)) ? "groupParent" : "vertexParent";
-	}
-
-	private Object getVertexId(TopoVertex vertex) {
-		return vertex.getItemId();
+	private boolean isSelected(Edge edge) {
+		return getSelectionManager().isEdgeRefSelected(edge);
 	}
 
 }

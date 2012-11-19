@@ -36,6 +36,7 @@ import java.util.Properties;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.LoggerFactory;
@@ -63,18 +64,18 @@ public class TopologySelector {
     	
 
     	@Override
-    	public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
     		operationContext.getGraphContainer().setDataSource(m_topologyProvider);
     		return null;
     	}
 
     	@Override
-    	public boolean display(List<Object> targets, OperationContext operationContext) {
+    	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
     		return true;
     	}
 
     	@Override
-    	public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
     		return true;
     	}
 
@@ -84,7 +85,7 @@ public class TopologySelector {
     	}
 
 		@Override
-		public boolean isChecked(List<Object> targets,	OperationContext operationContext) {
+		public boolean isChecked(List<VertexRef> targets,	OperationContext operationContext) {
 			TopologyProvider activeTopologyProvider = operationContext.getGraphContainer().getDataSource();
 			LoggerFactory.getLogger(getClass()).debug("Active provider is " + activeTopologyProvider + ": Expected " + m_topologyProvider);
 			return m_topologyProvider.equals(activeTopologyProvider);

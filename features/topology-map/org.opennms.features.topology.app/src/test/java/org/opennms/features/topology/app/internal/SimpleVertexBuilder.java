@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.adapter.internal;
+package org.opennms.features.topology.app.internal;
 
 public class SimpleVertexBuilder {
 	
@@ -25,7 +25,7 @@ public class SimpleVertexBuilder {
 	}
 	
 	public SimpleVertexBuilder vTooltip(String tooltipText) {
-		m_currentVertex.setTooltpText(tooltipText);
+		m_currentVertex.setTooltipText(tooltipText);
 		return this;
 	}
 	
