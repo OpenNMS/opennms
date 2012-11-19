@@ -62,6 +62,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.MethodProperty;
 
+@Deprecated
 public class SimpleGraphContainer implements GraphContainer {
 
 

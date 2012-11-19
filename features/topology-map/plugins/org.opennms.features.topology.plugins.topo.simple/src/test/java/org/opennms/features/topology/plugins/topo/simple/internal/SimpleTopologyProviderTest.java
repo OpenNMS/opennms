@@ -117,7 +117,7 @@ public class SimpleTopologyProviderTest {
 
 	@Override
 	public TopologyProvider getDataSource() {
-		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
+		return m_topologyProvider;
 	}
 
 	@Override

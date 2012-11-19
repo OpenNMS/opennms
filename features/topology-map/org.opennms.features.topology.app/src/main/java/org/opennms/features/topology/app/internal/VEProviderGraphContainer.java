@@ -137,11 +137,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	private final Collection<? extends Edge> m_displayEdges;
     	private final Layout m_layout;
     	
-        public VEGraph(Collection<? extends Vertex> displayVertices,
+        public VEGraph(Layout layout, Collection<? extends Vertex> displayVertices,
 				Collection<? extends Edge> displayEdges) {
 			m_displayVertices = displayVertices;
 			m_displayEdges = displayEdges;
-			m_layout = new DefaultLayout(VEProviderGraphContainer.this);
+			m_layout = layout;
 		}
 
 		@Override
@@ -207,15 +207,19 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private MergingGraphProvider m_mergedGraphProvider;
     private TopologyProvider m_dataSource;
 
+    private final Layout m_layout;
     private VEGraph m_graph;
     
     public VEProviderGraphContainer(TopologyProvider dataSource, ProviderManager providerManager) {
-    	this(new TPGraphProvider(dataSource), providerManager);
     	m_dataSource = dataSource;
+    	m_mergedGraphProvider = new MergingGraphProvider(new TPGraphProvider(dataSource), providerManager);
+		m_layout = new DefaultLayout(this);
+		rebuildGraph();
 	}
     
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
+    	m_layout = new DefaultLayout(this);
     	rebuildGraph();
     }
     
@@ -325,7 +329,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			}
     	}
     	
-    	m_graph = new VEGraph(displayVertices, displayEdges);
+    	m_graph = new VEGraph(m_layout, displayVertices, displayEdges);
     	
     	fireGraphChanged();
     	
