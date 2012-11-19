@@ -77,7 +77,7 @@
           noticeStatus="<b id=\"notificationOn\">On</b>";
         }
     } catch (Throwable t) {
-        noticeStatus = "<font color=\"ff0000\">Unknown</font>";
+        noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
 final String baseHref = Util.calculateUrlBase( request );
