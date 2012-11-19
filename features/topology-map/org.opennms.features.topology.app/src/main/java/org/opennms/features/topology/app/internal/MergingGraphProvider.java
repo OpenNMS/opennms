@@ -19,21 +19,33 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.ProviderManager.ProviderListener;
 
-public class MergingGraphProvider implements GraphProvider, VertexListener, EdgeListener {
+public class MergingGraphProvider implements GraphProvider, VertexListener, EdgeListener, ProviderListener {
 	
 	private static final GraphProvider NULL_PROVIDER = new NullProvider();
 	
 	private GraphProvider m_baseGraphProvider;
+	private final ProviderManager m_providerManager;
 	private final Map<String, VertexProvider> m_vertexProviders = new HashMap<String, VertexProvider>();
 	private final Map<String, EdgeProvider> m_edgeProviders = new HashMap<String, EdgeProvider>();
 	private final Map<String, Criteria> m_criteria = new HashMap<String, Criteria>();
 	private final Set<VertexListener> m_vertexListeners = new CopyOnWriteArraySet<VertexListener>();
 	private final Set<EdgeListener> m_edgeListeners = new CopyOnWriteArraySet<EdgeListener>();
 	
-	
-	public MergingGraphProvider(GraphProvider baseGraphProvider) {
+	public MergingGraphProvider(GraphProvider baseGraphProvider, ProviderManager providerManager) {
 		m_baseGraphProvider = baseGraphProvider;
+		m_providerManager = providerManager;
+		
+		for(VertexProvider vertexProvider : m_providerManager.getVertexListeners()) {
+			addVertexProvider(vertexProvider);
+		}
+		
+		for(EdgeProvider edgeProvider : m_providerManager.getEdgeListeners()) {
+			addEdgeProvider(edgeProvider);
+		}
+		
+		m_providerManager.addProviderListener(this);
 	}
 	
 	public Criteria getCriteria(String namespace) {
@@ -472,6 +484,26 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 			return false;
 		}
 		
+	}
+
+	@Override
+	public void edgeProviderAdded(EdgeProvider oldProvider,	EdgeProvider newProvider) {
+		addEdgeProvider(newProvider);
+	}
+
+	@Override
+	public void edgeProviderRemoved(EdgeProvider removedProvider) {
+		removeEdgeProvider(removedProvider);
+	}
+
+	@Override
+	public void vertexProviderAdded(VertexProvider oldProvider,	VertexProvider newProvider) {
+		addVertexProvider(newProvider);
+	}
+
+	@Override
+	public void vertexProviderRemoved(VertexProvider removedProvider) {
+		removeVertexProvider(removedProvider);
 	}
 
 

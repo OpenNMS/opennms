@@ -209,13 +209,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     private VEGraph m_graph;
     
-    public VEProviderGraphContainer(TopologyProvider dataSource) {
-    	this(new TPGraphProvider(dataSource));
+    public VEProviderGraphContainer(TopologyProvider dataSource, ProviderManager providerManager) {
+    	this(new TPGraphProvider(dataSource), providerManager);
     	m_dataSource = dataSource;
 	}
     
-    public VEProviderGraphContainer(GraphProvider graphProvider) {
-    	m_mergedGraphProvider = new MergingGraphProvider(graphProvider);
+    public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
+    	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
     	rebuildGraph();
     }
     

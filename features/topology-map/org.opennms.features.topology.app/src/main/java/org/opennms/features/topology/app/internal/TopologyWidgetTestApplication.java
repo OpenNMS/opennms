@@ -86,10 +86,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
     
-	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, IconRepositoryManager iconRepoManager) {
+	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
-		m_graphContainer = new VEProviderGraphContainer(topologyProvider);
+		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}

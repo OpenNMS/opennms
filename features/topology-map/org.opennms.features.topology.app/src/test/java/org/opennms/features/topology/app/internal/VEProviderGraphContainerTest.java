@@ -54,8 +54,10 @@ public class VEProviderGraphContainerTest {
 			.edge("ncs3", "nodes", "v1", "nodes", "v2").label("ncsedge3").styleName("ncs edge")
 			.get();
 		
-		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider);
-		graphContainer.addEdgeProvider(m_edgeProvider);
+		ProviderManager providerManager = new ProviderManager();
+		providerManager.onEdgeProviderBind(m_edgeProvider);
+
+		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
 		
 		m_graphContainer = graphContainer;
 	}

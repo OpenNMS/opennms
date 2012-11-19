@@ -41,8 +41,10 @@ public class MergingGraphProviderTest {
 			.edge("ncs2", "nodes", "v2", "nodes", "v4").label("ncsedge2")
 			.get();
 		
-		m_mergedProvider = new MergingGraphProvider(m_graphProvider);
-		m_mergedProvider.addEdgeProvider(m_edgeProvider);
+		ProviderManager providerManager = new ProviderManager();
+		providerManager.onEdgeProviderBind(m_edgeProvider);
+		
+		m_mergedProvider = new MergingGraphProvider(m_graphProvider, providerManager);
 
 	}
 	

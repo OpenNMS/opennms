@@ -40,7 +40,8 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.ncs.NCSSelectionTree.NCSServiceCriteria;
+import org.opennms.features.topology.api.topo.Criteria.ElementType;
+import org.opennms.features.topology.plugins.ncs.NCSSelectionTree.NCSSelectionTreeCriteria;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -69,7 +70,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 		@Override
 		public String getLabel() {
-			return null;
+			return getId();
 		}
 
 		@Override
@@ -79,7 +80,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 		@Override
 		public String getStyleName() {
-			return null;
+			return "ncs edge";
 		}
 
 		@Override
@@ -89,12 +90,12 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 		@Override
 		public String getTooltipText() {
-			return null;
+			return getLabel()	;
 		}
 
 		@Override
 		public String getId() {
-			return m_source.getId() + ":::" + m_target.getId();
+			return m_source.getVertex().getId() + ":::" + m_target.getVertex().getId();
 		}
 
 		@Override
@@ -307,5 +308,28 @@ public class NCSEdgeProvider implements EdgeProvider {
 	@Override
 	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
 		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
+	}
+
+	public static class NCSServiceCriteria extends ArrayList<Long> implements Criteria {
+		
+		private static final long serialVersionUID = 5833460704861282509L;
+		
+		public NCSServiceCriteria(Collection<Long> serviceIds) {
+			super(serviceIds);
+		}
+
+		@Override
+		public String getNamespace() {
+			return "ncs";
+		}
+
+		@Override
+		public ElementType getType() {
+			return ElementType.EDGE;
+		}
+	}
+
+	public static Criteria createCriteria(Collection<Long> selectedIds) {
+		return new NCSServiceCriteria(selectedIds);
 	}
 }

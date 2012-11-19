@@ -1,10 +1,11 @@
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.plugins.ncs;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
@@ -49,7 +50,7 @@ public abstract class SelectionTree extends Tree {
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
                 
-                if(m_itemClicked) {
+                //if(m_itemClicked) {
                     Set<Object> selectedIds = (Set<Object>) event.getProperty().getValue();
                     
                     Collection<Object> allIds = (Collection<Object>) getContainerDataSource().getItemIds();
@@ -61,30 +62,30 @@ public abstract class SelectionTree extends Tree {
                     deselectContainerItems(itemsToDeselected);
                     
                     selectContainerItemAndChildren(itemsToSelect);
-                } 
+                //} 
                 
             }
         });
 
-        /**
-         * This listener responds to clicks on items within the list and then 
-         */
-        this.addListener(new ItemClickListener() {
-            
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                m_itemClicked = true;
-                Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
-                
-                Object itemId = event.getItemId();
-                m_treeItemClickTracker.setClickedItemId(itemId);
-                
-                if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
-                    m_treeItemClickTracker.setRemove(true);
-                } 
-                
-            }
-        });
+//        /**
+//         * This listener responds to clicks on items within the list and then 
+//         */
+//        this.addListener(new ItemClickListener() {
+//            
+//            @Override
+//            public void itemClick(ItemClickEvent event) {
+//                m_itemClicked = true;
+//                Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
+//                
+//                Object itemId = event.getItemId();
+//                m_treeItemClickTracker.setClickedItemId(itemId);
+//                
+//                if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
+//                    m_treeItemClickTracker.setRemove(true);
+//                } 
+//                
+//            }
+//        });
     }
 
     private Set<Object> getSelectedItemIds(Set<Object> selectedIds) {
