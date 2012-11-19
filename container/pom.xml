@@ -16,6 +16,7 @@
     <module>karaf</module>
     <module>servlet</module>
     <module>bridge</module>
+    <module>security</module>
   </modules>
 
   <repositories>
