@@ -31,8 +31,6 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.topo.Vertex;
-
 public abstract class SimpleVertex {
 	String m_id;
 	int m_x;

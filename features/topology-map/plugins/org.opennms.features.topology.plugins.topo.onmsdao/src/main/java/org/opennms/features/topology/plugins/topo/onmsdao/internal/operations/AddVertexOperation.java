@@ -31,12 +31,10 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
-import org.slf4j.LoggerFactory;
 
 public class AddVertexOperation implements Operation{
     

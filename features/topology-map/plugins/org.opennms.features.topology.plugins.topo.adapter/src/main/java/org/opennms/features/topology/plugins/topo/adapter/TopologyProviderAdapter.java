@@ -14,10 +14,6 @@ import org.slf4j.LoggerFactory;
 
 public class TopologyProviderAdapter {
 
-
-    private static final String NAMESPACE = "namespace";
-    private static final String LABEL = "label";
-
     private static final Logger s_log = LoggerFactory.getLogger(TopologyProviderAdapter.class);
 
     private BundleContext m_bundleContext;

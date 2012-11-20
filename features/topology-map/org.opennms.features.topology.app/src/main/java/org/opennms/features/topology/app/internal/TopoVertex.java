@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.data.Item;

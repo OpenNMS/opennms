@@ -51,7 +51,6 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
-import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -64,10 +63,8 @@ import org.opennms.features.topology.plugins.topo.simple.internal.operations.Con
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
@@ -78,9 +75,9 @@ public class SimpleTopologyProviderTest {
 
     
     private class TestGraphContainer implements GraphContainer{
-        
-        
-        private SimpleVertexContainer m_vertContainer;
+
+        @SuppressWarnings("unused")
+        private final SimpleVertexContainer m_vertContainer;
 
         public TestGraphContainer(SimpleVertexContainer vertContainer) {
             m_vertContainer = vertContainer;

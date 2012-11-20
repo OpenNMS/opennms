@@ -31,10 +31,6 @@ package org.opennms.features.topology.app.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Test;

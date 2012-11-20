@@ -8,8 +8,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 
 import com.vaadin.data.Property;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial", "unchecked"})

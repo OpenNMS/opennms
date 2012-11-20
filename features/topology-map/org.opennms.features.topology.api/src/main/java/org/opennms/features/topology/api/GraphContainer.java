@@ -37,8 +37,6 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Item;
-
 public interface GraphContainer extends DisplayState {
 	
 	public interface ChangeListener {

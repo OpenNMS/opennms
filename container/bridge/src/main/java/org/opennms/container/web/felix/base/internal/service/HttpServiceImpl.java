@@ -59,6 +59,7 @@ public final class HttpServiceImpl
         return this.contextManager.getServletContext(context);
     }
 
+    @Override
     public void registerFilter(Filter filter, String pattern, Dictionary initParams, int ranking, HttpContext context)
         throws ServletException
     {
@@ -71,16 +72,19 @@ public final class HttpServiceImpl
         this.localFilters.add(filter);
     }
 
+    @Override
     public void unregisterFilter(Filter filter)
     {
         unregisterFilter(filter, true);
     }
 
+    @Override
     public void unregisterServlet(Servlet servlet)
     {
         unregisterServlet(servlet, true);
     }
 
+    @Override
     public void registerServlet(String alias, Servlet servlet, Dictionary initParams, HttpContext context)
         throws ServletException, NamespaceException
     {
@@ -96,6 +100,7 @@ public final class HttpServiceImpl
         this.localServlets.add(servlet);
     }
 
+    @Override
     public void registerResources(String alias, String name, HttpContext context)
         throws NamespaceException
     {
@@ -111,11 +116,13 @@ public final class HttpServiceImpl
         }
     }
 
+    @Override
     public void unregister(String alias)
     {
         unregisterServlet(this.handlerRegistry.getServletByAlias(alias));
     }
 
+    @Override
     public HttpContext createDefaultHttpContext()
     {
         return new DefaultHttpContext(this.bundle);
