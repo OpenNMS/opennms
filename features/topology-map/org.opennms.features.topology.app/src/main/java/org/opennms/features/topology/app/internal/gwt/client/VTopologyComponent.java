@@ -754,7 +754,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		updateGraphUpdateListeners();
 		if(isPanToSelection()) {
 		    centerSelection(m_graph.getVertices());
-		} else { // if(isFitToView())
+		} else if(isFitToView()) {
 		    fitMapToView(m_graph.getVertices());
 		}
         

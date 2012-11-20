@@ -5,6 +5,7 @@ import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.
 import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
+import org.opennms.features.topology.app.internal.gwt.client.svg.ClientRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -61,6 +62,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     HTMLPanel m_widgetContainer;
     
     TopologyViewRenderer m_topologyViewRenderer;
+
+    private boolean m_isRefresh;
     
 
     public TopologyViewImpl() {
@@ -177,7 +180,17 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public void onGraphUpdated(GWTGraph graph) {
             m_presenter.getViewRenderer().draw(graph, this);
+            
+            if(m_isRefresh) {
+                fitToScreen();
+                m_isRefresh = false;
+            }
+            
     }
+    
+    private final native void consoleLog(Object obj) /*-{
+        $wnd.console.log(obj);
+    }-*/;
 
     void updateScale(double oldScale, double newScale, int cx, int cy) {
         if(oldScale > 0) {
@@ -209,6 +222,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         	SVGMatrix ctm = g.getCTM().multiply(m);
         	String tempM = matrixTransform(ctm);
         	D3.d3().select(getSVGViewPort()).transition().duration(1000).attr("transform", tempM);
+        } else {
+           m_isRefresh = true;
         }
     }
     
@@ -250,6 +265,33 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 }
             });
         }
+    }
+    
+    private void fitToScreen() {
+        SVGElement svg = getSVGElement().cast();
+        final int svgWidth = svg.getParentElement().getOffsetWidth(); 
+        final int svgHeight = svg.getParentElement().getOffsetHeight();
+        
+        ClientRect clientRect = getSVGViewPort().getBoundingClientRect();
+        consoleLog("clientRect.getWidth(): " + clientRect.getWidth());
+        consoleLog("clientRect.getHeight(): " + clientRect.getHeight());
+        
+        final double scale = Math.min(svgWidth/((double)clientRect.getWidth() + 100), svgHeight/((double)clientRect.getHeight() + 100));
+        double translateX = (svgWidth - (clientRect.getWidth() * scale )) / 2;
+        double translateY = (svgHeight - (clientRect.getHeight() * scale)) / 2;
+        
+        consoleLog("translateX: " + translateX);
+        consoleLog("translateY: " + translateY);
+        
+        SVGMatrix transform = svg.createSVGMatrix()
+            .translate(translateX, translateY)
+            .scale(scale);
+                   
+        String transformVal = ((TopologyViewImpl)this).matrixTransform(transform);
+        
+        D3.d3().select(getSVGViewPort()).attr("transform", transformVal);
+        m_presenter.onScaleUpdate(scale);
+        
     }
 
 }
