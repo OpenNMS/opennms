@@ -86,6 +86,24 @@ sub runtime_branch {
 	return $self->get_branch_name('runtime');
 }
 
+sub pristine_revert_tag {
+	my $self    = shift;
+	my $version = shift;
+	if (not defined $version) {
+		croak "You must provide a version when getting revert tag names!";
+	}
+	return $self->get_tag_name('pristine/pre-' . $version);
+}
+
+sub runtime_revert_tag {
+	my $self    = shift;
+	my $version = shift;
+	if (not defined $version) {
+		croak "You must provide a version when getting revert tag names!";
+	}
+	return $self->get_tag_name('runtime/pre-' . $version);
+}
+
 sub existing_version {
 	my $self = shift;
 	my $package = shift;
@@ -158,7 +176,7 @@ sub setup {
 	return ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version);
 }
 
-sub _create_conflicted {
+sub create_conflicted {
 	my $conflicted = File::Spec->catfile($_OPENNMS_HOME, 'etc', 'conflicted');
 	write_file($conflicted, "Failed in $_OPENNMS_HOME\n");
 	return $conflicted;
@@ -166,7 +184,7 @@ sub _create_conflicted {
 
 END {
 	if ($? != 0) {
-		my $conflicted = _create_conflicted();
+		my $conflicted = create_conflicted();
 		print STDERR "ERROR: exiting non-zero. Creating '$conflicted' file.\n";
 	}
 };

@@ -145,6 +145,9 @@ eval {
 };
 ok($@);
 
+ok(!$git->tag_exists('blahtyblah'), 'tag should not exist');
+ok($git->tag_exists('bogus-tag'), 'bogus-tag should exist');
+
 write_file("$testdir/added.txt");
 unlink("$testdir/untracked.txt");
 @changes = $git->get_modifications();

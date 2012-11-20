@@ -496,38 +496,79 @@ Croaks on failure.
 =cut
 
 sub save_changes_compared_to {
-	my $self = shift;
-	my $sha  = shift;
-	my $ext  = shift || '.old';
+	my $self       = shift;
+	my $unmodified = shift;
+	my $ext        = shift;
 
-	if (not defined $sha or $sha eq '') {
+	return $self->save_changes_between('HEAD', $unmodified, $unmodified, $ext);
+}
+
+=head2 * save_changes_between(modified_files, unmodified_files, pristine_files)
+
+For each file that is new or different from the specified SHA, tag, or branch,
+create a copy of the file with the specified extension, and replace the file
+with the version in the pristine_files SHA.
+
+Croaks on failure.
+
+=cut
+
+sub save_changes_between {
+	my $self       = shift;
+	my $modified   = shift;
+	my $unmodified = shift;
+	my $pristine   = shift;
+	my $ext        = shift || '.old';
+
+	if (not defined $pristine or $pristine eq '') {
 		croak "You must specify a git SHA, tag, or branch name!";
 	}
 
-	my @files;
+	my @rename_files;
+	my @replace_files;
 	try {
-		@files = $self->_git()->command('diff', '--name-only', $sha);
+		@rename_files = $self->_git()->command('diff', '--name-only', $unmodified, $modified);
 	} catch Git::Error::Command with {
 		my $E = shift;
-		croak "Failed to run git diff --name-only $sha: " . $E->stringify;
+		croak "Failed to run git diff --name-only $unmodified $modified: " . $E->stringify;
 	};
-	for my $file (@files) {
+	try {
+		@replace_files = $self->_git()->command('diff', '--name-only', $pristine, $modified);
+	} catch Git::Error::Command with {
+		my $E = shift;
+		croak "Failed to run git diff --name-only $pristine $modified: " . $E->stringify;
+	};
+
+#	print STDERR <<END;
+#
+#modified      = $modified
+#unmodified    = $unmodified
+#pristine      = $pristine
+#
+#rename_files  = @rename_files
+#replace_files = @replace_files
+#
+#END
+
+	for my $file (@rename_files) {
 		my $from = File::Spec->catfile($self->dir, $file);
 		my $to   = $from . $ext;
 
 		if (-f $from) {
 			move($from, $to) or croak "Unable to copy $from to $to: $!";
 		}
+	}
+	for my $file (@replace_files) {
 		try {
 			# first, we check if the file is even in the pristine branch
-			my $result = $self->_git()->command('ls-tree', $sha, $file);
+			my $result = $self->_git()->command('ls-tree', $pristine, $file);
 			if ($result !~ /^[\r\n\s]*$/ms) {
 				# if so, check out the pristine version
-				$result = $self->_git()->command('checkout', $sha, $file);
+				$result = $self->_git()->command('checkout', $pristine, $file);
 			}
 		} catch Git::Error::Command with {
 			my $E = shift;
-			croak "Failed to checkout $file from $sha: " . $E->stringify;
+			croak "Failed to checkout $file from $pristine: " . $E->stringify;
 		};
 	}
 	
@@ -555,6 +596,34 @@ sub tag {
 	return $self;
 }
 
+=head2 * tag_exists($tag_name)
+
+Check if a tag with the given name exists.
+
+=cut
+
+sub tag_exists {
+	my $self = shift;
+	my $tag  = shift;
+
+	if (not defined $tag) {
+		croak "You must specify a tag name!";
+	}
+
+	my $result;
+
+	git_cmd_try {
+		$result = $self->_git()->command_oneline('tag', '-l', $tag);
+	} "Error \%d while attempting to list tags: \%s";
+
+
+	if (defined $result) {
+		chomp($result);
+		return ($result eq $tag);
+	}
+
+	return;
+}
 
 1;
 

@@ -42,10 +42,20 @@ if ($mods == 0) {
 	$config->log('(no changes to commit)');
 }
 
+my $revert_tag_runtime = $config->runtime_revert_tag($rpm_version);
+if (not $git->tag_exists($revert_tag_runtime)) {
+	$git->tag($revert_tag_runtime);
+}
+
 $config->log('tagging pre-upgrade');
 $git->tag($config->get_tag_name("pre-$rpm_name-$rpm_version"));
 
 $config->log('checking out ', $config->pristine_branch());
 $git->checkout($config->pristine_branch());
+
+my $revert_tag_pristine = $config->pristine_revert_tag($rpm_version);
+if (not $git->tag_exists($revert_tag_pristine)) {
+	$git->tag($revert_tag_pristine);
+}
 
 exit 0;

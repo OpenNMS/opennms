@@ -59,12 +59,31 @@ if ($@) {
 	$config->log($@);
 	$config->log('reverting to pristine and saving user modifications');
 	$git->reset($config->runtime_branch());
-	$git->save_changes_compared_to($config->pristine_branch());
+
+	my $runtime_branch      = $config->runtime_branch();
+	my $pristine_branch     = $config->pristine_branch();
+	my $compare_from        = $runtime_branch;
+	my $compare_to          = $pristine_branch;
+
+	my $revert_tag_pristine = $config->pristine_revert_tag($rpm_version);
+	my $revert_tag_runtime  = $config->runtime_revert_tag($rpm_version);
+
+	if ($git->tag_exists($revert_tag_pristine)) {
+		$compare_to = $revert_tag_pristine;
+	}
+	if ($git->tag_exists($revert_tag_runtime)) {
+		$compare_from = $revert_tag_runtime;
+	}
+
+	$git->save_changes_between($compare_from, $compare_to, $pristine_branch);
+
 	$config->log('committing pristine changes back to the user branch');
 	my $mods = $git->commit_modifications("Pristine revert for $rpm_name $rpm_version");
 	if ($mods == 0) {
 		$config->log('(no changes to commit)');
 	}
+
+	$config->create_conflicted();
 };
 
 exit 0;

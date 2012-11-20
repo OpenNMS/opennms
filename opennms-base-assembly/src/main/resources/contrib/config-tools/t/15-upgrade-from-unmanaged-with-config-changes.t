@@ -68,6 +68,7 @@ write_file('target/rpmroot/opt/opennms/etc/testfile.conf', 'asdjfkla;sdfjaksldjf
 
 OpenNMS::Config::RPM->install(rpms => [ $init, $rpm105 ], root => "target/rpmroot");
 ok(! -e 'target/rpmroot/opt/opennms/etc/conflicted', 'upgrade - there should be no conflicts or errors');
+ok(! -e 'target/rpmroot/opt/opennms/etc/postinstall-1.0-5.old', 'upgrade - there should be no .old pristine files');
 ok(  -e 'target/rpmroot/opt/opennms/etc/testfile.conf', 'testfile should still exist');
 is(read_file('target/rpmroot/opt/opennms/etc/testfile.conf'), "o-test-feature-a-1.0-5\n\n\n", 'upgrade - testfile.conf should have the pristine contents');
 is(read_file('target/rpmroot/opt/opennms/etc/testfile.conf.old'), 'asdjfkla;sdfjaksldjf', 'upgrade - testfile.conf.old should have the modified contents');

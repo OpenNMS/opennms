@@ -15,7 +15,6 @@ sub build_rpm {
 
 	chomp(my $contents = read_file('MANIFEST'));
 	my @files = split(/[\s]*\n/, $contents);
-	print STDERR "\nfiles = " . join(', ', @files) . "\n";
 	system('tar', '-cvzf', 'target/perlfiles.tar.gz', @files) == 0 or croak "unable to build tarball: $!";
 	$spec->add_source("perlfiles.tar.gz", 'target/perlfiles.tar.gz');
 	return $spec->build(_topdir => $topdir);
@@ -54,8 +53,8 @@ failovermethod=priority
 gpgcheck=0
 END
 
-	system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', '--downloadonly', 'install', 'perl', 'bash', 'coreutils', 'git');
-	system('yum', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', 'install', 'bash', 'coreutils');
+	system('yum', '-v', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', '--downloadonly', 'install', 'perl', 'bash', 'coreutils', 'git');
+	system('yum', '-v', '--installroot=' . $rpmroot, '--nogpgcheck', '-y', 'install', 'bash', 'coreutils');
 
     return ($rpmroot);
 }

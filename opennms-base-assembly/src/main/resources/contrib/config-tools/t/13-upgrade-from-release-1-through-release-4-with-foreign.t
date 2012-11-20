@@ -89,6 +89,5 @@ ok(-e $touchy . '1.0-4.old');
 ok(-e $testfile . '.old');
 ok(-e $b);
 ok(! -e $foreign);
-ok(-e $really_foreign);
-
-
+ok(! -e $really_foreign);
+ok(-e $really_foreign . '.old');
