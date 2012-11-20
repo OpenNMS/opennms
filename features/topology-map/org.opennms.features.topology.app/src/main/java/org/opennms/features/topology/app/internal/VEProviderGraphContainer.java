@@ -259,6 +259,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void redoLayout() {
         s_log.debug("redoLayout()");
+        // Rebuild the graph vertices and edges
+        rebuildGraph();
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(this);
             fireGraphChanged();
