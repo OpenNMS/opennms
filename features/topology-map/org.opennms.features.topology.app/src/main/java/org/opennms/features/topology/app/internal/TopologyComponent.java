@@ -83,6 +83,36 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         
         
     }
+	
+	private class PanToSelectionManager{
+	    
+	    private boolean m_vertexClickCheck = false;
+	    private boolean m_panToSelection = false;
+	    
+	    public PanToSelectionManager() {};
+	    
+	    public void verticesSelectedByMap() {
+	        m_vertexClickCheck = true;
+	    }
+	    
+	    public boolean isPanToSelection() {
+	        return m_panToSelection;
+	    }
+	    
+	    public void setPanToSelection(boolean panTo) {
+	        if(!m_vertexClickCheck) {
+	            m_panToSelection = panTo;
+	        }else {
+	            m_panToSelection = false;
+	        }
+	    }
+
+        public void reset() {
+            m_vertexClickCheck = false;
+            m_panToSelection = false;
+        }
+	    
+	}
     
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
@@ -91,10 +121,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
-    private boolean m_panToSelection = false;
     private boolean m_fitToView = true;
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
+    private PanToSelectionManager m_panToManager = new PanToSelectionManager();
 
 	public TopologyComponent(GraphContainer dataSource, Property scale) {
 		setGraph(dataSource.getGraph());
@@ -143,11 +173,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
         target.addAttribute("activeTool", m_activeTool);
         
-        target.addAttribute("panToSelection", getPanToSelection());
-        if (getPanToSelection()) {
-            
-        }
-        setPanToSelection(false);
+        boolean panToSelection = getPanToSelection();
+        target.addAttribute("panToSelection", panToSelection);
+        m_panToManager.reset();
         
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
@@ -175,12 +203,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         m_fitToView  = fitToView;
     }
 
-    private void setPanToSelection(boolean b) {
-        m_panToSelection  = b;
-    }
-
     private boolean getPanToSelection() {
-        return m_panToSelection;
+        return m_panToManager.isPanToSelection();
     }
 
     /**
@@ -206,16 +230,18 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("clickedVertex")) {
-        	String vertexKey = (String) variables.get("clickedVertex");
+            m_panToManager.verticesSelectedByMap();
+            String vertexKey = (String) variables.get("clickedVertex");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
         	    addVerticesToSelection(vertexKey);
         	}else {
         	    selectVertices(vertexKey);
         	}
-        	
+            
         }
         
         if(variables.containsKey("marqueeSelection")) {
+            m_panToManager.verticesSelectedByMap();
             String[] vertexKeys = (String[]) variables.get("marqueeSelection");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
             	addVerticesToSelection(vertexKeys);
@@ -226,18 +252,20 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("updatedVertex")) {
+            m_panToManager.verticesSelectedByMap();
             String vertexUpdate = (String) variables.get("updatedVertex");
             updateVertex(vertexUpdate);
+            
             
             requestRepaint();
         }
         
         if(variables.containsKey("updateVertices")) {
+            m_panToManager.verticesSelectedByMap();
             String[] vertices = (String[]) variables.get("updateVertices");
             for(String vUpdate : vertices) {
                 updateVertex(vUpdate);
             }
-            
             if(vertices.length > 0) {
                 requestRepaint();
             }
@@ -413,6 +441,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             m_activeTool = toolname;
             requestRepaint();
         }
+    }
+
+    public void setPanToSelection(boolean bool) {
+        m_panToManager.setPanToSelection(bool);
     }
 
 

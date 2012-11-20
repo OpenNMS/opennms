@@ -188,10 +188,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
             
     }
     
-    private final native void consoleLog(Object obj) /*-{
-        $wnd.console.log(obj);
-    }-*/;
-
     void updateScale(double oldScale, double newScale, int cx, int cy) {
         if(oldScale > 0) {
             double zoomFactor = newScale/oldScale;
@@ -273,15 +269,10 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         final int svgHeight = svg.getParentElement().getOffsetHeight();
         
         ClientRect clientRect = getSVGViewPort().getBoundingClientRect();
-        consoleLog("clientRect.getWidth(): " + clientRect.getWidth());
-        consoleLog("clientRect.getHeight(): " + clientRect.getHeight());
         
         final double scale = Math.min(svgWidth/((double)clientRect.getWidth() + 100), svgHeight/((double)clientRect.getHeight() + 100));
         double translateX = (svgWidth - (clientRect.getWidth() * scale )) / 2;
         double translateY = (svgHeight - (clientRect.getHeight() * scale)) / 2;
-        
-        consoleLog("translateX: " + translateX);
-        consoleLog("translateY: " + translateY);
         
         SVGMatrix transform = svg.createSVGMatrix()
             .translate(translateX, translateY)
