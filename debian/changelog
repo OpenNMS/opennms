@@ -22,6 +22,13 @@ opennms (1.11.0-1) unstable; urgency=low
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 11:21:00 -0400
 
+opennms (1.10.7-1) stable; urgency=low
+
+  * New upstream release.  This release has a few bug fixes and enhancements,
+    including support for adding annotations to alarms.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 19 Nov 2012 12:43:00 -0500
+
 opennms (1.10.6-1) stable; urgency=low
 
   * New upstream release.  This release has a few bug fixes and enhancements,

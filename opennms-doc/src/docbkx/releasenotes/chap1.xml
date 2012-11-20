@@ -61,6 +61,18 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.7">
+		<title>Release 1.10.7</title>
+
+		<para>
+			Release 1.10.7 is the latest in the stable series of OpenNMS releases.
+			It contains a number of bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.7 is <emphasis>Buccina</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.10.6">
 		<title>Release 1.10.6</title>
 
