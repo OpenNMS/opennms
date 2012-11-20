@@ -57,6 +57,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -145,8 +146,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.setImmediate(true);
 
 		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");
+		
+		final Label zoomLevelLabel = new Label("0");
+		
 
-		Button zoomInBtn = new Button();
+		final Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
 		zoomInBtn.setDescription("Expand Semantic Zoom Level");
 		zoomInBtn.setStyleName("semantic-zoom-button");
@@ -156,6 +160,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				int szl = (Integer) zoomLevel.getValue();
 				szl++;
 				zoomLevel.setValue(szl);
+				zoomLevelLabel.setValue(szl);
 				m_graphContainer.redoLayout();
 			}
 		});
@@ -168,9 +173,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 			public void buttonClick(ClickEvent event) {
 				int szl = (Integer) zoomLevel.getValue();
-				szl--;
-				zoomLevel.setValue(szl);
-				m_graphContainer.redoLayout();
+				if(szl > 0) {
+				    szl--;
+				    zoomLevel.setValue(szl);
+				    zoomLevelLabel.setValue(szl);
+				    m_graphContainer.redoLayout();
+				} 
+				
 			}
 		});
 		
@@ -209,13 +218,20 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		toolbar.addComponent(panBtn);
 		toolbar.addComponent(selectBtn);
 		
+		HorizontalLayout semanticLayout = new HorizontalLayout();
+		semanticLayout.addComponent(zoomInBtn);
+		semanticLayout.addComponent(zoomLevelLabel);
+		semanticLayout.addComponent(zoomOutBtn);
+		semanticLayout.setComponentAlignment(zoomLevelLabel, Alignment.MIDDLE_CENTER);
+		
 		AbsoluteLayout mapLayout = new AbsoluteLayout();
 
 		mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
 		mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
 		mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
-		mapLayout.addComponent(zoomInBtn, "top: 380px; left: 2px;");
-		mapLayout.addComponent(zoomOutBtn, "top: 380px; left: 27px");
+		mapLayout.addComponent(semanticLayout, "top: 380px; left: 2px;");
+		//mapLayout.addComponent(zoomInBtn, "top: 380px; left: 2px;");
+		//mapLayout.addComponent(zoomOutBtn, "top: 380px; left: 35px");
 		mapLayout.setSizeFull();
 
 		m_treeMapSplitPanel = new HorizontalSplitPanel();
