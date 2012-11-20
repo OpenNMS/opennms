@@ -179,6 +179,35 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.7">
+		<title>Changes in OpenNMS 1.10.7</title>
+
+		<section id="opennms-1.10.7-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Missing IP interfaces in node.jsp list (Issue <ulink url='http://issues.opennms.org/browse/NMS-5261'>NMS-5261</ulink>)</para></listitem>
+				<listitem><para>datacollection stops after making changes in &quot;Schedules Outages&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5491'>NMS-5491</ulink>)</para></listitem>
+				<listitem><para>vague provisiond.log DEBUG verbage (and misspelling)  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5518'>NMS-5518</ulink>)</para></listitem>
+				<listitem><para>DnsDetector logs an error message when attempting to detect the DNS service (Issue <ulink url='http://issues.opennms.org/browse/NMS-5565'>NMS-5565</ulink>)</para></listitem>
+				<listitem><para>verbose messages about old import formats should be removed (Issue <ulink url='http://issues.opennms.org/browse/NMS-5571'>NMS-5571</ulink>)</para></listitem>
+				<listitem><para>Latency thresholding fails for StrafePing, perhaps others when nulls exist in PollStatus properties (Issue <ulink url='http://issues.opennms.org/browse/NMS-5600'>NMS-5600</ulink>)</para></listitem>
+				<listitem><para>Ability to disable the scheduling for rescan existing nodes when Provisiond starts (Issue <ulink url='http://issues.opennms.org/browse/NMS-5622'>NMS-5622</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t hide a single widget from dashboard.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-5638'>NMS-5638</ulink>)</para></listitem>
+				<listitem><para>missing \ in report.mikrotik.temp.command in snmp-graphs.properties (Issue <ulink url='http://issues.opennms.org/browse/NMS-5648'>NMS-5648</ulink>)</para></listitem>
+				<listitem><para>nortel.kerneltasks report uses incorrect column name (Issue <ulink url='http://issues.opennms.org/browse/NMS-5649'>NMS-5649</ulink>)</para></listitem>
+				<listitem><para>typo in property name for novell report (Issue <ulink url='http://issues.opennms.org/browse/NMS-5650'>NMS-5650</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.7-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Allow user documentation on alarms and a class of alarms (Issue <ulink url='http://issues.opennms.org/browse/NMS-5632'>NMS-5632</ulink>)</para></listitem>
+				<listitem><para>Order of threshold groups (Issue <ulink url='http://issues.opennms.org/browse/NMS-5647'>NMS-5647</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.6">
 		<title>Changes in OpenNMS 1.10.6</title>
