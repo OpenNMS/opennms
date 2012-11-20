@@ -66,6 +66,7 @@ public class TopologySelector {
     	@Override
     	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
     		operationContext.getGraphContainer().setDataSource(m_topologyProvider);
+    		operationContext.getGraphContainer().redoLayout();
     		return null;
     	}
 

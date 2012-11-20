@@ -45,6 +45,7 @@
     <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
     <c:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
     <c:param name="breadcrumb" value="Results" />
+    <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
 </c:import>
 
 <div id="graph-results">

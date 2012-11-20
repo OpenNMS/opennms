@@ -45,6 +45,7 @@ public final class FilterHandler
         return this.filter;
     }
 
+    @Override
     public void init()
         throws ServletException
     {
@@ -53,6 +54,7 @@ public final class FilterHandler
         this.filter.init(config);
     }
 
+    @Override
     public void destroy()
     {
         this.filter.destroy();
@@ -90,6 +92,7 @@ public final class FilterHandler
         }
     }
 
+    @Override
     public int compareTo(FilterHandler other)
     {
         return other.ranking - this.ranking;

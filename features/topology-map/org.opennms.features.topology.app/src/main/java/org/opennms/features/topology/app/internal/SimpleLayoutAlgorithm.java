@@ -28,14 +28,11 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.Collection;
-
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

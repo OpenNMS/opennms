@@ -29,11 +29,8 @@
 package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.Collection;
 
-import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;

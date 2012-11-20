@@ -40,8 +40,6 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.Criteria.ElementType;
-import org.opennms.features.topology.plugins.ncs.NCSSelectionTree.NCSSelectionTreeCriteria;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;

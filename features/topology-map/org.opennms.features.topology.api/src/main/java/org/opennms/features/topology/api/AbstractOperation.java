@@ -2,6 +2,7 @@ package org.opennms.features.topology.api;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,13 @@ public abstract class AbstractOperation implements Operation {
     }
 
 	protected static Item getVertexItem(final OperationContext operationContext, final VertexRef target) {
-		return operationContext.getGraphContainer().getVertex(target).getItem();
+		Vertex vertex = operationContext.getGraphContainer().getVertex(target);
+		if (vertex == null) {
+			LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
+			return null;
+		} else {
+			return vertex.getItem();
+		}
 	}
 
     @SuppressWarnings("unchecked")

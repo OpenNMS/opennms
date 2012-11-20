@@ -28,10 +28,9 @@
 package org.opennms.features.topology.app.internal.support;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Dictionary;
-import java.util.Properties;
+import java.util.Hashtable;
 
 import org.junit.Test;
 
@@ -39,7 +38,7 @@ public class IconConfigManagerTest {
 
     @Test
     public void testParseConfig() {
-        Dictionary<Object,Object> props = new Properties();
+        Dictionary<String,Object> props = new Hashtable<String,Object>();
         props.put("type1", "file1.png");
         
         IconRepositoryManager iconManager = new IconRepositoryManager();

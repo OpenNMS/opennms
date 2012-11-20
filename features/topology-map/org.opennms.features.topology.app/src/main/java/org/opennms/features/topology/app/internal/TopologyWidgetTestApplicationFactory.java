@@ -40,6 +40,7 @@ import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.ops4j.pax.vaadin.ScriptTag;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import com.vaadin.Application;
 
@@ -56,7 +57,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
-        LoggerFactory.getLogger(getClass()).debug("created {} for servlet path {}", application, request.getServletPath());
+        LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
         return application;
 	}
 

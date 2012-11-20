@@ -2,7 +2,6 @@ package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.*;
 
-import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Before;

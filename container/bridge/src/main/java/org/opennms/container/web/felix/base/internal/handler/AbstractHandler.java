@@ -16,12 +16,15 @@
  */
 package org.opennms.container.web.felix.base.internal.handler;
 
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.servlet.ServletException;
 
 import org.opennms.container.web.felix.base.internal.context.ExtServletContext;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractHandler
 {
@@ -54,14 +57,14 @@ public abstract class AbstractHandler
         return this.initParams;
     }
 
-    public final void setInitParams(Dictionary map)
+    public final void setInitParams(Dictionary<?,?> map)
     {
         this.initParams.clear();
         if (map == null) {
             return;
         }
 
-        Enumeration e = map.keys();
+        Enumeration<?> e = map.keys();
         while (e.hasMoreElements()) {
             Object key = e.nextElement();
             Object value = map.get(key);

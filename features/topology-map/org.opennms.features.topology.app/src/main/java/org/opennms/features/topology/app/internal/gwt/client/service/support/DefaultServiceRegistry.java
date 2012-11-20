@@ -111,7 +111,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         return findProviders(serviceInterface, null);
     }
     
-    @SuppressWarnings("unused")
+    @SuppressWarnings({ "unchecked" })
     public <T> T cast(Object o, Class<T> c) {
         return (T) o;
     }

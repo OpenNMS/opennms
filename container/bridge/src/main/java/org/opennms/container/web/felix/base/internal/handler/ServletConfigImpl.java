@@ -36,22 +36,26 @@ public final class ServletConfigImpl
         this.initParams = initParams;
     }
 
+    @Override
     public String getServletName()
     {
         return this.name;
     }
 
+    @Override
     public ServletContext getServletContext()
     {
         return this.context;
     }
 
+    @Override
     public String getInitParameter(String name)
     {
         return this.initParams.get(name);
     }
 
-    public Enumeration getInitParameterNames()
+    @Override
+    public Enumeration<String> getInitParameterNames()
     {
         return Collections.enumeration(this.initParams.keySet());
     }
