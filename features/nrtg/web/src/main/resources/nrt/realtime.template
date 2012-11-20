@@ -4,7 +4,7 @@
         <title>NRT graph window</title>
 
         <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=IE8" />
 
         <!-- jquery include -->
         <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
@@ -220,6 +220,7 @@
     </head>
        
     <body>
+
         <div id="main"></div>
         <center>
             <div class="rrdgraph" data-src="realtime=1"></div>
@@ -278,5 +279,22 @@
                 </tr>
             </table>
         </div>
+
+        <!-- chrome frame -->
+        <!--[if IE]>
+            <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+            <div id="prompt"></div>
+            <script>
+                // The conditional ensures that this code will only execute in IE,
+                // Therefore we can use the IE-specific attachEvent without worry
+                window.attachEvent("onload", function() {
+                    CFInstall.check({
+                        mode: "inline", // the default
+                        node: "prompt"
+                    });
+                });
+            </script>
+        <![endif]-->
+
     </body>
 </html>

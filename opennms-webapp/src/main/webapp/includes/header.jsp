@@ -83,6 +83,9 @@
 final String baseHref = Util.calculateUrlBase( request );
 %>
 <c:choose>
+<c:when test="${param.docType == 'html5'}">
+<!DOCTYPE html>
+</c:when>
 <c:when test="${param.docType == 'html'}">
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 </c:when>
