@@ -65,6 +65,7 @@ public class TopologySelector {
 
     	@Override
     	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    		LoggerFactory.getLogger(getClass()).debug("Active provider is: {}" + m_topologyProvider);
     		operationContext.getGraphContainer().setDataSource(m_topologyProvider);
     		operationContext.getGraphContainer().redoLayout();
     		return null;
@@ -88,7 +89,6 @@ public class TopologySelector {
 		@Override
 		public boolean isChecked(List<VertexRef> targets,	OperationContext operationContext) {
 			TopologyProvider activeTopologyProvider = operationContext.getGraphContainer().getDataSource();
-			LoggerFactory.getLogger(getClass()).debug("Active provider is " + activeTopologyProvider + ": Expected " + m_topologyProvider);
 			return m_topologyProvider.equals(activeTopologyProvider);
 		}
     }

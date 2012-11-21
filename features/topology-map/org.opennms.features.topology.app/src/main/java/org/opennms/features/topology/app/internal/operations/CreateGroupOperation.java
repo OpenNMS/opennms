@@ -80,25 +80,21 @@ public class CreateGroupOperation implements Constants, Operation {
 				String groupLabel = (String)getField("Group Label").getValue();
 
 				TopologyProvider topologyProvider = graphContainer.getDataSource();
+				// Add the new group
 				Object groupId = topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
-
-				/*
-				for(Object itemId : targets) {
-					m_topologyProvider.setParent(itemId, groupId);
-				}
-				 */
 
 				Object parentGroup = null;
 				for(Object vertexId : targets) {
 					Object parent = topologyProvider.getVertexContainer().getParent(vertexId);
 					if (parentGroup == null) {
 						parentGroup = parent;
-					} else if (parentGroup != parent) {
+					} else if (!parentGroup.equals(parent)) {
 						parentGroup = ROOT_GROUP_ID;
 					}
 					topologyProvider.setParent(vertexId, groupId);
 				}
 
+				// Set the parent of the new group to the selected top-level parent
 				topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
 
 				// Save the topology
