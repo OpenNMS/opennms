@@ -54,7 +54,9 @@ public class DeleteGroupOperation implements Operation {
 
 		VertexRef parent = targets.get(0);
 		Object parentId = getTopoItemId(graphContainer, parent);
-		if (parentId == null) return null;
+		if (parentId == null) {
+			return null;
+		}
 		
 		Vertex grandParent = graphContainer.getParent(parent);
 		Object grandParentId = getTopoItemId(graphContainer, grandParent);
@@ -68,14 +70,14 @@ public class DeleteGroupOperation implements Operation {
 		}
 
 		// Remove the group from the topology
-		//graphContainer.getVertexContainer().removeItem(parentId);
+		graphContainer.getDataSource().getVertexContainer().removeItem(parentId);
 
 		graphContainer.redoLayout();
 
 		return null;
 	}
 	
-	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
+	private static Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
 		if (vertexRef == null)  return null;
 		Vertex v = graphContainer.getVertex(vertexRef);
 		if (v == null) return null;

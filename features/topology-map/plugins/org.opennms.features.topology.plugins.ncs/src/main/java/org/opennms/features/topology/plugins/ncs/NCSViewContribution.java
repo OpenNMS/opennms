@@ -27,6 +27,7 @@ public class NCSViewContribution implements IViewContribution {
 		
 		Tree tree = new Tree("Services", new FilterableHierarchicalContainer(new NCSServiceContainer(m_ncsComponentRepository)));
 		tree.setMultiSelect(true);
+		tree.setImmediate(true);
 		tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
 		tree.setItemCaptionPropertyId("name");
 		tree.addListener(new ValueChangeListener() {

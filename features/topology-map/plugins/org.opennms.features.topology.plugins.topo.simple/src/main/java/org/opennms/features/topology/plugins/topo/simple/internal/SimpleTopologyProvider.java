@@ -57,6 +57,10 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
+	private static final String SIMPLE_VERTEX_ID_PREFIX = "v";
+	private static final String SIMPLE_EDGE_ID_PREFIX = "e";
+	private static final String SIMPLE_GROUP_ID_PREFIX = "g";
+
     private final SimpleVertexContainer m_vertexContainer;
     private final BeanContainer<String, SimpleEdge> m_edgeContainer;
     private int m_counter = 0;
@@ -299,6 +303,15 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
         
         m_vertexContainer.removeAllItems();
+        for (SimpleVertex vertex : graph.m_vertices) {
+            if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
+                // Find the highest index group number and start the index for new groups above it
+                int groupNumber = Integer.parseInt(vertex.getId().substring(SIMPLE_GROUP_ID_PREFIX.length()));
+                if (m_groupCounter <= groupNumber) {
+                    m_groupCounter = groupNumber + 1;
+                }
+            }
+        }
         m_vertexContainer.addAll(graph.m_vertices);
         
         m_edgeContainer.removeAllItems();
@@ -316,16 +329,16 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return beans;
     }
 
-    public String getNextVertexId() {
-        return "v" + m_counter++;
+    private String getNextVertexId() {
+        return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
     }
 
-    public String getNextEdgeId() {
-        return "e" + m_edgeCounter ++;
+    private String getNextEdgeId() {
+        return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter ++;
     }
     
-    public String getNextGroupId() {
-        return "g" + m_groupCounter++;
+    private String getNextGroupId() {
+        return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
     }
 
     /* (non-Javadoc)

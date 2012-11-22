@@ -60,11 +60,12 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class LinkdTopologyProvider implements TopologyProvider {
+    private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
     
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
-    private static final String HTML_TOOLTIP_TAG_END  = "";
+    private static final String HTML_TOOLTIP_TAG_END  = "</p>";
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
@@ -188,7 +189,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     public String getNextGroupId() {
-        return "linkdg" + m_groupCounter++;
+        return LINKD_GROUP_ID_PREFIX + m_groupCounter++;
     }
 
     
@@ -396,12 +397,16 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
         if (configFile.exists() && configFile.canRead()) {
             log("loadtopology: loading topology from configuration file: " + m_configurationFile);
-            m_groupCounter=0;
+            m_groupCounter = 0;
             SimpleGraph graph = getGraphFromFile(configFile);
             for (LinkdVertex vertex: graph.m_vertices) {
                 if (!vertex.isLeaf()) {
                     log("loadtopology: adding group to topology: " + vertex.getId());
-                    m_groupCounter++;
+                    // Find the highest index group number and start the index for new groups above it
+                    int groupNumber = Integer.parseInt(vertex.getId().substring(LINKD_GROUP_ID_PREFIX.length()));
+                    if (m_groupCounter <= groupNumber) {
+                        m_groupCounter = groupNumber + 1;
+                    }
                     addGroup(vertex.getId(), vertex.getIconKey(), vertex.getLabel());
                 }
             }
@@ -454,9 +459,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
         if (sourceInterface != null && targetInterface != null
          && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress() 
          && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText+= "Type of the Link: Layer3/Layer2";
+            tooltipText+= "Type of Link: Layer3/Layer2";
         } else {
-            tooltipText+= "Type of the Link: Layer2";            
+            tooltipText+= "Type of Link: Layer2";
         }
         tooltipText +=HTML_TOOLTIP_TAG_END;
 
@@ -495,11 +500,11 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
 
         tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "EndPoint1: " + source.getLabel() + ", " + source.getIpAddr();
+        tooltipText += "End Point 1: " + source.getLabel() + ", " + source.getIpAddr();
         tooltipText +=HTML_TOOLTIP_TAG_END;
         
         tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "EndPoint2: " + target.getLabel() + ", " + target.getIpAddr();
+        tooltipText += "End Point 2: " + target.getLabel() + ", " + target.getIpAddr();
         tooltipText +=HTML_TOOLTIP_TAG_END;
 
         log("getEdgeTooltipText\n" + tooltipText);
@@ -514,7 +519,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             tooltipText +=HTML_TOOLTIP_TAG_END;
         }
         tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Mngt ip: " + vertex.getIpAddr();
+        tooltipText += "Management IP: " + vertex.getIpAddr();
         tooltipText +=HTML_TOOLTIP_TAG_END;
         
         tooltipText +=HTML_TOOLTIP_TAG_OPEN;
@@ -532,7 +537,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         if (ip != null && ip.isManaged()) {
             tooltipText += "/Managed";
         } else {
-            tooltipText += "/UnManaged";
+            tooltipText += "/Unmanaged";
         }
         tooltipText +=HTML_TOOLTIP_TAG_END;
 
@@ -572,7 +577,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     @Override
     public void setParent(Object vertexId, Object parentId) {
         boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
-        log("setParent for vertex:" + vertexId + " parent: " + parentId + ": "+ addedparent);
+        log("setParent() for vertex: " + vertexId + ", parent: " + parentId + ", result: " + (addedparent ? "SUCCESS" : "FAILED"));
     }
     
       private static String getIfStatusString(int ifStatusNum) {
