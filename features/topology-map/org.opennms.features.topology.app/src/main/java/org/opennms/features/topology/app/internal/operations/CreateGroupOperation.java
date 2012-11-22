@@ -35,8 +35,11 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -84,7 +87,8 @@ public class CreateGroupOperation implements Constants, Operation {
 				Object groupId = topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
 
 				Object parentGroup = null;
-				for(Object vertexId : targets) {
+				for(VertexRef vertexRef : targets) {
+					Object vertexId = getTopoItemId(graphContainer, vertexRef);
 					Object parent = topologyProvider.getVertexContainer().getParent(vertexId);
 					if (parentGroup == null) {
 						parentGroup = parent;
@@ -155,4 +159,16 @@ public class CreateGroupOperation implements Constants, Operation {
 	public String getId() {
 		return null;
 	}
+	
+	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
+		if (vertexRef == null)  return null;
+		Vertex v = graphContainer.getVertex(vertexRef);
+		if (v == null) return null;
+		Item item = v.getItem();
+		if (item == null) return null;
+		Property property = item.getItemProperty("itemId");
+		return property == null ? null : property.getValue();
+	}
+
+
 }
