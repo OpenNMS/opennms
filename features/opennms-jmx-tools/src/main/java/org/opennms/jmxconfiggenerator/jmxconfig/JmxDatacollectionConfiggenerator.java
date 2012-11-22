@@ -39,6 +39,7 @@ import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.management.remote.rmi.RMIConnector;
 import javax.xml.bind.JAXB;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.jmxconfiggenerator.helper.NameTools;
@@ -190,19 +191,23 @@ public class JmxDatacollectionConfiggenerator {
     }
 
     public MBeanServerConnection createMBeanServerConnection(String hostName, String port, String username, String password, Boolean ssl, Boolean jmxmp) throws MalformedURLException, IOException {
-        JMXConnector jmxConnector = getJmxConnector(hostName, port, username, password, ssl, jmxmp);
+		JMXServiceURL jmxServiceURL = getJmxServiceURL(jmxmp, hostName, port);
+		JMXConnector jmxConnector = getJmxConnector(username, password, jmxServiceURL);
         MBeanServerConnection jmxServerConnection = jmxConnector.getMBeanServerConnection();
         logger.debug("jmxServerConnection: '{}'", jmxServerConnection);
         logger.debug("count: " + jmxServerConnection.getMBeanCount());
         return jmxServerConnection;
     }
+    
 
-    //TODO
-    public JMXConnector getJmxConnector(String hostName, String port, String username, String password, Boolean ssl, Boolean jmxmp) throws MalformedURLException, IOException {
-        JMXServiceURL jmxServiceURL = getJmxServiceURL(jmxmp, hostName, port);
-        JMXConnector jmxConnector = getJmxConnector(username, password, jmxServiceURL);
-        return jmxConnector;
-    }
+	public MBeanServerConnection createMBeanServerConnection(String url, String username, String password) throws IOException {
+		JMXServiceURL jmxServiceURL = new JMXServiceURL(url);
+		JMXConnector jmxConnector = getJmxConnector(username, password, jmxServiceURL);
+		MBeanServerConnection jmxServerConnection = jmxConnector.getMBeanServerConnection();
+		logger.debug("jmxServerConnection: '{}'", jmxServerConnection);
+		logger.debug("count: " + jmxServerConnection.getMBeanCount());
+		return jmxServerConnection;
+	}
 
     /**
      * This method gets the JmxConnector to connect with the given jmxServiceURL.
@@ -215,16 +220,16 @@ public class JmxDatacollectionConfiggenerator {
      */
     private JMXConnector getJmxConnector(String username, String password, JMXServiceURL jmxServiceURL) throws IOException {
         JMXConnector jmxConnector;
+        HashMap<String, String[]> env = new HashMap<String, String[]>();
+        
         if (username != null && password != null) {
-            jmxConnector = JMXConnectorFactory.newJMXConnector(jmxServiceURL, null);
-            HashMap<String, String[]> env = new HashMap<String, String[]>();
             String[] credentials = new String[]{username, password};
             env.put("jmx.remote.credentials", credentials);
-            jmxConnector.connect(env);
-        } else {
-            jmxConnector = JMXConnectorFactory.connect(jmxServiceURL);
-            jmxConnector.connect();
         }
+        
+        jmxConnector = JMXConnectorFactory.connect(jmxServiceURL, env);
+        jmxConnector.connect();
+        
         return jmxConnector;
     }
 
@@ -329,4 +334,5 @@ public class JmxDatacollectionConfiggenerator {
         }
         return uniceAlias;
     }
+
 }

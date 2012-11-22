@@ -93,6 +93,9 @@ public class Starter {
 
     @Option(name = "-dictionary", usage = "Dictionary properties file for replacing attribute names and parts of this names")
     private String dictionaryFile;
+    
+    @Option(name = "-url", usage = "JMX URL Usage: <hostname>:<port> OR service:jmx:<protocol>:<sap>")
+    private String url;
 
     public static void main(String[] args) throws IOException {
         new Starter().doMain(args);
@@ -123,6 +126,17 @@ public class Starter {
                 jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
                 return;
             }
+            if (jmx && url != null && outFile != null) {
+                NameTools.loadInternalDictionary();
+                if (dictionaryFile != null) {
+                    NameTools.loadExtermalDictionary(dictionaryFile);
+                }
+                JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
+                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(url, username, password);
+                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans);
+                jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
+                return;
+            }
             if (graph && inputFile != null && outFile != null) {
                 JmxConfigReader jmxToSnmpGraphConfigGen = new JmxConfigReader();
                 Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig(inputFile);
@@ -142,7 +156,7 @@ public class Starter {
             }
             throw new CmdLineException(parser, "no valid call found.");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
             System.err.println("JmxConfigGenerator [options...] arguments...");
             parser.printUsage(System.err);
             System.err.println();
