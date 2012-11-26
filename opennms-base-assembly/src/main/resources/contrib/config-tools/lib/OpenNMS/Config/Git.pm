@@ -415,6 +415,22 @@ sub checkout {
 	return $self;
 }
 
+=head2 * get_conflicts()
+
+Get the list files in the current working tree that are in conflict.
+
+=cut
+
+sub get_conflicts {
+	my $self = shift;
+
+	my @list;
+	git_cmd_try {
+		@list = $self->_git()->command('diff', '--name-only', '--diff-filter=U');
+	} "Error \%d while attempting to list conflicted files: \%s";
+	
+	return @list;
+}
 =head2 * merge($branch_name)
 
 Merge the given branch into the current branch.

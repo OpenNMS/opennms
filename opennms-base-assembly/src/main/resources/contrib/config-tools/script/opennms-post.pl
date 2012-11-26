@@ -57,6 +57,11 @@ eval {
 };
 if ($@) {
 	$config->log($@);
+	$config->log('The following files are in conflict:');
+	for my $file ($git->get_conflicts()) {
+		$config->log('  ' . $file);
+	}
+	$config->log('');
 	$config->log('reverting to pristine and saving user modifications');
 	$git->reset($config->runtime_branch());
 
