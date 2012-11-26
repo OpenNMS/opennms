@@ -699,6 +699,20 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			}
 		}
+		
+		JsArray<GWTEdge> edges = graph.getEdges();
+        for( int i = 0; i < edges.length(); i++) {
+		    if(i != 0) {
+		        GWTEdge edge1 = edges.get(i-1);
+		        GWTEdge edge2 = edges.get(i);
+		        
+		        if(edge1.getSource() == edge2.getSource() && edge1.getTarget() == edge2.getTarget()) {
+		            edge2.setLinkNum(edge1.getLinkNum() + 1);
+		        }else {
+		            edge2.setLinkNum(1);
+		        }
+		    }
+		}
 
 		setGraph(graph);
 		
