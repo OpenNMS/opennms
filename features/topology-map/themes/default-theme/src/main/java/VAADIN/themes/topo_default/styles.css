@@ -1,9 +1,21 @@
 @CHARSET "UTF-8";
 @import "../reindeer/styles.css";
 
+/*** Vertex Styles ***/
 .vertex:hover{
 	opacity: 0.8;
 }
+
+.vertex.selected .highlight{
+	opacity: 1;
+}
+
+.vertex .highlight{
+	opacity: 0;
+	fill: yellow;
+}
+
+/*** End Vertex Styles***/
 
 .toolbar-button{
 	
