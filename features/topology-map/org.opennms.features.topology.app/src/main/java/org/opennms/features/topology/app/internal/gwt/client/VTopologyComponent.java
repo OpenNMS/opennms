@@ -907,8 +907,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
     
     @Override
-    public void onMouseWheel() {
-        // TODO Auto-generated method stub
+    public void onMouseWheel(double newScale, int clientX, int clientY) {
+        m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
+        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
+        m_client.updateVariable(m_paintableId, "clientY", clientY, false);
+        
+        m_client.sendPendingVariableChanges();
         
     }
     

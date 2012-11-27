@@ -316,7 +316,7 @@ public class GWTVertex extends JavaScriptObject {
                 	.attr("height", "48px");
                 
                 circleSelection.attr("class", "highlight")
-                    .attr("fill", "yellow")
+                    .attr("fill", "#00ffff")
                     .attr("x", -(width/2 + 2) + "px")
                     .attr("y", -(height/2 + 2) + "px")
                     .attr("r", ((width + 10)/2) + "px" )
