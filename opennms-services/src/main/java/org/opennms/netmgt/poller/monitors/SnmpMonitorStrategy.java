@@ -61,6 +61,7 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
     /** Constant <code>MATCHES="~"</code> */
     protected static final String MATCHES = "~";
     
+    boolean hex = false;
     /*
      * TODO: Use it or loose it.
      * Commented out because it is not currently used in this monitor
@@ -87,7 +88,11 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
         retVal = isCriteriaNull(result, operator, operand);
         
         if (retVal == null) {
-            String value = result.toString();
+        	String value = null;
+        	if (hex)
+        		value = result.toHexString();
+        	else
+        		value = result.toDisplayString();
             retVal = checkStringCriteria(operator, operand, value);
             
             if (retVal == null) {
