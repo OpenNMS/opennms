@@ -6,13 +6,13 @@
 	opacity: 0.8;
 }
 
-.vertex.selected .highlight{
-	opacity: 1;
-}
-
 .vertex .highlight{
 	opacity: 0;
 	fill: yellow;
+}
+
+.vertex.selected .highlight{
+    opacity: 1;
 }
 
 /*** End Vertex Styles***/
@@ -54,7 +54,7 @@ div.v-button-down .v-button-wrap{
 }
 
 .edge.ncs {
-	stroke: #b80404;
+	stroke: #4D6C80;
 }
 
 .edge.ncs.selected {

@@ -286,6 +286,8 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
+                int width = 60;
+                int height = 60;
                 D3 vertex = selection.append("g").attr("class", "vertex");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
@@ -298,13 +300,34 @@ public class GWTVertex extends JavaScriptObject {
                 D3 imageSelection = vertex.append("svg:image");
                 D3 textSelection = vertex.append("text");
                 
-                imageSelection.attr("xlink:href", loadIconAndSize(bgImage, imageSelection, circleSelection, textSelection));
+                //imageSelection.attr("xlink:href", loadIconAndSize(bgImage, imageSelection, circleSelection, textSelection));
                 
-//                imageSelection.attr("xlink:href", iconUrl())
-//                	.attr("x", "-24px")
-//                	.attr("y", "-24px")
-//                	.attr("width", "48px")
-//                	.attr("height", "48px");
+                
+                int length = (Math.max(width, height) + 10);
+                bgImage.attr("width", length +"px")
+                    .attr("height", length + "px")
+                    .attr("x", "-" + Math.round(length/2))
+                    .attr("y", "-" + Math.round(length/2));
+                
+                imageSelection.attr("xlink:href", iconUrl())
+                	.attr("x", "-24px")
+                	.attr("y", "-24px")
+                	.attr("width", "48px")
+                	.attr("height", "48px");
+                
+                circleSelection.attr("class", "highlight")
+                    .attr("fill", "yellow")
+                    .attr("x", -(width/2 + 2) + "px")
+                    .attr("y", -(height/2 + 2) + "px")
+                    .attr("r", ((width + 10)/2) + "px" )
+                    .attr("opacity", "0");
+                
+                textSelection.text(label())
+                    .attr("class", "vertex-label")
+                    .attr("x", "0px")
+                    .attr("y",  "" + (height/2 + 5) + "px")
+                    .attr("text-anchor", "middle")
+                    .attr("alignment-baseline", "text-before-edge");
 
                 vertex.call(draw());
                 
