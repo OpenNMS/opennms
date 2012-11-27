@@ -39,7 +39,6 @@ import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -52,11 +51,16 @@ import com.vaadin.data.util.BeanItem;
 
 public class NCSEdgeProvider implements EdgeProvider {
 
-	public class NCSEdge implements Edge {
-		private NCSConnector m_source;
-		private NCSConnector m_target;
+	private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
+	private static final String HTML_TOOLTIP_TAG_END  = "</p>";
 
-		public NCSEdge (NCSVertex source, NCSVertex target) {
+	public static class NCSEdge implements Edge {
+		private final String m_serviceName;
+		private final NCSConnector m_source;
+		private final NCSConnector m_target;
+
+		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
+			m_serviceName = serviceName;
 			m_source = new NCSConnector(this, source);
 			m_target = new NCSConnector(this, target);
 		}
@@ -88,7 +92,21 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 		@Override
 		public String getTooltipText() {
-			return getLabel()	;
+			StringBuffer toolTip = new StringBuffer();
+
+			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
+			toolTip.append("Service: " + m_serviceName);
+			toolTip.append(HTML_TOOLTIP_TAG_END);
+
+			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
+			toolTip.append("Source: " + m_source.getVertex().getLabel());
+			toolTip.append(HTML_TOOLTIP_TAG_END);
+
+			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
+			toolTip.append("Target: " + m_target.getVertex().getLabel());
+			toolTip.append(HTML_TOOLTIP_TAG_END);
+
+			return toolTip.toString();
 		}
 
 		@Override
@@ -124,7 +142,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 		}
 
 		@Override
-		public VertexRef getVertex() {
+		public NCSVertex getVertex() {
 			return m_vertex;
 		}
 
@@ -267,7 +285,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 								continue;
 							}
 						}
-						retval.add(new NCSEdge(new NCSVertex(String.valueOf(sourceNode.getId())), new NCSVertex(String.valueOf(targetNode.getId()))));
+						retval.add(new NCSEdge(service.getName(), new NCSVertex(String.valueOf(sourceNode.getId())), new NCSVertex(String.valueOf(targetNode.getId()))));
 					}
 				}
 			}
