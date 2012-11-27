@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
 	String m_iconKey;
 	String m_label;
 	String m_ipAddr;
-        String m_tooltipText;
+	String m_tooltipText;
 	LinkdGroup m_parent = null;
 	List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
 	private int m_semanticZoomLevel = -1;
