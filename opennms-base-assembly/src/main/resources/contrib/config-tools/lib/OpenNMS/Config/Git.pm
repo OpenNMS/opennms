@@ -570,7 +570,7 @@ sub save_changes_between {
 		my $from = File::Spec->catfile($self->dir, $file);
 		my $to   = $from . $ext;
 
-		if (-f $from) {
+		if ($from !~ /\b(java|opennms)\.conf$/ and -f $from) {
 			move($from, $to) or croak "Unable to copy $from to $to: $!";
 		}
 	}
