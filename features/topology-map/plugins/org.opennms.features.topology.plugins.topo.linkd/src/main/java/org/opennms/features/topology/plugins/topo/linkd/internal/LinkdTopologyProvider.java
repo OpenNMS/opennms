@@ -513,17 +513,19 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     private String getNodeTooltipText(OnmsNode node, LinkdVertex vertex, OnmsIpInterface ip) {
         String tooltipText="";
-        if (node.getSysDescription() != null && node.getSysDescription().length() >0) {
-            tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-            tooltipText +="Description: " + node.getSysDescription();
-            tooltipText +=HTML_TOOLTIP_TAG_END;
-        }
+
+//        if (node.getSysDescription() != null && node.getSysDescription().length() >0) {
+//            tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+//            tooltipText +="Description: " + node.getSysDescription();
+//            tooltipText +=HTML_TOOLTIP_TAG_END;
+//        }
+
         tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Management IP: " + vertex.getIpAddr();
+        tooltipText += "Name: " + vertex.getLabel();
         tooltipText +=HTML_TOOLTIP_TAG_END;
         
         tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Name: " + vertex.getLabel();
+        tooltipText += "Management IP: " + vertex.getIpAddr();
         tooltipText +=HTML_TOOLTIP_TAG_END;
         
         if (node.getSysLocation() != null && node.getSysLocation().length() >0) {
