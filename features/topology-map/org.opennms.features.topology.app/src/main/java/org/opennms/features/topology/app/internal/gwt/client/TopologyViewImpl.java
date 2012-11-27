@@ -13,15 +13,18 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
@@ -148,22 +151,19 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 final int clientX = event.getClientX();
                 final int clientY = event.getClientY();
                 //broken now need to fix it
-                //          Command cmd = new Command() {
-                //                
-                //                public void execute() {
-                //                    m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
-                //                    m_client.updateVariable(m_paintableId, "clientX", clientX, false);
-                //                    m_client.updateVariable(m_paintableId, "clientY", clientY, false);
-                //                    
-                //                    m_client.sendPendingVariableChanges();
-                //                }
-                //            };
-                //            
-                //            if(BrowserInfo.get().isWebkit()) {
-                //                Scheduler.get().scheduleDeferred(cmd);
-                //            }else {
-                //                cmd.execute();
-                //            }
+                  Command cmd = new Command() {
+                        
+                        public void execute() {
+                            
+                            //m_presenter.onMouseWheel(newScale, clientX, clientY);
+                        }
+                    };
+                    
+                    if(BrowserInfo.get().isWebkit()) {
+                        Scheduler.get().scheduleDeferred(cmd);
+                    }else {
+                        cmd.execute();
+                    }
     
                 break;
                 

@@ -15,7 +15,7 @@ public interface TopologyView<T> {
         void addGraphUpdateListener(GraphUpdateListener listener);
         T getViewRenderer();
         void onContextMenu(Object element, int x, int y, String type);
-        void onMouseWheel();
+        void onMouseWheel(double newScale, int clientX, int clientY);
         void onBackgroundClick();
         void onScaleUpdate(double scale);
     }
