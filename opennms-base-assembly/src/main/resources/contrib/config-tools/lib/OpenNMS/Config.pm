@@ -168,12 +168,13 @@ sub setup {
 	system("rpm --verify $rpm_name | grep $etcdir");
 	print STDERR "=" x 80, "\n";
 
-	my $conflicted = File::Spec->catfile($etcdir, 'conflicted');
-	if (-e $conflicted) {
-		croak "\nERROR: found a $conflicted file, bailing.\n\n";
-	}
-
 	return ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version);
+}
+
+sub is_conflicted {
+	my $self = shift;
+	my $conflicted = File::Spec->catfile($self->etc_dir(), 'conflicted');
+	return (-e $conflicted);
 }
 
 sub create_conflicted {

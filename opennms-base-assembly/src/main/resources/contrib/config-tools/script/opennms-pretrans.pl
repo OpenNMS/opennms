@@ -33,7 +33,11 @@ if ($current_branch eq $config->pristine_branch()) {
 }
 
 if ($current_branch ne $config->runtime_branch()) {
-	croak "Expected " . $config->runtime_branch() . ' branch, but current branch is ' . $current_branch . '. Bailing.';
+	croak "Expected " . $config->runtime_branch() . ' branch, but current branch is ' . $current_branch . '.  Bailing.';
+}
+
+if ($config->is_conflicted() and $git->get_modifications() > 0) {
+	croak "We are in a conflicted mode, but there are uncommitted modifications.  Bailing.";
 }
 
 $config->log('committing user modifications (', $rpm_name, '-', $version, ')');
