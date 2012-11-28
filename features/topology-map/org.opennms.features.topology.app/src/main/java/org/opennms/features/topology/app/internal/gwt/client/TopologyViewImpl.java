@@ -135,9 +135,9 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 
                 if (target.equals( getSVGElement() )) {
                     m_presenter.onContextMenu(null, event.getClientX(), event.getClientY(), "map");
-                    event.preventDefault();
-                    event.stopPropagation();
                 }
+                event.preventDefault();
+                event.stopPropagation();
                 break;
                 
             case Event.ONMOUSEDOWN:
@@ -171,6 +171,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 if(event.getEventTarget().equals(getSVGElement())) {
                     m_presenter.onBackgroundClick();
                 }
+                event.preventDefault();
+                event.stopPropagation();
                 break;
         }
 
