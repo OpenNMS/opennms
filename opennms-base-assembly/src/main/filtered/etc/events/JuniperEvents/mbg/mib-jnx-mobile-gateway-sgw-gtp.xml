@@ -45,7 +45,10 @@ goes down.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwGtpPeerName=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwGtpPeerGwUpNotif</uei>
@@ -92,7 +95,10 @@ or an existing peer goes down and comes back up.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwGtpPeerName=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwGtpPeerGwDnNotif:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwGtpPeerGwDnNotif:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwGtpPrDnTPerPrAlrmActv</uei>
@@ -145,7 +151,10 @@ monitor interval.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwGtpAlarmStatCounter=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwGtpPrDnTPerPrAlrmClr</uei>
@@ -198,7 +207,10 @@ the lower threshold.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwGtpAlarmStatCounter=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwGtpPrDnTPerPrAlrmActv:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwGtpPrDnTPerPrAlrmActv:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-SGW-GTP-MIB -->

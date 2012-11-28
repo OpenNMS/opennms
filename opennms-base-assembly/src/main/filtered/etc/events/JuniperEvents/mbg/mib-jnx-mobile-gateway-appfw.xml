@@ -49,7 +49,10 @@ mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewGatewayMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwGatewayMMStateChange</uei>
@@ -100,7 +103,10 @@ mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewGatewayMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwGatewayMMStateChange</uei>
@@ -151,7 +157,64 @@ mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewGatewayMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwGatewayMMStateChange</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwGatewayMMStateChange</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification indicates that the Gateway identified by
+jnxMbgPgwGatewayName undergoes a change in the maintenance 
+mode state.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwMMGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwPrevGatewayMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwNewGatewayMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwGatewayMMStateChange trap received 
+				jnxMbgPgwMMGatewayName=%parm[#1]% 
+				jnxMbgPgwPrevGatewayMMState=%parm[#2]% 
+				jnxMbgPgwNewGatewayMMState=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwGatewayMMStateChange</uei>
@@ -202,7 +265,10 @@ mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewGatewayMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwGatewayMMStateChange</uei>
@@ -253,7 +319,10 @@ mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewGatewayMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwGatewayMMStateChange:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwGatewayMMStateChange:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange</uei>
@@ -309,7 +378,10 @@ a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewAPNMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange</uei>
@@ -365,7 +437,10 @@ a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewAPNMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange</uei>
@@ -421,7 +496,69 @@ a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewAPNMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwAPNMMStateChange</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification indicates that the APN identified by 
+jnxMbgPgwAPNMMGatewayName and jnxMbgPgwAPNMMAPNName undergoes 
+a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwAPNMMGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwAPNMMAPNName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwPrevAPNMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwNewAPNMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwAPNMMStateChange trap received 
+				jnxMbgPgwAPNMMGatewayName=%parm[#1]% 
+				jnxMbgPgwAPNMMAPNName=%parm[#2]% 
+				jnxMbgPgwPrevAPNMMState=%parm[#3]% 
+				jnxMbgPgwNewAPNMMState=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange</uei>
@@ -477,7 +614,10 @@ a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewAPNMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwAPNMMStateChange</uei>
@@ -533,7 +673,10 @@ a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwNewAPNMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNMMStateChange:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMGtpEvntNotif</uei>
@@ -579,7 +722,10 @@ a change in the maintenance mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwSMGTPEventCause=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThreshStatus</uei>
@@ -617,7 +763,10 @@ notifying gateway.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThreshStatus</uei>
@@ -655,7 +804,10 @@ notifying gateway.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwQosCPUThreshStatus</uei>
@@ -693,7 +845,10 @@ notifying gateway.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThreshStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThreshStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThreshStatus</uei>
@@ -731,7 +886,10 @@ notifying gateway.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThreshStatus</uei>
@@ -769,7 +927,10 @@ notifying gateway.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwQosMemThreshStatus</uei>
@@ -807,7 +968,10 @@ notifying gateway.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThreshStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThreshStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBrThreshStatus</uei>
@@ -845,7 +1009,10 @@ identifies the notifying gateway&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBrThreshStatus</uei>
@@ -883,7 +1050,10 @@ identifies the notifying gateway&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwQosBrThreshStatus</uei>
@@ -921,7 +1091,726 @@ identifies the notifying gateway&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBrThreshStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBrThreshStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBearersThresStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosBearersThresStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured thresholds
+for bearers at gateway level are reached. The gateway name
+identifies the notifying gateway name and the next two
+fields would indicate the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosBearersThresStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBearersThresStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosBearersThresStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured thresholds
+for bearers at gateway level are reached. The gateway name
+identifies the notifying gateway name and the next two
+fields would indicate the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosBearersThresStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwQosBearersThresStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosBearersThresStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured thresholds
+for bearers at gateway level are reached. The gateway name
+identifies the notifying gateway name and the next two
+fields would indicate the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosBearersThresStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosBearersThresStatus:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThresholdStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosCPUThresholdStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured thresholds
+for CPU have been reached. The gateway name identifies the
+notifying gateway and the next two fields would indicate
+the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosCPUThresholdStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Critical</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThresholdStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosCPUThresholdStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured thresholds
+for CPU have been reached. The gateway name identifies the
+notifying gateway and the next two fields would indicate
+the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosCPUThresholdStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwQosCPUThresholdStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosCPUThresholdStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured thresholds
+for CPU have been reached. The gateway name identifies the
+notifying gateway and the next two fields would indicate
+the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosCPUThresholdStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosCPUThresholdStatus:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThresholdStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosMemThresholdStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification indicates whether the configured thresholds
+for Memory have been reached. The gateway name identifies the
+notifying gateway name and the next two fields would indicate
+the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosMemThresholdStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Critical</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThresholdStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosMemThresholdStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification indicates whether the configured thresholds
+for Memory have been reached. The gateway name identifies the
+notifying gateway name and the next two fields would indicate
+the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosMemThresholdStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwQosMemThresholdStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwQosMemThresholdStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification indicates whether the configured thresholds
+for Memory have been reached. The gateway name identifies the
+notifying gateway name and the next two fields would indicate
+the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwQosMemThresholdStatus trap received 
+				jnxMbgPgwGatewayName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwQosMemThresholdStatus:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNQosBearersThreStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwAPNQosBearersThreStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured APN thresholds
+for bearers have been reached. The APN Name identifies for
+which APN the thresholds are being reported and the next two
+fields would indicate the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosAPNName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwAPNQosBearersThreStatus trap received 
+				jnxMbgPgwQosAPNName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNQosBearersThreStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwAPNQosBearersThreStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured APN thresholds
+for bearers have been reached. The APN Name identifies for
+which APN the thresholds are being reported and the next two
+fields would indicate the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosAPNName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwAPNQosBearersThreStatus trap received 
+				jnxMbgPgwQosAPNName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwAPNQosBearersThreStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwAPNQosBearersThreStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the configured APN thresholds
+for bearers have been reached. The APN Name identifies for
+which APN the thresholds are being reported and the next two
+fields would indicate the Thresholds.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosAPNName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold1Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwQosThreshold2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			true(1)
+			false(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwAPNQosBearersThreStatus trap received 
+				jnxMbgPgwQosAPNName=%parm[#1]% 
+				jnxMbgPgwQosThreshold1Status=%parm[#2]% 
+				jnxMbgPgwQosThreshold2Status=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwAPNQosBearersThreStatus:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMGtpEventNotif</uei>
@@ -957,7 +1846,325 @@ identifies the notifying gateway&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwSMGTPEventCause=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMSubscribersThresGblNotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMSubscribersThresGblNotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Subscriber Threshold Global.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMSubscribersThresGblNotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMSubscribersThresPerSPNotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMSubscribersThresPerSPNotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Subscriber Threshold Per SPIC.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMSPICName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMSubscribersThresPerSPNotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]% 
+				jnxMbgPgwSMSPICName=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMSessionEstFailThresPerSPNotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMSessionEstFailThresPerSPNotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Session Establishment Failure Threshold.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMSessionEstFailReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMSPICName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMSessionEstFailThresPerSPNotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]% 
+				jnxMbgPgwSMSessionEstFailReason=%parm[#3]% 
+				jnxMbgPgwSMSPICName=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMSessionEstFailThresPerTCNotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMSessionEstFailThresPerTCNotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Session Establishment Failure Threshold 
+Per Traffic Class (GTPv1).&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMSessionEstFailReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMTCName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMSessionEstFailThresPerTCNotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]% 
+				jnxMbgPgwSMSessionEstFailReason=%parm[#3]% 
+				jnxMbgPgwSMTCName=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMSessionEstFailThresPerQCINotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMSessionEstFailThresPerQCINotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Session Establishment Failure Threshold 
+per QoS Class Identifier.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMSessionEstFailReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMQCIName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMSessionEstFailThresPerQCINotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]% 
+				jnxMbgPgwSMSessionEstFailReason=%parm[#3]% 
+				jnxMbgPgwSMQCIName=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMBearersThresGblNotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMBearersThresGblNotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Bearer Threshold Global.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMBearersThresGblNotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwSMBearersThresPerSPNotif</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-MIB defined trap event: jnxMbgPgwSMBearersThresPerSPNotif</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;Bearer Threshold Per SPIC.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmThrshld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMAlarmState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwSMSPICName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwSMBearersThresPerSPNotif trap received 
+				jnxMbgPgwSMAlarmThrshld=%parm[#1]% 
+				jnxMbgPgwSMAlarmState=%parm[#2]% 
+				jnxMbgPgwSMSPICName=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-SM-MIB -->

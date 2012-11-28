@@ -35,7 +35,10 @@ for CPU Utilization has been exceeded.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwCpuThrStatus</uei>
@@ -72,7 +75,10 @@ for CPU Utilization has been reached.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwCpuThrStatus</uei>
@@ -109,7 +115,10 @@ for CPU Utilization has been reached.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwCpuThrStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwCpuThrStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMemThrStatus</uei>
@@ -146,7 +155,10 @@ for Memory Utilization has been exceeded.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMemThrStatus</uei>
@@ -183,7 +195,10 @@ for Memory Utilization has been reached.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwMemThrStatus</uei>
@@ -220,7 +235,10 @@ for Memory Utilization has been reached.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMemThrStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMemThrStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwQosBearerThrStatus</uei>
@@ -236,7 +254,7 @@ for Memory Utilization has been reached.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
-			<mevalue>7</mevalue>
+			<mevalue>11</mevalue>
 		</maskelement>
 		</mask>
 		<descr>
@@ -257,7 +275,10 @@ for bearers at gateway level has been exceeded.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwQosBearerThrStatus</uei>
@@ -273,7 +294,7 @@ for bearers at gateway level has been exceeded.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
-			<mevalue>8</mevalue>
+			<mevalue>12</mevalue>
 		</maskelement>
 		</mask>
 		<descr>
@@ -294,7 +315,10 @@ for bearers at gateway level has been reached.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwQosBearerThrStatus</uei>
@@ -310,7 +334,7 @@ for bearers at gateway level has been reached.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
-			<mevalue>9</mevalue>
+			<mevalue>13</mevalue>
 		</maskelement>
 		</mask>
 		<descr>
@@ -331,7 +355,10 @@ for bearers at gateway level has been reached.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwTrapGwName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwQosBearerThrStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwQosBearerThrStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-SGW-SM-MIB -->

@@ -59,7 +59,10 @@ maintenance-mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolNewMMState=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolMMStateChange</uei>
@@ -120,7 +123,10 @@ maintenance-mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolNewMMState=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolMMStateChange</uei>
@@ -181,7 +187,74 @@ maintenance-mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolNewMMState=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolMMStateChange</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-SM-IP-POOL-MIB defined trap event: jnxMbgSMIPPoolMMStateChange</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification indicates that the pool name indicated by  
+LS-name, RI-name and pool-name undergoes a change in the
+maintenance-mode state.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSMIPPoolMMPoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSMIPPoolMMLSName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSMIPPoolMMRIName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSMIPPoolPrevMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSMIPPoolNewMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgSMIPPoolMMStateChange trap received 
+				jnxMbgSMIPPoolMMPoolName=%parm[#1]% 
+				jnxMbgSMIPPoolMMLSName=%parm[#2]% 
+				jnxMbgSMIPPoolMMRIName=%parm[#3]% 
+				jnxMbgSMIPPoolPrevMMState=%parm[#4]% 
+				jnxMbgSMIPPoolNewMMState=%parm[#5]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolMMStateChange</uei>
@@ -242,7 +315,10 @@ maintenance-mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolNewMMState=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSMIPPoolMMStateChange</uei>
@@ -303,7 +379,10 @@ maintenance-mode state.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolNewMMState=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolMMStateChange:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolMMStateChange:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPRangeHighThresExcd</uei>
@@ -360,7 +439,10 @@ higher threshold.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPRangeHiCurrUtil=%parm[#6]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSMIPRangeLowThresRchd</uei>
@@ -417,7 +499,10 @@ lower threshold.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPRangeLowCurrUtil=%parm[#6]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPRangeHighThresExcd:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPRangeHighThresExcd:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolHighThresExcd</uei>
@@ -470,7 +555,10 @@ value.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolCurrUtil=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSMIPPoolLowThresRchd</uei>
@@ -522,7 +610,10 @@ from a given address pool has reached the lower threshold value.&lt;/p&gt;&lt;ta
 				jnxMbgSMIPPoolCurrUtil=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolHighThresExcd:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolHighThresExcd:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgIPPoolExhausted</uei>
@@ -564,7 +655,10 @@ addresses and there are no free addresses left.&lt;/p&gt;&lt;table&gt;
 				jnxMbgIPPoolName=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSMIPPoolThresholdExceeded</uei>
@@ -617,7 +711,10 @@ value.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSMIPPoolCurrentThreshold=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-SM-IP-POOL-MIB -->

@@ -42,7 +42,10 @@ displayed.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwMfwdBufMemLimit=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwMfwdBufMemThresClear</uei>
@@ -86,7 +89,10 @@ displayed.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSgwMfwdBufMemLimit=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMfwdBufMemThresRaise:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMfwdBufMemThresRaise:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILE-GW-SGW-MFWD-MIB -->

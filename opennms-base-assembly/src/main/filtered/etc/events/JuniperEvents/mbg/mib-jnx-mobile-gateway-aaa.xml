@@ -20,7 +20,7 @@
 		<descr>
 &lt;p&gt;This notification signifies that the specified server has been
 marked dead. The ServerName identifies the server and the 
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -47,7 +47,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusServerUp</uei>
@@ -70,7 +73,7 @@ notification.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This notification signifies that the specified server has been
 marked active again. This could be because the server started to
 respond again. The ServerName identifies the server and the 
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -97,7 +100,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusServerDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusServerDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNetworkElementDown</uei>
@@ -119,7 +125,7 @@ notification.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified Network Element has 
 been marked DOWN. This could be because none of the servers  in the 
-network element is active.  SPIdentfier identifies the service-pic 
+network element is active.  SPIdentfier identifies the session-pic 
 which originated this notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -146,7 +152,10 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusNetworkElementUp</uei>
@@ -168,7 +177,7 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified Network Element
 has been marked UP. This could be because atleast one server in 
-the network element is active. SPIdentfier identifies the service-pic 
+the network element is active. SPIdentfier identifies the session-pic 
 which originated this notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -195,7 +204,10 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNetworkElementDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNetworkElementDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAuthQStatus</uei>
@@ -222,7 +234,7 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending authentication queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -270,7 +282,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusNEPendAuthQStatus</uei>
@@ -297,7 +312,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending authentication queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -345,7 +360,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAuthQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:1" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAuthQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAcctQStatus</uei>
@@ -372,7 +390,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending accounting queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -420,7 +438,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusNEPendAcctQStatus</uei>
@@ -447,7 +468,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending accounting queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -495,7 +516,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAcctQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:1" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAcctQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAAServerDown</uei>
@@ -517,7 +541,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 		<descr>
 &lt;p&gt;This notification signifies that the specified server has been
 marked dead. The ServerName identifies the server and the 
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -534,7 +558,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAAServerUp</uei>
@@ -557,7 +584,7 @@ notification.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This notification signifies that the specified server has been
 marked active again. This could be because the server started to
 respond again. The ServerName identifies the server and the 
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -574,7 +601,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAAServerDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAAServerDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANetworkElementDown</uei>
@@ -596,7 +626,7 @@ notification.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified Network Element has 
 been marked DOWN. This could be because none of the servers  in the 
-network element is active.  SPIdentfier identifies the service-pic 
+network element is active.  SPIdentfier identifies the session-pic 
 which originated this notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -613,7 +643,10 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAANetworkElementUp</uei>
@@ -635,7 +668,7 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified Network Element
 has been marked UP. This could be because atleast one server in 
-the network element is active. SPIdentfier identifies the service-pic 
+the network element is active. SPIdentfier identifies the session-pic 
 which originated this notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -652,7 +685,10 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANetworkElementDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANetworkElementDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAuthQStatus</uei>
@@ -679,7 +715,7 @@ which originated this notification.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending authentication queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -717,7 +753,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAANEPendAuthQStatus</uei>
@@ -744,7 +783,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending authentication queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -782,7 +821,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAuthQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:1" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAuthQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAcctQStatus</uei>
@@ -809,7 +851,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending accounting queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -847,7 +889,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAANEPendAcctQStatus</uei>
@@ -874,7 +919,7 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 &lt;p&gt;This notification signifies the crossing-over of a  watermark 
 (High or Low) of the pending accounting queue length of network 
 element. The NetworkElementName identifies the network element and 
-SPIdentfier identifies the service-pic which originated this notification.
+SPIdentfier identifies the session-pic which originated this notification.
 jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
 jnxMbgPendQWaterMarkValue is the value that has been crossed over.
 jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
@@ -912,7 +957,10 @@ jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;tab
 				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAcctQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:1" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAcctQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-AAA-MIB -->

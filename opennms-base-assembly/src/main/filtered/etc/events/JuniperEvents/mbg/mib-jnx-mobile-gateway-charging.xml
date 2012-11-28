@@ -53,7 +53,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChangeNotify</uei>
@@ -108,7 +111,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChangeNotify</uei>
@@ -163,7 +169,68 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChangeNotify</uei>
+		<event-label>JUNIPER-MOBILITY-CHARGING-MIB defined trap event: jnxMbgPgwCgMMStateChangeNotify</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This indicates that the given charging profile underwent a change
+in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgPeerProfName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgPrevMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgNewMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwCgMMStateChangeNotify trap received 
+				jnxMbgGwName=%parm[#1]% 
+				jnxMbgPgwCgPeerProfName=%parm[#2]% 
+				jnxMbgPgwCgPrevMMState=%parm[#3]% 
+				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChangeNotify</uei>
@@ -218,7 +285,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgMMStateChangeNotify</uei>
@@ -273,7 +343,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChangeNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChangeNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify</uei>
@@ -328,7 +401,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify</uei>
@@ -383,7 +459,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify</uei>
@@ -438,7 +517,68 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify</uei>
+		<event-label>JUNIPER-MOBILITY-CHARGING-MIB defined trap event: jnxMbgPgwCgTMMStateChangeNotify</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This indicates that the given transport profile underwent a change
+in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgPeerProfName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgPrevMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgNewMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwCgTMMStateChangeNotify trap received 
+				jnxMbgGwName=%parm[#1]% 
+				jnxMbgPgwCgPeerProfName=%parm[#2]% 
+				jnxMbgPgwCgPrevMMState=%parm[#3]% 
+				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify</uei>
@@ -493,7 +633,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgTMMStateChangeNotify</uei>
@@ -548,7 +691,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChangeNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange</uei>
@@ -598,7 +744,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange</uei>
@@ -648,7 +797,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange</uei>
@@ -698,7 +850,63 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange</uei>
+		<event-label>JUNIPER-MOBILITY-CHARGING-MIB defined trap event: jnxMbgPgwCgMMStateChange</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This indicates that the given charging profile underwent a change
+in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgProfileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgPrevMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgNewMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwCgMMStateChange trap received 
+				jnxMbgPgwCgProfileName=%parm[#1]% 
+				jnxMbgPgwCgPrevMMState=%parm[#2]% 
+				jnxMbgPgwCgNewMMState=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange</uei>
@@ -748,7 +956,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgMMStateChange</uei>
@@ -798,7 +1009,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMMStateChange:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange</uei>
@@ -848,7 +1062,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgTNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange</uei>
@@ -898,7 +1115,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgTNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange</uei>
@@ -948,7 +1168,63 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgTNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange</uei>
+		<event-label>JUNIPER-MOBILITY-CHARGING-MIB defined trap event: jnxMbgPgwCgTMMStateChange</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>Maintenance - In Phase</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>Maintenance - Out Phase</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This indicates that the given transport profile underwent a change
+in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgTProfileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgTPrevMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPgwCgTNewMMState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgPgwCgTMMStateChange trap received 
+				jnxMbgPgwCgTProfileName=%parm[#1]% 
+				jnxMbgPgwCgTPrevMMState=%parm[#2]% 
+				jnxMbgPgwCgTNewMMState=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange</uei>
@@ -998,7 +1274,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgTNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgTMMStateChange</uei>
@@ -1048,7 +1327,10 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgTNewMMState=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgTMMStateChange:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgGtpGWDownNotify</uei>
@@ -1070,7 +1352,7 @@ in the maintenance-mode.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified server has been
 marked dead.  The ServerName identifies the server and the
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -1092,7 +1374,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgGtpGWUpNotify</uei>
@@ -1114,7 +1399,7 @@ notification.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified server has been
 marked alive.  The ServerName identifies the server and the
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -1136,7 +1421,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgGtpGWDownNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgGtpGWDownNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgCDRDestNotify</uei>
@@ -1187,7 +1475,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgActiveCgfIpAddr=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgServiceUpNotify</uei>
@@ -1223,7 +1514,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Normal</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify</uei>
@@ -1286,7 +1580,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgAlarmStatus=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify</uei>
@@ -1349,7 +1646,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgAlarmStatus=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgMemThresNotify</uei>
@@ -1412,7 +1712,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgAlarmStatus=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgMemThresNotify</uei>
@@ -1475,7 +1778,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgAlarmStatus=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgMemThresNotify</uei>
@@ -1538,7 +1844,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgAlarmStatus=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotify</uei>
@@ -1601,7 +1910,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgAlarmStatus=%parm[#5]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify</uei>
@@ -1649,7 +1961,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify</uei>
@@ -1697,7 +2012,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgLcsThresNotify</uei>
@@ -1745,7 +2063,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgLcsThresNotify</uei>
@@ -1793,7 +2114,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgLcsThresNotify</uei>
@@ -1841,7 +2165,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotify</uei>
@@ -1889,7 +2216,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgServiceUpNotif</uei>
@@ -1920,7 +2250,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#1]%&lt;/p&gt;
 			</logmsg>
 		<severity>Normal</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgCDRDestNotif</uei>
@@ -1966,7 +2299,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgActiveCgfIpAddr=%parm[#3]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
+		<alarm-data auto-clean="false" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotif</uei>
@@ -2024,7 +2360,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgMemThresNotif</uei>
@@ -2082,7 +2421,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#4]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotif:%dpname%:%nodeid%:1:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgMemThresNotif:%dpname%:%nodeid%:1:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotif</uei>
@@ -2127,7 +2469,10 @@ the system.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Major</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotif</uei>
@@ -2172,7 +2517,10 @@ the system.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Warning</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgLcsThresNotif</uei>
@@ -2217,7 +2565,10 @@ the system.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgLcsUtil=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotif:%dpname%:%nodeid%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgLcsThresNotif:%dpname%:%nodeid%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgGtpGWDownNotif</uei>
@@ -2239,7 +2590,7 @@ the system.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified server has been
 marked dead.  The ServerName identifies the server and the
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -2256,7 +2607,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Critical</severity>
-		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgPgwCgGtpGWUpNotif</uei>
@@ -2278,7 +2632,7 @@ notification.&lt;/p&gt;&lt;table&gt;
 		<descr>
 &lt;p&gt;This notification signifies that the specified server has been
 marked alive.  The ServerName identifies the server and the
-SPIdentfier identifies the service-pic which originated this
+SPIdentfier identifies the session-pic which originated this
 notification.&lt;/p&gt;&lt;table&gt;
 		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -2295,7 +2649,10 @@ notification.&lt;/p&gt;&lt;table&gt;
 				jnxMbgPgwCgServicePicName=%parm[#2]%&lt;/p&gt;
 			</logmsg>
 		<severity>Cleared</severity>
-		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgGtpGWDownNotif:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgPgwCgGtpGWDownNotif:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
 	</event>
 </events>
 <!-- End of auto generated data from MIB: JUNIPER-MOBILITY-CHARGING-MIB -->
