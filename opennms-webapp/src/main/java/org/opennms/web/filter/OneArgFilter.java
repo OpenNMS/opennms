@@ -104,7 +104,8 @@ public abstract class OneArgFilter<T> extends BaseFilter<T> {
     /** {@inheritDoc} */
     @Override
     final public String getSql() {
-        return String.format(getSQLTemplate(), formatValue(m_value));
+        String sql = String.format(getSQLTemplate(), formatValue(m_value));
+        return sql;
     }
     
     @Override

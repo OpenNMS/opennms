@@ -56,6 +56,7 @@ import org.opennms.web.alarm.filter.NegativeNodeFilter;
 import org.opennms.web.alarm.filter.NegativePartialUEIFilter;
 import org.opennms.web.alarm.filter.NegativeServiceFilter;
 import org.opennms.web.alarm.filter.NegativeSeverityFilter;
+import org.opennms.web.alarm.filter.NodeCategoryLikeFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
@@ -153,6 +154,8 @@ public abstract class AlarmUtil extends Object {
             filter = new EventParmLikeFilter(value);
         } else if(type.equals(NegativeEventParmLikeFilter.TYPE)) {
             filter = new NegativeEventParmLikeFilter(value);
+        } else if (type.equals(NodeCategoryLikeFilter.TYPE)) {
+            filter = new NodeCategoryLikeFilter(value);
         }
 
         return filter;

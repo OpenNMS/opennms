@@ -52,6 +52,7 @@ import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
+import org.opennms.web.alarm.filter.NodeCategoryLikeFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
@@ -81,7 +82,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link EventFilterController EventFilterController}.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "nodecategorylike" };
 
     /**
      * The URL for the {@link EventFilterController EventFilterController}. The
@@ -206,6 +207,11 @@ public class AlarmQueryServlet extends HttpServlet {
             } catch (MissingParameterException e) {
                 throw new ServletException(e);
             }
+        }
+        
+        String nodeCategoryLike = request.getParameter("nodecategorylike");
+        if (nodeCategoryLike != null && nodeCategoryLike.length() > 0) {
+            filterArray.add(new NodeCategoryLikeFilter(nodeCategoryLike));
         }
 
         String queryString = "";

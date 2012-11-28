@@ -32,7 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,12 +42,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.WebAlarmRepository;
@@ -450,6 +456,57 @@ public class WebAlarmRepositoryFilterTest {
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
         
+    }
+    
+    @Test
+    @Transactional
+    public void testNodeCategoryLikeFilter() {
+        List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
+        assertNotNull(events);
+        OnmsEvent event = events.get(0);
+        
+        List<OnmsDistPoller> pollers = m_dbPopulator.getDistPollerDao().findAll();
+        assertNotNull(pollers);
+        OnmsDistPoller poller = pollers.get(0);
+        
+        CategoryDao catDao = m_dbPopulator.getCategoryDao();
+        NodeDao nodeDao = m_dbPopulator.getNodeDao();
+        AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
+        
+        Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
+        OnmsCategory catServers = new OnmsCategory();
+        catServers.setId(42);
+        catServers.setName("NotACatButACategory");
+        categories.add(catServers);
+        catDao.save(catServers);
+        catDao.flush();
+        
+        OnmsNode nodeOne = new OnmsNode();
+        nodeOne.setLabel("node-one");
+        nodeOne.setId(666);
+        nodeOne.setType("A");
+        nodeOne.setCategories(categories);
+        nodeDao.save(nodeOne);
+        nodeDao.flush();
+        
+        OnmsAlarm alarm = new OnmsAlarm();        
+        alarm.setUei("uei.opennms.org/test/testNodeCategoryLikeFilter");
+        alarm.setNode(nodeOne);
+        alarm.setCounter(10);
+        alarm.setDistPoller(poller);
+        alarm.setLastEvent(event);
+        alarm.setSeverityId(3);
+        alarmDao.save(alarm);
+        alarmDao.flush();
+        
+        
+        AlarmCriteria criteria = getCriteria(new NodeCategoryLikeFilter("NotACatButACategory"));
+        
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals("DAO repo has one matching alarm", 1, alarms.length);
+        
+        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals("JDBC Web repo has one matching alarm", 1, alarms.length);
     }
     
     private AlarmCriteria getCriteria(Filter...filters){

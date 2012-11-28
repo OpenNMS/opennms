@@ -91,10 +91,11 @@
           </tr>
 
           <tr>
-            <td colspan="2">Service:</td>
+            <td>Service:</td>
+            <td>Node Category Contains:</td>
           </tr>
           <tr>
-            <td colspan="2">
+            <td>
               <select name="service" size="1">
                 <option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
 
@@ -104,6 +105,17 @@
                 <% } %>
               </select>
             </td>
+            <td>
+              <input type="text" name="nodecategorylike" /></td
+                <option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
+
+                <% while( serviceNameIterator.hasNext() ) { %>
+                  <% String name = (String)serviceNameIterator.next(); %>
+                  <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+                <% } %>
+              </select>
+            </td>
+
           </tr>
 
           <tr><td colspan="2"><hr width=100% /></td></tr>

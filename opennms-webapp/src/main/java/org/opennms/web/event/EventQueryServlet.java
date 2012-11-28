@@ -50,6 +50,7 @@ import org.opennms.web.event.filter.BeforeDateFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
+import org.opennms.web.event.filter.NodeCategoryLikeFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
@@ -77,7 +78,7 @@ public class EventQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the servlet.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "nodecategorylike" };
 
     /**
      * The URL for the servlet. The
@@ -178,6 +179,12 @@ public class EventQueryServlet extends HttpServlet {
             } catch (MissingParameterException e) {
                 throw new ServletException(e);
             }
+        }
+        
+        // convenient syntax for NodeCategoryLikeFilter
+        String nodeCategoryLike = WebSecurityUtils.sanitizeString(request.getParameter("nodecategorylikes"));
+        if (nodeCategoryLike != null && nodeCategoryLike.length() > 0) {
+            filterArray.add(new NodeCategoryLikeFilter(nodeCategoryLike));
         }
 
         String queryString = "";
