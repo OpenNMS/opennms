@@ -538,6 +538,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				NativeEvent event = D3.getEvent();
 				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
 				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
+				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
+				m_client.updateVariable(m_paintableId, "ctrlKeyPressed", event.getCtrlKey(), false);
 				
 				event.preventDefault();
 				event.stopPropagation();

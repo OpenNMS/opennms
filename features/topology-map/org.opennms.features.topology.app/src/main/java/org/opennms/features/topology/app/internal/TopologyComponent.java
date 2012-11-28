@@ -233,7 +233,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if(variables.containsKey("clickedVertex")) {
             m_panToManager.verticesSelectedByMap();
             String vertexKey = (String) variables.get("clickedVertex");
-            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
+            if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
+                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true) {
         	    addVerticesToSelection(vertexKey);
         	}else {
         	    selectVertices(vertexKey);
