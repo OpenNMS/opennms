@@ -36,8 +36,13 @@ if ($current_branch ne $config->runtime_branch()) {
 	croak "Expected " . $config->runtime_branch() . ' branch, but current branch is ' . $current_branch . '.  Bailing.';
 }
 
-if ($config->is_conflicted() and $git->get_modifications() > 0) {
-	croak "We are in a conflicted mode, but there are uncommitted modifications.  Bailing.";
+my @modifications = $git->get_modifications();
+if ($config->is_conflicted() and (@modifications > 0)) {
+	$config->log("We are in a conflicted mode, but there are uncommitted modifications:");
+	for my $mod (@modifications) {
+		$config->log('- ' . $mod->file());
+	}
+	croak "Bailing out.";
 }
 
 $config->log('committing user modifications (', $rpm_name, '-', $version, ')');

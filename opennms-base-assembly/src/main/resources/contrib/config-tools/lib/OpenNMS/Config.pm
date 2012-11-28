@@ -171,14 +171,24 @@ sub setup {
 	return ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version);
 }
 
+sub get_conflicted_file {
+	my $config = shift;
+	if (not defined $config and defined $_OPENNMS_HOME) {
+		$config = OpenNMS::Config->new($_OPENNMS_HOME);
+	}
+	if (not defined $config) {
+		return;
+	}
+	return File::Spec->catfile($config->etc_dir(), '.git', 'opennms-conflicted');
+}
+
 sub is_conflicted {
 	my $self = shift;
-	my $conflicted = File::Spec->catfile($self->etc_dir(), 'conflicted');
-	return (-e $conflicted);
+	return (-e $self->get_conflicted_file());
 }
 
 sub create_conflicted {
-	my $conflicted = File::Spec->catfile($_OPENNMS_HOME, 'etc', 'conflicted');
+	my $conflicted = get_conflicted_file();
 	write_file($conflicted, "Failed in $_OPENNMS_HOME\n");
 	return $conflicted;
 }
