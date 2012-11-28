@@ -5,11 +5,13 @@ use strict;
 use warnings;
 
 use Carp;
+use Digest::MD5;
 use Error qw(:try);
 use File::Copy;
 use File::Path;
 use File::Spec;
 use Git;
+use IO::Handle;
 
 require Exporter;
 
@@ -274,6 +276,34 @@ sub get_modifications {
 	return sort { $a->file() cmp $b->file() } @results;
 }
 
+=head2 * get_deleted()
+
+Get a list of files which have been deleted, either from the filesystem, or through 'git rm'.
+
+=cut
+
+sub get_deleted {
+	my $self = shift;
+
+	my @entries;
+	git_cmd_try {
+		@entries = $self->_git()->command('status', '--porcelain');
+	} "Error \%d while running git status on the working tree: \%s";
+
+	my @results;
+	for my $entry (@entries) {
+		if ($entry =~ /^(.)(.) (.*)$/) {
+			my ($index, $working, $filename) = ($1, $2, $3);
+			if ($index eq 'D' or $working eq 'D') {
+				push(@results, $filename);
+			}
+		} else {
+			print STDERR "unable to parse $entry\n";
+		}
+	}
+	return @results;
+}
+
 =head2 * add(@files_and_directories)
 
 Add one or more files or directories to the git repository.
@@ -415,6 +445,22 @@ sub checkout {
 	return $self;
 }
 
+=head2 * get_conflicts()
+
+Get the list files in the current working tree that are in conflict.
+
+=cut
+
+sub get_conflicts {
+	my $self = shift;
+
+	my @list;
+	git_cmd_try {
+		@list = $self->_git()->command('diff', '--name-only', '--diff-filter=U');
+	} "Error \%d while attempting to list conflicted files: \%s";
+	
+	return @list;
+}
 =head2 * merge($branch_name)
 
 Merge the given branch into the current branch.
@@ -554,25 +600,61 @@ sub save_changes_between {
 		my $from = File::Spec->catfile($self->dir, $file);
 		my $to   = $from . $ext;
 
-		if (-f $from) {
+		if ($from !~ /\b(java|opennms)\.conf$/ and -f $from) {
+			OpenNMS::Config->log("- copying $from to $to");
 			move($from, $to) or croak "Unable to copy $from to $to: $!";
 		}
 	}
-	for my $file (@replace_files) {
+
+	my $modified_files = {};
+	for my $file ($self->get_deleted(), @replace_files) {
+		$modified_files->{$file}++;
+	}
+
+	for my $file (sort keys %$modified_files) {
 		try {
 			# first, we check if the file is even in the pristine branch
 			my $result = $self->_git()->command('ls-tree', $pristine, $file);
 			if ($result !~ /^[\r\n\s]*$/ms) {
 				# if so, check out the pristine version
+				OpenNMS::Config->log("- checking out $file from $pristine");
 				$result = $self->_git()->command('checkout', $pristine, $file);
+			} else {
+				OpenNMS::Config->log("- checking out $file from $modified");
+				$result = $self->_git()->command('checkout', $modified, $file);
 			}
 		} catch Git::Error::Command with {
 			my $E = shift;
 			croak "Failed to checkout $file from $pristine: " . $E->stringify;
 		};
 	}
+
+	for my $file (@rename_files) {
+		my $from = File::Spec->catfile($self->dir, $file);
+		my $to   = $from . $ext;
+
+		if (-e $from and -e $to) {
+			my $fromdigest = _digest_file($from);
+			my $todigest   = _digest_file($to);
+			if ($fromdigest eq $todigest) {
+				OpenNMS::Config->log("- $from matches $to, removing the $ext file");
+				unlink($to);
+			}
+		}
+	}
 	
 	return $self;
+}
+
+sub _digest_file {
+	my $file = shift;
+	my $digest = Digest::MD5->new();
+	my $handle = IO::Handle->new();
+	open ($handle, $file) or croak "Can't read from $file: $!";
+	binmode($handle);
+	my $retval = Digest::MD5->new()->addfile(*$handle)->hexdigest();
+	close ($handle) or croak "Can't close filehandle for $file: $!";
+	return $retval;
 }
 
 =head2 * tag($tag_name)

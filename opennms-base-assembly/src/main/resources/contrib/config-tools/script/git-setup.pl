@@ -86,6 +86,7 @@ print $gitignore "*.rpmorig\n";
 print $gitignore "*.rpmsave\n";
 print $gitignore "examples\n";
 print $gitignore "configured\n";
+print $gitignore "java.conf\n";
 print $gitignore "libraries.properties\n";
 close($gitignore) or croak "unable to close filehandle for .gitignore: $!";
 

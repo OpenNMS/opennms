@@ -168,16 +168,27 @@ sub setup {
 	system("rpm --verify $rpm_name | grep $etcdir");
 	print STDERR "=" x 80, "\n";
 
-	my $conflicted = File::Spec->catfile($etcdir, 'conflicted');
-	if (-e $conflicted) {
-		croak "\nERROR: found a $conflicted file, bailing.\n\n";
-	}
-
 	return ($config, $version, $pristinedir, $etcdir, $rpm_name, $rpm_version);
 }
 
+sub get_conflicted_file {
+	my $config = shift;
+	if (not defined $config and defined $_OPENNMS_HOME) {
+		$config = OpenNMS::Config->new($_OPENNMS_HOME);
+	}
+	if (not defined $config) {
+		return;
+	}
+	return File::Spec->catfile($config->etc_dir(), '.git', 'opennms-conflicted');
+}
+
+sub is_conflicted {
+	my $self = shift;
+	return (-e $self->get_conflicted_file());
+}
+
 sub create_conflicted {
-	my $conflicted = File::Spec->catfile($_OPENNMS_HOME, 'etc', 'conflicted');
+	my $conflicted = get_conflicted_file();
 	write_file($conflicted, "Failed in $_OPENNMS_HOME\n");
 	return $conflicted;
 }
