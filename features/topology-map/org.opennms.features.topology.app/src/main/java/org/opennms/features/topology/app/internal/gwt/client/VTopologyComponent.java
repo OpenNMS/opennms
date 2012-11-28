@@ -538,6 +538,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				NativeEvent event = D3.getEvent();
 				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
 				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
+				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
+				m_client.updateVariable(m_paintableId, "ctrlKeyPressed", event.getCtrlKey(), false);
 				
 				event.preventDefault();
 				event.stopPropagation();
@@ -706,7 +708,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		        GWTEdge edge1 = edges.get(i-1);
 		        GWTEdge edge2 = edges.get(i);
 		        
-		        if(edge1.getSource() == edge2.getSource() && edge1.getTarget() == edge2.getTarget()) {
+		        if((edge1.getSource() == edge2.getSource() && edge1.getTarget() == edge2.getTarget()) || (edge1.getSource() == edge2.getTarget() && edge1.getTarget() == edge2.getSource())) {
 		            edge2.setLinkNum(edge1.getLinkNum() + 1);
 		        }else {
 		            edge2.setLinkNum(1);

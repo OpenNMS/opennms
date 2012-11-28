@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -232,7 +233,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if(variables.containsKey("clickedVertex")) {
             m_panToManager.verticesSelectedByMap();
             String vertexKey = (String) variables.get("clickedVertex");
-            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
+            if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
+                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true) {
         	    addVerticesToSelection(vertexKey);
         	}else {
         	    selectVertices(vertexKey);
@@ -301,6 +303,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             if (type.toLowerCase().equals("vertex")) {
             	String targetKey = (String)props.get("target");
             	target = getGraph().getVertexByKey(targetKey);
+            	m_panToManager.verticesSelectedByMap();
+            	getSelectionManager().setSelectedVertexRefs(Arrays.asList((Vertex) target));
             } else if (type.toLowerCase().equals("edge")) {
             	String targetKey = (String)props.get("target");
             	target = getGraph().getEdgeByKey(targetKey);
@@ -370,7 +374,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if (selected) {
         	getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
         } else {
-        	getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
+        	getSelectionManager().deselectVertexRefs(Collections.singleton(vertex));
         }
     }
     
