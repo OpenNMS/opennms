@@ -72,6 +72,9 @@ public class DeleteGroupOperation implements Operation {
 		// Remove the group from the topology
 		graphContainer.getDataSource().getVertexContainer().removeItem(parentId);
 
+		// Save the topology
+		graphContainer.getDataSource().save(null);
+
 		graphContainer.redoLayout();
 
 		return null;
@@ -89,12 +92,20 @@ public class DeleteGroupOperation implements Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return true;
+		return targets != null && 
+			targets.size() == 1 && 
+			targets.get(0) != null 
+		;
 	}
 
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-		return targets != null && targets.size() == 1 && targets.get(0) != null;
+		// Only allow the operation on single non-leaf vertices (groups)
+		return targets != null && 
+			targets.size() == 1 && 
+			targets.get(0) != null && 
+			!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
+		;
 	}
 
 	@Override
