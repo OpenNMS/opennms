@@ -707,6 +707,31 @@ sub tag_exists {
 	return;
 }
 
+=head2 * get_latest_runtime_pre_tag()
+
+Get the latest pre-upgrade tag for the runtime branch.
+
+=cut
+
+sub get_latest_runtime_pre_tag {
+	my $self = shift;
+
+	my @tags;
+	git_cmd_try {
+		@tags = sort $self->_git()->command('tag', '-l');
+	} "Error \%d while attempting to list tags: \%s";
+
+	my $matching = undef;
+
+	for my $tag (@tags) {
+		if ($tag =~ /runtime\/pre-/) {
+			$matching = $tag;
+		}
+	}
+
+	return $matching;
+}
+
 1;
 
 package OpenNMS::Config::Git::Change;

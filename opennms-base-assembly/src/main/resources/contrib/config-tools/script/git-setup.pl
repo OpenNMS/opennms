@@ -24,6 +24,7 @@ if (-d $etc_pretrans) {
 	$config->log('Found an ', $etc_pretrans, ' directory.  Moving its contents back to ', $etcdir);
 	mkpath($etcdir);
 	find({
+		bydepth => 1,
 		wanted => sub {
 			return unless (-e $File::Find::name);
 			my $relative = File::Spec->abs2rel($File::Find::name, $etc_pretrans);
@@ -86,6 +87,7 @@ print $gitignore "*.rpmorig\n";
 print $gitignore "*.rpmsave\n";
 print $gitignore "examples\n";
 print $gitignore "configured\n";
+print $gitignore "conflicted\n";
 print $gitignore "java.conf\n";
 print $gitignore "libraries.properties\n";
 close($gitignore) or croak "unable to close filehandle for .gitignore: $!";

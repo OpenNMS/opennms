@@ -39,7 +39,14 @@ sub new {
 
 	my $dir = shift;
 	if (not defined $dir) {
-		carp "You must pass the OpenNMS home directory!";
+		my $env = $ENV{'OPENNMS_HOME'};
+		if (defined $env and -d $env) {
+			$dir = $env;
+		} elsif (-d '/opt/opennms') {
+			$dir = '/opt/opennms';
+		} else {
+			carp "You must pass the OpenNMS home directory!";
+		}
 	}
 
 	my $self = {
@@ -179,7 +186,7 @@ sub get_conflicted_file {
 	if (not defined $config) {
 		return;
 	}
-	return File::Spec->catfile($config->etc_dir(), '.git', 'opennms-conflicted');
+	return File::Spec->catfile($config->etc_dir(), 'conflicted');
 }
 
 sub is_conflicted {

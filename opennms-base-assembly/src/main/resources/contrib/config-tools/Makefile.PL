@@ -16,6 +16,8 @@ install_script 'script/git-setup.pl';
 install_script 'script/opennms-pretrans.pl';
 install_script 'script/opennms-post.pl';
 install_script 'script/opennms-posttrans.pl';
+install_script 'script/conflict-remerge.pl';
+install_script 'script/conflict-resolve.pl';
 
 #install_share 'share';
 

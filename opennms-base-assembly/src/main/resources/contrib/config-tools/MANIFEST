@@ -10,6 +10,8 @@ script/git-setup.pl
 script/opennms-pretrans.pl
 script/opennms-post.pl
 script/opennms-posttrans.pl
+script/conflict-remerge.pl
+script/conflict-resolve.pl
 t/01-OpenNMS-Config.pl
 t/02-OpenNMS-Config-Git.pl
 t/10-basic-upgrades.t
