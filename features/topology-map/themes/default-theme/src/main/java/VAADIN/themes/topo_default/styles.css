@@ -25,6 +25,13 @@
     padding: 4px 4px 0 1px;
 }
 
+/**
+ * SPC-506: Get rid of P tag margins to tighten up tooltip display
+ */
+.v-tooltip P {
+    margin: 0px;
+}
+
 div.v-button.v-button-toolbar-button.toolbar-button > span {
 	padding: 4px 4px 0 1px;
 }
@@ -60,6 +67,3 @@ div.v-button-down .v-button-wrap{
 .edge.ncs.selected {
 	stroke: #00ffff;
 }
-
-
-
