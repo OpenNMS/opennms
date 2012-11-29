@@ -15,5 +15,9 @@ my $git = OpenNMS::Config::Git->new($config->etc_dir());
 $git->author_name('OpenNMS Git Auto-Upgrade');
 $git->author_email($0);
 
+unlink($config->get_conflicted_file());
+
 $git->add('.');
 $git->commit('Manual merge after an upgrade conflict.');
+
+exit 0;
