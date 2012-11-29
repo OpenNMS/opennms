@@ -201,6 +201,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 		}
 
 		@Override
+		public boolean isLeaf() {
+			return true;
+		}
+
+		@Override
 		public String getNamespace() {
 			return "nodes";
 		}

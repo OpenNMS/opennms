@@ -400,7 +400,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		return tree;
 	}
 
-
+	@Override
 	public void updateMenuItems() {
 		updateMenuItems(m_menuBar.getItems());
 		m_menuBar.requestRepaint();

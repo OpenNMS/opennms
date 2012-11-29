@@ -41,6 +41,11 @@ public class SimpleVertex extends AbstractVertex {
 	}
 
 	@Override
+	public boolean isLeaf() {
+		return true;
+	}
+
+	@Override
 	public String getStyleName() {
 		return m_styleName;
 	}
