@@ -233,8 +233,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 }
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
                 for(SnmpValue result : results) {
-                    svcParams.setProperty("observedValue", result.toString());
                     if (result != null) {
+                        svcParams.setProperty("observedValue", getStringValue(result));
                         log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
@@ -260,7 +260,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
                 if (result != null) {
-                    svcParams.setProperty("observedValue", result.toString());
+                    svcParams.setProperty("observedValue", getStringValue(result));
                     log().debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                     
                     if (meetsCriteria(result, operator, operand)) {
