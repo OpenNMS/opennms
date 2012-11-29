@@ -72,6 +72,9 @@ public class DeleteGroupOperation implements Operation {
 		// Remove the group from the topology
 		graphContainer.getDataSource().getVertexContainer().removeItem(parentId);
 
+		// Save the topology
+		graphContainer.getDataSource().save(null);
+
 		graphContainer.redoLayout();
 
 		return null;
