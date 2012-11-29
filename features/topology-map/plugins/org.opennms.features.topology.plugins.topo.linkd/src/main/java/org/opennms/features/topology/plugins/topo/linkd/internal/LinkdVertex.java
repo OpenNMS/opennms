@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
- public abstract class LinkdVertex  {
+public abstract class LinkdVertex {
 	String m_id;
 	int m_x;
 	int m_y;

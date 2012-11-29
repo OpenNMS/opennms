@@ -16,4 +16,5 @@ public interface Vertex extends VertexRef {
 	
 	String getStyleName();
 	
+	boolean isLeaf();
 }

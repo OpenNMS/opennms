@@ -220,18 +220,18 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Rename Group"/>
+            <!-- <entry key="operation.menuLocation" value="Edit"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Rename Group"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RenameGroupOperation"/>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Delete Group"/>
+            <!-- <entry key="operation.menuLocation" value="Edit"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Delete Group"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.DeleteGroupOperation"/>
     </service>
