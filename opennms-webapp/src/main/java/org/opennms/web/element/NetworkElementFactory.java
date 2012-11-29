@@ -125,16 +125,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
     @Autowired
     SimpleJdbcTemplate m_jdbcTemplate;
-    
-    /**
-     * A mapping of service names (strings) to service identifiers (integers).
-     */
-    protected Map<String, Integer> serviceName2IdMap;
-
-    /**
-     * A mapping of service identifiers (integers) to service names (strings).
-     */
-    protected Map<Integer, String> serviceId2NameMap;
 
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
@@ -737,13 +727,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public String getServiceNameFromId(int serviceId) {
-        if (serviceId2NameMap == null) {
-            createServiceIdNameMaps();
-        }
-
-        String serviceName = serviceId2NameMap.get(new Integer(serviceId));
-
-        return (serviceName);
+        OnmsServiceType type = getServiceTypeDao().get(serviceId);
+        return type == null ? null : type.getName();
     }
 
     /* (non-Javadoc)
@@ -755,19 +740,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        int serviceId = -1;
-
-        if (serviceName2IdMap == null) {
-            createServiceIdNameMaps();
-        }
-
-        Integer value = serviceName2IdMap.get(serviceName);
-
-        if (value != null) {
-            serviceId = value.intValue();
-        }
-
-        return (serviceId);
+        OnmsServiceType type = getServiceTypeDao().findByName(serviceName);
+        return type == null ? -1 : type.getId();
     }
 
     /* (non-Javadoc)
@@ -775,11 +749,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public Map<Integer, String> getServiceIdToNameMap(){
-        if (serviceId2NameMap == null) {
-            createServiceIdNameMaps();
+        Map<Integer,String> serviceMap = new HashMap<Integer,String>();
+        for (OnmsServiceType type : getServiceTypeDao().findAll()) {
+            serviceMap.put(type.getId(), type.getName());
         }
-
-        return (new HashMap<Integer, String>(serviceId2NameMap));
+        return serviceMap;
     }
 
     /* (non-Javadoc)
@@ -787,28 +761,12 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public Map<String, Integer> getServiceNameToIdMap(){
-        if (serviceName2IdMap == null) {
-            createServiceIdNameMaps();
+        Map<String,Integer> serviceMap = new HashMap<String,Integer>();
+        for (OnmsServiceType type : getServiceTypeDao().findAll()) {
+            serviceMap.put(type.getName(), type.getId());
         }
-
-        return (new HashMap<String, Integer>(serviceName2IdMap));
+        return serviceMap;
     }
-
-    protected void createServiceIdNameMaps() {
-        HashMap<Integer, String> idMap = new HashMap<Integer, String>();
-        HashMap<String, Integer> nameMap = new HashMap<String, Integer>();
-        
-        List<OnmsServiceType> services = getServiceTypeDao().findAll();
-        for(OnmsServiceType servType : services) {
-            idMap.put(servType.getId(), servType.getName());
-            nameMap.put(servType.getName(), servType.getId());
-        }
-
-        serviceId2NameMap = idMap;
-        serviceName2IdMap = nameMap;
-    }
-    
-    
 
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLikeAndIpLike(java.lang.String, java.lang.String, int)

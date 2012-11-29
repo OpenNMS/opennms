@@ -71,7 +71,12 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
     /** {@inheritDoc} */
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) ;
     
-    
+
+    public String getStringValue(SnmpValue result) {
+    	if (hex)
+    		return result.toHexString();
+    	return result.toString();
+    }
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
      * by the operator and the operand from the configuration file.
@@ -88,11 +93,7 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
         retVal = isCriteriaNull(result, operator, operand);
         
         if (retVal == null) {
-        	String value = null;
-        	if (hex)
-        		value = result.toHexString();
-        	else
-        		value = result.toDisplayString();
+        	String value = getStringValue(result);
             retVal = checkStringCriteria(operator, operand, value);
             
             if (retVal == null) {
