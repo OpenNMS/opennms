@@ -16,6 +16,7 @@ use IO::Handle;
 require Exporter;
 
 our @ISA = qw(Exporter);
+our @MERGE_OPTIONS = qw(-Xpatience -Xignore-space-change -Xignore-all-space -Xrenormalize);
 
 our $VERSION = '0.1.0';
 
@@ -476,7 +477,7 @@ sub merge {
 	}
 
 	git_cmd_try {
-		$self->_git()->command('merge', $branch);
+		$self->_git()->command('merge', @MERGE_OPTIONS, $branch);
 	} "Error \%d while merging the '$branch' branch into the current branch: \%s";
 
 	return $self;
@@ -497,7 +498,7 @@ sub merge_or_fail {
 	}
 
 	try {
-		my $result = $self->_git()->command('merge', $branch);
+		my $result = $self->_git()->command('merge', @MERGE_OPTIONS, $branch);
 	} catch Git::Error::Command with {
 		my $E = shift;
 		croak "Error while running git merge $branch: " . $E->stringify;
