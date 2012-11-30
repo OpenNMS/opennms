@@ -233,8 +233,13 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			//Enters
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers()).with(enterTransition())
-			    .transition().styleTween("stroke-width", edgeStrokeWidthTween(topologyView));
-
+			    //.transition().styleTween("stroke-width", edgeStrokeWidthTween(topologyView));
+			    .transition().style("stroke-width", "7px");
+			
+			
+			D3.d3().select(topologyView.getSVGViewPort())
+			    .transition().duration(30000)
+			    .attr("transform", topologyView.getViewportTransform() );
 			//vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers()).with(enterTransition());
 			
 		}
@@ -244,10 +249,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
                 @Override
                 public Double call(GWTEdge edge, int index, String a) {
-                    D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
-                    double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
-                    final double strokeWidth = 5 * (1/scale);
-                    return strokeWidth;
+                    //D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
+                    //double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
+                    //final double strokeWidth = 5 * (1/scale);
+                    return 7.0; //strokeWidth;
                 }
                 
             };
@@ -313,8 +318,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			};
 			return vertexGroup.selectAll(GWTVertex.VERTEX_CLASS_NAME)
 					.data(graph.getVertices(), vertexIdentifierFunction);
-//			return vertexGroup.selectAll(GWTVertex.VERTEX_CLASS_NAME)
-//					.data(graph.getVertices(m_semanticZoomLevel), vertexIdentifierFunction);
 		}
 
 		private D3 getEdgeSelection(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView) {
@@ -331,8 +334,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			};
 			return edgeGroup.selectAll(GWTEdge.SVG_EDGE_ELEMENT).data(graph.getEdges(), edgeIdentifierFunction);
-//			return edgeGroup.selectAll(GWTEdge.SVG_EDGE_ELEMENT)
-//						.data(graph.getEdges(m_semanticZoomLevel), edgeIdentifierFunction);
 		}
 
 		public Handler<GWTEdge> getEdgeContextHandler() {
@@ -371,16 +372,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	private SVGGraphDrawer m_graphDrawer;
 	private SVGGraphDrawerNoTransition m_graphDrawerNoTransition;
 	private List<Element> m_selectedElements = new ArrayList<Element>();
-	private int m_semanticZoomLevel;
-	private int m_oldSemanticZoomLevel;
 	private DragHandlerManager m_svgDragHandlerManager;
-    private boolean m_panToSelection = false;
     private ServiceRegistry m_serviceRegistry;
     private TopologyViewRenderer m_currentViewRender;
     
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
-    private boolean m_fitToView;
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -635,24 +632,20 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-
+	    
 		if(client.updateComponent(this, uidl, true)) {
 			return;
 		}
-
+		
+		GWTGraph graph = GWTGraph.create();
+		
 		m_client = client;
 		m_paintableId = uidl.getId();
-
-		setScale(uidl.getDoubleAttribute("scale"), uidl.getIntAttribute("clientX"), uidl.getIntAttribute("clientY"));
-		setSemanticZoomLevel(uidl.getIntAttribute("semanticZoomLevel"));
-		setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
-		setFitToView(uidl.getBooleanAttribute("fitToView"));
 		setActiveTool(uidl.getStringAttribute("activeTool"));
-
+        
 		UIDL graphUIDL = uidl.getChildByTagName("graph");
 		Iterator<?> children = graphUIDL.getChildIterator();
-
-		GWTGraph graph = GWTGraph.create();
+		
 		GWTVertex.setBackgroundImage(client.translateVaadinUri("theme://images/vertex_circle_selector.png"));
 		while(children.hasNext()) {
 			UIDL child = (UIDL) children.next();
@@ -715,17 +708,23 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		        }
 		    }
 		}
-
+        
+        graph.setScale(uidl.getDoubleAttribute("scale"));
+        graph.setClientX(uidl.getIntAttribute("clientX"));
+        graph.setClientY(uidl.getIntAttribute("clientY"));
+        graph.setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
+        graph.setFitToView(uidl.getBooleanAttribute("fitToView"));
+        
+        if(m_scale != graph.getScale()) {
+            m_scale = uidl.getDoubleAttribute("scale");
+            updateScale(m_graph.getScale(), graph.getScale(), graph.getClientX(), graph.getClientY());
+            graph.setViewportTransform(m_topologyView.getViewportTransform());
+        }
+        
+        
 		setGraph(graph);
+        
 		
-	}
-
-	private void setFitToView(boolean bool) {
-	    m_fitToView = bool;
-    }
-	
-	private boolean isFitToView() {
-	    return m_fitToView;
 	}
 
     private void setActiveTool(String toolname) {
@@ -738,29 +737,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	    }
     }
 
-    private void setPanToSelection(boolean bool) {
-        m_panToSelection = bool;
-    }
-	
-	private boolean isPanToSelection() {
-	    return m_panToSelection;
-	}
-
-    private void setSemanticZoomLevel(int level) {
-		m_oldSemanticZoomLevel = m_semanticZoomLevel;
-		m_semanticZoomLevel = level;
-	}
-
-	private void setScale(double scale, int clientX, int clientY) {
-	    if(m_scale != scale) {
-			double oldScale = m_scale;
-			m_scale = scale;
-			updateScale(oldScale, m_scale, clientX, clientY);
-		}
-
-	}
-
-	/**
+    /**
 	 * Sets the graph, updates the ViewRenderer if need be and 
 	 * updates all graphUpdateListeners
 	 * @param graph
@@ -768,9 +745,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	private void setGraph(GWTGraph graph) {
 		m_graph = graph;
 		updateGraphUpdateListeners();
-		if(isPanToSelection()) {
+		
+		if(m_graph.isPanToSelection()) {
 		    centerSelection(m_graph.getVertices());
-		} else if(isFitToView()) {
+		} else if(m_graph.isFitToView()) {
 		    fitMapToView(m_graph.getVertices());
 		}
         
@@ -910,11 +888,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     
     @Override
     public void onMouseWheel(double newScale, int clientX, int clientY) {
-        m_client.updateVariable(m_paintableId, "mapScale", newScale, false);
-        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
-        m_client.updateVariable(m_paintableId, "clientY", clientY, false);
-        
-        m_client.sendPendingVariableChanges();
+        consoleLog("mapScale: " + newScale);
+//        m_client.updateVariable(m_paintableId, "scrollWheelScale", newScale, false);
+//        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
+//        m_client.updateVariable(m_paintableId, "clientY", clientY, false);
+//        
+//        m_client.sendPendingVariableChanges();
         
     }
     

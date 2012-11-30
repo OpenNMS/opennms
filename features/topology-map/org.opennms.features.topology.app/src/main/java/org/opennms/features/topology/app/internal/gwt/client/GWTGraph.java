@@ -31,6 +31,8 @@ package org.opennms.features.topology.app.internal.gwt.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
@@ -39,7 +41,10 @@ public final class GWTGraph extends JavaScriptObject {
     protected GWTGraph() {}
     
     public static final native GWTGraph create() /*-{
-    	return { "vertices":[], "edges":[], "idToVMap":{} };
+    	return { "vertices":[], "edges":[], "idToVMap":{}, 
+    	         "scale":0, "oldScale":0, "clientX":0, "clientY":0, 
+    	         "viewTransformation":{}, "panToSelection":false,
+    	         "fitToView":false };
 	}-*/;
 
     public final native JsArray<GWTVertex> getVertices()/*-{
@@ -119,5 +124,56 @@ public final class GWTGraph extends JavaScriptObject {
 	public GWTVertex getVertex(String vertexKey) {
 		return get(vertexKey);
 	}
+
+    public native double getScale() /*-{
+        return this.scale;
+    }-*/;
+
+    public native void setScale(double scale) /*-{
+        if(this.scale != scale) {
+            this.oldScale = this.scale;
+            this.scale = scale;
+        }
+    }-*/;
+    
+    public native double getOldScale() /*-{
+        return this.oldScale;
+    }-*/;
+
+    public native void setClientX(int clientX) /*-{
+        this.clientX = clientX;
+    }-*/;
+
+    public native void setClientY(int clientY) /*-{
+        this.clientY = clientY;
+    }-*/;
+
+    public native int getClientX() /*-{
+        return this.clientX;
+    }-*/;
+    
+    public native int getClientY() /*-{
+        return this.clientY;
+    }-*/;
+
+    public native void setViewportTransform(SVGMatrix viewportTransform) /*-{
+        this.viewTransform = viewportTransform;
+    }-*/;
+
+    public native void setPanToSelection(boolean panToSelection) /*-{
+        this.panToSelection = panToSelection;
+    }-*/;
+    
+    public native boolean isPanToSelection() /*-{
+        return this.panToSelection;
+    }-*/;
+
+    public native void setFitToView(boolean fitToView) /*-{
+        this.fitToView = fitToView;
+    }-*/;
+
+    public native boolean isFitToView() /*-{
+        return this.fitToView;
+    }-*/;
 
 }
