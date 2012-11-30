@@ -268,7 +268,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text").text(label()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
