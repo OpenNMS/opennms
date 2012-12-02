@@ -34,23 +34,33 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+/**
+ * Filter for adding the defined namespace to all elements of a xml document.
+ * We have many xmls without namespace but want to validation all of them
+ * against said namespace.
+ */
 public class SimpleNamespaceFilter extends XMLFilterImpl {
     private String m_namespaceUri;
+
     private boolean m_addNamespace = false;
+
     private boolean m_addedNamespace = false;
 
-    public SimpleNamespaceFilter(final String namespaceUri, final boolean addNamespace) {
+    public SimpleNamespaceFilter(final String namespaceUri,
+            final boolean addNamespace) {
         super();
 
-        LogUtils.debugf(this, "SimpleNamespaceFilter initalized with namespace %s (%s)", namespaceUri, Boolean.valueOf(addNamespace));
+        LogUtils.debugf(this,
+                        "SimpleNamespaceFilter initalized with namespace %s (%s)",
+                        namespaceUri, Boolean.valueOf(addNamespace));
         if (addNamespace) {
             this.m_namespaceUri = namespaceUri.intern();
-        } else { 
+        } else {
             this.m_namespaceUri = "".intern();
         }
         this.m_addNamespace = addNamespace;
     }
-	
+
     @Override
     public void startDocument() throws SAXException {
         super.startDocument();
@@ -58,61 +68,92 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
             startControlledPrefixMapping();
         }
     }
+
     @Override
-    public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
-    	if (m_addNamespace) {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, m_namespaceUri, localName, qName, attributes);
+    public void startElement(final String uri, final String localName,
+            final String qName, final Attributes attributes)
+            throws SAXException {
+        if (m_addNamespace) {
+            if (LogUtils.isTraceEnabled(this))
+                LogUtils.tracef(this,
+                                "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s",
+                                uri, m_namespaceUri, localName, qName,
+                                attributes);
 
-        	final String type = attributes.getValue("http://www.w3.org/2001/XMLSchema-instance", "type");
+            final String type = attributes.getValue("http://www.w3.org/2001/XMLSchema-instance",
+                                                    "type");
 
-        	// we found an xsi:type annotation, ignore to avoid, eg:
-			// org.xml.sax.SAXParseException: cvc-elt.4.2: Cannot resolve 'events' to a type definition for element 'events'.
-        	if (type != null) {
-    			final AttributesImpl att = new AttributesImpl();
-            	for (int i = 0; i < attributes.getLength(); i++) {
-            		if (!attributes.getLocalName(i).equals("type") || !attributes.getURI(i).equals("http://www.w3.org/2001/XMLSchema-instance")) {
-            			att.addAttribute(attributes.getURI(i), attributes.getLocalName(i), attributes.getQName(i), attributes.getType(i), attributes.getValue(i));
-            		}
-            	}
-        		super.startElement(m_namespaceUri, localName, qName, att);
-        	} else {
-            	super.startElement(m_namespaceUri, localName, qName, attributes);
-        	}
-    	}  else {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, uri, localName, qName, attributes);
-    		super.startElement(uri, localName, qName, attributes);
-    	}
+            // we found an xsi:type annotation, ignore to avoid, eg:
+            // org.xml.sax.SAXParseException: cvc-elt.4.2: Cannot resolve
+            // 'events' to a type definition for element 'events'.
+            if (type != null) {
+                final AttributesImpl att = new AttributesImpl();
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    if (!attributes.getLocalName(i).equals("type")
+                            || !attributes.getURI(i).equals("http://www.w3.org/2001/XMLSchema-instance")) {
+                        att.addAttribute(attributes.getURI(i),
+                                         attributes.getLocalName(i),
+                                         attributes.getQName(i),
+                                         attributes.getType(i),
+                                         attributes.getValue(i));
+                    }
+                }
+                super.startElement(m_namespaceUri, localName, qName, att);
+            } else {
+                super.startElement(m_namespaceUri, localName, qName,
+                                   attributes);
+            }
+        } else {
+            if (LogUtils.isTraceEnabled(this))
+                LogUtils.tracef(this,
+                                "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s",
+                                uri, uri, localName, qName, attributes);
+            super.startElement(uri, localName, qName, attributes);
+        }
     }
 
     @Override
-    public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-    	if(m_addNamespace) {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, new uri = %s, localName = %s, qName = %s", uri, m_namespaceUri, localName, qName);
-    		super.endElement(m_namespaceUri, localName, qName);
-    	} else {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, new uri = %s, localName = %s, qName = %s", uri, uri, localName, qName);
-    		super.endElement(uri, localName, qName);
-    	}
+    public void endElement(final String uri, final String localName,
+            final String qName) throws SAXException {
+        if (m_addNamespace) {
+            if (LogUtils.isTraceEnabled(this))
+                LogUtils.tracef(this,
+                                "end:   uri = %s, new uri = %s, localName = %s, qName = %s",
+                                uri, m_namespaceUri, localName, qName);
+            super.endElement(m_namespaceUri, localName, qName);
+        } else {
+            if (LogUtils.isTraceEnabled(this))
+                LogUtils.tracef(this,
+                                "end:   uri = %s, new uri = %s, localName = %s, qName = %s",
+                                uri, uri, localName, qName);
+            super.endElement(uri, localName, qName);
+        }
     }
 
     @Override
-    public void startPrefixMapping(final String prefix, final String url) throws SAXException {
-    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "startPrefixMapping: prefix = %s, url = %s", prefix, url);
+    public void startPrefixMapping(final String prefix, final String url)
+            throws SAXException {
+        if (LogUtils.isTraceEnabled(this))
+            LogUtils.tracef(this,
+                            "startPrefixMapping: prefix = %s, url = %s",
+                            prefix, url);
         if (m_addNamespace) {
             this.startControlledPrefixMapping();
         } else {
-        	super.startPrefixMapping(prefix, url);
+            super.startPrefixMapping(prefix, url);
         }
 
     }
 
     private void startControlledPrefixMapping() throws SAXException {
-    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "startControlledPrefixMapping");
+        if (LogUtils.isTraceEnabled(this))
+            LogUtils.tracef(this, "startControlledPrefixMapping");
         if (m_addNamespace && !m_addedNamespace) {
-            //We should add namespace since it is set and has not yet been done.
+            // We should add namespace since it is set and has not yet been
+            // done.
             super.startPrefixMapping("".intern(), m_namespaceUri);
 
-            //Make sure we don't do it twice
+            // Make sure we don't do it twice
             m_addedNamespace = true;
         }
     }
