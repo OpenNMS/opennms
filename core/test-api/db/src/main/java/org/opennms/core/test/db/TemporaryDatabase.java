@@ -48,6 +48,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.utils.LogUtils;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
@@ -329,7 +330,7 @@ public class TemporaryDatabase implements DataSource {
         }
 
         if (m_destroyed) {
-            System.err.println("Database '" + getTestDatabase() + "' already destroyed");
+        	LogUtils.warnf(this,"Database '" + getTestDatabase() + "' already destroyed");
             // database already destroyed
             return;
         }
@@ -354,14 +355,14 @@ public class TemporaryDatabase implements DataSource {
                 } catch (SQLException e) {
                     if ((dropAttempt + 1) >= MAX_DATABASE_DROP_ATTEMPTS) {
                         final String message = "Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e;
-                        System.err.println(new Date().toString() + ": " + message);
+                        LogUtils.errorf(this, new Date().toString() + ": " + message);
                         dumpThreads();
                         
                         SQLException newException = new SQLException(message);
                         newException.initCause(e);
                         throw newException;
                     } else {
-                        System.err.println(new Date().toString() + ": Failed to drop test database on attempt " + (dropAttempt + 1) + ": " + e);
+                    	LogUtils.warnf(this, new Date().toString() + ": Failed to drop test database on attempt " + (dropAttempt + 1) + ": " + e);
                         Thread.sleep(1000);
                     }
                 } finally {
@@ -380,7 +381,7 @@ public class TemporaryDatabase implements DataSource {
             try {
                 adminConnection.close();
             } catch (SQLException e) {
-                System.err.println("Error closing administrative database "
+            	LogUtils.errorf(this, "Error closing administrative database "
                         + "connection after attempting to drop "
                         + "test database");
                 e.printStackTrace();
@@ -404,7 +405,7 @@ public class TemporaryDatabase implements DataSource {
                 daemons++;
             }
         }
-        System.err.println("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
+        LogUtils.errorf(TemporaryDatabase.class, "Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
         Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
             public int compare(final Thread t1, final Thread t2) {
                 return Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId()));
@@ -414,12 +415,12 @@ public class TemporaryDatabase implements DataSource {
 
         for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {
             Thread thread = entry.getKey();
-            System.err.println("Thread " + thread.getId() + (thread.isDaemon() ? " (daemon)" : "") + ": " + thread + " (state: " + thread.getState() + ")");
+            LogUtils.errorf(TemporaryDatabase.class, "Thread " + thread.getId() + (thread.isDaemon() ? " (daemon)" : "") + ": " + thread + " (state: " + thread.getState() + ")");
             for (StackTraceElement e : entry.getValue()) {
-                System.err.println("\t" + e);
+            	LogUtils.errorf(TemporaryDatabase.class, "\t" + e);
             }
         }
-        System.err.println("Thread dump completed.");
+        LogUtils.errorf(TemporaryDatabase.class, "Thread dump completed.");
     }
 
 
