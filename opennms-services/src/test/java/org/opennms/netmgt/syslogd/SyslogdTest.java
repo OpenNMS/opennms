@@ -224,7 +224,7 @@ public class SyslogdTest implements InitializingBean {
     @Test
     public void testRegexSeverityMatch() throws Exception {
         startSyslogdGracefully();
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
         String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for dinner anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly";
@@ -253,7 +253,7 @@ public class SyslogdTest implements InitializingBean {
     @Test
     public void testRegexFacilitySeverityProcessMatch() throws Exception {
         startSyslogdGracefully();
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
         String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 maltd: beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess";
@@ -286,7 +286,7 @@ public class SyslogdTest implements InitializingBean {
     @Test
     public void testRegexFacilitySeverityMatch() throws Exception {
         startSyslogdGracefully();
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity";
@@ -318,7 +318,7 @@ public class SyslogdTest implements InitializingBean {
     @Test
     public void testRegexFacilityMatch() throws Exception {
         startSyslogdGracefully();
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly";
@@ -349,7 +349,7 @@ public class SyslogdTest implements InitializingBean {
     @Test
     public void testRegexProcessMatch() throws Exception {
         startSyslogdGracefully();
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beerd: beer - Not just for breakfast anymore";
         final String testUEI = "uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly";
@@ -420,7 +420,7 @@ public class SyslogdTest implements InitializingBean {
 
     @Test
 	public void testRegexUEIRewrite() throws Exception {
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
                       m_localhost, "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       "100 out of 666 tests failed for bar");

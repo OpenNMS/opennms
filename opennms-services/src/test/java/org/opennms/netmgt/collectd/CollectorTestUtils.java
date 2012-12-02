@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -66,16 +67,16 @@ public abstract class CollectorTestUtils {
 
     public static void persistCollectionSet(CollectionSpecification spec, CollectionSet collectionSet) {
         RrdRepository repository=spec.getRrdRepository("default");
-        System.err.println("repository = " + repository);
+        LogUtils.infof(CollectorTestUtils.class, "repository = " + repository);
         ServiceParameters params=new ServiceParameters(spec.getReadOnlyPropertyMap());
-        System.err.println("service parameters = " + params);
+        LogUtils.infof(CollectorTestUtils.class, "service parameters = " + params);
         BasePersister persister;
         if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
             persister=new GroupPersister(params, repository);
         } else {
             persister=new OneToOnePersister(params, repository);
         }
-        System.err.println("persister = " + persister);
+        LogUtils.infof(CollectorTestUtils.class, "persister = " + persister);
         collectionSet.visit(persister);
     }
 

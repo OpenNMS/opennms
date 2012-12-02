@@ -103,7 +103,7 @@ public class Nms4335Test implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging(true, "TRACE");
+        MockLogAppender.setupLogging(true, "WARN");
 
         InputStream stream = null;
         try {

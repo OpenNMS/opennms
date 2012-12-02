@@ -40,6 +40,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
@@ -228,7 +229,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
                 collectionSet.getStatus());
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
-        System.err.println("FIRST COLLECTION FINISHED");
+        LogUtils.infof(this, "FIRST COLLECTION FINISHED");
 
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
@@ -238,7 +239,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
-        System.err.println("SECOND COLLECTION FINISHED");
+        LogUtils.infof(this, "SECOND COLLECTION FINISHED");
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
@@ -393,7 +394,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
-        System.err.println("FIRST COLLECTION FINISHED");
+        LogUtils.infof(this, "FIRST COLLECTION FINISHED");
 
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
@@ -403,7 +404,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
-        System.err.println("SECOND COLLECTION FINISHED");
+        LogUtils.infof(this, "SECOND COLLECTION FINISHED");
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
@@ -466,7 +467,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
-        System.err.println("FIRST COLLECTION FINISHED");
+        LogUtils.infof(this, "FIRST COLLECTION FINISHED");
 
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
@@ -476,7 +477,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
-        System.err.println("SECOND COLLECTION FINISHED");
+        LogUtils.infof(this, "SECOND COLLECTION FINISHED");
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);

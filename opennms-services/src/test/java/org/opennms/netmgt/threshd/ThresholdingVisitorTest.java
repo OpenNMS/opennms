@@ -199,7 +199,8 @@ public class ThresholdingVisitorTest {
 
         // This is set at ERROR because JEXL prints some harmless, expected warning messages
         m_defaultErrorLevelToCheck = Level.ERROR;
-        System.setProperty("mock.logLevel", "DEBUG");
+        // bullshit! use log4j.properties plx
+        // System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
