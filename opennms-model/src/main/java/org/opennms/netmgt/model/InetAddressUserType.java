@@ -34,6 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
@@ -99,17 +100,25 @@ public class InetAddressUserType implements UserType {
             // Format the IP address into a uniform format
             Hibernate.STRING.nullSafeSet(st, InetAddressUtils.toIpAddrString((InetAddress)value), index);
         } else if (value instanceof String){
-            try {
-                // Format the IP address into a uniform format
-                Hibernate.STRING.nullSafeSet(st, InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress((String)value)), index);
-            } catch (final IllegalArgumentException e) {
-                // If the argument is not a valid IP address, then just pass it as-is. This
-                // can occur of the query is performing a LIKE query (ie. '192.168.%').
-                //
-                // TODO: Add more validation of this string
-                //
-                Hibernate.STRING.nullSafeSet(st, (String)value, index);
-            }
+			// TODO: Add more validation of this string
+        	String stringValue = (String) value;
+        	
+			// if it's a like expression don't try to convert it
+			// This can occur of the query is performing a LIKE query (ie.
+			// '192.168.%').
+			if (stringValue.contains("%")) {
+				Hibernate.STRING.nullSafeSet(st, (String) value, index);
+			} else {
+
+				try {
+					// Format the IP address into a uniform format
+					Hibernate.STRING.nullSafeSet(st, InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress((String) value)), index);
+				} catch (final IllegalArgumentException e) {
+					// If the argument is not a valid IP address, then just pass
+					// it as-is. 
+					Hibernate.STRING.nullSafeSet(st, (String) value, index);
+				}
+			}
         }
     }
 
