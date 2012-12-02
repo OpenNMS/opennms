@@ -71,6 +71,37 @@ import org.springframework.util.StringUtils;
 
 public class InstallerDb {
 
+    private static final Pattern LANGUAGE_PATTERN = Pattern.compile("(?is)\\bcreate trusted procedural "
+            + "language\\s+['\"]?(\\S+)['\"]?\\s+(.+?);");
+
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("(?is)\\bcreate function\\s+"
+            + "['\"]?(\\S+)['\"]?\\s+" + "(.+? language ['\"]?\\w+['\"]?);");
+
+    private static final Pattern INDEX_PATTERN = Pattern.compile("(?i)\\b(create (?:unique )?index\\s+"
+            + "['\"]?(\\S+)['\"]?\\s+.+?);");
+
+    private static final Pattern CREATE_TABLE_PATTERN = Pattern.compile("(?i)\\bcreate table\\s+['\"]?(\\S+)['\"]?"
+            + "\\s+\\((.+?)\\);");
+
+    private static final Pattern SEQ_MAPPING_PATTERN = Pattern.compile("\\s*--#\\s+install:\\s*"
+            + "(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*.*");
+
+    private static final Pattern CREATE_PATTERN = Pattern.compile("(?i)\\s*create\\b.*");
+
+    private static final Pattern CRITERIA_PATTERN = Pattern.compile("\\s*--#\\s+criteria:\\s*(.*)");
+
+    private static final Pattern INSERT_PATTERN = Pattern.compile("(?i)INSERT INTO "
+            + "[\"']?([\\w_]+)[\"']?.*");
+
+    private static final Pattern DROP_PATTERN = Pattern.compile("(?i)DROP TABLE [\"']?"
+            + "([\\w_]+)[\"']?.*");
+
+    private static final Pattern EMPTYLINE_PATTERN = Pattern.compile("^\\s*(\\\\.*)?$");
+
+    private static final Pattern CREATE_UNIQUE_PATTERN = Pattern.compile("(?i)\\s*create\\s+((?:unique )?\\w+)\\s+[\"']?(\\w+)[\"']?.*");
+
+    private static final Pattern CREATE_LANGUAGE_PATTERN = Pattern.compile("(?i)\\s*create\\s+trusted procedural language\\s+[\"']?(\\w+)[\"']?.*");
+
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     public static final float POSTGRES_MIN_VERSION = 7.4f;
@@ -80,11 +111,11 @@ public class InstallerDb {
     
     private static Comparator<Constraint> constraintComparator = new Comparator<Constraint>() {
 
-		public int compare(final Constraint o1, final Constraint o2) {
-			return o1.getName().compareTo(o2.getName());
-		}
-    	
-    }; 
+        public int compare(final Constraint o1, final Constraint o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+
+    };
     
     private final IndexDao m_indexDao = new IndexDao();
 
@@ -139,44 +170,27 @@ public class InstallerDb {
     
     private boolean m_no_revert = false;
 
-	private final Pattern m_seqmappingPattern = Pattern.compile("\\s*--#\\s+install:\\s*"
-	        + "(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*.*");
+    private final FileFilter m_sqlFilter = new FileFilter() {
+        public boolean accept(final File pathname) {
+            return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
+                    || pathname.getName().endsWith("Trigger.sql");
+        }
+    };
 
-	private final Pattern m_createPattern = Pattern.compile("(?i)\\s*create\\b.*");
+    private final Pattern m_createFunction = Pattern.compile("(?is)\\b(CREATE(?: OR REPLACE)? FUNCTION\\s+"
+            + "(\\w+)\\s*\\((.*?)\\)\\s+"
+            + "RETURNS\\s+(\\S+)\\s+AS\\s+"
+            + "(.+? language ['\"]?\\w+['\"]?);)");
 
-	private final Pattern m_criteriaPattern = Pattern.compile("\\s*--#\\s+criteria:\\s*(.*)");
+    private final SimpleDateFormat m_dateParser = new SimpleDateFormat(
+                                                                       "dd-MMM-yyyy HH:mm:ss");
 
-	private final Pattern m_insertPattern = Pattern.compile("(?i)INSERT INTO "
-	        + "[\"']?([\\w_]+)[\"']?.*");
+    private final SimpleDateFormat m_dateFormatter = new SimpleDateFormat(
+                                                                          "yyyy-MM-dd HH:mm:ss");
 
-	private final Pattern m_dropPattern = Pattern.compile("(?i)DROP TABLE [\"']?"
-	        + "([\\w_]+)[\"']?.*");
+    private final char m_spins[] = { '/', '-', '\\', '|' };
 
-	private final Pattern m_emptyLine = Pattern.compile("^\\s*(\\\\.*)?$");
-
-	private final Pattern m_createUnique = Pattern.compile("(?i)\\s*create\\s+((?:unique )?\\w+)\\s+[\"']?(\\w+)[\"']?.*");
-
-	private final Pattern m_createLanguagePattern = Pattern.compile("(?i)\\s*create\\s+trusted procedural language\\s+[\"']?(\\w+)[\"']?.*");
-
-	private final FileFilter m_sqlFilter = new FileFilter() {
-	    public boolean accept(final File pathname) {
-	        return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
-	             || pathname.getName().endsWith("Trigger.sql");
-	    }
-	};
-
-	private final Pattern m_createFunction = Pattern.compile("(?is)\\b(CREATE(?: OR REPLACE)? FUNCTION\\s+"
-	                                    + "(\\w+)\\s*\\((.*?)\\)\\s+"
-	                                    + "RETURNS\\s+(\\S+)\\s+AS\\s+"
-	                                    + "(.+? language ['\"]?\\w+['\"]?);)");
-
-	private final SimpleDateFormat m_dateParser = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-
-	private final SimpleDateFormat m_dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	private final char m_spins[] = { '/', '-', '\\', '|' };
-
-	private LinkedList<Constraint> m_constraints;
+    private LinkedList<Constraint> m_constraints;
 
     /**
      * <p>Constructor for InstallerDb.</p>
@@ -215,19 +229,19 @@ public class InstallerDb {
         while ((line = r.readLine()) != null) {
             Matcher m;
 
-            m = m_emptyLine.matcher(line);
+            m = EMPTYLINE_PATTERN.matcher(line);
             if (m.matches()) {
                 continue;
             }
 
-            m = m_seqmappingPattern.matcher(line);
+            m = SEQ_MAPPING_PATTERN.matcher(line);
             if (m.matches()) {
             	final String[] a = { m.group(2), m.group(3) };
                 m_seqmapping.put(m.group(1), a);
                 continue;
             }
             
-            m = m_criteriaPattern.matcher(line);
+            m = CRITERIA_PATTERN.matcher(line);
             if (m.matches()) {
                 criteria = m.group(1);
                 continue;
@@ -237,8 +251,8 @@ public class InstallerDb {
                 continue;
             }
 
-            if (m_createPattern.matcher(line).matches()) {
-                m = m_createUnique.matcher(line);
+            if (CREATE_PATTERN.matcher(line).matches()) {
+                m = CREATE_UNIQUE_PATTERN.matcher(line);
                 if (m.matches()) {
                     String type = m.group(1);
                     String name = m.group(2).replaceAll("^[\"']", "").replaceAll("[\"']$",  "");
@@ -254,7 +268,7 @@ public class InstallerDb {
                             //m_functions.add(name);
                         }
                     } else if (type.toLowerCase().indexOf("trusted") != -1) {
-                        m = m_createLanguagePattern.matcher(line);
+                        m = CREATE_LANGUAGE_PATTERN.matcher(line);
                         if (!m.matches()) {
                             throw new Exception("Could not match name and type of the trusted procedural language in this line: " + line);
                         }
@@ -276,7 +290,7 @@ public class InstallerDb {
                 continue;
             }
 
-            m = m_insertPattern.matcher(line);
+            m = INSERT_PATTERN.matcher(line);
             if (m.matches()) {
             	final String table = m.group(1);
                 final Insert insert = new Insert(table, line, criteria);
@@ -301,7 +315,7 @@ public class InstallerDb {
                 continue;
             }
 
-            m = m_dropPattern.matcher(line);
+            m = DROP_PATTERN.matcher(line);
             if (m.matches()) {
                 m_drops.add(m.group(1));
 
@@ -966,10 +980,10 @@ public class InstallerDb {
      * @return a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public String getXFromSQL(String item, final String regex, final int itemGroup, final int returnGroup, final String description) throws Exception {
+    public String getXFromSQL(String item, final Pattern pattern, final int itemGroup, final int returnGroup, final String description) throws Exception {
 
         item = item.toLowerCase();
-        final Matcher m = Pattern.compile(regex).matcher(getSql());
+        final Matcher m = pattern.matcher(getSql());
 
         while (m.find()) {
             if (m.group(itemGroup).toLowerCase().equals(item)) {
@@ -2303,8 +2317,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public String getTableCreateFromSQL(final String table) throws Exception {
-        return getXFromSQL(table, "(?i)\\bcreate table\\s+['\"]?(\\S+)['\"]?"
-                + "\\s+\\((.+?)\\);", 1, 2, "table");
+        return getXFromSQL(table, CREATE_TABLE_PATTERN, 1, 2, "table");
     }
 
     /**
@@ -2315,8 +2328,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public String getIndexFromSQL(final String index) throws Exception {
-        return getXFromSQL(index, "(?i)\\b(create (?:unique )?index\\s+"
-                + "['\"]?(\\S+)['\"]?\\s+.+?);", 2, 1, "index");
+        return getXFromSQL(index, INDEX_PATTERN, 2, 1, "index");
     }
 
     /**
@@ -2327,9 +2339,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public String getFunctionFromSQL(final String function) throws Exception {
-        return getXFromSQL(function, "(?is)\\bcreate function\\s+"
-                + "['\"]?(\\S+)['\"]?\\s+"
-                + "(.+? language ['\"]?\\w+['\"]?);", 1, 2, "function");
+        return getXFromSQL(function, FUNCTION_PATTERN, 1, 2, "function");
     }
 
     /**
@@ -2340,8 +2350,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public String getLanguageFromSQL(final String language) throws Exception {
-        return getXFromSQL(language, "(?is)\\bcreate trusted procedural "
-                + "language\\s+['\"]?(\\S+)['\"]?\\s+(.+?);", 1, 2,
+        return getXFromSQL(language, LANGUAGE_PATTERN, 1, 2,
                            "language");
     }
 
