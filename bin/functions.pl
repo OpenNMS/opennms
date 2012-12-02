@@ -129,7 +129,7 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 
 if (defined $TESTS) {
 	debug("tests are enabled");
-	unshift(@ARGS, '-DfailIfNoTests=false');
+	unshift(@ARGS, '-DfailIfNoTests=false -fn -Dorg.opennms.core.utils.InetAddressUtils.lookup.disabled=true');
 } else {
 	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
 	unshift(@ARGS, '-Dmaven.test.skip.exec=true');

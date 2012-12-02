@@ -365,7 +365,7 @@ final class SuspectEventProcessor implements Runnable {
         entryNode.setCreationTime(now);
         entryNode.setLastPoll(now);
         entryNode.setNodeType(DbNodeEntry.NODE_TYPE_ACTIVE);
-        entryNode.setLabel(primaryIf.getHostName());
+        entryNode.setLabel(InetAddressUtils.getHostname(primaryIf));
         if (entryNode.getLabel().equals(str(primaryIf)))
             entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_ADDRESS);
         else
@@ -487,7 +487,7 @@ final class SuspectEventProcessor implements Runnable {
         DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(nodeId,
                                                                  ifaddr);
         ipIfEntry.setLastPoll(now);
-        ipIfEntry.setHostname(ifaddr.getHostName());
+        ipIfEntry.setHostname(InetAddressUtils.getHostname(ifaddr));
 
         /*
          * NOTE: (reference internal bug# 201) If the ip is 'managed', it
@@ -682,7 +682,7 @@ final class SuspectEventProcessor implements Runnable {
             DbIpInterfaceEntry xipIfEntry = DbIpInterfaceEntry.create(nodeId,
                                                                       xifaddr);
             xipIfEntry.setLastPoll(now);
-            xipIfEntry.setHostname(xifaddr.getHostName());
+            xipIfEntry.setHostname(InetAddressUtils.getHostname(xifaddr));
 
             /*
              * NOTE: (reference internal bug# 201) If the ip is 'managed', it
@@ -1969,7 +1969,7 @@ final class SuspectEventProcessor implements Runnable {
         EventBuilder bldr = createEventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
         bldr.setNodeid(nodeId);
         bldr.setInterface(ipAddr);
-        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, InetAddressUtils.getHostname(ipAddr));
         bldr.addParam(EventConstants.PARM_METHOD, "icmp");
 
         sendEvent(bldr.getEvent());
@@ -1996,7 +1996,7 @@ final class SuspectEventProcessor implements Runnable {
         bldr.setNodeid(nodeEntry.getNodeId());
         bldr.setInterface(ipAddr);
         bldr.setService(svcName);
-        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, InetAddressUtils.getHostname(ipAddr));
         bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel());
         bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, nodeEntry.getLabelSource());
 
@@ -2029,7 +2029,7 @@ final class SuspectEventProcessor implements Runnable {
     private void createAndSendSuspectScanCompletedEvent(InetAddress ipAddr) {
     	EventBuilder bldr = createEventBuilder(EventConstants.SUSPECT_SCAN_COMPLETED_EVENT_UEI);
     	bldr.setInterface(ipAddr);
-    	bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
+    	bldr.addParam(EventConstants.PARM_IP_HOSTNAME, InetAddressUtils.getHostname(ipAddr));
     	sendEvent(bldr.getEvent());
     }
 

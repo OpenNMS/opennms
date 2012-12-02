@@ -36,6 +36,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.SystemPropertyUtils;
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Lookup;
@@ -54,6 +55,7 @@ abstract public class InetAddressUtils {
     private static final ByteArrayComparator s_BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     public static final InetAddress UNPINGABLE_ADDRESS;
     public static final InetAddress UNPINGABLE_ADDRESS_IPV6;
+    public static final String LOOKUP_DISABLED = "org.opennms.core.utils.InetAddressUtils.lookup.disabled";
 
     static {
         try {
@@ -624,4 +626,15 @@ abstract public class InetAddressUtils {
     public static String normalizeMacAddress(String macAddress) {
         return macAddressBytesToString(macAddressStringToBytes(macAddress));
     }
+
+	public static String getHostname(InetAddress inetAddr) {
+		if(inetAddr != null) {
+			if(!Boolean.TRUE.equals(Boolean.getBoolean(LOOKUP_DISABLED))) {
+				return inetAddr.getHostName();
+			} else {
+				return inetAddr.getHostAddress();
+			}
+		}
+		return null;
+	}
 }
