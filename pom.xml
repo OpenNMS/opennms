@@ -464,14 +464,6 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-eclipse-plugin</artifactId>
-       <configuration>
-         <additionalConfig>
-           <file>
-             <name>.settings/org.eclipse.jdt.core.prefs</name>
-             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
-           </file>
-         </additionalConfig>
-       </configuration>
      </plugin>
      <plugin>
        <groupId>org.ops4j</groupId>
