@@ -29,7 +29,9 @@
 package org.opennms.netmgt.xmlrpcd;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Hashtable;
+import java.util.Random;
 import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
@@ -39,13 +41,18 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class XmlrpcAnticipatorTest extends TestCase {
-    private static final int PORT = 9000;
+    private int PORT;
     
     private XmlrpcAnticipator m_anticipator;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        
+        // create a socket to find a random free one
+    	ServerSocket serverSocket = new ServerSocket(0);
+    	PORT = serverSocket.getLocalPort();
+    	serverSocket.close();
         
         m_anticipator = new XmlrpcAnticipator(PORT);
     }

@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -79,13 +80,17 @@ public class XmlRpcNotifierTest  {
 
     private static final int s_unknownNodeId = 2;
 
-    private static int s_port = 9000;
+    private int s_port;
     
     private static final boolean USE_DIFFERENT_PORT_PER_TEST = false;
 
     @Before
     public void setUp() throws Exception, InterruptedException, IOException  {
         
+    	// create a socket to find a random free one
+    	ServerSocket serverSocket = new ServerSocket(0);
+    	s_port = serverSocket.getLocalPort();
+    	serverSocket.close();
         
         MockLogAppender.setupLogging();
 
@@ -100,7 +105,7 @@ public class XmlRpcNotifierTest  {
         XmlrpcServer remoteServer = new XmlrpcServer();
         remoteServer.setUrl("http://localhost:" + port);
         
-        m_notifier = new XmlRpcNotifier(new XmlrpcServer[] { remoteServer }, 1, 1500, false, "");
+        m_notifier = new XmlRpcNotifier(new XmlrpcServer[] { remoteServer }, 1, 10, false, "");
 
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
