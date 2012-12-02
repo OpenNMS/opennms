@@ -188,7 +188,7 @@ public class MockLogAppender extends AppenderSkeleton {
      * @param props a {@link java.util.Properties} object.
      */
     public static void setupLogging(final boolean toConsole, final Properties props) {
-    	final String level = System.getProperty("mock.logLevel", "DEBUG");
+    	final String level = System.getProperty("mock.logLevel", "WARN");
         setupLogging(toConsole, level, props);
     }
     
