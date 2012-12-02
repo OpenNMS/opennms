@@ -73,7 +73,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void afterTestMethod(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)", testContext));
+		LogUtils.infof(this, String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)", testContext));
 
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 		if (jtd == null) return;
@@ -140,11 +140,11 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void beforeTestMethod(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)", testContext));
+		LogUtils.infof(this, String.format("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)", testContext));
 
 		// FIXME: Is there a better way to inject the instance into the test class?
 		if (testContext.getTestInstance() instanceof TemporaryDatabaseAware<?>) {
-			System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: "
+			LogUtils.infof(this, "injecting TemporaryDatabase into TemporaryDatabaseAware test: "
 							+ testContext.getTestInstance().getClass().getSimpleName() + "."
 							+ testContext.getTestMethod().getName());
 			injectTemporaryDatabase(testContext);
@@ -208,7 +208,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
 	@Override
 	public void prepareTestInstance(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)", testContext));
+		LogUtils.infof(this, String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)", testContext));
 		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 
 		if (jtd == null) {
@@ -230,8 +230,8 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		DataSourceFactory.setInstance(proxy);
 		
 		testContext.setAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource", pooledDataSource);
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
-        System.err.println("Temporary Database Name: " + m_database.getTestDatabase());
+		LogUtils.infof(this, String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
+		LogUtils.infof(this, "Temporary Database Name: " + m_database.getTestDatabase());
 	}
 
 	private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {
