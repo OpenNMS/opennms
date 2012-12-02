@@ -2310,7 +2310,7 @@ public class PollablesTest {
             public void run() {
                 m_lockCount++;
                 assertEquals(1, m_lockCount);
-                try { Thread.sleep(3000); } catch (InterruptedException e) {}
+                try { Thread.sleep(300); } catch (InterruptedException e) {}
                 m_lockCount--;
                 assertEquals(0, m_lockCount);
             }
@@ -2340,7 +2340,7 @@ public class PollablesTest {
             public void run() {
                 m_lockCount++;
                 assertEquals(1, m_lockCount);
-                try { Thread.sleep(5000); } catch (InterruptedException e) {}
+                try { Thread.sleep(500); } catch (InterruptedException e) {}
                 m_lockCount--;
                 assertEquals(0, m_lockCount);
             }
@@ -2355,7 +2355,7 @@ public class PollablesTest {
         final Runnable lockerWithTimeout = new Runnable() {
             public void run() {
                 try {
-                    pNode1.withTreeLock(r, 500);
+                    pNode1.withTreeLock(r, 50);
                     fail("Expected LockUnavailable");
                 } catch (LockUnavailable e) {
                     MockUtil.println("Received expected exception "+e);
