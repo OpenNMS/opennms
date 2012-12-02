@@ -47,8 +47,8 @@ import com.sun.jna.Platform;
  */
 
 public class PingThreadTest {
-    
-    @Before
+
+	@Before
     public void setUp() throws Exception {
         assumeTrue(Platform.isMac());
     }
@@ -64,7 +64,7 @@ public class PingThreadTest {
         try {
         listener.start();
         
-        listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), 1000, 0, pingCount, 1000);
+        listener.ping((Inet4Address) Inet4Address.getLocalHost(), 1000, 0, pingCount, 1000);
         
         } finally {
             listener.stop();
@@ -109,7 +109,7 @@ public class PingThreadTest {
             public void run() {
                 try {
                     Thread.sleep(id/10);
-                    listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), id, 0, count, 1000);
+                    listener.ping((Inet4Address) Inet4Address.getLocalHost(), id, 0, count, 1000);
                 } catch(Throwable e) {
                     e.printStackTrace();
                 }
