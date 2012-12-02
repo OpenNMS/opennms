@@ -36,7 +36,19 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Column {
-    private String m_name = null;
+    private static final Pattern END_QUOTE_PATTERN = Pattern.compile("['\"]$");
+
+	private static final Pattern BEGIN_QUOTE_PATTERN = Pattern.compile("^['\"]");
+
+	private static final Pattern MULTIWHITESPACE_PATTERN = Pattern.compile("\\s+");
+
+	private static final Pattern NAME_TYPE_PATTERN = Pattern.compile("(\\S+)\\s+(.+)");
+
+	private static final Pattern DEFAULT_PATTERN = Pattern.compile("(?i)(.*?)\\s*\\bdefault (.+)");
+
+	private static final Pattern NOT_NULL_PATTERN = Pattern.compile("(?i)(.*)\\bnot null\\b(.*)");
+
+	private String m_name = null;
 
     private String m_type = null;
 
@@ -219,15 +231,15 @@ public class Column {
     public void parse(String column) throws Exception {
         Matcher m;
 
-        m = Pattern.compile("(?i)(.*)\\bnot null\\b(.*)").matcher(column);
+        m = NOT_NULL_PATTERN.matcher(column);
         if (m.matches()) {
             m_notNull = true;
             column = m.group(1) + m.group(2);
         }
+        column = column.trim();
+        column = MULTIWHITESPACE_PATTERN.matcher(column).replaceAll(" ");
 
-        column = column.trim().replaceAll("\\s+", " ");
-
-        m = Pattern.compile("(?i)(.*?)\\s*\\bdefault (.+)").matcher(column);
+        m = DEFAULT_PATTERN.matcher(column);
         if (m.matches()) {
             column = m.group(1);
             setDefaultValue(m.group(2));
@@ -238,10 +250,10 @@ public class Column {
 
         // m =
         // Pattern.compile("((?:['\"])?\\S+?(?:['\"])?)\\s+((?:['\"])?.+?(?:['\"])?)").matcher(column);
-        m = Pattern.compile("(\\S+)\\s+(.+)").matcher(column);
+        m = NAME_TYPE_PATTERN.matcher(column);
         if (m.matches()) {
-            col_name = m.group(1).replaceAll("^['\"]", "").replaceAll("['\"]$", "");
-            col_type = m.group(2).replaceAll("^['\"]", "").replaceAll("['\"]$", "");
+        	col_name = removeQuotes(m.group(1));
+            col_type = removeQuotes(m.group(2));
         } else {
             throw new Exception("cannot parse column: " + column);
         }
@@ -250,6 +262,12 @@ public class Column {
 
         parseColumnType(col_type.trim().toLowerCase());
     }
+
+	private String removeQuotes(String str) {
+		str = BEGIN_QUOTE_PATTERN.matcher(str).replaceAll("");
+		str = END_QUOTE_PATTERN.matcher(str).replaceAll("");
+		return str;
+	}
 
     /**
      * <p>parseColumnType</p>
