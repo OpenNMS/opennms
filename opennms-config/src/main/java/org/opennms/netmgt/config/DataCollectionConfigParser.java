@@ -42,6 +42,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -212,10 +215,13 @@ public class DataCollectionConfigParser {
         
         // Parse configuration files (populate external groups map)
         final CountDownLatch latch = new CountDownLatch(listOfFiles.length);
+
         int i = 0;
         for (final File file : listOfFiles) {
-            Thread thread = new Thread("DataCollectionConfigParser-Thread-" + i++) {
-                public void run() {
+        	// don't use threads here, parsing the XML-files requires to create a XMLReader which is very expensive
+        	// we have to add correct namespace to the xmls, so we can avoid doing it will parsing them
+//            Thread thread = new Thread("DataCollectionConfigParser-Thread-" + i++) {
+//                public void run() {
                     try {
                         log().debug("parseExternalResources: parsing " + file);
                         DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource(file));
@@ -228,9 +234,9 @@ public class DataCollectionConfigParser {
                     } finally {
                         latch.countDown();
                     }
-                }
-            };
-            thread.start();
+//                }
+//            };
+//            thread.start();
         }
 
         try {
