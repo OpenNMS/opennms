@@ -1948,6 +1948,7 @@
   <event-file>events/AKCP.events.xml</event-file>
   <event-file>events/AlcatelLucent.OmniSwitch.events.xml</event-file>
   <event-file>events/AlcatelLucent.SMSBrick.events.xml</event-file>
+  <event-file>events/Allot.events.xml</event-file>
   <event-file>events/Allot.NetXplorer.events.xml</event-file>
   <event-file>events/Allot.SM.events.xml</event-file>
   <event-file>events/Alteon.events.xml</event-file>
@@ -1979,6 +1980,7 @@
   <event-file>events/BGP4.events.xml</event-file>
   <event-file>events/BlackBerryServer-SMIv2.events.xml</event-file>
   <event-file>events/BlackBerryServer.events.xml</event-file>
+  <event-file>events/BladeNetwork.events.xml</event-file>
   <event-file>events/Bluecat.events.xml</event-file>
   <event-file>events/BlueCoat.events.xml</event-file>
   <event-file>events/Brocade.events.xml</event-file>
@@ -2084,6 +2086,7 @@
 <event-file>events/JuniperEvents/mib-jnx-user-aaa.xml</event-file>
 <event-file>events/JuniperEvents/mib-jnx-virtualchassis.xml</event-file>
 <event-file>events/JuniperEvents/mib-jnx-vpn.xml</event-file>
+<event-file>events/JuniperEvents/mib-mpls-l3vpn.xml</event-file>
 <!-- Events for the tcaos family -->
 <event-file>events/JuniperEvents/tcaos/mib-jnx-tca-chassis.xml</event-file>
 <event-file>events/JuniperEvents/tcaos/mib-jnx-tca-gps.xml</event-file>
@@ -2110,8 +2113,13 @@
 <event-file>events/JuniperEvents/mfc/Juniper.MFD.events.xml</event-file>
 <event-file>events/JuniperEvents/mfc/NodeIface.Correlator.events.xml</event-file>
 <event-file>events/JuniperEvents/mfc/TallMaple.events.xml</event-file>
+<event-file>events/JuniperEvents/mfc/Juniper.MFC.events.xml</event-file>
 <!-- Syslog events -->
 <event-file>events/JuniperEvents/syslog/cfmd_ccm_defects.xml</event-file>
+<event-file>events/JuniperEvents/syslog/rpd_mpls_bfd.xml</event-file>
+<event-file>events/JuniperEvents/syslog/lfm_syslog.xml</event-file>
+<!-- Space Platform events -->
+<event-file>events/JuniperEvents/space-platform/mib-jnx-space-platform.xml</event-file>
 <!-- End of Juniper Event Files -->
   <event-file>events/K5Systems.events.xml</event-file>
   <event-file>events/LLDP.events.xml</event-file>
@@ -2148,6 +2156,7 @@
   <event-file>events/Packeteer.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/PCube.events.xml</event-file>
+  <event-file>events/Pingtel.events.xml</event-file>
   <event-file>events/Pixelmetrix.events.xml</event-file>
   <event-file>events/Polycom.events.xml</event-file>
   <event-file>events/Powerware.events.xml</event-file>
@@ -2186,6 +2195,7 @@
   <event-file>events/VMWare.obsolete.events.xml</event-file>
   <event-file>events/VMWare.events.xml</event-file>
   <event-file>events/Waverider.3000.events.xml</event-file>
+  <event-file>events/Websense.events.xml</event-file>
   <event-file>events/Xerox-V2.events.xml</event-file>
   <event-file>events/Xerox.events.xml</event-file>
 

@@ -109,7 +109,34 @@ then
 	}
 end
 
- 
+rule "Mpls L3VPN component down"
+        salience 100
+when
+        $e : Event( uei matches ".*mplsL3VpnVrfDown" )
+then
+        println( "Found Event " + $e.getUei() );
+        retract( $e );
+        List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsL3VpnVrfName", 1));
+        println(" Found matching components: " + list );
+        for ( NCSComponent ncs : list ) {
+                Component c = new Component( ncs );
+                insert( new ComponentDownEvent( c, $e ) );
+        }
+end
+
+rule "Mpls L3VPN component up"
+        salience 100
+when
+        $e : Event( $uei: uei matches ".*mplsL3VpnVrfUp" )
+then
+        println( "Found Event " + $e.getUei() );
+        retract( $e );
+        List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("mplsL3VpnVrfName", 1));
+        for ( NCSComponent ncs : list ) {
+                Component c = new Component( ncs );
+                insert( new ComponentUpEvent( c, $e ) );
+        }
+end
 
 rule "mpls lsp path component down"
 	salience 100
