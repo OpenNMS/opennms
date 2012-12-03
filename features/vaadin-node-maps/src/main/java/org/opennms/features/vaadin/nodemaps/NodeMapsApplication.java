@@ -184,6 +184,12 @@ public class NodeMapsApplication extends Application {
         return null;
     }
 
+    /**
+     * Creates the node layer.
+     *
+     * @param map the map
+     * @return the vector layer
+     */
     private VectorLayer createNodeLayer(final OpenLayersMap map) {
         // Creating Vecctor Layers
         VectorLayer nodeLayer = new VectorLayer();
