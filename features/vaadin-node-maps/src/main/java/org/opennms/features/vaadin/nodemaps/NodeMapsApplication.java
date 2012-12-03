@@ -30,14 +30,13 @@ package org.opennms.features.vaadin.nodemaps;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
 
@@ -62,7 +61,6 @@ import org.xml.sax.InputSource;
 import com.vaadin.Application;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Node Maps Application.
@@ -80,14 +78,14 @@ import com.vaadin.ui.themes.Runo;
 @SuppressWarnings("serial")
 public class NodeMapsApplication extends Application {
 
+    /** The Constant GEOCODER_REQUEST_PREFIX_FOR_XML. */
     private static final String GEOCODER_REQUEST_PREFIX_FOR_XML = "http://maps.google.com/maps/api/geocode/xml";
-    private static final String NODE_CLASS = "nodeCircle";
+
+    /** The Constant NODE_CLASS. */
+    private static final String NODE_STYLE = "nodeCircle";
 
     /** The OpenNMS Node DAO. */
     private NodeDao nodeDao;
-
-    /** The PopUps Map (in order to have a reference to the proper PopUp object for each node). */
-    private final Map<PointVector,Popup> popups = new HashMap<PointVector,Popup>();
 
     /**
      * Sets the OpenNMS Node DAO.
@@ -99,17 +97,25 @@ public class NodeMapsApplication extends Application {
         this.nodeDao = nodeDao;
     }
 
+    /**
+     * Gets the OpenNMS Node DAO.
+     *
+     * @return the OpenNMS Node DAO
+     */
+    public NodeDao getNodeDao() {
+        if (nodeDao == null) {
+            LogUtils.infof(this, "Initializing NodeDao");
+            nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+        }
+        return nodeDao;
+    }
+
     /* (non-Javadoc)
      * @see com.vaadin.Application#init()
      */
     @Override
     public void init() {
-        // Verify that NodeDao is not empty
-        if (nodeDao == null)
-            throw new RuntimeException("nodeDao cannot be null.");
-
         // Initialize Vaadin Main Window
-        setTheme(Runo.THEME_NAME);
         final VerticalLayout layout = new VerticalLayout();
         final Window mainWindow = new Window("OpenNMS Node Maps", layout);
         setMainWindow(mainWindow);
@@ -131,7 +137,9 @@ public class NodeMapsApplication extends Application {
         }
 
         // Populating Node Layer
-        addPoint(map, nodeLayer, office, "OpenNMS Office");
+        office.setDescription("OpenNMS Office");
+        office.setRenderIntent(NODE_STYLE);
+        nodeLayer.addVector(office);
 
         // Updating Vaadin Layout
         layout.setSizeFull();
@@ -192,50 +200,36 @@ public class NodeMapsApplication extends Application {
      */
     private VectorLayer createNodeLayer(final OpenLayersMap map) {
         // Creating Vecctor Layers
-        VectorLayer nodeLayer = new VectorLayer();
+        final VectorLayer nodeLayer = new VectorLayer();
         nodeLayer.setDisplayName("Nodes Layer");
         nodeLayer.setSelectionMode(SelectionMode.SIMPLE);
 
         // Configuring Node Styles
-        Style nodeCircle = new Style(NODE_CLASS);
+        Style nodeCircle = new Style(NODE_STYLE);
         nodeCircle.setPointRadius(30);
         nodeCircle.setFillColor("#000");
         nodeCircle.setFillOpacity(0.5);
         nodeLayer.setStyleMap(new StyleMap(nodeCircle));
 
-        // Configuring Layer Listeners for Node Popups
-        // TODO Is this the best way to do that ?
-        // The reason for that is because vectors don't support popups as markers
+        // Configuring Layer Listeners to display a PopUp for Node Vectors.
         nodeLayer.addListener(new VectorSelectedListener() {
             public void vectorSelected(VectorSelectedEvent event) {
-                map.addPopup(popups.get(event.getVector()));
+                if (event.getVector() instanceof PointVector) {
+                    final PointVector v = (PointVector) event.getVector();
+                    final Popup popup = new Popup(v.getPoint().getLon(), v.getPoint().getLat(), v.getDescription());
+                    popup.addListener(new CloseListener() {
+                        public void onClose(CloseEvent event) {
+                            map.removeComponent(popup);
+                            nodeLayer.getSelectedVector().setRenderIntent(NODE_STYLE);
+                            nodeLayer.setSelectedVector(null);
+                        }
+                    });
+                    map.addPopup(popup);
+                }
             }
         });
 
         return nodeLayer;
-    }
-
-    /**
-     * Adds the point.
-     *
-     * @param map the map
-     * @param vectorLayer the vector layer
-     * @param vector the vector
-     * @param content the content
-     */
-    private void addPoint(final OpenLayersMap map, final VectorLayer vectorLayer, final PointVector vector, final String content) {
-        vector.setRenderIntent(NODE_CLASS);
-        vectorLayer.addVector(vector);
-
-        final Popup popup = new Popup(vector.getPoint().getLon(), vector.getPoint().getLat(), content);
-        popup.addListener(new CloseListener() {
-            public void onClose(CloseEvent event) {
-                map.removeComponent(popup);
-                vectorLayer.getSelectedVector().setRenderIntent(NODE_CLASS);
-                vectorLayer.setSelectedVector(null);
-            }
-        });
-        popups.put(vector, popup);
     }
 
 }
