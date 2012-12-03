@@ -38,7 +38,7 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -158,41 +158,18 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	}
 
-	public static class NCSVertex implements Vertex {
+	public static class NCSVertex implements VertexRef {
 
 		private final String m_id;
+		private final String m_label;
 
-		public NCSVertex(String id) {
+		public NCSVertex(String id, String label) {
 			m_id = id;
+			m_label = label;
 		}
 
-		@Override
-		public String getIconKey() {
-			return null;
-		}
-
-		public Object getItemId() {
-			return getId();
-		}
-
-		@Override
-		public String getKey() {
-			return getId();
-		}
-
-		@Override
 		public String getLabel() {
-			return getId();
-		}
-
-		@Override
-		public String getStyleName() {
-			return null;
-		}
-
-		@Override
-		public String getTooltipText() {
-			return null;
+			return m_label == null ? "???" : m_label;
 		}
 
 		@Override
@@ -201,18 +178,8 @@ public class NCSEdgeProvider implements EdgeProvider {
 		}
 
 		@Override
-		public boolean isLeaf() {
-			return true;
-		}
-
-		@Override
 		public String getNamespace() {
 			return "nodes";
-		}
-
-		@Override
-		public Item getItem() {
-			return new BeanItem<Vertex>(this);
 		}
 
 	}
@@ -273,6 +240,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 						String foreignSource = null, foreignId = null;
 						OnmsNode sourceNode = null, targetNode = null;
 						NodeIdentification ident = subs[i].getNodeIdentification();
+						String sourceLabel = subs[i].getName();
 						if (ident != null) {
 							foreignSource = ident.getForeignSource();
 							foreignId = ident.getForeignId();
@@ -280,8 +248,12 @@ public class NCSEdgeProvider implements EdgeProvider {
 							if (sourceNode == null) {
 								continue;
 							}
+							if (sourceLabel == null) {
+								sourceLabel = sourceNode.getLabel();
+							}
 						}
 						ident = subs[j].getNodeIdentification();
+						String targetLabel = subs[j].getName();
 						if (ident != null) {
 							foreignSource = ident.getForeignSource();
 							foreignId = ident.getForeignId();
@@ -289,8 +261,12 @@ public class NCSEdgeProvider implements EdgeProvider {
 							if (targetNode == null) {
 								continue;
 							}
+							if (targetLabel == null) {
+								targetLabel = targetNode.getLabel();
+							}
 						}
-						retval.add(new NCSEdge(service.getName(), new NCSVertex(String.valueOf(sourceNode.getId())), new NCSVertex(String.valueOf(targetNode.getId()))));
+						
+						retval.add(new NCSEdge(service.getName(), new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel), new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
 					}
 				}
 			}
