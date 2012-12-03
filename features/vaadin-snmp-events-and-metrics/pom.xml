@@ -19,7 +19,7 @@
     <bundle.symbolicName>org.opennms.features.vaadin-snmp-events-and-metrics</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jsmiparser.version>0.12</jsmiparser.version>
+    <jsmiparser.version>0.13</jsmiparser.version>
     <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
     <vaadin.messagebox.version>1.1.1</vaadin.messagebox.version>
   </properties>
