@@ -81,10 +81,12 @@ import com.vaadin.ui.themes.Runo;
 public class NodeMapsApplication extends Application {
 
     private static final String GEOCODER_REQUEST_PREFIX_FOR_XML = "http://maps.google.com/maps/api/geocode/xml";
+    private static final String NODE_CLASS = "nodeCircle";
 
     /** The OpenNMS Node DAO. */
     private NodeDao nodeDao;
 
+    /** The PopUps Map (in order to have a reference to the proper PopUp object for each node). */
     private final Map<PointVector,Popup> popups = new HashMap<PointVector,Popup>();
 
     /**
@@ -117,38 +119,19 @@ public class NodeMapsApplication extends Application {
         map.setImmediate(true); // Update extent and zoom to server as they change
         map.setSizeFull();
         map.addLayer(new GoogleStreetMapLayer());
+        VectorLayer nodeLayer = createNodeLayer(map);
+        map.addLayer(nodeLayer);
 
+        // Define Map Center
+        // FIXME How to determinate the best center position according with the markers ?
         final PointVector office = getPointFromAddress("220 Chatham Business Drive, Pittsboro, NC, 27312");
         if (office != null) {
-            // FIXME How to determinate the best center position according with the markers ?
-            map.setCenter(office.getPoint().getLat(), office.getPoint().getLon());
+            map.setCenter(office.getPoint().getLon(), office.getPoint().getLat());
             map.setZoom(15);
         }
 
-        // Creating Vecctor Layers
-        VectorLayer vectorLayer = new VectorLayer();
-        vectorLayer.setSelectionMode(SelectionMode.SIMPLE);
-
-        // Configuring Node Styles
-        Style nodeCircle = new Style();
-        nodeCircle.setPointRadiusByAttribute("25");
-        nodeCircle.setFillColor("#000");
-        nodeCircle.setFillOpacity(0.5);
-        StyleMap stylemap = new StyleMap();
-        stylemap.setStyle("nodeCircle", nodeCircle);
-        vectorLayer.setStyleMap(stylemap);
-
-        // Configuring Layer Listeners for Node Popups
-        // TODO Is this the best way to do that ?
-        // The reason for that is because vectors don't support popups as markers
-        vectorLayer.addListener(new VectorSelectedListener() {
-            public void vectorSelected(VectorSelectedEvent event) {
-                map.addPopup(popups.get(event.getVector()));
-            }
-        });
-
-        // Adding Sample Point to the map
-        addPoint(map, vectorLayer, office, "OpenNMS Office");
+        // Populating Node Layer
+        addPoint(map, nodeLayer, office, "OpenNMS Office");
 
         // Updating Vaadin Layout
         layout.setSizeFull();
@@ -164,7 +147,11 @@ public class NodeMapsApplication extends Application {
      * @param address the address
      * @return the point from address
      */
-    public PointVector getPointFromAddress(String address) {
+    /*
+     * TODO We can create a provisioning adapter in order to populate the node assets with the coordinates based on the current
+     *      address configured on the database.
+     */
+    private PointVector getPointFromAddress(String address) {
         try {
             URL url = new URL(GEOCODER_REQUEST_PREFIX_FOR_XML + "?address=" + URLEncoder.encode(address, "UTF-8") + "&sensor=false");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -190,11 +177,36 @@ public class NodeMapsApplication extends Application {
                 LogUtils.warnf(this, "Couldn't find the coordinates for: %s", address);
                 return null;
             }
-            return new PointVector(lat, lng);
+            return new PointVector(lng, lat);
         } catch (Exception e) {
             LogUtils.errorf(this, e, "An error occured when trying to get coordinates for %s.", address);
         }
         return null;
+    }
+
+    private VectorLayer createNodeLayer(final OpenLayersMap map) {
+        // Creating Vecctor Layers
+        VectorLayer nodeLayer = new VectorLayer();
+        nodeLayer.setDisplayName("Nodes Layer");
+        nodeLayer.setSelectionMode(SelectionMode.SIMPLE);
+
+        // Configuring Node Styles
+        Style nodeCircle = new Style(NODE_CLASS);
+        nodeCircle.setPointRadius(30);
+        nodeCircle.setFillColor("#000");
+        nodeCircle.setFillOpacity(0.5);
+        nodeLayer.setStyleMap(new StyleMap(nodeCircle));
+
+        // Configuring Layer Listeners for Node Popups
+        // TODO Is this the best way to do that ?
+        // The reason for that is because vectors don't support popups as markers
+        nodeLayer.addListener(new VectorSelectedListener() {
+            public void vectorSelected(VectorSelectedEvent event) {
+                map.addPopup(popups.get(event.getVector()));
+            }
+        });
+
+        return nodeLayer;
     }
 
     /**
@@ -206,14 +218,14 @@ public class NodeMapsApplication extends Application {
      * @param content the content
      */
     private void addPoint(final OpenLayersMap map, final VectorLayer vectorLayer, final PointVector vector, final String content) {
-        vector.setRenderIntent("nodeCircle");
+        vector.setRenderIntent(NODE_CLASS);
         vectorLayer.addVector(vector);
 
         final Popup popup = new Popup(vector.getPoint().getLon(), vector.getPoint().getLat(), content);
         popup.addListener(new CloseListener() {
             public void onClose(CloseEvent event) {
                 map.removeComponent(popup);
-                vectorLayer.getSelectedVector().setRenderIntent("nodeCircle");
+                vectorLayer.getSelectedVector().setRenderIntent(NODE_CLASS);
                 vectorLayer.setSelectedVector(null);
             }
         });
