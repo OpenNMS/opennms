@@ -221,4 +221,13 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
         return m_outputStream.size() > 0 ? m_outputStream.toString() : null;
     }
 
+    /**
+     * Adds a new error message.
+     *
+     * @param errorMessage the error message
+     */
+    public void addError(String errorMessage) {
+        m_out.println(errorMessage);
+    }
+
 }

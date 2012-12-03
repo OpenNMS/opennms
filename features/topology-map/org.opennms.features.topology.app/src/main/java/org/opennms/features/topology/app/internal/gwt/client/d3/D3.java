@@ -134,8 +134,20 @@ public class D3 extends JavaScriptObject {
     }-*/;
     
     public final native D3 styleTween(String name, Tween<?, ?> t) /*-{
+        
+        function interpolate(a, b) {
+          var numA = a.replace('px', '');
+          var numB = b.replace('px', '');
+          numB -= numA;
+          return function(t) { $wnd.console.log("numA: " + numA + " numB: " + numB + " t: " + t); return (numA + numB * t) + "px"; };
+        };
+        
         function tween(d, i, a){
-            return $wnd.d3.interpolate(a, t.@org.opennms.features.topology.app.internal.gwt.client.d3.Tween::call(Ljava/lang/Object;ILjava/lang/String;)(d,i,a));
+            var f = $wnd.d3.interpolate(a,"11px");
+            $wnd.console.log("f: ");
+            $wnd.console.log(f);
+            return function(t){ var ret = f(t); $wnd.console.log("t: " + t + " ret: " + ret); return ret; }
+            //return $wnd.d3.interpolate(a, t.@org.opennms.features.topology.app.internal.gwt.client.d3.Tween::call(Ljava/lang/Object;ILjava/lang/String;)(d,i,a));
         }
         return this.styleTween(name, tween);
     }-*/;

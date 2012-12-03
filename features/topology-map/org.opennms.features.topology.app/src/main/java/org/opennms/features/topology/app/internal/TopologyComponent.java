@@ -280,6 +280,11 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             setScale(newScale);
         }
         
+        if(variables.containsKey("scrollWheelScale")) {
+            double newScale = (Double)variables.get("scrollWheelScale");
+            setScale(newScale);
+        }
+        
         if(variables.containsKey("clientX")) {
             int clientX = (Integer) variables.get("clientX");
             m_mapManager.setClientX(clientX);
@@ -379,6 +384,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
     
 	protected void setScale(double scale){
+	    if(scale <= 0) {
+	        scale = 0.01;
+	    } 
 	    m_scale.setValue(scale);
     }
     
@@ -412,9 +420,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     public void valueChange(ValueChangeEvent event) {
         double scale = (Double) m_scale.getValue();
-        if(scale == 0) {
+        if(scale <= 0) {
             m_scale.setValue(0.01);
-        }
+        } 
         
         if(!isScaleUpdateFromUI()) {
             requestRepaint();

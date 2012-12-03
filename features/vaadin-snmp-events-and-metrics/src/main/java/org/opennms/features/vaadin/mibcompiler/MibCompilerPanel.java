@@ -346,7 +346,7 @@ public class MibCompilerPanel extends Panel {
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
         if (events == null) {
-            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events.", Notification.TYPE_ERROR_MESSAGE);                
+            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.TYPE_ERROR_MESSAGE);                
         } else {
             if (events.getEventCount() > 0) {
                 try {
@@ -373,7 +373,7 @@ public class MibCompilerPanel extends Panel {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
             final DatacollectionGroup dcGroup = mibParser.getDataCollection();
             if (dcGroup == null) {
-                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection.", Notification.TYPE_ERROR_MESSAGE);
+                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.TYPE_ERROR_MESSAGE);
             } else {
                 if (dcGroup.getGroupCount() > 0) {
                     try {
