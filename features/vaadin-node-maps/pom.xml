@@ -3,8 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>org.opennms.features</artifactId>
-    <groupId>org.opennms</groupId>
+    <relativePath>../topology-map/poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
     <version>1.11.4-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
@@ -69,18 +70,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <_include>-osgi.bnd</_include>
-          </instructions>
-        </configuration>
       </plugin>
 
       <plugin>
