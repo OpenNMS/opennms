@@ -2,7 +2,6 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
@@ -69,8 +68,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     TopologyViewRenderer m_topologyViewRenderer;
 
     private boolean m_isRefresh;
-    private SVGMatrix m_currentViewportCTM;
-    
 
     public TopologyViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -204,41 +201,36 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
             
     }
     
-    void updateScale(double oldScale, double newScale, int cx, int cy) {
-        if(oldScale > 0) {
+    public SVGMatrix calculateNewTransform(double oldScale, double newScale, int cx, int cy) {
+        
+        
+        if(oldScale != 0) {
             double zoomFactor = newScale/oldScale;
-        	
             SVGElement svg = getSVGElement();
             SVGGElement g = getSVGViewPort().cast();
+            if(cx == 0 ) {
+                cx = (int) (Math.ceil(svg.getParentElement().getOffsetWidth() / 2.0) - 1);
+            }
         
-        	if(cx == 0 ) {
-        		cx = (int) (Math.ceil(svg.getParentElement().getOffsetWidth() / 2.0) - 1);
-        	}
+            if(cy == 0) {
+                cy = (int) (Math.ceil(svg.getParentElement().getOffsetHeight() / 2.0) -1);
+            }
         
-        	if(cy == 0) {
-        		cy = (int) (Math.ceil(svg.getParentElement().getOffsetHeight() / 2.0) -1);
-        	}
-        
-        	SVGPoint p = svg.createSVGPoint();
-        	p.setX(cx);
-        	p.setY(cy);
-        	String gCTM = matrixTransform(g.getCTM());
-        	String gCTMInverse = matrixTransform(g.getCTM().inverse());
-        	p = p.matrixTransform(g.getCTM().inverse());
-        	double x2 = p.getX();
-        	double y2 = p.getY();
-        	SVGMatrix m = svg.createSVGMatrix()
-        			.translate(x2,y2)
-        			 .scale(zoomFactor)
-        			.translate(-x2, -y2);
-        	m_currentViewportCTM = g.getCTM().multiply(m);
-        	
-//        	D3.d3().select(getSVGViewPort())
-//        	    .transition().duration(30000)
-//        	    .attr("transform", matrixTransform(ctm) )
-//        	    .selectAll(".edge").transition().styleTween("stroke-width", edgeStrokeWidthTween(5 / newScale) );
+            SVGPoint p = svg.createSVGPoint();
+            p.setX(cx);
+            p.setY(cy);
+            String gCTM = matrixTransform(g.getCTM());
+            String gCTMInverse = matrixTransform(g.getCTM().inverse());
+            p = p.matrixTransform(g.getCTM().inverse());
+            double x2 = p.getX();
+            double y2 = p.getY();
+            SVGMatrix m = svg.createSVGMatrix()
+                    .translate(x2,y2)
+                     .scale(zoomFactor)
+                    .translate(-x2, -y2);
+            return g.getCTM().multiply(m);
         } else {
-           m_isRefresh = true;
+            return getSVGElement().createSVGMatrix().translate(0, 0).scale(newScale);
         }
     }
     
@@ -267,37 +259,26 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return D3.getTransform( m ).toString();
     }
 
-    @Override
-    public void zoomToFit(final BoundingRect rect) {
-        if(!rect.isEmpty()) {
-            SVGElement svg = getSVGElement().cast();
-            final int svgWidth = svg.getParentElement().getOffsetWidth(); 
-            final int svgHeight = svg.getParentElement().getOffsetHeight();
-            
-            final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
-            
-            double svgCenterX = svgWidth/2;
-            double svgCenterY = svgHeight/2;
-            
-            double translateX = (svgCenterX - rect.getCenterX());
-            double translateY = (svgCenterY - rect.getCenterY());
-            
-            
-            SVGMatrix transform = svg.createSVGMatrix()
-                .translate(translateX, translateY)
-                .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
-                .scale(scale);
-                       
-            String transformVal = ((TopologyViewImpl)this).matrixTransform(transform);
-            
-            D3.d3().select(getSVGViewPort()).transition().duration(2000).attr("transform", transformVal).each("end", new AnonymousFunc() {
-                
-                @Override
-                public void call() {
-                    m_presenter.onScaleUpdate(scale);
-                }
-            });
-        }
+    public SVGMatrix calculateZoomToFit(final BoundingRect rect) {
+        SVGElement svg = getSVGElement().cast();
+        final int svgWidth = svg.getParentElement().getOffsetWidth(); 
+        final int svgHeight = svg.getParentElement().getOffsetHeight();
+        
+        final double scale = Math.min(svgWidth/(double)rect.getWidth(), svgHeight/(double)rect.getHeight());
+        
+        double svgCenterX = svgWidth/2;
+        double svgCenterY = svgHeight/2;
+        
+        double translateX = (svgCenterX - rect.getCenterX());
+        double translateY = (svgCenterY - rect.getCenterY());
+        
+        
+        SVGMatrix transform = svg.createSVGMatrix()
+            .translate(translateX, translateY)
+            .translate(-rect.getCenterX()*(scale-1), -rect.getCenterY()*(scale-1)) 
+            .scale(scale);
+                   
+        return transform;
     }
 
     private void fitToScreen() {
@@ -322,9 +303,5 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         
     }
 
-    @Override
-    public SVGMatrix getViewportTransform() {
-        return m_currentViewportCTM;
-    }
 
 }

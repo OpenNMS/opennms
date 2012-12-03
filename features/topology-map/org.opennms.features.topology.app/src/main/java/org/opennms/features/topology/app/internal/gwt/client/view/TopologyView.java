@@ -30,6 +30,6 @@ public interface TopologyView<T> {
     Element getReferenceViewPort();
     Element getMarqueeElement();
     void repaintNow(GWTGraph graph);
-    void zoomToFit(BoundingRect rect);
-    SVGMatrix getViewportTransform();
+    SVGMatrix calculateNewTransform(double oldScale, double newScale, int cx, int cy);
+    SVGMatrix calculateZoomToFit(final BoundingRect rect);
 }
