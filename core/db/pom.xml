@@ -21,6 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.netmgt.config.opennmsDataSources.*;org.opennms.core.db.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
