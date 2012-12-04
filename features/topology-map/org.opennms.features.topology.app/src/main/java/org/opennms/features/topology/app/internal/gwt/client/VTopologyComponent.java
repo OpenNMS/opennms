@@ -235,7 +235,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			//Enters
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 			
-			consoleLog("isFitToView(): " + graph.isFitToView() + " isPanToSelection(): " + graph.isPanToSelection());
             //Scaling and Fit to Zoom transitions
             if(!graph.isFitToView() && !graph.isPanToSelection()) {
                 
@@ -244,7 +243,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                 D3.d3().select(topologyView.getSVGViewPort())
                 .transition().duration(1000)
                 .attr("transform", matrixTransform(transform) )
-                .selectAll(GWTEdge.SVG_EDGE_ELEMENT).attr("opacity", "1").transition().style("stroke-width", 5/transform.getA() + "px");
+                .selectAll(GWTEdge.SVG_EDGE_ELEMENT).attr("opacity", "1").transition().style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px");
             
             } else if(graph.isPanToSelection()) {
                 
@@ -261,7 +260,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(500).duration(1500).attr("opacity", "1").style("stroke-width", 5 / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(500).duration(1500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }else if(graph.isFitToView()) {
                 
                 final BoundingRect rect = createBoundingRect(graph.getVertices(), true);
@@ -277,7 +276,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().duration(2000).attr("opacity", "1").style("stroke-width", 5 / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().duration(2000).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }
 		}
 		
@@ -699,7 +698,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			if(child.getTag().equals("vertex")) {
 				String vertexKey = child.getStringAttribute("key");
-				//consoleLog("UIDL vertex: " + vertexKey);
 
 				GWTVertex vertex = GWTVertex.create(vertexKey, child.getIntAttribute("x"), child.getIntAttribute("y"));
 				
@@ -726,7 +724,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				String edgeKey = child.getStringAttribute("key");
 				String sourceKey = child.getStringAttribute("source");
 				String targetKey = child.getStringAttribute("target");
-				//consoleLog("UIDL edge: " + edgeKey + "(" + sourceKey +"," + targetKey +")");
 				
 				GWTVertex source = graph.findVertexById(sourceKey);
 				GWTVertex target = graph.findVertexById( targetKey );
@@ -743,12 +740,21 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		}
 		
 		JsArray<GWTEdge> edges = graph.getEdges();
+		sortEdges(edges);
+		
+		
         for( int i = 0; i < edges.length(); i++) {
-		    if(i != 0) {
+            if(i != 0) {
 		        GWTEdge edge1 = edges.get(i-1);
 		        GWTEdge edge2 = edges.get(i);
 		        
-		        if((edge1.getSource() == edge2.getSource() && edge1.getTarget() == edge2.getTarget()) || (edge1.getSource() == edge2.getTarget() && edge1.getTarget() == edge2.getSource())) {
+		        String edge1Source = minEndPoint(edge1);
+		        String edge2Source = minEndPoint(edge2);
+		        String edge1Target = maxEndPoint(edge1);
+		        String edge2Target = maxEndPoint(edge2);
+		        
+		        if((edge1Source.equals(edge2Source) && edge1Target.equals(edge2Target))) {
+		            consoleLog("found match: " + edge1.getId() + " and " + edge2.getId());
 		            edge2.setLinkNum(edge1.getLinkNum() + 1);
 		        }else {
 		            edge2.setLinkNum(1);
@@ -762,11 +768,47 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         graph.setClientY(uidl.getIntAttribute("clientY"));
         graph.setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
         graph.setFitToView(uidl.getBooleanAttribute("fitToView"));
-        consoleLog("graph.oldScale(): " + graph.getOldScale() + " graph.getScale(): " + graph.getScale());
 		setGraph(graph);
         
 		
 	}
+
+    private String minEndPoint(GWTEdge edge1) {
+        String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getSource().getId() : edge1.getTarget().getId();
+        return edge1Source;
+    }
+	
+    private String maxEndPoint(GWTEdge edge1) {
+        String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getTarget().getId() : edge1.getSource().getId();
+        return edge1Source;
+    }
+    
+	private native void sortEdges(JsArray<GWTEdge> list)/*-{
+	
+	    list.sort(function(a,b){
+	        var sourceA = a.source.id < a.target.id ? a.source.id : a.target.id;
+            var targetA = a.source.id < a.target.id ? a.target.id : a.source.id;
+	        var sourceB = b.source.id < b.target.id ? b.source.id : b.target.id;
+	        var targetB = b.source.id < b.target.id ? b.target.id : b.source.id;
+	        if(sourceA > sourceB){ 
+	            return 1; 
+	        } else if(sourceA < sourceB){
+	            return -1;
+	        }else{
+	            if(targetA > targetB){
+	                return 1;
+	            }
+	            if(targetA < targetB){
+	                return -1;
+	            } else {return 0;}
+	        }
+	    });
+	    
+	}-*/;
+	
+	private native JsArray<GWTEdge> slice(JsArray<GWTEdge> list)/*-{
+	    return list.slice(0);
+	}-*/;
 
     private void setActiveTool(String toolname) {
 	    if(toolname.equals("pan")) {
@@ -899,7 +941,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     
     @Override
     public void onMouseWheel(double newScale, int clientX, int clientY) {
-        consoleLog("mapScale: " + newScale);
+        //consoleLog("mapScale: " + newScale);
 //        m_client.updateVariable(m_paintableId, "scrollWheelScale", newScale, false);
 //        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
 //        m_client.updateVariable(m_paintableId, "clientY", clientY, false);

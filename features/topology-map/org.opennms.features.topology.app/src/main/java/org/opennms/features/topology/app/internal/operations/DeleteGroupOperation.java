@@ -44,7 +44,7 @@ public class DeleteGroupOperation implements Operation {
 
 	@Override
 	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) {
+		if (targets == null || targets.isEmpty() || targets.size() != 1) {
 			return null;
 		}
 
