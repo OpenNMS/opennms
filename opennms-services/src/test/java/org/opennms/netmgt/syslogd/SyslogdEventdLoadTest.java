@@ -146,7 +146,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-    	MockLogAppender.setupLogging(true, "DEBUG");
+//    	MockLogAppender.setupLogging(true, "DEBUG");
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
@@ -159,7 +159,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
-        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
+//        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
     }
 
     private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
