@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
@@ -141,63 +142,63 @@ public abstract class LinkdNetworkBuilder {
     }
     
     void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
-        System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
-        System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
-        System.err.println("getCdpCacheAddress: "+cdpCacheTableEntry.getCdpCacheAddress());
-        System.err.println("getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
-        System.err.println("getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
-        System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
-        System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");        
+        LogUtils.debugf(this, "-----------------------------------------------------------");    
+        LogUtils.debugf(this, "getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
+        LogUtils.debugf(this, "getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
+        LogUtils.debugf(this, "getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
+        LogUtils.debugf(this, "getCdpCacheAddress: "+cdpCacheTableEntry.getCdpCacheAddress());
+        LogUtils.debugf(this, "getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
+        LogUtils.debugf(this, "getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
+        LogUtils.debugf(this, "getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
+        LogUtils.debugf(this, "getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
+        LogUtils.debugf(this, "-----------------------------------------------------------");
+        LogUtils.debugf(this, "");        
         
     }
 
     void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
             String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
-        System.err.println("getLldpRemSysname: "+lldpRemSysname);
-        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
-        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
-        System.err.println("getLldpRemPortid: "+lldpRemPortid);
-        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");        
+        LogUtils.debugf(this, "-----------------------------------------------------------");    
+        LogUtils.debugf(this, "getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
+        LogUtils.debugf(this, "getLldpRemSysname: "+lldpRemSysname);
+        LogUtils.debugf(this, "getLldpRemChassiid: "+lldpRemChassiid);
+        LogUtils.debugf(this, "getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
+        LogUtils.debugf(this, "getLldpRemPortid: "+lldpRemPortid);
+        LogUtils.debugf(this, "getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
+        LogUtils.debugf(this, "-----------------------------------------------------------");
+        LogUtils.debugf(this, "");        
     }
     
     void printLldpLocRow(Integer lldpLocPortNum,
             Integer lldpLocPortidSubtype, String lldpLocPortid) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getLldpLocPortNum: "+lldpLocPortNum);
-        System.err.println("getLldpLocPortid: "+lldpLocPortid);
-        System.err.println("getLldpRemPortidSubtype: "+lldpLocPortidSubtype);
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");
+        LogUtils.debugf(this, "-----------------------------------------------------------");    
+        LogUtils.debugf(this, "getLldpLocPortNum: "+lldpLocPortNum);
+        LogUtils.debugf(this, "getLldpLocPortid: "+lldpLocPortid);
+        LogUtils.debugf(this, "getLldpRemPortidSubtype: "+lldpLocPortidSubtype);
+        LogUtils.debugf(this, "-----------------------------------------------------------");
+        LogUtils.debugf(this, "");
       
     }
     
     void printLink(DataLinkInterface datalinkinterface) {
-        System.out.println("----------------Link------------------");
+        LogUtils.debugf(this, "----------------Link------------------");
         Integer nodeid = datalinkinterface.getNode().getId();
-        System.out.println("linkid: " + datalinkinterface.getId());
-        System.out.println("nodeid: " + nodeid);
-        System.out.println("nodelabel: " + m_nodeDao.get(nodeid).getLabel());       
+        LogUtils.debugf(this, "linkid: " + datalinkinterface.getId());
+        LogUtils.debugf(this, "nodeid: " + nodeid);
+        LogUtils.debugf(this, "nodelabel: " + m_nodeDao.get(nodeid).getLabel());       
         Integer ifIndex = datalinkinterface.getIfIndex();
-        System.out.println("ifindex: " + ifIndex);
+        LogUtils.debugf(this, "ifindex: " + ifIndex);
         if (ifIndex > 0)
-            System.out.println("ifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,ifIndex).getIfName());
+            LogUtils.debugf(this, "ifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,ifIndex).getIfName());
         Integer nodeparent = datalinkinterface.getNodeParentId();
-        System.out.println("nodeparent: " + nodeparent);
-        System.out.println("parentnodelabel: " + m_nodeDao.get(nodeparent).getLabel());
+        LogUtils.debugf(this, "nodeparent: " + nodeparent);
+        LogUtils.debugf(this, "parentnodelabel: " + m_nodeDao.get(nodeparent).getLabel());
         Integer parentifindex = datalinkinterface.getParentIfIndex();
-        System.out.println("parentifindex: " + parentifindex);        
+        LogUtils.debugf(this, "parentifindex: " + parentifindex);        
         if (parentifindex > 0)
-            System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
-        System.out.println("--------------------------------------");
-        System.out.println("");
+            LogUtils.debugf(this, "parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
+        LogUtils.debugf(this, "--------------------------------------");
+        LogUtils.debugf(this, "");
 
     }
     
@@ -212,11 +213,11 @@ public abstract class LinkdNetworkBuilder {
     }
 
     private void printNode(OnmsNode node) {
-        System.out.println("----------------Node------------------");
-        System.out.println("nodeid: " + node.getId());
-        System.out.println("nodelabel: " + node.getLabel());
-        System.out.println("--------------------------------------");
-        System.out.println("");
+        LogUtils.debugf(this, "----------------Node------------------");
+        LogUtils.debugf(this, "nodeid: " + node.getId());
+        LogUtils.debugf(this, "nodelabel: " + node.getLabel());
+        LogUtils.debugf(this, "--------------------------------------");
+        LogUtils.debugf(this, "");
         
     }
     
@@ -230,20 +231,20 @@ public abstract class LinkdNetworkBuilder {
     }
     
     void printipInterface(String nodeStringId,OnmsIpInterface ipinterface) {
-        System.out.println(nodeStringId+"_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+    	LogUtils.debugf(this, nodeStringId+"_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
     }
     
     void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
         if ( snmpinterface.getIfName() != null)
-            System.out.println(nodeStringId+"_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+        	LogUtils.debugf(this, nodeStringId+"_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)
-            System.out.println(nodeStringId+"_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+            	LogUtils.debugf(this, nodeStringId+"_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
             if (snmpinterface.getPhysAddr() != null)
-            System.out.println(nodeStringId+"_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+            	LogUtils.debugf(this, nodeStringId+"_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
             if (snmpinterface.getIfAlias() != null)
-            System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+            	LogUtils.debugf(this, nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
             if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
-            System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddress.getByName(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
+            	LogUtils.debugf(this, nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddress.getByName(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
         
     }
 
