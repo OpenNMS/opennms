@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.mock.EventConfWrapper;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -315,7 +316,7 @@ public class EventConfDataTest {
 
         org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(snmp);
 
-        System.out.println("Eventconf: " + (econf == null ? null : new EventConfWrapper(econf) ));
+        LogUtils.debugf(this, "Eventconf: " + (econf == null ? null : new EventConfWrapper(econf) ));
 
         if (event != null) {
             if (econf == null) {
