@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jetty.util.log.Log;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -278,13 +279,17 @@ public class DefaultPollContext implements PollContext, EventListener {
 
     /** {@inheritDoc} */
     public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
-        log().debug("openOutage: Opening outage for: "+svc+" with event:"+svcLostEvent);
+    	if(log().isDebugEnabled()) {
+    		log().debug("openOutage: Opening outage for: "+svc+" with event:"+svcLostEvent);
+    	}
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
         Runnable r = new Runnable() {
             public void run() {
-                log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
+            	if(log().isDebugEnabled()) {
+            		log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
+            	}
                 getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
             }
 
@@ -342,25 +347,40 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     public void onEvent(Event e) {
         synchronized (m_pendingPollEvents) {
-            log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
+        	if(log().isDebugEnabled()) {
+        		log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
+        	}
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
                 PendingPollEvent pollEvent = it.next();
-                log().debug("onEvent: comparing events to poll event: "+pollEvent);
+                if(log().isDebugEnabled()) {
+                	log().debug("onEvent: comparing events to poll event: "+pollEvent);
+                }
                 if (e.equals(pollEvent.getEvent())) {
-                    log().debug("onEvent: completing pollevent: "+pollEvent);
+                	if(log().isDebugEnabled()) {
+                		log().debug("onEvent: completing pollevent: "+pollEvent);
+                	}
                     pollEvent.complete(e);
                 }
             }
             
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = it.next();
-                log().debug("onEvent: determining if pollEvent is pending: "+pollEvent);
+                if(log().isDebugEnabled()) {
+                	log().debug("onEvent: determining if pollEvent is pending: "+pollEvent);
+                }
+                
                 if (pollEvent.isPending()) continue;
                 
-                log().debug("onEvent: processing pending pollEvent...: "+pollEvent);
+                if(log().isDebugEnabled()) {
+                	log().debug("onEvent: processing pending pollEvent...: "+pollEvent);
+                }
+                
                 pollEvent.processPending();
                 it.remove();
-                log().debug("onEvent: processing of pollEvent completed.: "+pollEvent);
+                
+                if(log().isDebugEnabled()) {
+                	log().debug("onEvent: processing of pollEvent completed.: "+pollEvent);
+                }
             }
         }
         
