@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.nodemaps;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -39,6 +40,7 @@ import javax.xml.xpath.XPathFactory;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 
 import org.vaadin.vol.GoogleStreetMapLayer;
 import org.vaadin.vol.OpenLayersMap;
@@ -128,18 +130,19 @@ public class NodeMapsApplication extends Application {
         VectorLayer nodeLayer = createNodeLayer(map);
         map.addLayer(nodeLayer);
 
-        // Define Map Center
-        // FIXME How to determinate the best center position according with the markers ?
-        final PointVector office = getPointFromAddress("220 Chatham Business Drive, Pittsboro, NC, 27312");
-        if (office != null) {
-            map.setCenter(office.getPoint().getLon(), office.getPoint().getLat());
-            map.setZoom(15);
+        // Populating Map with nodes
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        for (OnmsNode node : nodes) {
+            final String address = getNodeAddress(node);
+            final PointVector vector = getPointFromAddress(address);
+            if (vector == null) {
+                LogUtils.warnf(this, "Can't find geolocation coordinates for node %s", node.getLabel());
+            } else {
+                vector.setDescription(getNodeDescription(node));
+                vector.setRenderIntent(NODE_STYLE);
+                nodeLayer.addVector(vector);
+            }
         }
-
-        // Populating Node Layer
-        office.setDescription("OpenNMS Office");
-        office.setRenderIntent(NODE_STYLE);
-        nodeLayer.addVector(office);
 
         // Updating Vaadin Layout
         layout.setSizeFull();
@@ -160,6 +163,9 @@ public class NodeMapsApplication extends Application {
      *      address configured on the database.
      */
     private PointVector getPointFromAddress(String address) {
+        if (address == null) {
+            return null;
+        }
         try {
             URL url = new URL(GEOCODER_REQUEST_PREFIX_FOR_XML + "?address=" + URLEncoder.encode(address, "UTF-8") + "&sensor=false");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -192,6 +198,7 @@ public class NodeMapsApplication extends Application {
         return null;
     }
 
+
     /**
      * Creates the node layer.
      *
@@ -206,7 +213,7 @@ public class NodeMapsApplication extends Application {
 
         // Configuring Node Styles
         Style nodeCircle = new Style(NODE_STYLE);
-        nodeCircle.setPointRadius(30);
+        nodeCircle.setPointRadius(20);
         nodeCircle.setFillColor("#000");
         nodeCircle.setFillOpacity(0.5);
         nodeLayer.setStyleMap(new StyleMap(nodeCircle));
@@ -230,6 +237,36 @@ public class NodeMapsApplication extends Application {
         });
 
         return nodeLayer;
+    }
+
+    /**
+     * Gets the node description.
+     *
+     * @param node the OpenNMS Node
+     * @return the node description
+     */
+    private String getNodeDescription(OnmsNode node) {
+        StringBuffer sb = new StringBuffer(node.getLabel());
+        sb.append("<br/>foreignSource=").append(node.getForeignSource());
+        sb.append("<br/>foreignId=").append(node.getForeignId());
+        return sb.toString();
+    }
+
+    /**
+     * Gets the node address.
+     *
+     * @param node the OpenNMS Node
+     * @return the node address
+     */
+    private String getNodeAddress(OnmsNode node) {
+        if (node.getAssetRecord() == null)
+            return null;
+        StringBuffer sb = new StringBuffer(node.getAssetRecord().getAddress1());
+        sb.append(" ").append(node.getAssetRecord().getAddress2());
+        sb.append(", ").append(node.getAssetRecord().getCity());
+        sb.append(", ").append(node.getAssetRecord().getState());
+        sb.append(", ").append(node.getAssetRecord().getZip());
+        return sb.toString();
     }
 
 }
