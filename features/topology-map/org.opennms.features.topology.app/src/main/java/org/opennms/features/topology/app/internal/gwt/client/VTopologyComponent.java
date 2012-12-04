@@ -68,6 +68,7 @@ import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -227,7 +228,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
+			edgeSelection.call(GWTEdge.draw()).attr("opacity", 0);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
@@ -276,7 +277,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().duration(2000).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(500).duration(2000).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }
 		}
 		
@@ -583,6 +584,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
 				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
 				m_client.updateVariable(m_paintableId, "ctrlKeyPressed", event.getCtrlKey(), false);
+				m_client.updateVariable(m_paintableId, "platform", Navigator.getPlatform(), false);
 				
 				event.preventDefault();
 				event.stopPropagation();
@@ -806,10 +808,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	    
 	}-*/;
 	
-	private native JsArray<GWTEdge> slice(JsArray<GWTEdge> list)/*-{
-	    return list.slice(0);
-	}-*/;
-
     private void setActiveTool(String toolname) {
 	    if(toolname.equals("pan")) {
 	        m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
