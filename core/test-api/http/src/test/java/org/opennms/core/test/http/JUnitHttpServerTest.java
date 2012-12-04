@@ -62,7 +62,7 @@ public class JUnitHttpServerTest {
 	@BeforeClass
 	public static void beforeClass() {
 		LogUtils.logToConsole();
-		LogUtils.enableDebugging();
+//		LogUtils.enableDebugging();
 	}
 	
     @Test
