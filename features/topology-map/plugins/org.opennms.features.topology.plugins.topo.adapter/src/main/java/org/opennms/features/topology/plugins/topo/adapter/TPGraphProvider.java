@@ -315,7 +315,7 @@ public class TPGraphProvider implements GraphProvider {
     public int getSemanticZoomLevel(VertexRef vertexRef) {
         ItemVertex vertex = getVertex(vertexRef);
         ItemVertex parent = getParent(vertex);
-        return parent == null ? 0 : getSemanticZoomLevel(parent)+1;
+        return (parent == null || vertex.equals(parent)) ? 0 : getSemanticZoomLevel(parent)+1;
     }
 
     @Override
