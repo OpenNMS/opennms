@@ -7,6 +7,7 @@ import java.util.Set;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
+@SuppressWarnings("serial")
 public class ChainedItem implements Item {
 	
 	private final Item m_item;

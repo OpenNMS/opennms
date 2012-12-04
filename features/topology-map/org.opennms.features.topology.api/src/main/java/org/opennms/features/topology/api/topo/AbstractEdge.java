@@ -1,18 +1,13 @@
 package org.opennms.features.topology.api.topo;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-
 public abstract class AbstractEdge implements Edge {
 
 	private final String m_namespace;
 	private final String m_id;
-	private final BeanItem<Edge> m_item;
-	
+
 	public AbstractEdge(String namespace, String id) {
 		m_namespace = namespace;
 		m_id = id;
-		m_item = new BeanItem<Edge>(this);
 	}
 
 	@Override
@@ -28,11 +23,6 @@ public abstract class AbstractEdge implements Edge {
 	@Override
 	public String getKey() {
 		return m_namespace + ":" + m_id;
-	}
-
-	@Override
-	public Item getItem() {
-		return m_item;
 	}
 
 	@Override
