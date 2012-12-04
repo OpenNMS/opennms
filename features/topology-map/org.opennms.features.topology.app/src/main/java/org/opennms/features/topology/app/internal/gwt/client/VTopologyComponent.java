@@ -228,7 +228,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
+			edgeSelection.call(GWTEdge.draw()).attr("opacity", 0);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
@@ -277,7 +277,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().duration(2000).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(500).duration(2000).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }
 		}
 		
