@@ -200,7 +200,7 @@ public abstract class JaxbUtils {
 	 * @return
 	 * @throws SAXException
 	 */
-	private static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
+	public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
 
 		final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
 		if (schema != null) {
