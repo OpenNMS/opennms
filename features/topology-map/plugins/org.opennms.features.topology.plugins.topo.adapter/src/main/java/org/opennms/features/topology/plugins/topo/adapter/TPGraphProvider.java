@@ -87,7 +87,7 @@ public class TPGraphProvider implements GraphProvider {
 
             @Override
             public void containerItemSetChange(ItemSetChangeEvent event) {
-                ChangeSet changes = m_vertexIdTracker.setItemIds(m_topoProvider.getVertexIds());
+            	ChangeSet changes = m_edgeIdTracker.setItemIds(m_topoProvider.getEdgeIds());
                 fireEdgeChanges(changes);
             }
         };
@@ -105,7 +105,7 @@ public class TPGraphProvider implements GraphProvider {
 
     private ItemVertex getVertex(String id) {
         Object itemId = m_vertexIdTracker.getItemId(id);
-        return new ItemVertex(getNamespace(), id, itemId, m_vertexItemFinder);
+        return itemId == null ? null : new ItemVertex(getNamespace(), id, itemId, m_vertexItemFinder);
     }
     
     @Override
@@ -138,7 +138,8 @@ public class TPGraphProvider implements GraphProvider {
     private List<ItemVertex> getVertices(List<String> ids) {
         List<ItemVertex> vertices = new ArrayList<ItemVertex>();
         for(String id : ids) {
-            vertices.add(getVertex(id));
+            ItemVertex vertex = getVertex(id);
+			if (vertex != null) { vertices.add(vertex); }
         }
         return vertices;
     }
