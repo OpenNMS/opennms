@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,7 +58,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 
-public class RemoveVertexFromGroupOperation implements Constants, Operation {
+public class AddVertexToGroupOperation implements Constants, Operation {
 	
 	@Override
 	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
@@ -69,16 +70,21 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		final VertexRef currentGroup = targets.get(0);
-		final String currentGroupId = currentGroup.getId();
-		final Collection<String> childIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getChildren(currentGroupId);
-		for (String childId : childIds) {
-			log.debug("Child ID: {}", childId);
+		final VertexRef currentVertex = targets.get(0);
+		final String currentVertexId = currentVertex.getId();
+		final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+		final Collection<String> groupIds = new ArrayList<String>();
+		for (String vertexId : vertexIds) {
+			BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
+			if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
+				groupIds.add(vertexId);
+				log.debug("Found group: {}", vertexId);
+			}
 		}
 
 		final Window window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Remove Item From Group");
+		final Window groupNamePrompt = new Window("Add Item To Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
 		groupNamePrompt.setHeight("180px");
@@ -86,15 +92,15 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
-		item.addItemProperty("Item", new ObjectProperty<String>(null, String.class));
+		item.addItemProperty("Group", new ObjectProperty<String>(null, String.class));
 
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
 			public Field createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
-				if ("Item".equals(pid)) {
-					Select select = new Select("Item");
-					for (String childId : childIds) {
+				if ("Group".equals(pid)) {
+					Select select = new Select("Group");
+					for (String childId : groupIds) {
 						BeanItem<?> childVertex = graphContainer.getDataSource().getVertexContainer().getItem(childId);
 						Property childLabelProperty = childVertex.getItemProperty("label");
 						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
@@ -121,18 +127,15 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 			public void commit() {
 				super.commit();
 
-				String childId = (String)getField("Item").getValue();
-				log.debug("Field value: {}", childId);
+				String parentId = (String)getField("Group").getValue();
+				log.debug("Field value: {}", parentId);
 
-				LoggerFactory.getLogger(this.getClass()).debug("Removing item from group: {}", childId);
-
-				Vertex grandParent = graphContainer.getParent(currentGroup);
-				Object grandParentId = getTopoItemId(graphContainer, grandParent);
+				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
 
 				TopologyProvider topologyProvider = graphContainer.getDataSource();
 
-				// Relink the child to the grandparent group (or null if it is null)
-				topologyProvider.setParent(childId, grandParentId);
+				// Link the selected vertex to the parent group
+				topologyProvider.setParent(currentVertexId, parentId);
 
 				// Save the topology
 				topologyProvider.save(null);
@@ -187,7 +190,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-		return (targets.size() == 1) && (operationContext.getGraphContainer().getDataSource().getVertexContainer().getChildren(targets.get(0).getId()).size() > 0);
+		return targets.size() == 1;
 	}
 
 	@Override
