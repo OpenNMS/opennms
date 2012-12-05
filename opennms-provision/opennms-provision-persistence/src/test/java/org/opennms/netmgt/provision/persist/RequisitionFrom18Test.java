@@ -47,7 +47,7 @@ public class RequisitionFrom18Test {
 
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
         m_foreignSourceRepository = new FilesystemForeignSourceRepository();
         m_foreignSourceRepository.setForeignSourcePath("target/test-classes/empty");
         m_foreignSourceRepository.setRequisitionPath("target/test-classes/1.8-upgrade-test");
