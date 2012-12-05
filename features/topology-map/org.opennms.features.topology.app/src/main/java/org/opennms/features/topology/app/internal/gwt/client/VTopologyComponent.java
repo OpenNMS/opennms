@@ -54,7 +54,6 @@ import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.service.support.DefaultServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
@@ -199,7 +198,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			D3 edgeSelection = getEdgeSelection(graph, topologyView);
 
 			D3 vertexSelection = getVertexSelection(graph, topologyView);
-
+			
 			vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers())
 			.attr("transform", new Func<String, GWTVertex>() {
 
@@ -231,7 +230,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
-
 
 			//Enters
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
@@ -830,21 +828,21 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		    setTopologyViewRenderer(m_graphDrawer);
 		}
         
-        final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
-        selectedVertices.each(new Handler<GWTVertex>() {
-        
-            @Override
-            public void call(GWTVertex gwtVertex, int index) {
-                SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
-                vertex.getParentElement().appendChild(vertex);
-            }
-        });
+//        final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+//        selectedVertices.each(new Handler<GWTVertex>() {
+//        
+//            @Override
+//            public void call(GWTVertex gwtVertex, int index) {
+//                SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
+//                vertex.getParentElement().appendChild(vertex);
+//            }
+//        });
 		
         updateGraphUpdateListeners();
 	}
 
     public ApplicationConnection getClient() {
-		return m_client;
+		return m_client; 
 	}
 
 	public String getPaintableId() {
