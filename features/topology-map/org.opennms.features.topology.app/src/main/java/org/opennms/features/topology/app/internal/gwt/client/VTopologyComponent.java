@@ -216,7 +216,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 				@Override
 				public D3 run(D3 selection) {
-					return selection.transition().delay(0).duration(0);
+					return selection.transition().delay(0).duration(500);
 				}
 			}).attr("transform", new Func<String, GWTVertex>(){
 
@@ -228,7 +228,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 0);
+			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
@@ -244,7 +244,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                 D3.d3().select(topologyView.getSVGViewPort())
                 .transition().duration(1000)
                 .attr("transform", matrixTransform(transform) )
-                .selectAll(GWTEdge.SVG_EDGE_ELEMENT).attr("opacity", "1").transition().style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px");
+                .selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
             } else if(graph.isPanToSelection()) {
                 
@@ -261,7 +261,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(500).duration(1500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }else if(graph.isFitToView()) {
                 
                 final BoundingRect rect = createBoundingRect(graph.getVertices(), true);
@@ -269,7 +269,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                 final double scale = transform.getA();
                 graph.setScale(scale);
                 
-                D3.d3().select(topologyView.getSVGViewPort()).transition().delay(500).duration(2000).attr("transform", matrixTransform(transform)).each("end", new AnonymousFunc() {
+                D3.d3().select(topologyView.getSVGViewPort()).transition().duration(2000).attr("transform", matrixTransform(transform)).each("end", new AnonymousFunc() {
                     
                     @Override
                     public void call() {
@@ -277,7 +277,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(500).duration(2000).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }
 		}
 		
@@ -756,7 +756,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		        String edge2Target = maxEndPoint(edge2);
 		        
 		        if((edge1Source.equals(edge2Source) && edge1Target.equals(edge2Target))) {
-		            consoleLog("found match: " + edge1.getId() + " and " + edge2.getId());
 		            edge2.setLinkNum(edge1.getLinkNum() + 1);
 		        }else {
 		            edge2.setLinkNum(1);
