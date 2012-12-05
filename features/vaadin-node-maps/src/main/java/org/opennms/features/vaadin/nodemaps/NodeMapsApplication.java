@@ -66,16 +66,19 @@ import com.vaadin.ui.Window;
 
 /**
  * The Class Node Maps Application.
- * 
- * <p>PointVectors are used instead of Markers because the idea is to use the Cluster Strategy feature.</p>
- * 
- * <p>Here are some samples:</p>
+ * <p>
+ * PointVectors are used instead of Markers because the idea is to use the
+ * Cluster Strategy feature.
+ * </p>
+ * <p>
+ * Here are some samples:
+ * </p>
  * <ul>
  * <li>http://openlayers.org/dev/examples/strategy-cluster.html</li>
  * <li>http://developers.cloudmade.com/projects/web-maps-api/examples/marker-clustering</li>
  * </ul>
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 /*
  * TODO Design questions
@@ -110,7 +113,7 @@ public class NodeMapsApplication extends Application {
 
     /**
      * Sets the OpenNMS Node DAO.
-     *
+     * 
      * @param nodeDao the new OpenNMS Node DAO
      */
 
@@ -120,7 +123,7 @@ public class NodeMapsApplication extends Application {
 
     /**
      * Gets the OpenNMS Node DAO.
-     *
+     * 
      * @return the OpenNMS Node DAO
      */
     public NodeDao getNodeDao() {
@@ -131,7 +134,8 @@ public class NodeMapsApplication extends Application {
         return nodeDao;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see com.vaadin.Application#init()
      */
     @Override
@@ -168,15 +172,23 @@ public class NodeMapsApplication extends Application {
 
     /**
      * Gets the point from address.
-     * <p>This method will use the Google API to retrieve the geolocation coordinates for a given address.</p>
-     * <p>Source inspired on:<br/> http://code.google.com/p/gmaps-samples/source/browse/trunk/geocoder/java/GeocodingSample.java?r=2476</p>
-     *
-     * @param node the OpenNMS Node
+     * <p>
+     * This method will use the Google API to retrieve the geolocation
+     * coordinates for a given address.
+     * </p>
+     * <p>
+     * Source inspired on:<br/>
+     * http://code.google.com/p/gmaps-samples/source/browse/trunk/geocoder/
+     * java/GeocodingSample.java?r=2476
+     * </p>
+     * 
+     * @param address the address
      * @return the point from address
      */
     /*
-     * TODO We can create a provisioning adapter in order to populate the node assets with the coordinates based on the current
-     *      address configured on the database.
+     * TODO We can create a provisioning adapter in order to populate the node
+     * assets with the coordinates based on the current address configured on
+     * the database.
      */
     private PointVector getPointFromAddress(OnmsNode onmsNode) {
         final String address = getNodeAddress(onmsNode);
@@ -201,10 +213,14 @@ public class NodeMapsApplication extends Application {
             resultNodeList = (NodeList) xpath.evaluate("/GeocodeResponse/result[1]/geometry/location/*", geocoderResultDocument, XPathConstants.NODESET);
             double lat = Double.NaN;
             double lng = Double.NaN;
-            for (int i=0; i<resultNodeList.getLength(); ++i) {
+            for (int i = 0; i < resultNodeList.getLength(); ++i) {
                 Node node = resultNodeList.item(i);
-                if ("lat".equals(node.getNodeName())) lat = Double.parseDouble(node.getTextContent());
-                if ("lng".equals(node.getNodeName())) lng = Double.parseDouble(node.getTextContent());
+                if ("lat".equals(node.getNodeName())) {
+                    lat = Double.parseDouble(node.getTextContent());
+                }
+                if ("lng".equals(node.getNodeName())) {
+                    lng = Double.parseDouble(node.getTextContent());
+                }
             }
             if (lat == Double.NaN || lng == Double.NaN) {
                 LogUtils.warnf(this, "Couldn't find the coordinates for node %s located on %s", onmsNode.getLabel(), address);
@@ -218,10 +234,9 @@ public class NodeMapsApplication extends Application {
         return null;
     }
 
-
     /**
      * Creates the node layer.
-     *
+     * 
      * @param map the map
      * @return the vector layer
      */
@@ -261,7 +276,7 @@ public class NodeMapsApplication extends Application {
 
     /**
      * Gets the node description.
-     *
+     * 
      * @param node the OpenNMS Node
      * @return the node description
      */
@@ -274,7 +289,7 @@ public class NodeMapsApplication extends Application {
 
     /**
      * Gets the node address.
-     *
+     * 
      * @param node the OpenNMS Node
      * @return the node address
      */
