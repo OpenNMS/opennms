@@ -240,6 +240,11 @@ public class SimpleTopologyProviderTest {
             // TODO Auto-generated method stub
             return false;
         }
+
+		@Override
+		public DisplayLocation getDisplayLocation() {
+			return DisplayLocation.MENUBAR;
+		}
         
     }
     

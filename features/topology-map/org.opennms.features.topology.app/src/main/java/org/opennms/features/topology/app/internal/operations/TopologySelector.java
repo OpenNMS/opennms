@@ -107,8 +107,8 @@ public class TopologySelector {
     	m_operations.put(topologyProvider, operation);
     	
     	Properties properties = new Properties();
-        properties.put("operation.menuLocation", "View|Topology");
-        properties.put("operation.label", operation.getLabel());
+        properties.put("operation.menuLocation", "View");
+        properties.put("operation.label", operation.getLabel()+"?group=topology");
     	
     	ServiceRegistration reg = m_bundleContext.registerService(CheckedOperation.class.getName(), operation, properties);
     	
