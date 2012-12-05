@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNull;
 
 import java.net.InetAddress;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
@@ -53,12 +54,24 @@ public class MockSnmpStrategyTest {
     private static MockSnmpStrategy m_strategy;
     private InetAddress m_agentAddress = InetAddressUtils.addr("127.0.0.1");
     private int m_agentPort = 1691;
+    private String m_oldProperty;
 
     @Before
     public void setUp() throws Exception {
         m_strategy = new MockSnmpStrategy();
         MockSnmpStrategy.setDataForAddress(new SnmpAgentAddress(m_agentAddress, m_agentPort), new ClassPathResource("loadSnmpDataTest.properties"));
+        m_oldProperty = System.getProperty("org.opennms.snmp.strategyClass");
         System.setProperty("org.opennms.snmp.strategyClass", m_strategy.getClass().getName());
+    }
+    
+    @After
+    public void tearDown() {
+    	if (m_oldProperty == null) {
+    		System.getProperties().remove("org.opennms.snmp.strategyClass");
+    	} else {
+    		System.setProperty("org.opennms.snmp.strategyClass", m_oldProperty);
+    	}
+    	
     }
     
     @Test
