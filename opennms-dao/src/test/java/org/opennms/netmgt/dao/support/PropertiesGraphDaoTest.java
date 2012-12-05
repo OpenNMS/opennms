@@ -480,7 +480,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
     
     public void testPrefabPropertiesReloadBad() throws Exception {
-        MockLogAppender.setupLogging(false, "DEBUG");
+//        MockLogAppender.setupLogging(false, "DEBUG");
         
         File f = m_fileAnticipator.tempFile("snmp-graph.properties");
 

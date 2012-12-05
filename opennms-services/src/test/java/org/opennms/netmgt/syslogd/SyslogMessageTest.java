@@ -65,7 +65,7 @@ public class SyslogMessageTest {
     
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging(true, "TRACE");
+//        MockLogAppender.setupLogging(true, "TRACE");
     }
 
     @Test

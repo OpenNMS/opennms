@@ -77,7 +77,7 @@ public class AuthenticationIntegrationTest implements InitializingBean {
 
 	@Before
 	public void setUp() {
-	    MockLogAppender.setupLogging(true, "DEBUG");
+//	    MockLogAppender.setupLogging(true, "DEBUG");
 	}
 	
 	@Test

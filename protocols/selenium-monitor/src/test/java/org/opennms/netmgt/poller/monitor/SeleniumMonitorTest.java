@@ -114,7 +114,7 @@ public class SeleniumMonitorTest {
 	
 	@Before
 	public void setup() throws Exception{
-	    MockLogAppender.setupLogging(true, "DEBUG");
+//	    MockLogAppender.setupLogging(true, "DEBUG");
 		System.setProperty("opennms.home", "src/test/resources");
 	}
 	

@@ -72,7 +72,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
     @Test
     public void testDuplicateNodes() throws Exception {
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
 
         String req =
             "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +

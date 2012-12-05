@@ -57,7 +57,7 @@ public class TopReportPluginTest {
     private SystemReportPlugin m_topReportPlugin;
 
     public TopReportPluginTest() {
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
     @Test

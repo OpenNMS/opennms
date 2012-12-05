@@ -144,7 +144,7 @@ public class SyslogdLoadTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-    	MockLogAppender.setupLogging(true, "WARN");
+//    	MockLogAppender.setupLogging(true, "WARN");
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 

@@ -64,7 +64,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
     @Before
     public void setUp() {
         // Set the logging to INFO so that it doesn't OutOfMemory Eclipse with logs :)
-        MockLogAppender.setupLogging(true, "INFO");
+//        MockLogAppender.setupLogging(true, "INFO");
     }
 
     private static AsyncServiceDetector getNewDetector(int port, String bannerRegex) {

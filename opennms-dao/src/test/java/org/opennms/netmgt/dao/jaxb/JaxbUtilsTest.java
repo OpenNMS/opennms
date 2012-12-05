@@ -280,7 +280,7 @@ public class JaxbUtilsTest {
         final int eventCount = 1000000;
         final int logEvery = (eventCount / 1000);
         
-        MockLogAppender.setupLogging(true, "INFO");
+//        MockLogAppender.setupLogging(true, "INFO");
 
         LogUtils.infof(this, "starting");
         Thread.sleep(30000);

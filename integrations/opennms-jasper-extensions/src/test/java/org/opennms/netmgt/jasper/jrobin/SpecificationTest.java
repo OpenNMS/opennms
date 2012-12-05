@@ -50,6 +50,7 @@ import org.jrobin.core.Sample;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.LogUtils;
 
 
 public class SpecificationTest {
@@ -85,7 +86,7 @@ public class SpecificationTest {
         public double evaluate(long timestamp) {
             long x = timestamp - m_startTime;
             double ret = (m_amplitude * Math.sin(m_factor * x)) + m_offset;
-            System.out.println("Sin("+ x + ") = " + ret);
+            LogUtils.infof(this, "Sin("+ x + ") = " + ret);
             return ret;
         }
     }
@@ -111,7 +112,7 @@ public class SpecificationTest {
         public double evaluate(long timestamp) {
             long x = timestamp - m_startTime;
             double ret = (m_amplitude * Math.cos(m_factor * x)) + m_offset;
-            System.out.println("Cos("+ x + ") = " + ret);
+            LogUtils.infof(this, "Cos("+ x + ") = " + ret);
             return ret;
         }
     }
@@ -166,9 +167,9 @@ public class SpecificationTest {
         long end = now/MILLIS_PER_DAY*MILLIS_PER_DAY + (MILLIS_PER_HOUR * 4);
         long start = end - (MILLIS_PER_DAY*7);
         m_startDate = new Date(start);
-        System.out.println("startDate: " + m_startDate.getTime()/1000);
+        LogUtils.infof(this, "startDate: " + m_startDate.getTime()/1000);
         m_endDate = new Date(end);
-        System.out.println("endDate: " + m_endDate.getTime()/1000);
+        LogUtils.infof(this, "endDate: " + m_endDate.getTime()/1000);
         
         RrdDef rrdDef = new RrdDef("target/rrd/mo_calls.jrb", (start/1000) - 600000, 300);
         rrdDef.addDatasource("DS:mo_call_attempts:COUNTER:600:0:U");
@@ -200,14 +201,14 @@ public class SpecificationTest {
 
         int count = 0;
         for(long timestamp = start - 300000; timestamp<= end; timestamp += 300000){
-            System.out.println("timestamp: " + new Date(timestamp));
+            LogUtils.infof(this, "timestamp: " + new Date(timestamp));
             
             
             Sample sample = rrd1.createSample(timestamp/1000);
             double attemptsVal = moAttempts.evaluate(timestamp);
             double completesVal = moCompletes.evaluate(timestamp);
             
-            System.out.println("Attempts: " + attemptsVal + " Completes " + completesVal);
+            LogUtils.infof(this, "Attempts: " + attemptsVal + " Completes " + completesVal);
             sample.setValue("mo_call_attempts", attemptsVal);
             sample.setValue("mo_call_completes", completesVal);
             sample.setValue("mo_mins_carried", 32 * count);

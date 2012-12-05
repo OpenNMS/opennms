@@ -128,7 +128,7 @@ public class ProvisionerRescanTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging(true, "ERROR");
+//        MockLogAppender.setupLogging(true, "ERROR");
 
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);

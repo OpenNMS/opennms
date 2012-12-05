@@ -113,7 +113,7 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         	m_eventDao.delete(event);
         }
 
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
         m_anticipator = new EventAnticipator();
         m_eventManager.setEventAnticipator(m_anticipator);
         m_eventManager.setSynchronous(true);
