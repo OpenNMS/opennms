@@ -43,8 +43,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Refresh"/>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Refresh?group=start"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation">
             <argument ref="topologyProvider"/>
@@ -53,8 +53,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
       	<service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Hide Nodes Without Links"/>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Hide Nodes Without Links?group=start"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.HideNodesWithoutLinksOperation">
             <argument ref="topologyProvider"/>

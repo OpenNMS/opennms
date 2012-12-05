@@ -73,6 +73,11 @@ public class SaveToXmlTest {
 			}
 			
 			@Override
+			public DisplayLocation getDisplayLocation() {
+				throw new UnsupportedOperationException("OperationContext.getDisplayLocation is not yet implemented.");
+			}
+
+			@Override
 			public GraphContainer getGraphContainer() {
 				return new GraphContainer() {
 
@@ -210,6 +215,7 @@ public class SaveToXmlTest {
 					
 				};
 			}
+
 		});
 		
 		
