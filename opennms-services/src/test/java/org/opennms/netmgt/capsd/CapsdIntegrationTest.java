@@ -126,7 +126,7 @@ public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase
 
         m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
 
-        Thread.sleep(15000);
+        Thread.sleep(750);
 
         m_capsd.stop();
 
@@ -154,7 +154,7 @@ public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase
 
         m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
 
-        Thread.sleep(10000);
+        Thread.sleep(500);
 
         m_capsd.stop();
 
