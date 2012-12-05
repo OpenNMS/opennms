@@ -215,9 +215,10 @@ public abstract class MenuBuilder<T, K>{
 	        });
 	        
 	        String prevGroup = null;
+	        int separatorCount = 0;
 	        for(String key : keys) {
 	            if(prevGroup != null && !prevGroup.equals(getGroupForLabel(key, submenuOrder))) {
-	                sortedList.put("separator", null);
+	                sortedList.put("separator" + separatorCount++, null);
 	            }
 	           
 	            Object command = value.get(key);
