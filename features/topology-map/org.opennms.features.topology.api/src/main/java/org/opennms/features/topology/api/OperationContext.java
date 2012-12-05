@@ -28,12 +28,14 @@
 
 package org.opennms.features.topology.api;
 
-
 import com.vaadin.ui.Window;
 
 public interface OperationContext {
+	
+	enum DisplayLocation { MENUBAR, CONTEXTMENU };
 
     public Window getMainWindow();
     public GraphContainer getGraphContainer();
+    public DisplayLocation getDisplayLocation();
     public boolean isChecked();
 }

@@ -41,6 +41,7 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -57,11 +58,13 @@ public class CommandManager {
 
 		private Window m_mainWindow;
 		private GraphContainer m_graphContainer;
+		private DisplayLocation m_displayLocation;
 		private boolean m_checked = false;
 
-		public DefaultOperationContext(Window mainWindow, GraphContainer graphContainer) {
+		public DefaultOperationContext(Window mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
 			m_mainWindow = mainWindow;
 			m_graphContainer = graphContainer;
+			m_displayLocation = displayLocation;
 		}
 
 		@Override
@@ -72,6 +75,10 @@ public class CommandManager {
 		@Override
 		public GraphContainer getGraphContainer() {
 			return m_graphContainer;
+		}
+		
+		public DisplayLocation getDisplayLocation() {
+			return m_displayLocation;
 		}
 
 		public void setChecked(boolean checked) {
@@ -149,7 +156,7 @@ public class CommandManager {
 	}
 
 	MenuBar getMenuBar(GraphContainer graphContainer, Window mainWindow) {
-		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
 		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
@@ -171,7 +178,7 @@ public class CommandManager {
 	 * @return
 	 */
 	public TopoContextMenu getContextMenu(GraphContainer graphContainer, Window mainWindow) {
-		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer);
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
 		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
 		Map<String, Operation> operationMap = new HashMap<String, Operation>(); 
 		for (Command command : getCommandList()) {
@@ -309,7 +316,7 @@ public class CommandManager {
 	}
 
 	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, Window mainWindow) {
-		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
+		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
 		//Check for null because separators have no Operation
@@ -331,7 +338,7 @@ public class CommandManager {
 	}
 
     public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, Window mainWindow) {
-        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer);
+        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
         
         ContextMenuItem ctxMenuItem = contextItem.getItem();
         Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
