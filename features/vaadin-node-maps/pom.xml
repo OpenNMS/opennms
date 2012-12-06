@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>vaadin-node-maps</artifactId>
   <packaging>bundle</packaging>
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS Node Maps</name>
   <description>
     OpenNMS Vaadin UI for displaying nodes on geographical maps using assets records.
   </description>
@@ -83,6 +83,7 @@
           <features>
             <feature>vaadin</feature>
           </features>
+<!--
           <configs>
             <config>
                 <name>${bundle.symbolicName}</name>
@@ -92,6 +93,7 @@
                 </contents>
             </config>
           </configs>
+-->
         </configuration>
       </plugin>
     </plugins>
