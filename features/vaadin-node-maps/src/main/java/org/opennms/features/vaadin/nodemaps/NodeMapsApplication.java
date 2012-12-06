@@ -77,6 +77,25 @@ import com.vaadin.ui.Window;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+/*
+ * TODO Design questions
+ * 
+ * 1) Several nodes can share the exact location, so we should determinate the points and associate a
+ *    list of nodes to it.
+ * 2) Regions are polygons that contains a list of points (nodes or group of nodes).
+ *  
+ */
+/*
+ * Display Strategies
+ * 
+ * 1. Create the NodePoints object
+ *    (which is essentially Map<PointVector,List<OnmsNode>>, or Map<PointVector,List<Integer>>).
+ * 2. Create the NodeGroups objects
+ *    (which is essentially Map<Area,List<OnmsNode>>, or Map<Area,List<Integer>>)
+ * 3. Use NodeGroups for the Cluster Strategy (node aggregation)
+ * 4. Create a VectorLayer for the NodePoints.
+ * 5. Create a strategy to build/display the Popups even using Vaadin Widgets or OpenLayer widgets).
+ */
 @SuppressWarnings("serial")
 public class NodeMapsApplication extends Application {
 
@@ -133,11 +152,8 @@ public class NodeMapsApplication extends Application {
         // Populating Map with nodes
         List<OnmsNode> nodes = getNodeDao().findAll();
         for (OnmsNode node : nodes) {
-            final String address = getNodeAddress(node);
-            final PointVector vector = getPointFromAddress(address);
-            if (vector == null) {
-                LogUtils.warnf(this, "Can't find geolocation coordinates for node %s", node.getLabel());
-            } else {
+            final PointVector vector = getPointFromAddress(node);
+            if (vector != null) {
                 vector.setDescription(getNodeDescription(node));
                 vector.setRenderIntent(NODE_STYLE);
                 nodeLayer.addVector(vector);
@@ -155,18 +171,21 @@ public class NodeMapsApplication extends Application {
      * <p>This method will use the Google API to retrieve the geolocation coordinates for a given address.</p>
      * <p>Source inspired on:<br/> http://code.google.com/p/gmaps-samples/source/browse/trunk/geocoder/java/GeocodingSample.java?r=2476</p>
      *
-     * @param address the address
+     * @param node the OpenNMS Node
      * @return the point from address
      */
     /*
      * TODO We can create a provisioning adapter in order to populate the node assets with the coordinates based on the current
      *      address configured on the database.
      */
-    private PointVector getPointFromAddress(String address) {
+    private PointVector getPointFromAddress(OnmsNode onmsNode) {
+        final String address = getNodeAddress(onmsNode);
         if (address == null) {
+            LogUtils.debugf(this, "Node %s does not contain any address information.", onmsNode.getLabel());
             return null;
         }
         try {
+            LogUtils.debugf(this, "Getting geolocation for node %s, located on %s", onmsNode.getLabel(), address);
             URL url = new URL(GEOCODER_REQUEST_PREFIX_FOR_XML + "?address=" + URLEncoder.encode(address, "UTF-8") + "&sensor=false");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             Document geocoderResultDocument = null;
@@ -182,15 +201,16 @@ public class NodeMapsApplication extends Application {
             resultNodeList = (NodeList) xpath.evaluate("/GeocodeResponse/result[1]/geometry/location/*", geocoderResultDocument, XPathConstants.NODESET);
             double lat = Double.NaN;
             double lng = Double.NaN;
-            for(int i=0; i<resultNodeList.getLength(); ++i) {
+            for (int i=0; i<resultNodeList.getLength(); ++i) {
                 Node node = resultNodeList.item(i);
                 if ("lat".equals(node.getNodeName())) lat = Double.parseDouble(node.getTextContent());
                 if ("lng".equals(node.getNodeName())) lng = Double.parseDouble(node.getTextContent());
             }
             if (lat == Double.NaN || lng == Double.NaN) {
-                LogUtils.warnf(this, "Couldn't find the coordinates for: %s", address);
+                LogUtils.warnf(this, "Couldn't find the coordinates for node %s located on %s", onmsNode.getLabel(), address);
                 return null;
             }
+            LogUtils.infof(this, "Found geolocation coordinates for node %s at (%s, %s)", onmsNode.getLabel(), lng, lat);
             return new PointVector(lng, lat);
         } catch (Exception e) {
             LogUtils.errorf(this, e, "An error occured when trying to get coordinates for %s.", address);
@@ -259,7 +279,7 @@ public class NodeMapsApplication extends Application {
      * @return the node address
      */
     private String getNodeAddress(OnmsNode node) {
-        if (node.getAssetRecord() == null)
+        if (node == null || node.getAssetRecord() == null)
             return null;
         StringBuffer sb = new StringBuffer(node.getAssetRecord().getAddress1());
         sb.append(" ").append(node.getAssetRecord().getAddress2());
