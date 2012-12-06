@@ -130,7 +130,6 @@ public final class GWTGraph extends JavaScriptObject {
     }-*/;
 
     public native void setScale(double scale) /*-{
-        $wnd.console.log("setting scale in GWTGraph scale: " + scale);
         if(this.scale != scale) {
             this.oldScale = this.scale;
             this.scale = scale;
@@ -138,7 +137,6 @@ public final class GWTGraph extends JavaScriptObject {
     }-*/;
     
     public native double getOldScale() /*-{
-        $wnd.console.log("calling old scale");
         return this.oldScale;
     }-*/;
 
