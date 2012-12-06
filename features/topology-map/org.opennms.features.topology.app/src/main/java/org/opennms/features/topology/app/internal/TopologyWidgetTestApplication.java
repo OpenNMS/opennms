@@ -71,7 +71,7 @@ import com.vaadin.ui.Window;
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext {
     
     
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6837501987137310938L;
 
 	private static final String LABEL_PROPERTY = "label";
 	private Window m_window;

@@ -45,13 +45,12 @@ public class CommandProviderShellCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-    	final ServiceReference[] services = this.bundleContext.getServiceReferences(BlueprintContainer.class.getName(), null);
-    	for (final ServiceReference sr : services) {
+    	final Collection<ServiceReference<BlueprintContainer>> services = this.bundleContext.getServiceReferences(BlueprintContainer.class, null);
+    	for (final ServiceReference<BlueprintContainer> sr : services) {
 
     		final List<String> commands = new ArrayList<String>();
     		
-    		final BlueprintContainer container = (BlueprintContainer)this.bundleContext.getService(sr);
-    		@SuppressWarnings("unchecked")
+    		final BlueprintContainer container = this.bundleContext.getService(sr);
 			final Collection<ServiceMetadata> metadata = container.getMetadata(ServiceMetadata.class);
     		for (final ServiceMetadata data : metadata) {
     			String scope = null;

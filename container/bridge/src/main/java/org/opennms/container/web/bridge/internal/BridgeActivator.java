@@ -58,14 +58,14 @@ public final class BridgeActivator extends AbstractActivator
         props.put("http.felix.dispatcher", getDispatcherFilter().getClass().getName());
         props.put(Constants.SERVICE_DESCRIPTION, "Dispatcher for bridged request handling");
         props.put(Constants.SERVICE_VENDOR, "The OpenNMS Group, Inc.");
-        getBundleContext().registerService(Filter.class.getName(), getDispatcherFilter(), props);
+        getBundleContext().registerService(Filter.class, getDispatcherFilter(), props);
 
         // Http Session event dispatcher
         props = new Hashtable<String, Object>();
         props.put("http.felix.dispatcher", getEventDispatcher().getClass().getName());
         props.put(Constants.SERVICE_DESCRIPTION, "Dispatcher for bridged HttpSession events");
         props.put(Constants.SERVICE_VENDOR, "The OpenNMS Group, Inc.");
-        getBundleContext().registerService(EventListener.class.getName(), getEventDispatcher(), props);
+        getBundleContext().registerService(EventListener.class, getEventDispatcher(), props);
 
         SystemLogger.info("Started bridged http service");
     }

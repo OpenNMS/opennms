@@ -21,11 +21,6 @@
       <version>${gwtVersion}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>org.gwtwidgets</groupId>
       <artifactId>gwt-widgets</artifactId>
       <version>0.2.0</version>

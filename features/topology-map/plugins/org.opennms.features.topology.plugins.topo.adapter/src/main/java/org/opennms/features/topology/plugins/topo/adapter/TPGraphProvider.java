@@ -36,7 +36,7 @@ public class TPGraphProvider implements GraphProvider {
 
         @Override
         public Item getItem(Object itemId) {
-            return m_topoProvider.getVertexItem(itemId);
+            return m_topoProvider.getVertexContainer().getItem(itemId);
         }
 
     }
@@ -45,7 +45,7 @@ public class TPGraphProvider implements GraphProvider {
 
         @Override
         public Item getItem(Object itemId) {
-            return m_topoProvider.getEdgeItem(itemId);
+            return m_topoProvider.getEdgeContainer().getItem(itemId);
         }
     }
 

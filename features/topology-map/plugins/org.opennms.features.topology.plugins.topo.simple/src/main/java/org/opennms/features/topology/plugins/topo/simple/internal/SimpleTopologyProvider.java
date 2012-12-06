@@ -111,29 +111,21 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return m_edgeContainer;
     }
 
-    public Collection<?> getVertexIds() {
+    public Collection<String> getVertexIds() {
         return m_vertexContainer.getItemIds();
     }
 
     @Override
-    public Collection<?> getEdgeIds() {
+    public Collection<String> getEdgeIds() {
         return m_edgeContainer.getItemIds();
     }
 
-    public Item getVertexItem(Object vertexId) {
-        return m_vertexContainer.getItem(vertexId);
-    }
-
     @Override
-    public Item getEdgeItem(Object edgeId) {
-        return m_edgeContainer.getItem(edgeId);
-    }
-    
-    public Collection<?> getEndPointIdsForEdge(Object edgeId) {
+    public Collection<String> getEndPointIdsForEdge(Object edgeId) {
         
         SimpleEdge edge = getRequiredEdge(edgeId);
 
-        List<Object> endPoints = new ArrayList<Object>(2);
+        List<String> endPoints = new ArrayList<String>(2);
         
         endPoints.add(edge.getSource().getId());
         endPoints.add(edge.getTarget().getId());
@@ -142,18 +134,14 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
     }
 
     @Override
-    public Collection<?> getEdgeIdsForVertex(Object vertexId) {
+    public Collection<String> getEdgeIdsForVertex(Object vertexId) {
         
         SimpleVertex vertex = getRequiredVertex(vertexId);
         
-        List<Object> edges = new ArrayList<Object>(vertex.getEdges().size());
+        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
         
         for(SimpleEdge e : vertex.getEdges()) {
-            
-            Object edgeId = e.getId();
-            
-            edges.add(edgeId);
-
+            edges.add(e.getId());
         }
         
         return edges;
@@ -329,15 +317,15 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return beans;
     }
 
-    private String getNextVertexId() {
+    protected String getNextVertexId() {
         return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
     }
 
-    private String getNextEdgeId() {
+    protected String getNextEdgeId() {
         return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter ++;
     }
     
-    private String getNextGroupId() {
+    protected String getNextGroupId() {
         return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
     }
 
@@ -386,7 +374,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#connectVertices(java.lang.Object, java.lang.Object)
 	 */
     @Override
-	public Object connectVertices(Object sourceVertextId, Object targetVertextId) {
+	public String connectVertices(Object sourceVertextId, Object targetVertextId) {
         String nextEdgeId = getNextEdgeId();
         connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
         return nextEdgeId;

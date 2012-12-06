@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -563,10 +564,10 @@ public class SimpleGraphContainer implements GraphContainer {
             @Override
             protected GEdge make(String key, Object itemId, Item item) {
 
-                List<Object> endPoints = new ArrayList<Object>(m_topologyProvider.getEndPointIdsForEdge(itemId));
+                Iterator<?> endPoints = m_topologyProvider.getEndPointIdsForEdge((String)itemId).iterator();
 
-                Object sourceId = endPoints.get(0);
-                Object targetId = endPoints.get(1);
+                Object sourceId = endPoints.next();
+                Object targetId = endPoints.next();
                 
                 GVertex source = m_vertexHolder.getElementByItemId(sourceId);
                 GVertex target = m_vertexHolder.getElementByItemId(targetId);
@@ -658,14 +659,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_edgeContainer.getItemIds();
 	}
 
-	public BeanItem<GVertex> getVertexItem(Object vertexId) {
-		return m_vertexContainer.getItem(vertexId);
-	}
-
-	public BeanItem<GEdge> getEdgeItem(Object edgeId) {
-		return m_edgeContainer.getItem(edgeId); 
-	}
-	
 	public Collection<String> getEndPointIdsForEdge(Object key) {
 	        if (key == null) return Collections.emptyList();
 		GEdge edge = m_edgeHolder.getElementByKey(key.toString());
@@ -731,12 +724,12 @@ public class SimpleGraphContainer implements GraphContainer {
 
 
     public Object getVertexItemIdForVertexKey(Object key) {
-        Item vertexItem = getVertexItem(key);
+        Item vertexItem = getVertexContainer().getItem(key);
         return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
     }
     
     public int getX(Object itemId) {
-		BeanItem<GVertex> vertexItem = getVertexItem(itemId);
+		BeanItem<GVertex> vertexItem = getVertexContainer().getItem(itemId);
 		if (vertexItem == null) throw new NullPointerException("vertexItem "+ itemId +" is null");
 		Property itemProperty = vertexItem.getItemProperty(X_PROPERTY);
 		if (itemProperty == null) throw new NullPointerException("X property is null");
@@ -744,15 +737,15 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
     public int getY(Object itemId) {
-		return (Integer) getVertexItem(itemId).getItemProperty(Y_PROPERTY).getValue();
+		return (Integer) getVertexContainer().getItem(itemId).getItemProperty(Y_PROPERTY).getValue();
 	}
 
     public void setX(Object itemId, int x) {
-		getVertexItem(itemId).getItemProperty(X_PROPERTY).setValue(x);
+		getVertexContainer().getItem(itemId).getItemProperty(X_PROPERTY).setValue(x);
 	}
 
     public void setY(Object itemId, int y) {
-		getVertexItem(itemId).getItemProperty(Y_PROPERTY).setValue(y);
+		getVertexContainer().getItem(itemId).getItemProperty(Y_PROPERTY).setValue(y);
 	}
 
     public int getSemanticZoomLevel(Object itemId) {
@@ -760,11 +753,11 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
     
     public void setVertexItemProperty(Object itemId, String propertyName, Object value) {
-    	getVertexItem(itemId).getItemProperty(propertyName).setValue(value);
+    	getVertexContainer().getItem(itemId).getItemProperty(propertyName).setValue(value);
     }
 
 	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue) {
-		Item vertexItem = getVertexItem(itemId);
+		Item vertexItem = getVertexContainer().getItem(itemId);
 		if (vertexItem == null) {
 			return defaultValue;
 		} else {
@@ -778,27 +771,27 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
     
     public Object getGroupId(Object itemId) {
-    	return getVertexItem(itemId).getBean().getGroupKey();
+    	return getVertexContainer().getItem(itemId).getBean().getGroupKey();
     }
 
 	boolean isLeaf(Object itemId) {
-		Object value = getVertexItem(itemId).getItemProperty(LEAF).getValue();
+		Object value = getVertexContainer().getItem(itemId).getItemProperty(LEAF).getValue();
 	    return (Boolean) value;
 	}
 
 	String getLabel(Object itemId) {
-		Property labelProperty = getVertexItem(itemId).getItemProperty(LABEL);
+		Property labelProperty = getVertexContainer().getItem(itemId).getItemProperty(LABEL);
 		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
 		return label;
 	}
 
 	String getIconKey(Object itemId) {
-		return (String) getVertexItem(itemId).getItemProperty(ICON_KEY).getValue();
+		return (String) getVertexContainer().getItem(itemId).getItemProperty(ICON_KEY).getValue();
 	}
 
 	String getVertexTooltipText(Object itemId) {
-		if(getVertexItem(itemId).getItemProperty("tooltipText") != null && getVertexItem(itemId).getItemProperty("tooltipText").getValue() != null) {
-	        return (String) getVertexItem(itemId).getItemProperty("tooltipText").getValue();
+		if(getVertexContainer().getItem(itemId).getItemProperty("tooltipText") != null && getVertexContainer().getItem(itemId).getItemProperty("tooltipText").getValue() != null) {
+	        return (String) getVertexContainer().getItem(itemId).getItemProperty("tooltipText").getValue();
 	    }else {
 	        return getLabel(itemId);
 	    }

@@ -40,6 +40,8 @@ import com.vaadin.event.Action;
 
 public class OperationCommand extends Action implements Command  {
 
+    private static final long serialVersionUID = -6018957365232489699L;
+
     @Override
     public Action getAction() {
         return this;

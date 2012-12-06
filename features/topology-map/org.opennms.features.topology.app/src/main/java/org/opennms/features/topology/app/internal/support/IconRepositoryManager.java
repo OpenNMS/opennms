@@ -125,7 +125,7 @@ public class IconRepositoryManager {
         
     }
 
-    public void updateIconConfig(Dictionary<String, Object> properties) {
+    public void updateIconConfig(Dictionary<String,?> properties) {
         Enumeration<String> keys = properties.keys();
         
         while(keys.hasMoreElements()) {

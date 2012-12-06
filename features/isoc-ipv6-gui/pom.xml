@@ -101,6 +101,12 @@
       <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
     
     <!--GWT visualization-->
     <dependency>

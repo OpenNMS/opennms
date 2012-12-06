@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 public final class DispatcherTracker
-    extends ServiceTracker
+    extends ServiceTracker<Object, Object>
 {
     final static String DEFAULT_FILTER = "(http.felix.dispatcher=*)";
 
@@ -44,7 +44,7 @@ public final class DispatcherTracker
     }
 
     @Override
-    public Object addingService(ServiceReference ref)
+    public Object addingService(ServiceReference<Object> ref)
     {
         Object service = super.addingService(ref);
         if (service instanceof javax.servlet.Filter) {
@@ -55,7 +55,7 @@ public final class DispatcherTracker
     }
 
     @Override
-    public void removedService(ServiceReference ref, Object service)
+    public void removedService(ServiceReference<Object> ref, Object service)
     {
         if (service instanceof javax.servlet.Filter) {
             setDispatcher(null);

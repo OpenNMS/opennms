@@ -30,19 +30,18 @@ package org.opennms.features.topology.api;
 
 public interface DisplayState {
     
-    public abstract int getSemanticZoomLevel();
+    int getSemanticZoomLevel();
     
-    public abstract void setSemanticZoomLevel(int level);
+    void setSemanticZoomLevel(int level);
     
-    public abstract double getScale();
+    double getScale();
     
-    public void setScale(double scale);
+    void setScale(double scale);
     
-    public abstract void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm);
+    void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm);
     
-    public abstract LayoutAlgorithm getLayoutAlgorithm();
+    LayoutAlgorithm getLayoutAlgorithm();
 
-    public abstract void redoLayout();
-
+    void redoLayout();
 
 }

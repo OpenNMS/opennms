@@ -460,5 +460,4 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         m_panToManager.setPanToSelection(bool);
     }
 
-
 }

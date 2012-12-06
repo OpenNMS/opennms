@@ -74,7 +74,7 @@ public class SimpleTopologyProviderTest {
     }
 
     
-    private class TestGraphContainer implements GraphContainer{
+    private class TestGraphContainer implements GraphContainer {
 
         @SuppressWarnings("unused")
         private final SimpleVertexContainer m_vertContainer;
@@ -358,7 +358,7 @@ public class SimpleTopologyProviderTest {
 	public void testConnectVertices() {
 		m_topologyProvider.resetContainer();
 
-		Object vertexId = m_topologyProvider.addVertex(0, 0);
+		String vertexId = m_topologyProvider.addVertex(0, 0);
         
         assertEquals(1, m_topologyProvider.getVertexIds().size());
         Object vertId = m_topologyProvider.getVertexIds().iterator().next();
@@ -369,13 +369,13 @@ public class SimpleTopologyProviderTest {
         
         Object edgeId = m_topologyProvider.connectVertices("v0", "v1");
         assertEquals(1, m_topologyProvider.getEdgeIds().size());
-        SimpleLeafVertex sourceLeafVert = (SimpleLeafVertex) m_topologyProvider.getEdgeItem(edgeId).getItemProperty("source").getValue();
-        SimpleLeafVertex targetLeafVert = (SimpleLeafVertex) m_topologyProvider.getEdgeItem(edgeId).getItemProperty("target").getValue();
+        SimpleLeafVertex sourceLeafVert = (SimpleLeafVertex) m_topologyProvider.getEdgeContainer().getItem(edgeId).getItemProperty("source").getValue();
+        SimpleLeafVertex targetLeafVert = (SimpleLeafVertex) m_topologyProvider.getEdgeContainer().getItem(edgeId).getItemProperty("target").getValue();
         
         assertEquals("v0", sourceLeafVert.getId());
         assertEquals("v1", targetLeafVert.getId());
         
-        Collection<?> edgeIds = m_topologyProvider.getEdgeIdsForVertex(vertexId);
+        Collection<String> edgeIds = m_topologyProvider.getEdgeIdsForVertex(vertexId);
         assertEquals(1, edgeIds.size());
         assertEquals(edgeId, edgeIds.iterator().next());
         
@@ -415,7 +415,7 @@ public class SimpleTopologyProviderTest {
         CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
         groupOperation.execute(Arrays.asList((Object)"1", (Object)"2"), getOperationContext(graphContainer));
         
-        Item vertexItem1 = m_topologyProvider.getVertexItem(vertexId);
+        Item vertexItem1 = m_topologyProvider.getVertexContainer().getItem(vertexId);
         SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
         assertEquals(2, parent.getMembers().size());
         
@@ -433,7 +433,9 @@ public class SimpleTopologyProviderTest {
         final AtomicInteger eventsReceived = new AtomicInteger(0);
         
         m_topologyProvider.getVertexContainer().addListener(new ItemSetChangeListener() {
-            
+
+            private static final long serialVersionUID = 30630057710008362L;
+
             @Override
             public void containerItemSetChange(ItemSetChangeEvent event) {
                 eventsReceived.incrementAndGet();
@@ -473,7 +475,7 @@ public class SimpleTopologyProviderTest {
         assertEquals(1, edgeIds.size());
         
         for(Object edgeId : edgeIds) {
-            Item edgeItem = m_topologyProvider.getEdgeItem(edgeId);
+            Item edgeItem = m_topologyProvider.getEdgeContainer().getItem(edgeId);
             SimpleLeafVertex source = (SimpleLeafVertex) edgeItem.getItemProperty("source").getValue();
             SimpleLeafVertex target = (SimpleLeafVertex) edgeItem.getItemProperty("target").getValue();
             assertNotNull(source);

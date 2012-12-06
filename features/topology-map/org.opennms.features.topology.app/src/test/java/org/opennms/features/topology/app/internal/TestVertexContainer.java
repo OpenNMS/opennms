@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.VertexContainer;
 
-public class TestVertexContainer extends VertexContainer<String, TestVertex> {
+public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
 	private static final long serialVersionUID = 1L;
 
 	public TestVertexContainer() {

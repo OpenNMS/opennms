@@ -95,27 +95,9 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-container-default</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-junit</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-junit-extender-impl</artifactId>
-      <version>1.0.0</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>pax-exam-dependencies</artifactId>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
     <dependency>
