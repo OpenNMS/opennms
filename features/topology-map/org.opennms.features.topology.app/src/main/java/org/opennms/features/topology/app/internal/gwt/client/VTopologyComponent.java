@@ -54,6 +54,7 @@ import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
 import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.service.support.DefaultServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
@@ -277,6 +278,17 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                 
                 D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }
+            
+//          final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
+//          selectedVertices.each(new Handler<GWTVertex>() {
+//          
+//              @Override
+//              public void call(GWTVertex gwtVertex, int index) {
+//                  SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
+//                  vertex.getParentElement().appendChild(vertex);
+//              }
+//          });
+            
 		}
 		
 		private String matrixTransform(SVGMatrix matrix) {
@@ -578,6 +590,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			public void call(GWTVertex vertex, int index) {
 				NativeEvent event = D3.getEvent();
+				
+				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
+				vertexElement.getParentElement().appendChild(vertexElement);
+				
 				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
 				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
 				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
@@ -828,16 +844,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		    setTopologyViewRenderer(m_graphDrawer);
 		}
         
-//        final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
-//        selectedVertices.each(new Handler<GWTVertex>() {
-//        
-//            @Override
-//            public void call(GWTVertex gwtVertex, int index) {
-//                SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
-//                vertex.getParentElement().appendChild(vertex);
-//            }
-//        });
-		
         updateGraphUpdateListeners();
 	}
 

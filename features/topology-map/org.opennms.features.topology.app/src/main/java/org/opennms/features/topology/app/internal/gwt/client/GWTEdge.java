@@ -138,7 +138,7 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.append("g").append(SVG_EDGE_ELEMENT)
+                return selection.append(SVG_EDGE_ELEMENT)
                         .attr("class", "path")
                         .attr("opacity", 0)
                         .style("stroke-width", EDGE_WIDTH + "px")
