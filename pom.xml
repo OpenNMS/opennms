@@ -808,6 +808,30 @@
   </properties>
 
   <profiles>
+		<profile>
+			<id>inMemDb</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.liquibase</groupId>
+						<artifactId>liquibase-maven-plugin</artifactId>
+						<version>2.0.5</version>
+						<configuration>
+							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+							<propertyFile>${session.executionRootDirectory}/liquibase.properties</propertyFile>
+							<changeLogFile>${session.executionRootDirectory}/core/schema/src/main/liquibase/changelog.xml</changeLogFile>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<dependencies>
+				<dependency>
+					<groupId>org.hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<version>2.2.8</version>
+				</dependency>      
+			</dependencies>
+		</profile>
 
     <profile>
       <id>enable.snapshots</id>
@@ -2080,7 +2104,12 @@
         <version>2.4.8</version>
         <scope>test</scope>
       </dependency>
-      <dependency>
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>2.2.8</version>
+			</dependency>      
+			<dependency>
         <groupId>com.google.collections</groupId>
         <artifactId>google-collections</artifactId>
         <version>1.0</version>

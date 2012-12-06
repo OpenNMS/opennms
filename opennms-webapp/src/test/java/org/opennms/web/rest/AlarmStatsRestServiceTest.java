@@ -59,7 +59,7 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
 	@Override
 	protected void afterServletStart() throws Exception {
 	    count = 0;
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
         m_context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
         m_databasePopulator = m_context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();

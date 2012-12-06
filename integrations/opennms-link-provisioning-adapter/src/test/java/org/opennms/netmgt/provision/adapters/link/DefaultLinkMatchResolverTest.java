@@ -61,12 +61,12 @@ public class DefaultLinkMatchResolverTest {
 
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("log4j.logger.org.springframework", "WARN");
-        props.setProperty("log4j.logger.org.hibernate", "WARN");
-        props.setProperty("log4j.logger.org.opennms", "DEBUG");
-        props.setProperty("log4j.logger.org.opennms.netmgt.dao.castor", "WARN");
-        MockLogAppender.setupLogging(props);
+//        Properties props = new Properties();
+//        props.setProperty("log4j.logger.org.springframework", "WARN");
+//        props.setProperty("log4j.logger.org.hibernate", "WARN");
+//        props.setProperty("log4j.logger.org.opennms", "DEBUG");
+//        props.setProperty("log4j.logger.org.opennms.netmgt.dao.castor", "WARN");
+//        MockLogAppender.setupLogging(props);
     }
     
     @Test

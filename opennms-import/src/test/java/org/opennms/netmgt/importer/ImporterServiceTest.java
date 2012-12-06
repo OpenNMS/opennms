@@ -74,14 +74,14 @@ public class ImporterServiceTest implements InitializingBean {
 
     @Before
     public void onSetUpInTransactionIfEnabled() throws Exception {
-        Properties logConfig = new Properties();
-        
-        logConfig.put("log4j.logger.org.exolab.castor", "INFO");
-        logConfig.put("log4j.logger.org.hibernate", "INFO");
-        logConfig.put("log4j.logger.org.hibernate.SQL", "DEBUG");
-        logConfig.put("log4j.logger.org.springframework", "INFO");
-
-        MockLogAppender.setupLogging(logConfig);
+//        Properties logConfig = new Properties();
+//        
+//        logConfig.put("log4j.logger.org.exolab.castor", "INFO");
+//        logConfig.put("log4j.logger.org.hibernate", "INFO");
+//        logConfig.put("log4j.logger.org.hibernate.SQL", "DEBUG");
+//        logConfig.put("log4j.logger.org.springframework", "INFO");
+//
+//        MockLogAppender.setupLogging(logConfig);
     }
 
     @Test

@@ -52,7 +52,7 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Override
     protected void afterServletStart() throws Exception {
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
     @Test

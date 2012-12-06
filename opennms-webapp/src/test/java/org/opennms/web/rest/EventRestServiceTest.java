@@ -41,7 +41,7 @@ public class EventRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Override
     protected void afterServletStart() {
-        MockLogAppender.setupLogging(true, "DEBUG");
+//        MockLogAppender.setupLogging(true, "DEBUG");
         final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
         m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
