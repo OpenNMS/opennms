@@ -22,11 +22,5 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
-    </dependency>
   </dependencies>
 </project>

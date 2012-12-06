@@ -31,12 +31,8 @@ package org.opennms.features.topology.app.internal.gwt.client;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
-import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker;
-import org.opennms.features.topology.app.internal.gwt.client.tracker.LoadTracker.LoadTrackerHandler;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.Image;
 
 public class GWTVertex extends JavaScriptObject {
     
@@ -183,64 +179,6 @@ public class GWTVertex extends JavaScriptObject {
     	};
     }
     
-    static Func<String, GWTVertex> loadIconAndSize(final D3 bgImage, final D3 imageSelection, final D3 circleSelection, final D3 textSelection){
-        return new Func<String, GWTVertex>(){
-
-            public String call(GWTVertex datum, final int index) {
-                LoadTracker tracker = LoadTracker.get();
-                tracker.trackImageLoad(datum.getIconUrl(), new LoadTrackerHandler() {
-
-                    @Override
-                    public void onImageLoad(Image img) {
-                        double widthRatio = 48.0/img.getWidth();
-                        double heightRatio = 48.0/img.getHeight();
-                        double scaleFactor = Math.min(widthRatio, heightRatio);
-                        int width = (int) (img.getWidth() * scaleFactor);
-                        int height = (int) (img.getHeight() * scaleFactor);
-                        
-                        String strWidth = width + "px";
-                        String strHeight = height + "px";
-                        String x = "-" + width/2 + "px";
-                        String y = "-" + height/2 + "px";
-                        
-                        Element imgElem = D3.getElement(imageSelection, index);
-                        imgElem.setAttribute("width", strWidth);
-                        imgElem.setAttribute("height", strHeight);
-                        imgElem.setAttribute("x", x);
-                        imgElem.setAttribute("y", y);
-                        
-                        Element bgImgElem = D3.getElement(bgImage, index);
-                        int length = (Math.max(width, height) + 10);
-                        bgImgElem.setAttribute("width", length +"px");
-                        bgImgElem.setAttribute("height", length + "px");
-                        bgImgElem.setAttribute("x", "-" + Math.round(length/2));
-                        bgImgElem.setAttribute("y", "-" + Math.round(length/2));
-                        
-                        Element rectElem = D3.getElement(circleSelection, index);
-                        rectElem.setAttribute("class", "highlight");
-                        rectElem.setAttribute("fill", "yellow");
-                        rectElem.setAttribute("x", -(width/2 + 2) + "px");
-                        rectElem.setAttribute("y", -(height/2 + 2) + "px");
-                        rectElem.setAttribute("r", ((Math.max(width, height) + 9)/2) + "px" );
-                        rectElem.setAttribute("opacity", "0");
-                        
-                        textSelection.text(label());
-                        Element textElem = D3.getElement(textSelection, index);
-                        textElem.setAttribute("class", "vertex-label");
-                        textElem.setAttribute("x", "0px");
-                        textElem.setAttribute("y",  "" + (height/2 + 5) + "px");
-                        textElem.setAttribute("text-anchor", "middle");
-                        textElem.setAttribute("alignment-baseline", "text-before-edge");
-                    }
-                    
-                });
-                
-                
-                return datum.getIconUrl();
-            }
-        };
-    }
-    
     static Func<String, GWTVertex> label() {
     	return new Func<String, GWTVertex>() {
 
@@ -268,7 +206,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text").text(label()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
             }
         };
     }
@@ -286,13 +224,11 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                int width = 60;
-                int height = 60;
+                int width = 80;
+                int height = 80;
                 D3 vertex = selection.append("g").attr("class", "vertex");
                 vertex.attr("opacity",1e-6);
                 vertex.style("cursor", "pointer");
-                
-                //ImageElement img = DOM.createImg().cast();
                 
                 D3 circleSelection = vertex.append("circle");
                 D3 bgImage = vertex.append("svg:image");
@@ -300,14 +236,11 @@ public class GWTVertex extends JavaScriptObject {
                 D3 imageSelection = vertex.append("svg:image");
                 D3 textSelection = vertex.append("text");
                 
-                //imageSelection.attr("xlink:href", loadIconAndSize(bgImage, imageSelection, circleSelection, textSelection));
                 
-                
-                int length = (Math.max(width, height) + 10);
-                bgImage.attr("width", length +"px")
-                    .attr("height", length + "px")
-                    .attr("x", "-" + Math.round(length/2))
-                    .attr("y", "-" + Math.round(length/2));
+                bgImage.attr("width", width +"px")
+                    .attr("height", height + "px")
+                    .attr("x", "-" + Math.round(width/2))
+                    .attr("y", "-" + Math.round(height/2));
                 
                 imageSelection.attr("xlink:href", iconUrl())
                 	.attr("x", "-24px")
@@ -315,16 +248,18 @@ public class GWTVertex extends JavaScriptObject {
                 	.attr("width", "48px")
                 	.attr("height", "48px");
                 
+                int circleRadius = 38;
+                int circlePos = -32;
                 circleSelection.attr("class", "highlight")
-                    .attr("x", -(width/2 + 2) + "px")
-                    .attr("y", -(height/2 + 2) + "px")
-                    .attr("r", ((width + 10)/2) + "px" )
+                    .attr("x", circlePos + "px")
+                    .attr("y", circlePos + "px")
+                    .attr("r", circleRadius + "px" )
                     .attr("opacity", "0");
                 
                 textSelection.text(label())
                     .attr("class", "vertex-label")
                     .attr("x", "0px")
-                    .attr("y",  "" + (height/2 + 5) + "px")
+                    .attr("y",  "" + (height/2) + "px")
                     .attr("text-anchor", "middle")
                     .attr("alignment-baseline", "text-before-edge");
 

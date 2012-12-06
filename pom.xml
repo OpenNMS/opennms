@@ -386,7 +386,7 @@
       						</goals>
       					</pluginExecutionFilter>
       					<action>
-      						<ignore />
+      						<ignore/>
       					</action>
       				</pluginExecution>
       				<pluginExecution>
@@ -400,7 +400,7 @@
       						</goals>
       					</pluginExecutionFilter>
       					<action>
-      						<execute />
+      						<execute/>
       					</action>
       				</pluginExecution>
       				<pluginExecution>
@@ -417,7 +417,7 @@
       						</goals>
       					</pluginExecutionFilter>
       					<action>
-      						<ignore></ignore>
+      						<ignore/>
       					</action>
       				</pluginExecution>
       				<pluginExecution>
@@ -434,7 +434,7 @@
       						</goals>
       					</pluginExecutionFilter>
       					<action>
-      						<ignore></ignore>
+      						<ignore/>
       					</action>
       				</pluginExecution>
       				<pluginExecution>
@@ -451,7 +451,7 @@
       						</goals>
       					</pluginExecutionFilter>
       					<action>
-      						<ignore></ignore>
+      						<ignore/>
       					</action>
       				</pluginExecution>
       			</pluginExecutions>
@@ -788,14 +788,15 @@
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jaxbVersion>2.1.7</jaxbVersion>
-    <jettyVersion>7.5.4.v20111024</jettyVersion>
-    <karafVersion>2.2.7</karafVersion>
+    <jettyVersion>7.6.7.v20120910</jettyVersion>
+    <karafVersion>2.3.0</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
     <log4jVersion>1.2.16</log4jVersion>
-    <minaVersion>2.0.4</minaVersion>
+    <minaVersion>2.0.7</minaVersion>
+    <paxExamVersion>2.4.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
-    <osgiVersion>4.2.0</osgiVersion>
+    <osgiVersion>4.3.0</osgiVersion>
     <slf4jVersion>1.6.4</slf4jVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
@@ -811,7 +812,7 @@
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>6.8.2</vaadinVersion>
-    <paxVaadinVersion>0.1.0-ONMS-20120906</paxVaadinVersion>
+    <paxVaadinVersion>0.1.0-ONMS-20121206</paxVaadinVersion>
 
   </properties>
 
@@ -1385,6 +1386,13 @@
         <artifactId>jrrd-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>pax-exam-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -2154,12 +2162,19 @@
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
-        <version>1.5.0</version>
+        <version>1.8.0</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.extremecomponents</groupId>
         <artifactId>extremecomponents</artifactId>
         <version>1.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!--
 
@@ -2233,7 +2248,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
-        <version>1.1.2</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
@@ -2288,7 +2303,7 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-jsp-2.1</artifactId>
+        <artifactId>jetty-jsp</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -2364,7 +2379,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.8.2</version>
+        <version>4.10</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -2471,11 +2486,6 @@
         <groupId>struts</groupId>
         <artifactId>struts</artifactId>
         <version>1.2.9</version>
-      </dependency>
-      <dependency>
-        <groupId>taglibs</groupId>
-        <artifactId>standard</artifactId>
-        <version>1.1.2</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>

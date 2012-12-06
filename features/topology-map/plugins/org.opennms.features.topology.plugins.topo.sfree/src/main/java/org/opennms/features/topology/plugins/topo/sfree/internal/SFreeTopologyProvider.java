@@ -151,16 +151,6 @@ public class SFreeTopologyProvider implements TopologyProvider {
 	}
 
 	@Override
-	public Item getVertexItem(Object vertexId) {
-        return m_vertexContainer.getItem(vertexId);
-	}
-
-	@Override
-	public Item getEdgeItem(Object edgeId) {
-        return m_edgeContainer.getItem(edgeId);
-	}
-
-	@Override
 	public Collection<String> getEdgeIdsForVertex(Object vertexId) {
         SimpleVertex vertex = getRequiredVertex(vertexId);
         

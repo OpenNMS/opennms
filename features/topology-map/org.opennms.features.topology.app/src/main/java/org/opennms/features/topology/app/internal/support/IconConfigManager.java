@@ -41,7 +41,7 @@ public class IconConfigManager implements ManagedService {
     }
     
     @Override
-    public void updated(Dictionary properties) throws ConfigurationException {
+    public void updated(Dictionary<String,?> properties) throws ConfigurationException {
         m_iconRepoManager.updateIconConfig(properties);
     }
 

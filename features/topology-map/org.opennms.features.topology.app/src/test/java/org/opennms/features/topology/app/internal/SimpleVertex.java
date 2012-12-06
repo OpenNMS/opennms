@@ -2,15 +2,25 @@ package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
+
 public class SimpleVertex extends AbstractVertex {
 	
 	private String m_label;
 	private String m_tooltpText;
 	private String m_iconKey;
 	private String m_styleName;
+	private Item m_item;
 
 	public SimpleVertex(String namespace, String id) {
 		super(namespace, id);
+		m_item = new BeanItem<SimpleVertex>(this);
+	}
+	
+	@Override
+	public Item getItem() {
+		return m_item;
 	}
 
 	@Override

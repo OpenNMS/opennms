@@ -25,7 +25,7 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 public final class HttpServiceFactory
-    implements ServiceFactory
+    implements ServiceFactory<HttpServiceImpl>
 {
     private final ServletContext context;
     private final ServletContextAttributeListener attributeListener;
@@ -41,14 +41,14 @@ public final class HttpServiceFactory
         this.sharedContextAttributes = sharedContextAttributes;
     }
 
-    public Object getService(Bundle bundle, ServiceRegistration reg)
+    public HttpServiceImpl getService(Bundle bundle, ServiceRegistration<HttpServiceImpl> reg)
     {
         return new HttpServiceImpl(bundle, this.context, this.handlerRegistry, this.attributeListener,
             this.sharedContextAttributes);
     }
 
-    public void ungetService(Bundle bundle, ServiceRegistration reg, Object service)
+    public void ungetService(Bundle bundle, ServiceRegistration<HttpServiceImpl> reg, HttpServiceImpl service)
     {
-        ((HttpServiceImpl)service).unregisterAll();
+        service.unregisterAll();
     }
 }

@@ -28,39 +28,63 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Select;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 
-public class RenameGroupOperation implements Constants, Operation {
-
+public class AddVertexToGroupOperation implements Constants, Operation {
+	
 	@Override
 	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
 		if (targets == null || targets.isEmpty() || targets.size() != 1) {
 			return null;
 		}
 
+		final Logger log = LoggerFactory.getLogger(this.getClass());
+
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
+
+		final VertexRef currentVertex = targets.get(0);
+		final String currentVertexId = currentVertex.getId();
+		final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+		final Collection<String> groupIds = new ArrayList<String>();
+		for (String vertexId : vertexIds) {
+			BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
+			if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
+				groupIds.add(vertexId);
+				log.debug("Found group: {}", vertexId);
+			}
+		}
 
 		final Window window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Rename Group");
+		final Window groupNamePrompt = new Window("Add Item To Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
 		groupNamePrompt.setHeight("180px");
@@ -68,41 +92,61 @@ public class RenameGroupOperation implements Constants, Operation {
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
-		item.addItemProperty("Group Label", new ObjectProperty<String>("", String.class));
+		item.addItemProperty("Group", new ObjectProperty<String>(null, String.class));
 
-		// TODO Add validator for groupname value
+		FormFieldFactory fieldFactory = new FormFieldFactory() {
+			public Field createField(Item item, Object propertyId, Component uiContext) {
+				// Identify the fields by their Property ID.
+				String pid = (String) propertyId;
+				if ("Group".equals(pid)) {
+					Select select = new Select("Group");
+					for (String childId : groupIds) {
+						BeanItem<?> childVertex = graphContainer.getDataSource().getVertexContainer().getItem(childId);
+						Property childLabelProperty = childVertex.getItemProperty("label");
+						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
+						log.debug("Adding child: {}, {}", childId, childLabel);
+						select.addItem(childId);
+						select.setItemCaption(childId, childLabel);
+					}
+					select.setNewItemsAllowed(false);
+					select.setNullSelectionAllowed(false);
+					return select;
+				}
+
+				return null; // Invalid field (property) name.
+			}
+		};
+
+		// TODO Add validator for name value
 
 		final Form promptForm = new Form() {
 
-			private static final long serialVersionUID = 9202531175744361407L;
+			private static final long serialVersionUID = 2067414790743946906L;
 
 			@Override
 			public void commit() {
 				super.commit();
-				String groupLabel = (String)getField("Group Label").getValue();
 
-				//Object parentKey = targets.get(0);
-				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
-				VertexRef parentId = targets.get(0);
-				Vertex parentVertex = parentId == null ? null : graphContainer.getVertex(parentId);
-				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
-				
-				if (parentItem != null) {
+				String parentId = (String)getField("Group").getValue();
+				log.debug("Field value: {}", parentId);
 
-					Property property = parentItem.getItemProperty("label");
-					if (property != null && !property.isReadOnly()) {
-						property.setValue(groupLabel);
+				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
 
-						// Save the topology
-						graphContainer.getDataSource().save(null);
+				TopologyProvider topologyProvider = graphContainer.getDataSource();
 
-						graphContainer.redoLayout();
-					}
-				}
+				// Link the selected vertex to the parent group
+				topologyProvider.setParent(currentVertexId, parentId);
+
+				// Save the topology
+				topologyProvider.save(null);
+
+				graphContainer.redoLayout();
 			}
 		};
 		// Buffer changes to the datasource
 		promptForm.setWriteThrough(false);
+		// You must set the FormFieldFactory before you set the data source
+		promptForm.setFormFieldFactory(fieldFactory);
 		promptForm.setItemDataSource(item);
 
 		Button ok = new Button("OK");
@@ -141,24 +185,28 @@ public class RenameGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return targets != null && 
-			targets.size() == 1 && 
-			targets.get(0) != null 
-		;
+		return true;
 	}
 
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-		// Only allow the operation on single non-leaf vertices (groups)
-		return targets != null && 
-			targets.size() == 1 && 
-			targets.get(0) != null && 
-			!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
-		;
+		return targets.size() == 1;
 	}
 
 	@Override
 	public String getId() {
-		return "RenameGroup";
+		return null;
 	}
+
+	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
+		if (vertexRef == null)  return null;
+		Vertex v = graphContainer.getVertex(vertexRef);
+		if (v == null) return null;
+		Item item = v.getItem();
+		if (item == null) return null;
+		Property property = item.getItemProperty("itemId");
+		return property == null ? null : property.getValue();
+	}
+
+
 }

@@ -60,12 +60,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
       <scope>provided</scope>

@@ -3,6 +3,9 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
+
 public class SimpleEdge extends AbstractEdge {
 	
 	private final Connector m_source;
@@ -17,6 +20,11 @@ public class SimpleEdge extends AbstractEdge {
 		super(namespace, id);
 		m_source = source;
 		m_target = target;
+	}
+	
+	@Override
+	public Item getItem() {
+		return new BeanItem<SimpleEdge>(this);
 	}
 
 	@Override

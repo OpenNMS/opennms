@@ -36,6 +36,7 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 
 public class TopoContextMenu extends ContextMenu {
 
+	private static final long serialVersionUID = -4506151279227147283L;
 
 	public class TopoContextMenuItem {
 		

@@ -65,7 +65,7 @@ public final class HttpServiceController
     private final HttpSessionListenerManager sessionListener;
     private final HttpSessionAttributeListenerManager sessionAttributeListener;
     private final boolean sharedContextAttributes;
-    private ServiceRegistration serviceReg;
+    private ServiceRegistration<?> serviceReg;
 
     public HttpServiceController(BundleContext bundleContext)
     {

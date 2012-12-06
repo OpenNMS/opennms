@@ -1,9 +1,10 @@
 package org.opennms.features.topology.plugins.topo.adapter;
 
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -17,7 +18,7 @@ public class TopologyProviderAdapter {
     private static final Logger s_log = LoggerFactory.getLogger(TopologyProviderAdapter.class);
 
     private BundleContext m_bundleContext;
-    private final Map<TopologyProvider, ServiceRegistration> m_registrations = new HashMap<TopologyProvider, ServiceRegistration>();
+    private final Map<TopologyProvider, ServiceRegistration<GraphProvider>> m_registrations = new HashMap<TopologyProvider, ServiceRegistration<GraphProvider>>();
 
     public void setBundleContext(BundleContext context) {
         m_bundleContext = context;
@@ -27,14 +28,14 @@ public class TopologyProviderAdapter {
 
         s_log.debug("Adding topology provider: " + topologyProvider);
 
-        Properties properties = new Properties();
+        Dictionary<String,Object> properties = new Hashtable<String,Object>();
         for(Entry<String, Object> entry : metaData.entrySet()) {
             properties.put(entry.getKey(), entry.getValue().toString());
         }
 
         TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
 
-        ServiceRegistration reg = m_bundleContext.registerService(GraphProvider.class.getName(), graphProvider, properties);
+        ServiceRegistration<GraphProvider> reg = m_bundleContext.registerService(GraphProvider.class, graphProvider, properties);
 
         m_registrations.put(topologyProvider, reg);
     }
@@ -43,7 +44,7 @@ public class TopologyProviderAdapter {
 
         s_log.debug("Removing topology provider: " + topologyProvider);
 
-        ServiceRegistration reg = m_registrations.remove(topologyProvider);
+        ServiceRegistration<GraphProvider> reg = m_registrations.remove(topologyProvider);
         if (reg != null) {
             reg.unregister();
         }

@@ -66,7 +66,7 @@ public class AddVertexOperation implements Operation{
 
     void connectNewVertex(String vertexId, String iconKey, DisplayState graphContainer) {
         Object vertId1 = m_topologyProvider.addVertex(0, 0);
-        m_topologyProvider.setParent(vertId1, Constants.ROOT_GROUP_ID);
+        m_topologyProvider.setParent(vertId1, null);
         m_topologyProvider.connectVertices(vertexId, vertId1);
         
     }
@@ -85,7 +85,7 @@ public class AddVertexOperation implements Operation{
             }
             else {
                 Object vertId = m_topologyProvider.addVertex(250, 250);
-                m_topologyProvider.setParent(vertId, Constants.ROOT_GROUP_ID);
+                m_topologyProvider.setParent(vertId, null);
                 
             }
         } else {

@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.ssh.internal.AuthWindow;
 
@@ -60,7 +61,9 @@ public class SSHOperation implements Operation {
 	}
 
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-	    if(targets != null && targets.size() > 0 && targets.get(0) != null) {
+	    if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
+	    	return true;
+	    } else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
 	        return true;
 	    } else {
 	        return false;

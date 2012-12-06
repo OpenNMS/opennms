@@ -81,7 +81,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 					metaData.put(LABEL, properties.get(LABEL));
 				}
 
-				ServiceRegistration registration = m_bundleContext.registerService(new String[] { TopologyProvider.class.getName(), EditableTopologyProvider.class.getName() },
+				ServiceRegistration<?> registration = m_bundleContext.registerService(new String[] { TopologyProvider.class.getName(), EditableTopologyProvider.class.getName() },
 						topoProvider, metaData);
 
 				m_registrations.put(pid, registration);

@@ -1,18 +1,13 @@
 package org.opennms.features.topology.api.topo;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-
 public abstract class AbstractVertex implements Vertex {
 	
 	private final String m_namespace;
 	private final String m_id;
-	private final BeanItem<Vertex> m_item;
-	
+
 	public AbstractVertex(String namespace, String id) {
 		m_namespace = namespace;
 		m_id = id;
-		m_item = new BeanItem<Vertex>(this);
 	}
 
 	@Override
@@ -29,12 +24,6 @@ public abstract class AbstractVertex implements Vertex {
 	public String getKey() {
 		return m_namespace+":"+m_id;
 	}
-
-	@Override
-	public Item getItem() {
-		return m_item;
-	}
-
 
 	@Override
 	public int hashCode() {
