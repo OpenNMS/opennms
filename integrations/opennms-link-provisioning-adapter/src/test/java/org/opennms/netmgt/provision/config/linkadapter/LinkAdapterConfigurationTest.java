@@ -121,12 +121,12 @@ public class LinkAdapterConfigurationTest implements InitializingBean {
         m_unmarshaller = m_context.createUnmarshaller();
         m_unmarshaller.setSchema(null);
 
-        Properties props = new Properties();
-        props.setProperty("log4j.logger.org.springframework", "WARN");
-        props.setProperty("log4j.logger.org.hibernate", "WARN");
-        props.setProperty("log4j.logger.org.opennms", "DEBUG");
-        props.setProperty("log4j.logger.org.opennms.netmgt.dao.castor", "WARN");
-        MockLogAppender.setupLogging(props);
+//        Properties props = new Properties();
+//        props.setProperty("log4j.logger.org.springframework", "WARN");
+//        props.setProperty("log4j.logger.org.hibernate", "WARN");
+//        props.setProperty("log4j.logger.org.opennms", "DEBUG");
+//        props.setProperty("log4j.logger.org.opennms.netmgt.dao.castor", "WARN");
+//        MockLogAppender.setupLogging(props);
         
         XMLUnit.setIgnoreComments(true);
         XMLUnit.setIgnoreWhitespace(true);

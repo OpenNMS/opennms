@@ -88,12 +88,12 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
     
     @BeforeClass
     public static void setupLogging(){
-        Properties props = new Properties();
-        props.setProperty("log4j.logger.org.hibernate", "INFO");
-        props.setProperty("log4j.logger.org.springframework", "INFO");
-        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-
-        MockLogAppender.setupLogging(props);
+//        Properties props = new Properties();
+//        props.setProperty("log4j.logger.org.hibernate", "INFO");
+//        props.setProperty("log4j.logger.org.springframework", "INFO");
+//        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+//
+//        MockLogAppender.setupLogging(props);
     }
     
     @Before

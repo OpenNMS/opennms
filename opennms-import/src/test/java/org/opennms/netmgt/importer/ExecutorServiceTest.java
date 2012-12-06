@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.utils.LogUtils;
 
 public class ExecutorServiceTest {
 
@@ -63,7 +64,7 @@ public class ExecutorServiceTest {
 			final int index = i;
 			Runnable r = new Runnable() {
 				public void run() {
-					System.err.println(Thread.currentThread()+": "+new Date()+": "+index);
+					LogUtils.infof(this, Thread.currentThread()+": "+new Date()+": "+index);
 					sleep(500);
 					incr();
 				}

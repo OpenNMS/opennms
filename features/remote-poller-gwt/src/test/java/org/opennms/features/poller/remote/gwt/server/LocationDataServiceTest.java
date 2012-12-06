@@ -133,10 +133,10 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
 
     @Before
     public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate", "INFO");
-        p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-        MockLogAppender.setupLogging(p);
+//        Properties p = new Properties();
+//        p.setProperty("log4j.logger.org.hibernate", "INFO");
+//        p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+//        MockLogAppender.setupLogging(p);
         
         OnmsApplication app = new OnmsApplication();
         app.setName("TestApp1");

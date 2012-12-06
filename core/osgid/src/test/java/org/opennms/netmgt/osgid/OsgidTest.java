@@ -92,10 +92,10 @@ public class OsgidTest implements InitializingBean {
 	@Before
 	public void setUp() throws Exception {
 		Properties props = new Properties();
-		props.setProperty("log4j.logger.org.hibernate", "INFO");
-		props.setProperty("log4j.logger.org.springframework", "INFO");
+//		props.setProperty("log4j.logger.org.hibernate", "INFO");
+//		props.setProperty("log4j.logger.org.springframework", "INFO");
 		//props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-		MockLogAppender.setupLogging(props);
+//		MockLogAppender.setupLogging(props);
 		
 		m_daemon.setHomeDirectory(new File("target/test-classes/karaf").getPath());
 	}

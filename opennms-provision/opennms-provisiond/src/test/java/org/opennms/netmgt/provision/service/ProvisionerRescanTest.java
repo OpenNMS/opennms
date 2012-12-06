@@ -171,12 +171,12 @@ public class ProvisionerRescanTest implements InitializingBean {
     }
 
     private void setupLogging(final String logLevel) {
-        final Properties config = new Properties();
-        config.setProperty("log4j.logger.org.hibernate", "ERROR");
-        config.setProperty("log4j.logger.org.springframework", "ERROR");
-        config.setProperty("log4j.logger.org.hibernate.SQL", "ERROR");
-
-        MockLogAppender.setupLogging(true, logLevel, config);
+//        final Properties config = new Properties();
+//        config.setProperty("log4j.logger.org.hibernate", "ERROR");
+//        config.setProperty("log4j.logger.org.springframework", "ERROR");
+//        config.setProperty("log4j.logger.org.hibernate.SQL", "ERROR");
+//
+//        MockLogAppender.setupLogging(true, logLevel, config);
     }
 
     // fail if we take more than five minutes
