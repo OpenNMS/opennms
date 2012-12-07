@@ -299,6 +299,8 @@ public class PropertiesGraphDaoTest extends TestCase {
     
     @Override
     protected void tearDown() throws Exception {
+    	MockLogAppender.setupLogging(false, "WARN");
+    	
     	IOUtils.closeQuietly(m_writer);
     	IOUtils.closeQuietly(m_outputStream);
     	
@@ -480,7 +482,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
     
     public void testPrefabPropertiesReloadBad() throws Exception {
-//        MockLogAppender.setupLogging(false, "DEBUG");
+        MockLogAppender.setupLogging(false, "DEBUG");
         
         File f = m_fileAnticipator.tempFile("snmp-graph.properties");
 
