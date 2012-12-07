@@ -71,7 +71,13 @@ import org.springframework.util.StringUtils;
 
 public class InstallerDb {
 
-    private static final Pattern LANGUAGE_PATTERN = Pattern.compile("(?is)\\bcreate trusted procedural "
+    private static final Pattern CLEANTEXT_PATTERN = Pattern.compile("\\s+");
+
+	private static final Pattern BINDEX_PATTERN = Pattern.compile("^.*\\bindex\\b.*$");
+
+	private static final Pattern COMMENT_PATTERN = Pattern.compile("^--.*$");
+
+	private static final Pattern LANGUAGE_PATTERN = Pattern.compile("(?is)\\bcreate trusted procedural "
 	        + "language\\s+['\"]?(\\S+)['\"]?\\s+(.+?);");
 
 	private static final Pattern FUNCTION_PATTERN = Pattern.compile("(?is)\\bcreate function\\s+"
@@ -246,33 +252,34 @@ public class InstallerDb {
                 continue;
             }
 
-            if (line.matches("^--.*$")) {
+            if (COMMENT_PATTERN.matcher(line).matches()) {
                 continue;
             }
 
             if (CREATE_PATTERN.matcher(line).matches()) {
                 m = CREATE_UNIQUE_PATTERN.matcher(line);
                 if (m.matches()) {
-                    String type = m.group(1);
+                    String type = m.group(1).toLowerCase();
                     String name = m.group(2).replaceAll("^[\"']", "").replaceAll("[\"']$",  "");
 
-                    if (type.toLowerCase().indexOf("table") != -1) {
+                    if (type.indexOf("table") != -1) {
+                    	
                         m_tables.add(name);
-                    } else if (type.toLowerCase().indexOf("sequence") != -1) {
+                    } else if (type.indexOf("sequence") != -1) {
                         m_sequences.add(name);
-                    } else if (type.toLowerCase().indexOf("function") != -1) {
-                        if (type.toLowerCase().indexOf("language 'c'") != -1) {
+                    } else if (type.indexOf("function") != -1) {
+                        if (type.indexOf("language 'c'") != -1) {
                             //m_cfunctions.add(name);
                         } else {
                             //m_functions.add(name);
                         }
-                    } else if (type.toLowerCase().indexOf("trusted") != -1) {
+                    } else if (type.indexOf("trusted") != -1) {
                         m = CREATE_LANGUAGE_PATTERN.matcher(line);
                         if (!m.matches()) {
                             throw new Exception("Could not match name and type of the trusted procedural language in this line: " + line);
                         }
                         //m_languages.add(m.group(1));
-                    } else if (type.toLowerCase().matches("^.*\\bindex\\b.*$")) {
+                    } else if (BINDEX_PATTERN.matcher(type).matches()) {
                     	final Index i = Index.findIndexInString(line);
                         if (i == null) {
                             throw new Exception("Could not match name and type of the index in this line: " + line);
@@ -341,10 +348,10 @@ public class InstallerDb {
      * @return a {@link java.lang.String} object.
      */
     public static String cleanText(final List<String> list) {
-    	final StringBuffer s = new StringBuffer();
+    	final StringBuilder s = new StringBuilder();
 
         for (final String l : list) {
-            s.append(l.replaceAll("\\s+", " "));
+            s.append(CLEANTEXT_PATTERN.matcher(l).replaceAll(" "));
             if (l.indexOf(';') != -1) {
                 s.append('\n');
             }
@@ -2316,7 +2323,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public String getTableCreateFromSQL(final String table) throws Exception {
-        return getXFromSQL(table, CREATE_TABLE_PATTERN, 1, 2, "table");
+    	return getXFromSQL(table, CREATE_TABLE_PATTERN, 1, 2, "table");
     }
 
     /**
