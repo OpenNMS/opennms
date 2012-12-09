@@ -3,8 +3,10 @@ package org.opennms.jmxconfiggenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("there has to be a running server to test these")
 public class StarterTest {
 
 	@Test
@@ -30,7 +32,7 @@ public class StarterTest {
 
 	@Test
 	public void testJboss7() throws Throwable {
-		
+
 		System.out.print(System.getProperty("java.class.path"));
 
 		// CLASSPATH
@@ -51,7 +53,9 @@ public class StarterTest {
 
 		// java -classpath
 		// /usr/lib/jvm/default-java//lib/jconsole.jar:/usr/lib/jvm/default-java//lib/tools.jar:/opt/jboss/jboss-as-7.1.1.Final/bin/client/jboss-client.jar
-		// -jar JmxConfigGenerator.jar -jmx -url service:jmx:remoting-jmx://localhost:9999 -out JMX-DatacollectionDummy.xml
+		// -jar JmxConfigGenerator.jar -jmx -url
+		// service:jmx:remoting-jmx://localhost:9999 -out
+		// JMX-DatacollectionDummy.xml
 
 		List<String> args = new ArrayList<String>();
 		args.add("-jmx");
