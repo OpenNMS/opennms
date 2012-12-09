@@ -43,7 +43,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
- * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class C3P0ConnectionFactoryTest extends TestCase {
