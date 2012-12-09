@@ -15,17 +15,84 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>jboss</id>
-			<name>Jboss Repository</name>
-			<layout>default</layout>
-			<url>https://repository.jboss.org/nexus/content/repositories/releases</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+	<profiles>
+		<profile>
+			<id>jboss71x</id>
+			<properties>
+				<jbossVersion>7.1.2.Final</jbossVersion>
+			</properties>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.jboss.as</groupId>
+						<artifactId>jboss-as-ejb-client-bom</artifactId>
+						<version>${jbossVersion}</version>
+						<type>pom</type>
+						<scope>import</scope>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+
+			<dependencies>
+
+				<!-- Import the EJB 3.1 API, we use runtime scope because we aren't using 
+					any direct reference to EJB spec API in our client code -->
+				<dependency>
+					<groupId>org.jboss.spec.javax.ejb</groupId>
+					<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+
+				<!-- JBoss EJB client API jar. We use runtime scope because the EJB client 
+					API isn't directly used in this example. We just need it in our runtime classpath -->
+				<dependency>
+					<groupId>org.jboss</groupId>
+					<artifactId>jboss-ejb-client</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+				<!-- client communications with the server use XNIO -->
+				<dependency>
+					<groupId>org.jboss.xnio</groupId>
+					<artifactId>xnio-api</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+				<dependency>
+					<groupId>org.jboss.xnio</groupId>
+					<artifactId>xnio-nio</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+				<!-- remoting-jmx required for mbean calls -->
+				<dependency>
+					<groupId>org.jboss.remotingjmx</groupId>
+					<artifactId>remoting-jmx</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+				<!-- data serialization for invoking remote EJBs -->
+				<dependency>
+					<groupId>org.jboss.marshalling</groupId>
+					<artifactId>jboss-marshalling-river</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+			</dependencies>
+			<repositories>
+				<repository>
+					<id>jboss</id>
+					<name>Jboss Repository</name>
+					<layout>default</layout>
+					<url>https://repository.jboss.org/nexus/content/repositories/releases</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -53,27 +120,27 @@
 			</plugin>
 
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.3</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>org.opennms.jmxconfiggenerator.Starter</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
+						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>shade</goal>
 						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.opennms.jmxconfiggenerator.Starter</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<finalName>uber-${artifactId}-${version}</finalName>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -139,10 +206,5 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.6</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.jboss.remotingjmx</groupId> -->
-<!-- 			<artifactId>remoting-jmx</artifactId> -->
-<!-- 			<version>1.0.5.Final</version> -->
-<!-- 		</dependency> -->
 	</dependencies>
 </project>

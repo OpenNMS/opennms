@@ -94,7 +94,7 @@ public class Starter {
     @Option(name = "-dictionary", usage = "Dictionary properties file for replacing attribute names and parts of this names")
     private String dictionaryFile;
     
-    @Option(name = "-url", usage = "JMX URL Usage: <hostname>:<port> OR service:jmx:<protocol>:<sap>")
+    @Option(name = "-url", usage = "JMX URL Usage: <hostname>:<port> OR service:jmx:<protocol>:<sap> OR if build with jboss71 support service:jmx:remoting-jmx://<hostname>:<port>")
     private String url;
 
     public static void main(String[] args) throws IOException {
