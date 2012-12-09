@@ -75,6 +75,18 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>jboss</id>
+			<name>Jboss Repository</name>
+			<layout>default</layout>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -174,6 +186,8 @@
 			<groupId>org.jboss.remotingjmx</groupId>
 			<artifactId>remoting-jmx</artifactId>
 			<scope>runtime</scope>
+			<!-- we need at least 1.0.5 to fix REMJMX-52 -->
+			<version>1.0.5.Final</version>
 		</dependency>
 
 		<!-- data serialization for invoking remote EJBs -->
