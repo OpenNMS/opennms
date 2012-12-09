@@ -133,10 +133,16 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-		
+
 		<!-- -->
 		<!-- Jboss 7.1.x -->
 		<!-- -->
+
+		<dependency>
+			<groupId>org.jboss.sasl</groupId>
+			<artifactId>jboss-sasl</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.spec.javax.ejb</groupId>
