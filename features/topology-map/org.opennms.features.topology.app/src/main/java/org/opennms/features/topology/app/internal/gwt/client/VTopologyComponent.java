@@ -45,7 +45,6 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
-import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
 import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
@@ -276,18 +275,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                     }
                 });
                 
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
+                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).attr("opacity", "0").transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
             }
-            
-//          final D3 selectedVertices = D3.d3().selectAll(GWTVertex.SELECTED_VERTEX_CLASS_NAME);
-//          selectedVertices.each(new Handler<GWTVertex>() {
-//          
-//              @Override
-//              public void call(GWTVertex gwtVertex, int index) {
-//                  SVGGElement vertex = D3.getElement(selectedVertices, index).cast();
-//                  vertex.getParentElement().appendChild(vertex);
-//              }
-//          });
             
 		}
 		
@@ -300,20 +289,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	                ", " + matrix.getF() + ")";
 	        return D3.getTransform( m ).toString();
 	    }
-
-        private Tween<Double, GWTEdge> edgeStrokeWidthTween(final TopologyView<TopologyViewRenderer> topologyView) {
-            return new Tween<Double, GWTEdge>() {
-
-                @Override
-                public Double call(GWTEdge edge, int index, String a) {
-                    //D3 viewPort = D3.d3().select(topologyView.getSVGViewPort());
-                    //double scale = D3.getTransform(viewPort.attr("transform")).getScale().get(0);
-                    //final double strokeWidth = 5 * (1/scale);
-                    return 7.0; //strokeWidth;
-                }
-                
-            };
-        }		
 
 		protected D3Behavior enterTransition() {
 			return fadeIn(500, 1000);
