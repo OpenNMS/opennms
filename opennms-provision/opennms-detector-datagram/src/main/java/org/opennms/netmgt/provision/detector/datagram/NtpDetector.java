@@ -29,9 +29,7 @@
 package org.opennms.netmgt.provision.detector.datagram;
 
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.NtpClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
@@ -52,35 +50,38 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     
-    private String m_ipToValidate;
+    private final NtpClient m_client;
     
     /**
      * <p>Constructor for NtpDetector.</p>
      */
     public NtpDetector() {
         super("NTP", 123);
+        m_client = new NtpClient();
     }
 
     /** {@inheritDoc} */
     @Override
     protected Client<NtpMessage, DatagramPacket> getClient() {
-        return new NtpClient();
+        return m_client;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        send(createNtpMessage(), validateResponse(getAddress()));
+        send(createNtpMessage(), validateResponse());
     }
 
-    private static ResponseValidator<DatagramPacket> validateResponse(final InetAddress nserver) {
+    private ResponseValidator<DatagramPacket> validateResponse() {
         return new ResponseValidator<DatagramPacket>(){
 
             public boolean validate(final DatagramPacket response) {
-                if (response.getAddress().equals(nserver)) {
-                    // parse the incoming data
-                    new NtpMessage(response.getData());
-                    return true;
+                if (response.getAddress().equals(m_client.getAddress())) {
+                    // Parse the incoming data
+                    NtpMessage m = new NtpMessage(response.getData());
+                    LogUtils.infof(this, "NTP message received %s", m.toString());
+                    // All timestamps returned on the package are required in order to process the NTP package on the client side.
+                    return m.originateTimestamp > 0 && m.transmitTimestamp > 0 && m.referenceTimestamp > 0 && m.receiveTimestamp > 0;
                 }else{
                     return false;
                 }
@@ -89,7 +90,7 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
         };
     }
 
-    private static RequestBuilder<NtpMessage> createNtpMessage() {
+    private RequestBuilder<NtpMessage> createNtpMessage() {
         return new RequestBuilder<NtpMessage>(){
 
             public NtpMessage getRequest() {
@@ -98,31 +99,14 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
             
         };
     }
-    
-    private InetAddress getAddress() {
-    	final InetAddress addr = InetAddressUtils.addr(getIpToValidate());
-    	if (addr == null) {
-    		LogUtils.debugf(this, "Failed to get InetAddress from %s", getIpToValidate());
-    	}
-    	return addr;
-    }
-    
-    /**
-     * <p>setIpToValidate</p>
-     *
-     * @param ipToValidate a {@link java.lang.String} object.
-     */
-    public void setIpToValidate(final String ipToValidate) {
-        m_ipToValidate = ipToValidate;
+
+    public void setIpToValidate(String address) {
+        // This method only exists for compatibility purposes, this won't be used. The address to be used will be the one defined on the client.
     }
 
-    /**
-     * <p>getIpToValidate</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getIpToValidate() {
-        return m_ipToValidate;
+        // This method only exists for compatibility purposes, this won't be used. The address to be used will be the one defined on the client.
+        return null;
     }
 
 }
