@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -71,6 +72,16 @@ public class NtpDetectorTest implements ApplicationContextAware {
             @Override
             public void onInit(){
                 NtpMessage message = new NtpMessage();
+                message.version = 3;
+                message.mode = 4;
+                message.stratum = 3;
+                message.precision = 24;
+                message.rootDelay = 24.17;
+                message.rootDispersion = 56.82;
+                message.referenceTimestamp = message.transmitTimestamp;
+                message.originateTimestamp = message.transmitTimestamp;
+                message.receiveTimestamp = message.transmitTimestamp;
+                message.transmitTimestamp = message.transmitTimestamp;
                 byte[] response = message.toByteArray();
                 
                 addRequestResponse(null, response);
@@ -109,6 +120,8 @@ public class NtpDetectorTest implements ApplicationContextAware {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
     
+    // This test is no longer valid because setIpToValidate is no longer needed.
+    @Ignore
     @Test(timeout=90000)
     public void testDetectorFailIncorrectIp() throws Exception{
         m_server.onInit();
