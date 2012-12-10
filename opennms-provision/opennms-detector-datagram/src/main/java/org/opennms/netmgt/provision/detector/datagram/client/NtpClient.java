@@ -114,7 +114,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    protected InetAddress getAddress() {
+    public InetAddress getAddress() {
         return m_address;
     }
 
@@ -132,7 +132,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      *
      * @return a int.
      */
-    protected int getPort() {
+    public int getPort() {
         return m_port;
     }
 }
