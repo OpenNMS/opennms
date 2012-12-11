@@ -191,6 +191,11 @@ public class DefaultPollingContext implements PollingContext {
         boolean succesfullyPolledAController = false;
 
         try {
+            if (m_pool == null) {
+                log().warn("run() called, but no thread pool has been initialized.  Calling init()");
+                init();
+            }
+
             // Invoke all of the pollers using the thread pool
             List<Future<OnmsAccessPointCollection>> futures = m_pool.invokeAll(callables);
 
