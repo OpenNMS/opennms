@@ -35,18 +35,18 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AccessPointRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	private AccessPointDatabasePopulator m_databasePopulator;
+    private AccessPointDatabasePopulator m_databasePopulator;
 
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		m_databasePopulator = context.getBean("accessPointDatabasePopulator", AccessPointDatabasePopulator.class);
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        m_databasePopulator = context.getBean("accessPointDatabasePopulator", AccessPointDatabasePopulator.class);
         m_databasePopulator.populateDatabase();
-	}
+    }
 
-	@Test
-	public void testAccessPoints() throws Exception {
-		String xml = sendRequest(GET, "/accesspoints", parseParamData("limit=1"), 200);
-		assertTrue(xml.contains(m_databasePopulator.getAP1().getPhysAddr()));
-	}
+    @Test
+    public void testAccessPoints() throws Exception {
+        String xml = sendRequest(GET, "/accesspoints", parseParamData("limit=1"), 200);
+        assertTrue(xml.contains(m_databasePopulator.getAP1().getPhysAddr()));
+    }
 }

@@ -37,17 +37,19 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
 /**
- * <p>AccessPointStatusUserType class.</p>
- *
+ * <p>
+ * AccessPointStatusUserType class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public class AccessPointStatusUserType implements UserType {
 
     /**
      * A public default constructor is required by Hibernate.
      */
-    public AccessPointStatusUserType() {}
+    public AccessPointStatusUserType() {
+    }
 
     public Object assemble(final Serializable cached, final Object owner) {
         return deepCopy(cached);
@@ -65,15 +67,15 @@ public class AccessPointStatusUserType implements UserType {
     }
 
     public Serializable disassemble(final Object value) {
-        return (Serializable)deepCopy(value);
+        return (Serializable) deepCopy(value);
     }
 
     public boolean equals(final Object x, final Object y) {
         if (x == y) {
-        	return true;
+            return true;
         }
         if (x == null || y == null) {
-        	return false;
+            return false;
         }
         return x.equals(y);
     }
@@ -94,10 +96,10 @@ public class AccessPointStatusUserType implements UserType {
         if (value == null) {
             st.setInt(index, 1);
         } else if (value instanceof AccessPointStatus) {
-            st.setInt(index,((AccessPointStatus)value).getId());
+            st.setInt(index, ((AccessPointStatus) value).getId());
         } else if (value instanceof String) {
             try {
-                st.setInt(index, ((AccessPointStatus)value).getId());
+                st.setInt(index, ((AccessPointStatus) value).getId());
             } catch (final IllegalArgumentException e) {
                 throw new HibernateException("unable to set status " + value, e);
             }

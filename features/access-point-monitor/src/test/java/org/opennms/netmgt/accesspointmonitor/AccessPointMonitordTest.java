@@ -71,17 +71,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml",
-        "classpath:META-INF/opennms/smallEventConfDao.xml"
-})
+@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml", "classpath:/META-INF/opennms/applicationContext-daemon.xml", "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml", "classpath:META-INF/opennms/smallEventConfDao.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
 public class AccessPointMonitordTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
@@ -97,29 +90,25 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
 
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
-	
-	@Autowired
-	private AccessPointDao m_accessPointDao;
-	
+
+    @Autowired
+    private AccessPointDao m_accessPointDao;
+
     @Autowired
     AccessPointMonitord m_apm;
-    
-    AnnotationBasedEventListenerAdapter m_adapter;
-    
-    AccessPointMonitorConfigFactory m_apmdConfigFactory;
-    
-    private MockEventIpcManager m_eventMgr;
-    
-    private EventAnticipator m_anticipator;
 
+    AnnotationBasedEventListenerAdapter m_adapter;
+    AccessPointMonitorConfigFactory m_apmdConfigFactory;
+
+    private MockEventIpcManager m_eventMgr;
+    private EventAnticipator m_anticipator;
     private TemporaryDatabase m_database;
-        
+
     private final static String AP1_MAC = "00:01:02:03:04:05";
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
-    private final static String AP3_MAC = "F0:05:BA:11:00:FF";   
-        
+    private final static String AP3_MAC = "F0:05:BA:11:00:FF";
     private final static int PACKAGE_SCAN_INTERVAL = 1000;
-	
+
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }
@@ -135,142 +124,144 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
 
     @Before
     public void setUp() throws Exception {
-        // Initialise the JdbcFilterDao so that it will connect to the correct database
+        // Initialise the JdbcFilterDao so that it will connect to the correct
+        // database
         DatabaseSchemaConfigFactory.init();
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         jdbcFilterDao.setDataSource(m_database);
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
-        
-        // Create our event manager and anticipator
-		m_anticipator = new EventAnticipator();
 
-		m_eventMgr = new MockEventIpcManager();
-		m_eventMgr.setEventAnticipator(m_anticipator);
-		m_eventMgr.setSynchronous(true);
-		
-		// Ensure our annotations are called
-        m_adapter = new AnnotationBasedEventListenerAdapter(m_apm, m_eventMgr);      
+        // Create our event manager and anticipator
+        m_anticipator = new EventAnticipator();
+
+        m_eventMgr = new MockEventIpcManager();
+        m_eventMgr.setEventAnticipator(m_anticipator);
+        m_eventMgr.setSynchronous(true);
+
+        // Ensure our annotations are called
+        m_adapter = new AnnotationBasedEventListenerAdapter(m_apm, m_eventMgr);
     }
 
     @After
-    public void tearDown() throws Exception {    	
-    	if( m_apm.getStatus() == AccessPointMonitord.RUNNING ) {
-    		m_apm.stop();
-    		LogUtils.debugf(this, "AccessPointMonitord stopped");    
-    	}
+    public void tearDown() throws Exception {
+        if (m_apm.getStatus() == AccessPointMonitord.RUNNING) {
+            m_apm.stop();
+            LogUtils.debugf(this, "AccessPointMonitord stopped");
+        }
     }
-    
+
     private void initApmdWithConfig(String config) throws Exception {
-		m_apm.setEventManager(m_eventMgr);
-		
-		// Convert the string to an input stream
+        m_apm.setEventManager(m_eventMgr);
+
+        // Convert the string to an input stream
         InputStream is = new ByteArrayInputStream(config.getBytes("UTF-8"));
         m_apmdConfigFactory = new AccessPointMonitorConfigFactory(0, is);
         m_apm.setPollerConfig(m_apmdConfigFactory.getConfig());
 
         // Initialise, but do not start
-        m_apm.init();	
+        m_apm.init();
     }
-    
-    private void updateConfigAndReloadDaemon(String config, Boolean anticipateEvents) throws Exception {        
-		// Build an input stream from the string
-        InputStream is = new ByteArrayInputStream(config.getBytes("UTF-8"));
-        
-        // Get the latest time-stamp on the configuration file so that the factory will use our string and not the file
-        File cfgFile = ConfigFileConstants.getConfigFileByName(AccessPointMonitorConfigFactory.getDefaultConfigFilename());
-        
-        // Update the configuration factory
-        AccessPointMonitorConfigFactory.setInstance(new AccessPointMonitorConfigFactory(cfgFile.lastModified(),is));
-        
-        // Anticipate the reload successful event
-    	if( anticipateEvents ) {	        
-	        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, m_apm.getName());
-	        bldr.setParam(EventConstants.PARM_DAEMON_NAME, "AccessPointMonitor");
-	        m_anticipator.anticipateEvent(bldr.getEvent());
-    	}
 
-    	// Anticipate the reload event
+    private void updateConfigAndReloadDaemon(String config, Boolean anticipateEvents) throws Exception {
+        // Build an input stream from the string
+        InputStream is = new ByteArrayInputStream(config.getBytes("UTF-8"));
+
+        // Get the latest time-stamp on the configuration file so that the
+        // factory will use our string and not the file
+        File cfgFile = ConfigFileConstants.getConfigFileByName(AccessPointMonitorConfigFactory.getDefaultConfigFilename());
+
+        // Update the configuration factory
+        AccessPointMonitorConfigFactory.setInstance(new AccessPointMonitorConfigFactory(cfgFile.lastModified(), is));
+
+        // Anticipate the reload successful event
+        if (anticipateEvents) {
+            EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, m_apm.getName());
+            bldr.setParam(EventConstants.PARM_DAEMON_NAME, "AccessPointMonitor");
+            m_anticipator.anticipateEvent(bldr.getEvent());
+        }
+
+        // Anticipate the reload event
         EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         bldr.setParam(EventConstants.PARM_DAEMON_NAME, "AccessPointMonitor");
-        if( anticipateEvents ) {
-        	 m_anticipator.anticipateEvent(bldr.getEvent());
+        if (anticipateEvents) {
+            m_anticipator.anticipateEvent(bldr.getEvent());
         }
-        
+
         // Send the reload event
         m_eventMgr.send(bldr.getEvent());
     }
-    
+
     private void addNewAccessPoint(String name, String mac, String pkg) {
         NetworkBuilder nb = new NetworkBuilder();
-        
+
         nb.addNode(name).setForeignSource("apmd").setForeignId(name);
         nb.addInterface("169.254.0.1");
         m_nodeDao.save(nb.getCurrentNode());
-        
-        final OnmsAccessPoint ap1  = new OnmsAccessPoint(mac,nb.getCurrentNode().getId(),pkg);
+
+        final OnmsAccessPoint ap1 = new OnmsAccessPoint(mac, nb.getCurrentNode().getId(), pkg);
         ap1.setStatus(AccessPointStatus.UNKNOWN);
         m_accessPointDao.save(ap1);
-        
+
         m_nodeDao.flush();
         m_accessPointDao.flush();
     }
-    
+
     @Test
     public void testDynamicPackages() throws Exception {
-    	// A package name that matches the mask
-    	addNewAccessPoint("ap1", AP1_MAC, "dynamic-pkg-1");
-    	
-    	initApmdWithConfig(getDynamicPackageConfig());
-    	m_apm.start();
-    	sleep(PACKAGE_SCAN_INTERVAL*2);
-    	assertEquals(1, m_apm.getActivePackageNames().size());
-    	
-    	// Another package name that matches the mask
-    	addNewAccessPoint("ap2", AP2_MAC, "dynamic-pkg-2");
-    	
-    	// A package name that does not match the mask
-    	addNewAccessPoint("ap3", AP3_MAC, "default");
-    	
-    	sleep(PACKAGE_SCAN_INTERVAL*2);
-    	assertEquals(2, m_apm.getActivePackageNames().size());
-    	
-    	// Change the package name for AP1 - the package should be unscheduled
-    	OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
-    	ap1.setPollingPackage("default");
-    	m_accessPointDao.update(ap1);
-    	m_accessPointDao.flush();
-    	
-    	List<String> packageNames = m_accessPointDao.findDistinctPackagesLike("dynamic-pkg-%");
-    	assertEquals(1, packageNames.size());
-    	
-    	sleep(PACKAGE_SCAN_INTERVAL*2);
-    	assertEquals(1, m_apm.getActivePackageNames().size());
-    	
-    	// Change the package name for AP1 - the package should be unscheduled
-    	ap1.setPollingPackage("dynamic-pkg-2");
-    	m_accessPointDao.update(ap1);
-    	m_accessPointDao.flush();
-    	
-    	sleep(PACKAGE_SCAN_INTERVAL*2);
-    	assertEquals(1, m_apm.getActivePackageNames().size());
-    	
-    	// Reload the daemon
-    	updateConfigAndReloadDaemon(getDynamicPackageConfig(), true);
-    	
-    	sleep(PACKAGE_SCAN_INTERVAL*2);
-    	
-    	assertEquals(1, m_apm.getActivePackageNames().size());
+        // A package name that matches the mask
+        addNewAccessPoint("ap1", AP1_MAC, "dynamic-pkg-1");
+
+        initApmdWithConfig(getDynamicPackageConfig());
+        m_apm.start();
+        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        assertEquals(1, m_apm.getActivePackageNames().size());
+
+        // Another package name that matches the mask
+        addNewAccessPoint("ap2", AP2_MAC, "dynamic-pkg-2");
+
+        // A package name that does not match the mask
+        addNewAccessPoint("ap3", AP3_MAC, "default");
+
+        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        assertEquals(2, m_apm.getActivePackageNames().size());
+
+        // Change the package name for AP1 - the package should be unscheduled
+        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        ap1.setPollingPackage("default");
+        m_accessPointDao.update(ap1);
+        m_accessPointDao.flush();
+
+        List<String> packageNames = m_accessPointDao.findDistinctPackagesLike("dynamic-pkg-%");
+        assertEquals(1, packageNames.size());
+
+        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        assertEquals(1, m_apm.getActivePackageNames().size());
+
+        // Change the package name for AP1 - the package should be unscheduled
+        ap1.setPollingPackage("dynamic-pkg-2");
+        m_accessPointDao.update(ap1);
+        m_accessPointDao.flush();
+
+        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        assertEquals(1, m_apm.getActivePackageNames().size());
+
+        // Reload the daemon
+        updateConfigAndReloadDaemon(getDynamicPackageConfig(), true);
+
+        sleep(PACKAGE_SCAN_INTERVAL * 2);
+
+        assertEquals(1, m_apm.getActivePackageNames().size());
     }
 
-	private void sleep(long millis) {
-	    try {
+    private void sleep(long millis) {
+        try {
             Thread.sleep(millis);
-	    } catch (InterruptedException e) {
-	        // Do nothing
+        } catch (InterruptedException e) {
+            // Do nothing
         }
-	}
+    }
 
     private String getDynamicPackageConfig() {
     	return "<?xml version=\"1.0\"?>\n" +

@@ -38,26 +38,23 @@ public class AccessPointDatabasePopulator {
     private NodeDao m_nodeDao;
     private AccessPointDao m_accessPointDao;
     private IpInterfaceDao m_ipInterfaceDao;
-
     private OnmsNode m_node1;
-    
     private OnmsAccessPoint m_ap1;
 
     public void populateDatabase() {
-    	m_node1 = new OnmsNode();
-    	m_node1.setLabel("AP1");
-    	getNodeDao().save(m_node1);
-    	getNodeDao().flush();
-    	
-    	m_ap1 = new OnmsAccessPoint("00:00:00:00:00:01", m_node1.getId(), "default");
-    	getAccessPointDao().save(m_ap1);
-    	getAccessPointDao().flush();
+        m_node1 = new OnmsNode();
+        m_node1.setLabel("AP1");
+        getNodeDao().save(m_node1);
+        getNodeDao().flush();
+
+        m_ap1 = new OnmsAccessPoint("00:00:00:00:00:01", m_node1.getId(), "default");
+        getAccessPointDao().save(m_ap1);
+        getAccessPointDao().flush();
     }
 
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
-
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
@@ -67,9 +64,8 @@ public class AccessPointDatabasePopulator {
         return m_nodeDao;
     }
 
-
     public void setAccessPointDao(AccessPointDao accessPointDao) {
-    	m_accessPointDao = accessPointDao;
+        m_accessPointDao = accessPointDao;
     }
 
     public AccessPointDao getAccessPointDao() {
@@ -79,13 +75,12 @@ public class AccessPointDatabasePopulator {
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-    
-    
+
     public OnmsAccessPoint getAP1() {
-    	return m_ap1;
+        return m_ap1;
     }
-    
+
     public void setAP1(OnmsAccessPoint ap) {
-    	m_ap1 = ap;
+        m_ap1 = ap;
     }
 }

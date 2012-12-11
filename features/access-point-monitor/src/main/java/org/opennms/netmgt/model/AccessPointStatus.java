@@ -37,25 +37,21 @@ import java.util.Map;
 
 /**
  * Access point status enumeration.
- *
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public enum AccessPointStatus implements Serializable {
     // Keep this ordered by ID so we can use the internal enum compareTo
-    UNKNOWN(0, "Unknown"),
-    ONLINE(1, "Online"),
-    OFFLINE(3, "Offline");
-    
-    private static final Map<Integer, AccessPointStatus> ID_MAP; 
-    
+    UNKNOWN(0, "Unknown"), ONLINE(1, "Online"), OFFLINE(3, "Offline");
+
+    private static final Map<Integer, AccessPointStatus> ID_MAP;
     private int m_id;
     private String m_label;
 
     static {
-    	ID_MAP = new HashMap<Integer, AccessPointStatus>(values().length);
+        ID_MAP = new HashMap<Integer, AccessPointStatus>(values().length);
         for (final AccessPointStatus status : values()) {
-        	ID_MAP.put(status.getId(), status);
+            ID_MAP.put(status.getId(), status);
         }
     }
 
@@ -63,29 +59,36 @@ public enum AccessPointStatus implements Serializable {
         m_id = id;
         m_label = label;
     }
-    
+
     /**
-     * <p>getId</p>
-     *
+     * <p>
+     * getId
+     * </p>
+     * 
      * @return a int.
      */
     public int getId() {
         return m_id;
     }
-    
+
     /**
-     * <p>getLabel</p>
-     *
+     * <p>
+     * getLabel
+     * </p>
+     * 
      * @return a {@link java.lang.String} object.
      */
     public String getLabel() {
         return m_label;
     }
-    
+
     /**
-     * <p>get</p>
-     *
-     * @param id a int.
+     * <p>
+     * get
+     * </p>
+     * 
+     * @param id
+     *            a int.
      * @return a {@link org.opennms.netmgt.model.AccessPointStatus} object.
      */
     public static AccessPointStatus get(final int id) {
@@ -97,9 +100,12 @@ public enum AccessPointStatus implements Serializable {
     }
 
     /**
-     * <p>get</p>
-     *
-     * @param label a {@link java.lang.String} object.
+     * <p>
+     * get
+     * </p>
+     * 
+     * @param label
+     *            a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.AccessPointStatus} object.
      */
     public static AccessPointStatus get(final String label) {

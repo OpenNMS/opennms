@@ -31,10 +31,11 @@ package org.opennms.netmgt.accesspointmonitor.jmx;
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * <p>AccessPointMonitorMBean interface.</p>
- *
+ * <p>
+ * AccessPointMonitorMBean interface.
+ * </p>
+ * 
  * @author <a href="jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public interface AccessPointMonitorMBean extends BaseOnmsMBean {
 
