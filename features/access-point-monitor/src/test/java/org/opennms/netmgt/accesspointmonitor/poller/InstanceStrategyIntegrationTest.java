@@ -29,7 +29,6 @@
 package org.opennms.netmgt.accesspointmonitor.poller;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -42,6 +41,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -52,39 +54,45 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.accesspointmonitor.AccessPointMonitord;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
-import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.eventd.mock.EventAnticipator;
 import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.AccessPointStatus;
-import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-daemon.xml", "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml", "classpath:META-INF/opennms/smallEventConfDao.xml" })
+@ContextConfiguration(locations = {
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+    "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+    "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+    "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
+    "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml",
+    "classpath:META-INF/opennms/smallEventConfDao.xml"
+})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
+@DirtiesContext
 public class InstanceStrategyIntegrationTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
 
     @Autowired
@@ -109,29 +117,20 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
     AccessPointMonitord m_apm;
 
     AnnotationBasedEventListenerAdapter m_adapter;
-
     AccessPointMonitorConfigFactory m_apmdConfigFactory;
-
     private MockEventIpcManager m_eventMgr;
-
     private EventAnticipator m_anticipator;
-
     private TemporaryDatabase m_database;
 
     private final static String AP1_MAC = "00:01:02:03:04:05";
-
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
-
     private final static String AP3_MAC = "F0:05:BA:11:00:FF";
 
     private final static int AGENT_TIMEOUT = 1000;
-
     private final static int POLLING_INTERVAL = 5000;
-
     private final static int POLLING_INTERVAL_DELTA = POLLING_INTERVAL + 2000;
 
     private static final String PASSIVE_STATUS_UEI = "uei.opennms.org/services/passiveServiceStatus";
-
     private static final String SNMP_DATA_PATH = "/org/opennms/netmgt/accesspointmonitor/poller/instancestrategy/";
 
     public void setTemporaryDatabase(TemporaryDatabase database) {
@@ -144,13 +143,13 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
+        assertNotNull(m_snmpPeerFactory);
         assertNotNull(m_apm);
     }
 
     @Before
     public void setUp() throws Exception {
-        // Initialise the JdbcFilterDao so that it will connect to the correct
-        // database
+        // Initialize the JdbcFilterDao so that it will connect to the correct database
         DatabaseSchemaConfigFactory.init();
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         jdbcFilterDao.setDataSource(m_database);
@@ -174,6 +173,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
 
     @After
     public void tearDown() throws Exception {
+        Sleeper.getInstance().setSleepTime(0);
         if (m_apm.getStatus() == AccessPointMonitord.RUNNING) {
             m_apm.stop();
             LogUtils.debugf(this, "AccessPointMonitor stopped");
@@ -367,22 +367,24 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getInetAddress("10.1.0.2"));
         Sleeper.getInstance().setSleepTime(agentConfig.getTimeout() + 1000);
 
-        // Anticipate the event
-        anticipateApStatusEvent(AP1_MAC, "DOWN");
+        try {
+            // Anticipate the event
+            anticipateApStatusEvent(AP1_MAC, "DOWN");
 
-        // Initialize and start the daemon
-        initApmdWithConfig(getStandardConfig());
-        m_apm.start();
+            // Initialize and start the daemon
+            initApmdWithConfig(getStandardConfig());
+            m_apm.start();
 
-        // Verify the events
-        verifyAnticipated(POLLING_INTERVAL_DELTA + 2000);
+            // Verify the events
+            verifyAnticipated(POLLING_INTERVAL_DELTA + 2000);
 
-        // Verify the state of the AP in the database
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
-        assertTrue(ap1.getStatus() == AccessPointStatus.OFFLINE);
-
-        // Clear the timeout
-        Sleeper.getInstance().setSleepTime(0);
+            // Verify the state of the AP in the database
+            OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+            assertTrue(ap1.getStatus() == AccessPointStatus.OFFLINE);
+        } finally {
+            // Clear the timeout
+            Sleeper.getInstance().setSleepTime(0);
+        }
     }
 
     /*
@@ -451,9 +453,11 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
      * state and the controller's address in the database after the poll.
      */
     @Test
-    @JUnitSnmpAgents(value = { @JUnitSnmpAgent(host = "10.1.0.2", port = 161, resource = SNMP_DATA_PATH + "10.1.0.2-walk.txt"),
-            @JUnitSnmpAgent(host = "10.1.1.2", port = 161, resource = SNMP_DATA_PATH + "10.1.1.2-walk.txt"),
-            @JUnitSnmpAgent(host = "10.1.2.2", port = 161, resource = SNMP_DATA_PATH + "10.1.2.2-walk.txt") })
+    @JUnitSnmpAgents(value = {
+        @JUnitSnmpAgent(host = "10.1.0.2", port = 161, resource = SNMP_DATA_PATH + "10.1.0.2-walk.txt"),
+        @JUnitSnmpAgent(host = "10.1.1.2", port = 161, resource = SNMP_DATA_PATH + "10.1.1.2-walk.txt"),
+        @JUnitSnmpAgent(host = "10.1.2.2", port = 161, resource = SNMP_DATA_PATH + "10.1.2.2-walk.txt")
+    })
     public void testManyControllers() throws Exception {
         // Add AP1 and AP2 to the default package
         addNewAccessPoint("ap1", AP1_MAC, "default");
@@ -526,8 +530,10 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
      * started. Verify: That the proper events are sent by the daemon.
      */
     @Test
-    @JUnitSnmpAgents(value = { @JUnitSnmpAgent(host = "10.1.0.2", port = 161, resource = SNMP_DATA_PATH + "10.1.0.2-walk.txt"),
-            @JUnitSnmpAgent(host = "10.1.1.2", port = 161, resource = SNMP_DATA_PATH + "10.1.1.2-walk.txt") })
+    @JUnitSnmpAgents(value = {
+        @JUnitSnmpAgent(host = "10.1.0.2", port = 161, resource = SNMP_DATA_PATH + "10.1.0.2-walk.txt"),
+        @JUnitSnmpAgent(host = "10.1.1.2", port = 161, resource = SNMP_DATA_PATH + "10.1.1.2-walk.txt")
+    })
     public void testAddControllerToPackage() throws Exception {
         // Add AP1 and AP2 to the default package
         addNewAccessPoint("ap1", AP1_MAC, "default");
