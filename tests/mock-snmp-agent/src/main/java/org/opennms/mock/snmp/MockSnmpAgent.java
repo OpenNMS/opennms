@@ -204,8 +204,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         try {
             while (!agent.isRunning() && thread.isAlive()) {
                 Thread.sleep(10);
-            } 
+            }
         } catch (final InterruptedException e) {
+            s_log.warn("Agent interrupted while starting: " + e.getLocalizedMessage());
             agent.shutDownAndWait();
             throw e;
         }
@@ -373,11 +374,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         	s_log.error("An error occurred while initializing.", t);
         }
 
+        boolean interrupted = false;
         while (m_running) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
             } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
+                interrupted = true;
                 break;
             }
         }
@@ -385,12 +387,15 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         for (final TransportMapping transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) transportMapping.close();
-            } catch (final Throwable t) {
+            } catch (final IOException t) {
             	s_log.error("an error occurred while closing the transport mapping", t);
             }
         }
 
         m_stopped = true;
+        
+        s_log.debug("Agent is no longer running.");
+        if (interrupted) Thread.currentThread().interrupt();
     }
 
     /*

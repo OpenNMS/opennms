@@ -31,10 +31,11 @@ package org.opennms.netmgt.accesspointmonitor.jmx;
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
 /**
- * <p>AccessPointMonitor class.</p>
- *
+ * <p>
+ * AccessPointMonitor class.
+ * </p>
+ * 
  * @author <a href="jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public class AccessPointMonitor extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.accesspointmonitor.AccessPointMonitord> implements AccessPointMonitorMBean {
 

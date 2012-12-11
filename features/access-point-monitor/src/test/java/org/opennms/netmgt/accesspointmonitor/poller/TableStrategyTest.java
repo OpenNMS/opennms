@@ -27,6 +27,7 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.accesspointmonitor.poller;
+
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.mock.MockSnmpValueFactory;
@@ -34,20 +35,20 @@ import org.opennms.netmgt.snmp.mock.MockSnmpValueFactory;
 import junit.framework.TestCase;
 
 public class TableStrategyTest extends TestCase {
-    
+
     public void testPhydAddrFromValue() {
-    	SnmpValueFactory valueFactory = new MockSnmpValueFactory();
-    	
-    	final byte[] ZERO_MAC = new byte[] {0, 0, 0, 0, 0, 0};
-    	SnmpValue value = valueFactory.getOctetString(ZERO_MAC);
-    	assertEquals("00:00:00:00:00:00", TableStrategy.getPhysAddrFromValue(value));
-    	
-    	final byte[] RANDOM_MAC = new byte[] {11, 22, 33, 44, (byte)255, 66};
-    	value = valueFactory.getOctetString(RANDOM_MAC);
-    	assertEquals("0B:16:21:2C:FF:42", TableStrategy.getPhysAddrFromValue(value));
-    	
-    	final byte[] NOT_A_MAC = new byte[] {11, 22, 33, 44, 55};
-    	value = valueFactory.getOctetString(NOT_A_MAC);
-    	assertEquals(null, TableStrategy.getPhysAddrFromValue(value));
+        SnmpValueFactory valueFactory = new MockSnmpValueFactory();
+
+        final byte[] ZERO_MAC = new byte[] { 0, 0, 0, 0, 0, 0 };
+        SnmpValue value = valueFactory.getOctetString(ZERO_MAC);
+        assertEquals("00:00:00:00:00:00", TableStrategy.getPhysAddrFromValue(value));
+
+        final byte[] RANDOM_MAC = new byte[] { 11, 22, 33, 44, (byte) 255, 66 };
+        value = valueFactory.getOctetString(RANDOM_MAC);
+        assertEquals("0B:16:21:2C:FF:42", TableStrategy.getPhysAddrFromValue(value));
+
+        final byte[] NOT_A_MAC = new byte[] { 11, 22, 33, 44, 55 };
+        value = valueFactory.getOctetString(NOT_A_MAC);
+        assertEquals(null, TableStrategy.getPhysAddrFromValue(value));
     }
 }

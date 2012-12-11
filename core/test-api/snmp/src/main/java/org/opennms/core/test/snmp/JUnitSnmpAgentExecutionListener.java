@@ -81,7 +81,10 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
-        testContext.setAttribute(STRATEGY_CLASS_KEY, System.getProperty(STRATEGY_CLASS_PROPERTY));
+        final String strategy = System.getProperty(STRATEGY_CLASS_PROPERTY);
+        LogUtils.debugf(this, "Initializing JUnit SNMP Agent with strategy: %s", strategy);
+
+        testContext.setAttribute(STRATEGY_CLASS_KEY, strategy);
         final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
         testContext.setAttribute(AGENT_KEY, mockAgents);
 
@@ -116,6 +119,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
         if (provider != null) {
+            LogUtils.debugf(this, "Tearing down JUnit SNMP Agent provider: %s", provider);
         	provider.resetData();
         }
 
@@ -186,14 +190,21 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     	        try {
     	            agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(listenAddress.getAddress()) + "/" + listenAddress.getPort());
     	            break;
-    	        } catch (final InterruptedException e) {
-    	            if (e.getCause() instanceof BindException && e.getCause().getMessage().contains("already in use")) {
-    	                do {
-    	                    listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
-    	                } while (mapper.contains(listenAddress));
-    	            } else {
-    	                throw e;
+    	        } catch (final RuntimeException e) {
+    	            boolean rethrow = true;
+    	            Throwable cause = e;
+    	            while (cause != null) {
+                        if (cause instanceof BindException && cause.getMessage().contains("already in use")) {
+                            do {
+                                listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
+                            } while (mapper.contains(listenAddress));
+                            cause = null;
+                            rethrow = false;
+                        } else {
+                            cause = cause.getCause();
+                        }
     	            }
+    	            if (rethrow) throw e;
     	        }
     	    }
 
@@ -246,6 +257,11 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public void resetData() {
             MockSnmpStrategy.resetData();
         }
+        
+        @Override
+        public String toString() {
+            return "MockSnmpStrategyDataProvider[]";
+        }
     }
 
     private static final class MockSnmpAgentDataProvider implements MockSnmpDataProvider {
@@ -269,14 +285,21 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public void resetData() {
             for (final MockSnmpAgent agent : m_agents.values()) {
                 try {
+                    LogUtils.debugf(this, "Shutting down agent: %s", agent);
                     agent.shutDownAndWait();
                 } catch (final InterruptedException e) {
                     LogUtils.debugf(this, e, "Unable to shut down agent %s", agent);
-                    Thread.currentThread().interrupt();
+                    // Thread.currentThread().interrupt();
                 }
             }
             m_agents.clear();
         }
+        
+        @Override
+        public String toString() {
+            return "MockSnmpAgentDataProvider[" + (m_agents == null? "" : (m_agents.size() + " agents")) + "]";
+        }
+
     }
 
 }

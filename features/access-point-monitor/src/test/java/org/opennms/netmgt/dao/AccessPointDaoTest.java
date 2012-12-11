@@ -52,39 +52,36 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * <p>AccessPointDaoTest</p>
- *
+ * <p>
+ * AccessPointDaoTest
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
-})
+@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml", "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
-	@Autowired
-	private NodeDao m_nodeDao;
-	
-	@Autowired
-	private AccessPointDao m_accessPointDao;
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private AccessPointDao m_accessPointDao;
 
     @Autowired
     TransactionTemplate m_transTemplate;
 
     @SuppressWarnings("unused")
-	private TemporaryDatabase m_database;
-    
-	private final static String AP1_MAC = "00:01:02:03:04:05";
-	
-	private final static String AP2_MAC = "07:08:09:0A:0B:0C";
-	
-	private final static String AP3_MAC = "0C:0D:0E:0F:01:02";
+    private TemporaryDatabase m_database;
+
+    private final static String AP1_MAC = "00:01:02:03:04:05";
+
+    private final static String AP2_MAC = "07:08:09:0A:0B:0C";
+
+    private final static String AP3_MAC = "0C:0D:0E:0F:01:02";
 
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
@@ -92,26 +89,26 @@ public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAw
 
     @Override
     public void afterPropertiesSet() throws Exception {
-    	assertNotNull(m_nodeDao);
+        assertNotNull(m_nodeDao);
         assertNotNull(m_accessPointDao);
     }
 
     @Before
     public void setUp() throws Exception {
-    	
+
     }
-    
+
     private void addNewAccessPoint(String name, String mac, String pkg) {
         NetworkBuilder nb = new NetworkBuilder();
-        
+
         nb.addNode(name).setForeignSource("apmd").setForeignId(name);
         nb.addInterface("169.254.0.1");
         m_nodeDao.save(nb.getCurrentNode());
-        
-        final OnmsAccessPoint ap1  = new OnmsAccessPoint(mac,nb.getCurrentNode().getId(),pkg);
+
+        final OnmsAccessPoint ap1 = new OnmsAccessPoint(mac, nb.getCurrentNode().getId(), pkg);
         ap1.setStatus(AccessPointStatus.UNKNOWN);
         m_accessPointDao.save(ap1);
-        
+
         m_nodeDao.flush();
         m_accessPointDao.flush();
     }
@@ -119,31 +116,31 @@ public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAw
     @Test
     @Transactional
     public void testFindByPhysAddr() {
-    	addNewAccessPoint("ap1", AP1_MAC, "default-package");
-    	addNewAccessPoint("ap2", AP2_MAC, "not-default-package");
-    	
-    	OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
-    	assertEquals("default-package", ap1.getPollingPackage());
-    	
-    	OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
-    	assertEquals("not-default-package", ap2.getPollingPackage());   
+        addNewAccessPoint("ap1", AP1_MAC, "default-package");
+        addNewAccessPoint("ap2", AP2_MAC, "not-default-package");
+
+        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        assertEquals("default-package", ap1.getPollingPackage());
+
+        OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        assertEquals("not-default-package", ap2.getPollingPackage());
     }
-    
+
     @Test
     @Transactional
     public void testFindByPackage() {
-    	addNewAccessPoint("ap1", AP1_MAC, "package1");
-    	addNewAccessPoint("ap2", AP2_MAC, "package1");
-    	addNewAccessPoint("ap3", AP3_MAC, "package2");
-    	
-    	OnmsAccessPointCollection apsInPkg = m_accessPointDao.findByPackage("package1");
-    	
-    	assertEquals("There should be two APs in the package.", 2, apsInPkg.size());
-    	
-    	List<String> unqPkgNames = m_accessPointDao.findDistinctPackagesLike("%ack%");
-    	
-    	assertEquals(2, unqPkgNames.size());
-    	assertEquals(true, unqPkgNames.contains("package1"));
-    	assertEquals(true, unqPkgNames.contains("package2"));
+        addNewAccessPoint("ap1", AP1_MAC, "package1");
+        addNewAccessPoint("ap2", AP2_MAC, "package1");
+        addNewAccessPoint("ap3", AP3_MAC, "package2");
+
+        OnmsAccessPointCollection apsInPkg = m_accessPointDao.findByPackage("package1");
+
+        assertEquals("There should be two APs in the package.", 2, apsInPkg.size());
+
+        List<String> unqPkgNames = m_accessPointDao.findDistinctPackagesLike("%ack%");
+
+        assertEquals(2, unqPkgNames.size());
+        assertEquals(true, unqPkgNames.contains("package1"));
+        assertEquals(true, unqPkgNames.contains("package2"));
     }
 }

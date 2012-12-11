@@ -42,14 +42,15 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * <p>AccessPointMonitorConfigFactory class.</p>
- *
+ * <p>
+ * AccessPointMonitorConfigFactory class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public class AccessPointMonitorConfigFactory {
-	private static final String ACCESS_POINT_MONITOR_CONFIG_FILE_NAME = "access-point-monitor-configuration.xml";
-	
+    private static final String ACCESS_POINT_MONITOR_CONFIG_FILE_NAME = "access-point-monitor-configuration.xml";
+
     /**
      * The singleton instance of this factory
      */
@@ -59,26 +60,26 @@ public class AccessPointMonitorConfigFactory {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-    
+
     /**
      * Loaded version
      */
     private long m_currentVersion = -1L;
-	
+
     private AccessPointMonitorConfig m_accessPointMonitorConfig = null;
-    
+
     public static AccessPointMonitorConfigFactory getInstance() {
         if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
         }
         return m_singleton;
     }
-    
+
     public static synchronized void setInstance(AccessPointMonitorConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
     }
-    
+
     public static synchronized void init() throws IOException, JAXBException {
         if (m_loaded) {
             // init already called - return
@@ -88,7 +89,7 @@ public class AccessPointMonitorConfigFactory {
 
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
         log().debug("init: config file path: " + cfgFile.getPath());
-        
+
         InputStream is = null;
         try {
             is = new FileInputStream(cfgFile);
@@ -99,12 +100,12 @@ public class AccessPointMonitorConfigFactory {
             }
         }
     }
-    
+
     public static synchronized void reload() throws IOException, JAXBException {
         init();
         getInstance().update();
     }
-    
+
     public synchronized void update() throws IOException, JAXBException {
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
@@ -112,8 +113,8 @@ public class AccessPointMonitorConfigFactory {
             log().debug("init: config file path: " + cfgFile.getPath());
             InputStream is = null;
             try {
-            	is = new FileInputStream(cfgFile);
-            	m_accessPointMonitorConfig = unmarshall(is);
+                is = new FileInputStream(cfgFile);
+                m_accessPointMonitorConfig = unmarshall(is);
             } finally {
                 if (is != null) {
                     IOUtils.closeQuietly(is);
@@ -122,34 +123,33 @@ public class AccessPointMonitorConfigFactory {
             log().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }
-    
+
     public AccessPointMonitorConfigFactory(long currentVersion, InputStream is) throws JAXBException {
-    	m_accessPointMonitorConfig = unmarshall(is);
-    	m_currentVersion = currentVersion;
+        m_accessPointMonitorConfig = unmarshall(is);
+        m_currentVersion = currentVersion;
     }
-    
+
     private static AccessPointMonitorConfig unmarshall(InputStream is) throws JAXBException {
         InputStream apmcStream = is;
         JAXBContext context = JAXBContext.newInstance(AccessPointMonitorConfig.class);
         Unmarshaller um = context.createUnmarshaller();
         um.setSchema(null);
-        return (AccessPointMonitorConfig)um.unmarshal(apmcStream);
+        return (AccessPointMonitorConfig) um.unmarshal(apmcStream);
     }
-    
+
     protected static ThreadCategory log() {
         return ThreadCategory.getInstance(AccessPointMonitorConfigFactory.class);
     }
-    
+
     public AccessPointMonitorConfig getConfig() {
-    	return m_accessPointMonitorConfig;
+        return m_accessPointMonitorConfig;
     }
-    
+
     public static AccessPointMonitorConfig getConfigFromInstance() {
-    	return getInstance().getConfig();
+        return getInstance().getConfig();
     }
-    
-    
+
     public static String getDefaultConfigFilename() {
-    	return ACCESS_POINT_MONITOR_CONFIG_FILE_NAME;
+        return ACCESS_POINT_MONITOR_CONFIG_FILE_NAME;
     }
 }
