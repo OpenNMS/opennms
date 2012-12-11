@@ -84,21 +84,21 @@ public abstract class MockSnmpAgentTestCase {
 
 	@After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
 
         agentCleanup();
     
+        //MockLogAppender.assertNoWarningsOrGreater();
+
         MockUtil.println("------------ End Test --------------------------");
     }
 
 	protected void agentCleanup() throws InterruptedException {
-		if (usingMockStrategy()) {
-			MockSnmpStrategy.removeHost(new SnmpAgentAddress(m_agentAddress, m_agentPort));
-		} else {
-			if (m_agent != null) {
-				m_agent.shutDownAndWait();
-			}
+		MockSnmpStrategy.removeHost(new SnmpAgentAddress(m_agentAddress, m_agentPort));
+
+		if (m_agent != null) {
+			m_agent.shutDownAndWait();
 		}
+		
 	}
 
     protected SnmpAgentConfig getAgentConfig() {
@@ -113,7 +113,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_agentAddress;
     }
 
-    public void setAgentAddress(InetAddress agentAddress) {
+    private void setAgentAddress(InetAddress agentAddress) {
         m_agentAddress = agentAddress;
     }
 
@@ -121,7 +121,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_agentPort;
     }
 
-    public void setAgentPort(int agentPort) {
+    private void setAgentPort(int agentPort) {
         m_agentPort = agentPort;
     }
 

@@ -34,6 +34,7 @@ import java.util.List;
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.EventsAlarmsWindow;
 import org.opennms.features.topology.netutils.internal.Node;
@@ -84,11 +85,11 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
     
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        if(targets != null && targets.size() > 0 && targets.get(0) != null) {
-            return true;
-        }else {
-            return false;
-        }
+    	if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
+    		return true;
+    	} else {
+			return targets != null && targets.size() > 0 && targets.get(0) != null;
+    	}
         
     }
 

@@ -29,6 +29,7 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +44,6 @@ import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspWriter;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -248,11 +248,11 @@ public class CategoryList {
      *        its accessability and this comment. :-P
      */
     @SuppressWarnings("unused")
-    private void printBox(JspWriter out, HttpServletResponse response) throws IOException, MarshalException, ValidationException {
+    private void printBox(Writer out, HttpServletResponse response) throws IOException, MarshalException, ValidationException {
 
         Map<String,List<Category>> categoryData = getCategoryData();
 
-        out.println("<table width=\"100%\" border=\"1\" cellspacing=\"0\" " + "cellpadding=\"2\" bordercolor=\"black\" " + "bgcolor=\"#cccccc\">");
+        out.write("<table width=\"100%\" border=\"1\" cellspacing=\"0\" " + "cellpadding=\"2\" bordercolor=\"black\" " + "bgcolor=\"#cccccc\">\n");
 
         long earliestUpdate = getEarliestUpdate(categoryData);
         boolean opennmsDisconnect = isDisconnected(earliestUpdate);
@@ -260,11 +260,11 @@ public class CategoryList {
         for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext();) {
             String sectionName = i.next();
 
-            out.println("<tr bgcolor=\"#999999\">");
-            out.println("<td width=\"50%\"><b>" + sectionName + "</b></td>");
-            out.println("<td width=\"20%\" align=\"right\">" + "<b>Outages</b></td>");
-            out.println("<td width=\"30%\" align=\"right\">" + "<b>24hr Avail</b></td>");
-            out.println("</tr>");
+            out.write("<tr bgcolor=\"#999999\">\n");
+            out.write("<td width=\"50%\"><b>" + sectionName + "</b></td>\n");
+            out.write("<td width=\"20%\" align=\"right\">" + "<b>Outages</b></td>\n");
+            out.write("<td width=\"30%\" align=\"right\">" + "<b>24hr Avail</b></td>\n");
+            out.write("</tr>\n");
 
             List<Category> categories = categoryData.get(sectionName);
 
@@ -292,26 +292,26 @@ public class CategoryList {
 
                 availText = "<b>" + category.getAvailText() + "</b>";
 
-                out.println("<tr>");
+                out.write("<tr>\n");
 
-                out.println("<td><a href=\"rtc/category.jsp?category=" + URLEncoder.encode(response.encodeURL(categoryName), "UTF-8") + "\" title=\"" + title + "\">" + categoryName + "</a></td>");
-                out.println("<td bgcolor=\"" + outageColor + "\" align=\"right\" title=\"Updated: " + lastUpdated + "\">" + outageText + "</td>");
-                out.println("<td bgcolor=\"" + availColor + "\" align=\"right\" title=\"Updated: " + lastUpdated + "\">" + availText + "</td>");
-                out.println("<!-- Last updated " + lastUpdated + " -->");
-                out.println("<!-- Epoch time:  " + lastUpdatedTime + " -->");
+                out.write("<td><a href=\"rtc/category.jsp?category=" + URLEncoder.encode(response.encodeURL(categoryName), "UTF-8") + "\" title=\"" + title + "\">" + categoryName + "</a></td>\n");
+                out.write("<td bgcolor=\"" + outageColor + "\" align=\"right\" title=\"Updated: " + lastUpdated + "\">" + outageText + "</td>\n");
+                out.write("<td bgcolor=\"" + availColor + "\" align=\"right\" title=\"Updated: " + lastUpdated + "\">" + availText + "</td>\n");
+                out.write("<!-- Last updated " + lastUpdated + " -->\n");
+                out.write("<!-- Epoch time:  " + lastUpdatedTime + " -->\n");
 
-                out.println("</tr>");
+                out.write("</tr>\n");
             }
         }
 
-        out.println("<tr bgcolor=\"#999999\">");
+        out.write("<tr bgcolor=\"#999999\">\n");
         if (opennmsDisconnect) {
-            out.println("<td colspan=\"3\"><font color=\"#bb1111\">" + "OpenNMS Disconnect -- is the OpenNMS daemon " + "running?<br/>Last update: " + (earliestUpdate > 0 ? new Date(earliestUpdate).toString() : "one or more categories have never been updated.") + "</font></td>");
+            out.write("<td colspan=\"3\"><font color=\"#bb1111\">" + "OpenNMS Disconnect -- is the OpenNMS daemon " + "running?<br/>Last update: " + (earliestUpdate > 0 ? new Date(earliestUpdate).toString() : "one or more categories have never been updated.") + "</font></td>\n");
         } else {
-            out.println("<td colspan=\"3\">Percentage over last " + "24 hours</td>");
+            out.write("<td colspan=\"3\">Percentage over last " + "24 hours</td>\n");
         }
 
-        out.println("</tr>");
-        out.println("</table>");
+        out.write("</tr>\n");
+        out.write("</table>\n");
     }
 }

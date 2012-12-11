@@ -67,7 +67,7 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 		
 		Dimension size = selectLayoutSize(graphContainer);
-		Dimension paddedSize = new Dimension((int)(size.getWidth()*.75), (int)(size.getHeight()*75));
+		Dimension paddedSize = new Dimension((int)(size.getWidth()*.75), (int)(size.getHeight()*.75));
 		
 		doISOMLayout(graphLayout, jungGraph, size);
 		doSpringLayout(graphLayout, jungGraph, size, LAYOUT_REPULSION);

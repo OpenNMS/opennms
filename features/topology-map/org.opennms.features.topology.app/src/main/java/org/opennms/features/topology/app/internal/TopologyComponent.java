@@ -234,7 +234,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             m_panToManager.verticesSelectedByMap();
             String vertexKey = (String) variables.get("clickedVertex");
             if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
-                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true) {
+                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true
+                    || (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true  && !(((String)variables.get("platform")).indexOf("Mac") > 0)  )) {
         	    addVerticesToSelection(vertexKey);
         	}else {
         	    selectVertices(vertexKey);
@@ -277,6 +278,11 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if(variables.containsKey("mapScale")) {
             double newScale = (Double)variables.get("mapScale");
             setScaleUpdateFromUI(true);
+            setScale(newScale);
+        }
+        
+        if(variables.containsKey("scrollWheelScale")) {
+            double newScale = (Double)variables.get("scrollWheelScale");
             setScale(newScale);
         }
         
@@ -379,6 +385,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
     
 	protected void setScale(double scale){
+	    if(scale <= 0) {
+	        scale = 0.01;
+	    } 
 	    m_scale.setValue(scale);
     }
     
@@ -412,9 +421,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     public void valueChange(ValueChangeEvent event) {
         double scale = (Double) m_scale.getValue();
-        if(scale == 0) {
+        if(scale <= 0) {
             m_scale.setValue(0.01);
-        }
+        } 
         
         if(!isScaleUpdateFromUI()) {
             requestRepaint();
@@ -450,6 +459,5 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     public void setPanToSelection(boolean bool) {
         m_panToManager.setPanToSelection(bool);
     }
-
 
 }

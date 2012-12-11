@@ -42,7 +42,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
-public class TestTopologyProvider implements TopologyProvider{
+public class TestTopologyProvider implements TopologyProvider {
 	private final String m_namespace;
     private TestVertexContainer m_vertexContainer;
     private BeanContainer<String, TestEdge> m_edgeContainer;
@@ -129,8 +129,7 @@ public class TestTopologyProvider implements TopologyProvider{
 
     @Override
     public void save(String filename) {
-        // TODO Auto-generated method stub
-        
+        // Do nothing
     }
 
     @Override
@@ -167,50 +166,38 @@ public class TestTopologyProvider implements TopologyProvider{
     }
 
     @Override
-    public VertexContainer<?, ?> getVertexContainer() {
+    public VertexContainer<Object,TestVertex> getVertexContainer() {
         return m_vertexContainer;
     }
 
     @Override
-    public BeanContainer<?, ?> getEdgeContainer() {
+    public BeanContainer<String,TestEdge> getEdgeContainer() {
         return m_edgeContainer;
     }
 
     @Override
-    public Collection<?> getVertexIds() {
+    public Collection<Object> getVertexIds() {
         return m_vertexContainer.getItemIds();
     }
 
     @Override
-    public Collection<?> getEdgeIds() {
+    public Collection<String> getEdgeIds() {
         return m_edgeContainer.getItemIds();
     }
 
     @Override
-    public BeanItem<TestVertex> getVertexItem(Object vertexId) {
-        return m_vertexContainer.getItem(vertexId);
-    }
-
-    @Override
-    public BeanItem<TestEdge> getEdgeItem(Object edgeId) {
-        assertEdge(edgeId);
-        return m_edgeContainer.getItem(edgeId);
-    }
-
-    @Override
-    public Collection<?> getEdgeIdsForVertex(Object vertexId) {
+    public Collection<String> getEdgeIdsForVertex(Object vertexId) {
         TestVertex vertex = getRequiresVertex(vertexId);
-        List<Object> edges = new ArrayList<Object>(vertex.getEdges().size());
+        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
         
         for(TestEdge e : vertex.getEdges()) {
-            Object edgeId = e.getId();
-            edges.add(edgeId);
+            edges.add(e.getId());
         }
         return edges;
     }
 
     @Override
-    public Collection<?> getEndPointIdsForEdge(Object edgeId) {
+    public Collection<Object> getEndPointIdsForEdge(Object edgeId) {
         TestEdge edge = getRequiredEdge(edgeId);
         List<Object> endPoints = new ArrayList<Object>(2);
         endPoints.add(edge.getSource().getId());

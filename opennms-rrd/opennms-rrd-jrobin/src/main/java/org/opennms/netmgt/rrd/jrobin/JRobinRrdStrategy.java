@@ -56,7 +56,6 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 
-import antlr.StringUtils;
 
 /**
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
@@ -889,7 +888,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @return an array of {@link java.lang.String} objects.
      */
     public static String[] tokenizeWithQuotingAndEscapes(final String line, final String delims, final boolean processQuoted, final String tokens) {
-        ThreadCategory log = ThreadCategory.getInstance(StringUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(JRobinRrdStrategy.class);
         List<String> tokenList = new LinkedList<String>();
     
         StringBuffer currToken = new StringBuffer();

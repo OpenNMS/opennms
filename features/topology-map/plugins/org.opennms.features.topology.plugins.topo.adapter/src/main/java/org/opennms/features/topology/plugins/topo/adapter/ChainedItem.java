@@ -7,6 +7,7 @@ import java.util.Set;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
+@SuppressWarnings("serial")
 public class ChainedItem implements Item {
 	
 	private final Item m_item;
@@ -20,13 +21,15 @@ public class ChainedItem implements Item {
 	@Override
 	public Property getItemProperty(Object id) {
 		Property property = m_item == null ? null : m_item.getItemProperty(id);
-		return property != null ? property : m_next.getItemProperty(id);
+		return property != null ? property : m_next != null ? m_next.getItemProperty(id) : null;
 	}
 
 	@Override
 	public Collection<?> getItemPropertyIds() {
 		Set<Object> propertyIds = new LinkedHashSet<Object>(m_item.getItemPropertyIds());
-		propertyIds.addAll(m_next.getItemPropertyIds());
+		if (m_next != null) {
+			propertyIds.addAll(m_next.getItemPropertyIds());
+		}
 		return propertyIds;
 	}
 

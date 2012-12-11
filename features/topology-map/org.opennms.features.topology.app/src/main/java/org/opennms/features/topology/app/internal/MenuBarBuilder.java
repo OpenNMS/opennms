@@ -108,7 +108,7 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
 	            MenuBar.MenuItem subMenuItem = subMenu.addItem(commandKey, null);
 	            addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
 	        }else {
-	            if(commandKey.equals("separator")) {
+	            if(commandKey.startsWith("separator")) {
 	                subMenu.addSeparator();
 	            }else {
 	                subMenu.addItem(removeLabelProperties(commandKey), (Command) entry.getValue());

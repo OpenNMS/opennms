@@ -149,6 +149,7 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     
     <dependency>

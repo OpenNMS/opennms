@@ -239,6 +239,11 @@ public class OnmsTopologyProviderTest {
             // TODO Auto-generated method stub
             return false;
         }
+
+		@Override
+		public DisplayLocation getDisplayLocation() {
+			throw new UnsupportedOperationException("OperationContext.getDisplayLocation is not yet implemented.");
+		}
         
     }
 

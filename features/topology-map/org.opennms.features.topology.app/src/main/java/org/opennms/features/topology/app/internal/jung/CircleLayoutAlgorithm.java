@@ -43,6 +43,7 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
+	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
 		
 		Graph g = graphContainer.getGraph();

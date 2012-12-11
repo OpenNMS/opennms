@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.NodeInfoWindow;
@@ -78,7 +79,10 @@ public class NodeInfoOperation extends AbstractOperation {
     
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        if(targets != null && targets.size() > 0 && targets.get(0) != null) {
+    	if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
+    		return true;
+    	}
+    	else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
             return true;
         }else {
             return false;

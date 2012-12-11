@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
@@ -36,23 +38,26 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.data.validator.AbstractValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-
 public class RenameGroupOperation implements Constants, Operation {
 
 	@Override
 	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) {
+		if (targets == null || targets.isEmpty() || targets.size() != 1) {
 			return null;
 		}
 
@@ -63,14 +68,12 @@ public class RenameGroupOperation implements Constants, Operation {
 		final Window groupNamePrompt = new Window("Rename Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
-		groupNamePrompt.setHeight("180px");
+		groupNamePrompt.setHeight("220px");
 		groupNamePrompt.setWidth("300px");
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
 		item.addItemProperty("Group Label", new ObjectProperty<String>("", String.class));
-
-		// TODO Add validator for groupname value
 
 		final Form promptForm = new Form() {
 
@@ -78,6 +81,8 @@ public class RenameGroupOperation implements Constants, Operation {
 
 			@Override
 			public void commit() {
+				// Trim the form value
+				getField("Group Label").setValue(((String)getField("Group Label").getValue()).trim());
 				super.commit();
 				String groupLabel = (String)getField("Group Label").getValue();
 
@@ -86,7 +91,7 @@ public class RenameGroupOperation implements Constants, Operation {
 				VertexRef parentId = targets.get(0);
 				Vertex parentVertex = parentId == null ? null : graphContainer.getVertex(parentId);
 				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
-				
+
 				if (parentItem != null) {
 
 					Property property = parentItem.getItemProperty("label");
@@ -103,7 +108,41 @@ public class RenameGroupOperation implements Constants, Operation {
 		};
 		// Buffer changes to the datasource
 		promptForm.setWriteThrough(false);
+		// Bind the item to create all of the fields
 		promptForm.setItemDataSource(item);
+		// Add validators to the fields
+		promptForm.getField("Group Label").setRequired(true);
+		promptForm.getField("Group Label").setRequiredError("Group label cannot be blank.");
+		promptForm.getField("Group Label").addValidator(new StringLengthValidator("Label must be at least one character long.", 1, -1, false));
+		promptForm.getField("Group Label").addValidator(new AbstractValidator("A group with label \"{0}\" already exists.") {
+
+			private static final long serialVersionUID = 79618011585921224L;
+
+			@Override
+			public boolean isValid(Object value) {
+				try {
+					final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+					final Collection<String> groupLabels = new ArrayList<String>();
+					for (String vertexId : vertexIds) {
+						BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
+						if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
+							groupLabels.add((String)vertex.getItemProperty("label").getValue());
+						}
+					}
+
+					for (String label : groupLabels) {
+						LoggerFactory.getLogger(this.getClass()).debug("Comparing {} to {}", value, label);
+						if (label.equals(value)) {
+							return false;
+						}
+					}
+					return true;
+				} catch (Throwable e) {
+					LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+					return false;
+				}
+			}
+		});
 
 		Button ok = new Button("OK");
 		ok.addListener(new ClickListener() {
@@ -142,8 +181,8 @@ public class RenameGroupOperation implements Constants, Operation {
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
 		return targets != null && 
-			targets.size() == 1 && 
-			targets.get(0) != null 
+		targets.size() == 1 && 
+		targets.get(0) != null 
 		;
 	}
 
@@ -151,9 +190,9 @@ public class RenameGroupOperation implements Constants, Operation {
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
 		// Only allow the operation on single non-leaf vertices (groups)
 		return targets != null && 
-			targets.size() == 1 && 
-			targets.get(0) != null && 
-			!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
+		targets.size() == 1 && 
+		targets.get(0) != null && 
+		!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
 		;
 	}
 

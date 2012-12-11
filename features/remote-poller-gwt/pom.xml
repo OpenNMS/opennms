@@ -213,25 +213,6 @@
     </dependency>
     <!-- technically for testing (making a full war)... -->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
-      <type>pom</type>
-      <scope>provided</scope>
-      <!-- 
-        We have to exclude this Java compiler from the classpath because it
-        conflicts with one bundled inside gwt-dev that is used when GWT compiles
-        code into Javascript.
-
-        http://code.google.com/p/google-web-toolkit/issues/detail?id=5290
-      -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jdt.core.compiler</groupId>
-          <artifactId>ecj</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>provided</scope>

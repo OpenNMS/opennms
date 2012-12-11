@@ -141,7 +141,7 @@ public class TopologyComponentTest {
         Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
-            BeanItem<TestVertex> beanItem = topologyProvider.getVertexItem(vertId);
+            BeanItem<TestVertex> beanItem = topologyProvider.getVertexContainer().getItem(vertId);
             TestVertex v = beanItem.getBean();
             if(v.isLeaf()) {
                 topologyProvider.setParent(vertId, groupId);
@@ -190,7 +190,7 @@ public class TopologyComponentTest {
         Object groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
-            TestVertex v = (TestVertex) ((BeanItem<TestVertex>) topoProvider.getVertexItem(vertId)).getBean();
+            TestVertex v = topoProvider.getVertexContainer().getItem(vertId).getBean();
             if(v.isLeaf()) {
                 topoProvider.setParent(vertId, groupId);
             }
