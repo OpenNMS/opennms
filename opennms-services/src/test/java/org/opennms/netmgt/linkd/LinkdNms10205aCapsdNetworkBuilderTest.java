@@ -78,7 +78,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkdNms10205CapsdNetworkBuilderTest extends LinkdNms10205NetworkBuilder implements InitializingBean {
+public class LinkdNms10205aCapsdNetworkBuilderTest extends LinkdNms10205aNetworkBuilder implements InitializingBean {
 
     
     @Autowired
