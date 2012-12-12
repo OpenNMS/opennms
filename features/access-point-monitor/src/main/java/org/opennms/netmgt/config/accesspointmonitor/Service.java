@@ -38,53 +38,54 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 /**
- * <p>Service class.</p>
- *
+ * <p>
+ * Service class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
-@XmlType(name="service")
+@XmlType(name = "service")
 public class Service extends ServiceTemplate implements Cloneable {
     private static final long serialVersionUID = -7231942028852991463L;
-       
-    @XmlAttribute(name="template-name")
+
+    @XmlAttribute(name = "template-name")
     private String m_templateName;
-    
+
     @XmlTransient
     private ServiceTemplate m_template;
 
     public Service() {
-    	super();
+        super();
     }
-    
+
     public Service(Service copy) {
-    	super(copy);
-    	if(copy.m_templateName!=null) {
-    		m_templateName = new String(copy.m_templateName);
-    	}
-    	if(copy.m_template!=null) {
-    		m_template = new ServiceTemplate(copy.m_template);
-    	}
+        super(copy);
+        if (copy.m_templateName != null) {
+            m_templateName = new String(copy.m_templateName);
+        }
+        if (copy.m_template != null) {
+            m_template = new ServiceTemplate(copy.m_template);
+        }
     }
-    
+
     @XmlTransient
     public String getTemplateName() {
         return m_templateName;
     }
 
     public void setTemplateName(String templateName) {
-    	m_templateName = templateName;
+        m_templateName = templateName;
     }
-    
+
     @XmlTransient
     public ServiceTemplate getTemplate() {
-    	return m_template;
+        return m_template;
     }
-    
+
     public void setTemplate(ServiceTemplate template) {
-    	m_template = template;
+        m_template = template;
     }
-    
+
     public int compareTo(Service obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())
@@ -96,50 +97,48 @@ public class Service extends ServiceTemplate implements Cloneable {
             .append(getParameters().toArray(OF_PARAMETERS), obj.getParameters().toArray(OF_PARAMETERS))
             .toComparison();
     }
-    
+
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((m_template == null) ? 0 : m_template.hashCode());
-		result = prime * result
-				+ ((m_templateName == null) ? 0 : m_templateName.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((m_template == null) ? 0 : m_template.hashCode());
+        result = prime * result + ((m_templateName == null) ? 0 : m_templateName.hashCode());
+        return result;
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Service) {
-        	Service other = (Service) obj;
+            Service other = (Service) obj;
             return new EqualsBuilder()
-            .append(getName(), other.getName())
-            .append(getThreads(), other.getThreads())
-            .append(getPassiveServiceName(), other.getPassiveServiceName())
-            .append(getInterval(), other.getInterval())
-            .append(getStatus(), other.getStatus())
-            .append(getTemplateName(), other.getTemplateName())
-            .append(getParameters().toArray(OF_PARAMETERS), other.getParameters().toArray(OF_PARAMETERS))
+                .append(getName(), other.getName())
+                .append(getThreads(), other.getThreads())
+                .append(getPassiveServiceName(), other.getPassiveServiceName())
+                .append(getInterval(), other.getInterval())
+                .append(getStatus(), other.getStatus())
+                .append(getTemplateName(), other.getTemplateName())
+                .append(getParameters().toArray(OF_PARAMETERS), other.getParameters().toArray(OF_PARAMETERS))
                 .isEquals();
         }
         return false;
     }
-    
+
     @Override
     public Object clone() throws CloneNotSupportedException {
-		Service cloned = new Service();
-    	cloned.m_template = m_template;
-    	cloned.m_templateName = m_templateName;
-		cloned.m_name = m_name;
-		cloned.m_threads = m_threads;
-		cloned.m_passiveServiceName = m_passiveServiceName;
-		cloned.m_interval = m_interval;
-		cloned.m_status = m_status;
-		cloned.m_parameters = new ArrayList<Parameter>();
-		for(Parameter p : getParameters()) {
-			cloned.m_parameters.add((Parameter)p.clone());
-		}
-		return cloned;
+        Service cloned = new Service();
+        cloned.m_template = m_template;
+        cloned.m_templateName = m_templateName;
+        cloned.m_name = m_name;
+        cloned.m_threads = m_threads;
+        cloned.m_passiveServiceName = m_passiveServiceName;
+        cloned.m_interval = m_interval;
+        cloned.m_status = m_status;
+        cloned.m_parameters = new ArrayList<Parameter>();
+        for (Parameter p : getParameters()) {
+            cloned.m_parameters.add((Parameter) p.clone());
+        }
+        return cloned;
     }
-    
+
 }

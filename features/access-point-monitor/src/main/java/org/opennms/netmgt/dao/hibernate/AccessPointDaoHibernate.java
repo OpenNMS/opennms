@@ -40,45 +40,45 @@ import org.opennms.netmgt.model.OnmsAccessPointCollection;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
- * <p>AccessPointDaoHibernate class.</p>
- *
+ * <p>
+ * AccessPointDaoHibernate class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoint, Integer> implements AccessPointDao {
-	
-	/**
-	 * <p>Constructor for AccessPointDaoHibernate.</p>
-	 */
-	public AccessPointDaoHibernate() {
-		super(OnmsAccessPoint.class);
-	}
-	
+
+    /**
+     * <p>
+     * Constructor for AccessPointDaoHibernate.
+     * </p>
+     */
+    public AccessPointDaoHibernate() {
+        super(OnmsAccessPoint.class);
+    }
+
     /** {@inheritDoc} */
     public OnmsAccessPoint findByPhysAddr(final String physaddr) {
-    	// Case insensitive search
+        // Case insensitive search
         return findUnique("from OnmsAccessPoint as aps where upper(aps.physAddr) = ?", physaddr.toUpperCase());
     }
-    
+
     /** {@inheritDoc} */
-	public OnmsAccessPointCollection findByPackage(final String pkg) {
-		String hql = "from OnmsAccessPoint as aps where aps.pollingPackage = ?";
-		OnmsAccessPointCollection aps = new OnmsAccessPointCollection();
-		aps.addAll(super.find(hql, pkg));
-		return aps;
-	}
-	
-	/** {@inheritDoc} */
-	@SuppressWarnings("unchecked")
-	public List<String> findDistinctPackagesLike(final String pkg) {
-    	final HibernateCallback<List<String>> callback = new HibernateCallback<List<String>>() {
-			public List<String> doInHibernate(final Session session) throws SQLException {
-				return session.createCriteria(OnmsAccessPoint.class)
-					    .setProjection( Projections.groupProperty("pollingPackage") )
-					    .add(Restrictions.like("pollingPackage", pkg))
-					    .list();
+    public OnmsAccessPointCollection findByPackage(final String pkg) {
+        String hql = "from OnmsAccessPoint as aps where aps.pollingPackage = ?";
+        OnmsAccessPointCollection aps = new OnmsAccessPointCollection();
+        aps.addAll(super.find(hql, pkg));
+        return aps;
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    public List<String> findDistinctPackagesLike(final String pkg) {
+        final HibernateCallback<List<String>> callback = new HibernateCallback<List<String>>() {
+            public List<String> doInHibernate(final Session session) throws SQLException {
+                return session.createCriteria(OnmsAccessPoint.class).setProjection(Projections.groupProperty("pollingPackage")).add(Restrictions.like("pollingPackage", pkg)).list();
             }
         };
         return getHibernateTemplate().executeFind(callback);
-	}
+    }
 }

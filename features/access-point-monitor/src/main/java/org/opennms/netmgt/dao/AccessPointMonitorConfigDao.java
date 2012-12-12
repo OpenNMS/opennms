@@ -31,10 +31,11 @@ package org.opennms.netmgt.dao;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 
 /**
- * <p>AccessPointMonitorConfigDao</p>
- *
+ * <p>
+ * AccessPointMonitorConfigDao
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public interface AccessPointMonitorConfigDao {
     public AccessPointMonitorConfig getConfig();

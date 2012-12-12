@@ -62,56 +62,55 @@ public class AccessPointMonitorConfigTest {
     private Unmarshaller um;
     private FileAnticipator fa;
     private JAXBContext c;
-    
     private AccessPointMonitorConfig apmc;
-    
+
     static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;
-        
+
         public TestOutputResolver(File schemaFile) {
             m_schemaFile = schemaFile;
         }
-        
+
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
         }
     }
-    
+
     @Before
     public void setUp() throws Exception {
         fa = new FileAnticipator();
         c = JAXBContext.newInstance(AccessPointMonitorConfig.class);
         m = c.createMarshaller();
         um = c.createUnmarshaller();
-        
+
         ServiceTemplate svcTemplate = new ServiceTemplate();
         svcTemplate.setName("IsAPAdoptedOnController-Template");
         svcTemplate.setInterval(120000L);
         svcTemplate.setStatus("off");
-        svcTemplate.addParameter(new Parameter("retry","2"));
-        svcTemplate.addParameter(new Parameter("oid",".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.19"));
-        svcTemplate.addParameter(new Parameter("operator","="));
-        svcTemplate.addParameter(new Parameter("operand","1"));
-        svcTemplate.addParameter(new Parameter("match","true"));
-        
+        svcTemplate.addParameter(new Parameter("retry", "2"));
+        svcTemplate.addParameter(new Parameter("oid", ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.19"));
+        svcTemplate.addParameter(new Parameter("operator", "="));
+        svcTemplate.addParameter(new Parameter("operand", "1"));
+        svcTemplate.addParameter(new Parameter("match", "true"));
+
         Service svc = new Service();
         svc.setName("IsAPAdoptedOnController");
         svc.setTemplateName("IsAPAdoptedOnController-Template");
         svc.setStatus("on");
-        svc.addParameter(new Parameter("retry","3"));
-        
+        svc.addParameter(new Parameter("retry", "3"));
+
         Package pkg = new Package();
         pkg.setName("default");
         pkg.setFilter("IPADDR != '0.0.0.0'");
         pkg.addSpecific("172.23.1.1");
-        pkg.addIncludeRange(new IpRange("192.168.0.0","192.168.255.255"));
-        pkg.addExcludeRange(new IpRange("192.168.1.0","192.168.1.255"));
+        pkg.addIncludeRange(new IpRange("192.168.0.0", "192.168.255.255"));
+        pkg.addExcludeRange(new IpRange("192.168.1.0", "192.168.1.255"));
         pkg.setService(svc);
-        
+
         Monitor monitor = new Monitor();
         monitor.setService("IsAPAdoptedOnController");
         monitor.setClassName("org.opennms.netmgt.accesspointmonitor.poller.InstanceStrategy");
-        
+
         apmc = new AccessPointMonitorConfig();
         apmc.setThreads(30);
         apmc.setPackageScanInterval(1800000L);
@@ -123,12 +122,12 @@ public class AccessPointMonitorConfigTest {
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setNormalize(true);
     }
-    
+
     @After
     public void tearDown() throws Exception {
-        
+
     }
-    
+
     @Test
     public void generateSchema() throws Exception {
         File schemaFile = fa.expecting("access-point-monitor-configuration.xsd");
@@ -137,7 +136,7 @@ public class AccessPointMonitorConfigTest {
             fa.deleteExpected();
         }
     }
-    
+
     @Test
     public void generateXML() throws Exception {
         // Marshal the test object to an XML string
@@ -169,66 +168,65 @@ public class AccessPointMonitorConfigTest {
         DetailedDiff myDiff = getDiff(objectXML, exampleXML);
         assertEquals("Number of XMLUnit differences between the example XML and the mock object XML is 0", 0, myDiff.getAllDifferences().size());
     }
-    
+
     @Test
     public void readXML() throws Exception {
         // Retrieve the file we're parsing.
         File apmConfig = new File(ClassLoader.getSystemResource("access-point-monitor-configuration.xml").getFile());
         assertTrue("access-point-monitor-configuration.xml is readable", apmConfig.canRead());
-        
+
         InputStream reader = new FileInputStream(apmConfig);
-        
+
         um.setSchema(null);
-        AccessPointMonitorConfig exampleApmc = (AccessPointMonitorConfig)um.unmarshal(reader);
+        AccessPointMonitorConfig exampleApmc = (AccessPointMonitorConfig) um.unmarshal(reader);
 
         assertTrue("Compare Access Point Monitor Config objects.", apmc.equals(exampleApmc));
-        
+
         reader.close();
     }
-    
+
     @Test
     public void testServiceTemplate() throws Exception {
-    	// Get the service on the first package
-    	Service svc = apmc.getPackages().get(0).getService();
-    	svc = apmc.getPackages().get(0).getEffectiveService();
-    	
-    	assertEquals("Service should inherit service template parameters", 1, ParameterMap.getKeyedInteger(svc.getParameterMap(), "operand", 0));  
-    	
-    	assertEquals("Service parameters should override template parameters", 3, ParameterMap.getKeyedInteger(svc.getParameterMap(), "retry", 0)); 
-    	
-    	apmc.setServiceTemplates(null);
-    	svc = apmc.getPackages().get(0).getEffectiveService();
-    	
-    	assertEquals("Services should reflect template changes", 0, ParameterMap.getKeyedInteger(svc.getParameterMap(), "operand", 0));
+        // Get the service on the first package
+        Service svc = apmc.getPackages().get(0).getService();
+        svc = apmc.getPackages().get(0).getEffectiveService();
+
+        assertEquals("Service should inherit service template parameters", 1, ParameterMap.getKeyedInteger(svc.getParameterMap(), "operand", 0));
+
+        assertEquals("Service parameters should override template parameters", 3, ParameterMap.getKeyedInteger(svc.getParameterMap(), "retry", 0));
+
+        apmc.setServiceTemplates(null);
+        svc = apmc.getPackages().get(0).getEffectiveService();
+
+        assertEquals("Services should reflect template changes", 0, ParameterMap.getKeyedInteger(svc.getParameterMap(), "operand", 0));
     }
-    
+
     @Test
     public void testDefaultPassiveServiceName() throws Exception {
-    	// Get the service on the first package
-    	Service svc = apmc.getPackages().get(0).getEffectiveService();
-    	
-    	assertEquals("Passive service name should default to the service name if not set",svc.getName(),svc.getPassiveServiceName());
-    	
-    	String passiveServiceName = "Not" + svc.getName();
-    	svc.setPassiveServiceName(passiveServiceName);
-    	
-    	assertEquals("Passive service name should not return the service name if set",passiveServiceName,svc.getPassiveServiceName());
+        // Get the service on the first package
+        Service svc = apmc.getPackages().get(0).getEffectiveService();
+
+        assertEquals("Passive service name should default to the service name if not set", svc.getName(), svc.getPassiveServiceName());
+
+        String passiveServiceName = "Not" + svc.getName();
+        svc.setPassiveServiceName(passiveServiceName);
+
+        assertEquals("Passive service name should not return the service name if set", passiveServiceName, svc.getPassiveServiceName());
     }
-    
+
     @Test
     public void testSpecialValuesInFilter() throws Exception {
         Package pkg = new Package();
         pkg.setName("default");
         pkg.setFilter("pollerCategory == '%packageName%'");
         assertEquals("The package name should be replaced in the filter.", "pollerCategory == 'default'", pkg.getEffectiveFilter());
-        
+
         pkg.setFilter("packageName");
         assertEquals("The package name should not be replaced in the filter.", "packageName", pkg.getEffectiveFilter());
     }
-    
+
     @SuppressWarnings("unchecked")
-    private DetailedDiff getDiff(StringWriter objectXML,
-            StringBuffer exampleXML) throws SAXException, IOException {
+    private DetailedDiff getDiff(StringWriter objectXML, StringBuffer exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {

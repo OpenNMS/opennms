@@ -40,13 +40,13 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
 public class AccessPointMonitorConfigDaoJaxbTest extends TestCase {
-    
+
     public void testAfterPropertiesSetWithNoConfigSet() {
-    	AccessPointMonitorConfigDaoJaxb dao = new AccessPointMonitorConfigDaoJaxb();
-        
+        AccessPointMonitorConfigDaoJaxb dao = new AccessPointMonitorConfigDaoJaxb();
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("property configResource must be set and be non-null"));
-        
+
         try {
             dao.afterPropertiesSet();
         } catch (Throwable t) {
@@ -54,15 +54,15 @@ public class AccessPointMonitorConfigDaoJaxbTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
     public void testAfterPropertiesSetWithBogusFileResource() throws Exception {
         Resource resource = new FileSystemResource("/bogus-file");
         AccessPointMonitorConfigDaoJaxb dao = new AccessPointMonitorConfigDaoJaxb();
         dao.setConfigResource(resource);
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new MarshallingResourceFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
-        
+
         try {
             dao.afterPropertiesSet();
         } catch (Throwable t) {
@@ -70,14 +70,14 @@ public class AccessPointMonitorConfigDaoJaxbTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
     public void testAfterPropertiesSetWithGoodConfigFile() throws Exception {
-    	AccessPointMonitorConfigDaoJaxb dao = new AccessPointMonitorConfigDaoJaxb();
-        
+        AccessPointMonitorConfigDaoJaxb dao = new AccessPointMonitorConfigDaoJaxb();
+
         InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("access-point-monitor-configuration.xml");
         dao.setConfigResource(new InputStreamResource(in));
         dao.afterPropertiesSet();
-        
+
         assertNotNull("access point monitor config should not be null", dao.getConfig());
     }
 

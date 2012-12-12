@@ -37,36 +37,45 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * <p>OnmsAccessPointCollection class.</p>
- *
+ * <p>
+ * OnmsAccessPointCollection class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 @XmlRootElement(name = "accesspoints")
 public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
 
     private static final long serialVersionUID = 4989886422555152257L;
+
     private int m_totalCount;
 
     /**
-     * <p>Constructor for OnmsAccessPointCollection.</p>
+     * <p>
+     * Constructor for OnmsAccessPointCollection.
+     * </p>
      */
     public OnmsAccessPointCollection() {
         super();
     }
 
     /**
-     * <p>Constructor for OnmsAccessPointCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
+     * <p>
+     * Constructor for OnmsAccessPointCollection.
+     * </p>
+     * 
+     * @param c
+     *            a {@link java.util.Collection} object.
      */
     public OnmsAccessPointCollection(Collection<? extends OnmsAccessPoint> c) {
         super(c);
     }
 
     /**
-     * <p>getAccessPoints</p>
-     *
+     * <p>
+     * getAccessPoints
+     * </p>
+     * 
      * @return a {@link java.util.List} object.
      */
     @XmlElement(name = "accesspoint")
@@ -75,9 +84,12 @@ public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
     }
 
     /**
-     * <p>setAccessPoints</p>
-     *
-     * @param accesspoints a {@link java.util.List} object.
+     * <p>
+     * setAccessPoints
+     * </p>
+     * 
+     * @param accesspoints
+     *            a {@link java.util.List} object.
      */
     public void setAccessPoints(List<OnmsAccessPoint> accesspoints) {
         clear();
@@ -85,29 +97,36 @@ public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
     }
 
     /**
-     * <p>getCount</p>
-     *
+     * <p>
+     * getCount
+     * </p>
+     * 
      * @return a {@link java.lang.Integer} object.
      */
-    @XmlAttribute(name="count")
+    @XmlAttribute(name = "count")
     public Integer getCount() {
         return this.size();
     }
-    
+
     /**
-     * <p>getTotalCount</p>
-     *
+     * <p>
+     * getTotalCount
+     * </p>
+     * 
      * @return a int.
      */
-    @XmlAttribute(name="totalCount")
+    @XmlAttribute(name = "totalCount")
     public int getTotalCount() {
         return m_totalCount;
     }
 
     /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
+     * <p>
+     * setTotalCount
+     * </p>
+     * 
+     * @param count
+     *            a int.
      */
     public void setTotalCount(int count) {
         m_totalCount = count;

@@ -27,23 +27,24 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.accesspointmonitor.poller;
+
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 import junit.framework.TestCase;
 
 public class InstanceStrategyTest extends TestCase {
-    
+
     public void testPhysdAddrToAndFromInstance() {
-    	SnmpInstId instanceId = new SnmpInstId(".0.0.0.0.0.0");
-    	assertEquals("00:00:00:00:00:00", InstanceStrategy.getPhysAddrFromInstance(instanceId));
-    	assertEquals(instanceId, InstanceStrategy.getInstanceFromPhysAddr("00:00:00:00:00:00"));
-    	
-    	instanceId = new SnmpInstId(".11.22.33.44.255.66");
-    	assertEquals("0B:16:21:2C:FF:42", InstanceStrategy.getPhysAddrFromInstance(instanceId));
-    	assertEquals(instanceId, InstanceStrategy.getInstanceFromPhysAddr("0B:16:21:2C:FF:42"));
-    	
-    	instanceId = new SnmpInstId(".11.22.33.44.55");
-    	assertEquals(null, InstanceStrategy.getPhysAddrFromInstance(instanceId));
-    	assertEquals(null, InstanceStrategy.getInstanceFromPhysAddr("0B:16:21:2C:37"));
+        SnmpInstId instanceId = new SnmpInstId(".0.0.0.0.0.0");
+        assertEquals("00:00:00:00:00:00", InstanceStrategy.getPhysAddrFromInstance(instanceId));
+        assertEquals(instanceId, InstanceStrategy.getInstanceFromPhysAddr("00:00:00:00:00:00"));
+
+        instanceId = new SnmpInstId(".11.22.33.44.255.66");
+        assertEquals("0B:16:21:2C:FF:42", InstanceStrategy.getPhysAddrFromInstance(instanceId));
+        assertEquals(instanceId, InstanceStrategy.getInstanceFromPhysAddr("0B:16:21:2C:FF:42"));
+
+        instanceId = new SnmpInstId(".11.22.33.44.55");
+        assertEquals(null, InstanceStrategy.getPhysAddrFromInstance(instanceId));
+        assertEquals(null, InstanceStrategy.getInstanceFromPhysAddr("0B:16:21:2C:37"));
     }
 }

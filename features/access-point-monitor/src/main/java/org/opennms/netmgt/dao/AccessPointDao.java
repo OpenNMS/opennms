@@ -34,35 +34,46 @@ import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsAccessPointCollection;
 
 /**
- * <p>AccessPointDao interface.</p>
- *
+ * <p>
+ * AccessPointDao interface.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public interface AccessPointDao extends OnmsDao<OnmsAccessPoint, Integer> {
 
     /**
-     * <p>findByPhysAddr</p>
-     *
-     * @param physaddr a {@link java.lang.String} object.
+     * <p>
+     * findByPhysAddr
+     * </p>
+     * 
+     * @param physaddr
+     *            a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsAccessPoint} object.
      */
-	public OnmsAccessPoint findByPhysAddr(final String physaddr);
-	
+    public OnmsAccessPoint findByPhysAddr(final String physaddr);
+
     /**
-     * <p>findByPackage</p>
-     *
-     * @param pkg a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsAccessPointCollection} object.
+     * <p>
+     * findByPackage
+     * </p>
+     * 
+     * @param pkg
+     *            a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAccessPointCollection}
+     *         object.
      */
-	public OnmsAccessPointCollection findByPackage(final String pkg);
-	
+    public OnmsAccessPointCollection findByPackage(final String pkg);
+
     /**
-     * <p>findDistinctPackagesLike</p>
-     *
-     * @param pkg a {@link java.lang.String} object.
+     * <p>
+     * findDistinctPackagesLike
+     * </p>
+     * 
+     * @param pkg
+     *            a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-	public List<String> findDistinctPackagesLike(final String pkg);
-	
+    public List<String> findDistinctPackagesLike(final String pkg);
+
 }

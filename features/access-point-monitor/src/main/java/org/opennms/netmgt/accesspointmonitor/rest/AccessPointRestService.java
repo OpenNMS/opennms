@@ -53,14 +53,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 /**
- *
- *<p>REST service to the OpenNMS {@link OnmsAccessPoint} data.</p>
- *<pre>
- *curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/accesspoints
- *</pre>
- *
+ * <p>
+ * REST service to the OpenNMS {@link OnmsAccessPoint} data.
+ * </p>
+ * 
+ * <pre>
+ * curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/accesspoints
+ * </pre>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 @Component
 @PerRequest
@@ -70,27 +71,31 @@ public class AccessPointRestService {
 
     @Autowired
     private AccessPointDao m_accessPointDao;
-    
-    @Context 
+
+    @Context
     private UriInfo m_uriInfo;
 
     @Context
     private SecurityContext m_securityContext;
-    
+
     @Context
     private ServletContext m_servletContext;
-    
+
     /**
-     * <p>getAccessPoint</p>
-     *
-     * @param accessPointId a {@link java.lang.String} object.
+     * <p>
+     * getAccessPoint
+     * </p>
+     * 
+     * @param accessPointId
+     *            a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsAccessPoint} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("{accessPointId}")
     @Transactional
-    public OnmsAccessPoint getOutage(@PathParam("accessPointId") final String accessPointId) {
+    public OnmsAccessPoint getOutage(@PathParam("accessPointId")
+    final String accessPointId) {
         readLock();
         try {
             return m_accessPointDao.get(Integer.valueOf(accessPointId));
@@ -98,10 +103,12 @@ public class AccessPointRestService {
             readUnlock();
         }
     }
-    
+
     /**
-     * <p>getCount</p>
-     *
+     * <p>
+     * getCount
+     * </p>
+     * 
      * @return a {@link java.lang.String} object.
      */
     @GET
@@ -118,57 +125,62 @@ public class AccessPointRestService {
     }
 
     /**
-     * <p>getOutages</p>
-     *
+     * <p>
+     * getOutages
+     * </p>
+     * 
      * @return a {@link org.opennms.netmgt.model.OnmsOutageCollection} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public OnmsAccessPointCollection getAccessPoints() {
         readLock();
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsAccessPoint.class);
-            // TODO: Fix query filters - these don't seem to work outside of the opennms-webapp project
-            //applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-    
+            // TODO: Fix query filters - these don't seem to work outside of
+            // the opennms-webapp project
+            // applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+
             final OnmsAccessPointCollection coll = new OnmsAccessPointCollection(m_accessPointDao.findAll());
 
-            //For getting totalCount
+            // For getting totalCount
             coll.setTotalCount(m_accessPointDao.countMatching(builder.count().toCriteria()));
-    
+
             return coll;
         } finally {
             readUnlock();
         }
     }
-    
+
     private final ReentrantReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+
     private final Lock m_readLock = m_globalLock.readLock();
+
     private final Lock m_writeLock = m_globalLock.writeLock();
-    
-	protected void readLock() {
-	    m_readLock.lock();
-	}
-	
-	protected void readUnlock() {
-	    if (m_globalLock.getReadHoldCount() > 0) {
-	        m_readLock.unlock();
-	    }
-	}
 
-	protected void writeLock() {
-	    if (m_globalLock.getWriteHoldCount() == 0) {
-	        while (m_globalLock.getReadHoldCount() > 0) {
-	            m_readLock.unlock();
-	        }
-	        m_writeLock.lock();
-	    }
-	}
+    protected void readLock() {
+        m_readLock.lock();
+    }
 
-	protected void writeUnlock() {
-	    if (m_globalLock.getWriteHoldCount() > 0) {
-	        m_writeLock.unlock();
-	    }
-	}
+    protected void readUnlock() {
+        if (m_globalLock.getReadHoldCount() > 0) {
+            m_readLock.unlock();
+        }
+    }
+
+    protected void writeLock() {
+        if (m_globalLock.getWriteHoldCount() == 0) {
+            while (m_globalLock.getReadHoldCount() > 0) {
+                m_readLock.unlock();
+            }
+            m_writeLock.lock();
+        }
+    }
+
+    protected void writeUnlock() {
+        if (m_globalLock.getWriteHoldCount() > 0) {
+            m_writeLock.unlock();
+        }
+    }
 }

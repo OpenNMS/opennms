@@ -37,89 +37,90 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 /**
- * <p>Parameter class.</p>
- *
+ * <p>
+ * Parameter class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 public class Parameter implements Serializable, Comparable<Parameter>, Cloneable {
     private static final long serialVersionUID = -9083835214208208854L;
-    
-    @XmlAttribute(name="key")
-    private String m_key;
-    
-    @XmlAttribute(name="value")
-    private String m_value;
-    
-    public Parameter() {
-        
-    }
-    
-    public Parameter(Parameter copy) {
-    	if(copy.m_key!=null) {
-    		m_key = new String(copy.m_key);
-    	}
-    	if(copy.m_value!=null) {
-    		m_value = new String(copy.m_value);
-    	}
-    }
-    
-    public Parameter(String key, String value) {
-    	m_key = key;
-    	m_value = value;
-	}
 
-	@XmlTransient
+    @XmlAttribute(name = "key")
+    private String m_key;
+
+    @XmlAttribute(name = "value")
+    private String m_value;
+
+    public Parameter() {
+
+    }
+
+    public Parameter(Parameter copy) {
+        if (copy.m_key != null) {
+            m_key = new String(copy.m_key);
+        }
+        if (copy.m_value != null) {
+            m_value = new String(copy.m_value);
+        }
+    }
+
+    public Parameter(String key, String value) {
+        m_key = key;
+        m_value = value;
+    }
+
+    @XmlTransient
     public String getKey() {
         return m_key;
     }
 
     public void setKey(String key) {
-    	m_key = key;
+        m_key = key;
     }
-    
+
     @XmlTransient
     public String getValue() {
         return m_value;
     }
 
     public void setValue(String value) {
-    	m_value = value;
+        m_value = value;
     }
-    
+
     public int compareTo(Parameter obj) {
         return new CompareToBuilder()
             .append(getKey(), obj.getKey())
             .append(getValue(), obj.getValue())
             .toComparison();
     }
-    
+
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_key == null) ? 0 : m_key.hashCode());
-		result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
-		return result;
-	}
-    
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_key == null) ? 0 : m_key.hashCode());
+        result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
+        return result;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Parameter) {
-        	Parameter other = (Parameter) obj;
+            Parameter other = (Parameter) obj;
             return new EqualsBuilder()
-	            .append(getKey(), other.getKey())
-	            .append(getValue(), other.getValue())
+                .append(getKey(), other.getKey())
+                .append(getValue(), other.getValue())
                 .isEquals();
         }
         return false;
     }
-    
+
     @Override
     public Object clone() throws CloneNotSupportedException {
-		Parameter cloned = new Parameter();
-		cloned.m_key = m_key;
-		cloned.m_value = m_value;
-		return cloned;
+        Parameter cloned = new Parameter();
+        cloned.m_key = m_key;
+        cloned.m_value = m_value;
+        return cloned;
     }
 }

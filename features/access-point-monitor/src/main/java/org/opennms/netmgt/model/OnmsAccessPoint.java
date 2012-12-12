@@ -46,157 +46,186 @@ import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 /**
- * <p>OnmsAccessPoint class.</p>
- *
+ * <p>
+ * OnmsAccessPoint class.
+ * </p>
+ * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- * @version $Id: $
  */
 @XmlRootElement(name = "accesspoint")
 @Entity
 @Table(name = "accesspoints")
 public class OnmsAccessPoint implements Serializable, Comparable<OnmsAccessPoint> {
-    
     private static final long serialVersionUID = -52686562234234234L;
 
     private String m_physAddr;
-
     private Integer m_nodeId;
-
     private String m_pollingPackage;
-		
-	private AccessPointStatus m_status = AccessPointStatus.UNKNOWN;
-
-	private InetAddress m_controllerIpAddr;
+    private AccessPointStatus m_status = AccessPointStatus.UNKNOWN;
+    private InetAddress m_controllerIpAddr;
 
     /**
-     * <p>Constructor for OnmsAccessPoint.</p>
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param physAddr a {@link java.lang.String} object.
-     * @param pollingPackage a {@link java.lang.String} object.
+     * <p>
+     * Constructor for OnmsAccessPoint.
+     * </p>
+     * 
+     * @param nodeId
+     *            a {@link java.lang.Integer} object.
+     * @param physAddr
+     *            a {@link java.lang.String} object.
+     * @param pollingPackage
+     *            a {@link java.lang.String} object.
      */
     public OnmsAccessPoint(String physAddr, Integer nodeId, String pollingPackage) {
-    	m_physAddr = physAddr;
-    	m_nodeId = nodeId;
-    	m_pollingPackage = pollingPackage;
+        m_physAddr = physAddr;
+        m_nodeId = nodeId;
+        m_pollingPackage = pollingPackage;
     }
-    
+
     /**
-     * <p>Default constructor for OnmsAccessPoint.</p>
+     * <p>
+     * Default constructor for OnmsAccessPoint.
+     * </p>
      */
     public OnmsAccessPoint() {
 
     }
-    
+
     /**
-     * <p>getPhysAddr</p>
-     *
+     * <p>
+     * getPhysAddr
+     * </p>
+     * 
      * @return a {@link java.lang.String} object.
      */
     @Id
-    @Column(name = "physAddr", length = 32, nullable=false)
-    @XmlElement(name="physAddr")
+    @Column(name = "physAddr", length = 32, nullable = false)
+    @XmlElement(name = "physAddr")
     public String getPhysAddr() {
         return m_physAddr;
     }
 
     /**
-     * <p>setPhysAddr</p>
-     *
-     * @param physaddr a {@link java.lang.String} object.
+     * <p>
+     * setPhysAddr
+     * </p>
+     * 
+     * @param physaddr
+     *            a {@link java.lang.String} object.
      */
     public void setPhysAddr(String physaddr) {
         m_physAddr = physaddr;
     }
 
     /**
-     * <p>getNodeId</p>
-     *
+     * <p>
+     * getNodeId
+     * </p>
+     * 
      * @return a {@link java.lang.Integer} object.
      */
-    @Column(name="nodeId", nullable=false)
-    @XmlAttribute(name="nodeId")
+    @Column(name = "nodeId", nullable = false)
+    @XmlAttribute(name = "nodeId")
     public Integer getNodeId() {
         return m_nodeId;
     }
 
     /**
-     * <p>setNodeId</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
+     * <p>
+     * setNodeId
+     * </p>
+     * 
+     * @param nodeId
+     *            a {@link java.lang.Integer} object.
      */
     public void setNodeId(Integer nodeId) {
-    	m_nodeId = nodeId;
+        m_nodeId = nodeId;
     }
 
     /**
-     * <p>getPollingPackage</p>
-     *
+     * <p>
+     * getPollingPackage
+     * </p>
+     * 
      * @return a {@link java.lang.String} object.
      */
     @Column(name = "pollingPackage", length = 256)
-    @XmlElement(name="pollingPackage")
+    @XmlElement(name = "pollingPackage")
     public String getPollingPackage() {
         return m_pollingPackage;
     }
 
     /**
-     * <p>setPollingPackage</p>
-     *
-     * @param pollingpackage a {@link java.lang.String} object.
+     * <p>
+     * setPollingPackage
+     * </p>
+     * 
+     * @param pollingpackage
+     *            a {@link java.lang.String} object.
      */
     public void setPollingPackage(String pollingpackage) {
-    	m_pollingPackage = pollingpackage;
+        m_pollingPackage = pollingpackage;
     }
 
-    
     /**
-     * <p>getStatus</p>
-     *
+     * <p>
+     * getStatus
+     * </p>
+     * 
      * @return a {@link org.opennms.netmgt.model.AccessPointStatus} object.
      */
-    @Column(name="status", nullable=false)
+    @Column(name = "status", nullable = false)
     // @Enumerated(EnumType.ORDINAL)
-    @Type(type="org.opennms.netmgt.model.AccessPointStatusUserType")
+    @Type(type = "org.opennms.netmgt.model.AccessPointStatusUserType")
     @XmlTransient
     public AccessPointStatus getStatus() {
         return this.m_status;
     }
 
     /**
-     * <p>setStatus</p>
-     *
-     * @param severity a {@link org.opennms.netmgt.model.AccessPointStatus} object.
+     * <p>
+     * setStatus
+     * </p>
+     * 
+     * @param severity
+     *            a {@link org.opennms.netmgt.model.AccessPointStatus} object.
      */
     public void setStatus(AccessPointStatus status) {
         m_status = status;
     }
-    
-    
+
     /**
-     * <p>getControllerIpAddress</p>
-     *
+     * <p>
+     * getControllerIpAddress
+     * </p>
+     * 
      * @return a {@link java.net.InetAddress} object.
      */
-    @Column(name="controllerIpAddr")
-    @XmlElement(name="controllerIpAddress")
-    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @Column(name = "controllerIpAddr")
+    @XmlElement(name = "controllerIpAddress")
+    @Type(type = "org.opennms.netmgt.model.InetAddressUserType")
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getControllerIpAddress() {
         return m_controllerIpAddr;
     }
 
     /**
-     * <p>setControllerIpAddress</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
+     * <p>
+     * setControllerIpAddress
+     * </p>
+     * 
+     * @param ipaddr
+     *            a {@link java.lang.String} object.
      */
     public void setControllerIpAddress(InetAddress ipaddr) {
-    	m_controllerIpAddr = ipaddr;
+        m_controllerIpAddr = ipaddr;
     }
 
     /**
-     * <p>toString</p>
-     *
+     * <p>
+     * toString
+     * </p>
+     * 
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
@@ -209,42 +238,43 @@ public class OnmsAccessPoint implements Serializable, Comparable<OnmsAccessPoint
     }
 
     /**
-     * <p>compareTo</p>
-     *
+     * <p>
+     * compareTo
+     * </p>
+     * 
      * @return a {@link java.lang.int} object.
      */
-	public int compareTo(OnmsAccessPoint o) {
-		return m_physAddr.compareTo(o.m_physAddr);
-	}
-    
-    @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((m_physAddr == null) ? 0 : m_physAddr.hashCode());
-		return result;
-	}
+    public int compareTo(OnmsAccessPoint o) {
+        return m_physAddr.compareTo(o.m_physAddr);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof OnmsAccessPoint)) {
-			return false;
-		}
-		OnmsAccessPoint other = (OnmsAccessPoint) obj;
-		if (m_physAddr == null) {
-			if (other.m_physAddr != null) {
-				return false;
-			}
-		} else if (!m_physAddr.equalsIgnoreCase(other.m_physAddr)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_physAddr == null) ? 0 : m_physAddr.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsAccessPoint)) {
+            return false;
+        }
+        OnmsAccessPoint other = (OnmsAccessPoint) obj;
+        if (m_physAddr == null) {
+            if (other.m_physAddr != null) {
+                return false;
+            }
+        } else if (!m_physAddr.equalsIgnoreCase(other.m_physAddr)) {
+            return false;
+        }
+        return true;
+    }
 }
