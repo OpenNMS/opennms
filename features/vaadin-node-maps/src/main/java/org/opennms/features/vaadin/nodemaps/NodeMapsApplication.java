@@ -40,8 +40,8 @@ import javax.xml.xpath.XPathFactory;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-
 import org.vaadin.vol.GoogleStreetMapLayer;
 import org.vaadin.vol.OpenLayersMap;
 import org.vaadin.vol.PointVector;
@@ -52,9 +52,8 @@ import org.vaadin.vol.Style;
 import org.vaadin.vol.StyleMap;
 import org.vaadin.vol.VectorLayer;
 import org.vaadin.vol.VectorLayer.SelectionMode;
-import org.vaadin.vol.VectorLayer.VectorSelectedListener;
 import org.vaadin.vol.VectorLayer.VectorSelectedEvent;
-
+import org.vaadin.vol.VectorLayer.VectorSelectedListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -293,14 +292,22 @@ public class NodeMapsApplication extends Application {
      * @param node the OpenNMS Node
      * @return the node address
      */
-    private String getNodeAddress(OnmsNode node) {
-        if (node == null || node.getAssetRecord() == null)
-            return null;
-        StringBuffer sb = new StringBuffer(node.getAssetRecord().getAddress1());
-        sb.append(" ").append(node.getAssetRecord().getAddress2());
-        sb.append(", ").append(node.getAssetRecord().getCity());
-        sb.append(", ").append(node.getAssetRecord().getState());
-        sb.append(", ").append(node.getAssetRecord().getZip());
+    private String getNodeAddress(final OnmsNode node) {
+        if (node == null || node.getAssetRecord() == null) return null;
+        final OnmsAssetRecord assetRecord = node.getAssetRecord();
+
+        final StringBuffer sb = new StringBuffer();
+
+        if (assetRecord.getAddress1() != null) {
+            sb.append(assetRecord.getAddress1());
+            if (assetRecord.getAddress2() != null) {
+                sb.append(" ").append(assetRecord.getAddress2());
+            }
+        }
+
+        if (sb.length() > 0 && assetRecord.getCity() != null) sb.append(", ").append(assetRecord.getCity());
+        if (sb.length() > 0 && assetRecord.getState() != null) sb.append(", ").append(assetRecord.getState());
+        if (sb.length() > 0 && assetRecord.getZip() != null) sb.append(" ").append(assetRecord.getZip());
         return sb.toString();
     }
 
