@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
@@ -125,7 +125,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 				Vertex grandParent = graphContainer.getParent(currentGroup);
 				Object grandParentId = getTopoItemId(graphContainer, grandParent);
 
-				GraphProvider topologyProvider = graphContainer.getBaseTopology();
+				EditableGraphProvider topologyProvider = graphContainer.getBaseTopology();
 
 				// Relink the child to the grandparent group (or null if it is null)
 				topologyProvider.setParent(childId, grandParentId);

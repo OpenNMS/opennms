@@ -31,11 +31,10 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +62,9 @@ public class AddVertexOperation implements Operation{
     }
 
     void connectNewVertex(String vertexId, String iconKey, GraphContainer graphContainer) {
-        Object vertId1 = graphContainer.getBaseTopology().addVertex(0, 0);
-        graphContainer.getBaseTopology().setParent(vertId1, null);
+        Vertex vertId1 = graphContainer.getBaseTopology().addVertex(0, 0);
+        // Make the new vertex a root node
+        vertId1.setParent(null);
         graphContainer.getBaseTopology().connectVertices(vertexId, vertId1);
         
     }
@@ -82,8 +82,8 @@ public class AddVertexOperation implements Operation{
             	connectNewVertex(Constants.CENTER_VERTEX_ID, Constants.SERVER_ICON_KEY, operationContext.getGraphContainer());
             }
             else {
-                Object vertId = operationContext.getGraphContainer().getBaseTopology().addVertex(250, 250);
-                operationContext.getGraphContainer().getBaseTopology().setParent(vertId, null);
+                Vertex vertId = operationContext.getGraphContainer().getBaseTopology().addVertex(250, 250);
+                vertId.setParent(null);
                 
             }
         } else {

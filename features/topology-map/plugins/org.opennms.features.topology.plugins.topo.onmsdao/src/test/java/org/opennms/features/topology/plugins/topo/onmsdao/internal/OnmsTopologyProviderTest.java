@@ -35,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
@@ -108,7 +109,7 @@ public class OnmsTopologyProviderTest {
         }
 
 	@Override
-	public GraphProvider getBaseTopology() {
+	public EditableGraphProvider getBaseTopology() {
 		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 	}
 

@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.SimpleVertex;
 import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.dao.OnmsMapElementDao;
@@ -47,7 +48,6 @@ import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
@@ -130,7 +130,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     @Override
     public void removeVertex(Object vertexId) {
         
-        SimpleVertex vertex = getVertex(vertexId, false);
+        Vertex vertex = getVertex(vertexId, false);
         if (vertex == null) return;
         
         m_vertexContainer.removeItem(vertexId);
@@ -142,7 +142,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         
     }
 
-    private SimpleVertex getRequiredVertex(Object vertexId) {
+    private Vertex getRequiredVertex(Object vertexId) {
         return getVertex(vertexId, true);
     }
 
@@ -198,7 +198,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
                 id = ((SimpleGroup)vertex).getMapid();
                 type=OnmsMapElement.MAP_TYPE;
             }
-            SimpleGroup parent = vertex.getParent();
+            VertexRef parent = vertex.getParent();
             if (parent == null) {
                 mapid = rootMapid;
             } else {
@@ -305,7 +305,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     }
 
     @Override
-    public void setParent(Object vertexId, Object parentId) {
+    public void setParent(VertexRef vertexId, VertexRef parentId) {
         m_vertexContainer.setParent(vertexId, parentId);
     }
 

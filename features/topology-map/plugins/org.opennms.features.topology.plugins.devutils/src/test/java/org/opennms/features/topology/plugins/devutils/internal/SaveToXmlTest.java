@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.devutils.internal;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
@@ -107,7 +108,7 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public GraphProvider getBaseTopology() {
+					public EditableGraphProvider getBaseTopology() {
 						throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 					}
 

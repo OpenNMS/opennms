@@ -86,7 +86,7 @@ public class SimpleGraphContainerTest {
     public void testGroupingVertices() {
         GraphProvider topologyProvider = topoProvider();
         
-        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "groupIcon.jpg");
+        Vertex groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "groupIcon.jpg");
         topologyProvider.setParent("v0", groupId);
         topologyProvider.setParent("v1", groupId);
         
@@ -94,7 +94,7 @@ public class SimpleGraphContainerTest {
         graphContainer.setLayoutAlgorithm(new SimpleLayoutAlgorithm());
         graphContainer.setSemanticZoomLevel(0);
         
-        Collection<Object> gcIds = graphContainer.getVertexIds();
+        Collection<? extends Vertex> gcIds = graphContainer.getBaseTopology().getVertices();
         assertEquals(3, gcIds.size());
         
         for(Object gcId : gcIds) {
@@ -135,7 +135,7 @@ public class SimpleGraphContainerTest {
     
     @Test
     public void testUpdateTopologyProviderUpdatesGraphContainer() {
-        TestTopologyProvider topologyProvider = topoProvider();
+        GraphProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
@@ -173,7 +173,7 @@ public class SimpleGraphContainerTest {
     public void testGraphContainerSendUpdateEvents() {
         final AtomicInteger eventsReceived = new AtomicInteger(0);
         
-        TestTopologyProvider topologyProvider = topoProvider();
+        GraphProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
@@ -233,7 +233,7 @@ public class SimpleGraphContainerTest {
     public void testGraphContainerUpdatesGraph() {
         final AtomicInteger eventsReceived = new AtomicInteger(0);
         
-        TestTopologyProvider topologyProvider = topoProvider();
+        GraphProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
@@ -307,7 +307,7 @@ public class SimpleGraphContainerTest {
     
     @Test
     public void testUpdateTopologyProviderUpdatesGraph() {
-        TestTopologyProvider topologyProvider = topoProvider();
+        GraphProvider topologyProvider = topoProvider();
         
         //Setup the graphcontainer
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
@@ -339,7 +339,7 @@ public class SimpleGraphContainerTest {
     
     @Test
     public void testGraphContainerElementIds() {
-        TestTopologyProvider topologyProvider = topoProvider();
+        GraphProvider topologyProvider = topoProvider();
 
         Object toprEdgeId = topologyProvider.getEdgeIds().iterator().next();
         

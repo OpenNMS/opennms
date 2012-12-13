@@ -38,13 +38,11 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleVertexContainer extends VertexContainer {
 
+	private static final long serialVersionUID = -4778160802984543398L;
+
 	public SimpleVertexContainer() {
 		super();
 		setBeanIdProperty("id");
-	}
-	
-	public void fireLayoutChange() {
-		fireItemSetChange();
 	}
 
 	@Override
@@ -55,44 +53,36 @@ public class SimpleVertexContainer extends VertexContainer {
 	}
 
 	@Override
-	public Collection<VertexRef> getChildren(VertexRef itemId) {
-		if (!containsId(itemId)) return Collections.emptyList();
-		Vertex v = getItem(itemId).getBean();
-		if (v.isLeaf()) {
-			return Collections.emptyList();
+	public Collection<? extends VertexRef> getChildren(Object itemId) {
+		if (itemId instanceof VertexRef) {
+			if (!containsId(itemId)) return Collections.emptyList();
+			Vertex v = getItem(itemId).getBean();
+			if (v.isLeaf()) {
+				return Collections.emptyList();
+			} else {
+				return v.getMembers();
+			}
+		} else {
+			throw new IllegalArgumentException("Cannot find children on non-VertexRef type");
 		}
-		else {
-			SimpleGroup g = (SimpleGroup)v;
-			return g.getMembers();
+	}
+
+	@Override
+	public VertexRef getParent(Object itemId) {
+		if (itemId instanceof VertexRef) {
+			if (!containsId(itemId)) return null;
+
+			VertexRef g = getItem(itemId).getBean().getParent();
+			return g;
+		} else {
+			throw new IllegalArgumentException("Cannot find children on non-VertexRef type");
 		}
-	}
-
-	@Override
-	public VertexRef getParent(VertexRef itemId) {
-		if (!containsId(itemId)) return null;
-		
-		SimpleGroup g = getItem(itemId).getBean().getParent();
-		return g == null ? null : g;
-	}
-
-	@Override
-	public boolean hasChildren(VertexRef itemId) {
-		if (!containsId(itemId)) return false;
-		Vertex v = getItem(itemId).getBean();
-		return !v.isLeaf();
-	}
-
-	@Override
-	public boolean isRoot(VertexRef itemId) {
-		if (!containsId(itemId)) return false;
-		
-		return (getParent(itemId) == null);
 	}
 
 	@Override
 	public Collection<?> rootItemIds() {
 		List<Object> rootItemIds = new ArrayList<Object>();
-		
+
 		for(Object itemId : getItemIds()) {
 			if (getItem(itemId).getBean().getParent() == null) {
 				rootItemIds.add(itemId);
@@ -109,27 +99,25 @@ public class SimpleVertexContainer extends VertexContainer {
 	@Override
 	public boolean setParent(Object itemId, Object newParentId) {
 		if (!containsId(itemId)) return false;
-		
+
 		Vertex v  = getItem(itemId).getBean();
-		
+
 		if (newParentId == null) {
 			v.setParent(null);
 			fireItemSetChange();
 			return true;
 		}
-		
+
 		if (!containsId(newParentId)) return false;
-		
+
 		Vertex p = getItem(newParentId).getBean();
-		
+
 		if (p.isLeaf()) return false;
-		
-		SimpleGroup g = (SimpleGroup)p;
-		
-		v.setParent(g);
+
+		v.setParent(p);
 		fireItemSetChange();
 		return true;
-		
+
 	}
-	
+
 }

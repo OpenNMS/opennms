@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -46,7 +47,7 @@ import com.vaadin.data.util.BeanItem;
 
 public class TestTopologyProvider implements EditableGraphProvider {
 	private final String m_namespace;
-    private TestVertexContainer m_vertexContainer;
+    private SimpleVertexContainer m_vertexContainer;
     private BeanContainer<String, TestEdge> m_edgeContainer;
     private int m_vertexCounter = 0;
     private int m_edgeCounter = 0;
@@ -54,7 +55,7 @@ public class TestTopologyProvider implements EditableGraphProvider {
     
     public TestTopologyProvider(String namespace) {
     	m_namespace = namespace;
-        m_vertexContainer = new TestVertexContainer();
+        m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, TestEdge>(TestEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
         

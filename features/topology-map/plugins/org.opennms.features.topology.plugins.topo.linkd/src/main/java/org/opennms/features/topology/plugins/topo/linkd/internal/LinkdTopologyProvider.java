@@ -43,8 +43,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
@@ -148,7 +148,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         this.addNodeWithoutLink = addNodeWithoutLink;
     }
 
-    private final LinkdVertexContainer m_vertexContainer;
+    private final SimpleVertexContainer m_vertexContainer;
     private final BeanContainer<String, LinkdEdge> m_edgeContainer;
 
     private int m_groupCounter = 0;
@@ -168,7 +168,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
     }
     
     public LinkdTopologyProvider() {
-        m_vertexContainer = new LinkdVertexContainer();
+        m_vertexContainer = new SimpleVertexContainer();
         m_edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
         m_edgeContainer.setBeanIdProperty("id");
     }
@@ -346,9 +346,9 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
                 log("loadtopology: found vertex: " + vertex.getId());
                 if (vertex.isRoot()) {
                     if (!vertex.isLeaf())
-                        setParent(vertex.getId(), Constants.ROOT_GROUP_ID);
+                        setParent(vertex, null);
                 } else {
-                    setParent(vertex.getId(), vertex.getParent().getId());
+                    setParent(vertex, vertex.getParent());
                 }
             }
 

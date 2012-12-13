@@ -435,9 +435,9 @@ public class EasyMockDataPopulator {
     }
 
     public void check(LinkdTopologyProvider topologyProvider) {
-        Assert.assertTrue(topologyProvider.getVertexIds().size()==8);
+        Assert.assertTrue(topologyProvider.getVertices().size()==8);
         
-        Assert.assertTrue(topologyProvider.getEdgeIds().size()==8);
+        Assert.assertTrue(topologyProvider.getEdges().size()==8);
 
         Assert.assertTrue(topologyProvider.containsVertexId("1"));
         Assert.assertTrue(topologyProvider.containsVertexId("2"));

@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.api.HierarchicalBeanContainer;
-import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -22,55 +22,7 @@ import org.opennms.features.topology.app.internal.TestTopologyProvider;
 
 
 public class FilterableHeirarchicalContainerTest {
-    
-    private class DefaultTestVertexContainer extends VertexContainer implements VertexProvider {
 
-        public DefaultTestVertexContainer() {
-            super();
-        }
-
-        @Override
-        public Collection<?> getChildren(Object itemId) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Object getParent(Object itemId) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Collection<?> rootItemIds() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public boolean setParent(Object itemId, Object newParentId)
-                throws UnsupportedOperationException {
-            // TODO Auto-generated method stub
-            return false;
-        }
-
-        @Override
-        public boolean areChildrenAllowed(Object itemId) {
-            // TODO Auto-generated method stub
-            return false;
-        }
-
-        @Override
-        public boolean setChildrenAllowed(Object itemId,
-                boolean areChildrenAllowed)
-                throws UnsupportedOperationException {
-            // TODO Auto-generated method stub
-            return false;
-        }
-        
-    }
-    
-    
     private FilterableHierarchicalContainer m_container;
     
     HierarchicalBeanContainer<VertexRef, Vertex> m_beanContainer;
@@ -80,7 +32,7 @@ public class FilterableHeirarchicalContainerTest {
     @Before
     public void setUp() {
         m_topologyProvider = new TestTopologyProvider("test");
-        m_beanContainer = new DefaultTestVertexContainer();
+        m_beanContainer = new SimpleVertexContainer();
         m_beanContainer.setBeanIdProperty("id");
         m_beanContainer.addAll(m_vertexProvider.getVertices());
         

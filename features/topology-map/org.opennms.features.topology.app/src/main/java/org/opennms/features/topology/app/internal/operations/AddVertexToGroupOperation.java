@@ -56,7 +56,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-
 public class AddVertexToGroupOperation implements Constants, Operation {
 	
 	@Override
@@ -98,13 +97,10 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
 					Select select = new Select("Group");
-					for (String childId : groupIds) {
-						BeanItem<?> childVertex = graphContainer.getBaseTopology().getVertexItem(childId);
-						Property childLabelProperty = childVertex.getItemProperty("label");
-						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
-						log.debug("Adding child: {}, {}", childId, childLabel);
-						select.addItem(childId);
-						select.setItemCaption(childId, childLabel);
+					for (Vertex childId : vertexIds) {
+						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
+						select.addItem(childId.getId());
+						select.setItemCaption(childId.getId(), childId.getLabel());
 					}
 					select.setNewItemsAllowed(false);
 					select.setNullSelectionAllowed(false);
@@ -131,12 +127,12 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
 
 				// Link the selected vertex to the parent group
-				graphContainer.getBaseTopology().setParent(currentVertexId, parentId);
+				graphContainer.getBaseTopology().setParent(currentVertex, parentId);
 
 				// Save the topology
 				graphContainer.getBaseTopology().save(null);
 
-				graphContainer.getBaseTopology().redoLayout();
+				graphContainer.redoLayout();
 			}
 		};
 		// Buffer changes to the datasource

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
@@ -62,7 +63,6 @@ import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
-@Deprecated
 public class SimpleGraphContainer implements GraphContainer {
 
     private static final String LEAF = "leaf";
@@ -488,7 +488,7 @@ public class SimpleGraphContainer implements GraphContainer {
     
     private ElementHolder<GVertex> m_vertexHolder;
     private ElementHolder<GEdge> m_edgeHolder;
-    private GraphProvider m_graphProvider;
+    private EditableGraphProvider m_graphProvider;
     private GEdgeContainer m_edgeContainer;
     
     private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
@@ -588,7 +588,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	
 
 	@Override
-	public GraphProvider getBaseTopology() {
+	public EditableGraphProvider getBaseTopology() {
 		return m_graphProvider;
 	}
 
