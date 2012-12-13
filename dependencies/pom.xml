@@ -38,6 +38,7 @@
     <module>liquibase</module>
     <module>mina</module>
     <module>netty</module>
+    <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
     <!-- <module>rrd4j</module> -->

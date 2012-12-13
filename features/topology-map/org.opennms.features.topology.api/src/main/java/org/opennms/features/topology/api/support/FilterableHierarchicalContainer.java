@@ -49,7 +49,7 @@ import com.vaadin.data.util.HierarchicalContainer;
 @SuppressWarnings("serial")
 public class FilterableHierarchicalContainer extends HierarchicalContainer implements ItemSetChangeListener {
 
-    HierarchicalBeanContainer m_container;
+    HierarchicalBeanContainer<?,?> m_container;
     List<Object> m_filteredItems;
     private LinkedList<Object> m_filteredRoots = null;
     private HashMap<Object, LinkedList<Object>> m_filteredChildren = null;
@@ -58,7 +58,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
     private Set<Object> m_filterOverride = null;
     private final HashMap<Object, Object> m_parent = new HashMap<Object, Object>();
     
-   public FilterableHierarchicalContainer(HierarchicalBeanContainer container) {
+   public FilterableHierarchicalContainer(HierarchicalBeanContainer<?,?> container) {
         super();
         m_container = container;
         m_container.addListener(this);

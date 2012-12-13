@@ -125,11 +125,11 @@ public class IconRepositoryManager {
         
     }
 
-    public void updateIconConfig(Dictionary<Object, Object> properties) {
-        Enumeration<Object> keys = properties.keys();
+    public void updateIconConfig(Dictionary<String,?> properties) {
+        Enumeration<String> keys = properties.keys();
         
         while(keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
+            String key = keys.nextElement();
             String url = (String)properties.get(key);
             m_configRepo.addIconConfig(key, url);
         }

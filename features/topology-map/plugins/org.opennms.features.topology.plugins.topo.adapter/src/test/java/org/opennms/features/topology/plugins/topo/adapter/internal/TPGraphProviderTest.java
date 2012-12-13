@@ -24,10 +24,11 @@ public class TPGraphProviderTest {
 		m_topoProvider = new SimpleTopologyProvider();
 		m_graphProvider = new TPGraphProvider(m_topoProvider);
 	}
-
+	
 	@Test
 	public void testVertices() {
-		Vertex vertex = m_graphProvider.getVertex("192.168.30.138");
+		Vertex vertex = m_graphProvider.getVertex("vmware", "192.168.30.138");
+		assertNotNull(vertex);
 		assertEquals("vmware", vertex.getNamespace());
 		assertEquals("192.168.30.138", vertex.getId());
 		assertEquals("Captn Crunch (192.168.30.138)", vertex.getLabel());
@@ -51,7 +52,8 @@ public class TPGraphProviderTest {
 	
 	@Test
 	public void testEdges() {
-		Edge edge = m_graphProvider.getEdge("192.168.30.138/host-52->network-30");
+		Edge edge = m_graphProvider.getEdge("vmware", "192.168.30.138/host-52->network-30");
+		assertNotNull(edge);
 		assertEquals("vmware", edge.getNamespace());
 		assertEquals("192.168.30.138/host-52->network-30", edge.getId());
 		

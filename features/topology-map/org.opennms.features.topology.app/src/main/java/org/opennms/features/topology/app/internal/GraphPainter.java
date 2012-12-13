@@ -3,15 +3,14 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Layout.Point;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -38,17 +37,25 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	@Override
 	public void visitVertex(Vertex vertex) throws PaintException {
+		Point initialLocation = m_layout.getInitialLocation(vertex);
+		Point location = m_layout.getLocation(vertex);
 		m_target.startTag("vertex");
 		m_target.addAttribute("key", vertex.getKey());
-		m_target.addAttribute("initialX", getInitialX(vertex));
-		m_target.addAttribute("initialY", getInitialY(vertex));
-		m_target.addAttribute("x", getX(vertex));
-		m_target.addAttribute("y", getY(vertex));
+		m_target.addAttribute("initialX", initialLocation.getX());
+		m_target.addAttribute("initialY", initialLocation.getY());
+		m_target.addAttribute("x", location.getX());
+		m_target.addAttribute("y", location.getY());
 		m_target.addAttribute("selected", isSelected(vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		m_target.addAttribute("label", vertex.getLabel());
-		m_target.addAttribute("tooltipText", vertex.getTooltipText());
+		m_target.addAttribute("tooltipText", getTooltipText(vertex));
 		m_target.endTag("vertex");
+	}
+
+	private String getTooltipText(Vertex vertex) {
+		String tooltipText = vertex.getTooltipText();
+		tooltipText = tooltipText != null ? tooltipText : vertex.getLabel();
+		return tooltipText != null ? tooltipText : "";
 	}
 
 	@Override
@@ -59,23 +66,20 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("target", getTargetKey(edge));
 		m_target.addAttribute("selected", isSelected(edge));
 		m_target.addAttribute("cssClass", getStyleName(edge));
-		m_target.addAttribute("tooltipText", edge.getTooltipText());
+		m_target.addAttribute("tooltipText", getTooltipText(edge));
 		m_target.endTag("edge");
+	}
+
+	private String getTooltipText(Edge edge) {
+		String tooltipText = edge.getTooltipText();
+		tooltipText = tooltipText != null ? tooltipText : edge.getLabel();
+		tooltipText = tooltipText != null ? tooltipText : "";
+		return tooltipText;
 	}
 
 	@Override
 	public void completeGraph(Graph graph) throws PaintException {
 		m_target.endTag("graph");
-	}
-
-	private int getInitialX(Vertex vertex) {
-		Vertex parent = m_graphContainer.getParent(vertex);
-		return parent == null ? (int)(Math.random()*1000) : m_graphContainer.getVertexX(parent);
-	}
-
-	private int getInitialY(Vertex vertex) {
-		Vertex parent = m_graphContainer.getParent(vertex);
-		return parent == null ? (int)(Math.random()*1000) : m_graphContainer.getVertexY(parent);
 	}
 
 	private String getSourceKey(Edge edge) {
@@ -91,20 +95,11 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private boolean isSelected(Vertex vertex) {
-		return getSelectionManager().isVertexSelected(vertex.getItemId());
+		return getSelectionManager().isVertexRefSelected(vertex);
 	}
 
 	private boolean isSelected(Edge edge) {
-		return getSelectionManager().isEdgeSelected(edge.getItemId());
-	}
-
-
-	private int getX(Vertex vertex) {
-		return m_layout.getVertexX(vertex);
-	}
-
-	private int getY(Vertex vertex) {
-		return m_layout.getVertexY(vertex);
+		return getSelectionManager().isEdgeRefSelected(edge);
 	}
 
 }

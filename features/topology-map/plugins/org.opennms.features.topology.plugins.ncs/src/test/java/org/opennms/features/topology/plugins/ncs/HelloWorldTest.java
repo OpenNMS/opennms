@@ -19,6 +19,7 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
@@ -33,6 +34,7 @@ import org.osgi.framework.Constants;
 
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
+@Ignore
 public class HelloWorldTest {
     @Inject
     private NCSComponentRepository m_repository;

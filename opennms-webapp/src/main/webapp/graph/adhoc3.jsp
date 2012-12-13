@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,org.opennms.web.*,org.opennms.web.api.Util"
+	import="java.util.*,org.opennms.web.api.Util"
 %>
 
 <%  

@@ -51,7 +51,7 @@ public final class FilterConfigImpl
         return this.initParams.get(name);
     }
 
-    public Enumeration getInitParameterNames()
+    public Enumeration<String> getInitParameterNames()
     {
         return Collections.enumeration(this.initParams.keySet());
     }

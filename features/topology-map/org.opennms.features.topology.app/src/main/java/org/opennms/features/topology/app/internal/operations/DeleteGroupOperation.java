@@ -33,20 +33,18 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 
 
 public class DeleteGroupOperation implements Operation {
 
-	public TopologyProvider m_topologyProvider;
-
-	public DeleteGroupOperation(TopologyProvider topologyProvider) {
-		m_topologyProvider = topologyProvider;
-	}
-
 	@Override
-	public Undoer execute(List<Object> targets, OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) {
+	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+		if (targets == null || targets.isEmpty() || targets.size() != 1) {
 			return null;
 		}
 
@@ -54,29 +52,60 @@ public class DeleteGroupOperation implements Operation {
 		
 		// TODO: Add a confirmation dialog before the group is deleted
 
-		Object parentKey = targets.get(0);
-		Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
-		Object grandParentId = m_topologyProvider.getVertexContainer().getParent(parentId);
-		// Detach all children from the group
-		for (Object childId : m_topologyProvider.getVertexContainer().getChildren(parentId)) {
-			// Attach the children to their grandparent (which can be null)
-			m_topologyProvider.setParent(childId, grandParentId);
+		VertexRef parent = targets.get(0);
+		Object parentId = getTopoItemId(graphContainer, parent);
+		if (parentId == null) {
+			return null;
 		}
+		
+		Vertex grandParent = graphContainer.getParent(parent);
+		Object grandParentId = getTopoItemId(graphContainer, grandParent);
+
+		// Detach all children from the group
+		for(VertexRef childRef : graphContainer.getChildren(parent)) {
+			Object childId = getTopoItemId(graphContainer, childRef);
+			if (childId != null) {
+				graphContainer.getDataSource().setParent(childId, grandParentId);
+			}
+		}
+
 		// Remove the group from the topology
-		m_topologyProvider.getVertexContainer().removeItem(parentId);
+		graphContainer.getDataSource().getVertexContainer().removeItem(parentId);
+
+		// Save the topology
+		graphContainer.getDataSource().save(null);
 
 		graphContainer.redoLayout();
+
 		return null;
 	}
-
-	@Override
-	public boolean display(List<Object> targets, OperationContext operationContext) {
-		return true;
+	
+	private static Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
+		if (vertexRef == null)  return null;
+		Vertex v = graphContainer.getVertex(vertexRef);
+		if (v == null) return null;
+		Item item = v.getItem();
+		if (item == null) return null;
+		Property property = item.getItemProperty("itemId");
+		return property == null ? null : property.getValue();
 	}
 
 	@Override
-	public boolean enabled(List<Object> targets, OperationContext operationContext) {
-		return targets != null && targets.size() == 1 && targets.get(0) != null;
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+		return targets != null && 
+			targets.size() == 1 && 
+			targets.get(0) != null 
+		;
+	}
+
+	@Override
+	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+		// Only allow the operation on single non-leaf vertices (groups)
+		return targets != null && 
+			targets.size() == 1 && 
+			targets.get(0) != null && 
+			!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
+		;
 	}
 
 	@Override

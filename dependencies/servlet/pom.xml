@@ -30,16 +30,8 @@
       <artifactId>jstl</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-2.1-glassfish</artifactId>
-      <version>2.1.v20100127</version>
-      <!-- The modern artifact ID of ant is org.apache.ant:ant -->
-      <exclusions>
-        <exclusion>
-          <groupId>ant</groupId>
-          <artifactId>ant</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jsp</artifactId>
     </dependency>
     <!--
     2011-03-10 - I commented this out so that we would be back to using

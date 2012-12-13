@@ -30,7 +30,6 @@ package org.opennms.features.topology.api;
 
 import java.util.Collection;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 
 
@@ -57,10 +56,6 @@ public interface TopologyProvider {
     Collection<?> getVertexIds();
 
     Collection<?> getEdgeIds();
-
-    Item getVertexItem(Object vertexId);
-
-    Item getEdgeItem(Object edgeId);
 
     Collection<?> getEdgeIdsForVertex(Object vertexId);
 

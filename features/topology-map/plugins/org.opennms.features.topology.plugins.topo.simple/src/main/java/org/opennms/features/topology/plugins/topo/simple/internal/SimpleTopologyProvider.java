@@ -57,6 +57,10 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
+	private static final String SIMPLE_VERTEX_ID_PREFIX = "v";
+	private static final String SIMPLE_EDGE_ID_PREFIX = "e";
+	private static final String SIMPLE_GROUP_ID_PREFIX = "g";
+
     private final SimpleVertexContainer m_vertexContainer;
     private final BeanContainer<String, SimpleEdge> m_edgeContainer;
     private int m_counter = 0;
@@ -107,29 +111,21 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return m_edgeContainer;
     }
 
-    public Collection<?> getVertexIds() {
+    public Collection<String> getVertexIds() {
         return m_vertexContainer.getItemIds();
     }
 
     @Override
-    public Collection<?> getEdgeIds() {
+    public Collection<String> getEdgeIds() {
         return m_edgeContainer.getItemIds();
     }
 
-    public Item getVertexItem(Object vertexId) {
-        return m_vertexContainer.getItem(vertexId);
-    }
-
     @Override
-    public Item getEdgeItem(Object edgeId) {
-        return m_edgeContainer.getItem(edgeId);
-    }
-    
-    public Collection<?> getEndPointIdsForEdge(Object edgeId) {
+    public Collection<String> getEndPointIdsForEdge(Object edgeId) {
         
         SimpleEdge edge = getRequiredEdge(edgeId);
 
-        List<Object> endPoints = new ArrayList<Object>(2);
+        List<String> endPoints = new ArrayList<String>(2);
         
         endPoints.add(edge.getSource().getId());
         endPoints.add(edge.getTarget().getId());
@@ -138,18 +134,14 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
     }
 
     @Override
-    public Collection<?> getEdgeIdsForVertex(Object vertexId) {
+    public Collection<String> getEdgeIdsForVertex(Object vertexId) {
         
         SimpleVertex vertex = getRequiredVertex(vertexId);
         
-        List<Object> edges = new ArrayList<Object>(vertex.getEdges().size());
+        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
         
         for(SimpleEdge e : vertex.getEdges()) {
-            
-            Object edgeId = e.getId();
-            
-            edges.add(edgeId);
-
+            edges.add(e.getId());
         }
         
         return edges;
@@ -299,6 +291,15 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
         
         m_vertexContainer.removeAllItems();
+        for (SimpleVertex vertex : graph.m_vertices) {
+            if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
+                // Find the highest index group number and start the index for new groups above it
+                int groupNumber = Integer.parseInt(vertex.getId().substring(SIMPLE_GROUP_ID_PREFIX.length()));
+                if (m_groupCounter <= groupNumber) {
+                    m_groupCounter = groupNumber + 1;
+                }
+            }
+        }
         m_vertexContainer.addAll(graph.m_vertices);
         
         m_edgeContainer.removeAllItems();
@@ -316,16 +317,16 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return beans;
     }
 
-    public String getNextVertexId() {
-        return "v" + m_counter++;
+    protected String getNextVertexId() {
+        return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
     }
 
-    public String getNextEdgeId() {
-        return "e" + m_edgeCounter ++;
+    protected String getNextEdgeId() {
+        return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter ++;
     }
     
-    public String getNextGroupId() {
-        return "g" + m_groupCounter++;
+    protected String getNextGroupId() {
+        return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
     }
 
     /* (non-Javadoc)
@@ -353,7 +354,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addVertex(int, int)
 	 */
     @Override
-	public Object addVertex(int x, int y) {
+	public String addVertex(int x, int y) {
         String nextVertexId = getNextVertexId();
 //        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1", -1);
         /* 
@@ -373,7 +374,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#connectVertices(java.lang.Object, java.lang.Object)
 	 */
     @Override
-	public Object connectVertices(Object sourceVertextId, Object targetVertextId) {
+	public String connectVertices(Object sourceVertextId, Object targetVertextId) {
         String nextEdgeId = getNextEdgeId();
         connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
         return nextEdgeId;

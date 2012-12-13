@@ -37,6 +37,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 public final class GWTEdge extends JavaScriptObject {
     
     public static final String SVG_EDGE_ELEMENT = "path";
+    public static final int EDGE_WIDTH = 3;
     
     protected GWTEdge() {};
     
@@ -56,6 +57,7 @@ public final class GWTEdge extends JavaScriptObject {
         return this.id;
     }-*/;
     
+    @SuppressWarnings("unused")
     private final native boolean isSelected() /*-{
         return this.selected === undefined ? false : this.selected;
     }-*/;
@@ -136,7 +138,12 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.append("g").append(SVG_EDGE_ELEMENT).attr("class", "path").attr("opacity", 0).style("stroke-width", "5").style("fill", "none").style("cursor", "pointer")
+                return selection.append(SVG_EDGE_ELEMENT)
+                        .attr("class", "path")
+                        .attr("opacity", 0)
+                        .style("stroke-width", EDGE_WIDTH + "px")
+                        .style("fill", "none")
+                        .style("cursor", "pointer")
                         .call(draw());
             }
         };

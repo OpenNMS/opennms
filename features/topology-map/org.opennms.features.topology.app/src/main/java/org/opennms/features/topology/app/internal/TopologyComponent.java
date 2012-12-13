@@ -29,26 +29,24 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Container.PropertySetChangeEvent;
-import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -59,7 +57,7 @@ import com.vaadin.ui.ClientWidget;
 
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements ItemSetChangeListener, PropertySetChangeListener, ValueChangeListener {
+public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
 	
@@ -86,6 +84,36 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         
         
     }
+	
+	private class PanToSelectionManager{
+	    
+	    private boolean m_vertexClickCheck = false;
+	    private boolean m_panToSelection = false;
+	    
+	    public PanToSelectionManager() {};
+	    
+	    public void verticesSelectedByMap() {
+	        m_vertexClickCheck = true;
+	    }
+	    
+	    public boolean isPanToSelection() {
+	        return m_panToSelection;
+	    }
+	    
+	    public void setPanToSelection(boolean panTo) {
+	        if(!m_vertexClickCheck) {
+	            m_panToSelection = panTo;
+	        }else {
+	            m_panToSelection = false;
+	        }
+	    }
+
+        public void reset() {
+            m_vertexClickCheck = false;
+            m_panToSelection = false;
+        }
+	    
+	}
     
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
@@ -94,12 +122,12 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
-    private boolean m_panToSelection = false;
     private boolean m_fitToView = true;
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
+    private PanToSelectionManager m_panToManager = new PanToSelectionManager();
 
-	public TopologyComponent(GraphContainer dataSource) {
+	public TopologyComponent(GraphContainer dataSource, Property scale) {
 		setGraph(dataSource.getGraph());
 		
 		m_graphContainer = dataSource;
@@ -112,16 +140,10 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 			}
 		});
 
+		m_graphContainer.addChangeListener(this);
 		
-		m_graphContainer.getVertexContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getVertexContainer().addListener((PropertySetChangeListener) this);
-		
-		m_graphContainer.getEdgeContainer().addListener((ItemSetChangeListener)this);
-		m_graphContainer.getEdgeContainer().addListener((PropertySetChangeListener) this);
-		
-		Property scale = m_graphContainer.getProperty(DisplayState.SCALE);
 		setScaleDataSource(scale);
-		
+				
 	}
 	
 	private void setScaleDataSource(Property scale) {
@@ -152,11 +174,9 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
         target.addAttribute("activeTool", m_activeTool);
         
-        target.addAttribute("panToSelection", getPanToSelection());
-        if (getPanToSelection()) {
-            
-        }
-        setPanToSelection(false);
+        boolean panToSelection = getPanToSelection();
+        target.addAttribute("panToSelection", panToSelection);
+        m_panToManager.reset();
         
         target.addAttribute("fitToView", isFitToView());
         setFitToView(false);
@@ -184,12 +204,8 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         m_fitToView  = fitToView;
     }
 
-    private void setPanToSelection(boolean b) {
-        m_panToSelection  = b;
-    }
-
     private boolean getPanToSelection() {
-        return m_panToSelection;
+        return m_panToManager.isPanToSelection();
     }
 
     /**
@@ -215,16 +231,20 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         }
         
         if(variables.containsKey("clickedVertex")) {
-        	String vertexKey = (String) variables.get("clickedVertex");
-            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
+            m_panToManager.verticesSelectedByMap();
+            String vertexKey = (String) variables.get("clickedVertex");
+            if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
+                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true
+                    || (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true  && !(((String)variables.get("platform")).indexOf("Mac") > 0)  )) {
         	    addVerticesToSelection(vertexKey);
         	}else {
         	    selectVertices(vertexKey);
         	}
-        	
+            
         }
         
         if(variables.containsKey("marqueeSelection")) {
+            m_panToManager.verticesSelectedByMap();
             String[] vertexKeys = (String[]) variables.get("marqueeSelection");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
             	addVerticesToSelection(vertexKeys);
@@ -235,18 +255,20 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         }
         
         if(variables.containsKey("updatedVertex")) {
+            m_panToManager.verticesSelectedByMap();
             String vertexUpdate = (String) variables.get("updatedVertex");
             updateVertex(vertexUpdate);
+            
             
             requestRepaint();
         }
         
         if(variables.containsKey("updateVertices")) {
+            m_panToManager.verticesSelectedByMap();
             String[] vertices = (String[]) variables.get("updateVertices");
             for(String vUpdate : vertices) {
                 updateVertex(vUpdate);
             }
-            
             if(vertices.length > 0) {
                 requestRepaint();
             }
@@ -256,6 +278,11 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         if(variables.containsKey("mapScale")) {
             double newScale = (Double)variables.get("mapScale");
             setScaleUpdateFromUI(true);
+            setScale(newScale);
+        }
+        
+        if(variables.containsKey("scrollWheelScale")) {
+            double newScale = (Double)variables.get("scrollWheelScale");
             setScale(newScale);
         }
         
@@ -281,12 +308,12 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
             Object target = null;
             if (type.toLowerCase().equals("vertex")) {
             	String targetKey = (String)props.get("target");
-            	Vertex vertex = getGraph().getVertexByKey(targetKey);
-            	target = vertex.getItemId();
+            	target = getGraph().getVertexByKey(targetKey);
+            	m_panToManager.verticesSelectedByMap();
+            	getSelectionManager().setSelectedVertexRefs(Arrays.asList((Vertex) target));
             } else if (type.toLowerCase().equals("edge")) {
             	String targetKey = (String)props.get("target");
-            	Edge edge = getGraph().getEdgeByKey(targetKey);
-            	target = edge.getItemId();
+            	target = getGraph().getEdgeByKey(targetKey);
             }
 
             getContextMenuHandler().show(target, x, y);
@@ -296,15 +323,15 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
     }
 
 	private void selectVertices(String... vertexKeys) {
-		List<Object> itemIds = new ArrayList<Object>(vertexKeys.length);
+		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);
 		
 		for(String vertexKey : vertexKeys) {
-			itemIds.add(getGraph().getVertexByKey(vertexKey).getItemId());
+			vertexRefs.add(getGraph().getVertexByKey(vertexKey));
 		}
 
-		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
+		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
 
-	    getSelectionManager().setSelectedVertices(vertexIds);
+	    getSelectionManager().setSelectedVertexRefs(vertexTrees);
 	}
 
 	private SelectionManager getSelectionManager() {
@@ -312,21 +339,21 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 	}
 
 	private void addVerticesToSelection(String... vertexKeys) {
-		List<Object> itemIds = new ArrayList<Object>(vertexKeys.length);
+		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);
 		
 		for(String vertexKey : vertexKeys) {
-			itemIds.add(getGraph().getVertexByKey(vertexKey).getItemId());
+			vertexRefs.add(getGraph().getVertexByKey(vertexKey));
 		}
+
+		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
 		
-		Collection<?> vertexIds = m_graphContainer.getVertexForest(itemIds);
-		
-		getSelectionManager().selectVertices(vertexIds);
+		getSelectionManager().selectVertexRefs(vertexTrees);
     }
     
 	private void selectEdge(String edgeKey) {
 		Edge edge = getGraph().getEdgeByKey(edgeKey);
 		
-		getSelectionManager().setSelectedEdges(Collections.singleton(edge.getItemId()));
+		getSelectionManager().setSelectedEdgeRefs(Collections.singleton(edge));
 
 	}
 
@@ -348,17 +375,19 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         
         Vertex vertex = getGraph().getVertexByKey(id);
         
-        getGraph().getLayout().setVertexX(vertex, x);
-        getGraph().getLayout().setVertexY(vertex, y);
+        getGraph().getLayout().setLocation(vertex, x, y);
 
         if (selected) {
-        	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));
+        	getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
         } else {
-        	getSelectionManager().selectVertices(Collections.singleton(vertex.getItemId()));
+        	getSelectionManager().deselectVertexRefs(Collections.singleton(vertex));
         }
     }
     
 	protected void setScale(double scale){
+	    if(scale <= 0) {
+	        scale = 0.01;
+	    } 
 	    m_scale.setValue(scale);
     }
     
@@ -384,20 +413,17 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
 	    }
 	}
 
-	public void containerItemSetChange(ItemSetChangeEvent event) {
+	public void graphChanged(GraphContainer container) {
+		setGraph(container.getGraph());
 		setFitToView(true);
-		requestRepaint();
-	}
-
-	public void containerPropertySetChange(PropertySetChangeEvent event) {
 		requestRepaint();
 	}
 
     public void valueChange(ValueChangeEvent event) {
         double scale = (Double) m_scale.getValue();
-        if(scale == 0) {
+        if(scale <= 0) {
             m_scale.setValue(0.01);
-        }
+        } 
         
         if(!isScaleUpdateFromUI()) {
             requestRepaint();
@@ -430,5 +456,8 @@ public class TopologyComponent extends AbstractComponent implements ItemSetChang
         }
     }
 
+    public void setPanToSelection(boolean bool) {
+        m_panToManager.setPanToSelection(bool);
+    }
 
 }

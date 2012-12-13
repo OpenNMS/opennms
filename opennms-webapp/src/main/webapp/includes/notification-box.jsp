@@ -67,23 +67,9 @@
 		}
 %>
 
-<style type="text/css">
-	#notificationDisabled{
-		border: 1px solid red;
-		background-color: lightyellow;
-		color: red;
-		padding: 5px;
-	}
-</style>
-
 <h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
 	<ul class="plain o-box">
-		<li <%=("Off".equals(status) ? "id=\"notificationDisabled\"" : "")%>>
-			<strong>Notification Status</strong>:
-			<%=status%>
-		</li>
-
 		<% if( nodeIdString == null ) { %>
 			<li><strong>You</strong>: <%
 				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());

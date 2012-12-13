@@ -25,9 +25,13 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public Edge getEdge(String id) {
+	private Edge getEdge(String id) {
 		return m_edges.get(id);
+	}
+	
+	@Override
+	public Edge getEdge(String namespace, String id) {
+		return getEdge(id);
 	}
 
 	@Override
@@ -56,6 +60,11 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	public String getNamespace() {
 		return "ncs";
 	}
+	
+	@Override
+	public boolean contributesTo(String namespace) {
+		return "nodes".equals(namespace);
+	}
 
 	@Override
 	public void removeEdgeListener(EdgeListener vertexListener) {
@@ -65,5 +74,10 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	@Override
 	public List<? extends Edge> getEdges(Criteria criteria) {
 		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
+	}
+
+	@Override
+	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
+		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
 	}
 }

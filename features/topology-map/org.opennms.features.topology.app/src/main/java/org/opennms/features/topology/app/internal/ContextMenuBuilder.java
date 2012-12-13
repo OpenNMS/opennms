@@ -64,7 +64,7 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
 	            TopoContextMenuItem subMenuItem = subMenu.addItem(commandKey, null);
 	            addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
 	        }else {
-	            if(commandKey.equals("separator")) {
+	            if(commandKey.startsWith("separator")) {
 	                subMenu.setSeparatorVisible(true);
 	            }else {
 	                Command cmd = (Command) entry.getValue();

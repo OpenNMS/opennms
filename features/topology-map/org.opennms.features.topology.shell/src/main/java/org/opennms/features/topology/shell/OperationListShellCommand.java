@@ -29,6 +29,7 @@
 package org.opennms.features.topology.shell;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,11 +57,11 @@ public class OperationListShellCommand extends OsgiCommandSupport {
     	final Set<Operation> operations = new TreeSet<Operation>();
     	final Map<Operation,Map<String,Object>> properties = new HashMap<Operation,Map<String,Object>>();
 
-    	final ServiceReference[] services = this.bundleContext.getServiceReferences(Operation.class.getName(), null);
+    	final Collection<ServiceReference<Operation>> services = this.bundleContext.getServiceReferences(Operation.class, null);
         if (services == null) return null;
 
-        for (final ServiceReference sr : services) {
-    		final Operation operation = (Operation)this.bundleContext.getService(sr);
+        for (final ServiceReference<Operation> sr : services) {
+    		final Operation operation = this.bundleContext.getService(sr);
     		if (operation == null) continue;
 
     		operations.add(operation);

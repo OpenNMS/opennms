@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Item;
 
@@ -46,13 +46,13 @@ public class TopoGraph implements Graph {
 	public static final String PROP_Y = "y";
 	public static final String PROP_ICON = "icon";
 	
-	private GraphContainer m_dataSource;
+	private SimpleGraphContainer m_dataSource;
 	private ElementHolder<TopoVertex> m_vertexHolder;
 	private ElementHolder<TopoEdge> m_edgeHolder;
 	private Layout m_layout;
 
 	
-	public TopoGraph(GraphContainer dataSource){	
+	public TopoGraph(SimpleGraphContainer dataSource){	
 		
 		if(dataSource == null) {
 			throw new NullPointerException("dataSource may not be null");
@@ -61,13 +61,13 @@ public class TopoGraph implements Graph {
 		
 	}
 	
-	private GraphContainer getGraphContainer() { return m_dataSource; }
+	private SimpleGraphContainer getGraphContainer() { return m_dataSource; }
 	
 	private int getSemanticZoomLevel() {
 		return getGraphContainer().getSemanticZoomLevel();
 	}
 	
-	private void setDataSource(GraphContainer dataSource) {
+	private void setDataSource(SimpleGraphContainer dataSource) {
 		if(dataSource == m_dataSource) {
 			return;
 		}
@@ -89,7 +89,7 @@ public class TopoGraph implements Graph {
 			@Override
 			protected TopoVertex make(String key, Object itemId, Item item) {
 				// System.out.println("Graph Make Call :: Parent of itemId: " + itemId + " groupId: " + groupId);
-				return new TopoVertex(m_dataSource, key, itemId);
+				return new TopoVertex(m_dataSource, key, itemId, item);
 			}
 
 		};
@@ -127,6 +127,19 @@ public class TopoGraph implements Graph {
 
 	public List<TopoVertex> getVertices(){
 		return m_vertexHolder.getElements();
+	}
+	
+	private boolean eq(VertexRef a, VertexRef b) {
+		return a.getNamespace().equals(b.getNamespace()) && a.getId().equals(b.getId());
+	}
+	
+	public TopoVertex getVertex(VertexRef ref) {
+		for(TopoVertex v : getVertices()) {
+			if (eq(v, ref)) {
+				return v;
+			}
+		}
+		return null;
 	}
 	
 	public List<TopoVertex> getLeafVertices(){

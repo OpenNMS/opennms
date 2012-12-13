@@ -10,42 +10,24 @@
 			<action class="org.opennms.features.topology.plugins.ncs.ComponentCommand" />
 		</command>
 	</command-bundle>
-
-	<bean id="ncsServiceContainer" class="org.opennms.features.topology.plugins.ncs.NCSServiceContainer" scope="prototype">
-		<description>This bean exposes the NCS object model as a hierarchical container.</description>
-		<argument ref="ncsComponentRepository" />
-	</bean>
-
-	<bean id="ncsFilterableContainer" class="org.opennms.features.topology.api.support.FilterableHierarchicalContainer" scope="prototype">
-		<argument ref="ncsServiceContainer" />
-	</bean>
-
-	<bean id="ncsServiceTree" class="org.opennms.features.topology.plugins.ncs.NCSSelectionTree" scope="prototype">
-		<description>This selection tree is a UI component for the NCS tree.</description>
-		<argument ref="ncsFilterableContainer" />
+	
+	<bean id="viewContribution" class="org.opennms.features.topology.plugins.ncs.NCSViewContribution">
 		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
-		<property name="nodeDao" ref="nodeDao" />
 	</bean>
 
-	<bean id="ncsServiceTreeFactory" class="org.opennms.features.topology.api.support.SelectionTreeFactory">
-		<description>This factory will access the blueprint container to create new selection trees.</description>
-		<!-- Blueprint container bean -->
-		<argument ref="blueprintContainer"/>
-		<!-- Bean id of the prototype selection tree -->
-		<argument value="ncsServiceTree"/>
-		<property name="title" value="Services"/>
-	</bean>
-
-	<service interface="org.opennms.features.topology.api.IViewContribution" ref="ncsServiceTreeFactory">
-		<description>Bind the selection tree UI factory as an IViewContribution service.</description>
+	<service interface="org.opennms.features.topology.api.IViewContribution" ref="viewContribution">
+		<description>Service Tree IViewContribution service.</description>
 		<service-properties>
 			<entry key="location" value="left"/>
 		</service-properties>
 	</service>
 
-<!--
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsServiceTree">
-		<description>Also bind the selection tree UI as an EdgeProvider for the topology.</description>
-	</service>
--->
+	<bean id="ncsEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSEdgeProvider">
+		<description>This EdgeProvider exposes edges between nodes that are implied by NCSComponents.</description>
+		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
+		<property name="nodeDao" ref="nodeDao" />
+	</bean>
+
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
+
 </blueprint>

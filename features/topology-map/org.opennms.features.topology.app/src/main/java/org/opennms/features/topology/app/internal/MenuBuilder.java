@@ -68,7 +68,7 @@ public abstract class MenuBuilder<T, K>{
 	            Map<String, Object> subMenu = new LinkedHashMap<String, Object>();
 	            menu.put(first, subMenu);
 	            add(menuPath.subList(1, menuPath.size()), command, subMenu);
-	        }else if(item instanceof Map) {
+	        }else if(item instanceof Map<?,?>) {
 	            @SuppressWarnings("unchecked")
 				Map<String, Object> subMenu = (Map<String, Object>) item;
 	            add(menuPath.subList(1, menuPath.size()), command, subMenu);
@@ -215,9 +215,10 @@ public abstract class MenuBuilder<T, K>{
 	        });
 	        
 	        String prevGroup = null;
+	        int separatorCount = 0;
 	        for(String key : keys) {
 	            if(prevGroup != null && !prevGroup.equals(getGroupForLabel(key, submenuOrder))) {
-	                sortedList.put("separator", null);
+	                sortedList.put("separator" + separatorCount++, null);
 	            }
 	           
 	            Object command = value.get(key);

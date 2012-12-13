@@ -28,11 +28,8 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.Collection;
 
-import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -46,6 +43,7 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
+	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
 		
 		Graph g = graphContainer.getGraph();
@@ -69,11 +67,7 @@ public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 		
 		SpringLayout<VertexRef, EdgeRef> layout = new SpringLayout<VertexRef, EdgeRef>(jungGraph);
-		layout.setInitializer(new Transformer<VertexRef, Point2D>() {
-			public Point2D transform(VertexRef v) {
-				return new Point(graphLayout.getVertexX(v), graphLayout.getVertexY(v));
-			}
-		});
+		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(selectLayoutSize(graphContainer));
 		layout.setRepulsionRange(LAYOUT_REPULSION);
 		
@@ -85,8 +79,7 @@ public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		
 		for(VertexRef v : vertices) {
-			graphLayout.setVertexX(v, (int)layout.getX(v));
-			graphLayout.setVertexY(v, (int)layout.getY(v));
+			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
 		
 		

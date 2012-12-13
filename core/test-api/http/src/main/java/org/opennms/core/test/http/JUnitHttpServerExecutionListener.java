@@ -32,8 +32,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.jetty.http.security.Constraint;
-import org.eclipse.jetty.http.ssl.SslContextFactory;
+import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -77,7 +77,7 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         if (config.https()) {
             m_server = new Server();
             final SslContextFactory factory = new SslContextFactory(config.keystore());
-            factory.setKeyStore(config.keystore());
+            factory.setKeyStorePath(config.keystore());
             factory.setKeyStorePassword(config.keystorePassword());
             factory.setKeyManagerPassword(config.keyPassword());
             factory.setTrustStore(config.keystore());

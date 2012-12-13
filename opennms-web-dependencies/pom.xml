@@ -27,10 +27,6 @@
       <groupId>jakarta-regexp</groupId>
       <artifactId>jakarta-regexp</artifactId>
     </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
     <!-- org.opennms packages -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -115,11 +111,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jersey-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

@@ -2,6 +2,8 @@ package org.opennms.features.topology.api;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
@@ -10,19 +12,19 @@ import com.vaadin.data.Property;
 public abstract class AbstractOperation implements Operation {
 
     @Override
-    public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         return null;
     }
 
     @Override
-    public boolean display(final List<Object> targets, final OperationContext operationContext) {
+    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(final List<Object> targets, final OperationContext operationContext) {
+    public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
         if (targets == null || targets.size() < 2) {
-            for (final Object target : targets) {
+            for (final VertexRef target : targets) {
                 final Integer nodeValue = getNodeIdValue(operationContext, target);
                 if (nodeValue != null && nodeValue > 0) {
                     return true;
@@ -35,21 +37,27 @@ public abstract class AbstractOperation implements Operation {
     @Override
     public abstract String getId();
 
-    protected static String getLabelValue(final OperationContext operationContext, final Object target) {
-        return getVertexPropertyValue(operationContext, target, "label", String.class);
+    protected static String getLabelValue(final OperationContext operationContext, final VertexRef target) {
+        return getPropertyValue(getVertexItem(operationContext, target), "label", String.class);
     }
 
-    protected static String getIpAddrValue(final OperationContext operationContext, final Object target) {
-        return getVertexPropertyValue(operationContext, target, "ipAddr", String.class);
+    protected static String getIpAddrValue(final OperationContext operationContext, final VertexRef target) {
+        return getPropertyValue(getVertexItem(operationContext, target), "ipAddr", String.class);
     }
 
-    protected static Integer getNodeIdValue(final OperationContext operationContext, final Object target) {
-        return getVertexPropertyValue(operationContext, target, "nodeID", Integer.class);
+    protected static Integer getNodeIdValue(final OperationContext operationContext, final VertexRef target) {
+        return getPropertyValue(getVertexItem(operationContext, target), "nodeID", Integer.class);
     }
 
-    protected static <T> T getVertexPropertyValue(final OperationContext operationContext, final Object target, final Object id, final Class<T> clazz) {
-        return getPropertyValue(operationContext.getGraphContainer().getVertexItem(target), id, clazz);
-    }
+	protected static Item getVertexItem(final OperationContext operationContext, final VertexRef target) {
+		Vertex vertex = operationContext.getGraphContainer().getVertex(target);
+		if (vertex == null) {
+			LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
+			return null;
+		} else {
+			return vertex.getItem();
+		}
+	}
 
     @SuppressWarnings("unchecked")
     protected static <T> T getPropertyValue(final Item item, final Object id, final Class<T> clazz) {

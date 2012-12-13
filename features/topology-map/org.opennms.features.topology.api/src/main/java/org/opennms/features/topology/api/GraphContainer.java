@@ -37,30 +37,23 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanContainer;
-
 public interface GraphContainer extends DisplayState {
+	
+	public interface ChangeListener {
+		public void graphChanged(GraphContainer graphContainer);
+	}
 
-    public VertexContainer<?, ?> getVertexContainer();
+	public Collection<? extends Vertex> getVertices();
 
-    public BeanContainer<?, ?> getEdgeContainer();
+	public Collection<? extends Vertex> getChildren(VertexRef vRef);
 
-    public Item getVertexItem(Object vertexId);
+	public Collection<? extends Vertex> getRootGroup();
 
-    public Item getEdgeItem(Object edgeId);
+	public boolean hasChildren(VertexRef vRef);
 
-    public Collection<?> getEndPointIdsForEdge(Object edgeId);
-
-    public Collection<?> getEdgeIdsForVertex(Object vertexId);
-
-    public Object getVertexItemIdForVertexKey(Object key);
-    
-    public GraphProvider getBaseTopology();
+	public GraphProvider getBaseTopology();
     
     public void setBaseTopology(GraphProvider graphProvider);
-    
-    public Object getGroupId(Object vertexId);
     
     public Vertex getParent(VertexRef child);
     
@@ -68,49 +61,26 @@ public interface GraphContainer extends DisplayState {
     
     public Edge getEdge(EdgeRef ref);
     
-    public int getVertexX(VertexRef vertexId);
-    
-    public void setVertexX(VertexRef vertexId, int x);
-    
-    public int getVertexY(VertexRef vertexId);
-    
-    public void setVertexY(VertexRef vertexId, int y);
-    
-    public int getSemanticZoomLevel(Object vertexId);
-    
-	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel);
+	public Criteria getCriteria(String namespace);
+	
+	public void setCriteria(Criteria critiera);
+	
+	public void addChangeListener(ChangeListener listener);
+	
+	public void removeChangeListener(ChangeListener listener);
 
+	public Graph getGraph();
+	
+	public SelectionManager getSelectionManager();
+	
+	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs);
+
+
+	// These will work the GraphProvider in the future
 	@Deprecated
     public TopologyProvider getDataSource();
 
     @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
-
-	public Graph getCompleteGraph();
-	
-	public Graph getGraph();
-	
-	public boolean hasChildren(Object itemId);
-
-	public Collection<?> getChildren(Object itemId);
-
-	Object getParentId(Object itemId);
-
-	public boolean containsVertexId(Object vertexId);
-	
-	public boolean containsEdgeId(Object edgeId);
-
-	public SelectionManager getSelectionManager();
-	
-	// returns a list containing all of the passed in vertices and their children grandchildren etc.
-	public Collection<?> getVertexForest(Collection<?> vertexIds);
-	
-    public void setVertexItemProperty(Object itemId, String propertyName, Object value);
-
-	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue);
-	
-	public Criteria getCriteria(String namespace);
-	
-	public void setCriteria(String namespace, Criteria critiera);
 
 }

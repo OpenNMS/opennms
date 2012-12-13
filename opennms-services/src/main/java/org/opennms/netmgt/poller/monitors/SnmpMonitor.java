@@ -166,7 +166,9 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         int countMin = ParameterMap.getKeyedInteger(parameters, "minimum", 0);
         int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
         String reasonTemplate = ParameterMap.getKeyedString(parameters, "reason-template", DEFAULT_REASON_TEMPLATE);
+        String hexstr = ParameterMap.getKeyedString(parameters, "hex", "false");
 
+        hex = "true".equalsIgnoreCase(hexstr);
         // set timeout and retries on SNMP peer object
         //
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
@@ -187,6 +189,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         svcParams.setProperty("retries", svcParams.getProperty("retry"));
         svcParams.setProperty("ipaddr", hostAddress);
         svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
+        svcParams.setProperty("hex", hexstr);
 
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
 
@@ -230,8 +233,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 }
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
                 for(SnmpValue result : results) {
-                    svcParams.setProperty("observedValue", result.toString());
                     if (result != null) {
+                        svcParams.setProperty("observedValue", getStringValue(result));
                         log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
@@ -257,7 +260,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
                 if (result != null) {
-                    svcParams.setProperty("observedValue", result.toString());
+                    svcParams.setProperty("observedValue", getStringValue(result));
                     log().debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                     
                     if (meetsCriteria(result, operator, operand)) {

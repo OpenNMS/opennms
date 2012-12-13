@@ -1,9 +1,21 @@
 @CHARSET "UTF-8";
 @import "../reindeer/styles.css";
 
+/*** Vertex Styles ***/
 .vertex:hover{
 	opacity: 0.8;
 }
+
+.vertex .highlight{
+	opacity: 0;
+	fill: #00ffff;
+}
+
+.vertex.selected .highlight{
+    opacity: 1;
+}
+
+/*** End Vertex Styles***/
 
 .toolbar-button{
 	
@@ -11,6 +23,13 @@
 
 .v-toolbar-button .v-button-wrap{
     padding: 4px 4px 0 1px;
+}
+
+/**
+ * SPC-506: Get rid of P tag margins to tighten up tooltip display
+ */
+.v-tooltip P {
+    margin: 0px;
 }
 
 div.v-button.v-button-toolbar-button.toolbar-button > span {
@@ -33,13 +52,18 @@ div.v-button-down .v-button-wrap{
 	padding: 7px 4px 0 1px;
 }
 
-.path {
+.edge {
 	stroke: #ccc;
 }
 
-.path.selected {
+.edge.selected {
 	stroke: #00ffff;
 }
 
+.edge.ncs {
+	stroke: #4D6C80;
+}
 
-
+.edge.ncs.selected {
+	stroke: #00ffff;
+}

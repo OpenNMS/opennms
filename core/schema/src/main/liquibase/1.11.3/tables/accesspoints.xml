@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="jwhite" id="1.11.3-SNAPSHOT-accesspoints">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="accesspoints" /></not>
+		</preConditions> 
+
+		<createTable tableName="accesspoints">
+			<!-- Physical address of the access point - unique identifier -->
+			<column name="physaddr" type="varchar(32)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_physaddr" />
+			</column>
+
+			<!-- Node ID for the associated node -->
+			<column name="nodeid" type="integer" />
+
+			<!-- Polling package for the access point -->
+			<column name="pollingpackage" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Last known status -->
+			<column name="status" type="integer" />
+			
+			<!-- Last seen on this controller -->
+			<column name="controlleripaddr" type="varchar(40)" />
+		</createTable>
+
+		<createIndex tableName="accesspoints" indexName="accesspoint_package_idx">
+			<column name="pollingpackage" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>
+

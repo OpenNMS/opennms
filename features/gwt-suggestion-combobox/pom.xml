@@ -23,6 +23,13 @@
     </dependency>
     
     <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
         <version>${project.version}</version>
@@ -31,8 +38,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.7</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Edge;
@@ -46,9 +45,9 @@ public class TopoEdge implements Edge {
 	private final TopoVertex m_source;
 	private final Object m_targetId;
 	private final TopoVertex m_target;
-	private final GraphContainer m_graphContainer;
+	private final SimpleGraphContainer m_graphContainer;
 
-	public TopoEdge(GraphContainer graphContainer, String key, Object itemId, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
+	public TopoEdge(SimpleGraphContainer graphContainer, String key, Object itemId, Object sourceId, TopoVertex source, Object targetId, TopoVertex target) {; 
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
@@ -58,7 +57,7 @@ public class TopoEdge implements Edge {
 		m_target = target;
 	}
 	
-	public GraphContainer getGraphContainer() {
+	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
 	}
 
@@ -92,15 +91,15 @@ public class TopoEdge implements Edge {
 	}
 
 	public Item getItem() {
-		return m_graphContainer.getEdgeItem(m_itemId);
+		return m_graphContainer.getEdgeContainer().getItem(m_itemId);
 	}
 
     public String getTooltipText() {
         return getEdgeTooltipText(m_graphContainer, m_itemId);
     }
     
-    private String getEdgeTooltipText(GraphContainer graphContainer,	Object edgeId) {
-		Item item = graphContainer.getEdgeItem(edgeId);
+    private String getEdgeTooltipText(SimpleGraphContainer graphContainer,	Object edgeId) {
+		Item item = graphContainer.getEdgeContainer().getItem(edgeId);
 		if(item != null && item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
             return (String) item.getItemProperty("tooltipText").getValue();
         }else {
@@ -114,7 +113,7 @@ public class TopoEdge implements Edge {
     
     
     public String getCssClass() {
-    	return getSelectionManager().isEdgeSelected(m_itemId) ? getStyleName()+" selected" : getStyleName(); 
+    	return getSelectionManager().isEdgeRefSelected(this) ? getStyleName()+" selected" : getStyleName(); 
     }
 
 	public String getStyleName() {

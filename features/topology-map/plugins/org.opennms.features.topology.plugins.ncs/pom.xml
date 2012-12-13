@@ -143,7 +143,7 @@
     <dependency>
       <groupId>org.apache.karaf</groupId>
       <artifactId>apache-karaf</artifactId>
-      <version>2.2.7</version>
+      <version>${karafVersion}</version>
       <type>tar.gz</type>
       <scope>test</scope>
     </dependency>
@@ -179,7 +179,7 @@
     <dependency>
     	<groupId>org.apache.karaf.jaas</groupId>
     	<artifactId>org.apache.karaf.jaas.boot</artifactId>
-    	<version>2.2.7</version>
+    	<version>${karafVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
@@ -214,19 +214,19 @@
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.framework</artifactId>
-      <version>3.2.2</version>
+      <version>4.0.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.29</version>
+      <version>1.0.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.29</version>
+      <version>1.0.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

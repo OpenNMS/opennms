@@ -60,11 +60,12 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class LinkdTopologyProvider implements TopologyProvider {
+    private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
     
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
-    private static final String HTML_TOOLTIP_TAG_END  = "";
+    private static final String HTML_TOOLTIP_TAG_END  = "</p>";
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
@@ -188,7 +189,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
     
     public String getNextGroupId() {
-        return "linkdg" + m_groupCounter++;
+        return LINKD_GROUP_ID_PREFIX + m_groupCounter++;
     }
 
     
@@ -240,11 +241,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     @Override
-    public Item getEdgeItem(Object edgeId) {
-        return m_edgeContainer.getItem(edgeId);
-    }
-
-    @Override
     public Collection<String> getEndPointIdsForEdge(Object edgeId) {
         LinkdEdge edge= getRequiredEdge(edgeId);
 
@@ -278,11 +274,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
     @Override
     public Collection<String> getVertexIds() {
         return m_vertexContainer.getItemIds();
-    }
-
-    @Override
-    public Item getVertexItem(Object vertexId) {
-        return m_vertexContainer.getItem(vertexId);
     }
 
     @Override
@@ -396,12 +387,16 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
         if (configFile.exists() && configFile.canRead()) {
             log("loadtopology: loading topology from configuration file: " + m_configurationFile);
-            m_groupCounter=0;
+            m_groupCounter = 0;
             SimpleGraph graph = getGraphFromFile(configFile);
             for (LinkdVertex vertex: graph.m_vertices) {
                 if (!vertex.isLeaf()) {
                     log("loadtopology: adding group to topology: " + vertex.getId());
-                    m_groupCounter++;
+                    // Find the highest index group number and start the index for new groups above it
+                    int groupNumber = Integer.parseInt(vertex.getId().substring(LINKD_GROUP_ID_PREFIX.length()));
+                    if (m_groupCounter <= groupNumber) {
+                        m_groupCounter = groupNumber + 1;
+                    }
                     addGroup(vertex.getId(), vertex.getIconKey(), vertex.getLabel());
                 }
             }
@@ -445,100 +440,100 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
     private String getEdgeTooltipText(DataLinkInterface link,
             LinkdVertex source, LinkdVertex target) {
-        String tooltipText="";
+        StringBuffer tooltipText = new StringBuffer();
 
         OnmsSnmpInterface sourceInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), link.getIfIndex());
         OnmsSnmpInterface targetInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), link.getParentIfIndex());
         
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         if (sourceInterface != null && targetInterface != null
          && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress() 
          && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText+= "Type of the Link: Layer3/Layer2";
+            tooltipText.append("Type of Link: Layer3/Layer2");
         } else {
-            tooltipText+= "Type of the Link: Layer2";            
+            tooltipText.append("Type of Link: Layer2");
         }
-        tooltipText +=HTML_TOOLTIP_TAG_END;
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
 
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Name: &lt;endpoint1 " + source.getLabel() ;
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( "Name: &lt;endpoint1 " + source.getLabel());
         if (sourceInterface != null ) 
-            tooltipText += ":"+sourceInterface.getIfName();
-        tooltipText += " ---- endpoint2 " + target.getLabel();
+            tooltipText.append( ":"+sourceInterface.getIfName());
+        tooltipText.append( " ---- endpoint2 " + target.getLabel());
         if (targetInterface != null) 
-            tooltipText += ":"+targetInterface.getIfName();
-        tooltipText +="&gt;";
-        tooltipText +=HTML_TOOLTIP_TAG_END;
+            tooltipText.append( ":"+targetInterface.getIfName());
+        tooltipText.append("&gt;");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
         
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
-                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-                tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed());
-                tooltipText +=HTML_TOOLTIP_TAG_END;
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
             if (targetInterface.getIfOperStatus() != null) {
-                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-                tooltipText += "Link status: " + getIfStatusString(targetInterface.getIfOperStatus());
-                tooltipText +=HTML_TOOLTIP_TAG_END;
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append( "Link status: " + getIfStatusString(targetInterface.getIfOperStatus()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         } else if (sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
-                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-                tooltipText += "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed());
-                tooltipText +=HTML_TOOLTIP_TAG_END;
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
             if (sourceInterface.getIfOperStatus() != null) {
-                tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-                tooltipText += "Link status: " + getIfStatusString(sourceInterface.getIfOperStatus());
-                tooltipText +=HTML_TOOLTIP_TAG_END;
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append( "Link status: " + getIfStatusString(sourceInterface.getIfOperStatus()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
 
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "EndPoint1: " + source.getLabel() + ", " + source.getIpAddr();
-        tooltipText +=HTML_TOOLTIP_TAG_END;
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddr());
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
         
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "EndPoint2: " + target.getLabel() + ", " + target.getIpAddr();
-        tooltipText +=HTML_TOOLTIP_TAG_END;
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddr());
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         log("getEdgeTooltipText\n" + tooltipText);
-        return tooltipText;
+        return tooltipText.toString();
     }
 
     private String getNodeTooltipText(OnmsNode node, LinkdVertex vertex, OnmsIpInterface ip) {
-        String tooltipText="";
+        StringBuffer tooltipText = new StringBuffer();
+
+        /*
         if (node.getSysDescription() != null && node.getSysDescription().length() >0) {
-            tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-            tooltipText +="Description: " + node.getSysDescription();
-            tooltipText +=HTML_TOOLTIP_TAG_END;
+            tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+            tooltipText.append("Description: " + node.getSysDescription());
+            tooltipText.append(HTML_TOOLTIP_TAG_END);
         }
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Mngt ip: " + vertex.getIpAddr();
-        tooltipText +=HTML_TOOLTIP_TAG_END;
-        
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Name: " + vertex.getLabel();
-        tooltipText +=HTML_TOOLTIP_TAG_END;
+        */
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( "Management IP and Name: " + vertex.getIpAddr() + " (" + vertex.getLabel() + ")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
         
         if (node.getSysLocation() != null && node.getSysLocation().length() >0) {
-            tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-            tooltipText +="Location: " + node.getSysLocation();
-            tooltipText +=HTML_TOOLTIP_TAG_END;
+            tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+            tooltipText.append("Location: " + node.getSysLocation());
+            tooltipText.append(HTML_TOOLTIP_TAG_END);
         }
         
-        tooltipText +=HTML_TOOLTIP_TAG_OPEN;
-        tooltipText += "Status: " +getNodeStatusString(node.getType().charAt(0));
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( "Status: " +getNodeStatusString(node.getType().charAt(0)));
         if (ip != null && ip.isManaged()) {
-            tooltipText += "/Managed";
+            tooltipText.append( " / Managed");
         } else {
-            tooltipText += "/UnManaged";
+            tooltipText.append( " / Unmanaged");
         }
-        tooltipText +=HTML_TOOLTIP_TAG_END;
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         log("getNodeTooltipText:\n" + tooltipText);
         
-        return tooltipText;
+        return tooltipText.toString();
 
     }
     
@@ -572,7 +567,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     @Override
     public void setParent(Object vertexId, Object parentId) {
         boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
-        log("setParent for vertex:" + vertexId + " parent: " + parentId + ": "+ addedparent);
+        log("setParent() for vertex: " + vertexId + ", parent: " + parentId + ", result: " + (addedparent ? "SUCCESS" : "FAILED"));
     }
     
       private static String getIfStatusString(int ifStatusNum) {
@@ -667,7 +662,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
 
 	@Override
 	public String getNamespace() {
-		return "node";
+		return "nodes";
 	}
     
     

@@ -31,10 +31,6 @@ package org.opennms.features.topology.app.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -70,7 +66,8 @@ public class TopologyComponentTest {
     }
 
     private TopologyComponent getTopologyComponent(SimpleGraphContainer dataSource) {
-        TopologyComponent topologyComponent = new TopologyComponent(dataSource);
+    	BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(dataSource);
+        TopologyComponent topologyComponent = new TopologyComponent(dataSource, item.getItemProperty("scale"));
         topologyComponent.setIconRepoManager(new IconRepositoryManager());
         return topologyComponent;
     }
@@ -144,7 +141,7 @@ public class TopologyComponentTest {
         Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
-            BeanItem<TestVertex> beanItem = topologyProvider.getVertexItem(vertId);
+            BeanItem<TestVertex> beanItem = topologyProvider.getVertexContainer().getItem(vertId);
             TestVertex v = beanItem.getBean();
             if(v.isLeaf()) {
                 topologyProvider.setParent(vertId, groupId);
@@ -193,7 +190,7 @@ public class TopologyComponentTest {
         Object groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Object vertId : vertIds) {
-            TestVertex v = (TestVertex) ((BeanItem<TestVertex>) topoProvider.getVertexItem(vertId)).getBean();
+            TestVertex v = topoProvider.getVertexContainer().getItem(vertId).getBean();
             if(v.isLeaf()) {
                 topoProvider.setParent(vertId, groupId);
             }
@@ -210,16 +207,11 @@ public class TopologyComponentTest {
         	mockVertexWithKey(target2, key);
         }
         
-        Map<Object, String> verticesKeyMapper = new HashMap<Object, String>();
-        for(Vertex v : graph.getDisplayVertices()) {
-            verticesKeyMapper.put(v.getItemId(), v.getKey());
-        }
-        
         for(Edge e: graph.getDisplayEdges()) {
         	Vertex sourceV = graphContainer.getVertex(e.getSource().getVertex());
         	Vertex targetV = graphContainer.getVertex(e.getTarget().getVertex());
-            String sourceKey = verticesKeyMapper.get(sourceV.getItemId());
-            String targetKey = verticesKeyMapper.get(targetV.getItemId());
+            String sourceKey = sourceV.getKey();
+            String targetKey = targetV.getKey();
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);
         }
         mockGraphTagEnd(target2);

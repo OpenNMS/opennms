@@ -30,9 +30,6 @@ package org.opennms.features.topology.netutils.internal;
 
 import static org.junit.Assert.*;
 
-import java.net.URL;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -26,41 +26,39 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class AbstractListenerManager<ListenerType> extends ServiceTracker
-{
+public class AbstractListenerManager<T> extends ServiceTracker<T, T> {
 
-    private ArrayList<ListenerType> allContextListeners;
+    private ArrayList<T> allContextListeners;
 
     private final Object lock;
 
-    protected AbstractListenerManager(BundleContext context, Class<ListenerType> clazz)
+    protected AbstractListenerManager(BundleContext context, Class<T> clazz)
     {
-        super(context, clazz.getName(), null);
+        super(context, clazz, null);
         lock = new Object();
     }
 
-    @SuppressWarnings("unchecked")
-    protected final Iterator<ListenerType> getContextListeners()
+    protected final Iterator<T> getContextListeners()
     {
-        ArrayList<ListenerType> result = allContextListeners;
+        ArrayList<T> result = allContextListeners;
         if (result == null)
         {
             synchronized (lock)
             {
                 if (allContextListeners == null)
                 {
-                    Object[] services = getServices();
+                    T[] services = (T[])getServices();
                     if (services != null && services.length > 0)
                     {
-                        result = new ArrayList<ListenerType>(services.length);
-                        for (Object service : services)
+                        result = new ArrayList<T>(services.length);
+                        for (T service : services)
                         {
-                            result.add((ListenerType) service);
+                            result.add(service);
                         }
                     }
                     else
                     {
-                        result = new ArrayList<ListenerType>(0);
+                        result = new ArrayList<T>(0);
                     }
                     this.allContextListeners = result;
                 }
@@ -74,7 +72,7 @@ public class AbstractListenerManager<ListenerType> extends ServiceTracker
     }
 
     @Override
-    public Object addingService(ServiceReference reference)
+    public T addingService(ServiceReference<T> reference)
     {
         synchronized (lock)
         {
@@ -85,7 +83,7 @@ public class AbstractListenerManager<ListenerType> extends ServiceTracker
     }
 
     @Override
-    public void modifiedService(ServiceReference reference, Object service)
+    public void modifiedService(ServiceReference<T> reference, T service)
     {
         synchronized (lock)
         {
@@ -96,7 +94,7 @@ public class AbstractListenerManager<ListenerType> extends ServiceTracker
     }
 
     @Override
-    public void removedService(ServiceReference reference, Object service)
+    public void removedService(ServiceReference<T> reference, T service)
     {
         synchronized (lock)
         {

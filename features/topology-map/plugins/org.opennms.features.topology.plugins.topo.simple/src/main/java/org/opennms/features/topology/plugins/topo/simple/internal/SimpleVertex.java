@@ -35,9 +35,6 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.opennms.features.topology.api.topo.Vertex;
-
-
 public abstract class SimpleVertex {
 	String m_id;
 	int m_x;
@@ -50,10 +47,10 @@ public abstract class SimpleVertex {
 	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
     private String m_ipAddr ="127.0.0.1";
     private int m_nodeID = -1;
-//	private int m_semanticZoomLevel = -1;
+	private int m_semanticZoomLevel = -1;
     private String m_iconKey;
     private String m_tooltipText;
-	
+		
 	public SimpleVertex() {}
 	
 	public SimpleVertex(String id) {
@@ -211,16 +208,16 @@ public abstract class SimpleVertex {
     }
     
     public String getTooltipText() {
-        return m_tooltipText;
+        return m_tooltipText != null ? m_tooltipText : getLabel();
     }
 
-//	public int getSemanticZoomLevel() {
-//		return m_semanticZoomLevel >= 0
-//				? m_semanticZoomLevel
-//				: m_parent == null 
-//				? 0 
-//				: m_parent.getSemanticZoomLevel() + 1;
-//	}
+	public int getSemanticZoomLevel() {
+		return m_semanticZoomLevel >= 0
+				? m_semanticZoomLevel
+				: m_parent == null 
+				? 0 
+				: m_parent.getSemanticZoomLevel() + 1;
+	}
 	
 //	public SimpleVertex getDisplayVertex(int semanticZoomLevel) {
 //		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {

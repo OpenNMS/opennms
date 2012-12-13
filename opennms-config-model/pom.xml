@@ -114,7 +114,6 @@
               org.opennms.netmgt.config.notifd.*;version="${project.version}",
               org.opennms.netmgt.config.notificationCommands.*;version="${project.version}",
               org.opennms.netmgt.config.notifications.*;version="${project.version}",
-              org.opennms.netmgt.config.opennmsDataSources.*;version="${project.version}",
               org.opennms.netmgt.config.outage.*;version="${project.version}",
               org.opennms.netmgt.config.pagesequence.*;version="${project.version}",
               org.opennms.netmgt.config.poller.*;version="${project.version}",

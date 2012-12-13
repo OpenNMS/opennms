@@ -77,12 +77,15 @@
           noticeStatus="<b id=\"notificationOn\">On</b>";
         }
     } catch (Throwable t) {
-        noticeStatus = "<font color=\"ff0000\">Unknown</font>";
+        noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
 final String baseHref = Util.calculateUrlBase( request );
 %>
 <c:choose>
+<c:when test="${param.docType == 'html5'}">
+<!DOCTYPE html>
+</c:when>
 <c:when test="${param.docType == 'html'}">
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 </c:when>

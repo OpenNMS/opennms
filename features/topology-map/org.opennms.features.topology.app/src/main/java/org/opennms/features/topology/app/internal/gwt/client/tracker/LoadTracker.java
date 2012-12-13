@@ -33,6 +33,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.Visibility;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.Image;
@@ -60,7 +65,9 @@ public class LoadTracker {
                 
             });
             
-            Document.get().getBody().appendChild(m_image.getElement());
+            Element div = Document.get().getElementById(m_trackerDivId);
+            div.appendChild(m_image.getElement());
+            //Document.get().getBody().appendChild(m_image.getElement());
         }
 
         protected void callHandlers() {
@@ -86,8 +93,19 @@ public class LoadTracker {
     }
     
     private static LoadTracker m_instance = null;
+    private static String m_trackerDivId = "loadTracker";
     
-    protected LoadTracker() {}
+    protected LoadTracker() {
+        if(Document.get().getElementById(m_trackerDivId) == null) {
+            Element div = DOM.createDiv();
+            div.getStyle().setPosition(Position.ABSOLUTE);
+            div.getStyle().setTop(0.0, Unit.PX);
+            div.getStyle().setLeft(-9999.0, Unit.PX);
+            div.getStyle().setVisibility(Visibility.HIDDEN);
+            div.setId("loadTracker");
+            Document.get().getBody().appendChild(div);
+        }
+    }
     
     public static LoadTracker get() {
         if(m_instance == null) {

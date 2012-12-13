@@ -34,6 +34,8 @@ import java.util.List;
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.EventsAlarmsWindow;
 import org.opennms.features.topology.netutils.internal.Node;
 
@@ -43,13 +45,13 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
 
     private String m_alarmsURL;
 
-    public Undoer execute(final List<Object> targets, final OperationContext operationContext) {
+    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         String label = "";
         int nodeID = -1;
 
         try {
             if (targets != null) {
-                for (final Object target : targets) {
+                for (final VertexRef target : targets) {
                     final String labelValue = getLabelValue(operationContext, target);
                     final Integer nodeValue = getNodeIdValue(operationContext, target);
 
@@ -82,12 +84,12 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
     }
     
     @Override
-    public boolean display(final List<Object> targets, final OperationContext operationContext) {
-        if(targets != null && targets.size() > 0 && targets.get(0) != null) {
-            return true;
-        }else {
-            return false;
-        }
+    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
+    	if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
+    		return true;
+    	} else {
+			return targets != null && targets.size() > 0 && targets.get(0) != null;
+    	}
         
     }
 

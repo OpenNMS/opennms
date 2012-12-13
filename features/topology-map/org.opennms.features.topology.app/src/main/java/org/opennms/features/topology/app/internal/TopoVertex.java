@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.data.Item;
@@ -43,12 +42,14 @@ public class TopoVertex implements Vertex {
 	
     private final String m_key;
 	private final Object m_itemId;
-	private final GraphContainer m_graphContainer;
+	private final Item m_item;
+	private final SimpleGraphContainer m_graphContainer;
 	
-	public TopoVertex(GraphContainer graphContainer, String key, Object itemId) {
+	public TopoVertex(SimpleGraphContainer graphContainer, String key, Object itemId, Item item) {
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
+		m_item = item;
 	}
 	
 	public Object getItemId() {
@@ -59,25 +60,12 @@ public class TopoVertex implements Vertex {
 		return !getGraphContainer().hasChildren(getItemId());
 	}
 
-	private int getX() {
-		return getGraphContainer().getVertexX(this);
-		
-	}
-
-	private int getY(){
-		return getGraphContainer().getVertexY(this);
-	}
-
 	public String toString() {
-    	return "v" + getItemId() + "(" + getX()  + "," + getY() + "):" + (isSelected() ? "selected" : "unselected");
+    	return "v" + getItemId();
     }
 
-	private boolean isSelected() {
-		return getGraphContainer().getSelectionManager().isVertexSelected(getItemId());
-	}
-
 	public Item getItem() {
-		return getGraphContainer().getVertexItem(getItemId());
+		return m_item;
 	}
 	
 	public String getKey() {
@@ -107,7 +95,7 @@ public class TopoVertex implements Vertex {
 				: (String)(tooltipTextProperty.getValue());
 	}
 
-	public GraphContainer getGraphContainer() {
+	public SimpleGraphContainer getGraphContainer() {
 		return m_graphContainer;
 	}
 

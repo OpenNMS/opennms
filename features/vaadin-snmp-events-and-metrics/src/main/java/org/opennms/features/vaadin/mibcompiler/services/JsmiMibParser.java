@@ -96,9 +96,6 @@ public class JsmiMibParser implements MibParser, Serializable {
     /** The error handler. */
     private OnmsProblemEventHandler errorHandler;
 
-    /** The errors. */
-    private String errors;
-
     /** The missing dependencies. */
     private List<String> missingDependencies = new ArrayList<String>();
 
@@ -123,13 +120,12 @@ public class JsmiMibParser implements MibParser, Serializable {
     public boolean parseMib(File mibFile) {
         // Validate MIB Directory
         if (mibDirectory == null) {
-            errors = "MIB directory has not been set.";
+            errorHandler.addError("MIB directory has not been set.");
             return false;
         }
 
         // Reset error handler and dependencies tracker
         missingDependencies.clear();
-        errors = null;
 
         // Set UP the MIB Queue MIB to be parsed
         List<URL> queue = new ArrayList<URL>();
@@ -141,7 +137,13 @@ public class JsmiMibParser implements MibParser, Serializable {
         addFileToQueue(queue, mibFile);
         while (true) {
             errorHandler.reset();
-            mib = parser.parse();
+            try {
+                mib = parser.parse();
+            } catch (Exception e) {
+                LogUtils.errorf(this, e, "Can't compile %s", mibFile);
+                errorHandler.addError(e.getMessage());
+                return false;
+            }
             if (errorHandler.isOk()) {
                 break;
             } else {
@@ -195,10 +197,11 @@ public class JsmiMibParser implements MibParser, Serializable {
         try {
             return convertMibToEvents(module, ueibase);
         } catch (Throwable e) {
-            errors = e.getMessage();
+            String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating events objects from the MIB " + module.getId();
             LogUtils.errorf(this, e, "Event parsing error: %s", errors);
+            errorHandler.addError(errors);
             return null;
         }
     }
@@ -234,10 +237,11 @@ public class JsmiMibParser implements MibParser, Serializable {
                 }
             }
         } catch (Throwable e) {
-            errors = e.getMessage();
+            String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating data collection objects from the MIB " + module.getId();
             LogUtils.errorf(this, e, "Data Collection parsing error: %s", errors);
+            errorHandler.addError(errors);
             return null;
         }
         return dcGroup;
@@ -306,7 +310,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 return m;
             }
         }
-        errors = "Can't find the MIB module for " + mibFile;
+        errorHandler.addError("Can't find the MIB module for " + mibFile);
         return null;
     }
 

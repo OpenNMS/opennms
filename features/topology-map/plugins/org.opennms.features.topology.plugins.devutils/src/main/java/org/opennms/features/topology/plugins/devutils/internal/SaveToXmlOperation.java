@@ -41,12 +41,12 @@ import javax.xml.bind.JAXB;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.TopologyProvider;
-
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SaveToXmlOperation implements Operation {
     
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
     	
     	TopologyProvider topologyProvider = operationContext.getGraphContainer().getDataSource();
     	
@@ -55,7 +55,7 @@ public class SaveToXmlOperation implements Operation {
 		// first create all the vertices;
 		List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
 		for(Object vertexId : topologyProvider.getVertexIds()) {
-			WrappedVertex wrappedVertex = WrappedVertex.create(topologyProvider.getVertexItem(vertexId));
+			WrappedVertex wrappedVertex = WrappedVertex.create(topologyProvider.getVertexContainer().getItem(vertexId));
 			vertices.add(wrappedVertex);
 			idMap.put(vertexId, wrappedVertex);
 		}
@@ -83,7 +83,7 @@ public class SaveToXmlOperation implements Operation {
 			WrappedVertex source = idMap.get(sourceId);
 			WrappedVertex target = idMap.get(targetId);
 			
-			edges.add(new WrappedEdge(topologyProvider.getEdgeItem(edgeId), source, target));
+			edges.add(new WrappedEdge(topologyProvider.getEdgeContainer().getItem(edgeId), source, target));
 			
 
 		}
@@ -97,12 +97,12 @@ public class SaveToXmlOperation implements Operation {
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 

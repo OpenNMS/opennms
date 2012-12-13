@@ -29,6 +29,7 @@
 package org.opennms.netmgt.ticketd;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -38,6 +39,7 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.util.Assert;
 
 /**
@@ -94,7 +96,8 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     			EventConstants.TROUBLETICKET_CANCEL_UEI,
     			EventConstants.TROUBLETICKET_CLOSE_UEI,
     			EventConstants.TROUBLETICKET_CREATE_UEI,
-    			EventConstants.TROUBLETICKET_UPDATE_UEI
+    			EventConstants.TROUBLETICKET_UPDATE_UEI,
+                EventConstants.RELOAD_DAEMON_CONFIG_UEI
     	};
     	m_eventIpcManager.addEventListener(this, Arrays.asList(ueis));
         
@@ -146,7 +149,9 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 			handleCreateTicket(e);
 		} else if (EventConstants.TROUBLETICKET_UPDATE_UEI.equals(e.getUei())) {
 			handleUpdateTicket(e);
-		}
+		} else if (isReloadConfigEvent(e)) {
+            handleTicketerReload(e);
+ 		}
         } catch (InsufficientInformationException ex) {
             log().warn("Unable to create trouble ticket due to lack of information: "+ex.getMessage());
         } catch (Throwable t) {
@@ -225,4 +230,21 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_ticketerServiceLayer.cancelTicketForAlarm(alarmId, ticketId);
 	}
 
+    private boolean isReloadConfigEvent(Event event) {
+        boolean isTarget = false;
+        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
+            List<Parm> parmCollection = event.getParmCollection();
+            for (Parm parm : parmCollection) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Ticketd".equalsIgnoreCase(parm.getValue().getContent())) {
+                    isTarget = true;
+                    break;
+                }
+            }
+        }
+        return isTarget;
+    }
+    
+    private void handleTicketerReload(Event e) {
+        m_ticketerServiceLayer.reloadTicketer();
+    }
 }

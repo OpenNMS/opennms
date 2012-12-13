@@ -3,22 +3,21 @@ package org.opennms.features.topology.app.internal;
 import java.util.Collection;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionManager.SelectionListener;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial"})
-public abstract class VertexSelectionTree extends Tree implements SelectionListener, IViewContribution {
+public class VertexSelectionTree extends Tree implements SelectionListener {
 
+	private final String m_title;
     private final GraphContainer m_graphContainer;
 
-    public VertexSelectionTree(FilterableHierarchicalContainer container, GraphContainer graphContainer) {
-        super(null, container);
+    public VertexSelectionTree(String title, GraphContainer graphContainer) {
+        super(null, new GCFilterableContainer(graphContainer));
+        m_title = title;
         
         m_graphContainer = graphContainer;
         
@@ -27,11 +26,13 @@ public abstract class VertexSelectionTree extends Tree implements SelectionListe
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 
-            	Collection<?> vertices = m_graphContainer.getVertexForest((Collection<?>)event.getProperty().getValue());
-            	m_graphContainer.getSelectionManager().setSelectedVertices(vertices);
+            	@SuppressWarnings("unchecked")
+				Collection<? extends VertexRef> refs = (Collection<? extends VertexRef>)event.getProperty().getValue();
             	
-            	getContainerDataSource().fireItemUpdated();
-                
+            	Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
+            	m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
+            	
+            	getContainerDataSource().fireItemSetChange();
             }
         });
 
@@ -42,19 +43,14 @@ public abstract class VertexSelectionTree extends Tree implements SelectionListe
      */
     @Override
     public void selectionChanged(SelectionManager selectionManager) {
-        setValue(selectionManager.getSelectedVertices());
+        setValue(selectionManager.getSelectedVertexRefs());
     }
 
     @Override
-    public FilterableHierarchicalContainer getContainerDataSource() {
-        return (FilterableHierarchicalContainer)super.getContainerDataSource();
+    public GCFilterableContainer getContainerDataSource() {
+        return (GCFilterableContainer)super.getContainerDataSource();
     }
 
-    @Override
-    public abstract String getTitle();
+    public String getTitle() { return m_title; }
 
-    @Override
-    public Component getView(WidgetContext widgetContext) {
-        return this;
-    }
 }

@@ -11,6 +11,8 @@ import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 //import org.springframework.util.Assert;
 
+import com.vaadin.data.util.BeanItem;
+
 public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSComponent> {
 
 	private static final long serialVersionUID = 3245953234720320852L;
@@ -20,6 +22,9 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSComp
 	public NCSServiceContainer(NCSComponentRepository dao) {
 		super(NCSComponent.class);
 		m_dao = dao;
+		setBeanIdProperty("id");
+		addAll(m_dao.findByType("Service"));
+		addAll(m_dao.findByType("ServiceElement"));
 	}
 
 	@Override
@@ -92,4 +97,6 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSComp
 		component.setParentComponents(parent);
 		return true;
 	}
+
+	
 }

@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
 
 public class ConnectOperation implements Operation {
@@ -43,21 +44,21 @@ public class ConnectOperation implements Operation {
     }
     
     @Override
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         
-        List<Object> endPoints = targets;
+        List<VertexRef> endPoints = targets;
         
-        m_topologyProvider.connectVertices((String)endPoints.get(0), (String)endPoints.get(1));
+        m_topologyProvider.connectVertices(endPoints.get(0).getId(), endPoints.get(1).getId());
         return null;
     }
 
     @Override
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return false;
     }
 
     @Override
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return targets.size() == 2;
     }
 
