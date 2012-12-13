@@ -91,7 +91,7 @@ public class TopoEdge implements Edge {
 	}
 
 	public Item getItem() {
-		return m_graphContainer.getEdgeContainer().getItem(m_itemId);
+		return m_graphContainer.getEdgeItem(m_itemId);
 	}
 
     public String getTooltipText() {
@@ -99,7 +99,7 @@ public class TopoEdge implements Edge {
     }
     
     private String getEdgeTooltipText(SimpleGraphContainer graphContainer,	Object edgeId) {
-		Item item = graphContainer.getEdgeContainer().getItem(edgeId);
+		Item item = graphContainer.getEdgeItem(edgeId);
 		if(item != null && item.getItemProperty("tooltipText") != null && item.getItemProperty("tooltipText").getValue() != null) {
             return (String) item.getItemProperty("tooltipText").getValue();
         }else {

@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GEdge;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GVertex;
@@ -50,13 +52,11 @@ public class SimpleGraphContainerTest {
     @Test
     public void testSimpleGraphContainer() {
         SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider());
-        Collection<Object> vertexIds = graphContainer.getVertexIds();
-        Collection<String> edgeIds = graphContainer.getEdgeIds();
+        Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
+        Collection<? extends Edge> edgeIds = graphContainer.getBaseTopology().getEdges();
         
-        Object edgeId = edgeIds.iterator().next();
+        Edge edge = edgeIds.iterator().next();
         
-        BeanItem<GEdge> edgeItem = graphContainer.getEdgeContainer().getItem(edgeId);
-        GEdge edge= edgeItem.getBean();
         assertEquals("e0", edge.getItemId());
         
         assertEquals(2, vertexIds.size());
@@ -65,7 +65,7 @@ public class SimpleGraphContainerTest {
         
     }
 
-	private TestTopologyProvider topoProvider() {
+	private GraphProvider topoProvider() {
 		return new TestTopologyProvider("test");
 	}
     
@@ -84,7 +84,7 @@ public class SimpleGraphContainerTest {
     
     @Test
     public void testGroupingVertices() {
-        TestTopologyProvider topologyProvider = topoProvider();
+        GraphProvider topologyProvider = topoProvider();
         
         Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "groupIcon.jpg");
         topologyProvider.setParent("v0", groupId);
@@ -98,11 +98,11 @@ public class SimpleGraphContainerTest {
         assertEquals(3, gcIds.size());
         
         for(Object gcId : gcIds) {
-            Item gcItem = graphContainer.getVertexContainer().getItem(gcId);
+            Item gcItem = graphContainer.getBaseTopology().getItem(gcId);
             Boolean leaf = (Boolean) gcItem.getItemProperty("leaf").getValue();
             System.out.println("Expecting gcItem: " + gcItem + " id: " + gcId + " leaf is true: " + leaf);
             if(leaf) {
-                Object parentId = graphContainer.getVertexContainer().getParent(gcId);
+                Object parentId = graphContainer.getBaseTopology().getParent(gcId);
                 assertNotNull(parentId);
                 
                 Object semanticZoomLevel = gcItem.getItemProperty("semanticZoomLevel").getValue();

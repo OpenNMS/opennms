@@ -72,7 +72,7 @@ public class SimpleVertexContainer extends VertexContainer {
 		if (!containsId(itemId)) return null;
 		
 		SimpleGroup g = getItem(itemId).getBean().getParent();
-		return g == null ? null : g.getId();
+		return g == null ? null : g;
 	}
 
 	@Override

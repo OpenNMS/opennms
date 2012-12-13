@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -88,27 +87,26 @@ public class CreateGroupOperation implements Constants, Operation {
 				super.commit();
 				String groupLabel = (String)getField("Group Label").getValue();
 
-				TopologyProvider topologyProvider = graphContainer.getDataSource();
 				// Add the new group
-				Object groupId = topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
+				Object groupId = operationContext.getGraphContainer().getBaseTopology().addGroup(groupLabel, GROUP_ICON_KEY);
 
 				Object parentGroup = null;
 				for(VertexRef vertexRef : targets) {
 					Object vertexId = getTopoItemId(graphContainer, vertexRef);
-					Object parent = topologyProvider.getVertexContainer().getParent(vertexId);
+					Object parent = operationContext.getGraphContainer().getBaseTopology().getParent(vertexId);
 					if (parentGroup == null) {
 						parentGroup = parent;
 					} else if (!parentGroup.equals(parent)) {
 						parentGroup = ROOT_GROUP_ID;
 					}
-					topologyProvider.setParent(vertexId, groupId);
+					operationContext.getGraphContainer().getBaseTopology().setParent(vertexId, groupId);
 				}
 
 				// Set the parent of the new group to the selected top-level parent
-				topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
 
 				// Save the topology
-				topologyProvider.save(null);
+				operationContext.getGraphContainer().getBaseTopology().save(null);
 
 				graphContainer.redoLayout();
 			}

@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -45,16 +45,16 @@ import org.slf4j.LoggerFactory;
 public class TopologySelector {
 
 	private BundleContext m_bundleContext;
-	private final Map<TopologyProvider, TopologySelectorOperation> m_operations = new HashMap<TopologyProvider, TopologySelector.TopologySelectorOperation>();
-	private final Map<TopologyProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<TopologyProvider, ServiceRegistration<CheckedOperation>>();
+	private final Map<GraphProvider, TopologySelectorOperation> m_operations = new HashMap<GraphProvider, TopologySelector.TopologySelectorOperation>();
+	private final Map<GraphProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<GraphProvider, ServiceRegistration<CheckedOperation>>();
 	
     
     private class TopologySelectorOperation implements CheckedOperation {
     	
-    	private TopologyProvider m_topologyProvider;
+    	private GraphProvider m_topologyProvider;
     	private Map<?,?> m_metaData;
 
-    	public TopologySelectorOperation(TopologyProvider topologyProvider, Map<?,?> metaData) {
+    	public TopologySelectorOperation(GraphProvider topologyProvider, Map<?,?> metaData) {
     		m_topologyProvider = topologyProvider;
     		m_metaData = metaData;
 		}
@@ -89,8 +89,8 @@ public class TopologySelector {
 
 		@Override
 		public boolean isChecked(List<VertexRef> targets,	OperationContext operationContext) {
-			TopologyProvider activeTopologyProvider = operationContext.getGraphContainer().getDataSource();
-			return m_topologyProvider.equals(activeTopologyProvider);
+			GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
+			return m_topologyProvider.equals(activeGraphProvider);
 		}
     }
     
@@ -99,9 +99,9 @@ public class TopologySelector {
 		m_bundleContext = bundleContext;
 	}
 	
-	public void addTopologyProvider(TopologyProvider topologyProvider, Map<?,?> metaData) {
+	public void addGraphProvider(GraphProvider topologyProvider, Map<?,?> metaData) {
     	
-    	LoggerFactory.getLogger(getClass()).debug("Adding topology provider: " + topologyProvider);
+    	LoggerFactory.getLogger(getClass()).debug("Adding graph provider: " + topologyProvider);
     	
     	TopologySelectorOperation operation = new TopologySelectorOperation(topologyProvider, metaData);
     	
@@ -116,9 +116,9 @@ public class TopologySelector {
     	m_registrations.put(topologyProvider, reg);
     }
     
-	public void removeTopologyProvider(TopologyProvider topologyProvider, Map<?,?> metaData) {
+	public void removeGraphProvider(GraphProvider topologyProvider, Map<?,?> metaData) {
     	
-    	LoggerFactory.getLogger(getClass()).debug("Removing topology provider: " + topologyProvider);
+    	LoggerFactory.getLogger(getClass()).debug("Removing graph provider: " + topologyProvider);
     	
     	m_operations.remove(topologyProvider);
     	ServiceRegistration<CheckedOperation> reg = m_registrations.remove(topologyProvider);

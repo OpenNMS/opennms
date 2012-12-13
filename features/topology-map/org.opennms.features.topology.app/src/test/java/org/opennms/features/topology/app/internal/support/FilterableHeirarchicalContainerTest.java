@@ -18,7 +18,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TestTopologyProvider;
-import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 
 
 
@@ -83,7 +82,6 @@ public class FilterableHeirarchicalContainerTest {
         m_topologyProvider = new TestTopologyProvider("test");
         m_beanContainer = new DefaultTestVertexContainer();
         m_beanContainer.setBeanIdProperty("id");
-        m_vertexProvider = new TPGraphProvider(m_topologyProvider);
         m_beanContainer.addAll(m_vertexProvider.getVertices());
         
     }

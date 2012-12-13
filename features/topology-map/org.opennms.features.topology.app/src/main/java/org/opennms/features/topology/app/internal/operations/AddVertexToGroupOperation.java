@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
@@ -100,7 +99,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				if ("Group".equals(pid)) {
 					Select select = new Select("Group");
 					for (String childId : groupIds) {
-						BeanItem<?> childVertex = graphContainer.getVertexContainer().getItem(childId);
+						BeanItem<?> childVertex = graphContainer.getBaseTopology().getVertexItem(childId);
 						Property childLabelProperty = childVertex.getItemProperty("label");
 						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
 						log.debug("Adding child: {}, {}", childId, childLabel);
@@ -131,15 +130,13 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
 
-				TopologyProvider topologyProvider = graphContainer.getDataSource();
-
 				// Link the selected vertex to the parent group
-				topologyProvider.setParent(currentVertexId, parentId);
+				graphContainer.getBaseTopology().setParent(currentVertexId, parentId);
 
 				// Save the topology
-				topologyProvider.save(null);
+				graphContainer.getBaseTopology().save(null);
 
-				graphContainer.redoLayout();
+				graphContainer.getBaseTopology().redoLayout();
 			}
 		};
 		// Buffer changes to the datasource

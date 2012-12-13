@@ -157,16 +157,6 @@ public class TestTopologyProvider implements EditableGraphProvider {
         m_edgeContainer.addAll(edges);
     }
 
-    @Override
-    public VertexContainer getVertexContainer() {
-        return m_vertexContainer;
-    }
-
-    @Override
-    public BeanContainer<String,TestEdge> getEdgeContainer() {
-        return m_edgeContainer;
-    }
-
     private TestEdge getRequiredEdge(Object edgeId) {
         return getEdge(edgeId, true);
     }

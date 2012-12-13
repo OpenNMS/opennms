@@ -37,20 +37,14 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public class ConnectOperation implements Operation {
 
-    EditableGraphProvider m_topologyProvider;
-    
-    public ConnectOperation(EditableGraphProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-    
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-    	String ns = m_topologyProvider.getNamespace();
+    	String ns = operationContext.getGraphContainer().getBaseTopology().getNamespace();
     	if(targets != null && targets.size() > 1) {
     		VertexRef sourceRef = targets.get(0);
     		VertexRef targetRef = targets.get(1);
     		if (ns.equals(sourceRef.getNamespace()) && ns.equals(targetRef.getNamespace()))  {
-    			m_topologyProvider.connectVertices(sourceRef, targetRef);
+    			operationContext.getGraphContainer().getBaseTopology().connectVertices(sourceRef, targetRef);
     		}
     	}
     	return null;

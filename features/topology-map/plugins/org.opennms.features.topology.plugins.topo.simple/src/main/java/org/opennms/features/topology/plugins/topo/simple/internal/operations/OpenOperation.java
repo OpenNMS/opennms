@@ -32,23 +32,16 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 
 public class OpenOperation implements Operation {
     
-    TopologyProvider m_topologyProvider;
-    
-    public OpenOperation(TopologyProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-    
 	@Override
     public Undoer execute(List<VertexRef> targets,
             OperationContext operationContext) {
         
-        m_topologyProvider.load("graph.xml");
+        operationContext.getGraphContainer().getBaseTopology().load("graph.xml");
         //graphContainer.load("graph.xml");
         return null;
     }
@@ -65,6 +58,6 @@ public class OpenOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return "Open";
     }
 }

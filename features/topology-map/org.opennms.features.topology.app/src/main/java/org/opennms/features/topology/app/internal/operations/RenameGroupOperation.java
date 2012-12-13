@@ -99,7 +99,7 @@ public class RenameGroupOperation implements Constants, Operation {
 						property.setValue(groupLabel);
 
 						// Save the topology
-						graphContainer.getDataSource().save(null);
+						graphContainer.getBaseTopology().save(null);
 
 						graphContainer.redoLayout();
 					}

@@ -32,22 +32,15 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider;
 
 public class ErdosReniyOperation implements Operation {
 
-    TopologyProvider m_topologyProvider;
-    
-    public ErdosReniyOperation(TopologyProvider topologyProvider) {
-        m_topologyProvider=topologyProvider;
-    }
-
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-            m_topologyProvider.load(SFreeTopologyProvider.ERDOS_RENIS);
             if (operationContext != null && operationContext.getGraphContainer() != null) {
+                operationContext.getGraphContainer().getBaseTopology().load(SFreeTopologyProvider.ERDOS_RENIS);
                 operationContext.getGraphContainer().redoLayout();
             }
             return null;

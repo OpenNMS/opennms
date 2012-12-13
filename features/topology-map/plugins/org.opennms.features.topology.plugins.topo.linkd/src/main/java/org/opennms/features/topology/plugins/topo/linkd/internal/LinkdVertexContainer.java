@@ -93,7 +93,7 @@ public class LinkdVertexContainer extends VertexContainer {
         
         if (!containsId(newParentId)) return false;
         
-        LinkdVertex p = getItem(newParentId).getBean();
+        Vertex p = getItem(newParentId).getBean();
         
         if (p.isLeaf()) return false;
         
@@ -106,7 +106,7 @@ public class LinkdVertexContainer extends VertexContainer {
     @Override
     public boolean areChildrenAllowed(Object itemId) {
         if (!containsId(itemId)) return false;
-        LinkdVertex v = getItem(itemId).getBean();
+        Vertex v = getItem(itemId).getBean();
         return !v.isLeaf();    
     }
 
@@ -125,7 +125,7 @@ public class LinkdVertexContainer extends VertexContainer {
     @Override
     public boolean hasChildren(Object itemId) {
         if (!containsId(itemId)) return false;
-        LinkdVertex v = getItem(itemId).getBean();
+        Vertex v = getItem(itemId).getBean();
         if (v.isLeaf()) return false;
         LinkdGroup g = (LinkdGroup) v;
         return !g.getMembers().isEmpty();

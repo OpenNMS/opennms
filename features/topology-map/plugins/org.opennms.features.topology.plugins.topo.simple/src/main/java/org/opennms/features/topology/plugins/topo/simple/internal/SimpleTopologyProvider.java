@@ -148,7 +148,7 @@ public class SimpleTopologyProvider implements EditableGraphProvider {
     @Override
 	public void removeVertex(Object vertexId) {
         
-        SimpleVertex vertex = getVertex(vertexId, false);
+        Vertex vertex = getVertex(vertexId, false);
         if (vertex == null) return;
         
         m_vertexContainer.removeItem(vertexId);
@@ -252,7 +252,7 @@ public class SimpleTopologyProvider implements EditableGraphProvider {
         SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
         
         m_vertexContainer.removeAllItems();
-        for (SimpleVertex vertex : graph.m_vertices) {
+        for (Vertex vertex : graph.m_vertices) {
             if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
                 // Find the highest index group number and start the index for new groups above it
                 int groupNumber = Integer.parseInt(vertex.getId().substring(SIMPLE_GROUP_ID_PREFIX.length()));

@@ -35,7 +35,7 @@ public class SFreeTopologyProvider implements EditableGraphProvider {
 	}
 
 	@Override
-	public Object addGroup(String groupName, String groupIcon) {
+	public Vertex addGroup(String groupName, String groupIcon) {
 		return null;
 	}
 

@@ -170,6 +170,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 		public String getLabel() {
 			return m_label == null ? "???" : m_label;
 		}
+
+		@Override
+		public boolean isLeaf() {
+			return true;
+		}
 	}
 
 	private NCSComponentRepository m_dao;

@@ -14,7 +14,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -28,7 +27,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,12 +206,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     private final Layout m_layout;
     private VEGraph m_graph;
-    
-    public VEProviderGraphContainer(TopologyProvider dataSource, ProviderManager providerManager) {
-    	m_mergedGraphProvider = new MergingGraphProvider(new TPGraphProvider(dataSource), providerManager);
-		m_layout = new DefaultLayout(this);
-		rebuildGraph();
-	}
     
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);

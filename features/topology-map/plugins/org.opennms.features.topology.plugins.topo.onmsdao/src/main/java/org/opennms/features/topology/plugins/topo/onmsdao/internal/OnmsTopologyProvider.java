@@ -95,27 +95,27 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         m_edgeContainer.setBeanIdProperty("id");
     }
 
-    @Override
-    private Item addVertex(String id, int x, int y, String icon) {
+    private Vertex addVertex(String id, int x, int y, String icon) {
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
         SimpleVertex vertex = new SimpleLeafVertex(-1,id, x, y);
         vertex.setIcon(icon);
-        return m_vertexContainer.addBean(vertex);
+        m_vertexContainer.addBean(vertex);
+        return vertex;
     }
     
     @Override
-    public Item addGroup(String groupLabel, String icon) {
+    public Vertex addGroup(String groupLabel, String icon) {
         if (m_vertexContainer.containsId(groupLabel)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupLabel + " already exists!");
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupLabel);
-        SimpleVertex vertex = new SimpleGroup(-1,groupLabel);
+        SimpleVertex vertex = new SimpleGroup(groupLabel, -1);
         vertex.setIcon(icon);
-        return m_vertexContainer.addBean(vertex);
-        
+        m_vertexContainer.addBean(vertex);
+        return vertex;
     }
 
     private Edge connectVertices(String id, Vertex sourceVertextId, Vertex targetVertextId) {
@@ -146,8 +146,8 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         return getVertex(vertexId, true);
     }
 
-    private SimpleVertex getVertex(Object vertexId, boolean required) {
-        BeanItem<SimpleVertex> item = m_vertexContainer.getItem(vertexId);
+    private Vertex getVertex(Object vertexId, boolean required) {
+        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
         if (required && item == null) {
             throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
         }
@@ -236,7 +236,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         }
         
         for (OnmsMapElement element: getOnmsMapElementDao().findMapElementsOnMap(mapId)) {
-            SimpleGroup vertex = new SimpleGroup(element.getElementId(),Integer.toString(element.getId()));
+            SimpleGroup vertex = new SimpleGroup(Integer.toString(element.getId()), element.getElementId());
             vertex.setLocked(false);
             vertex.setSelected(false);
             vertex.setIcon(element.getIconName());
@@ -301,8 +301,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     public Vertex addVertex(int nodeid, int x, int y, String icon) {
         LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with icon: {}", getClass().getSimpleName(), icon);
         String nextVertexId = getNextVertexId();
-        addVertex(nextVertexId, x, y, icon);
-        return nextVertexId;
+        return addVertex(nextVertexId, x, y, icon);
     }
 
     @Override

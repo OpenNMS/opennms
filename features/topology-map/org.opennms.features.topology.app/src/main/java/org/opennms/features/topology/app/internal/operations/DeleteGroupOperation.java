@@ -65,15 +65,15 @@ public class DeleteGroupOperation implements Operation {
 		for(VertexRef childRef : graphContainer.getBaseTopology().getChildren(parent)) {
 			Object childId = getTopoItemId(graphContainer, childRef);
 			if (childId != null) {
-				graphContainer.getDataSource().setParent(childId, grandParentId);
+				graphContainer.getBaseTopology().setParent(childId, grandParentId);
 			}
 		}
 
 		// Remove the group from the topology
-		graphContainer.getDataSource().getVertexContainer().removeItem(parentId);
+		graphContainer.getBaseTopology().removeVertex(parentId);
 
 		// Save the topology
-		graphContainer.getDataSource().save(null);
+		graphContainer.getBaseTopology().save(null);
 
 		graphContainer.redoLayout();
 
