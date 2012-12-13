@@ -62,7 +62,7 @@ public class DeleteGroupOperation implements Operation {
 		Object grandParentId = getTopoItemId(graphContainer, grandParent);
 
 		// Detach all children from the group
-		for(VertexRef childRef : graphContainer.getChildren(parent)) {
+		for(VertexRef childRef : graphContainer.getBaseTopology().getChildren(parent)) {
 			Object childId = getTopoItemId(graphContainer, childRef);
 			if (childId != null) {
 				graphContainer.getDataSource().setParent(childId, grandParentId);
@@ -82,7 +82,7 @@ public class DeleteGroupOperation implements Operation {
 	
 	private static Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
 		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getVertex(vertexRef);
+		Vertex v = graphContainer.getBaseTopology().getVertex(vertexRef);
 		if (v == null) return null;
 		Item item = v.getItem();
 		if (item == null) return null;
@@ -104,7 +104,7 @@ public class DeleteGroupOperation implements Operation {
 		return targets != null && 
 			targets.size() == 1 && 
 			targets.get(0) != null && 
-			!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
+			!operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isLeaf()
 		;
 	}
 

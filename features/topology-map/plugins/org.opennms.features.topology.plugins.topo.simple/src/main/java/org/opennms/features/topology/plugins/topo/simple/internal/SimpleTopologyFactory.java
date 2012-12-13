@@ -36,8 +36,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.features.topology.api.EditableTopologyProvider;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -81,7 +81,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 					metaData.put(LABEL, properties.get(LABEL));
 				}
 
-				ServiceRegistration<?> registration = m_bundleContext.registerService(new String[] { TopologyProvider.class.getName(), EditableTopologyProvider.class.getName() },
+				ServiceRegistration<?> registration = m_bundleContext.registerService(new String[] { GraphProvider.class.getName(), EditableGraphProvider.class.getName() },
 						topoProvider, metaData);
 
 				m_registrations.put(pid, registration);

@@ -32,8 +32,10 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.topo.Edge;
+
 @XmlRootElement(name="edge")
-public class TestEdge {
+public class TestEdge implements Edge {
 	String m_id;
 	TestVertex m_source;
 	TestVertex m_target;

@@ -32,11 +32,13 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.topo.Edge;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
 @XmlRootElement(name="edge")
-public class WrappedEdge {
+public class WrappedEdge implements Edge {
 	Item m_edge;
 	WrappedVertex m_source;
 	WrappedVertex m_target;

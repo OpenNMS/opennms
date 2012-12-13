@@ -83,11 +83,11 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private String getSourceKey(Edge edge) {
-		return m_graphContainer.getVertex(edge.getSource().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getSource().getVertex()).getKey();
 	}
 
 	private String getTargetKey(Edge edge) {
-		return m_graphContainer.getVertex(edge.getTarget().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getTarget().getVertex()).getKey();
 	}
 
 	private String getStyleName(Edge edge) {

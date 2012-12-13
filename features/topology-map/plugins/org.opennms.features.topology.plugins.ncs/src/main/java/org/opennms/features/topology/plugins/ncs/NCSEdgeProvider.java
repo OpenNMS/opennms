@@ -32,13 +32,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -158,30 +158,18 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	}
 
-	public static class NCSVertex implements VertexRef {
+	public static class NCSVertex extends AbstractVertex {
 
-		private final String m_id;
 		private final String m_label;
 
 		public NCSVertex(String id, String label) {
-			m_id = id;
+			super("nodes", id);
 			m_label = label;
 		}
 
 		public String getLabel() {
 			return m_label == null ? "???" : m_label;
 		}
-
-		@Override
-		public String getId() {
-			return m_id;
-		}
-
-		@Override
-		public String getNamespace() {
-			return "nodes";
-		}
-
 	}
 
 	private NCSComponentRepository m_dao;

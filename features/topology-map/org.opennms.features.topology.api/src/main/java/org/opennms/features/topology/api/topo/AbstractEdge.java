@@ -1,9 +1,14 @@
 package org.opennms.features.topology.api.topo;
 
+import javax.xml.bind.annotation.XmlID;
+
 public abstract class AbstractEdge implements Edge {
 
 	private final String m_namespace;
 	private final String m_id;
+	private String m_label;
+	private String m_tooltipText;
+	private String m_styleName;
 
 	public AbstractEdge(String namespace, String id) {
 		m_namespace = namespace;
@@ -11,18 +16,46 @@ public abstract class AbstractEdge implements Edge {
 	}
 
 	@Override
-	public String getId() {
+	@XmlID
+	public final String getId() {
 		return m_id;
 	}
 
 	@Override
-	public String getNamespace() {
+	public final String getNamespace() {
 		return m_namespace;
 	}
 
 	@Override
 	public String getKey() {
 		return m_namespace + ":" + m_id;
+	}
+
+	@Override
+	public String getLabel() {
+		return m_label;
+	}
+
+	@Override
+	public String getTooltipText() {
+		return m_tooltipText;
+	}
+
+	@Override
+	public String getStyleName() {
+		return m_styleName;
+	}
+
+	public final void setLabel(String label) {
+		m_label = label;
+	}
+
+	public final void setTooltipText(String tooltipText) {
+		m_tooltipText = tooltipText;
+	}
+
+	public final void setStyleName(String styleName) {
+		m_styleName = styleName;
 	}
 
 	@Override

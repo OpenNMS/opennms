@@ -28,10 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.sfree.internal;
 
+import org.opennms.features.topology.api.SimpleVertex;
+
 public class SimpleLeafVertex extends SimpleVertex {
 
-	public SimpleLeafVertex() {}
-	
 	public SimpleLeafVertex(String id, int x, int y) {
 		super(id, x, y);
 	}

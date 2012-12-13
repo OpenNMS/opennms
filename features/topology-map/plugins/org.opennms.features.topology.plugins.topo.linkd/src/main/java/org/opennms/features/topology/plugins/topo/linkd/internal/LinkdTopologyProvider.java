@@ -44,7 +44,8 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -59,7 +60,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
-public class LinkdTopologyProvider implements TopologyProvider {
+public class LinkdTopologyProvider implements EditableGraphProvider {
     private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
@@ -160,6 +161,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
+    @Override
     public void onInit() {
         log("init: loading topology v1.3");
         loadtopology();
@@ -172,85 +174,37 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     @Override
-    public Object addGroup(String groupName, String groupIconKey) {
+    public Vertex addGroup(String groupName, String groupIconKey) {
         String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIconKey, groupName);
-        return nextGroupId;
+        return addGroup(nextGroupId, groupIconKey, groupName);
     }
 
-    private Item addGroup(String groupId, String iconKey, String label) {
+    private Vertex addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         log("Adding a group: " + groupId);
         LinkdVertex vertex = new LinkdGroup(groupId, label);
         vertex.setIconKey(iconKey);
-        return m_vertexContainer.addBean(vertex);        
+        m_vertexContainer.addBean(vertex);
+        return vertex;
     }
     
-    public String getNextGroupId() {
+    private String getNextGroupId() {
         return LINKD_GROUP_ID_PREFIX + m_groupCounter++;
     }
 
-    
-    @Override
-    public boolean containsVertexId(Object vertexId) {
-        return m_vertexContainer.containsId(vertexId);    
-    }
-
-    @Override
-    public BeanContainer<String, LinkdEdge> getEdgeContainer() {
-        return m_edgeContainer;
-    }
-
-    @Override
-    public Collection<String> getEdgeIds() {
-        return m_edgeContainer.getItemIds();
-    }
-
-    @Override
-    public Collection<String> getEdgeIdsForVertex(Object vertexId) {
-        
-        LinkdVertex vertex = getRequiredVertex(vertexId);
-        
-        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
-        
-        for(LinkdEdge e : vertex.getEdges()) {
-            
-            String edgeId = e.getId();
-            
-            edges.add(edgeId);
-
-        }
-        
-        return edges;
-    }
-
-    
-    private LinkdVertex getRequiredVertex(Object vertexId) {
+    private Vertex getRequiredVertex(Object vertexId) {
         return getVertex(vertexId, true);
     }
 
-    private LinkdVertex getVertex(Object vertexId, boolean required) {
-        BeanItem<LinkdVertex> item = m_vertexContainer.getItem(vertexId);
+    private Vertex getVertex(Object vertexId, boolean required) {
+        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
         if (required && item == null) {
             throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
         }
         
         return item == null ? null : item.getBean();
-    }
-
-    @Override
-    public Collection<String> getEndPointIdsForEdge(Object edgeId) {
-        LinkdEdge edge= getRequiredEdge(edgeId);
-
-        List<String> endPoints = new ArrayList<String>(2);
-        
-        endPoints.add(edge.getSource().getId());
-        endPoints.add(edge.getTarget().getId());
-
-        return endPoints;
-
     }
 
     private LinkdEdge getRequiredEdge(Object edgeId) {
@@ -264,16 +218,6 @@ public class LinkdTopologyProvider implements TopologyProvider {
         }
         
         return item == null ? null : item.getBean();
-    }
-
-    @Override
-    public LinkdVertexContainer getVertexContainer() {
-        return m_vertexContainer;
-    }
-
-    @Override
-    public Collection<String> getVertexIds() {
-        return m_vertexContainer.getItemIds();
     }
 
     @Override
@@ -293,15 +237,12 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 @XmlElement(name="vertex", type=LinkdNodeVertex.class),
                 @XmlElement(name="group", type=LinkdGroup.class)
         })
-        List<LinkdVertex> m_vertices = new ArrayList<LinkdVertex>();
+        List<Vertex> m_vertices = new ArrayList<Vertex>();
         
         @XmlElement(name="edge")
         List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
         
-        @SuppressWarnings("unused")
-        public SimpleGraph() {}
-
-        public SimpleGraph(List<LinkdVertex> vertices, List<LinkdEdge> edges) {
+        public SimpleGraph(List<Vertex> vertices, List<LinkdEdge> edges) {
             m_vertices = vertices;
             m_edges = edges;
         }
@@ -326,9 +267,9 @@ public class LinkdTopologyProvider implements TopologyProvider {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
         log("loadtopology: Clean Vertexcontainer");
-        getVertexContainer().removeAllItems();
+        m_vertexContainer.removeAllItems();
         log("loadtopology: Clean EdgeContainer");
-        getEdgeContainer().removeAllItems();
+        m_edgeContainer.removeAllItems();
 
         Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
         Collection<LinkdEdge> edges = new ArrayList<LinkdEdge>();
@@ -389,7 +330,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
             log("loadtopology: loading topology from configuration file: " + m_configurationFile);
             m_groupCounter = 0;
             SimpleGraph graph = getGraphFromFile(configFile);
-            for (LinkdVertex vertex: graph.m_vertices) {
+            for (Vertex vertex: graph.m_vertices) {
                 if (!vertex.isLeaf()) {
                     log("loadtopology: adding group to topology: " + vertex.getId());
                     // Find the highest index group number and start the index for new groups above it
@@ -401,7 +342,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
                 }
             }
             
-            for (LinkdVertex vertex: graph.m_vertices) {
+            for (Vertex vertex: graph.m_vertices) {
                 log("loadtopology: found vertex: " + vertex.getId());
                 if (vertex.isRoot()) {
                     if (!vertex.isLeaf())
@@ -545,7 +486,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     public void save(String filename) {
         if (filename == null) 
             filename=m_configurationFile;
-        List<LinkdVertex> vertices = getBeans(m_vertexContainer);
+        List<Vertex> vertices = getBeans(m_vertexContainer);
         List<LinkdEdge> edges = getBeans(m_edgeContainer);
 
         SimpleGraph graph = new SimpleGraph(vertices, edges);
@@ -565,7 +506,7 @@ public class LinkdTopologyProvider implements TopologyProvider {
     }
 
     @Override
-    public void setParent(Object vertexId, Object parentId) {
+    public void setParent(VertexRef vertexId, VertexRef parentId) {
         boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
         log("setParent() for vertex: " + vertexId + ", parent: " + parentId + ", result: " + (addedparent ? "SUCCESS" : "FAILED"));
     }
@@ -664,6 +605,4 @@ public class LinkdTopologyProvider implements TopologyProvider {
 	public String getNamespace() {
 		return "nodes";
 	}
-    
-    
 }

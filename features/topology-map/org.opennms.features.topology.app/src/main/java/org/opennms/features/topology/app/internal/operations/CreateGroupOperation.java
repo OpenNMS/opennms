@@ -128,12 +128,11 @@ public class CreateGroupOperation implements Constants, Operation {
 			@Override
 			public boolean isValid(Object value) {
 				try {
-					final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
-					for (String vertexId : vertexIds) {
-						BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
-						if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
-							groupLabels.add((String)vertex.getItemProperty("label").getValue());
+					for (Vertex vertexId : vertexIds) {
+						if (!vertexId.isLeaf()) {
+							groupLabels.add(vertexId.getLabel());
 						}
 					}
 
@@ -202,7 +201,7 @@ public class CreateGroupOperation implements Constants, Operation {
 
 	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
 		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getVertex(vertexRef);
+		Vertex v = graphContainer.getBaseTopology().getVertex(vertexRef);
 		if (v == null) return null;
 		Item item = v.getItem();
 		if (item == null) return null;

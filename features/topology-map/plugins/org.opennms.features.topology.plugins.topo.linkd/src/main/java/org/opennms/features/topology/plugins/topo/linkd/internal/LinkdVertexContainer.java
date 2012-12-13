@@ -34,22 +34,19 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.Vertex;
 
-public class LinkdVertexContainer extends VertexContainer<String, LinkdVertex> {
-	/**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+public class LinkdVertexContainer extends VertexContainer {
 
     public LinkdVertexContainer() {
-		super(LinkdVertex.class);
+		super();
 		setBeanIdProperty("id");
 	}
 
     @Override
     public Collection<?> getChildren(Object itemId) {
         if (!containsId(itemId)) return Collections.EMPTY_LIST;
-        LinkdVertex v = getItem(itemId).getBean();
+        Vertex v = getItem(itemId).getBean();
         if (v.isLeaf()) {
                 return Collections.EMPTY_LIST;
         } else {
@@ -87,7 +84,7 @@ public class LinkdVertexContainer extends VertexContainer<String, LinkdVertex> {
             throws UnsupportedOperationException {
         if (!containsId(itemId)) return false;
         
-        LinkdVertex v  = getItem(itemId).getBean();
+        Vertex v  = getItem(itemId).getBean();
         
         if (newParentId == null) {
                 v.setParent(null);

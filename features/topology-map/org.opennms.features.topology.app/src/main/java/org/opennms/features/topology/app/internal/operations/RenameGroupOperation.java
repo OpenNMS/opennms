@@ -89,7 +89,7 @@ public class RenameGroupOperation implements Constants, Operation {
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
 				VertexRef parentId = targets.get(0);
-				Vertex parentVertex = parentId == null ? null : graphContainer.getVertex(parentId);
+				Vertex parentVertex = parentId == null ? null : graphContainer.getBaseTopology().getVertex(parentId);
 				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
 
 				if (parentItem != null) {
@@ -121,12 +121,11 @@ public class RenameGroupOperation implements Constants, Operation {
 			@Override
 			public boolean isValid(Object value) {
 				try {
-					final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
-					for (String vertexId : vertexIds) {
-						BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
-						if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
-							groupLabels.add((String)vertex.getItemProperty("label").getValue());
+					for (Vertex vertexId : vertexIds) {
+						if (!vertexId.isLeaf()) {
+							groupLabels.add(vertexId.getLabel());
 						}
 					}
 
@@ -192,7 +191,7 @@ public class RenameGroupOperation implements Constants, Operation {
 		return targets != null && 
 		targets.size() == 1 && 
 		targets.get(0) != null && 
-		!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
+		!operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isLeaf()
 		;
 	}
 

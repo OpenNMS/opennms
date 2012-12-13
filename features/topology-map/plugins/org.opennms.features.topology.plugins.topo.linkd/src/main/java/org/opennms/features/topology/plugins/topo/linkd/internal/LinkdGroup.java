@@ -42,8 +42,7 @@ public class LinkdGroup extends LinkdVertex {
 	List<LinkdVertex> m_members = new ArrayList<LinkdVertex>();
 	
 	int m_mapid;
-	public LinkdGroup() {}
-	
+
 	public LinkdGroup(String groupId, String label) {
 	    super(groupId, GROUP_ICON_KEY, label, null);
 	}

@@ -32,7 +32,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
@@ -43,17 +42,21 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.EditableTopologyProvider;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.SimpleGroup;
+import org.opennms.features.topology.api.SimpleVertex;
+import org.opennms.features.topology.api.SimpleVertexContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
-public class SimpleTopologyProvider implements TopologyProvider, EditableTopologyProvider{
+public class SimpleTopologyProvider implements EditableGraphProvider {
 	
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
@@ -82,6 +85,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         setTopologyLocation(defaultGraph);
     }
     
+    @Override
     public String getNamespace() {
     	return m_namespace;
     }
@@ -103,52 +107,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 		}
 	}
 
-	public SimpleVertexContainer getVertexContainer() {
-        return m_vertexContainer;
-    }
-
-    public BeanContainer<String, SimpleEdge> getEdgeContainer() {
-        return m_edgeContainer;
-    }
-
-    public Collection<String> getVertexIds() {
-        return m_vertexContainer.getItemIds();
-    }
-
-    @Override
-    public Collection<String> getEdgeIds() {
-        return m_edgeContainer.getItemIds();
-    }
-
-    @Override
-    public Collection<String> getEndPointIdsForEdge(Object edgeId) {
-        
-        SimpleEdge edge = getRequiredEdge(edgeId);
-
-        List<String> endPoints = new ArrayList<String>(2);
-        
-        endPoints.add(edge.getSource().getId());
-        endPoints.add(edge.getTarget().getId());
-
-        return endPoints;
-    }
-
-    @Override
-    public Collection<String> getEdgeIdsForVertex(Object vertexId) {
-        
-        SimpleVertex vertex = getRequiredVertex(vertexId);
-        
-        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
-        
-        for(SimpleEdge e : vertex.getEdges()) {
-            edges.add(e.getId());
-        }
-        
-        return edges;
-
-    }
-    
-    private Item addVertex(String id, int x, int y, String label, String ipAddr, int nodeID) {
+    private Vertex addVertex(String id, int x, int y, String label, String ipAddr, int nodeID) {
         if (m_vertexContainer.containsId(id)) {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
@@ -158,10 +117,12 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         vertex.setLabel(label);
         vertex.setIpAddr(ipAddr);
         vertex.setNodeID(nodeID);
-        return m_vertexContainer.addBean(vertex);
+        m_vertexContainer.addBean(vertex);
+        return vertex;
     }
     
-    private Item addGroup(String groupId, String iconKey, String label) {
+    @Override
+    public Item addGroup(String groupId, String iconKey, String label) {
         if (m_vertexContainer.containsId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
@@ -172,14 +133,13 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return m_vertexContainer.addBean(vertex);
         
     }
-    private void connectVertices(String id, Object sourceVertextId, Object targetVertextId) {
-        SimpleVertex source = getRequiredVertex(sourceVertextId);
-        SimpleVertex target = getRequiredVertex(targetVertextId);
-        
-        SimpleEdge edge = new SimpleEdge(id, source, target);
+    private Edge connectVertices(String id, Vertex sourceVertexId, Vertex targetVertexId) {
+
+        SimpleEdge edge = new SimpleEdge("simple", id, sourceVertexId, targetVertexId);
         
         m_edgeContainer.addBean(edge);
         
+        return edge;
     }
     
     /* (non-Javadoc)
@@ -200,12 +160,12 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         
     }
 
-    private SimpleVertex getRequiredVertex(Object vertexId) {
+    private Vertex getRequiredVertex(Object vertexId) {
         return getVertex(vertexId, true);
     }
 
-    private SimpleVertex getVertex(Object vertexId, boolean required) {
-        BeanItem<SimpleVertex> item = m_vertexContainer.getItem(vertexId);
+    private Vertex getVertex(Object vertexId, boolean required) {
+        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
         if (required && item == null) {
             throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
         }
@@ -213,11 +173,11 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         return item == null ? null : item.getBean();
     }
 
-    private SimpleEdge getRequiredEdge(Object edgeId) {
+    private Edge getRequiredEdge(Object edgeId) {
         return getEdge(edgeId, true);
     }
 
-    private SimpleEdge getEdge(Object edgeId, boolean required) {
+    private Edge getEdge(Object edgeId, boolean required) {
         BeanItem<SimpleEdge> item = m_edgeContainer.getItem(edgeId);
         if (required && item == null) {
             throw new IllegalArgumentException("required edge " + edgeId + " not found.");
@@ -235,7 +195,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
                 @XmlElement(name="vertex", type=SimpleLeafVertex.class),
                 @XmlElement(name="group", type=SimpleGroup.class)
         })
-        List<SimpleVertex> m_vertices = new ArrayList<SimpleVertex>();
+        List<Vertex> m_vertices = new ArrayList<Vertex>();
         
         @XmlElement(name="edge")
         List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
@@ -246,7 +206,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         @SuppressWarnings("unused") // except by JAXB
         public SimpleGraph() {}
 
-        public SimpleGraph(String namespace, List<SimpleVertex> vertices, List<SimpleEdge> edges) {
+        public SimpleGraph(String namespace, List<Vertex> vertices, List<SimpleEdge> edges) {
         	m_namespace = namespace;
             m_vertices = vertices;
             m_edges = edges;
@@ -261,7 +221,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 */
     @Override
 	public void save(String filename) {
-        List<SimpleVertex> vertices = getBeans(m_vertexContainer);
+        List<Vertex> vertices = getBeans(m_vertexContainer);
         List<SimpleEdge> edges = getBeans(m_edgeContainer);
 
         SimpleGraph graph = new SimpleGraph(m_namespace, vertices, edges);
@@ -269,6 +229,7 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         JAXB.marshal(graph, new File(filename));
     }
     
+    @Override
 	public void load(URL url) {
         SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
         
@@ -334,35 +295,25 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 */
     @Override
 	public void resetContainer() {
-        getVertexContainer().removeAllItems();
-        getEdgeContainer().removeAllItems();
+        m_vertexContainer.removeAllItems();
+        m_edgeContainer.removeAllItems();
         
         m_counter = 0;
         m_edgeCounter = 0;
     }
 
-    public Collection<?> getPropertyIds() {
-        return Collections.EMPTY_LIST;
-    }
-
-    public Property getProperty(String propertyId) {
-        return null;
-    }
-    
-    
     /* (non-Javadoc)
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addVertex(int, int)
 	 */
     @Override
-	public String addVertex(int x, int y) {
+	public Vertex addVertex(int x, int y) {
         String nextVertexId = getNextVertexId();
 //        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1", -1);
         /* 
          * Passing a nodeID of -1 will disable the Events/Alarms, Node Info, and
          * Resource Graphs windows in the context menus  
          */
-        addVertex(nextVertexId, x, y, "Vertex " + nextVertexId, "64.146.64.214", -1);
-        return nextVertexId;
+        return addVertex(nextVertexId, x, y, "Vertex " + nextVertexId, "64.146.64.214", -1);
     }
 
     @Override
@@ -374,10 +325,9 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#connectVertices(java.lang.Object, java.lang.Object)
 	 */
     @Override
-	public String connectVertices(Object sourceVertextId, Object targetVertextId) {
+	public Edge connectVertices(Vertex sourceVertextId, Vertex targetVertextId) {
         String nextEdgeId = getNextEdgeId();
-        connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
-        return nextEdgeId;
+        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
     }
 
     /* (non-Javadoc)
@@ -390,14 +340,4 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
         addGroup(nextGroupId, groupIconKey, groupLabel);
         return nextGroupId;
     }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#containsVertexId(java.lang.Object)
-	 */
-
-	@Override
-    public boolean containsVertexId(Object vertexId) {
-        return m_vertexContainer.containsId(vertexId);
-    }
-    
 }

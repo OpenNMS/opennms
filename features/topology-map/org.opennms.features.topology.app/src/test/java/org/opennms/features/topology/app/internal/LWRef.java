@@ -1,4 +1,6 @@
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal;
+
+import org.opennms.features.topology.api.topo.Ref;
 
 class LWRef implements Ref {
 	

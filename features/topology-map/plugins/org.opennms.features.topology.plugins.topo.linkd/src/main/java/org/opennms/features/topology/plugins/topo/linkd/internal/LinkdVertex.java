@@ -31,11 +31,12 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
-public abstract class LinkdVertex {
+import org.opennms.features.topology.api.topo.AbstractVertex;
+
+public abstract class LinkdVertex extends AbstractVertex {
 	String m_id;
 	int m_x;
 	int m_y;
@@ -49,9 +50,12 @@ public abstract class LinkdVertex {
 	List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
 	private int m_semanticZoomLevel = -1;
 	
-	public LinkdVertex() {}
+	public LinkdVertex() {
+		super("linkd", null);
+	}
 
 	public LinkdVertex(String id, String iconKey, String label, String ipAddr) {
+		super("linkd", id);
 	    m_id=id;
 	    m_iconKey=iconKey;
 	    m_label = label;
@@ -59,12 +63,9 @@ public abstract class LinkdVertex {
 	}
 	
 	public LinkdVertex(String id, int x, int y, String iconKey, String label, String ipAddr) {
-		m_id=id;
+		this(id, iconKey, label, ipAddr);
 		m_x=x;
 		m_y=y;
-		m_iconKey=iconKey;
-		m_label=label;
-		m_ipAddr = ipAddr;
 	}
 	
 	@XmlIDREF
@@ -96,15 +97,6 @@ public abstract class LinkdVertex {
 		return m_parent == null;
 	}
 	
-	@XmlID
-	public String getId() {
-		return m_id;
-	}
-
-	public void setId(String id) {
-		m_id = id;
-	}
-
 	public int getX() {
 		return m_x;
 	}
@@ -127,14 +119,6 @@ public abstract class LinkdVertex {
 
 	public void setSelected(boolean selected) {
 		m_selected = selected;
-	}
-
-	public String getIconKey() {
-		return m_iconKey;
-	}
-
-	public void setIconKey(String icon) {
-		m_iconKey = icon;
 	}
 
 	public String getIcon() {
@@ -216,14 +200,6 @@ public abstract class LinkdVertex {
 
 	}
 
-    public String getTooltipText() {
-        return m_tooltipText;
-    }
-
-    public void setTooltipText(String tooltipText) {
-        m_tooltipText = tooltipText;
-    }
-    
     public int getNodeID() {
         return 0;
     }

@@ -37,12 +37,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.Vertex;
 
-public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
+public class TestVertexContainer extends VertexContainer {
 	private static final long serialVersionUID = 1L;
 
 	public TestVertexContainer() {
-		super(TestVertex.class);
+		super();
 		setBeanIdProperty("id");
 	}
 	
@@ -53,7 +54,7 @@ public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
 	public boolean areChildrenAllowed(Object itemId) {
 	    assertVertex(itemId);
 		if (!containsId(itemId)) return false;
-		TestVertex v = getItem(itemId).getBean();
+		Vertex v = getItem(itemId).getBean();
 		return !v.isLeaf();
 	}
 
@@ -64,7 +65,7 @@ public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
     public Collection<?> getChildren(Object itemId) {
         assertVertex(itemId);
 		if (!containsId(itemId)) return Collections.EMPTY_LIST;
-		TestVertex v = getItem(itemId).getBean();
+		Vertex v = getItem(itemId).getBean();
 		if (v.isLeaf()) {
 			return Collections.EMPTY_LIST;
 		}
@@ -89,7 +90,7 @@ public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
 	public boolean hasChildren(Object itemId) {
 	    assertVertex(itemId);
 		if (!containsId(itemId)) return false;
-		TestVertex v = getItem(itemId).getBean();
+		Vertex v = getItem(itemId).getBean();
 		return !v.isLeaf();
 	}
 
@@ -120,7 +121,7 @@ public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
 	    assertGroup(newParentId);
 		if (!containsId(itemId)) return false;
 		
-		TestVertex v  = getItem(itemId).getBean();
+		Vertex v  = getItem(itemId).getBean();
 		
 		if (newParentId == null) {
 			v.setParent(null);
@@ -130,7 +131,7 @@ public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
 		
 		if (!containsId(newParentId)) return false;
 		
-		TestVertex p = getItem(newParentId).getBean();
+		Vertex p = getItem(newParentId).getBean();
 		
 		if (p.isLeaf()) return false;
 		
@@ -144,7 +145,7 @@ public class TestVertexContainer extends VertexContainer<Object,TestVertex> {
 
     private void assertGroup(Object newParentId) {
         assertVertex(newParentId);
-        TestVertex group = getItem(newParentId).getBean();
+        Vertex group = getItem(newParentId).getBean();
         assertFalse(group.isLeaf());
         
     }

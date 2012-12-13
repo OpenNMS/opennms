@@ -1,14 +1,14 @@
 package org.opennms.features.topology.app.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.LWEdgeRef;
-import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 
 public class MergingGraphProviderTest {

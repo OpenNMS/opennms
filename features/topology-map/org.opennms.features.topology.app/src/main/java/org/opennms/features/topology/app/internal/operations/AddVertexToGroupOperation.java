@@ -72,12 +72,11 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 		final VertexRef currentVertex = targets.get(0);
 		final String currentVertexId = currentVertex.getId();
-		final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+		final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getChildren(currentVertex);
 		final Collection<String> groupIds = new ArrayList<String>();
-		for (String vertexId : vertexIds) {
-			BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
-			if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
-				groupIds.add(vertexId);
+		for (Vertex vertexId : vertexIds) {
+			if (!vertexId.isLeaf()) {
+				groupIds.add(vertexId.getLabel());
 				log.debug("Found group: {}", vertexId);
 			}
 		}
@@ -101,7 +100,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				if ("Group".equals(pid)) {
 					Select select = new Select("Group");
 					for (String childId : groupIds) {
-						BeanItem<?> childVertex = graphContainer.getDataSource().getVertexContainer().getItem(childId);
+						BeanItem<?> childVertex = graphContainer.getVertexContainer().getItem(childId);
 						Property childLabelProperty = childVertex.getItemProperty("label");
 						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
 						log.debug("Adding child: {}, {}", childId, childLabel);
@@ -200,7 +199,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
 		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getVertex(vertexRef);
+		Vertex v = graphContainer.getBaseTopology().getVertex(vertexRef);
 		if (v == null) return null;
 		Item item = v.getItem();
 		if (item == null) return null;

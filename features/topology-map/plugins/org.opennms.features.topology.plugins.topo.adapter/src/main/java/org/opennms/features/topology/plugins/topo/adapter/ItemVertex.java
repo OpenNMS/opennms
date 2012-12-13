@@ -87,10 +87,6 @@ class ItemVertex extends AbstractVertex {
     }
 
     @Override
-    public String getKey() {
-        return getNamespace()+":"+getId();
-    }
-    @Override
     public String getLabel() {
         Property labelProperty = getItem().getItemProperty(LABEL);
         String label = labelProperty == null ? "labels unsupported " : (String) labelProperty.getValue();

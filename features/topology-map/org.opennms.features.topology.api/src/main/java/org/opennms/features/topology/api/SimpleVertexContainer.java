@@ -26,23 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.onmsdao.internal;
+package org.opennms.features.topology.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.features.topology.api.VertexContainer;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex> {
-	/**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+public class SimpleVertexContainer extends VertexContainer {
 
-    public SimpleVertexContainer() {
-		super(SimpleVertex.class);
+	public SimpleVertexContainer() {
+		super();
 		setBeanIdProperty("id");
 	}
 	
@@ -50,47 +47,49 @@ public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex>
 		fireItemSetChange();
 	}
 
+	@Override
 	public boolean areChildrenAllowed(Object itemId) {
 		if (!containsId(itemId)) return false;
-		SimpleVertex v = getItem(itemId).getBean();
+		Vertex v = getItem(itemId).getBean();
 		return !v.isLeaf();
 	}
 
-	public Collection<?> getChildren(Object itemId) {
-		if (!containsId(itemId)) return Collections.EMPTY_LIST;
-		SimpleVertex v = getItem(itemId).getBean();
+	@Override
+	public Collection<VertexRef> getChildren(VertexRef itemId) {
+		if (!containsId(itemId)) return Collections.emptyList();
+		Vertex v = getItem(itemId).getBean();
 		if (v.isLeaf()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		else {
 			SimpleGroup g = (SimpleGroup)v;
-			List<String> memberIds = new ArrayList<String>();
-			for(SimpleVertex member : g.getMembers()) {
-				memberIds.add(member.getId());
-			}
-			return memberIds;
+			return g.getMembers();
 		}
 	}
 
-	public Object getParent(Object itemId) {
+	@Override
+	public VertexRef getParent(VertexRef itemId) {
 		if (!containsId(itemId)) return null;
 		
 		SimpleGroup g = getItem(itemId).getBean().getParent();
 		return g == null ? null : g.getId();
 	}
 
-	public boolean hasChildren(Object itemId) {
+	@Override
+	public boolean hasChildren(VertexRef itemId) {
 		if (!containsId(itemId)) return false;
-		SimpleVertex v = getItem(itemId).getBean();
+		Vertex v = getItem(itemId).getBean();
 		return !v.isLeaf();
 	}
 
-	public boolean isRoot(Object itemId) {
+	@Override
+	public boolean isRoot(VertexRef itemId) {
 		if (!containsId(itemId)) return false;
 		
 		return (getParent(itemId) == null);
 	}
 
+	@Override
 	public Collection<?> rootItemIds() {
 		List<Object> rootItemIds = new ArrayList<Object>();
 		
@@ -102,29 +101,33 @@ public class SimpleVertexContainer extends VertexContainer<String, SimpleVertex>
 		return rootItemIds;
 	}
 
+	@Override
 	public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("this operation is not allowed");
 	}
 
-	public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
+	@Override
+	public boolean setParent(Object itemId, Object newParentId) {
 		if (!containsId(itemId)) return false;
 		
-		SimpleVertex v  = getItem(itemId).getBean();
+		Vertex v  = getItem(itemId).getBean();
 		
 		if (newParentId == null) {
 			v.setParent(null);
+			fireItemSetChange();
 			return true;
 		}
 		
 		if (!containsId(newParentId)) return false;
 		
-		SimpleVertex p = getItem(newParentId).getBean();
+		Vertex p = getItem(newParentId).getBean();
 		
 		if (p.isLeaf()) return false;
 		
 		SimpleGroup g = (SimpleGroup)p;
 		
 		v.setParent(g);
+		fireItemSetChange();
 		return true;
 		
 	}

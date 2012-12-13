@@ -30,16 +30,16 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.EditableTopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class ConnectOperation implements Operation {
 
-    EditableTopologyProvider m_topologyProvider;
+    EditableGraphProvider m_topologyProvider;
     
-    public ConnectOperation(EditableTopologyProvider topologyProvider) {
+    public ConnectOperation(EditableGraphProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
     
@@ -50,9 +50,7 @@ public class ConnectOperation implements Operation {
     		VertexRef sourceRef = targets.get(0);
     		VertexRef targetRef = targets.get(1);
     		if (ns.equals(sourceRef.getNamespace()) && ns.equals(targetRef.getNamespace()))  {
-    			Object sourceVertexId = sourceRef.getId();
-    			Object targetVertexId = targetRef.getId();
-    			m_topologyProvider.connectVertices(sourceVertexId, targetVertexId);
+    			m_topologyProvider.connectVertices(sourceRef, targetRef);
     		}
     	}
     	return null;

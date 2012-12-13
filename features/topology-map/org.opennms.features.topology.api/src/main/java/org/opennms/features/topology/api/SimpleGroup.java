@@ -26,35 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.sfree.internal;
+package org.opennms.features.topology.api;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.features.topology.api.SimpleVertex;
+
+@XmlRootElement(name="group")
 public class SimpleGroup extends SimpleVertex {
 
 	List<SimpleVertex> m_members = new ArrayList<SimpleVertex>();
-	
-	
-	public SimpleGroup() {}
-	
-	public SimpleGroup(String id) {
-		super(id);
+
+	int m_mapid;
+
+	public SimpleGroup(String groupId) {
+		this(groupId, -1);
+	}
+
+	public SimpleGroup(String groupId, int mapid) {
+		super(groupId);
+		m_mapid = mapid;
+	}
+
+	public int getMapid() {
+		return m_mapid;
+	}
+
+	public void setMapid(int mapid) {
+		m_mapid = mapid;
 	}
 
 	@Override
 	public boolean isLeaf() {
 		return false;
 	}
-	
+
+	@XmlIDREF
 	public List<SimpleVertex> getMembers() {
 		return m_members;
 	}
-	
+
 	public void addMember(SimpleVertex v) {
 		m_members.add(v);
 	}
-	
+
 	public void removeMember(SimpleVertex v) {
 		m_members.remove(v);
 	}

@@ -1,4 +1,6 @@
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal;
+
+import org.opennms.features.topology.api.topo.EdgeRef;
 
 public class LWEdgeRef extends LWRef implements EdgeRef {
 

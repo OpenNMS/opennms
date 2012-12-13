@@ -205,13 +205,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private SelectionManager m_selectionManager = new DefaultSelectionManager(); 
     
     private MergingGraphProvider m_mergedGraphProvider;
-    private TopologyProvider m_dataSource;
 
     private final Layout m_layout;
     private VEGraph m_graph;
     
     public VEProviderGraphContainer(TopologyProvider dataSource, ProviderManager providerManager) {
-    	m_dataSource = dataSource;
     	m_mergedGraphProvider = new MergingGraphProvider(new TPGraphProvider(dataSource), providerManager);
 		m_layout = new DefaultLayout(this);
 		rebuildGraph();
@@ -361,26 +359,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     		return getDisplayVertex(parent);
     	}
     }
-    
-
-    @Override
-    public Vertex getVertex(VertexRef ref) {
-    	return m_mergedGraphProvider.getVertex(ref);
-    }
-
-    @Override
-    public Edge getEdge(EdgeRef ref) {
-    	return m_mergedGraphProvider.getEdge(ref);
-    }
-
-    @Override
-    public TopologyProvider getDataSource() {
-    	return m_dataSource;
-    }
 
     @Override
     public void setDataSource(TopologyProvider topologyProvider) {
-    	m_dataSource = topologyProvider;
     	TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
     	m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
     }
@@ -428,26 +409,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
 
 	@Override
-	public Collection<? extends Vertex> getVertices() {
-		return m_mergedGraphProvider.getVertices();
-	}
-
-	@Override
-	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
-		return m_mergedGraphProvider.getChildren(vRef);
-	}
-
-	@Override
-	public Collection<? extends Vertex> getRootGroup() {
-		return m_mergedGraphProvider.getRootGroup();
-	}
-
-	@Override
-	public boolean hasChildren(VertexRef vRef) {
-		return m_mergedGraphProvider.hasChildren(vRef);
-	}
-
-	@Override
 	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
 		for(VertexRef vertexRef : vertexRefs) {
@@ -459,7 +420,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
 		processed.add(vertexId);
 
-		for(VertexRef childId : getChildren(vertexId)) {
+		for(VertexRef childId : getBaseTopology().getChildren(vertexId)) {
 			if (!processed.contains(childId)) {
 				addRefTreeToSet(childId, processed);
 			}

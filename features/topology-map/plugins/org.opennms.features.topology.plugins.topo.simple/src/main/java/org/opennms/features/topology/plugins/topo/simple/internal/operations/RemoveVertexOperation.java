@@ -31,7 +31,7 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.EditableTopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -40,9 +40,9 @@ import org.slf4j.LoggerFactory;
 
 public class RemoveVertexOperation implements Operation {
 
-    EditableTopologyProvider m_topologyProvider;
+    EditableGraphProvider m_topologyProvider;
     
-    public RemoveVertexOperation(EditableTopologyProvider topologyProvider) {
+    public RemoveVertexOperation(EditableGraphProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
     
@@ -73,8 +73,8 @@ public class RemoveVertexOperation implements Operation {
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
-            for(Object target : targets) {
-                if(!m_topologyProvider.containsVertexId(target)) return false;
+            for(VertexRef target : targets) {
+                if(m_topologyProvider.getVertex(target) == null) return false;
             }
             return true;
         }
@@ -83,7 +83,6 @@ public class RemoveVertexOperation implements Operation {
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return "RemoveVertex";
     }
 }

@@ -28,20 +28,27 @@
 
 package org.opennms.features.topology.api;
 
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-public interface EditableTopologyProvider extends TopologyProvider {
+public interface EditableGraphProvider extends GraphProvider {
 
-	public abstract void removeVertex(Object vertexId);
+	void removeVertex(Object vertexId);
 
-	public abstract void save(String filename);
+	void save(String filename);
 
-	public abstract void load(String filename);
+	void load(String filename);
 
-	public abstract void resetContainer();
+	void resetContainer();
 
-	public abstract Object addVertex(int x, int y);
+	Vertex addVertex(int x, int y);
 
-	public abstract Object connectVertices(Object sourceVertextId,
-			Object targetVertextId);
+	void setParent(VertexRef vertexId, VertexRef parentId);
+	
+	Vertex addGroup(String label, String iconKey);
+
+	Edge connectVertices(Vertex sourceVertextId, Vertex targetVertextId);
 
 }

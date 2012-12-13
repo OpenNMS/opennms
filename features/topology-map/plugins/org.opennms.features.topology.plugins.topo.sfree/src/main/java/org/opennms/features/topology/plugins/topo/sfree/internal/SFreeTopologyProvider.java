@@ -1,21 +1,23 @@
 package org.opennms.features.topology.plugins.topo.sfree.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.SimpleVertexContainer;
+import org.opennms.features.topology.api.topo.Vertex;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
-public class SFreeTopologyProvider implements TopologyProvider {
+public class SFreeTopologyProvider implements EditableGraphProvider {
 
+	private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
 	public static final String ERDOS_RENIS = "ErdosReniy";
 	public static final String BARABASI_ALBERT = "BarabasiAlbert";
     private final SimpleVertexContainer m_vertexContainer;
@@ -35,11 +37,6 @@ public class SFreeTopologyProvider implements TopologyProvider {
 	@Override
 	public Object addGroup(String groupName, String groupIcon) {
 		return null;
-	}
-
-	@Override
-	public boolean containsVertexId(Object vertexId) {
-		return m_vertexContainer.containsId(vertexId);
 	}
 
 	@Override
@@ -74,7 +71,7 @@ public class SFreeTopologyProvider implements TopologyProvider {
 			nodes.put(j, vertexj);
 			System.err.println("Creating First Cluster: " + i);
 			System.err.println("Creating First Cluster: " + j);
-			edges.add(new SimpleEdge("link:"+i+"-"+j, nodes.get(i), nodes.get(j)));
+			edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+i+"-"+j, nodes.get(i), nodes.get(j)));
 		}
 		
 		Random r = new Random((new Date()).getTime());
@@ -90,7 +87,7 @@ public class SFreeTopologyProvider implements TopologyProvider {
 				System.err.println("Generated random position: " + d);
 				Long j = (long)d;
 				System.err.println("Try Adding edge: " + j + "--->" + i);
-				edge = new SimpleEdge("link:"+i+"-"+j, nodes.get(i), nodes.get(j.intValue()));
+				edge = new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+i+"-"+j, nodes.get(i), nodes.get(j.intValue()));
 				if( i==j.intValue() ) continue;
 				edges.add(edge);
 			}// m links added
@@ -120,7 +117,7 @@ public class SFreeTopologyProvider implements TopologyProvider {
 		for (Integer start=0; start < numberOfNodes; start++) {
 			for (Integer end = start+1; end<numberOfNodes;end++) {
 				if (z*r.nextDouble()<averageNumberofNeighboors)  {
-					edges.add(new SimpleEdge("link:"+start+"-"+end, nodes.get(start), nodes.get(end)));
+					edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+start+"-"+end, nodes.get(start), nodes.get(end)));
 				}
 			}
 		}
@@ -130,68 +127,17 @@ public class SFreeTopologyProvider implements TopologyProvider {
 		
 	}
 
-	@Override
-	public SimpleVertexContainer getVertexContainer() {
-		return m_vertexContainer;
-	}
-
-	@Override
-	public BeanContainer<String, SimpleEdge> getEdgeContainer() {
-		return m_edgeContainer;
-	}
-
-	@Override
-	public Collection<String> getVertexIds() {
-        return m_vertexContainer.getItemIds();
-	}
-
-	@Override
-	public Collection<String> getEdgeIds() {
-		return m_edgeContainer.getItemIds();
-	}
-
-	@Override
-	public Collection<String> getEdgeIdsForVertex(Object vertexId) {
-        SimpleVertex vertex = getRequiredVertex(vertexId);
-        
-        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
-        
-        for(SimpleEdge e : vertex.getEdges()) {
-            
-            String edgeId = e.getId();
-            
-            edges.add(edgeId);
-
-        }
-        
-        return edges;
-    }
-
-    
-    private SimpleVertex getRequiredVertex(Object vertexId) {
+    private Vertex getRequiredVertex(Object vertexId) {
         return getVertex(vertexId, true);
     }
 
-    private SimpleVertex getVertex(Object vertexId, boolean required) {
-        BeanItem<SimpleVertex> item = m_vertexContainer.getItem(vertexId);
+    private Vertex getVertex(Object vertexId, boolean required) {
+        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
         if (required && item == null) {
             throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
         }
         
         return item == null ? null : item.getBean();
-    }
-
-	@Override
-    public Collection<String> getEndPointIdsForEdge(Object edgeId) {
-        SimpleEdge edge= getRequiredEdge(edgeId);
-
-        List<String> endPoints = new ArrayList<String>(2);
-        
-        endPoints.add(edge.getSource().getId());
-        endPoints.add(edge.getTarget().getId());
-
-        return endPoints;
-
     }
 
     private SimpleEdge getRequiredEdge(Object edgeId) {

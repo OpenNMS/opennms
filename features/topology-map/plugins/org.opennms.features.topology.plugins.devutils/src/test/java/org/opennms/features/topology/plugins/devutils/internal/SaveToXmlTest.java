@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -108,16 +107,6 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public TopologyProvider getDataSource() {
-						return simpleTopo;
-					}
-
-					@Override
-					public void setDataSource(TopologyProvider topologyProvider) {
-						throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
-					}
-
-					@Override
 					public GraphProvider getBaseTopology() {
 						throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 					}
@@ -135,16 +124,6 @@ public class SaveToXmlTest {
 					@Override
 					public Graph getGraph() {
 						throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
-					}
-
-					@Override
-					public Vertex getVertex(VertexRef ref) {
-						throw new UnsupportedOperationException("GraphContainer.getVertex is not yet implemented.");
-					}
-
-					@Override
-					public Edge getEdge(EdgeRef ref) {
-						throw new UnsupportedOperationException("GraphContainer.getEdge is not yet implemented.");
 					}
 
 					@Override
@@ -186,39 +165,12 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public Collection<? extends Vertex> getVertices() {
-						throw new UnsupportedOperationException("GraphContainer.getVertices is not yet implemented.");
-					}
-
-					@Override
-					public Collection<? extends Vertex> getChildren(
-							VertexRef vRef) {
-						throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
-					}
-
-					@Override
-					public Collection<? extends Vertex> getRootGroup() {
-						throw new UnsupportedOperationException("GraphContainer.getRootGroup is not yet implemented.");
-					}
-
-					@Override
-					public boolean hasChildren(VertexRef vRef) {
-						throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
-					}
-
-					@Override
 					public Collection<VertexRef> getVertexRefForest(
 							Collection<? extends VertexRef> vertexRefs) {
 						throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
 					}
-
-					
 				};
 			}
-
 		});
-		
-		
-		
 	}
 }

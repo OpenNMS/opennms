@@ -30,16 +30,16 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
 
 public class SaveOperation implements Operation {
     
-    TopologyProvider m_topologyProvider;
+    EditableGraphProvider m_topologyProvider;
 	
     public SaveOperation(SimpleTopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;

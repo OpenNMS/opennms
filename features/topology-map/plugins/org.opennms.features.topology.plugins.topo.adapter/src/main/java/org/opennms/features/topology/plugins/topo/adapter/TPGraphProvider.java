@@ -17,9 +17,9 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
 
 public class TPGraphProvider implements GraphProvider {
 

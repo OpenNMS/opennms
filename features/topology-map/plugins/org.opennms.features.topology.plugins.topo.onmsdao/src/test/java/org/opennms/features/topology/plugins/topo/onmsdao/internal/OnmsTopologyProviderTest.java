@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 
 import java.util.Collection;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +40,8 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -65,7 +64,7 @@ public class OnmsTopologyProviderTest {
     
     @Autowired
      private EasyMockDataPopulator m_databasePopulator;
-     public class TestVertex {
+     public class TestVertex implements Vertex {
 
     }
 
@@ -109,16 +108,6 @@ public class OnmsTopologyProviderTest {
         }
 
 	@Override
-	public TopologyProvider getDataSource() {
-		throw new UnsupportedOperationException("GraphContainer.getDataSource is not yet implemented.");
-	}
-
-	@Override
-	public void setDataSource(TopologyProvider topologyProvider) {
-		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
-	}
-
-	@Override
 	public GraphProvider getBaseTopology() {
 		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 	}
@@ -131,16 +120,6 @@ public class OnmsTopologyProviderTest {
 	@Override
 	public Graph getGraph() {
 		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
-	}
-
-	@Override
-	public Vertex getVertex(VertexRef ref) {
-		throw new UnsupportedOperationException("GraphContainer.getVertex is not yet implemented.");
-	}
-
-	@Override
-	public Edge getEdge(EdgeRef ref) {
-		throw new UnsupportedOperationException("GraphContainer.getEdge is not yet implemented.");
 	}
 
 	@Override
@@ -185,26 +164,6 @@ public class OnmsTopologyProviderTest {
 	public void removeChangeListener(ChangeListener listener) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public Collection<? extends Vertex> getVertices() {
-		throw new UnsupportedOperationException("GraphContainer.getVertices is not yet implemented.");
-	}
-
-	@Override
-	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
-		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
-	}
-
-	@Override
-	public Collection<? extends Vertex> getRootGroup() {
-		throw new UnsupportedOperationException("GraphContainer.getRootGroup is not yet implemented.");
-	}
-
-	@Override
-	public boolean hasChildren(VertexRef vRef) {
-		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
 	}
 
 	@Override

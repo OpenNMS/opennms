@@ -3,6 +3,7 @@ package org.opennms.features.topology.app.internal;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;

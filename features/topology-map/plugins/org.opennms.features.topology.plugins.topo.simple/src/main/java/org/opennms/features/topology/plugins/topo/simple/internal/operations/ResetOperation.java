@@ -31,17 +31,18 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.EditableTopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 
 public class ResetOperation implements Constants, Operation {
     
-    EditableTopologyProvider m_topologyProvider;
+    EditableGraphProvider m_topologyProvider;
     
-    public ResetOperation(EditableTopologyProvider topologyProvider) {
+    public ResetOperation(EditableGraphProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
 
@@ -49,8 +50,8 @@ public class ResetOperation implements Constants, Operation {
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         
         m_topologyProvider.resetContainer();
-        Object groupId = m_topologyProvider.addGroup("Group", GROUP_ICON_KEY);
-        Object vertexId = m_topologyProvider.addVertex(50, 50);
+        Vertex groupId = m_topologyProvider.addGroup("Group", GROUP_ICON_KEY);
+        Vertex vertexId = m_topologyProvider.addVertex(50, 50);
         m_topologyProvider.setParent(vertexId, groupId);
         return null;
     }

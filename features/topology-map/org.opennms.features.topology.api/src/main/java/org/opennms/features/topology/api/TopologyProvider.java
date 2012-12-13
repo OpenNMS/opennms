@@ -30,9 +30,14 @@ package org.opennms.features.topology.api;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.api.topo.GraphProvider;
+
 import com.vaadin.data.util.BeanContainer;
 
-
+/**
+ * @deprecated You should use the {@link GraphProvider} interface instead
+ * of this interface to access edges and vertices.
+ */
 public interface TopologyProvider {
 
 	/**
@@ -43,13 +48,11 @@ public interface TopologyProvider {
 
     Object addGroup(String groupLabel, String groupIcon);
 
-    boolean containsVertexId(Object vertexId);
-
     void save(String filename);
 
     void load(String filename);
 
-    VertexContainer<?, ?> getVertexContainer();
+    VertexContainer getVertexContainer();
 
     BeanContainer<?, ?> getEdgeContainer();
 

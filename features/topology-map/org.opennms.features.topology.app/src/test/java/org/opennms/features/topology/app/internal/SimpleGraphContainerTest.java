@@ -36,12 +36,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GEdge;
 import org.opennms.features.topology.app.internal.SimpleGraphContainer.GVertex;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
 public class SimpleGraphContainerTest {
@@ -190,11 +191,11 @@ public class SimpleGraphContainerTest {
         
         
         //Add another vertex to the TopologyProvider
-        Object vertId = topologyProvider.addVertex();
+        Vertex vertId = topologyProvider.addVertex(0, 0);
         assertEquals(2, eventsReceived.get());
         eventsReceived.set(0);
         
-        Object vertId2 = topologyProvider.addVertex();
+        Vertex vertId2 = topologyProvider.addVertex();
         assertEquals(2, eventsReceived.get());
         eventsReceived.set(0);
        

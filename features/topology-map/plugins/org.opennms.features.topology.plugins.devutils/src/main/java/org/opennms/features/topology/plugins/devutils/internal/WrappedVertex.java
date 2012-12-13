@@ -35,11 +35,13 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.features.topology.api.topo.Vertex;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
 
-abstract public class WrappedVertex {
+abstract public class WrappedVertex implements Vertex {
 	
 	public static WrappedVertex create(Item vertex) {
 		Property leaf = vertex.getItemProperty("leaf");

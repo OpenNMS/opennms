@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.EditableTopologyProvider;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -40,10 +40,10 @@ import org.slf4j.LoggerFactory;
 
 public class AddVertexOperation implements Operation{
     
-    private EditableTopologyProvider m_topologyProvider;
+    private EditableGraphProvider m_topologyProvider;
     
     private String m_iconKey;
-    public AddVertexOperation(String iconKey, EditableTopologyProvider topologyProvider) {
+    public AddVertexOperation(String iconKey, EditableGraphProvider topologyProvider) {
         m_iconKey = iconKey;
         m_topologyProvider = topologyProvider;
     }
@@ -61,7 +61,7 @@ public class AddVertexOperation implements Operation{
 
     @Override
     public String getId() {
-        return null;
+        return "AddVertex";
     }
 
     void connectNewVertex(String vertexId, String iconKey, DisplayState graphContainer) {

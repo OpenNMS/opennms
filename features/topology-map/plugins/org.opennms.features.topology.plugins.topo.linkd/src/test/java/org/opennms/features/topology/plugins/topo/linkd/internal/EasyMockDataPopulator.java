@@ -33,23 +33,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-
 import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

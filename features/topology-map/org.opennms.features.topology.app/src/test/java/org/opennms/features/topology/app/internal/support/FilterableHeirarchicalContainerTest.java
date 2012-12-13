@@ -10,14 +10,13 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HierarchicalBeanContainer;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
-import org.opennms.features.topology.app.internal.SimpleGraphContainer;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TestTopologyProvider;
 import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 
@@ -25,10 +24,10 @@ import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 
 public class FilterableHeirarchicalContainerTest {
     
-    private class DefaultTestVertexContainer extends VertexContainer<String, Vertex>{
+    private class DefaultTestVertexContainer extends VertexContainer implements VertexProvider {
 
-        public DefaultTestVertexContainer(Class<? super Vertex> type) {
-            super(type);
+        public DefaultTestVertexContainer() {
+            super();
         }
 
         @Override
@@ -75,16 +74,14 @@ public class FilterableHeirarchicalContainerTest {
     
     private FilterableHierarchicalContainer m_container;
     
-    HierarchicalBeanContainer<String, Vertex> m_beanContainer;
+    HierarchicalBeanContainer<VertexRef, Vertex> m_beanContainer;
     VertexProvider m_vertexProvider;
-    GraphContainer m_graphContainer;
-    TopologyProvider m_topologyProvider;
+    GraphProvider m_topologyProvider;
     
     @Before
     public void setUp() {
         m_topologyProvider = new TestTopologyProvider("test");
-        m_graphContainer = new SimpleGraphContainer(m_topologyProvider);
-        m_beanContainer = new DefaultTestVertexContainer(Vertex.class);
+        m_beanContainer = new DefaultTestVertexContainer();
         m_beanContainer.setBeanIdProperty("id");
         m_vertexProvider = new TPGraphProvider(m_topologyProvider);
         m_beanContainer.addAll(m_vertexProvider.getVertices());

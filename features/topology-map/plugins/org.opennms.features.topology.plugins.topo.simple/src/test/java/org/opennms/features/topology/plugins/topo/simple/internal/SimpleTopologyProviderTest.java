@@ -45,33 +45,40 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.api.Constants;
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.SimpleVertexContainer;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
-    
-    public class TestVertex {
 
-    }
+	public static class TestVertex extends AbstractVertex {
+		private static int i = 0;
+		public TestVertex() {
+			super("test", "" + i++);
+		}
+
+		@Override
+		public boolean isLeaf() {
+			return true;
+		}
+	}
 
     
     private class TestGraphContainer implements GraphContainer {
@@ -113,16 +120,6 @@ public class SimpleTopologyProviderTest {
         }
 
 	@Override
-	public TopologyProvider getDataSource() {
-		return m_topologyProvider;
-	}
-
-	@Override
-	public void setDataSource(TopologyProvider topologyProvider) {
-		throw new UnsupportedOperationException("GraphContainer.setDataSource is not yet implemented.");
-	}
-
-	@Override
 	public GraphProvider getBaseTopology() {
 		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 	}
@@ -145,16 +142,6 @@ public class SimpleTopologyProviderTest {
 	@Override
 	public Vertex getParent(VertexRef child) {
 		throw new UnsupportedOperationException("GraphContainer.getParent is not yet implemented.");
-	}
-
-	@Override
-	public Vertex getVertex(VertexRef ref) {
-		throw new UnsupportedOperationException("GraphContainer.getVertex is not yet implemented.");
-	}
-
-	@Override
-	public Edge getEdge(EdgeRef ref) {
-		throw new UnsupportedOperationException("GraphContainer.getEdge is not yet implemented.");
 	}
 
 	@Override
@@ -187,26 +174,6 @@ public class SimpleTopologyProviderTest {
 	public void removeChangeListener(ChangeListener listener) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public Collection<? extends Vertex> getVertices() {
-		throw new UnsupportedOperationException("GraphContainer.getVertices is not yet implemented.");
-	}
-
-	@Override
-	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
-		throw new UnsupportedOperationException("GraphContainer.getChildren is not yet implemented.");
-	}
-
-	@Override
-	public Collection<? extends Vertex> getRootGroup() {
-		throw new UnsupportedOperationException("GraphContainer.getRootGroup is not yet implemented.");
-	}
-
-	@Override
-	public boolean hasChildren(VertexRef vRef) {
-		throw new UnsupportedOperationException("GraphContainer.hasChildren is not yet implemented.");
 	}
 
 	@Override
@@ -248,7 +215,7 @@ public class SimpleTopologyProviderTest {
         
     }
     
-    private SimpleTopologyProvider m_topologyProvider;
+    private EditableGraphProvider m_topologyProvider;
     
     @Before
     public void setUp() {
@@ -270,20 +237,20 @@ public class SimpleTopologyProviderTest {
     
 	@Test
 	public void test() {
-		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		EditableGraphProvider topologyProvider = new SimpleTopologyProvider();
 		topologyProvider.resetContainer();
 		
-		String vertexA = (String) topologyProvider.addVertex(50, 100);
-		String vertexB = (String) topologyProvider.addVertex(100, 50);
-		String vertexC = (String) topologyProvider.addVertex(100, 150);
-		String vertexD = (String) topologyProvider.addVertex(150, 100);
-		String vertexE = (String) topologyProvider.addVertex(200, 200);
-		String group1 = (String) topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
-		String group2 = (String) topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
-		topologyProvider.getVertexContainer().setParent(vertexA, group1);
-		topologyProvider.getVertexContainer().setParent(vertexB, group1);
-		topologyProvider.getVertexContainer().setParent(vertexC, group2);
-		topologyProvider.getVertexContainer().setParent(vertexD, group2);
+		Vertex vertexA = topologyProvider.addVertex(50, 100);
+		Vertex vertexB = topologyProvider.addVertex(100, 50);
+		Vertex vertexC = topologyProvider.addVertex(100, 150);
+		Vertex vertexD = topologyProvider.addVertex(150, 100);
+		Vertex vertexE = topologyProvider.addVertex(200, 200);
+		Vertex group1 = topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
+		Vertex group2 = topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
+		topologyProvider.setParent(vertexA, group1);
+		topologyProvider.setParent(vertexB, group1);
+		topologyProvider.setParent(vertexC, group2);
+		topologyProvider.setParent(vertexD, group2);
 		
 		topologyProvider.connectVertices(vertexA, vertexB);
 		topologyProvider.connectVertices(vertexA, vertexC);
@@ -301,11 +268,11 @@ public class SimpleTopologyProviderTest {
 	
 	@Test
 	public void loadSampleGraph() {
-		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		EditableGraphProvider topologyProvider = new SimpleTopologyProvider();
 		topologyProvider.load("saved-vmware-graph.xml");
 		
-		System.err.println("Vertex Count: " + topologyProvider.getVertexIds().size());
-		System.err.println("Edge Count: " + topologyProvider.getEdgeIds().size());
+		System.err.println("Vertex Count: " + topologyProvider.getVertices().size());
+		System.err.println("Edge Count: " + topologyProvider.getEdges().size());
 	}
 	
 	@Test
@@ -317,9 +284,9 @@ public class SimpleTopologyProviderTest {
 	    AddVertexOperation addOperation = new AddVertexOperation(Constants.GROUP_ICON_KEY, m_topologyProvider);
 	    addOperation.execute(targets, operationContext);
 	    
-	    Collection<?> vertIds =  m_topologyProvider.getVertexIds();
+	    Collection<? extends Vertex> vertIds =  m_topologyProvider.getVertices();
 	    assertEquals(1, vertIds.size());
-	    assertTrue(vertIds.contains("v0"));
+	    assertTrue("v0".equals(vertIds.iterator().next().getId()));
 	}
 
 	@Test
@@ -344,10 +311,10 @@ public class SimpleTopologyProviderTest {
 	    AddVertexOperation addOperation = new AddVertexOperation(Constants.SERVER_ICON_KEY, m_topologyProvider);
         addOperation.execute(targets, operationContext);
 	    
-        Collection<?> vertIds = m_topologyProvider.getVertexIds();
+        Collection<? extends Vertex> vertIds = m_topologyProvider.getVertices();
         assertEquals(2, vertIds.size());
         
-        Collection<?> edgeIds = m_topologyProvider.getEdgeIds();
+        Collection<? extends Edge> edgeIds = m_topologyProvider.getEdges();
         assertEquals(1, edgeIds.size());
         
         EasyMock.verify(graphContainer);
@@ -358,19 +325,19 @@ public class SimpleTopologyProviderTest {
 	public void testConnectVertices() {
 		m_topologyProvider.resetContainer();
 
-		String vertexId = m_topologyProvider.addVertex(0, 0);
+		Vertex vertexId = m_topologyProvider.addVertex(0, 0);
         
-        assertEquals(1, m_topologyProvider.getVertexIds().size());
-        Object vertId = m_topologyProvider.getVertexIds().iterator().next();
-        assertEquals("v0", vertId);
+        assertEquals(1, m_topologyProvider.getVertices().size());
+        Vertex vertex0 = m_topologyProvider.getVertices().iterator().next();
+        assertEquals("v0", vertex0.getId());
         
-        m_topologyProvider.addVertex(0, 0);
-        assertEquals(2, m_topologyProvider.getVertexIds().size());
+        Vertex vertex1 = m_topologyProvider.addVertex(0, 0);
+        assertEquals(2, m_topologyProvider.getVertices().size());
         
-        Object edgeId = m_topologyProvider.connectVertices("v0", "v1");
-        assertEquals(1, m_topologyProvider.getEdgeIds().size());
-        SimpleLeafVertex sourceLeafVert = (SimpleLeafVertex) m_topologyProvider.getEdgeContainer().getItem(edgeId).getItemProperty("source").getValue();
-        SimpleLeafVertex targetLeafVert = (SimpleLeafVertex) m_topologyProvider.getEdgeContainer().getItem(edgeId).getItemProperty("target").getValue();
+        Edge edgeId = m_topologyProvider.connectVertices(vertex0, vertex1);
+        assertEquals(1, m_topologyProvider.getEdges().size());
+        SimpleLeafVertex sourceLeafVert = (SimpleLeafVertex) edgeId.getSource().getVertex();
+        SimpleLeafVertex targetLeafVert = (SimpleLeafVertex) edgeId.getTarget().getVertex();
         
         assertEquals("v0", sourceLeafVert.getId());
         assertEquals("v1", targetLeafVert.getId());
@@ -394,7 +361,7 @@ public class SimpleTopologyProviderTest {
         RemoveVertexOperation removeOperation = new RemoveVertexOperation(m_topologyProvider);
         removeOperation.execute(Arrays.asList(vertexRef), operationContext);
         
-        assertEquals(0, m_topologyProvider.getVertexIds().size());
+        assertEquals(0, m_topologyProvider.getVertices().size());
         
     }
     
@@ -432,7 +399,7 @@ public class SimpleTopologyProviderTest {
         
         final AtomicInteger eventsReceived = new AtomicInteger(0);
         
-        m_topologyProvider.getVertexContainer().addListener(new ItemSetChangeListener() {
+        m_topologyProvider.addVertexListener(new ItemSetChangeListener() {
 
             private static final long serialVersionUID = 30630057710008362L;
 
@@ -471,13 +438,12 @@ public class SimpleTopologyProviderTest {
         ConnectOperation connectOperation = new ConnectOperation(m_topologyProvider);
         connectOperation.execute(targets, getOperationContext(graphContainer));
         
-        Collection<?> edgeIds = m_topologyProvider.getEdgeIds();
+        Collection<? extends Edge> edgeIds = m_topologyProvider.getEdges();
         assertEquals(1, edgeIds.size());
         
-        for(Object edgeId : edgeIds) {
-            Item edgeItem = m_topologyProvider.getEdgeContainer().getItem(edgeId);
-            SimpleLeafVertex source = (SimpleLeafVertex) edgeItem.getItemProperty("source").getValue();
-            SimpleLeafVertex target = (SimpleLeafVertex) edgeItem.getItemProperty("target").getValue();
+        for(Edge edgeId : edgeIds) {
+            SimpleLeafVertex source = (SimpleLeafVertex) edgeId.getSource().getVertex();
+            SimpleLeafVertex target = (SimpleLeafVertex) edgeId.getTarget().getVertex();
             assertNotNull(source);
             assertNotNull(target);
             assertEquals(vertexId1.getId(), source.getId());
@@ -493,8 +459,6 @@ public class SimpleTopologyProviderTest {
     }
 	
 	private VertexRef addVertexToTopr() {
-	    String id = m_topologyProvider.addVertex(0, 0);
-	    return new LWVertexRef(m_topologyProvider.getNamespace(), id);
+	    return m_topologyProvider.addVertex(0, 0);
     }
-
 }

@@ -39,9 +39,6 @@ public class TestGroup extends TestVertex {
 
 	List<TestVertex> m_members = new ArrayList<TestVertex>();
 	
-	
-	public TestGroup() {}
-	
 	public TestGroup(String id) {
 		super(id);
 	}

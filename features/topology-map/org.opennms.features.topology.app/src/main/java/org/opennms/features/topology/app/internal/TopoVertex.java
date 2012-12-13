@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -41,18 +42,18 @@ public class TopoVertex implements Vertex {
     public static final String ICON_KEY = "iconKey";
 	
     private final String m_key;
-	private final Object m_itemId;
+	private final VertexRef m_itemId;
 	private final Item m_item;
 	private final SimpleGraphContainer m_graphContainer;
 	
-	public TopoVertex(SimpleGraphContainer graphContainer, String key, Object itemId, Item item) {
+	public TopoVertex(SimpleGraphContainer graphContainer, String key, VertexRef itemId, Item item) {
 		m_graphContainer = graphContainer;
 		m_key = key;
 		m_itemId = itemId;
 		m_item = item;
 	}
 	
-	public Object getItemId() {
+	public VertexRef getItemId() {
 		return m_itemId;
 	}
 	

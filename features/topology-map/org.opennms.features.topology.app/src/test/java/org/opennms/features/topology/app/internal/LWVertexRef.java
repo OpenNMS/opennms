@@ -1,4 +1,6 @@
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal;
+
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class LWVertexRef extends LWRef implements VertexRef {
 
