@@ -18594,7 +18594,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeSc1324</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeSc1324</event-label>
     <descr><![CDATA[
-                <p><b>The number of CAMEL dialogues exceeds 95% of the configured maximum.</b></p>
+                <p><b>The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -18607,7 +18607,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95% of the configured maximum.</p>
+                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</p>
                 ]]></logmsg>
     <severity>Indeterminate</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -18639,7 +18639,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeSc1324</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeSc1324</event-label>
     <descr><![CDATA[
-                <p><b>The number of CAMEL dialogues exceeds 95% of the configured maximum.</b></p>
+                <p><b>The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -18652,7 +18652,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95% of the configured maximum.</p>
+                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</p>
                 ]]></logmsg>
     <severity>Critical</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -18684,7 +18684,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeSc1324</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeSc1324</event-label>
     <descr><![CDATA[
-                <p><b>The number of CAMEL dialogues exceeds 95% of the configured maximum.</b></p>
+                <p><b>The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -18697,7 +18697,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95% of the configured maximum.</p>
+                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</p>
                 ]]></logmsg>
     <severity>Major</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -18729,7 +18729,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeSc1324</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeSc1324</event-label>
     <descr><![CDATA[
-                <p><b>The number of CAMEL dialogues exceeds 95% of the configured maximum.</b></p>
+                <p><b>The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -18742,7 +18742,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95% of the configured maximum.</p>
+                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</p>
                 ]]></logmsg>
     <severity>Minor</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -18774,7 +18774,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeSc1324</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeSc1324</event-label>
     <descr><![CDATA[
-                <p><b>The number of CAMEL dialogues exceeds 95% of the configured maximum.</b></p>
+                <p><b>The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -18787,7 +18787,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95% of the configured maximum.</p>
+                        <b>Alarm Set:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</p>
                 ]]></logmsg>
     <severity>Warning</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -18816,7 +18816,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/resolution/vseTrapAlarmAgwMmeSc1324</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeSc1324</event-label>
     <descr><![CDATA[
-                <p><b>The number of CAMEL dialogues exceeds 95% of the configured maximum.</b></p>
+                <p><b>The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -18829,7 +18829,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Cleared:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95% of the configured maximum.</p>
+                        <b>Alarm Cleared:</b> AgwMmeSc1324 [%parm[#13]%-%parm[#14]%]: The number of CAMEL dialogues exceeds 95 percent of the configured maximum.</p>
                 ]]></logmsg>
     <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#5]%" alarm-type="2" auto-clean="false"
@@ -23436,7 +23436,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1304</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1304</event-label>
     <descr><![CDATA[
-                <p><b>Number of MAP transactions exceeds 95% of provisioned data.</b></p>
+                <p><b>Number of MAP transactions exceeds 95 percent of provisioned data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23449,7 +23449,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95% of provisioned data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95 percent of provisioned data.</p>
                 ]]></logmsg>
     <severity>Indeterminate</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -23481,7 +23481,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1304</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1304</event-label>
     <descr><![CDATA[
-                <p><b>Number of MAP transactions exceeds 95% of provisioned data.</b></p>
+                <p><b>Number of MAP transactions exceeds 95 percent of provisioned data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23494,7 +23494,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95% of provisioned data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95 percent of provisioned data.</p>
                 ]]></logmsg>
     <severity>Critical</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -23526,7 +23526,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1304</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1304</event-label>
     <descr><![CDATA[
-                <p><b>Number of MAP transactions exceeds 95% of provisioned data.</b></p>
+                <p><b>Number of MAP transactions exceeds 95 percent of provisioned data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23539,7 +23539,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95% of provisioned data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95 percent of provisioned data.</p>
                 ]]></logmsg>
     <severity>Major</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -23571,7 +23571,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1304</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1304</event-label>
     <descr><![CDATA[
-                <p><b>Number of MAP transactions exceeds 95% of provisioned data.</b></p>
+                <p><b>Number of MAP transactions exceeds 95 percent of provisioned data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23584,7 +23584,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95% of provisioned data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95 percent of provisioned data.</p>
                 ]]></logmsg>
     <severity>Minor</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -23616,7 +23616,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1304</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1304</event-label>
     <descr><![CDATA[
-                <p><b>Number of MAP transactions exceeds 95% of provisioned data.</b></p>
+                <p><b>Number of MAP transactions exceeds 95 percent of provisioned data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23629,7 +23629,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95% of provisioned data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95 percent of provisioned data.</p>
                 ]]></logmsg>
     <severity>Warning</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -23658,7 +23658,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/resolution/vseTrapAlarmAgwMmeTcap1304</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1304</event-label>
     <descr><![CDATA[
-                <p><b>Number of MAP transactions exceeds 95% of provisioned data.</b></p>
+                <p><b>Number of MAP transactions exceeds 95 percent of provisioned data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23671,7 +23671,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Cleared:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95% of provisioned data.</p>
+                        <b>Alarm Cleared:</b> AgwMmeTcap1304 [%parm[#13]%-%parm[#14]%]: Number of MAP transactions exceeds 95 percent of provisioned data.</p>
                 ]]></logmsg>
     <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#5]%" alarm-type="2" auto-clean="false"
@@ -23974,7 +23974,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1306</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1306</event-label>
     <descr><![CDATA[
-                <p><b>Number of CAP transactions exceeds 95% of the configured data.</b></p>
+                <p><b>Number of CAP transactions exceeds 95 percent of the configured data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -23987,7 +23987,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95% of the configured data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95 percent of the configured data.</p>
                 ]]></logmsg>
     <severity>Indeterminate</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -24019,7 +24019,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1306</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1306</event-label>
     <descr><![CDATA[
-                <p><b>Number of CAP transactions exceeds 95% of the configured data.</b></p>
+                <p><b>Number of CAP transactions exceeds 95 percent of the configured data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -24032,7 +24032,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95% of the configured data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95 percent of the configured data.</p>
                 ]]></logmsg>
     <severity>Critical</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -24064,7 +24064,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1306</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1306</event-label>
     <descr><![CDATA[
-                <p><b>Number of CAP transactions exceeds 95% of the configured data.</b></p>
+                <p><b>Number of CAP transactions exceeds 95 percent of the configured data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -24077,7 +24077,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95% of the configured data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95 percent of the configured data.</p>
                 ]]></logmsg>
     <severity>Major</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -24109,7 +24109,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1306</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1306</event-label>
     <descr><![CDATA[
-                <p><b>Number of CAP transactions exceeds 95% of the configured data.</b></p>
+                <p><b>Number of CAP transactions exceeds 95 percent of the configured data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -24122,7 +24122,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95% of the configured data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95 percent of the configured data.</p>
                 ]]></logmsg>
     <severity>Minor</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -24154,7 +24154,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/vseTrapAlarmAgwMmeTcap1306</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1306</event-label>
     <descr><![CDATA[
-                <p><b>Number of CAP transactions exceeds 95% of the configured data.</b></p>
+                <p><b>Number of CAP transactions exceeds 95 percent of the configured data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -24167,7 +24167,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95% of the configured data.</p>
+                        <b>Alarm Set:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95 percent of the configured data.</p>
                 ]]></logmsg>
     <severity>Warning</severity>
     <alarm-data reduction-key="%uei%:%nodeid%:%parm[#5]%" alarm-type="1" auto-clean="false" />
@@ -24196,7 +24196,7 @@
     <uei>uei.opennms.org/vendor/Juniper/traps/resolution/vseTrapAlarmAgwMmeTcap1306</uei>
     <event-label>MME-APL-MIB defined trap event: vseTrapAlarmAgwMmeTcap1306</event-label>
     <descr><![CDATA[
-                <p><b>Number of CAP transactions exceeds 95% of the configured data.</b></p>
+                <p><b>Number of CAP transactions exceeds 95 percent of the configured data.</b></p>
                 <table>
                         <tr>
                                 <td>Location (f-sh-s-ss)</td>
@@ -24209,7 +24209,7 @@
         </table>
         ]]></descr>
     <logmsg dest="logndisplay"><![CDATA[<p>
-                        <b>Alarm Cleared:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95% of the configured data.</p>
+                        <b>Alarm Cleared:</b> AgwMmeTcap1306 [%parm[#13]%-%parm[#14]%]: Number of CAP transactions exceeds 95 percent of the configured data.</p>
                 ]]></logmsg>
     <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#5]%" alarm-type="2" auto-clean="false"
