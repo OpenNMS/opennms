@@ -322,8 +322,8 @@ public class SimpleGraphContainerTest {
         topologyProvider.addVertex();
         graph.update();
         
-        assertEquals(3, topologyProvider.getVertexIds().size());
-        assertEquals(3, graphContainer.getVertexIds().size());
+        assertEquals(3, topologyProvider.getVertices().size());
+        assertEquals(3, graphContainer.getBaseTopology().getVertices().size());
         assertEquals(3, graph.getVertices().size());
         
         Collection<Object> gcIds = graphContainer.getVertexIds();

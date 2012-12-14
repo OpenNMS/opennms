@@ -37,6 +37,7 @@ import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -434,7 +435,7 @@ public class EasyMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
-    public void check(LinkdTopologyProvider topologyProvider) {
+    public void check(GraphProvider topologyProvider) {
         Assert.assertTrue(topologyProvider.getVertices().size()==8);
         
         Assert.assertTrue(topologyProvider.getEdges().size()==8);

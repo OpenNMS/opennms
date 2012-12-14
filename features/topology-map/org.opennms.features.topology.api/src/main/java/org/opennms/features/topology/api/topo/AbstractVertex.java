@@ -12,6 +12,7 @@ public abstract class AbstractVertex implements Vertex {
 	private String m_tooltipText;
 	private String m_iconKey;
 	private String m_styleName;
+	private VertexRef m_parent;
 	protected Item m_item;
 
 	public AbstractVertex(String namespace, String id) {
@@ -78,6 +79,17 @@ public abstract class AbstractVertex implements Vertex {
 
 	public final void setStyleName(String styleName) {
 		m_styleName = styleName;
+	}
+
+	public VertexRef getParent() {
+		return m_parent;
+	}
+
+	/**
+	 * @param parent
+	 */
+	public void setParent(VertexRef parent) {
+		this.m_parent = parent;
 	}
 
 	@Override

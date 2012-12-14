@@ -45,8 +45,8 @@ public interface EdgeProvider {
 	 */
 	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references);
 	
-	public void addEdgeListener(EdgeListener vertexListener);
+	public void addEdgeListener(EdgeListener listener);
 	
-	public void removeEdgeListener(EdgeListener vertexListener);
+	public void removeEdgeListener(EdgeListener listener);
 
 }

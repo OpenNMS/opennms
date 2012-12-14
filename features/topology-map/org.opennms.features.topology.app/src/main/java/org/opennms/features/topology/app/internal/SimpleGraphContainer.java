@@ -76,7 +76,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	private static final String Y_PROPERTY = "y";
 	private static final String SEMANTIC_ZOOM_LEVEL = "semanticZoomLevel";
 
-    public class GVertex extends AbstractVertex {
+    public static class GVertex extends AbstractVertex {
         
 		private String m_key;
         private Object m_itemId;
@@ -184,7 +184,7 @@ public class SimpleGraphContainer implements GraphContainer {
             m_item.getItemProperty(NODE_ID).setValue(new Integer(nodeID));
         }
 
-        private GVertex getParent() {
+        public GVertex getParent() {
             if (m_groupKey == null) return null;
             
             return m_vertexHolder.getElementByKey(m_groupKey);
@@ -324,6 +324,7 @@ public class SimpleGraphContainer implements GraphContainer {
             addAll(m_vertexHolder.getElements());
         }
 
+		@Override
 		public void setTopologyProvider(GraphProvider provider) {
 			if (topologyProvider != null) {
 				topologyProvider.removeVertexListener((ItemSetChangeListener)this);
@@ -597,6 +598,7 @@ public class SimpleGraphContainer implements GraphContainer {
 		throw new UnsupportedOperationException("SimpleGraphContainer.setBaseTopology is not yet implemented.");
 	}
 
+    @Override
 	public Collection<String> getEndPointIdsForEdge(Object key) {
 	        if (key == null) return Collections.emptyList();
 		GEdge edge = m_edgeHolder.getElementByKey(key.toString());
@@ -604,6 +606,7 @@ public class SimpleGraphContainer implements GraphContainer {
 		return Arrays.asList(edge.getSource().getKey(), edge.getTarget().getKey());
 	}
 
+    @Override
 	public Collection<String> getEdgeIdsForVertex(Object vertexKey) {
 	    GVertex vertex = m_vertexHolder.getElementByKey(vertexKey.toString());
 	    return m_edgeHolder.getKeysByItemId(m_graphProvider.getEdgeIdsForVertex(vertex.getItemId()));
@@ -637,10 +640,12 @@ public class SimpleGraphContainer implements GraphContainer {
         return m_layoutAlgorithm;
     }
 
+    @Override
     public double getScale() {
         return m_scale;
     }
     
+    @Override
     public void setScale(double scale) {
         m_scale = scale;
     }
@@ -654,6 +659,7 @@ public class SimpleGraphContainer implements GraphContainer {
         }
     }
 
+    @Override
 	public void fireChange() {
 		for(ChangeListener listener : m_listeners) {
 			listener.graphChanged(this);
@@ -661,11 +667,6 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 
-    public Object getVertexItemIdForVertexKey(Object key) {
-        Item vertexItem = getBaseTopology().getVertexItem(key);
-        return vertexItem == null ? null : vertexItem.getItemProperty("itemId").getValue();
-    }
-    
     public int getX(Object itemId) {
 		BeanItem<Vertex> vertexItem = getVertexItem(itemId);
 		if (vertexItem == null) throw new NullPointerException("vertexItem "+ itemId +" is null");
@@ -674,28 +675,34 @@ public class SimpleGraphContainer implements GraphContainer {
 		return (Integer) itemProperty.getValue();
 	}
 
-    public int getY(Object itemId) {
-		return (Integer) getVertexItem(itemId).getItemProperty(Y_PROPERTY).getValue();
+    @Override
+    public int getY(VertexRef itemId) {
+		return (Integer) getBaseTopology().getVertex(itemId).getItem().getItemProperty(Y_PROPERTY).getValue();
 	}
 
-    public void setX(Object itemId, int x) {
-		getVertexItem(itemId).getItemProperty(X_PROPERTY).setValue(x);
+    @Override
+    public void setX(VertexRef itemId, int x) {
+		getBaseTopology().getVertex(itemId).getItem().getItemProperty(X_PROPERTY).setValue(x);
 	}
 
-    public void setY(Object itemId, int y) {
-		getBaseTopology().getVertexItem(itemId).getItemProperty(Y_PROPERTY).setValue(y);
+    @Override
+    public void setY(VertexRef itemId, int y) {
+		getBaseTopology().getVertex(itemId).getItem().getItemProperty(Y_PROPERTY).setValue(y);
 	}
 
+    @Override
     public int getSemanticZoomLevel(Object itemId) {
 		return getVertexItemProperty(itemId, SEMANTIC_ZOOM_LEVEL, Integer.valueOf(0));
 	}
     
-    public void setVertexItemProperty(Object itemId, String propertyName, Object value) {
-    	getBaseTopology().getVertexItem(itemId).getItemProperty(propertyName).setValue(value);
+    @Override
+    public void setVertexItemProperty(VertexRef itemId, String propertyName, Object value) {
+    	getBaseTopology().getVertex(itemId).getItem().getItemProperty(propertyName).setValue(value);
     }
 
-	public <T> T getVertexItemProperty(Object itemId, String propertyName, T defaultValue) {
-		Item vertexItem = getBaseTopology().getVertexItem(itemId);
+    @Override
+	public <T> T getVertexItemProperty(VertexRef itemId, String propertyName, T defaultValue) {
+		Item vertexItem = getBaseTopology().getVertex(itemId).getItem();
 		if (vertexItem == null) {
 			return defaultValue;
 		} else {
@@ -708,25 +715,30 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
     
+    @Override
     public Object getGroupId(Object itemId) {
     	return getBaseTopology().getVertexItem(itemId).getBean().getGroupKey();
     }
 
+    @Override
 	boolean isLeaf(Object itemId) {
 		Object value = getBaseTopology().getVertexItem(itemId).getItemProperty(LEAF).getValue();
 	    return (Boolean) value;
 	}
 
+    @Override
 	String getLabel(Object itemId) {
 		Property labelProperty = getBaseTopology().getVertexItem(itemId).getItemProperty(LABEL);
 		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
 		return label;
 	}
 
+    @Override
 	String getIconKey(Object itemId) {
 		return (String) getBaseTopology().getVertexItem(itemId).getItemProperty(ICON_KEY).getValue();
 	}
 
+    @Override
 	String getVertexTooltipText(Object itemId) {
 		if(getBaseTopology().getVertexItem(itemId).getItemProperty("tooltipText") != null && getBaseTopology().getVertexItem(itemId).getItemProperty("tooltipText").getValue() != null) {
 	        return (String) getBaseTopology().getVertexItem(itemId).getItemProperty("tooltipText").getValue();
@@ -735,6 +747,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	    }
 	}
 	
+    @Override
 	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
 
 		int szl = getSemanticZoomLevel(vertexId);
@@ -755,6 +768,7 @@ public class SimpleGraphContainer implements GraphContainer {
 		return processed;
 	}
 	
+    @Override
 	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
 		processed.add(vertexId);
 
@@ -765,6 +779,7 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
 
+    @Override
 	public TopoGraph getCompleteGraph() {
 		return m_graph;
 	}
@@ -778,18 +793,21 @@ public class SimpleGraphContainer implements GraphContainer {
 		return getVertex(v).getItemId();
 	}
 
+    @Override
 	public int getVertexX(VertexRef v) {
 		Object itemId = getItemId(v);
 		return itemId == null ? 0 : getX(itemId);
 		
 	}
 
+    @Override
 	public int getVertexY(VertexRef v) {
 		Object itemId = getItemId(v);
 		return itemId == null ? 100 : getY(itemId);
 		
 	}
 
+    @Override
 	public void setVertexX(VertexRef v, int x) {
 		Object itemId = getItemId(v);
 		if (itemId != null) {
@@ -797,6 +815,7 @@ public class SimpleGraphContainer implements GraphContainer {
 		}
 	}
 	
+    @Override
 	public void setVertexY(VertexRef v, int y) {
 		Object itemId = getItemId(v);
 		if (itemId != null) {
