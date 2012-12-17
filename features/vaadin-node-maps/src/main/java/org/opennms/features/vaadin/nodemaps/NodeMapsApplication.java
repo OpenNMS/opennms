@@ -30,7 +30,6 @@ package org.opennms.features.vaadin.nodemaps;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -39,10 +38,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.vaadin.nodemaps.ui.VOpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.vaadin.vol.GoogleStreetMapLayer;
 import org.vaadin.vol.OpenLayersMap;
 import org.vaadin.vol.PointVector;
 import org.vaadin.vol.Popup;
@@ -144,29 +143,12 @@ public class NodeMapsApplication extends Application {
         final Window mainWindow = new Window("OpenNMS Node Maps", layout);
         setMainWindow(mainWindow);
 
-        // Creating OpenLayers Map with Google Street Map Layer
-        final OpenLayersMap map = new OpenLayersMap();
-        map.setImmediate(true); // Update extent and zoom to server as they change
-        map.setSizeFull();
-        map.addLayer(new GoogleStreetMapLayer());
-        VectorLayer nodeLayer = createNodeLayer(map);
-        map.addLayer(nodeLayer);
-
-        // Populating Map with nodes
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        for (OnmsNode node : nodes) {
-            final PointVector vector = getPointFromAddress(node);
-            if (vector != null) {
-                vector.setDescription(getNodeDescription(node));
-                vector.setRenderIntent(NODE_STYLE);
-                nodeLayer.addVector(vector);
-            }
-        }
+        final VOpenlayersWidgetComponent openlayers = new VOpenlayersWidgetComponent();
 
         // Updating Vaadin Layout
         layout.setSizeFull();
-        layout.addComponent(map);
-        layout.setExpandRatio(map, 1);
+        layout.addComponent(openlayers);
+        layout.setExpandRatio(openlayers, 1);
     }
 
     /**
