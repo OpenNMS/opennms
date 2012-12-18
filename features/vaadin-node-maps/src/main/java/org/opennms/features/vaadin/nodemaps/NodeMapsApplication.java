@@ -27,39 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.nodemaps;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.vaadin.nodemaps.ui.VOpenlayersWidgetComponent;
+import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.vaadin.vol.OpenLayersMap;
-import org.vaadin.vol.PointVector;
-import org.vaadin.vol.Popup;
-import org.vaadin.vol.Popup.CloseEvent;
-import org.vaadin.vol.Popup.CloseListener;
-import org.vaadin.vol.Style;
-import org.vaadin.vol.StyleMap;
-import org.vaadin.vol.VectorLayer;
-import org.vaadin.vol.VectorLayer.SelectionMode;
-import org.vaadin.vol.VectorLayer.VectorSelectedEvent;
-import org.vaadin.vol.VectorLayer.VectorSelectedListener;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import com.vaadin.Application;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -138,17 +113,11 @@ public class NodeMapsApplication extends Application {
      */
     @Override
     public void init() {
-        // Initialize Vaadin Main Window
-        final VerticalLayout layout = new VerticalLayout();
-        final Window mainWindow = new Window("OpenNMS Node Maps", layout);
+        final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
+        openlayers.setSizeFull();
+
+        final Window mainWindow = new Window("OpenNMS Node Maps", openlayers);
         setMainWindow(mainWindow);
-
-        final VOpenlayersWidgetComponent openlayers = new VOpenlayersWidgetComponent();
-
-        // Updating Vaadin Layout
-        layout.setSizeFull();
-        layout.addComponent(openlayers);
-        layout.setExpandRatio(openlayers, 1);
     }
 
     /**
@@ -171,6 +140,7 @@ public class NodeMapsApplication extends Application {
      * assets with the coordinates based on the current address configured on
      * the database.
      */
+    /*
     private PointVector getPointFromAddress(OnmsNode onmsNode) {
         final String address = getNodeAddress(onmsNode);
         if (address == null) {
@@ -214,6 +184,7 @@ public class NodeMapsApplication extends Application {
         }
         return null;
     }
+    */
 
     /**
      * Creates the node layer.
@@ -221,6 +192,7 @@ public class NodeMapsApplication extends Application {
      * @param map the map
      * @return the vector layer
      */
+    /*
     private VectorLayer createNodeLayer(final OpenLayersMap map) {
         // Creating Vecctor Layers
         final VectorLayer nodeLayer = new VectorLayer();
@@ -254,7 +226,8 @@ public class NodeMapsApplication extends Application {
 
         return nodeLayer;
     }
-
+	*/
+    
     /**
      * Gets the node description.
      * 

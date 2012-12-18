@@ -212,15 +212,21 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
 		</dependency>
+<!--
 		<dependency>
-			<groupId>org.vaadin.vol</groupId>
-			<artifactId>openlayers-wrapper</artifactId>
-			<version>${vaadin.openlayers.wrapper.version}</version>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId>
+			<version>${gwtVersion}</version>
+			<optional>true</optional>
+			<scope>provided</scope>
 		</dependency>
+-->
 		<dependency>
-			<groupId>org.opennms.dependencies</groupId>
-			<artifactId>gwt-dependencies</artifactId>
-			<type>pom</type>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwtVersion}</version>
+			<optional>true</optional>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Node Maps Dependencies -->

@@ -1,15 +1,16 @@
-package org.opennms.features.vaadin.nodemaps.ui.client;
+package org.opennms.features.vaadin.nodemaps.gwt.client;
 
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OpenlayersWidget extends Widget {
+public class GWTOpenlayersWidget extends Widget {
 	private final DivElement m_div;
 
-	public OpenlayersWidget() {
+	public GWTOpenlayersWidget() {
 		super();
 		m_div = Document.get().createDivElement();
+		m_div.setId("gwt-map");
 		setElement(m_div);
 
 		init(m_div.getId());
@@ -22,23 +23,23 @@ public class OpenlayersWidget extends Widget {
 
 
 	private final native void init(final String divId) /*-{
-            var map = new OpenLayers.Map({
+            var map = new $wnd.OpenLayers.Map({
                 div: divId,
                 displayProjection: "EPSG:900913",
                 projection: "EPSG:4326",
                 controls: [
-                    new OpenLayers.Control.Navigation(),
-                    new OpenLayers.Control.PanZoomBar(),
-                    new OpenLayers.Control.LayerSwitcher(),
-                    new OpenLayers.Control.MousePosition()
+                    new $wnd.OpenLayers.Control.Navigation(),
+                    new $wnd.OpenLayers.Control.PanZoomBar(),
+                    new $wnd.OpenLayers.Control.LayerSwitcher(),
+                    new $wnd.OpenLayers.Control.MousePosition()
                 ]
             });
             
             // Main Layer
             
-            map.addLayer(new OpenLayers.Layer.Google("GoogleMaps", {sphericalMercator: true}));
-            map.addLayer(new OpenLayers.Layer.OSM("OpenStreetMaps"));
-            map.addLayer(new OpenLayers.Layer.XYZ(
+            map.addLayer(new $wnd.OpenLayers.Layer.Google("GoogleMaps", {sphericalMercator: true}));
+            map.addLayer(new $wnd.OpenLayers.Layer.OSM("OpenStreetMaps"));
+            map.addLayer(new $wnd.OpenLayers.Layer.XYZ(
                 "MapQuest", 
                 [
                     "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
