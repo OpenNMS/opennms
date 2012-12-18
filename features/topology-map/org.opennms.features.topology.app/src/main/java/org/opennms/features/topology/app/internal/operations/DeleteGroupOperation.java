@@ -36,10 +36,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-
-
 public class DeleteGroupOperation implements Operation {
 
 	@Override
@@ -53,24 +49,16 @@ public class DeleteGroupOperation implements Operation {
 		// TODO: Add a confirmation dialog before the group is deleted
 
 		VertexRef parent = targets.get(0);
-		Object parentId = getTopoItemId(graphContainer, parent);
-		if (parentId == null) {
-			return null;
-		}
 		
 		Vertex grandParent = graphContainer.getParent(parent);
-		Object grandParentId = getTopoItemId(graphContainer, grandParent);
 
 		// Detach all children from the group
 		for(VertexRef childRef : graphContainer.getBaseTopology().getChildren(parent)) {
-			Object childId = getTopoItemId(graphContainer, childRef);
-			if (childId != null) {
-				graphContainer.getBaseTopology().setParent(childId, grandParentId);
-			}
+			graphContainer.getBaseTopology().setParent(childRef, grandParent);
 		}
 
 		// Remove the group from the topology
-		graphContainer.getBaseTopology().removeVertex(parentId);
+		graphContainer.getBaseTopology().removeVertex(parent);
 
 		// Save the topology
 		graphContainer.getBaseTopology().save(null);
@@ -78,16 +66,6 @@ public class DeleteGroupOperation implements Operation {
 		graphContainer.redoLayout();
 
 		return null;
-	}
-	
-	private static Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
-		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getBaseTopology().getVertex(vertexRef);
-		if (v == null) return null;
-		Item item = v.getItem();
-		if (item == null) return null;
-		Property property = item.getItemProperty("itemId");
-		return property == null ? null : property.getValue();
 	}
 
 	@Override

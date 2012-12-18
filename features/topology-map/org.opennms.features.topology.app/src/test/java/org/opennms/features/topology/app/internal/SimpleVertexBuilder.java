@@ -1,5 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
+
 public class SimpleVertexBuilder {
 	
 	SimpleVertexProvider m_vertexProvider;

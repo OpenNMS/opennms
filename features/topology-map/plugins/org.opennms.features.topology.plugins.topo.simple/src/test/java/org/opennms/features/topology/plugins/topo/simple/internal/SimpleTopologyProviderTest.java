@@ -51,11 +51,11 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
@@ -83,13 +83,6 @@ public class SimpleTopologyProviderTest {
     
     private class TestGraphContainer implements GraphContainer {
 
-        @SuppressWarnings("unused")
-        private final SimpleVertexContainer m_vertContainer;
-
-        public TestGraphContainer(SimpleVertexContainer vertContainer) {
-            m_vertContainer = vertContainer;
-        }
-        
         @Override
         public int getSemanticZoomLevel() {
         	return 0;
@@ -120,7 +113,7 @@ public class SimpleTopologyProviderTest {
         }
 
 	@Override
-	public GraphProvider getBaseTopology() {
+	public EditableGraphProvider getBaseTopology() {
 		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 	}
 
@@ -279,9 +272,9 @@ public class SimpleTopologyProviderTest {
 	public void testAddVertexWithOperation() {
 	    
 	    List<VertexRef> targets = Collections.emptyList();
-	    OperationContext operationContext = getOperationContext(new TestGraphContainer(new SimpleVertexContainer()));
+	    OperationContext operationContext = getOperationContext(new TestGraphContainer());
 	    
-	    AddVertexOperation addOperation = new AddVertexOperation(Constants.GROUP_ICON_KEY, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(Constants.GROUP_ICON_KEY);
 	    addOperation.execute(targets, operationContext);
 	    
 	    Collection<? extends Vertex> vertIds =  m_topologyProvider.getVertices();
@@ -308,7 +301,7 @@ public class SimpleTopologyProviderTest {
 	    targets.add(vertexRef);
 	    
 	    OperationContext operationContext = getOperationContext(graphContainer);
-	    AddVertexOperation addOperation = new AddVertexOperation(Constants.SERVER_ICON_KEY, m_topologyProvider);
+	    AddVertexOperation addOperation = new AddVertexOperation(Constants.SERVER_ICON_KEY);
         addOperation.execute(targets, operationContext);
 	    
         Collection<? extends Vertex> vertIds = m_topologyProvider.getVertices();
@@ -435,7 +428,7 @@ public class SimpleTopologyProviderTest {
         targets.add(vertexId1);
         targets.add(vertexId2);
         
-        ConnectOperation connectOperation = new ConnectOperation(m_topologyProvider);
+        ConnectOperation connectOperation = new ConnectOperation();
         connectOperation.execute(targets, getOperationContext(graphContainer));
         
         Collection<? extends Edge> edgeIds = m_topologyProvider.getEdges();

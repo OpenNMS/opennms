@@ -9,6 +9,8 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -34,12 +36,12 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices() {
+	public List<Vertex> getVertices() {
 		return m_vertices.getVertices();
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices(
+	public List<Vertex> getVertices(
 			Collection<? extends VertexRef> references) {
 		return m_vertices.getVertices(references);
 	}
@@ -59,15 +61,15 @@ public class SimpleGraphProvider implements GraphProvider {
 		m_vertices.removeVertexListener(vertexListener);
 	}
 
-	public void setVertices(List<SimpleVertex> vertices) {
+	public void setVertices(List<Vertex> vertices) {
 		m_vertices.setVertices(vertices);
 	}
 
-	public void add(SimpleVertex... vertices) {
+	public void add(Vertex... vertices) {
 		m_vertices.add(vertices);
 	}
 
-	public void add(List<SimpleVertex> vertices) {
+	public void add(List<Vertex> vertices) {
 		m_vertices.add(vertices);
 	}
 	
@@ -91,7 +93,7 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public List<? extends Vertex> getRootGroup() {
+	public List<Vertex> getRootGroup() {
 		return m_vertices.getRootGroup();
 	}
 
@@ -101,11 +103,11 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public List<? extends Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group) {
 		return m_vertices.getChildren(group);
 	}
 
-	public void remove(List<SimpleVertex> vertices) {
+	public void remove(List<Vertex> vertices) {
 		m_vertices.remove(vertices);
 	}
 
@@ -144,7 +146,7 @@ public class SimpleGraphProvider implements GraphProvider {
 		m_edges.removeEdgeListener(edgeListener);
 	}
 
-	public void setEdges(List<SimpleEdge> edges) {
+	public void setEdges(List<Edge> edges) {
 		m_edges.setEdges(edges);
 	}
 
@@ -157,7 +159,7 @@ public class SimpleGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices(Criteria criteria) {
+	public List<Vertex> getVertices(Criteria criteria) {
 		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
 	}
 

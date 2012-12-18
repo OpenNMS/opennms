@@ -36,8 +36,10 @@ import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleVertex;
-import org.opennms.features.topology.api.SimpleVertexContainer;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
@@ -54,12 +56,11 @@ import com.vaadin.data.util.BeanItem;
 public class OnmsTopologyProvider implements EditableGraphProvider {
     
 
-    private SimpleVertexContainer m_vertexContainer;
-    private BeanContainer<String, SimpleEdge> m_edgeContainer;
+    private SimpleVertexProvider m_vertexContainer;
+    private SimpleEdgeProvider m_edgeContainer;
     private int m_counter = 0;
     private int m_edgeCounter = 0;
-    private int m_groupCounter = 0;
-    
+
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -90,9 +91,8 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     }
 
     public OnmsTopologyProvider() {
-        m_vertexContainer = new SimpleVertexContainer();
-        m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
-        m_edgeContainer.setBeanIdProperty("id");
+        m_vertexContainer = new SimpleVertexProvider("onmsdao");
+        m_edgeContainer = new SimpleEdgeProvider("onmsdao");
     }
 
     private Vertex addVertex(String id, int x, int y, String icon) {
@@ -102,7 +102,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
         SimpleVertex vertex = new SimpleLeafVertex(-1,id, x, y);
         vertex.setIcon(icon);
-        m_vertexContainer.addBean(vertex);
+        m_vertexContainer.add(vertex);
         return vertex;
     }
     
@@ -114,7 +114,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupLabel);
         SimpleVertex vertex = new SimpleGroup(groupLabel, -1);
         vertex.setIcon(icon);
-        m_vertexContainer.addBean(vertex);
+        m_vertexContainer.add(vertex);
         return vertex;
     }
 
@@ -122,52 +122,35 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
 
         SimpleEdge edge = new SimpleEdge(id, sourceVertextId, targetVertextId);
         
-        m_edgeContainer.addBean(edge);
+        m_edgeContainer.add(edge);
         
         return edge;
     }
     
     @Override
-    public void removeVertex(Object vertexId) {
+    public void removeVertex(VertexRef vertexId) {
         
         Vertex vertex = getVertex(vertexId, false);
         if (vertex == null) return;
         
-        m_vertexContainer.removeItem(vertexId);
+        m_vertexContainer.remove(vertexId);
         
-        for(SimpleEdge e : vertex.getEdges()) {
-            m_edgeContainer.removeItem(e.getId());
+        for(Edge e : vertex.getEdges()) {
+            m_edgeContainer.remove(e);
         }
                 
         
     }
 
-    private Vertex getRequiredVertex(Object vertexId) {
-        return getVertex(vertexId, true);
-    }
-
-    private Vertex getVertex(Object vertexId, boolean required) {
-        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
+    private Vertex getVertex(VertexRef vertexId, boolean required) {
+        Vertex item = m_vertexContainer.getVertex(vertexId);
         if (required && item == null) {
             throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
         }
         
-        return item == null ? null : item.getBean();
+        return item;
     }
 
-    private SimpleEdge getRequiredEdge(Object edgeId) {
-        return getEdge(edgeId, true);
-    }
-
-    private SimpleEdge getEdge(Object edgeId, boolean required) {
-        BeanItem<SimpleEdge> item = m_edgeContainer.getItem(edgeId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required edge " + edgeId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
-    }
-    
     private OnmsMap getMap(int mapId) {
         return getOnmsMapDao().findMapById(mapId);
     }
@@ -175,7 +158,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     @Override
     public void save(String filename) {
         
-        List<Vertex> vertices = getBeans(m_vertexContainer);
+        List<Vertex> vertices = m_vertexContainer.getVertices();
         int rootMapid = Integer.parseInt(filename);
         OnmsMap rootMap = getMap(rootMapid);
         getOnmsMapElementDao().deleteElementsByMapId(rootMap);
@@ -216,11 +199,11 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         List<Vertex> vertices = getVertex(map.getId(),null);
         List<SimpleEdge> edges = getEdges(vertices);
         
-        m_vertexContainer.removeAllItems();
-        m_vertexContainer.addAll(vertices);
+        m_vertexContainer.clear();
+        m_vertexContainer.add(vertices);
         
-        m_edgeContainer.removeAllItems();
-        m_edgeContainer.addAll(edges);
+        m_edgeContainer.clear();
+        m_edgeContainer.add(edges);
     }
     
 
@@ -269,17 +252,6 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         return edges;
     }
 
-    private <T> List<T> getBeans(BeanContainer<?, T> container) {
-        Collection<?> itemIds = container.getItemIds();
-        List<T> beans = new ArrayList<T>(itemIds.size());
-        
-        for(Object itemId : itemIds) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        
-        return beans;
-    }
-
     private String getNextVertexId() {
         return "v" + m_counter++;
     }
@@ -290,8 +262,8 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     
     @Override
     public void resetContainer() {
-        m_vertexContainer.removeAllItems();
-        m_edgeContainer.removeAllItems();
+        m_vertexContainer.clear();
+        m_edgeContainer.clear();
         
         m_counter = 0;
         m_edgeCounter = 0;
@@ -305,8 +277,8 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     }
 
     @Override
-    public void setParent(VertexRef vertexId, VertexRef parentId) {
-        m_vertexContainer.setParent(vertexId, parentId);
+    public boolean setParent(VertexRef vertexId, VertexRef parentId) {
+        return m_vertexContainer.setParent(vertexId, parentId);
     }
 
     @Override

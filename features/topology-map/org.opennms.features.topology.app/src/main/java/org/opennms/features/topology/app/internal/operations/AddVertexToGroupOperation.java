@@ -190,15 +190,4 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		return null;
 	}
 
-	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
-		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getBaseTopology().getVertex(vertexRef);
-		if (v == null) return null;
-		Item item = v.getItem();
-		if (item == null) return null;
-		Property property = item.getItemProperty("itemId");
-		return property == null ? null : property.getValue();
-	}
-
-
 }

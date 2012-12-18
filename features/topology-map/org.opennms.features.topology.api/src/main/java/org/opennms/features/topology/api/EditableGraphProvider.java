@@ -45,7 +45,7 @@ public interface EditableGraphProvider extends GraphProvider {
 
 	Vertex addVertex(int x, int y);
 
-	void setParent(VertexRef vertexId, VertexRef parentId);
+	boolean setParent(VertexRef vertexId, VertexRef parentId);
 	
 	Vertex addGroup(String label, String iconKey);
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -258,7 +259,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public GraphProvider getBaseTopology() {
+    public EditableGraphProvider getBaseTopology() {
         return m_mergedGraphProvider;
     }
 
@@ -426,8 +427,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider,
-			List<? extends Edge> added, List<? extends Edge> updated,
-			List<String> removedEdgeIds) {
+			Collection<? extends Edge> added, Collection<? extends Edge> updated,
+			Collection<String> removedEdgeIds) {
 		rebuildGraph();
 	}
 
@@ -438,8 +439,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider,
-			List<? extends Vertex> added, List<? extends Vertex> update,
-			List<String> removedVertexIds) {
+			Collection<? extends Vertex> added, Collection<? extends Vertex> update,
+			Collection<String> removedVertexIds) {
 		rebuildGraph();
 	}
 

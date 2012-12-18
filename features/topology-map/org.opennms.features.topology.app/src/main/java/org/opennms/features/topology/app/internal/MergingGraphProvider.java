@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -21,7 +22,7 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.ProviderManager.ProviderListener;
 
-public class MergingGraphProvider implements GraphProvider, VertexListener, EdgeListener, ProviderListener {
+public class MergingGraphProvider implements EditableGraphProvider, VertexListener, EdgeListener, ProviderListener {
 	
 	private static final GraphProvider NULL_PROVIDER = new NullProvider();
 	
@@ -209,12 +210,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices(Criteria criteria) {
+	public List<Vertex> getVertices(Criteria criteria) {
 		return vProvider(criteria).getVertices(criteria);
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices() {
+	public List<Vertex> getVertices() {
 		List<Vertex> vertices = new ArrayList<Vertex>(baseVertices());
 		
 		for(VertexProvider vertexProvider : m_vertexProviders.values()) {
@@ -237,7 +238,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references) {
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
 		List<Vertex> vertices = new ArrayList<Vertex>(references.size());
 		
 		for(VertexRef vertexRef : references) {
@@ -251,7 +252,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<? extends Vertex> getRootGroup() {
+	public List<Vertex> getRootGroup() {
 		return m_baseGraphProvider.getRootGroup();
 	}
 
@@ -266,7 +267,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<? extends Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group) {
 		return vProvider(group).getChildren(group);
 	}
 
@@ -333,8 +334,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public void vertexSetChanged(VertexProvider provider, List<? extends Vertex> added, List<? extends Vertex> update,
-			List<String> removedVertexIds) {
+	public void vertexSetChanged(VertexProvider provider, Collection<? extends Vertex> added, Collection<? extends Vertex> update,
+			Collection<String> removedVertexIds) {
 		fireVertexChanged();
 	}
 
@@ -361,8 +362,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider,
-			List<? extends Edge> added, List<? extends Edge> updated,
-			List<String> removedEdgeIds) {
+			Collection<? extends Edge> added, Collection<? extends Edge> updated,
+			Collection<String> removedEdgeIds) {
 		fireEdgeChanged();
 	}
 
@@ -399,22 +400,22 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public List<? extends Vertex> getVertices(Criteria criteria) {
+		public List<Vertex> getVertices(Criteria criteria) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<? extends Vertex> getVertices() {
+		public List<Vertex> getVertices() {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references) {
+		public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<? extends Vertex> getRootGroup() {
+		public List<Vertex> getRootGroup() {
 			return Collections.emptyList();
 		}
 
@@ -429,7 +430,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public List<? extends Vertex> getChildren(VertexRef group) {
+		public List<Vertex> getChildren(VertexRef group) {
 			return Collections.emptyList();
 		}
 
@@ -483,6 +484,16 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		public boolean matches(EdgeRef edgeRef, Criteria criteria) {
 			return false;
 		}
+
+		@Override
+		public void clear() {
+			// Do nothing
+		}
+
+		@Override
+		public boolean setParent(VertexRef child, VertexRef parent) {
+			return false;
+		}
 		
 	}
 
@@ -505,6 +516,5 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	public void vertexProviderRemoved(VertexProvider removedProvider) {
 		removeVertexProvider(removedProvider);
 	}
-
 
 }

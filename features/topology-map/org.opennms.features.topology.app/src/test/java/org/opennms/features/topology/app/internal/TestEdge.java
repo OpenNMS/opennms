@@ -32,78 +32,45 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Connector;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 
 @XmlRootElement(name="edge")
-public class TestEdge implements Edge {
+public class TestEdge extends AbstractEdge {
 	String m_id;
-	TestVertex m_source;
-	TestVertex m_target;
+	Connector m_source;
+	Connector m_target;
 	
-	public TestEdge() {}
-	
-	
-	public TestEdge(String id, TestVertex source, TestVertex target) {
-		m_id = id;
+	public TestEdge(String id, Connector source, Connector target) {
+		super("test", id);
 		m_source = source;
 		m_target = target;
-		
-		m_source.addEdge(this);
-		m_target.addEdge(this);
 	}
 
-	@XmlID
-	public String getId() {
-		return m_id;
+	@Override
+	public Item getItem() {
+		return new BeanItem<TestEdge>(this);
 	}
 
-	public void setId(String id) {
-		m_id = id;
-	}
-	
 	@XmlIDREF
-	public TestVertex getSource() {
+	public Connector getSource() {
 		return m_source;
 	}
 
-	public void setSource(TestVertex source) {
+	public void setSource(Connector source) {
 		m_source = source;
-		m_source.addEdge(this);
 	}
 
 	@XmlIDREF
-	public TestVertex getTarget() {
+	public Connector getTarget() {
 		return m_target;
 	}
 
-	public void setTarget(TestVertex target) {
+	public void setTarget(Connector target) {
 		m_target = target;
-		m_target.addEdge(this);
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TestEdge other = (TestEdge) obj;
-		if (m_id == null) {
-			if (other.m_id != null)
-				return false;
-		} else if (!m_id.equals(other.m_id))
-			return false;
-		return true;
-	}
-		
 }

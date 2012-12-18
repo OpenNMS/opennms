@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -16,13 +18,14 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 public class EdgeProviderMapImpl implements EdgeProvider {
 
 	private Map<String,Edge> m_edges = new HashMap<String,Edge>();
+	final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
 
 	public EdgeProviderMapImpl() {
 	}
 
 	@Override
-	public void addEdgeListener(EdgeListener vertexListener) {
-		throw new UnsupportedOperationException();
+	public void addEdgeListener(EdgeListener edgeListener) {
+		m_listeners.add(edgeListener);
 	}
 
 	private Edge getEdge(String id) {
@@ -80,4 +83,24 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
 		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
 	}
+
+
+	@Override
+	public void clear() {
+		List<Edge> all = new ArrayList<Edge>(m_edges.size()); 
+		all.addAll(getEdges());
+		m_edges.clear();
+		fireEdgesRemoved(all);
+	}
+
+	private void fireEdgesRemoved(List<Edge> edges) {
+		List<String> ids = new ArrayList<String>(edges.size());
+		for(Edge e : edges) {
+			ids.add(e.getId());
+		}
+		for(EdgeListener listener : m_listeners) {
+			listener.edgeSetChanged(this, null, null, ids);
+		}
+	}
+
 }

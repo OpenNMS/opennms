@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleEdgeBuilder {

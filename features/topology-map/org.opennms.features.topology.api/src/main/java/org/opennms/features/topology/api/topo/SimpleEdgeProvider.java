@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.topo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,13 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.opennms.features.topology.api.SimpleEdge;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
 
 public class SimpleEdgeProvider implements EdgeProvider {
 	
@@ -52,7 +45,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 	
 	final String m_namespace;
-	final Map<String, SimpleEdge> m_edgeMap = new LinkedHashMap<String, SimpleEdge>();
+	final Map<String, Edge> m_edgeMap = new LinkedHashMap<String, Edge>();
 	final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
 	final String m_contributesTo;
 	
@@ -89,10 +82,10 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		return getSimpleEdge(reference);
 	}
 
-	private SimpleEdge getSimpleEdge(EdgeRef reference) {
+	private Edge getSimpleEdge(EdgeRef reference) {
 		if (getNamespace().equals(reference.getNamespace())) {
-			if (reference instanceof SimpleEdge) {
-				return SimpleEdge.class.cast(reference);
+			if (reference instanceof Edge) {
+				return Edge.class.cast(reference);
 			} else {
 				return m_edgeMap.get(reference.getId());
 			}
@@ -101,15 +94,15 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<? extends Edge> getEdges() {
-		return Collections.unmodifiableList(new ArrayList<SimpleEdge>(m_edgeMap.values()));
+	public List<Edge> getEdges() {
+		return Collections.unmodifiableList(new ArrayList<Edge>(m_edgeMap.values()));
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references) {
-		List<SimpleEdge> edges = new ArrayList<SimpleEdge>();
+	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
+		List<Edge> edges = new ArrayList<Edge>();
 		for(EdgeRef ref : references) {
-			SimpleEdge edge = getSimpleEdge(ref);
+			Edge edge = getSimpleEdge(ref);
 			if (ref != null) {
 				edges.add(edge);
 			}
@@ -123,15 +116,15 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		}
 	}
 
-	private void fireEdgesAdded(List<SimpleEdge> edges) {
+	private void fireEdgesAdded(List<Edge> edges) {
 		for(EdgeListener listener : m_listeners) {
 			listener.edgeSetChanged(this, edges, null, null);
 		}
 	}
 
-	private void fireEdgesRemoved(List<SimpleEdge> edges) {
+	private void fireEdgesRemoved(List<Edge> edges) {
 		List<String> ids = new ArrayList<String>(edges.size());
-		for(SimpleEdge e : edges) {
+		for(Edge e : edges) {
 			ids.add(e.getId());
 		}
 		for(EdgeListener listener : m_listeners) {
@@ -149,44 +142,44 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		m_listeners.remove(edgeListener);
 	}
 	
-	private void removeEdges(List<SimpleEdge> edges) {
-		for(SimpleEdge edge : edges) {
+	private void removeEdges(List<Edge> edges) {
+		for(Edge edge : edges) {
 			m_edgeMap.remove(edge.getId());
 		}
 	}
 	
-	private void addEdges(List<SimpleEdge> edges) {
-		for(SimpleEdge edge : edges) {
+	private void addEdges(List<Edge> edges) {
+		for(Edge edge : edges) {
 			m_edgeMap.put(edge.getId(), edge);
 		}
 	}
 	
-	public void setEdges(List<SimpleEdge> edges) {
+	public void setEdges(List<Edge> edges) {
 		m_edgeMap.clear();
 		addEdges(edges);
 		fireEdgeSetChanged();
 	}
 	
-	public void add(SimpleEdge...edges) {
+	public void add(Edge...edges) {
 		add(Arrays.asList(edges));
 	}
 	
-	public void add(List<SimpleEdge> edges) {
+	public void add(List<Edge> edges) {
 		addEdges(edges);
 		fireEdgesAdded(edges);
 	}
 	
-	public void remove(List<SimpleEdge> edges) {
+	public void remove(List<Edge> edges) {
 		removeEdges(edges);
 		fireEdgesRemoved(edges);
 	}
 	
-	public void remove(SimpleEdge... edges) {
+	public void remove(Edge... edges) {
 		remove(Arrays.asList(edges));
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(Criteria c) {
+	public List<Edge> getEdges(Criteria c) {
 		MatchingCriteria criteria = (MatchingCriteria) c;
 		
 		List<Edge> edges = new ArrayList<Edge>();
@@ -205,6 +198,13 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		MatchingCriteria criteria = (MatchingCriteria)c;
 		
 		return criteria.matches(getEdge(edgeRef));
+	}
+
+	@Override
+	public void clear() {
+		List<Edge> all = getEdges();
+		removeEdges(all);
+		fireEdgesRemoved(all);
 	}
 
 }

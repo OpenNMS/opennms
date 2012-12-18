@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.topo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,16 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
-
 public class SimpleVertexProvider implements VertexProvider {
 	
 	final String m_namespace;
-	final Map<String, SimpleVertex> m_vertexMap = new LinkedHashMap<String, SimpleVertex>();
+	final Map<String,Vertex> m_vertexMap = new LinkedHashMap<String,Vertex>();
 	final Set<VertexListener> m_listeners = new CopyOnWriteArraySet<VertexListener>();
 	final Map<VertexRef, VertexRef> m_parents= new HashMap<VertexRef, VertexRef>();
 	final Map<VertexRef, List<VertexRef>> m_children = new HashMap<VertexRef, List<VertexRef>>();
@@ -52,10 +46,10 @@ public class SimpleVertexProvider implements VertexProvider {
 		return getSimpleVertex(reference);
 	}
 
-	private SimpleVertex getSimpleVertex(VertexRef reference) {
+	private Vertex getSimpleVertex(VertexRef reference) {
 		if (getNamespace().equals(reference.getNamespace())) {
-			if (reference instanceof SimpleVertex) {
-				return SimpleVertex.class.cast(reference);
+			if (reference instanceof Vertex) {
+				return Vertex.class.cast(reference);
 			} else {
 				return m_vertexMap.get(reference.getId());
 			}
@@ -64,15 +58,15 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices() {
-		return Collections.unmodifiableList(new ArrayList<SimpleVertex>(m_vertexMap.values()));
+	public List<Vertex> getVertices() {
+		return Collections.unmodifiableList(new ArrayList<Vertex>(m_vertexMap.values()));
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references) {
-		List<SimpleVertex> vertices = new ArrayList<SimpleVertex>();
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
+		List<Vertex> vertices = new ArrayList<Vertex>();
 		for(VertexRef ref : references) {
-			SimpleVertex vertex = getSimpleVertex(ref);
+			Vertex vertex = getSimpleVertex(ref);
 			if (ref != null) {
 				vertices.add(vertex);
 			}
@@ -81,9 +75,9 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<? extends Vertex> getRootGroup() {
-		List<SimpleVertex> rootGroup = new ArrayList<SimpleVertex>(); 
-		for(SimpleVertex vertex : m_vertexMap.values()) {
+	public List<Vertex> getRootGroup() {
+		List<Vertex> rootGroup = new ArrayList<Vertex>(); 
+		for(Vertex vertex : m_vertexMap.values()) {
 			if (getParent(vertex) == null) {
 				rootGroup.add(vertex);
 			}
@@ -101,8 +95,9 @@ public class SimpleVertexProvider implements VertexProvider {
 		VertexRef parentRef = m_parents.get(vertex);
 		return parentRef == null ? null : getSimpleVertex(parentRef);
 	}
-	
-	public void setParent(VertexRef child, VertexRef parent) {
+
+	@Override
+	public boolean setParent(VertexRef child, VertexRef parent) {
 		m_parents.put(child, parent);
 		
 		List<VertexRef> children = m_children.get(parent);
@@ -110,13 +105,13 @@ public class SimpleVertexProvider implements VertexProvider {
 			children = new ArrayList<VertexRef>();
 			m_children.put(parent, children);
 		}
-		children.add(child);
+		return children.add(child);
 	}
 
 	@Override
-	public List<? extends Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group) {
 		List<VertexRef> children = m_children.get(group);
-		return children == null ? Collections.<SimpleVertex>emptyList() : getVertices(children);
+		return children == null ? Collections.<Vertex>emptyList() : getVertices(children);
 	}
 	
 	private void fireVertexSetChanged() {
@@ -125,15 +120,15 @@ public class SimpleVertexProvider implements VertexProvider {
 		}
 	}
 
-	private void fireVerticesAdded(List<SimpleVertex> vertices) {
+	private void fireVerticesAdded(Collection<Vertex> vertices) {
 		for(VertexListener listener : m_listeners) {
 			listener.vertexSetChanged(this, vertices, null, null);
 		}
 	}
 
-	private void fireVerticesRemoved(List<SimpleVertex> vertices) {
-		List<String> ids = new ArrayList<String>(vertices.size());
-		for(SimpleVertex vertex : vertices) {
+	private void fireVerticesRemoved(List<? extends VertexRef> all) {
+		List<String> ids = new ArrayList<String>(all.size());
+		for(VertexRef vertex : all) {
 			ids.add(vertex.getId());
 		}
 		for(VertexListener listener : m_listeners) {
@@ -151,51 +146,58 @@ public class SimpleVertexProvider implements VertexProvider {
 		m_listeners.remove(vertexListener);
 	}
 	
-	private void removeVertices(List<SimpleVertex> vertices) {
-		for(SimpleVertex vertex : vertices) {
+	private void removeVertices(List<? extends VertexRef> all) {
+		for(VertexRef vertex : all) {
 			m_vertexMap.remove(vertex.getId());
 		}
 	}
 	
-	private void addVertices(List<SimpleVertex> vertices) {
-		for(SimpleVertex vertex : vertices) {
+	private void addVertices(Collection<Vertex> vertices) {
+		for(Vertex vertex : vertices) {
 			m_vertexMap.put(vertex.getId(), vertex);
 		}
 	}
 	
-	public void setVertices(List<SimpleVertex> vertices) {
+	public void setVertices(List<Vertex> vertices) {
 		m_vertexMap.clear();
 		addVertices(vertices);
 		fireVertexSetChanged();
 	}
 	
-	public void add(SimpleVertex...vertices) {
+	public void add(Vertex...vertices) {
 		add(Arrays.asList(vertices));
 	}
 	
-	public void add(List<SimpleVertex> vertices) {
+	public void add(Collection<Vertex> vertices) {
 		addVertices(vertices);
 		fireVerticesAdded(vertices);
 	}
 	
-	public void remove(List<SimpleVertex> vertices) {
+	public void remove(List<VertexRef> vertices) {
 		removeVertices(vertices);
 		fireVerticesRemoved(vertices);
 	}
 	
-	public void remove(SimpleVertex... vertices) {
+	public void remove(VertexRef... vertices) {
 		remove(Arrays.asList(vertices));
 	}
 
 	@Override
-	public List<? extends Vertex> getVertices(Criteria criteria) {
+	public List<Vertex> getVertices(Criteria criteria) {
 		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
 	}
 
-    @Override
-    public int getSemanticZoomLevel(VertexRef vertex) {
-    	Vertex parent = getParent(vertex);
-    	return parent == null ? 0 : 1 + getSemanticZoomLevel(parent);
-    }
+	@Override
+	public int getSemanticZoomLevel(VertexRef vertex) {
+		Vertex parent = getParent(vertex);
+		return parent == null ? 0 : 1 + getSemanticZoomLevel(parent);
+	}
+
+	@Override
+	public void clear() {
+		List<? extends Vertex> all = getVertices();
+		removeVertices(all);
+		fireVerticesRemoved(all);
+	}
 
 }

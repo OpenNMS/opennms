@@ -32,6 +32,10 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Connector;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 
 @XmlRootElement(name="edge")
 public class LinkdEdge extends AbstractEdge {
@@ -49,25 +53,30 @@ public class LinkdEdge extends AbstractEdge {
 	}
 
 	@Override
+	public Item getItem() {
+		return new BeanItem<LinkdEdge>(this);
+	}
+
+	@Override
 	@XmlIDREF
-	public LinkdVertex getSource() {
+	public Connector getSource() {
 		return m_source;
 	}
 
 	@Override
-	public void setSource(LinkdVertex source) {
+	public void setSource(Connector source) {
 		m_source = source;
 		m_source.addEdge(this);
 	}
 
 	@Override
 	@XmlIDREF
-	public LinkdVertex getTarget() {
+	public Connector getTarget() {
 		return m_target;
 	}
 
 	@Override
-	public void setTarget(LinkdVertex target) {
+	public void setTarget(Connector target) {
 		m_target = target;
 		m_target.addEdge(this);
 	}

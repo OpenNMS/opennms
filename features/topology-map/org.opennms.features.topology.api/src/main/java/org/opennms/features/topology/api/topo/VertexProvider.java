@@ -33,22 +33,26 @@ public interface VertexProvider {
 	/**
 	 * Return an immutable list of vertices that match the criteria.
 	 */
-	public List<? extends Vertex> getVertices(Criteria criteria);
+	public List<Vertex> getVertices(Criteria criteria);
 
-	public List<? extends Vertex> getVertices();
+	public List<Vertex> getVertices();
 	
-	public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references);
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references);
 	
-	public List<? extends Vertex> getRootGroup();
+	public List<Vertex> getRootGroup();
 	
 	public boolean hasChildren(VertexRef group);
 	
 	public Vertex getParent(VertexRef vertex);
 	
-    public List<? extends Vertex> getChildren(VertexRef group);
+	boolean setParent(VertexRef child, VertexRef parent);
+	
+	public List<Vertex> getChildren(VertexRef group);
 	
 	public void addVertexListener(VertexListener vertexListener);
 	
 	public void removeVertexListener(VertexListener vertexListener);
+
+	void clear();
 
 }

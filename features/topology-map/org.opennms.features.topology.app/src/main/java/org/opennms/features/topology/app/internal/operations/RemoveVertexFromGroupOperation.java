@@ -123,12 +123,11 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 				LoggerFactory.getLogger(this.getClass()).debug("Removing item from group: {}", childId);
 
 				Vertex grandParent = graphContainer.getParent(currentGroup);
-				Object grandParentId = getTopoItemId(graphContainer, grandParent);
 
 				EditableGraphProvider topologyProvider = graphContainer.getBaseTopology();
 
 				// Relink the child to the grandparent group (or null if it is null)
-				topologyProvider.setParent(childId, grandParentId);
+				topologyProvider.setParent(childId, grandParent);
 
 				// Save the topology
 				topologyProvider.save(null);
@@ -190,16 +189,4 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 	public String getId() {
 		return null;
 	}
-
-	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
-		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getBaseTopology().getVertex(vertexRef);
-		if (v == null) return null;
-		Item item = v.getItem();
-		if (item == null) return null;
-		Property property = item.getItemProperty("itemId");
-		return property == null ? null : property.getValue();
-	}
-
-
 }

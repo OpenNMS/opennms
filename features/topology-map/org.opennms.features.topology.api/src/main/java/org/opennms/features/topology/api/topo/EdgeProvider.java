@@ -49,4 +49,6 @@ public interface EdgeProvider {
 	
 	public void removeEdgeListener(EdgeListener listener);
 
+	void clear();
+
 }

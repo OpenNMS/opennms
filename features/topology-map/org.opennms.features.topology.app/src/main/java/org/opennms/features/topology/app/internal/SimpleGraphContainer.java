@@ -43,9 +43,9 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.VertexContainer;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -61,7 +61,6 @@ import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeListener;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 
 public class SimpleGraphContainer implements GraphContainer {
 
@@ -78,7 +77,6 @@ public class SimpleGraphContainer implements GraphContainer {
 
     public static class GVertex extends AbstractVertex {
         
-		private String m_key;
         private Object m_itemId;
         private String m_groupKey;
         private Object m_groupId;
@@ -207,7 +205,6 @@ public class SimpleGraphContainer implements GraphContainer {
     
     public static class GEdge extends AbstractEdge {
 
-		private String m_key;
         private Object m_itemId;
         private Item m_item;
         private GVertex m_source;
@@ -216,7 +213,6 @@ public class SimpleGraphContainer implements GraphContainer {
 
         public GEdge(String key, Object itemId, Item item, GVertex source, GVertex target) {
             super("simple", key);
-            m_key = key;
             m_itemId = itemId;
             m_item = item;
             m_source = source;
@@ -227,11 +223,11 @@ public class SimpleGraphContainer implements GraphContainer {
             return m_itemId;
         }
 
-        public GVertex getSource() {
+        public Connector getSource() {
             return m_source;
         }
 
-        public GVertex getTarget() {
+        public Connector getTarget() {
             return m_target;
         }
 
@@ -251,233 +247,7 @@ public class SimpleGraphContainer implements GraphContainer {
             }
         }
     }
-    
-    @SuppressWarnings("serial")
-	private class GEdgeContainer extends BeanContainer<String, GEdge> implements ItemSetChangeListener, PropertySetChangeListener{
-    	
-    	GraphProvider topologyProvider;
 
-        public GEdgeContainer() {
-            super(GEdge.class);
-            setBeanIdProperty("key");
-            addAll(m_edgeHolder.getElements());
-        }
-        
-		public void setTopologyProvider(GraphProvider provider) {
-			if (topologyProvider != null) {
-				topologyProvider.removeEdgeListener((ItemSetChangeListener)this);
-	            topologyProvider.removeEdgeListener((PropertySetChangeListener)this);
-			}
-			
-			topologyProvider = provider;
-			
-			if (topologyProvider != null) {
-				topologyProvider.addEdgeListener((ItemSetChangeListener)this);
-				topologyProvider.addEdgeListener((PropertySetChangeListener)this);
-			}
-			
-			removeAllItems();
-			addAll(m_edgeHolder.getElements());
-
-			
-			containerItemSetChange(null);
-		}
-
-
-
-        @Override
-        public void containerPropertySetChange(PropertySetChangeEvent event) {
-            m_edgeHolder.update();
-            removeAllItems();
-            addAll(m_edgeHolder.getElements());
-            if (m_graph != null) {
-            	m_graph.update();
-            }
-            fireContainerPropertySetChange();
-        }
-
-        @Override
-        public void containerItemSetChange(ItemSetChangeEvent event) {
-            LoggerFactory.getLogger(getClass()).debug("containerItemSetChange()");
-            m_edgeHolder.update();
-            removeAllItems();
-            addAll(m_edgeHolder.getElements());
-            if (m_graph != null) {
-            	m_graph.update();
-            }
-            fireItemSetChange();
-        }
-        
-        
-    }
-     
-    private class GVertexContainer extends VertexContainer implements ItemSetChangeListener, PropertySetChangeListener{
-    	
-		
-		private static final long serialVersionUID = -5363822401177550580L;
-
-		GraphProvider topologyProvider;
-
-		public GVertexContainer() {
-            super();
-            setBeanIdProperty("key");
-            addAll(m_vertexHolder.getElements());
-        }
-
-		@Override
-		public void setTopologyProvider(GraphProvider provider) {
-			if (topologyProvider != null) {
-				topologyProvider.removeVertexListener((ItemSetChangeListener)this);
-	            topologyProvider.removeVertexListener((PropertySetChangeListener)this);
-			}
-			
-			
-			
-			topologyProvider = provider;
-			
-			
-			if (topologyProvider != null) {
-				topologyProvider.addVertexListener((ItemSetChangeListener)this);
-				topologyProvider.addVertexListener((PropertySetChangeListener)this);
-			}
-			
-			removeAllItems();
-			addAll(m_vertexHolder.getElements());
-
-			containerItemSetChange(null);
-		}
-
-        @Override
-        public Collection<String> getChildren(Object gItemId) {
-            GVertex v = m_vertexHolder.getElementByKey(gItemId.toString());
-            Collection<?> children = topologyProvider.getChildren(v.getItemId());
-            
-            return m_vertexHolder.getKeysByItemId(children);
-        }
-        
-        @Override
-        public Object getParent(Object gItemId) {
-            GVertex vertex = m_vertexHolder.getElementByKey(gItemId.toString());
-            return vertex == null ? null : vertex.getGroupKey();
-        }
-
-        @Override
-        public Collection<String> rootItemIds() {
-            return m_vertexHolder.getKeysByItemId(topologyProvider.rootItemIds());
-        }
-
-        @Override
-        public boolean setParent(Object gKey, Object gNewParentKey) throws UnsupportedOperationException {
-           if(!containsId(gKey)) return false;
-           
-           GVertex vertex = m_vertexHolder.getElementByKey(gKey.toString());
-           GVertex parentVertex = m_vertexHolder.getElementByKey(gNewParentKey.toString());
-           
-           if(topologyProvider.setParent(vertex.getItemId(), parentVertex.getItemId())) {
-               vertex.setGroupId(parentVertex.getItemId());
-               vertex.setGroupKey(parentVertex.getKey());
-               return true;
-           }
-           
-           return false;
-           
-        }
-
-        @Override
-        public boolean areChildrenAllowed(Object key) {
-            if(key == null) return false;
-            
-            GVertex vertex = m_vertexHolder.getElementByKey(key.toString());
-            return vertex != null && !vertex.isLeaf();
-        }
-
-        @Override
-        public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {
-            throw new UnsupportedOperationException("this operation is not allowed");
-        }
-
-        @Override
-        public boolean isRoot(Object key) {
-            GVertex vertex = m_vertexHolder.getElementByKey(key.toString());
-            return topologyProvider.isRoot(vertex.getItemId());
-        }
-
-        @Override
-        public boolean hasChildren(Object key) {
-            GVertex vertex = m_vertexHolder.getElementByKey(key.toString());
-            return topologyProvider.hasChildren(vertex.getItemId());
-        }
-
-        @Override
-        public void containerItemSetChange(ItemSetChangeEvent event) {
-            LoggerFactory.getLogger(getClass()).debug("containerItemSetChange()");
-            m_vertexHolder.update();
-            
-//            removeAllItems();
-//            addAll(m_vertexHolder.getElements());
-            
-            List<Vertex> oldVertices = getAllGVertices();
-            List<GVertex> newVertices = m_vertexHolder.getElements();
-            
-            Set<GVertex> newContainerVertices = new LinkedHashSet<GVertex>(newVertices);
-            newContainerVertices.removeAll(oldVertices);
-            
-            Set<Vertex> removedContainerVertices = new LinkedHashSet<Vertex>(oldVertices);
-            removedContainerVertices.removeAll(newVertices);
-            
-            for(Vertex v : removedContainerVertices) {
-                removeItem(v.getKey());
-            }
-            updateAll(newVertices);
-            addAll(newContainerVertices);
-
-            if (m_graph != null) {
-            	m_graph.update();
-            }
-
-            fireItemSetChange();
-        }
-
-        private void updateAll(List<GVertex> vertices) {
-            for(GVertex v : vertices) {
-                Object key = v.getKey();
-                if(containsId(key)) {
-                    BeanItem<Vertex> item = getItem(key);
-                    item.getItemProperty("groupId").setValue(v.getGroupId());
-                    item.getItemProperty("groupKey").setValue(v.getGroupKey());
-                    item.getItemProperty("icon").setValue(v.getIcon());
-                    item.getItemProperty("item").setValue(v.getItem());
-                    item.getItemProperty("itemId").setValue(v.getItemId());
-                    item.getItemProperty("key").setValue(v.getKey());
-                    item.getItemProperty("selected").setValue(v.isSelected());
-                    item.getItemProperty("x").setValue(v.getX());
-                    item.getItemProperty("y").setValue(v.getY());
-                }
-            }
-        }
-
-        private List<Vertex> getAllGVertices() {
-            List<Vertex> allVertices = new ArrayList<Vertex>();
-            for(Object itemId : getAllItemIds()) {
-                allVertices.add(getItem(itemId).getBean());
-            }
-            return allVertices;
-        }
-
-        @Override
-        public void containerPropertySetChange(PropertySetChangeEvent event) {
-            LoggerFactory.getLogger(getClass()).debug("containerPropertySetChange()");
-            m_vertexHolder.update();
-            removeAllItems();
-            addAll(m_vertexHolder.getElements());
-            if (m_graph != null) {
-            	m_graph.update();
-            }
-            fireContainerPropertySetChange();
-        }
-        
-    }
-    
     private final SelectionManager m_selectionManager;
 	private TopoGraph m_graph;
 
@@ -485,13 +255,10 @@ public class SimpleGraphContainer implements GraphContainer {
 	private double m_scale = 1;
 	private int m_semanticZoomLevel;
 
-    private GVertexContainer m_vertexContainer;
-    
     private ElementHolder<GVertex> m_vertexHolder;
     private ElementHolder<GEdge> m_edgeHolder;
     private EditableGraphProvider m_graphProvider;
-    private GEdgeContainer m_edgeContainer;
-    
+
     private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
     
 	public SimpleGraphContainer(GraphProvider topologyProvider) {
@@ -506,7 +273,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
             @Override
             protected GVertex update(GVertex element) {
-                Object groupId = m_graphProvider.getParent(element.getItemId());
+                Vertex groupId = m_graphProvider.getParent(element.getItemId());
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
                 
                 element.setGroupId(groupId);
@@ -517,7 +284,7 @@ public class SimpleGraphContainer implements GraphContainer {
 
             @Override
             protected GVertex make(String key, Object itemId, Item item) {
-                Object groupId = m_graphProvider.getParent(itemId);
+                Vertex groupId = m_graphProvider.getParent(itemId);
                 String groupKey = groupId == null ? null : getKeyForItemId(groupId);
                 //System.err.printf("GVertex Make Call :: Parent of itemId: %s with key %s groupId: %s groupKey %s\n" + key, itemId, key, groupId, groupKey);
                 GVertex gVertex = new GVertex(key, itemId, item, groupKey, groupId);
@@ -530,7 +297,7 @@ public class SimpleGraphContainer implements GraphContainer {
             @Override
             protected GEdge make(String key, Object itemId, Item item) {
 
-                Iterator<?> endPoints = m_graphProvider.getEndPointIdsForEdge((String)itemId).iterator();
+                Iterator<VertexRef> endPoints = m_graphProvider.getEndPointIdsForEdge((String)itemId).iterator();
 
                 Object sourceId = endPoints.next();
                 Object targetId = endPoints.next();
@@ -542,10 +309,6 @@ public class SimpleGraphContainer implements GraphContainer {
             }
 
         };
-
-
-		m_vertexContainer = new GVertexContainer();
-		m_edgeContainer = new GEdgeContainer();
 	}
 	
 	@Override
@@ -554,39 +317,17 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 	@Override
-	public void setDataSource(GraphProvider topologyProvider) {
-	    m_graphProvider = new TPGraphProvider(topologyProvider);
+	public void setDataSource(EditableGraphProvider topologyProvider) {
+	    m_graphProvider = topologyProvider;
 	    
 	    m_vertexHolder.setContainer(m_graphProvider);
 	    
 	    m_edgeHolder.setContainer(m_graphProvider);
 	    
-	    m_vertexContainer.setTopologyProvider(topologyProvider);
-	    m_edgeContainer.setTopologyProvider(topologyProvider);
-	    
 	    m_graph = new TopoGraph(this);
 	    
 	    redoLayout();
-	    
-	    m_vertexContainer.addListener(new ItemSetChangeListener() {
-			
-			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
-				SimpleGraphContainer.this.fireChange();
-			}
-		});
-	    
-	    m_edgeContainer.addListener(new ItemSetChangeListener() {
-			
-			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
-				SimpleGraphContainer.this.fireChange();
-			}
-		});
-
 	}
-	
-	
 
 	@Override
 	public EditableGraphProvider getBaseTopology() {
@@ -599,7 +340,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
     @Override
-	public Collection<String> getEndPointIdsForEdge(Object key) {
+	public Collection<VertexRef> getEndPointIdsForEdge(EdgeRef key) {
 	        if (key == null) return Collections.emptyList();
 		GEdge edge = m_edgeHolder.getElementByKey(key.toString());
 		if (edge == null) return Collections.emptyList();
@@ -607,7 +348,7 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
     @Override
-	public Collection<String> getEdgeIdsForVertex(Object vertexKey) {
+	public Collection<EdgeRef> getEdgeIdsForVertex(VertexRef vertexKey) {
 	    GVertex vertex = m_vertexHolder.getElementByKey(vertexKey.toString());
 	    return m_edgeHolder.getKeysByItemId(m_graphProvider.getEdgeIdsForVertex(vertex.getItemId()));
 	}
@@ -667,8 +408,8 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
 
-    public int getX(Object itemId) {
-		BeanItem<Vertex> vertexItem = getVertexItem(itemId);
+    public int getX(VertexRef itemId) {
+		Vertex vertexItem = getVertex(itemId);
 		if (vertexItem == null) throw new NullPointerException("vertexItem "+ itemId +" is null");
 		Property itemProperty = vertexItem.getItemProperty(X_PROPERTY);
 		if (itemProperty == null) throw new NullPointerException("X property is null");
@@ -716,39 +457,38 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
     
     @Override
-    public Object getGroupId(Object itemId) {
-    	return getBaseTopology().getVertexItem(itemId).getBean().getGroupKey();
+    public Object getGroupId(VertexRef itemId) {
+    	return getBaseTopology().getVertex(itemId).getGroupKey();
     }
 
     @Override
-	boolean isLeaf(Object itemId) {
-		Object value = getBaseTopology().getVertexItem(itemId).getItemProperty(LEAF).getValue();
+	boolean isLeaf(VertexRef itemId) {
+		Object value = getBaseTopology().getVertex(itemId).isLeaf();
 	    return (Boolean) value;
 	}
 
     @Override
-	String getLabel(Object itemId) {
-		Property labelProperty = getBaseTopology().getVertexItem(itemId).getItemProperty(LABEL);
-		String label = labelProperty == null ? "no such label" : (String)labelProperty.getValue();
-		return label;
+	String getLabel(VertexRef itemId) {
+		return getBaseTopology().getVertex(itemId).getLabel();
 	}
 
     @Override
-	String getIconKey(Object itemId) {
-		return (String) getBaseTopology().getVertexItem(itemId).getItemProperty(ICON_KEY).getValue();
+	String getIconKey(VertexRef itemId) {
+		return (String) getBaseTopology().getVertex(itemId).getIconKey();
 	}
 
     @Override
-	String getVertexTooltipText(Object itemId) {
-		if(getBaseTopology().getVertexItem(itemId).getItemProperty("tooltipText") != null && getBaseTopology().getVertexItem(itemId).getItemProperty("tooltipText").getValue() != null) {
-	        return (String) getBaseTopology().getVertexItem(itemId).getItemProperty("tooltipText").getValue();
-	    }else {
-	        return getLabel(itemId);
-	    }
-	}
-	
+    String getVertexTooltipText(VertexRef itemId) {
+    	String tooltipText = getBaseTopology().getVertex(itemId).getTooltipText();
+    	if(tooltipText == null || "".equals(tooltipText.trim())) {
+    		return getLabel(itemId);
+    	}else {
+    		return tooltipText;
+    	}
+    }
+
     @Override
-	public Object getDisplayVertexId(Object vertexId, int semanticZoomLevel) {
+	public Object getDisplayVertexId(VertexRef vertexId, int semanticZoomLevel) {
 
 		int szl = getSemanticZoomLevel(vertexId);
 
@@ -789,40 +529,6 @@ public class SimpleGraphContainer implements GraphContainer {
 		return m_graph;
 	}
 	
-	private Object getItemId(VertexRef v) {
-		return getVertex(v).getItemId();
-	}
-
-    @Override
-	public int getVertexX(VertexRef v) {
-		Object itemId = getItemId(v);
-		return itemId == null ? 0 : getX(itemId);
-		
-	}
-
-    @Override
-	public int getVertexY(VertexRef v) {
-		Object itemId = getItemId(v);
-		return itemId == null ? 100 : getY(itemId);
-		
-	}
-
-    @Override
-	public void setVertexX(VertexRef v, int x) {
-		Object itemId = getItemId(v);
-		if (itemId != null) {
-			setX(itemId, x);
-		}
-	}
-	
-    @Override
-	public void setVertexY(VertexRef v, int y) {
-		Object itemId = getItemId(v);
-		if (itemId != null) {
-			setY(itemId, y);
-		}
-	}
-
 	@Override
 	public Vertex getVertex(VertexRef ref) {
 		if (ref instanceof TopoVertex) {

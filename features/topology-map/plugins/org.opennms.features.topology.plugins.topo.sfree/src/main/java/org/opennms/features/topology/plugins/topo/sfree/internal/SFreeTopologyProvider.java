@@ -9,10 +9,11 @@ import java.util.Random;
 
 import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.SimpleEdge;
-import org.opennms.features.topology.api.SimpleVertexContainer;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
 public class SFreeTopologyProvider implements EditableGraphProvider {
@@ -20,18 +21,17 @@ public class SFreeTopologyProvider implements EditableGraphProvider {
 	private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
 	public static final String ERDOS_RENIS = "ErdosReniy";
 	public static final String BARABASI_ALBERT = "BarabasiAlbert";
-    private final SimpleVertexContainer m_vertexContainer;
-    private final BeanContainer<String, SimpleEdge> m_edgeContainer;
+    private final SimpleVertexProvider m_vertexContainer;
+    private final SimpleEdgeProvider m_edgeContainer;
 
     public SFreeTopologyProvider() {
-        m_vertexContainer = new SimpleVertexContainer();
-        m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
-        m_edgeContainer.setBeanIdProperty("id");
+        m_vertexContainer = new SimpleVertexProvider("sfree");
+        m_edgeContainer = new SimpleEdgeProvider("sfree");
     }
 
 	@Override
-	public void setParent(Object vertexId, Object parentId) {
-		m_vertexContainer.setParent(vertexId, parentId);
+	public boolean setParent(VertexRef vertexId, VertexRef parentId) {
+		return m_vertexContainer.setParent(vertexId, parentId);
 	}
 
 	@Override
@@ -46,8 +46,8 @@ public class SFreeTopologyProvider implements EditableGraphProvider {
 	@Override
 	public void load(String filename) {
 		
-		m_vertexContainer.removeAllItems();
-		m_edgeContainer.removeAllItems();
+		m_vertexContainer.clear();
+		m_edgeContainer.clear();
 
 		if (filename.equals(ERDOS_RENIS))
 			createERRandomTopology(100,3);		
@@ -127,35 +127,8 @@ public class SFreeTopologyProvider implements EditableGraphProvider {
 		
 	}
 
-    private Vertex getRequiredVertex(Object vertexId) {
-        return getVertex(vertexId, true);
-    }
-
-    private Vertex getVertex(Object vertexId, boolean required) {
-        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
-    }
-
-    private SimpleEdge getRequiredEdge(Object edgeId) {
-        return getEdge(edgeId, true);
-    }
-
-    private SimpleEdge getEdge(Object edgeId, boolean required) {
-        BeanItem<SimpleEdge> item = m_edgeContainer.getItem(edgeId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required edge " + edgeId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
-    }
-
 	@Override
 	public String getNamespace() {
-		return "vertex"; 
+		return "sfree"; 
 	}
-
 }

@@ -32,6 +32,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,10 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.EditableGraphProvider;
-import org.opennms.features.topology.api.SimpleVertexContainer;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
@@ -148,8 +152,8 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         this.addNodeWithoutLink = addNodeWithoutLink;
     }
 
-    private final SimpleVertexContainer m_vertexContainer;
-    private final BeanContainer<String, LinkdEdge> m_edgeContainer;
+    private final SimpleVertexProvider m_vertexContainer;
+    private final SimpleEdgeProvider m_edgeContainer;
 
     private int m_groupCounter = 0;
     
@@ -168,9 +172,8 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
     }
     
     public LinkdTopologyProvider() {
-        m_vertexContainer = new SimpleVertexContainer();
-        m_edgeContainer = new BeanContainer<String, LinkdEdge>(LinkdEdge.class);
-        m_edgeContainer.setBeanIdProperty("id");
+        m_vertexContainer = new SimpleVertexProvider("linkd");
+        m_edgeContainer = new SimpleEdgeProvider("linkd");
     }
 
     @Override
@@ -186,38 +189,12 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         log("Adding a group: " + groupId);
         LinkdVertex vertex = new LinkdGroup(groupId, label);
         vertex.setIconKey(iconKey);
-        m_vertexContainer.addBean(vertex);
+        m_vertexContainer.add(vertex);
         return vertex;
     }
     
     private String getNextGroupId() {
         return LINKD_GROUP_ID_PREFIX + m_groupCounter++;
-    }
-
-    private Vertex getRequiredVertex(Object vertexId) {
-        return getVertex(vertexId, true);
-    }
-
-    private Vertex getVertex(Object vertexId, boolean required) {
-        BeanItem<Vertex> item = m_vertexContainer.getItem(vertexId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
-    }
-
-    private LinkdEdge getRequiredEdge(Object edgeId) {
-        return getEdge(edgeId, true);
-    }
-
-    private LinkdEdge getEdge(Object edgeId, boolean required) {
-        BeanItem<LinkdEdge> item = m_edgeContainer.getItem(edgeId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required edge " + edgeId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
     }
 
     @Override
@@ -240,9 +217,9 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         List<Vertex> m_vertices = new ArrayList<Vertex>();
         
         @XmlElement(name="edge")
-        List<LinkdEdge> m_edges = new ArrayList<LinkdEdge>();
+        List<Edge> m_edges = new ArrayList<Edge>();
         
-        public SimpleGraph(List<Vertex> vertices, List<LinkdEdge> edges) {
+        public SimpleGraph(List<Vertex> vertices, List<Edge> edges) {
             m_vertices = vertices;
             m_edges = edges;
         }
@@ -257,8 +234,8 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         File file = new File(filename);
         if (file.exists() && file.canRead()) {
             SimpleGraph graph = getGraphFromFile(file);        
-            m_vertexContainer.addAll(graph.m_vertices);        
-            m_edgeContainer.addAll(graph.m_edges);
+            m_vertexContainer.add(graph.m_vertices);        
+            m_edgeContainer.add(graph.m_edges);
         }
     }
 
@@ -267,12 +244,12 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
         log("loadtopology: Clean Vertexcontainer");
-        m_vertexContainer.removeAllItems();
+        m_vertexContainer.clear();
         log("loadtopology: Clean EdgeContainer");
-        m_edgeContainer.removeAllItems();
+        m_edgeContainer.clear();
 
-        Map<String, LinkdVertex> vertexes = new HashMap<String, LinkdVertex>();
-        Collection<LinkdEdge> edges = new ArrayList<LinkdEdge>();
+        Map<String, Vertex> vertexes = new HashMap<String,Vertex>();
+        List<Edge> edges = new ArrayList<Edge>();
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 
@@ -280,7 +257,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
             //OnmsNode node = link.getNode();
             log("loadtopology: found node: " + node.getLabel());
             String sourceId = node.getNodeId();
-            LinkdVertex source;
+            Vertex source;
             if ( vertexes.containsKey(sourceId)) {
                 source = vertexes.get(sourceId);
             } else {
@@ -292,7 +269,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
             log("loadtopology: found parentnode: " + parentNode.getLabel());
                        String targetId = parentNode.getNodeId();
-            LinkdVertex target;
+            Vertex target;
             if (vertexes.containsKey(targetId)) {
                 target = vertexes.get(targetId);
             } else {
@@ -300,7 +277,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
                 target = getVertex(parentNode);
                 vertexes.put(targetId, target);
             }
-            LinkdEdge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
+            Edge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
             edge.setTooltipText(getEdgeTooltipText(link,source,target));
             edges.add(edge);
         }
@@ -321,8 +298,8 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         log("Found Edges: #" + edges.size());
 
                 
-        m_vertexContainer.addAll(vertexes.values());
-        m_edgeContainer.addAll(edges);        
+        m_vertexContainer.add(vertexes.values());
+        m_edgeContainer.add(edges);
  
         File configFile = new File(m_configurationFile);
 
@@ -486,29 +463,19 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
     public void save(String filename) {
         if (filename == null) 
             filename=m_configurationFile;
-        List<Vertex> vertices = getBeans(m_vertexContainer);
-        List<LinkdEdge> edges = getBeans(m_edgeContainer);
+        List<Vertex> vertices = m_vertexContainer.getVertices();
+        List<Edge> edges = m_edgeContainer.getEdges();
 
         SimpleGraph graph = new SimpleGraph(vertices, edges);
         
         JAXB.marshal(graph, new File(filename));
     }
 
-    private static <T> List<T> getBeans(BeanContainer<?, T> container) {
-        Collection<?> itemIds = container.getItemIds();
-        List<T> beans = new ArrayList<T>(itemIds.size());
-        
-        for(Object itemId : itemIds) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        
-        return beans;
-    }
-
     @Override
-    public void setParent(VertexRef vertexId, VertexRef parentId) {
+    public boolean setParent(VertexRef vertexId, VertexRef parentId) {
         boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
         log("setParent() for vertex: " + vertexId + ", parent: " + parentId + ", result: " + (addedparent ? "SUCCESS" : "FAILED"));
+        return addedparent;
     }
     
       private static String getIfStatusString(int ifStatusNum) {
