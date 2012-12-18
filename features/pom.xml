@@ -33,8 +33,9 @@
     <!-- Near Real Time Graphing -->
     <module>nrtg</module>
 
-    <!-- Topoology Map -->
+    <!-- Topology Map -->
     <module>topology-map</module>
+    <module>vaadin-node-maps</module>
 
     <!-- SMS monitoring -->
     <module>phonebook</module>
