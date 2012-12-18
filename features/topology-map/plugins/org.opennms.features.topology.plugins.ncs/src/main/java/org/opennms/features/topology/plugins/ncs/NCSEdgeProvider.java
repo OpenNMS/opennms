@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.SimpleConnector;
+import org.opennms.features.topology.api.SimpleVertex;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -126,49 +127,17 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	}
 
-	public static class NCSConnector implements Connector {
-
-		private final NCSVertex m_vertex;
-		private final NCSEdge m_edge;
-
+	public static class NCSConnector extends SimpleConnector {
 		public NCSConnector(NCSEdge edge, NCSVertex vertex) {
-			m_edge = edge;
-			m_vertex = vertex;
+			super("ncs", edge.getId() + "::" + vertex.getId(), vertex, edge);
 		}
-
-		@Override
-		public NCSEdge getEdge() {
-			return m_edge;
-		}
-
-		@Override
-		public NCSVertex getVertex() {
-			return m_vertex;
-		}
-
-		@Override
-		public String getId() {
-			return m_edge.getId() + "::" + m_vertex.getId();
-		}
-
-		@Override
-		public String getNamespace() {
-			return "ncs";
-		}
-
 	}
 
-	public static class NCSVertex extends AbstractVertex {
-
-		private final String m_label;
+	public static class NCSVertex extends SimpleVertex {
 
 		public NCSVertex(String id, String label) {
 			super("nodes", id);
-			m_label = label;
-		}
-
-		public String getLabel() {
-			return m_label == null ? "???" : m_label;
+			setLabel(label);
 		}
 
 		@Override

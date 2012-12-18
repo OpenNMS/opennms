@@ -31,15 +31,12 @@ package org.opennms.features.topology.plugins.devutils.internal;
 import java.util.Collection;
 
 import org.junit.Test;
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -108,7 +105,7 @@ public class SaveToXmlTest {
 					}
 
 					@Override
-					public EditableGraphProvider getBaseTopology() {
+					public GraphProvider getBaseTopology() {
 						throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 					}
 

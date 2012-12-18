@@ -29,15 +29,14 @@
 package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
+import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.SimpleVertex;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -50,10 +49,7 @@ import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-
-public class OnmsTopologyProvider implements EditableGraphProvider {
+public class OnmsTopologyProvider implements GraphProvider {
     
 
     private SimpleVertexProvider m_vertexContainer;
@@ -100,8 +96,9 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
-        SimpleVertex vertex = new SimpleLeafVertex(-1,id, x, y);
-        vertex.setIcon(icon);
+        SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
+        vertex.setNodeID(-1);
+        vertex.setIconKey(icon);
         m_vertexContainer.add(vertex);
         return vertex;
     }
@@ -113,7 +110,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupLabel);
         SimpleVertex vertex = new SimpleGroup(groupLabel, -1);
-        vertex.setIcon(icon);
+        vertex.setIconKey(icon);
         m_vertexContainer.add(vertex);
         return vertex;
     }
@@ -128,18 +125,16 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
     }
     
     @Override
-    public void removeVertex(VertexRef vertexId) {
-        
-        Vertex vertex = getVertex(vertexId, false);
-        if (vertex == null) return;
-        
-        m_vertexContainer.remove(vertexId);
-        
-        for(Edge e : vertex.getEdges()) {
-            m_edgeContainer.remove(e);
+    public void removeVertex(Vertex... vertexId) {
+        for (Vertex vertex : vertexId) {
+            if (vertex == null) return;
+            
+            m_vertexContainer.remove(vertexId);
+            
+            for(Edge e : vertex.getEdges()) {
+                m_edgeContainer.remove(e);
+            }
         }
-                
-        
     }
 
     private Vertex getVertex(VertexRef vertexId, boolean required) {
@@ -188,7 +183,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
                 mapid = parent.getMapid();
             }
             OnmsMap map = getMap(mapid);
-            getOnmsMapElementDao().save(new OnmsMapElement(map, id, type, "Here is the label", vertex.getIcon(), vertex.getX(), vertex.getY()));
+            getOnmsMapElementDao().save(new OnmsMapElement(map, id, type, "Here is the label", vertex.getIconKey(), vertex.getX(), vertex.getY()));
         }
     }
     
@@ -213,7 +208,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
             SimpleLeafVertex vertex = new SimpleLeafVertex(element.getElementId(),Integer.toString(element.getId()),element.getX(),element.getY());
             vertex.setLocked(false);
             vertex.setSelected(false);
-            vertex.setIcon(element.getIconName());
+            vertex.setIconKey(element.getIconName());
             vertex.setParent(parent);
             vertexes.add(vertex);
         }
@@ -222,7 +217,7 @@ public class OnmsTopologyProvider implements EditableGraphProvider {
             SimpleGroup vertex = new SimpleGroup(Integer.toString(element.getId()), element.getElementId());
             vertex.setLocked(false);
             vertex.setSelected(false);
-            vertex.setIcon(element.getIconName());
+            vertex.setIconKey(element.getIconName());
             vertex.setParent(parent);
             vertexes.add(vertex);
             vertexes.addAll(getVertex(element.getElementId(),vertex));

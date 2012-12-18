@@ -34,15 +34,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.util.BeanItem;
-
-public class TestTopologyProvider implements EditableGraphProvider {
+public class TestTopologyProvider implements GraphProvider {
 	private final String m_namespace;
     private SimpleVertexProvider m_vertexContainer;
     private SimpleEdgeProvider m_edgeContainer;

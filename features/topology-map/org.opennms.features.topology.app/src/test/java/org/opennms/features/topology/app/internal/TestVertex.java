@@ -31,15 +31,12 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 
 public abstract class TestVertex extends AbstractVertex {
 
-	int m_x;
-	int m_y;
 	TestGroup m_parent = null;
 	List<TestEdge> m_edges = new ArrayList<TestEdge>();
 
@@ -49,23 +46,8 @@ public abstract class TestVertex extends AbstractVertex {
 
 	public TestVertex(String id, int x, int y) {
 		this(id);
-		m_x = x;
-		m_y = y;
-	}
-
-	@XmlIDREF
-	public TestGroup getParent() {
-		return m_parent;
-	}
-
-	public void setParent(TestGroup parent) {
-		if (m_parent != null) {
-			m_parent.removeMember(this);
-		}
-		m_parent = parent;
-		if (m_parent != null) {
-			m_parent.addMember(this);
-		}
+		setX(x);
+		setY(y);
 	}
 
 	@Override
@@ -73,22 +55,6 @@ public abstract class TestVertex extends AbstractVertex {
 
 	public boolean isRoot() {
 		return m_parent == null;
-	}
-
-	public int getX() {
-		return m_x;
-	}
-
-	public void setX(int x) {
-		m_x = x;
-	}
-
-	public int getY() {
-		return m_y;
-	}
-
-	public void setY(int y) {
-		m_y = y;
 	}
 
 	@XmlTransient

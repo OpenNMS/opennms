@@ -9,19 +9,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -66,56 +65,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
         @Override
         public Connector getSource() {
-            return new Connector() {
-
-                @Override
-                public String getNamespace() {
-                    return PseudoEdge.this.getNamespace();
-                }
-
-                @Override
-                public String getId() {
-                    return PseudoEdge.this.getId()+":source";
-                }
-
-                @Override
-                public EdgeRef getEdge() {
-                    return PseudoEdge.this;
-                }
-
-                @Override
-                public VertexRef getVertex() {
-                    return PseudoEdge.this.m_source;
-                }
-
-            };
+            return new SimpleConnector(PseudoEdge.this.getNamespace(), PseudoEdge.this.getId()+":source", PseudoEdge.this.m_source, PseudoEdge.this);
         }
 
         @Override
         public Connector getTarget() {
-            return new Connector() {
-
-                @Override
-                public String getNamespace() {
-                    return PseudoEdge.this.getNamespace();
-                }
-
-                @Override
-                public String getId() {
-                    return PseudoEdge.this.getId()+":target";
-                }
-
-                @Override
-                public EdgeRef getEdge() {
-                    return PseudoEdge.this;
-                }
-
-                @Override
-                public VertexRef getVertex() {
-                    return PseudoEdge.this.m_target;
-                }
-
-            };
+            return new SimpleConnector(PseudoEdge.this.getNamespace(), PseudoEdge.this.getId()+":target", PseudoEdge.this.m_target, PseudoEdge.this);
         }
 
         @Override
@@ -259,7 +214,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public EditableGraphProvider getBaseTopology() {
+    public GraphProvider getBaseTopology() {
         return m_mergedGraphProvider;
     }
 

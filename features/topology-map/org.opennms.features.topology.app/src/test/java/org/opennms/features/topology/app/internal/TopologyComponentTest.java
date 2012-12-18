@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
+        GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoComponent.paintContent(target);
@@ -65,7 +66,7 @@ public class TopologyComponentTest {
         EasyMock.verify(target);
     }
 
-    private TopologyComponent getTopologyComponent(SimpleGraphContainer dataSource) {
+    private static TopologyComponent getTopologyComponent(GraphContainer dataSource) {
     	BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(dataSource);
         TopologyComponent topologyComponent = new TopologyComponent(dataSource, item.getItemProperty("scale"));
         topologyComponent.setIconRepoManager(new IconRepositoryManager());
@@ -93,7 +94,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
+        GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoProvider.addVertex();
@@ -133,7 +134,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        GraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         Collection<?> vertIds = topologyProvider.getVertexIds();
@@ -163,7 +164,7 @@ public class TopologyComponentTest {
     @Ignore
     public void testTopologyComponentSendCorrectEdgeIds() throws PaintException {
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        SimpleGraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
+        GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         topoComponent.setIconRepoManager(new IconRepositoryManager());
         Graph graph = topoComponent.getGraph();

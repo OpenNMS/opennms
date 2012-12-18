@@ -31,162 +31,49 @@ package org.opennms.features.topology.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 
 public abstract class SimpleVertex extends AbstractVertex {
 
-	int m_x;
-	int m_y;
-	boolean m_selected;
-	boolean m_locked = false;
-	String m_icon;
-	SimpleGroup m_parent = null;
-	List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
-	private String m_ipAddr ="127.0.0.1";
-	private int m_nodeID = -1;
-	private int m_semanticZoomLevel = -1;
+	private List<Edge> m_edges = new ArrayList<Edge>();
 
-	private String m_label;
-	private String m_tooltipText;
-	private String m_iconKey;
-
-	public SimpleVertex(String id) {
-		super("simple", id);
+	/**
+	 * @param namespace
+	 * @param id
+	 */
+	public SimpleVertex(String namespace, String id) {
+		super(namespace, id);
 	}
 
-	public SimpleVertex(String id, int x, int y) {
-		this(id);
-		m_x = x;
-		m_y = y;
-	}
-
-	@XmlIDREF
-	public SimpleGroup getParent() {
-		return m_parent;
-	}
-
-	@Override
-	public void setParent(SimpleGroup parent) {
-		if (m_parent != null) {
-			m_parent.removeMember(this);
-		}
-		m_parent = parent;
-		if (m_parent != null) {
-			m_parent.addMember(this);
-		}
-	}
-
-	@Override
-	public boolean isLocked() {
-		return m_locked;
-	}
-
-	@Override
-	public void setLocked(boolean locked) {
-		m_locked = locked;
-	}
-
-	@Override
-	public abstract boolean isLeaf();
-
-	@Override
-	public boolean isRoot() {
-		return m_parent == null;
-	}
-
-	@Override
-	public int getX() {
-		return m_x;
-	}
-
-	@Override
-	public void setX(int x) {
-		m_x = x;
-	}
-
-	@Override
-	public int getY() {
-		return m_y;
-	}
-
-	@Override
-	public void setY(int y) {
-		m_y = y;
-	}
-
-	@Override
-	public boolean isSelected() {
-		return m_selected;
-	}
-
-	@Override
-	public void setSelected(boolean selected) {
-		m_selected = selected;
-	}
-
-	@Override
-	public String getLabel() {
-		return m_label;
-	}
-
-	@Override
-	public void setLabel(String label) {
-		m_label = label;
-	}
-
-	@Override
-	public String getIpAddr() {
-		return m_ipAddr;
-	}
-
-	@Override
-	public void setIpAddr(String ipAddr){
-		m_ipAddr = ipAddr;
-	}
-
-	@Override
-	public int getNodeID() {
-		return m_nodeID;
-	}
-
-	@Override
-	public void setNodeID(int nodeID) {
-		m_nodeID = nodeID;
+	/**
+	 * @param namespace
+	 * @param id
+	 * @param x
+	 * @param y
+	 */
+	public SimpleVertex(String namespace, String id, int x, int y) {
+		this(namespace, id);
+		setX(x);
+		setY(y);
 	}
 
 	@XmlTransient
 	@Override
-	public List<SimpleEdge> getEdges() {
+	public List<Edge> getEdges() {
 		return m_edges;
 	}
 
 	@Override
-	void addEdge(SimpleEdge edge) {
+	public void addEdge(Edge edge) {
 		m_edges.add(edge);
 	}
 
 	@Override
-	void removeEdge(SimpleEdge edge) {
+	public void removeEdge(Edge edge) {
 		m_edges.remove(edge);
 	}
-
-	public int getSemanticZoomLevel() {
-		return m_semanticZoomLevel >= 0
-		? m_semanticZoomLevel
-				: m_parent == null 
-				? 0 
-						: m_parent.getSemanticZoomLevel() + 1;
-	}
-
-	//	public SimpleVertex getDisplayVertex(int semanticZoomLevel) {
-		//		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
-	//			return this;
-	//		}else {
-	//			return getParent().getDisplayVertex(semanticZoomLevel);
-	//		}
-	//
-	//	}
 }

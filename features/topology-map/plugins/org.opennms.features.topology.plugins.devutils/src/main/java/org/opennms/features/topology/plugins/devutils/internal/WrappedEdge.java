@@ -32,6 +32,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.SimpleConnector;
+import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Edge;
 
 import com.vaadin.data.Item;
@@ -40,19 +42,15 @@ import com.vaadin.data.Property;
 @XmlRootElement(name="edge")
 public class WrappedEdge implements Edge {
 	Item m_edge;
-	WrappedVertex m_source;
-	WrappedVertex m_target;
+	Connector m_source;
+	Connector m_target;
 	
 	public WrappedEdge() {}
 	
-	
 	public WrappedEdge(Item edge, WrappedVertex source, WrappedVertex target) {
 		m_edge = edge;
-		m_source = source;
-		m_target = target;
-		
-		m_source.addEdge(this);
-		m_target.addEdge(this);
+		setSource(new SimpleConnector("wrapped", source.getId() + "::" + target.getId(), source, this));
+		setTarget(new SimpleConnector("wrapped", target.getId() + "::" + source.getId(), target, this));
 	}
 	
 	private Object getProperty(String propertyId) {
@@ -78,48 +76,20 @@ public class WrappedEdge implements Edge {
 	}
 	
 	@XmlIDREF
-	public WrappedVertex getSource() {
+	public Connector getSource() {
 		return m_source;
 	}
 
-	public void setSource(WrappedVertex source) {
+	public void setSource(Connector source) {
 		m_source = source;
-		m_source.addEdge(this);
 	}
 
 	@XmlIDREF
-	public WrappedVertex getTarget() {
+	public Connector getTarget() {
 		return m_target;
 	}
 
-	public void setTarget(WrappedVertex target) {
+	public void setTarget(Connector target) {
 		m_target = target;
-		m_target.addEdge(this);
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WrappedEdge other = (WrappedEdge) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
-			return false;
-		return true;
-	}
-		
 }

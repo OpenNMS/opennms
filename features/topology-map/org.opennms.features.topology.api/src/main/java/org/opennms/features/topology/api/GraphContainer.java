@@ -41,7 +41,7 @@ public interface GraphContainer extends DisplayState {
 		public void graphChanged(GraphContainer graphContainer);
 	}
 
-	public EditableGraphProvider getBaseTopology();
+	public GraphProvider getBaseTopology();
     
     public void setBaseTopology(GraphProvider graphProvider);
     

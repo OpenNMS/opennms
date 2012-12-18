@@ -45,17 +45,15 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
@@ -68,19 +66,6 @@ import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
 
-	public static class TestVertex extends AbstractVertex {
-		private static int i = 0;
-		public TestVertex() {
-			super("test", "" + i++);
-		}
-
-		@Override
-		public boolean isLeaf() {
-			return true;
-		}
-	}
-
-    
     private class TestGraphContainer implements GraphContainer {
 
         @Override
@@ -113,7 +98,7 @@ public class SimpleTopologyProviderTest {
         }
 
 	@Override
-	public EditableGraphProvider getBaseTopology() {
+	public GraphProvider getBaseTopology() {
 		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
 	}
 
@@ -208,7 +193,7 @@ public class SimpleTopologyProviderTest {
         
     }
     
-    private EditableGraphProvider m_topologyProvider;
+    private GraphProvider m_topologyProvider;
     
     @Before
     public void setUp() {
@@ -230,7 +215,7 @@ public class SimpleTopologyProviderTest {
     
 	@Test
 	public void test() {
-		EditableGraphProvider topologyProvider = new SimpleTopologyProvider();
+		GraphProvider topologyProvider = new SimpleTopologyProvider();
 		topologyProvider.resetContainer();
 		
 		Vertex vertexA = topologyProvider.addVertex(50, 100);
@@ -261,7 +246,7 @@ public class SimpleTopologyProviderTest {
 	
 	@Test
 	public void loadSampleGraph() {
-		EditableGraphProvider topologyProvider = new SimpleTopologyProvider();
+		GraphProvider topologyProvider = new SimpleTopologyProvider();
 		topologyProvider.load("saved-vmware-graph.xml");
 		
 		System.err.println("Vertex Count: " + topologyProvider.getVertices().size());

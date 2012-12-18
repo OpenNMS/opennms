@@ -31,8 +31,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +42,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -61,10 +58,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-
-public class LinkdTopologyProvider implements EditableGraphProvider {
+public class LinkdTopologyProvider implements GraphProvider {
     private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
@@ -211,8 +205,8 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
     private static class SimpleGraph {
         
         @XmlElements({
-                @XmlElement(name="vertex", type=LinkdNodeVertex.class),
-                @XmlElement(name="group", type=LinkdGroup.class)
+                @XmlElement(name="vertex", type=Vertex.class),
+                @XmlElement(name="group", type=Vertex.class)
         })
         List<Vertex> m_vertices = new ArrayList<Vertex>();
         
@@ -243,9 +237,9 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
     private void loadtopology() {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
-        log("loadtopology: Clean Vertexcontainer");
+        log("loadtopology: Clear " + m_vertexContainer.getClass().getSimpleName());
         m_vertexContainer.clear();
-        log("loadtopology: Clean EdgeContainer");
+        log("loadtopology: Clear " + m_edgeContainer.getClass().getSimpleName());
         m_edgeContainer.clear();
 
         Map<String, Vertex> vertexes = new HashMap<String,Vertex>();
@@ -337,7 +331,8 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
 
     private LinkdVertex getVertex(OnmsNode onmsnode) {
         OnmsIpInterface ip = getAddress(onmsnode);
-        LinkdVertex vertex = new LinkdNodeVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+        LinkdVertex vertex = new LinkdVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+        vertex.setNodeID(Integer.parseInt(onmsnode.getNodeId()));
         vertex.setTooltipText(getNodeTooltipText(onmsnode, vertex, ip));
         return vertex;
     }
@@ -357,7 +352,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
     
 
     private String getEdgeTooltipText(DataLinkInterface link,
-            LinkdVertex source, LinkdVertex target) {
+            Vertex source, Vertex target) {
         StringBuffer tooltipText = new StringBuffer();
 
         OnmsSnmpInterface sourceInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), link.getIfIndex());
@@ -408,11 +403,11 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         }
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddr());
+        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddress());
         tooltipText.append(HTML_TOOLTIP_TAG_END);
         
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddr());
+        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddress());
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         log("getEdgeTooltipText\n" + tooltipText);
@@ -431,7 +426,7 @@ public class LinkdTopologyProvider implements EditableGraphProvider {
         */
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Management IP and Name: " + vertex.getIpAddr() + " (" + vertex.getLabel() + ")");
+        tooltipText.append( "Management IP and Name: " + vertex.getIpAddress() + " (" + vertex.getLabel() + ")");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
         
         if (node.getSysLocation() != null && node.getSysLocation().length() >0) {

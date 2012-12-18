@@ -7,16 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.util.BeanItem;
-
-public class SFreeTopologyProvider implements EditableGraphProvider {
+public class SFreeTopologyProvider implements GraphProvider {
 
 	private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
 	public static final String ERDOS_RENIS = "ErdosReniy";

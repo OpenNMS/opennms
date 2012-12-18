@@ -31,18 +31,18 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 
 public class RemoveVertexOperation implements Operation {
 
-    EditableGraphProvider m_topologyProvider;
+    GraphProvider m_topologyProvider;
     
-    public RemoveVertexOperation(EditableGraphProvider topologyProvider) {
+    public RemoveVertexOperation(GraphProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
     

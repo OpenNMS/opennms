@@ -1,20 +1,36 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api;
 
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.Vertex;
 
 public class SimpleConnector implements Connector {
-	
+
 	private final String m_namespace;
 	private final String m_id;
-	private final VertexRef m_vertex;
+	private final Vertex m_vertex;
 	private EdgeRef m_edge;
 
-	public SimpleConnector(String namespace, String id, VertexRef vertex) {
+	/**
+	 * @param namespace
+	 * @param id
+	 * @param vertex
+	 */
+	public SimpleConnector(String namespace, String id, Vertex vertex) {
 		m_namespace = namespace;
 		m_id = id;
 		m_vertex = vertex;
+	}
+
+	/**
+	 * @param namespace
+	 * @param id
+	 * @param vertex
+	 * @param edge
+	 */
+	public SimpleConnector(String namespace, String id, Vertex vertex, EdgeRef edge) {
+		this(namespace, id, vertex);
+		m_edge = edge;
 	}
 
 	@Override
@@ -31,13 +47,13 @@ public class SimpleConnector implements Connector {
 	public EdgeRef getEdge() {
 		return m_edge;
 	}
-	
+
 	public void setEdge(EdgeRef edgeRef) {
 		m_edge = edgeRef;
 	}
 
 	@Override
-	public VertexRef getVertex() {
+	public Vertex getVertex() {
 		return m_vertex;
 	}
 

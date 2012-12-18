@@ -40,27 +40,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LinkdGroup extends LinkdVertex {
 
 	List<LinkdVertex> m_members = new ArrayList<LinkdVertex>();
-	
+
 	int m_mapid;
 
 	public LinkdGroup(String groupId, String label) {
-	    super(groupId, GROUP_ICON_KEY, label, null);
+		super(groupId, GROUP_ICON_KEY, label, null);
 	}
 
-        @Override
+	@Override
 	public boolean isLeaf() {
 		return false;
 	}
-	
-        @XmlIDREF
-        public List<LinkdVertex> getMembers() {
+
+	@XmlIDREF
+	public List<LinkdVertex> getMembers() {
 		return m_members;
 	}
-	
+
 	public void addMember(LinkdVertex v) {
 		m_members.add(v);
 	}
-	
+
 	public void removeMember(LinkdVertex v) {
 		m_members.remove(v);
 	}

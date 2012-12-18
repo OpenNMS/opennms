@@ -34,21 +34,21 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.SimpleVertex;
+import org.opennms.features.topology.api.topo.Vertex;
 
 @XmlRootElement(name="group")
 public class SimpleGroup extends SimpleVertex {
 
-	List<SimpleVertex> m_members = new ArrayList<SimpleVertex>();
+	List<Vertex> m_members = new ArrayList<Vertex>();
 
 	int m_mapid;
 
-	public SimpleGroup(String groupId) {
-		this(groupId, -1);
+	public SimpleGroup(String namespace, String groupId) {
+		this(namespace, groupId, -1);
 	}
 
-	public SimpleGroup(String groupId, int mapid) {
-		super(groupId);
+	public SimpleGroup(String namespace, String groupId, int mapid) {
+		super(namespace, groupId);
 		m_mapid = mapid;
 	}
 
@@ -66,7 +66,7 @@ public class SimpleGroup extends SimpleVertex {
 	}
 
 	@XmlIDREF
-	public List<SimpleVertex> getMembers() {
+	public List<Vertex> getMembers() {
 		return m_members;
 	}
 

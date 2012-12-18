@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -22,7 +21,7 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.ProviderManager.ProviderListener;
 
-public class MergingGraphProvider implements EditableGraphProvider, VertexListener, EdgeListener, ProviderListener {
+public class MergingGraphProvider implements GraphProvider, VertexListener, EdgeListener, ProviderListener {
 	
 	private static final GraphProvider NULL_PROVIDER = new NullProvider();
 	
@@ -494,7 +493,41 @@ public class MergingGraphProvider implements EditableGraphProvider, VertexListen
 		public boolean setParent(VertexRef child, VertexRef parent) {
 			return false;
 		}
-		
+
+		@Override
+		public Vertex addGroup(String label, String iconKey) {
+			return null;
+		}
+
+		@Override
+		public Vertex addVertex(int x, int y) {
+			return null;
+		}
+
+		@Override
+		public Edge connectVertices(Vertex sourceVertextId, Vertex targetVertextId) {
+			return null;
+		}
+
+		@Override
+		public void load(String filename) {
+			// Do nothing
+		}
+
+		@Override
+		public void removeVertex(Vertex... vertexId) {
+			// Do nothing
+		}
+
+		@Override
+		public void resetContainer() {
+			// Do nothing
+		}
+
+		@Override
+		public void save(String filename) {
+			// Do nothing
+		}
 	}
 
 	@Override

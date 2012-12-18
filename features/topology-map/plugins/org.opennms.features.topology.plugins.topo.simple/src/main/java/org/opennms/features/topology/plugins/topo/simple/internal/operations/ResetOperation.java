@@ -31,28 +31,20 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 import java.util.List;
 
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-
 public class ResetOperation implements Constants, Operation {
     
-    EditableGraphProvider m_topologyProvider;
-    
-    public ResetOperation(EditableGraphProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         
-        m_topologyProvider.resetContainer();
-        Vertex groupId = m_topologyProvider.addGroup("Group", GROUP_ICON_KEY);
-        Vertex vertexId = m_topologyProvider.addVertex(50, 50);
-        m_topologyProvider.setParent(vertexId, groupId);
+        operationContext.getGraphContainer().getBaseTopology().resetContainer();
+        Vertex groupId = operationContext.getGraphContainer().getBaseTopology().addGroup("Group", GROUP_ICON_KEY);
+        Vertex vertexId = operationContext.getGraphContainer().getBaseTopology().addVertex(50, 50);
+        operationContext.getGraphContainer().getBaseTopology().setParent(vertexId, groupId);
         return null;
     }
 
@@ -68,6 +60,6 @@ public class ResetOperation implements Constants, Operation {
 
     @Override
     public String getId() {
-        return null;
+        return "Reset";
     }
 }

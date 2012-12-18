@@ -26,21 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.onmsdao.internal;
+package org.opennms.features.topology.api;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.SimpleVertex;
 
+@XmlRootElement(name="vertex")
 public class SimpleLeafVertex extends SimpleVertex {
 
-	int m_nodeid;
-
-	public SimpleLeafVertex(int nodeid, String id, int x, int y) {
-		super(id, x, y);
-		m_nodeid=nodeid;
-	}
-
-	public int getNodeid() {
-		return m_nodeid;
+	public SimpleLeafVertex(String namespace, String id, int x, int y) {
+		super(namespace, id, x, y);
 	}
 
 	@Override

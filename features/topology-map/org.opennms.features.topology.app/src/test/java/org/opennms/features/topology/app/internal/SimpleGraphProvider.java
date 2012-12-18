@@ -107,11 +107,8 @@ public class SimpleGraphProvider implements GraphProvider {
 		return m_vertices.getChildren(group);
 	}
 
-	public void remove(List<Vertex> vertices) {
-		m_vertices.remove(vertices);
-	}
-
-	public void remove(SimpleVertex... vertices) {
+	@Override
+	public void removeVertex(Vertex... vertices) {
 		m_vertices.remove(vertices);
 	}
 

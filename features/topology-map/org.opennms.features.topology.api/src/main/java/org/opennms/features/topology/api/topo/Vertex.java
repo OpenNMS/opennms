@@ -22,11 +22,29 @@ public interface Vertex extends VertexRef {
 	 * TODO: To support Many-to-Many grouping, this function will need to be
 	 * enhanced add to a list of parents.
 	 */
-	void setParent(VertexRef parent);
+	void setParent(Vertex parent);
 
 	/**
 	 * TODO: To support Many-to-Many grouping, this function will need to be
 	 * enhanced to return an array of vertices.
 	 */
-	VertexRef getParent();
+	Vertex getParent();
+
+	int getX();
+
+	int getY();
+
+	boolean isLocked();
+
+	boolean isRoot();
+
+	boolean isSelected();
+
+	String getIpAddress();
+
+	int getNodeID();
+
+	Vertex getDisplayVertex(int semanticZoomLevel);
+
+	int getSemanticZoomLevel();
 }

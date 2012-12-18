@@ -87,7 +87,7 @@ abstract public class WrappedVertex implements Vertex {
 		}
 	}
 	
-	public Boolean isLocked() {
+	public boolean isLocked() {
 		return (Boolean) getProperty("locked");
 	}
 
@@ -110,7 +110,8 @@ abstract public class WrappedVertex implements Vertex {
 		setProperty("id", id);
 	}
 
-	public Integer getX() {
+	@Override
+	public int getX() {
 		return (Integer) getProperty("x");
 	}
 
@@ -118,6 +119,7 @@ abstract public class WrappedVertex implements Vertex {
 		setProperty("x", x);
 	}
 
+	@Override
 	public int getY() {
 		return (Integer) getProperty("y");
 	}
@@ -126,20 +128,12 @@ abstract public class WrappedVertex implements Vertex {
 		setProperty("y", y);
 	}
 
-	public Boolean isSelected() {
+	public boolean isSelected() {
 		return (Boolean) getProperty("selected");
 	}
 
 	public void setSelected(Boolean selected) {
 		setProperty("selected", selected);
-	}
-
-	public String getIcon() {
-		return (String) getProperty("icon");
-	}
-
-	public void setIcon(String icon) {
-		setProperty("icon", icon);
 	}
 
 	public String getLabel() {
@@ -158,7 +152,7 @@ abstract public class WrappedVertex implements Vertex {
 		setProperty("ipAddr", ipAddr);
 	}
 	
-	public Integer getNodeID() {
+	public int getNodeID() {
 		return (Integer) getProperty("nodeID");
 	}
 	
@@ -204,6 +198,7 @@ abstract public class WrappedVertex implements Vertex {
 		return true;
 	}
 
+	@Override
     public String getIconKey() {
         return (String) getProperty("iconKey");
     }

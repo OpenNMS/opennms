@@ -42,12 +42,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.EditableGraphProvider;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
+import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.SimpleVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -55,10 +56,9 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 
-public class SimpleTopologyProvider implements EditableGraphProvider {
+public class SimpleTopologyProvider implements GraphProvider {
 	
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
@@ -116,7 +116,7 @@ public class SimpleTopologyProvider implements EditableGraphProvider {
         SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
         vertex.setIconKey("server");
         vertex.setLabel(label);
-        vertex.setIpAddr(ipAddr);
+        vertex.setIpAddress(ipAddr);
         vertex.setNodeID(nodeID);
         m_vertexContainer.add(vertex);
         return vertex;
