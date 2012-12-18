@@ -29,24 +29,28 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.FileReloadCallback;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
@@ -63,7 +67,10 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
-
+    
+    private DirectoryWatcher<ForeignSource> m_foreignSources;
+    private DirectoryWatcher<Requisition> m_requisitions;
+    
     /**
      * <p>Constructor for FilesystemForeignSourceRepository.</p>
      *
@@ -77,6 +84,9 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_requisitionPath, "Requisition path must not be empty.");
         Assert.notNull(m_foreignSourcePath, "Foreign source path must not be empty.");
+        
+        m_foreignSources = new DirectoryWatcher<ForeignSource>(new File(m_foreignSourcePath), fsLoader());
+        m_requisitions = new DirectoryWatcher<Requisition>(new File(m_requisitionPath), reqLoader());
     }
 
     /**
@@ -87,19 +97,11 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
-            final Set<String> fsNames = new TreeSet<String>();
-            
-            FileProcessor addToNames = new FileProcessor() {
-				@Override
-				public void processFile(File dir, String basename, String extension) {
-					fsNames.add(basename);
-				}
-            };
-            
-            forEachFile(new File(m_foreignSourcePath), ".xml", addToNames);
-            forEachFile(new File(m_requisitionPath), ".xml", addToNames);
-
-            return fsNames;
+        	Set<String> activeForeignSourceNames = new LinkedHashSet<String>();
+        	activeForeignSourceNames.addAll(m_foreignSources.getBaseNamesWithExtension(".xml"));
+        	activeForeignSourceNames.addAll(m_requisitions.getBaseNamesWithExtension(".xml"));
+        	return activeForeignSourceNames;
+        	
         } finally {
             m_readLock.unlock();
         }
@@ -128,7 +130,7 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
     public int getForeignSourceCount() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            return getForeignSources().size();
+        	return m_foreignSources.getBaseNamesWithExtension(".xml").size();
         } finally {
             m_readLock.unlock();
         }
@@ -143,20 +145,16 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-        	
-            final TreeSet<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
-            
-            forEachFile(new File(m_foreignSourcePath), ".xml", new FileProcessor() {
-
-				@Override
-				public void processFile(File file, String basename, String extension) {
-                    foreignSources.add(RequisitionFileUtils.getForeignSourceFromFile(file));
+        	Set<ForeignSource> foreignSources = new LinkedHashSet<ForeignSource>();
+        	for(String baseName : m_foreignSources.getBaseNamesWithExtension(".xml")) {
+				try {
+	        		ForeignSource contents = m_foreignSources.getContents(baseName+".xml");
+					foreignSources.add(contents);
+				} catch (FileNotFoundException e) {
+					LogUtils.infof(this, e, "Unable to load foreignSource %s: It must have been deleted by another thread", baseName);
 				}
-            	
-            });
-        	
-            return foreignSources;
-
+        	}
+        	return foreignSources;
         } finally {
             m_readLock.unlock();
         }
@@ -169,15 +167,12 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
         }
         m_readLock.lock();
         try {
-            final File inputFile = RequisitionFileUtils.encodeFileName(m_foreignSourcePath, foreignSourceName);
-            if (inputFile != null && inputFile.exists()) {
-                return RequisitionFileUtils.getForeignSourceFromFile(inputFile);
-            } else {
-                final ForeignSource fs = getDefaultForeignSource();
-                fs.setName(foreignSourceName);
-                return fs;
-            }
-        } finally {
+        	return m_foreignSources.getContents(foreignSourceName+".xml");
+        } catch (FileNotFoundException e) {
+            final ForeignSource fs = getDefaultForeignSource();
+            fs.setName(foreignSourceName);
+            return fs;
+		} finally {
             m_readLock.unlock();
         }
     }
@@ -243,23 +238,16 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            final TreeSet<Requisition> requisitions = new TreeSet<Requisition>();
-
-            forEachFile(new File(m_requisitionPath), ".xml", new FileProcessor() {
-				
-				@Override
-				public void processFile(File file, String basename, String extension) {
-                    try {  
-                        requisitions.add(RequisitionFileUtils.getRequisitionFromFile(file));
-                    } catch (ForeignSourceRepositoryException e) {
-                        // race condition, probably got deleted by the importer as part of moving things
-                        // need a better way to handle this; move "pending" to the database?
-                    }
+        	Set<Requisition> requisitions = new LinkedHashSet<Requisition>();
+        	for(String baseName : m_requisitions.getBaseNamesWithExtension(".xml")) {
+				try {
+	        		Requisition contents = m_requisitions.getContents(baseName+".xml");
+					requisitions.add(contents);
+				} catch (FileNotFoundException e) {
+					LogUtils.infof(this, e, "Unable to load requisition %s: It must have been deleted by another thread", baseName);
 				}
-			});
-
-            return requisitions;
-
+        	}
+        	return requisitions;
         } finally {
             m_readLock.unlock();
         }
@@ -272,12 +260,10 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
         }
         m_readLock.lock();
         try {
-            final File inputFile = RequisitionFileUtils.encodeFileName(m_requisitionPath, foreignSourceName);
-            if (inputFile != null && inputFile.exists()) {
-                return RequisitionFileUtils.getRequisitionFromFile(inputFile);
-            }
-            return null;
-        } finally {
+        	return m_requisitions.getContents(foreignSourceName+".xml");
+        } catch (FileNotFoundException e) {
+        	throw new ForeignSourceRepositoryException("Requisition: " + foreignSourceName + " does not exist.", e);
+		} finally {
             m_readLock.unlock();
         }
     }
@@ -410,18 +396,25 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
         // Unnecessary, there is no caching/delayed writes in FilesystemForeignSourceRepository
         LogUtils.debugf(this, "flush() called");
     }
+    
+    private FileReloadCallback<ForeignSource> fsLoader() {
+    	return new FileReloadCallback<ForeignSource>() {
 
-	public void forEachFile(File directory, String extension, FileProcessor fileProcessor) {
-		if (directory == null) throw new NullPointerException("directory cannot be null");
-        if (directory.exists()) {
-            for (File file : directory.listFiles()) {
-                String name = file.getName();
-				if (extension == null || name.endsWith(extension)) {
-                	String basename = extension == null ? name : name.substring(0, name.length()-extension.length());
-                	fileProcessor.processFile(file, basename, extension);
-                }
-            }
-        }
+			@Override
+			public ForeignSource reload(ForeignSource object, Resource resource) throws IOException {
+				return RequisitionFileUtils.getForeignSourceFromFile(resource.getFile());
+			}
+		};
+    };
+    
+	private FileReloadCallback<Requisition> reqLoader() {
+		return new FileReloadCallback<Requisition>() {
 
+			@Override
+			public Requisition reload(Requisition object, Resource resource) throws IOException {
+				return RequisitionFileUtils.getRequisitionFromFile(resource.getFile());
+			}
+		};
 	}
+    
 }
