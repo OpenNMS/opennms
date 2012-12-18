@@ -37,4 +37,10 @@
   	<qualifier value="queueing" />
   	<property name="foreignSourceRepository" ref="fusedForeignSourceRepository" />
   </bean>
+  
+  <bean id="fastForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository">
+  	<qualifier value="fast" />
+  	<property name="requisitionPath" value="target/opennms-home/etc/imports/pending" />
+  	<property name="foreignSourcePath" value="target/opennms-home/etc/foreign-sources/pending" />
+  </bean>
 </beans>

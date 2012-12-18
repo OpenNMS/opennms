@@ -28,6 +28,8 @@
 
 package org.opennms.core.utils;
 
+import java.io.IOException;
+
 import org.springframework.core.io.Resource;
 
 /**
@@ -66,5 +68,5 @@ public interface FileReloadCallback<T> {
      *  being used
      * @param <T> a T object.
      */
-    public T reload(T object, Resource resource);
+    public T reload(T object, Resource resource) throws IOException;
 }
