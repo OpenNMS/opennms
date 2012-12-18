@@ -612,7 +612,7 @@ ORDER BY
 			<textField evaluationTime="Page">
 				<reportElement style="Body" x="254" y="16" width="131" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000 * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000L * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
