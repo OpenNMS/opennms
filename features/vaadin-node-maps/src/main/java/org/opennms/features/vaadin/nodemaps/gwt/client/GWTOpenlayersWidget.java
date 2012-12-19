@@ -1,5 +1,6 @@
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,40 +18,207 @@ public class GWTOpenlayersWidget extends Widget {
 	@Override
 	protected void onLoad() {
 		super.onLoad();
-
-		init(m_div.getId());
+		createMap(m_div.getId());
 	}
 
-	private final native void init(final String divId) /*-{
-            var map = new $wnd.OpenLayers.Map({
-                div: divId,
-                displayProjection: "EPSG:900913",
-                projection: "EPSG:4326",
-                controls: [
-                    new $wnd.OpenLayers.Control.Navigation(),
-                    new $wnd.OpenLayers.Control.PanZoomBar(),
-                    new $wnd.OpenLayers.Control.LayerSwitcher(),
-                    new $wnd.OpenLayers.Control.MousePosition()
-                ]
-            });
-            
-            // Main Layer
-            
-            map.addLayer(new $wnd.OpenLayers.Layer.Google("GoogleMaps", {sphericalMercator: true}));
-            map.addLayer(new $wnd.OpenLayers.Layer.OSM("OpenStreetMaps"));
-            map.addLayer(new $wnd.OpenLayers.Layer.XYZ(
-                "MapQuest", 
-                [
-                    "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-                    "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-                    "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-                    "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"
-                ],
-                {
-                    attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
-                    transitionEffect: "resize",
-                    sphericalMercator: true
-                }
-            ));
+	@Override
+	protected void onUnload() {
+		destroyMap();
+		super.onUnload();
+	}
+
+	private String getNodesGml() {
+		return GWT.getModuleBaseURL() + "nodes.gml";
+	}
+
+	private final native void createMap(final String divId) /*-{
+		var map = new $wnd.OpenLayers.Map({
+			div: divId,
+			displayProjection: "EPSG:900913",
+			projection: "EPSG:4326",
+			controls: [
+				new $wnd.OpenLayers.Control.Navigation(),
+				new $wnd.OpenLayers.Control.PanZoomBar(),
+				new $wnd.OpenLayers.Control.LayerSwitcher(),
+				new $wnd.OpenLayers.Control.MousePosition()
+			]
+		});
+
+		// Main Layer
+
+		map.addLayer(new $wnd.OpenLayers.Layer.Google("GoogleMaps", {sphericalMercator: true}));
+		map.addLayer(new $wnd.OpenLayers.Layer.OSM("OpenStreetMaps"));
+		map.addLayer(new $wnd.OpenLayers.Layer.XYZ(
+			"MapQuest", 
+			[
+				"http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+				"http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+				"http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+				"http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"
+			],
+			{
+				attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+				transitionEffect: "resize",
+				sphericalMercator: true
+			}
+		));
+
+		var displayAllNodes = true;
+
+		var fillColors = {
+			Critical: "#F5CDCD",
+			Major: "#FFD7CD",
+			Minor: "#FFEBCD",
+			Warning: "#FFF5CD",
+			Normal: "#D7E100" // was #D7E1CD
+		};
+
+		var strokeColors = {
+			Critical: "#CC0000",
+			Major: "#FF3300",
+			Minor: "#FF9900",
+			Warning: "#FFCC00",
+			Normal: "#336600"
+		};
+
+		var style = new $wnd.OpenLayers.Style({
+			pointRadius: "${radius}",
+			label: "${label}",
+			display: "${display}",
+			fillColor: "${fillColor}",
+			fillOpacity: 0.8,
+			strokeColor: "${strokeColor}",
+			strokeOpacity: 0.8,
+			strokeWidth: 2
+		}, {
+			context: {
+				// The Radius will change according with the amount of nodes on the cluster.
+				radius: function(feature) {
+					return feature.cluster ? Math.min(feature.attributes.count, 7) + 5 : 5;
+				},
+				// The label will display the amount of nodes only for clusters.
+				label: function(feature) {
+					return feature.cluster && feature.cluster.length > 1 ? feature.cluster.length : "";
+				},
+				display: function(feature) {
+					if (displayAllNodes) {
+						return 'display';
+					}
+					// Display only nodes with availability < 100
+					return getAvailability(feature) < 100 ? 'display' : 'none';
+				},
+				// It depends on the calculated severity
+				strokeColor: function(feature) {
+					return strokeColors[getSeverity(feature)];
+				},
+				// It depends on the calculated severity
+				fillColor: function(feature) {
+					return fillColors[getSeverity(feature)];
+				}
+			}
+		});
+
+		// Nodes Layer
+
+		var nodesGml = this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::getNodesGml()();
+		$wnd.console.log("nodesGml = " + nodesGml);
+		var nodes = new $wnd.OpenLayers.Layer.Vector("All Nodes", {
+			strategies: [
+				new $wnd.OpenLayers.Strategy.Fixed(),
+				new $wnd.OpenLayers.Strategy.Cluster()
+			],
+			protocol: new $wnd.OpenLayers.Protocol.HTTP({
+				url: nodesGml,
+				format: new $wnd.OpenLayers.Format.GML()
+			}),
+			styleMap: new $wnd.OpenLayers.StyleMap({
+				'default': style,
+				'select': {
+					fillColor: "#8aeeef",
+					strokeColor: "#32a8a9"
+				}
+			})
+		});
+
+		// Selection Features
+
+		var select = new $wnd.OpenLayers.Control.SelectFeature(
+			nodes, {hover: true}
+		);
+		map.addControl(select);
+		select.activate();
+
+		nodes.events.on({
+			'featureselected': onFeatureSelect,
+			'featureunselected': onFeatureUnselect
+		});
+		map.addLayer(nodes);
+
+		map.setCenter(new $wnd.OpenLayers.LonLat(0, 0), 1);
+
+		function getAvailability(feature) {
+			if (!feature.cluster) return 100;
+			var count = 0;
+			for (var i=0; i<feature.cluster.length; i++) {
+				var n = feature.cluster[i].attributes;
+				if (n.nodeStatus == 'Down') count++;
+			}
+			return ((1 - count/feature.cluster.length) * 100).toFixed(2);
+		}
+
+		function getSeverity(feature) {
+			var p = getAvailability(feature);
+			if (p == 100)           return 'Normal';
+			if (p < 100 && p >= 98) return 'Warning';
+			if (p < 98 && p >= 90)  return 'Minor';
+			if (p < 90 && p >= 80)  return 'Major';
+			if (p < 80)             return 'Critical';
+		}
+
+		function onPopupClose(evt) {
+			select.unselect(this.feature);
+		}
+
+		function onFeatureSelect(evt) {
+			feature = evt.feature;
+			var msg = "";
+			if (feature.cluster.length > 1) {
+				var nodes = [];
+				for (var i=0; i<feature.cluster.length; i++) {
+					var n = feature.cluster[i].attributes;
+					nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.nodeStatus);
+				}
+				msg = "<h2># of nodes: " + feature.cluster.length + " (" + getAvailability(feature) + "% Available)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
+			} else {
+				var n = feature.cluster[0].attributes;
+				msg = "<h2>Node " + n.nodeLabel + "</h2><p>IP Address: " + n.ipAddress + "</p>";
+			}
+			popup = new $wnd.OpenLayers.Popup.FramedCloud("nodePopup",
+				feature.geometry.getBounds().getCenterLonLat(),
+				new $wnd.OpenLayers.Size(100,100), msg, null, false, onPopupClose);
+			feature.popup = popup;
+			popup.feature = feature;
+			map.addPopup(popup);
+		}
+
+		function onFeatureUnselect(evt) {
+			feature = evt.feature;
+			if (feature.popup) {
+				popup.feature = null;
+				map.removePopup(feature.popup);
+				feature.popup.destroy();
+				feature.popup = null;
+			}
+		}
+
+		function applyFilters(btn) {
+			btn.value = displayAllNodes ? 'Show All Nodes' : 'Show Down Nodes';
+			displayAllNodes = !displayAllNodes; 
+			nodes.refresh();
+		}
+	}-*/;
+
+	private final native void destroyMap() /*-{
+		map.destroy();
 	}-*/;
 }
