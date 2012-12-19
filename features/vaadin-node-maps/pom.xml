@@ -19,7 +19,6 @@
 		<bundle.symbolicName>org.opennms.features.vaadin-node-maps</bundle.symbolicName>
 		<bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vaadin.openlayers.wrapper.version>1.2.0</vaadin.openlayers.wrapper.version>
 	</properties>
 
 	<build>
@@ -79,7 +78,6 @@
 				<configuration>
 					<bundles>
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
-						<bundle>wrap:mvn:org.vaadin.vol/openlayers-wrapper/${vaadin.openlayers.wrapper.version}</bundle>
 					</bundles>
 					<features>
 						<feature>vaadin</feature>
