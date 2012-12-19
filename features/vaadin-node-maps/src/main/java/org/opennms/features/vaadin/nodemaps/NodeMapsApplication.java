@@ -27,40 +27,15 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.nodemaps;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.vaadin.vol.GoogleStreetMapLayer;
-import org.vaadin.vol.OpenLayersMap;
-import org.vaadin.vol.PointVector;
-import org.vaadin.vol.Popup;
-import org.vaadin.vol.Popup.CloseEvent;
-import org.vaadin.vol.Popup.CloseListener;
-import org.vaadin.vol.Style;
-import org.vaadin.vol.StyleMap;
-import org.vaadin.vol.VectorLayer;
-import org.vaadin.vol.VectorLayer.SelectionMode;
-import org.vaadin.vol.VectorLayer.VectorSelectedEvent;
-import org.vaadin.vol.VectorLayer.VectorSelectedListener;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import com.vaadin.Application;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -110,6 +85,10 @@ public class NodeMapsApplication extends Application {
     /** The OpenNMS Node DAO. */
     private NodeDao nodeDao;
 
+    private Window m_window;
+
+    private AbsoluteLayout m_rootLayout;
+
     /**
      * Sets the OpenNMS Node DAO.
      * 
@@ -139,34 +118,17 @@ public class NodeMapsApplication extends Application {
      */
     @Override
     public void init() {
-        // Initialize Vaadin Main Window
-        final VerticalLayout layout = new VerticalLayout();
-        final Window mainWindow = new Window("OpenNMS Node Maps", layout);
-        setMainWindow(mainWindow);
+        final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
+        openlayers.setSizeFull();
 
-        // Creating OpenLayers Map with Google Street Map Layer
-        final OpenLayersMap map = new OpenLayersMap();
-        map.setImmediate(true); // Update extent and zoom to server as they change
-        map.setSizeFull();
-        map.addLayer(new GoogleStreetMapLayer());
-        VectorLayer nodeLayer = createNodeLayer(map);
-        map.addLayer(nodeLayer);
+        m_rootLayout = new AbsoluteLayout();
+        m_rootLayout.setSizeFull();
 
-        // Populating Map with nodes
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        for (OnmsNode node : nodes) {
-            final PointVector vector = getPointFromAddress(node);
-            if (vector != null) {
-                vector.setDescription(getNodeDescription(node));
-                vector.setRenderIntent(NODE_STYLE);
-                nodeLayer.addVector(vector);
-            }
-        }
+        m_window = new Window("OpenNMS Node Maps");
+        m_window.setContent(m_rootLayout);
+        setMainWindow(m_window);
 
-        // Updating Vaadin Layout
-        layout.setSizeFull();
-        layout.addComponent(map);
-        layout.setExpandRatio(map, 1);
+        m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
     }
 
     /**
@@ -189,6 +151,7 @@ public class NodeMapsApplication extends Application {
      * assets with the coordinates based on the current address configured on
      * the database.
      */
+    /*
     private PointVector getPointFromAddress(OnmsNode onmsNode) {
         final String address = getNodeAddress(onmsNode);
         if (address == null) {
@@ -232,6 +195,7 @@ public class NodeMapsApplication extends Application {
         }
         return null;
     }
+    */
 
     /**
      * Creates the node layer.
@@ -239,6 +203,7 @@ public class NodeMapsApplication extends Application {
      * @param map the map
      * @return the vector layer
      */
+    /*
     private VectorLayer createNodeLayer(final OpenLayersMap map) {
         // Creating Vecctor Layers
         final VectorLayer nodeLayer = new VectorLayer();
@@ -272,7 +237,8 @@ public class NodeMapsApplication extends Application {
 
         return nodeLayer;
     }
-
+	*/
+    
     /**
      * Gets the node description.
      * 
