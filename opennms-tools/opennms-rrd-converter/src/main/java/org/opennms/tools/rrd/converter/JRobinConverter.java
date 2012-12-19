@@ -266,7 +266,7 @@ public class JRobinConverter {
         final long endTime = dataSource.getEndTime();
         // 1 year
         final long startTime = endTime - ONE_YEAR_IN_SECONDS;
-        for (long time = startTime; time <= endTime; time += 300) {
+        for (long time = startTime; time <= endTime; time += dataSource.getNativeStep()) {
             final RrdEntry entry = dataSource.getDataAt(time);
             writer.write(entry);
         }
