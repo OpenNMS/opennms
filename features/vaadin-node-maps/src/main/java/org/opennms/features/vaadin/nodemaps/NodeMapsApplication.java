@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.vaadin.Application;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -84,6 +85,10 @@ public class NodeMapsApplication extends Application {
     /** The OpenNMS Node DAO. */
     private NodeDao nodeDao;
 
+    private Window m_window;
+
+    private AbsoluteLayout m_rootLayout;
+
     /**
      * Sets the OpenNMS Node DAO.
      * 
@@ -116,8 +121,14 @@ public class NodeMapsApplication extends Application {
         final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
         openlayers.setSizeFull();
 
-        final Window mainWindow = new Window("OpenNMS Node Maps", openlayers);
-        setMainWindow(mainWindow);
+        m_rootLayout = new AbsoluteLayout();
+        m_rootLayout.setSizeFull();
+
+        m_window = new Window("OpenNMS Node Maps");
+        m_window.setContent(m_rootLayout);
+        setMainWindow(m_window);
+
+        m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
     }
 
     /**
