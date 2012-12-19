@@ -12,5 +12,6 @@
   <name>OpenNMS Ticketing</name>
   <modules>
     <module>api</module>
+    <module>drools-integration</module>
   </modules>
 </project>

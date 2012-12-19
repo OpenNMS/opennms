@@ -12,7 +12,7 @@
 		<property name="pluginClass" value="${opennms.ticketer.plugin}"/>
 	</bean>
    
-	<bean name="ticketerServiceLayer" class="org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer">
+	<bean name="ticketerServiceLayer" class="${opennms.ticketer.servicelayer}">
 		<property name="alarmDao" ref="alarmDao" />
 		<property name="ticketerPlugin" ref="ticketerPlugin" />
 	</bean>

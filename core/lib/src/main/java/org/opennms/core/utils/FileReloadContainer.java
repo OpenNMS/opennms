@@ -31,6 +31,7 @@ package org.opennms.core.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
@@ -138,6 +139,16 @@ public class FileReloadContainer<T> {
         m_lastReloadCheck = System.currentTimeMillis();
     }
     
+    public FileReloadContainer(File file, FileReloadCallback<T> callback) {
+    	m_object = null;
+    	m_resource = new FileSystemResource(file);
+    	m_file = file;
+    	m_callback = callback;
+    	
+    	m_lastModified = -1;
+    			
+    }
+    
     /**
      * Creates a new container with an object which has no underlying file.
      * This will not auto-reload.
@@ -171,7 +182,7 @@ public class FileReloadContainer<T> {
         
         m_lastReloadCheck = System.currentTimeMillis();
         
-        if (m_file.lastModified() <= m_lastModified) {
+        if (m_file.lastModified() < m_lastModified) {
             return;
         }
         

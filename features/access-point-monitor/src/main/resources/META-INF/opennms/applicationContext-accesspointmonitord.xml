@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+	">
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <bean id="daemon" class="org.opennms.netmgt.accesspointmonitor.AccessPointMonitord" destroy-method="stop">
+      <property name="eventManager" ref="eventIpcManager" />
+      <property name="pollerConfig" ref="accesspointmonitorConfig" />
+      <property name="accessPointDao" ref="accessPointDao" />
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+    </bean>
+    
+    <bean id="init-accesspointmonitorConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="accesspointmonitorConfig" class="org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory" depends-on="init-accesspointmonitorConfig-factory" factory-method="getConfigFromInstance"/>
+
+    <bean id="apMonitorEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  	  <property name="annotatedListener" ref="daemon" />
+  	  <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+
+</beans>

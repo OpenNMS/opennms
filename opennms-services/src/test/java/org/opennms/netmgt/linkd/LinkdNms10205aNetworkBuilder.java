@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public abstract class LinkdNms10205NetworkBuilder extends LinkdNetworkBuilder {
+public abstract class LinkdNms10205aNetworkBuilder extends LinkdNetworkBuilder {
 
     static final String MUMBAI_IP = "10.205.56.5";
     static final String MUMBAI_NAME = "Mumbai";

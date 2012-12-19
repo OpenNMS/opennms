@@ -612,7 +612,7 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/ncs*
+%{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd

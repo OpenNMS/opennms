@@ -14,4 +14,7 @@
       </rollback>
     </changeSet>
 
+    <!-- Add a new table for the access point monitor -->
+    <include file="1.11.3/tables/accesspoints.xml" />
+
 </databaseChangeLog>

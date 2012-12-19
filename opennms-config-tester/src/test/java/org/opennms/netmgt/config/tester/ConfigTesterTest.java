@@ -81,6 +81,11 @@ public class ConfigTesterTest {
     }
 
 	@Test
+	public void testAccessPointMonitorConfiguration() {
+        ignoreConfigFile("access-point-monitor-configuration.xml");
+	}
+
+	@Test
 	public void testAckdConfiguration() {
         testConfigFile("ackd-configuration.xml");
 	}
