@@ -3,8 +3,11 @@ package org.opennms.features.vaadin.nodemaps.gwt.client;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.OnmsOpenLayersMap;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 
 public class GWTOpenlayersWidget extends Widget {
@@ -21,7 +24,11 @@ public class GWTOpenlayersWidget extends Widget {
 	@Override
 	protected void onLoad() {
 		super.onLoad();
-		createMap(m_div.getId());
+		Scheduler.get().scheduleDeferred(new Command() {
+			public void execute() {
+				createMap(m_div.getId());
+			}
+		});
 	}
 
 	@Override
