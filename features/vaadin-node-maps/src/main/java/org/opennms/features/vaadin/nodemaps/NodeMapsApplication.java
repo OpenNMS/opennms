@@ -204,7 +204,7 @@ public class NodeMapsApplication extends Application {
      * @return the vector layer
      */
     /*
-    private VectorLayer createNodeLayer(final OpenLayersMap map) {
+    private VectorLayer createNodeLayer(final OnmsOpenLayersMap map) {
         // Creating Vecctor Layers
         final VectorLayer nodeLayer = new VectorLayer();
         nodeLayer.setDisplayName("Nodes Layer");

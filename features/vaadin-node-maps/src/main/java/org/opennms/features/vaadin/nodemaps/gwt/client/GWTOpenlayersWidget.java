@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
+import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.OnmsOpenLayersMap;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -7,6 +9,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class GWTOpenlayersWidget extends Widget {
 	private final DivElement m_div;
+	private OnmsOpenLayersMap m_map;
 
 	public GWTOpenlayersWidget() {
 		super();
@@ -31,38 +34,12 @@ public class GWTOpenlayersWidget extends Widget {
 		return GWT.getModuleBaseURL() + "nodes.gml";
 	}
 
-	private final native void createMap(final String divId) /*-{
-		var map = new $wnd.OpenLayers.Map({
-			div: divId,
-			displayProjection: "EPSG:900913",
-			projection: "EPSG:4326",
-			controls: [
-				new $wnd.OpenLayers.Control.Navigation(),
-				new $wnd.OpenLayers.Control.PanZoomBar(),
-				new $wnd.OpenLayers.Control.LayerSwitcher(),
-				new $wnd.OpenLayers.Control.MousePosition()
-			]
-		});
+	private void createMap(final String divId) {
+		m_map = OnmsOpenLayersMap.newInstance(divId);
+		initializeMap(m_map);
+	}
 
-		// Main Layer
-
-		map.addLayer(new $wnd.OpenLayers.Layer.Google("GoogleMaps", {sphericalMercator: true}));
-		map.addLayer(new $wnd.OpenLayers.Layer.OSM("OpenStreetMaps"));
-		map.addLayer(new $wnd.OpenLayers.Layer.XYZ(
-			"MapQuest", 
-			[
-				"http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-				"http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-				"http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-				"http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"
-			],
-			{
-				attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
-				transitionEffect: "resize",
-				sphericalMercator: true
-			}
-		));
-
+	private final native void initializeMap(final OnmsOpenLayersMap map) /*-{
 		var displayAllNodes = true;
 
 		var fillColors = {
@@ -221,4 +198,5 @@ public class GWTOpenlayersWidget extends Widget {
 	private final native void destroyMap() /*-{
 		map.destroy();
 	}-*/;
+
 }
