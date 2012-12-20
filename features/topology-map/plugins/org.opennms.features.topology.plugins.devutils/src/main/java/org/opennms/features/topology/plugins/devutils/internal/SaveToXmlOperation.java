@@ -77,7 +77,7 @@ public class SaveToXmlOperation implements Operation {
 			edges.add(new WrappedEdge(edge.getItem(), wrappedSource, wrappedTarget));
 		}
 
-		WrappedGraph graph = new WrappedGraph(graphProvider.getNamespace(), vertices, edges);
+		WrappedGraph graph = new WrappedGraph(graphProvider.getVertexNamespace(), vertices, edges);
 
 		JAXB.marshal(graph, new File("/tmp/saved-graph.xml"));
 

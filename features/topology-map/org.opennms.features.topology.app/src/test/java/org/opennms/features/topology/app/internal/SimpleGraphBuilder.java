@@ -2,15 +2,16 @@ package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleGraphBuilder {
-	
-	
-	private final SimpleGraphProvider m_graphProvider;
-	private SimpleVertex m_currentVertex;
-	private SimpleEdge m_currentEdge;
+
+	private final GraphProvider m_graphProvider;
+	private Vertex m_currentVertex;
+	private Edge m_currentEdge;
 	
 	public SimpleGraphBuilder(String namespace) {
 		m_graphProvider = new SimpleGraphProvider(namespace);
@@ -18,7 +19,7 @@ public class SimpleGraphBuilder {
 	
 	public SimpleGraphBuilder vertex(String id) {
 		m_currentVertex = new SimpleVertex(ns(), id);
-		m_graphProvider.add(m_currentVertex);
+		m_graphProvider.addVertices(m_currentVertex);
 		return this;
 	}
 	
@@ -69,7 +70,7 @@ public class SimpleGraphBuilder {
 		source.setEdge(m_currentEdge);
 		target.setEdge(m_currentEdge);
 		
-		m_graphProvider.add(m_currentEdge);
+		m_graphProvider.addEdges(m_currentEdge);
 		
 		return this;
 	}
@@ -89,12 +90,12 @@ public class SimpleGraphBuilder {
 		return this;
 	}
 	
-	public SimpleGraphProvider get() {
+	public GraphProvider get() {
 		return m_graphProvider;
 	}
 
 	private String ns() {
-		return m_graphProvider.getNamespace();
+		return m_graphProvider.getVertexNamespace();
 	}
 	
 }

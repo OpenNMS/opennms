@@ -38,7 +38,7 @@ public class ConnectOperation implements Operation {
 
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-    	String ns = operationContext.getGraphContainer().getBaseTopology().getNamespace();
+    	String ns = operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
     	if(targets != null && targets.size() > 1) {
     		VertexRef sourceRef = targets.get(0);
     		VertexRef targetRef = targets.get(1);

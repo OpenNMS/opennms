@@ -43,12 +43,12 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	}
 
 	@Override
-	public List<? extends Edge> getEdges() {
+	public List<Edge> getEdges() {
 		return Collections.unmodifiableList(Collections.list(Collections.enumeration(m_edges.values())));
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references) {
+	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		List<Edge> retval = new ArrayList<Edge>();
 		for (EdgeRef reference : references) {
 			Edge edge = getEdge(reference);
@@ -60,7 +60,7 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	}
 
 	@Override
-	public String getNamespace() {
+	public String getEdgeNamespace() {
 		return "ncs";
 	}
 	
@@ -75,7 +75,7 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(Criteria criteria) {
+	public List<Edge> getEdges(Criteria criteria) {
 		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
 	}
 
@@ -86,7 +86,7 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 
 
 	@Override
-	public void clear() {
+	public void clearEdges() {
 		List<Edge> all = new ArrayList<Edge>(m_edges.size()); 
 		all.addAll(getEdges());
 		m_edges.clear();

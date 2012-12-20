@@ -53,15 +53,16 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
@@ -320,9 +321,9 @@ public class SimpleTopologyProviderTest {
         assertEquals("v0", sourceLeafVert.getId());
         assertEquals("v1", targetLeafVert.getId());
         
-        Collection<String> edgeIds = m_topologyProvider.getEdgeIdsForVertex(vertexId);
-        assertEquals(1, edgeIds.size());
-        assertEquals(edgeId, edgeIds.iterator().next());
+        EdgeRef[] edgeIds = m_topologyProvider.getEdgeIdsForVertex(vertexId);
+        assertEquals(1, edgeIds.length);
+        assertEquals(edgeId, edgeIds[0]);
         
 	}
     
@@ -377,16 +378,22 @@ public class SimpleTopologyProviderTest {
         
         final AtomicInteger eventsReceived = new AtomicInteger(0);
         
-        m_topologyProvider.addVertexListener(new ItemSetChangeListener() {
-
-            private static final long serialVersionUID = 30630057710008362L;
+        m_topologyProvider.addVertexListener(new VertexListener() {
 
             @Override
-            public void containerItemSetChange(ItemSetChangeEvent event) {
+            public void vertexSetChanged(VertexProvider provider,
+                    Collection<? extends Vertex> added,
+                    Collection<? extends Vertex> update,
+                    Collection<String> removedVertexIds) {
+                eventsReceived.incrementAndGet();
+            }
+
+            @Override
+            public void vertexSetChanged(VertexProvider provider) {
                 eventsReceived.incrementAndGet();
             }
         });
-        
+
         Object groupId = m_topologyProvider.addGroup("Test Group", "groupIcon.jpg");
         assertEquals(1, eventsReceived.get());
         eventsReceived.set(0);

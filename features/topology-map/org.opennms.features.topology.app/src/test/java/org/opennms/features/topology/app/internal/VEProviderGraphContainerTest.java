@@ -16,7 +16,9 @@ import org.junit.Test;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -24,8 +26,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public class VEProviderGraphContainerTest {
 
-	private SimpleGraphProvider m_graphProvider;
-	private SimpleEdgeProvider m_edgeProvider;
+	private GraphProvider m_graphProvider;
+	private EdgeProvider m_edgeProvider;
 	private GraphContainer m_graphContainer;
 	private Set<VertexRef> m_expectedVertices = new HashSet<VertexRef>();
 	private Map<VertexRef, String> m_expectedVertexStyles = new HashMap<VertexRef, String>();

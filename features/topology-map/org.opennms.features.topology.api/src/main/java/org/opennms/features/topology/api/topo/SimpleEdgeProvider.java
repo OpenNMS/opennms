@@ -59,7 +59,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public String getNamespace() {
+	public String getEdgeNamespace() {
 		return m_namespace;
 	}
 	
@@ -83,7 +83,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	private Edge getSimpleEdge(EdgeRef reference) {
-		if (getNamespace().equals(reference.getNamespace())) {
+		if (getEdgeNamespace().equals(reference.getNamespace())) {
 			if (reference instanceof Edge) {
 				return Edge.class.cast(reference);
 			} else {
@@ -201,7 +201,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public void clear() {
+	public void clearEdges() {
 		List<Edge> all = getEdges();
 		removeEdges(all);
 		fireEdgesRemoved(all);

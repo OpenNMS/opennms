@@ -187,8 +187,8 @@ public class NCSEdgeProvider implements EdgeProvider {
 	 * @param criteria An {@link NCSServiceCriteria} object
 	 */
 	@Override
-	public List<? extends Edge> getEdges(Criteria criteria) {
-		List<NCSEdge> retval = new ArrayList<NCSEdge>();
+	public List<Edge> getEdges(Criteria criteria) {
+		List<Edge> retval = new ArrayList<Edge>();
 		NCSServiceCriteria crit = (NCSServiceCriteria)criteria;
 		for (Long id : crit) {
 			NCSComponent service = m_dao.get(id);
@@ -237,20 +237,20 @@ public class NCSEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<? extends Edge> getEdges() {
+	public List<Edge> getEdges() {
 		throw new UnsupportedOperationException("Not implemented");
 		// TODO: Implement me
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(
+	public List<Edge> getEdges(
 			Collection<? extends EdgeRef> references) {
 		throw new UnsupportedOperationException("Not implemented");
 		// TODO: Implement me
 	}
 
 	@Override
-	public String getNamespace() {
+	public String getEdgeNamespace() {
 		return "ncs";
 	}
 	
@@ -290,5 +290,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	public static Criteria createCriteria(Collection<Long> selectedIds) {
 		return new NCSServiceCriteria(selectedIds);
+	}
+
+
+	@Override
+	public void clearEdges() {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }

@@ -24,7 +24,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public String getNamespace() {
+	public String getVertexNamespace() {
 		return m_namespace;
 	}
 	
@@ -35,7 +35,7 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public Vertex getVertex(String namespace, String id) {
-		if (getNamespace().equals(namespace)) {
+		if (getVertexNamespace().equals(namespace)) {
 			return m_vertexMap.get(id);
 		}
 		return null;
@@ -47,7 +47,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	private Vertex getSimpleVertex(VertexRef reference) {
-		if (getNamespace().equals(reference.getNamespace())) {
+		if (getVertexNamespace().equals(reference.getNamespace())) {
 			if (reference instanceof Vertex) {
 				return Vertex.class.cast(reference);
 			} else {
@@ -194,7 +194,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public void clear() {
+	public void clearVertices() {
 		List<? extends Vertex> all = getVertices();
 		removeVertices(all);
 		fireVerticesRemoved(all);

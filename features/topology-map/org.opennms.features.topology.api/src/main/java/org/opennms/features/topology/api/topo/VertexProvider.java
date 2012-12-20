@@ -12,7 +12,7 @@ public interface VertexProvider {
 	 * such as letters digits and underscore (no colons, periods, commans etc.)
 	 * 
 	 */
-	public String getNamespace();
+	public String getVertexNamespace();
 	
 	/**
 	 * This boolean returns true if the vertices in this provider are intended
@@ -23,6 +23,8 @@ public interface VertexProvider {
 	 * return false for passing its own namepace. A provider doesn't contribute to itself    
 	 */
 	public boolean contributesTo(String namespace);
+
+	boolean containsVertexId(VertexRef id);
 
 	public Vertex getVertex(String namespace, String id);
 	
@@ -53,6 +55,6 @@ public interface VertexProvider {
 	
 	public void removeVertexListener(VertexListener vertexListener);
 
-	void clear();
+	void clearVertices();
 
 }

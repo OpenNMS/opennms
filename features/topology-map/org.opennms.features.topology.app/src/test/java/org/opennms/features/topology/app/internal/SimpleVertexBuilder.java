@@ -42,7 +42,7 @@ public class SimpleVertexBuilder {
 	}
 	
 	public String ns() {
-		return m_vertexProvider.getNamespace();
+		return m_vertexProvider.getVertexNamespace();
 	}
 	
 

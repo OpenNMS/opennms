@@ -57,8 +57,13 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 	
 	@Override
-	public String getNamespace() {
-		return m_baseGraphProvider.getNamespace();
+	public String getVertexNamespace() {
+		return m_baseGraphProvider.getVertexNamespace();
+	}
+	
+	@Override
+	public String getEdgeNamespace() {
+		return m_baseGraphProvider.getEdgeNamespace();
 	}
 	
 	@Override
@@ -85,12 +90,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 	
 	public void addVertexProvider(VertexProvider vertexProvider) {
-		VertexProvider oldProvider = m_vertexProviders.put(vertexProvider.getNamespace(), vertexProvider);
+		VertexProvider oldProvider = m_vertexProviders.put(vertexProvider.getVertexNamespace(), vertexProvider);
 	
 		if (oldProvider != null) { oldProvider.removeVertexListener(this); }
 		vertexProvider.addVertexListener(this);
 
-		String ns = m_baseGraphProvider.getNamespace();
+		String ns = m_baseGraphProvider.getVertexNamespace();
 		if ((oldProvider != null && oldProvider.contributesTo(ns)) || vertexProvider.contributesTo(ns)) {
 			fireVertexChanged();
 		}
@@ -98,36 +103,36 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	public void removeVertexProvider(VertexProvider vertexProvider) {
-		VertexProvider oldProvider = m_vertexProviders.remove(vertexProvider.getNamespace());
+		VertexProvider oldProvider = m_vertexProviders.remove(vertexProvider.getVertexNamespace());
 		
 		if (oldProvider == null) { return; }
 		
 		oldProvider.removeVertexListener(this);
-		if (oldProvider.contributesTo(m_baseGraphProvider.getNamespace())) {
+		if (oldProvider.contributesTo(m_baseGraphProvider.getVertexNamespace())) {
 			fireVertexChanged();
 		}
 	}
 	
 	public void addEdgeProvider(EdgeProvider edgeProvider) {
-		EdgeProvider oldProvider = m_edgeProviders.put(edgeProvider.getNamespace(), edgeProvider);
+		EdgeProvider oldProvider = m_edgeProviders.put(edgeProvider.getEdgeNamespace(), edgeProvider);
 
 		if (oldProvider != null) { oldProvider.removeEdgeListener(this); }
 
 		edgeProvider.addEdgeListener(this);
 
-		String ns = m_baseGraphProvider.getNamespace();
+		String ns = m_baseGraphProvider.getVertexNamespace();
 		if ((oldProvider != null && oldProvider.contributesTo(ns)) || edgeProvider.contributesTo(ns)) {
 			fireEdgeChanged();
 		}
 	}
 	
 	public void removeEdgeProvider(EdgeProvider edgeProvider) {
-		EdgeProvider oldProvider = m_edgeProviders.remove(edgeProvider.getNamespace());
+		EdgeProvider oldProvider = m_edgeProviders.remove(edgeProvider.getEdgeNamespace());
 
 		if (oldProvider == null) { return; }
 		
 		oldProvider.removeEdgeListener(this);
-		if (oldProvider.contributesTo(m_baseGraphProvider.getNamespace())) {
+		if (oldProvider.contributesTo(m_baseGraphProvider.getVertexNamespace())) {
 			fireEdgeChanged();
 		}
 	}
@@ -139,12 +144,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	private VertexProvider vProvider(String namespace) {
 		assertNotNull(namespace, "namespace may not be null");
 
-		if (namespace.equals(m_baseGraphProvider.getNamespace())) {
+		if (namespace.equals(m_baseGraphProvider.getVertexNamespace())) {
 			return m_baseGraphProvider;
 		}
 		
 		for(VertexProvider provider : m_vertexProviders.values()) {
-			if (namespace.equals(provider.getNamespace())) {
+			if (namespace.equals(provider.getVertexNamespace())) {
 				return provider;
 			}
 		}
@@ -175,12 +180,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	private EdgeProvider eProvider(String namespace) {
 		assertNotNull(namespace, "namespace may not be null");
 
-		if (namespace.equals(m_baseGraphProvider.getNamespace())) {
+		if (namespace.equals(m_baseGraphProvider.getVertexNamespace())) {
 			return m_baseGraphProvider;
 		}
 
 		for(EdgeProvider provider : m_edgeProviders.values()) {
-			if (namespace.equals(provider.getNamespace())) {
+			if (namespace.equals(provider.getEdgeNamespace())) {
 				return provider;
 			}
 		}
@@ -218,7 +223,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		List<Vertex> vertices = new ArrayList<Vertex>(baseVertices());
 		
 		for(VertexProvider vertexProvider : m_vertexProviders.values()) {
-			if (vertexProvider.contributesTo(m_baseGraphProvider.getNamespace())) {
+			if (vertexProvider.contributesTo(m_baseGraphProvider.getVertexNamespace())) {
 				vertices.addAll(filteredVertices(vertexProvider));
 			}
 		}
@@ -227,12 +232,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	public List<? extends Vertex> baseVertices() {
-		Criteria criteria = m_criteria.get(m_baseGraphProvider.getNamespace());
+		Criteria criteria = m_criteria.get(m_baseGraphProvider.getVertexNamespace());
 		return criteria != null ? m_baseGraphProvider.getVertices(criteria) : m_baseGraphProvider.getVertices();
 	}
 	
 	public List<? extends Vertex> filteredVertices(VertexProvider vertexProvider) {
-		Criteria criteria = m_criteria.get(vertexProvider.getNamespace());
+		Criteria criteria = m_criteria.get(vertexProvider.getVertexNamespace());
 		return criteria != null ? vertexProvider.getVertices(criteria) : Collections.<Vertex>emptyList();
 	}
 
@@ -281,16 +286,16 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(Criteria criteria) {
+	public List<Edge> getEdges(Criteria criteria) {
 		return eProvider(criteria).getEdges(criteria);
 	}
 
 	@Override
-	public List<? extends Edge> getEdges() {
+	public List<Edge> getEdges() {
 		List<Edge> edges = new ArrayList<Edge>(baseEdges());
 		
 		for(EdgeProvider edgeProvider : m_edgeProviders.values()) {
-			if (edgeProvider.contributesTo(m_baseGraphProvider.getNamespace())) {
+			if (edgeProvider.contributesTo(m_baseGraphProvider.getVertexNamespace())) {
 				edges.addAll(filteredEdges(edgeProvider));
 			}
 		}
@@ -299,17 +304,17 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 	
 	public List<? extends Edge> baseEdges() {
-		Criteria criteria = m_criteria.get(m_baseGraphProvider.getNamespace());
+		Criteria criteria = m_criteria.get(m_baseGraphProvider.getVertexNamespace());
 		return criteria != null ? m_baseGraphProvider.getEdges(criteria) : m_baseGraphProvider.getEdges();
 	}
 	
 	public List<? extends Edge> filteredEdges(EdgeProvider edgeProvider) {
-		Criteria criteria = m_criteria.get(edgeProvider.getNamespace());
+		Criteria criteria = m_criteria.get(edgeProvider.getEdgeNamespace());
 		return criteria != null ? edgeProvider.getEdges(criteria) : Collections.<Edge>emptyList();
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references) {
+	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		List<Edge> edges = new ArrayList<Edge>(references.size());
 		
 		for(EdgeRef edgeRef : references) {
@@ -379,7 +384,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	private static class NullProvider implements GraphProvider {
 
 		@Override
-		public String getNamespace() {
+		public String getVertexNamespace() {
+			return null;
+		}
+
+		@Override
+		public String getEdgeNamespace() {
 			return null;
 		}
 
@@ -452,17 +462,17 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public List<? extends Edge> getEdges(Criteria criteria) {
+		public List<Edge> getEdges(Criteria criteria) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<? extends Edge> getEdges() {
+		public List<Edge> getEdges() {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references) {
+		public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 			return Collections.emptyList();
 		}
 
@@ -485,7 +495,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public void clear() {
+		public void clearVertices() {
 			// Do nothing
 		}
 
@@ -505,7 +515,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public Edge connectVertices(Vertex sourceVertextId, Vertex targetVertextId) {
+		public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
 			return null;
 		}
 
@@ -515,7 +525,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public void removeVertex(Vertex... vertexId) {
+		public void removeVertex(VertexRef... vertexId) {
 			// Do nothing
 		}
 

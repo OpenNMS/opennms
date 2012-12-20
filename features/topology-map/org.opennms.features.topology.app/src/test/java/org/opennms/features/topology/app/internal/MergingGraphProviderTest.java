@@ -9,14 +9,16 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
 public class MergingGraphProviderTest {
 
-	private SimpleGraphProvider m_graphProvider;
-	private SimpleEdgeProvider m_edgeProvider;
-	private MergingGraphProvider m_mergedProvider;
+	private GraphProvider m_graphProvider;
+	private EdgeProvider m_edgeProvider;
+	private GraphProvider m_mergedProvider;
 
 	
 	@Before

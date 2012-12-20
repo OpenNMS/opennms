@@ -9,28 +9,19 @@ import java.util.Random;
 
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 
-public class SFreeTopologyProvider implements GraphProvider {
+public class SFreeTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
 
 	private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
 	public static final String ERDOS_RENIS = "ErdosReniy";
 	public static final String BARABASI_ALBERT = "BarabasiAlbert";
-    private final SimpleVertexProvider m_vertexContainer;
-    private final SimpleEdgeProvider m_edgeContainer;
 
-    public SFreeTopologyProvider() {
-        m_vertexContainer = new SimpleVertexProvider("sfree");
-        m_edgeContainer = new SimpleEdgeProvider("sfree");
-    }
-
-	@Override
-	public boolean setParent(VertexRef vertexId, VertexRef parentId) {
-		return m_vertexContainer.setParent(vertexId, parentId);
+	public SFreeTopologyProvider() {
+		super(TOPOLOGY_NAMESPACE_SFREE);
 	}
 
 	@Override
@@ -40,13 +31,14 @@ public class SFreeTopologyProvider implements GraphProvider {
 
 	@Override
 	public void save(String filename) {
+		// Do nothing
 	}
 
 	@Override
 	public void load(String filename) {
-		
-		m_vertexContainer.clear();
-		m_edgeContainer.clear();
+
+		clearVertices();
+		clearEdges();
 
 		if (filename.equals(ERDOS_RENIS))
 			createERRandomTopology(100,3);		
@@ -60,10 +52,10 @@ public class SFreeTopologyProvider implements GraphProvider {
 
 		for(int i=0; i<2*averageNumberofNeighboors; i++){
 			int j=(i+1)%(2*averageNumberofNeighboors);
-			SimpleLeafVertex vertexi = new SimpleLeafVertex(Integer.toString(i),0,0);
+			SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
 			vertexi.setIconKey("sfree:system");
 			vertexi.setLabel("BarabasiAlbertNode"+i);
-			SimpleLeafVertex vertexj = new SimpleLeafVertex(Integer.toString(j),0,0);
+			SimpleLeafVertex vertexj = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(j), 0, 0);
 			vertexj.setIconKey("sfree:system");
 			vertexj.setLabel("BarabasiAlbertNode"+j);
 			nodes.put(i, vertexi);
@@ -72,10 +64,10 @@ public class SFreeTopologyProvider implements GraphProvider {
 			System.err.println("Creating First Cluster: " + j);
 			edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+i+"-"+j, nodes.get(i), nodes.get(j)));
 		}
-		
+
 		Random r = new Random((new Date()).getTime());
 		for(int i=2*averageNumberofNeighboors;i<numberOfNodes;i++){
-			SimpleLeafVertex vertexi = new SimpleLeafVertex(Integer.toString(i),0,0);
+			SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i),0,0);
 			vertexi.setIconKey("sfree:system");
 			vertexi.setLabel("BarabasiAlbertNode"+i);
 			nodes.put(i, vertexi);
@@ -92,8 +84,8 @@ public class SFreeTopologyProvider implements GraphProvider {
 			}// m links added
 		}
 
-		m_vertexContainer.addAll(nodes.values());
-		m_edgeContainer.addAll(edges);
+		addVertices(nodes.values().toArray(new Vertex[] {}));
+		addEdges(edges.toArray(new Edge[] {}));
 
 	}
 
@@ -101,18 +93,18 @@ public class SFreeTopologyProvider implements GraphProvider {
 		Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
 		List<SimpleEdge> edges = new ArrayList<SimpleEdge>();
 		for (Integer i=0; i< numberOfNodes ;i++) {
-			SimpleLeafVertex vertex = new SimpleLeafVertex(Integer.toString(i),0,0);
+			SimpleLeafVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
 			vertex.setIconKey("sfree:system");
 			vertex.setLabel("ErdosReniyNode"+i);
-			
+
 			nodes.put(i,vertex);
 		}
 
 		Double z = 0.5*(numberOfNodes-1);
-//		Double p = averageNumberofNeighboors/z;
-		
+		//		Double p = averageNumberofNeighboors/z;
+
 		Random r = new Random((new Date()).getTime());
-		
+
 		for (Integer start=0; start < numberOfNodes; start++) {
 			for (Integer end = start+1; end<numberOfNodes;end++) {
 				if (z*r.nextDouble()<averageNumberofNeighboors)  {
@@ -120,14 +112,9 @@ public class SFreeTopologyProvider implements GraphProvider {
 				}
 			}
 		}
-		
-		m_vertexContainer.addAll(nodes.values());
-		m_edgeContainer.addAll(edges);
-		
-	}
 
-	@Override
-	public String getNamespace() {
-		return "sfree"; 
+		addVertices(nodes.values().toArray(new Vertex[] {}));
+		addEdges(edges.toArray(new Edge[] {}));
+
 	}
 }

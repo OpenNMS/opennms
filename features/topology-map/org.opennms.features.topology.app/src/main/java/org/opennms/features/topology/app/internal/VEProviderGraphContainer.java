@@ -309,8 +309,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public void setDataSource(TopologyProvider topologyProvider) {
-    	TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
+    public void setDataSource(GraphProvider graphProvider) {
     	m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
     }
 

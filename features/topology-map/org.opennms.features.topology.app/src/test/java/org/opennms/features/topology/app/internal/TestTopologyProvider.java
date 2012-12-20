@@ -34,39 +34,34 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-public class TestTopologyProvider implements GraphProvider {
-	private final String m_namespace;
-    private SimpleVertexProvider m_vertexContainer;
-    private SimpleEdgeProvider m_edgeContainer;
+public class TestTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
     private int m_vertexCounter = 0;
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
     
     public TestTopologyProvider(String namespace) {
-    	m_namespace = namespace;
-        m_vertexContainer = new SimpleVertexProvider("test");
-        m_edgeContainer = new SimpleEdgeProvider("test");
+    	super("test");
         
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
         v1.setLabel("a leaf");
         
-        m_vertexContainer.add(v1);
+        addVertices(v1);
         
         String vId2 = getNextVertexId();
         TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
         v2.setLabel("another leaf");
-        m_vertexContainer.add(v2);
+        addVertices(v2);
         
         String edgeId = getNextEdgeId();
         TestEdge edge = new TestEdge(edgeId, v1, v2);
-        m_edgeContainer.add(edge);
+        addEdges(edge);
         
     }
     
@@ -75,7 +70,7 @@ public class TestTopologyProvider implements GraphProvider {
         String id = getNextVertexId();
         TestVertex vert = new TestLeafVertex(id, x, y);
         vert.setLabel("a vertex");
-        m_vertexContainer.add(vert);
+        addVertices(vert);
         return vert;
         
     }
@@ -89,26 +84,18 @@ public class TestTopologyProvider implements GraphProvider {
     }
 
     @Override
-    public boolean setParent(VertexRef vertexId, VertexRef parentId) {
-        assertVertex(vertexId);
-        assertGroup(parentId);
-        
-        return m_vertexContainer.setParent(vertexId, parentId);
-    }
-
-    @Override
     public Vertex addGroup(String groupLabel, String groupIcon) {
         String nextGroupId = getNextGroupId();
         return addGroup(nextGroupId, groupIcon, groupLabel);
     }
 
     private Vertex addGroup(String groupId, String groupIcon, String groupLabel) {
-        if(m_vertexContainer.containsId(groupId)) {
+        if(containsVertexId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         TestVertex vertex = new TestGroup(groupId);
         vertex.setLabel(groupLabel);
-        m_vertexContainer.add(vertex);
+        addVertices(vertex);
         return vertex;
     }
 
@@ -124,8 +111,8 @@ public class TestTopologyProvider implements GraphProvider {
     @Override
     public void load(String filename) {
 
-        m_edgeContainer.clear();
-        m_vertexContainer.clear();
+        clearEdges();
+        clearVertices();
         
         List<TestVertex> vertices = new ArrayList<TestVertex>();
         List<TestEdge> edges = new ArrayList<TestEdge>();
@@ -148,12 +135,12 @@ public class TestTopologyProvider implements GraphProvider {
         edges.add(edge);
         //m_edgeContainer.addBean(edge);
                  
-        m_vertexContainer.add(vertices);
-        m_edgeContainer.add(edges);
+        addVertices(vertices.toArray(new Vertex[] {}));
+        addEdges(edges.toArray(new Edge[] {}));
     }
 
     private Vertex getVertex(VertexRef vertexId, boolean required) {
-        Vertex item = m_vertexContainer.getVertex(vertexId);
+        Vertex item = getVertex(vertexId);
         if(required && item == null) {
             throw new IllegalArgumentException("required vertex " + vertexId + " not found");
         }
@@ -161,17 +148,12 @@ public class TestTopologyProvider implements GraphProvider {
     }
     
     private void assertGroup(VertexRef parentId) {
-        assertTrue(m_vertexContainer.containsId(parentId));
-        Vertex parentItem = m_vertexContainer.getVertex(parentId);
+        assertTrue(containsVertexId(parentId));
+        Vertex parentItem = getVertex(parentId);
         assertFalse(parentItem.isLeaf());
     }
 
     private void assertVertex(Object vertexId) {
-        assertTrue(m_vertexContainer.containsId(vertexId));
+        assertTrue(containsVertexId(vertexId));
     }
-
-	@Override
-	public String getNamespace() {
-		return m_namespace;
-	}
 }

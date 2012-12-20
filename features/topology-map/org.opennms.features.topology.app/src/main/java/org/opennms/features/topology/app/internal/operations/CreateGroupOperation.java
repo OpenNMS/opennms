@@ -40,8 +40,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
@@ -95,13 +93,16 @@ public class CreateGroupOperation implements Constants, Operation {
 					if (parentGroup == null) {
 						parentGroup = parent;
 					} else if (!parentGroup.equals(parent)) {
-						parentGroup = ROOT_GROUP_ID;
+						// If there are multiple parents present then attach the new group 
+						// to the top level of the hierarchy
+						parentGroup = null;
+						break;
 					}
 					operationContext.getGraphContainer().getBaseTopology().setParent(vertexRef, groupId);
 				}
 
 				// Set the parent of the new group to the selected top-level parent
-				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup);
 
 				// Save the topology
 				operationContext.getGraphContainer().getBaseTopology().save(null);

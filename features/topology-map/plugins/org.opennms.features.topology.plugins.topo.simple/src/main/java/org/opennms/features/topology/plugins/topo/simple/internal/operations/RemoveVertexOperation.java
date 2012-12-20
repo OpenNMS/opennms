@@ -54,7 +54,7 @@ public class RemoveVertexOperation implements Operation {
             LoggerFactory.getLogger(getClass()).debug("need to handle selection!!!");
         } else {
             for(VertexRef target : targets) {
-            	if (m_topologyProvider.getNamespace().equals(target.getNamespace())) {
+            	if (m_topologyProvider.getVertexNamespace().equals(target.getNamespace())) {
             		m_topologyProvider.removeVertex(target.getId());
             	}
             }

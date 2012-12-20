@@ -34,7 +34,6 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.osgi.framework.BundleContext;
@@ -50,7 +49,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 
 	private BundleContext m_bundleContext;
 	private Map<String, SimpleTopologyProvider> m_providers = new HashMap<String, SimpleTopologyProvider>();
-	private Map<String, ServiceRegistration> m_registrations = new HashMap<String, ServiceRegistration>();
+	private Map<String, ServiceRegistration<GraphProvider>> m_registrations = new HashMap<String, ServiceRegistration<GraphProvider>>();
 
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -80,17 +79,16 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 					metaData.put(LABEL, properties.get(LABEL));
 				}
 
-				ServiceRegistration<?> registration = m_bundleContext.registerService(new String[] { GraphProvider.class.getName(), GraphProvider.class.getName() },
-						topoProvider, metaData);
+				ServiceRegistration<GraphProvider> registration = m_bundleContext.registerService(GraphProvider.class, topoProvider, metaData);
 
 				m_registrations.put(pid, registration);
 
 			} else {
 				m_providers.get(pid).setTopologyLocation(url);
 
-				ServiceRegistration registration = m_registrations.get(pid);
+				ServiceRegistration<GraphProvider> registration = m_registrations.get(pid);
 
-				Properties metaData = new Properties();
+				Dictionary<String,Object> metaData = new Hashtable<String,Object>();
 				metaData.put(Constants.SERVICE_PID, pid);
 
 				if (properties.get(LABEL) != null) {
@@ -107,7 +105,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 
 	@Override
 	public void deleted(String pid) {
-		ServiceRegistration registration = m_registrations.remove(pid);
+		ServiceRegistration<GraphProvider> registration = m_registrations.remove(pid);
 		if (registration != null) {
 			registration.unregister();
 		}

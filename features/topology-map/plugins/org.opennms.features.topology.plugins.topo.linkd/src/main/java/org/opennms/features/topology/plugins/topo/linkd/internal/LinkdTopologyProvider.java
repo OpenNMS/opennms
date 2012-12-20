@@ -42,11 +42,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -58,7 +61,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
-public class LinkdTopologyProvider implements GraphProvider {
+public class LinkdTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
     private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
@@ -146,9 +149,6 @@ public class LinkdTopologyProvider implements GraphProvider {
         this.addNodeWithoutLink = addNodeWithoutLink;
     }
 
-    private final SimpleVertexProvider m_vertexContainer;
-    private final SimpleEdgeProvider m_edgeContainer;
-
     private int m_groupCounter = 0;
     
     public DataLinkInterfaceDao getDataLinkInterfaceDao() {
@@ -166,8 +166,7 @@ public class LinkdTopologyProvider implements GraphProvider {
     }
     
     public LinkdTopologyProvider() {
-        m_vertexContainer = new SimpleVertexProvider("linkd");
-        m_edgeContainer = new SimpleEdgeProvider("linkd");
+    	super("nodes");
     }
 
     @Override
@@ -177,13 +176,13 @@ public class LinkdTopologyProvider implements GraphProvider {
     }
 
     private Vertex addGroup(String groupId, String iconKey, String label) {
-        if (m_vertexContainer.containsId(groupId)) {
+        if (containsVertexId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         log("Adding a group: " + groupId);
         LinkdVertex vertex = new LinkdGroup(groupId, label);
         vertex.setIconKey(iconKey);
-        m_vertexContainer.add(vertex);
+        addVertices(vertex);
         return vertex;
     }
     
@@ -227,9 +226,9 @@ public class LinkdTopologyProvider implements GraphProvider {
     private void loadfromfile(String filename) {
         File file = new File(filename);
         if (file.exists() && file.canRead()) {
-            SimpleGraph graph = getGraphFromFile(file);        
-            m_vertexContainer.add(graph.m_vertices);        
-            m_edgeContainer.add(graph.m_edges);
+            SimpleGraph graph = getGraphFromFile(file);
+            addVertices(graph.m_vertices.toArray(new Vertex[] {}));
+            addEdges(graph.m_edges.toArray(new Edge[] {}));
         }
     }
 
@@ -237,10 +236,10 @@ public class LinkdTopologyProvider implements GraphProvider {
     private void loadtopology() {
         log("loadtopology: loading topology: configFile:" + m_configurationFile);
         
-        log("loadtopology: Clear " + m_vertexContainer.getClass().getSimpleName());
-        m_vertexContainer.clear();
-        log("loadtopology: Clear " + m_edgeContainer.getClass().getSimpleName());
-        m_edgeContainer.clear();
+        log("loadtopology: Clear " + VertexProvider.class.getSimpleName());
+        clearVertices();
+        log("loadtopology: Clear " + EdgeProvider.class.getSimpleName());
+        clearVertices();
 
         Map<String, Vertex> vertexes = new HashMap<String,Vertex>();
         List<Edge> edges = new ArrayList<Edge>();
@@ -271,7 +270,7 @@ public class LinkdTopologyProvider implements GraphProvider {
                 target = getVertex(parentNode);
                 vertexes.put(targetId, target);
             }
-            Edge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
+            LinkdEdge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
             edge.setTooltipText(getEdgeTooltipText(link,source,target));
             edges.add(edge);
         }
@@ -292,8 +291,8 @@ public class LinkdTopologyProvider implements GraphProvider {
         log("Found Edges: #" + edges.size());
 
                 
-        m_vertexContainer.add(vertexes.values());
-        m_edgeContainer.add(edges);
+        addVertices(vertexes.values().toArray(new Vertex[] {}));
+        addEdges(edges.toArray(new Edge[] {}));
  
         File configFile = new File(m_configurationFile);
 
@@ -458,21 +457,14 @@ public class LinkdTopologyProvider implements GraphProvider {
     public void save(String filename) {
         if (filename == null) 
             filename=m_configurationFile;
-        List<Vertex> vertices = m_vertexContainer.getVertices();
-        List<Edge> edges = m_edgeContainer.getEdges();
+        List<Vertex> vertices = super.getVertices();
+        List<Edge> edges = super.getEdges();
 
         SimpleGraph graph = new SimpleGraph(vertices, edges);
         
         JAXB.marshal(graph, new File(filename));
     }
 
-    @Override
-    public boolean setParent(VertexRef vertexId, VertexRef parentId) {
-        boolean addedparent = m_vertexContainer.setParent(vertexId, parentId);
-        log("setParent() for vertex: " + vertexId + ", parent: " + parentId + ", result: " + (addedparent ? "SUCCESS" : "FAILED"));
-        return addedparent;
-    }
-    
       private static String getIfStatusString(int ifStatusNum) {
           if (ifStatusNum < OPER_ADMIN_STATUS.length) {
               return OPER_ADMIN_STATUS[ifStatusNum];
@@ -562,9 +554,4 @@ public class LinkdTopologyProvider implements GraphProvider {
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }
-
-	@Override
-	public String getNamespace() {
-		return "nodes";
-	}
 }

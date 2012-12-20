@@ -137,15 +137,13 @@ public class TopologyComponentTest {
         GraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
-        Collection<?> vertIds = topologyProvider.getVertexIds();
+        Collection<Vertex> vertIds = topologyProvider.getVertices();
         
         Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
-        for(Object vertId : vertIds) {
-            BeanItem<TestVertex> beanItem = topologyProvider.getVertexItem(vertId);
-            TestVertex v = beanItem.getBean();
+        for(Vertex v : vertIds) {
             if(v.isLeaf()) {
-                topologyProvider.setParent(vertId, groupId);
+                topologyProvider.setParent(v, groupId);
             }
             
         }
@@ -186,14 +184,13 @@ public class TopologyComponentTest {
         
         System.err.println("\n****** Right before Creation of a Group ******\n");
         
-        Collection<?> vertIds = topoProvider.getVertexIds();
+        Collection<Vertex> vertIds = topoProvider.getVertices();
         
         Object groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
-        for(Object vertId : vertIds) {
-            TestVertex v = topoProvider.getVertexItem(vertId).getBean();
+        for(Vertex v: vertIds) {
             if(v.isLeaf()) {
-                topoProvider.setParent(vertId, groupId);
+                topoProvider.setParent(v, groupId);
             }
             
         }
@@ -224,21 +221,6 @@ public class TopologyComponentTest {
         EasyMock.verify(target2);
     }
 
-    private void mockGroupWithKey(PaintTarget target, String key) throws PaintException {
-        target.startTag("group");
-        target.addAttribute("key", key);
-        target.addAttribute("x", 0);
-        target.addAttribute("y", 0);
-        target.addAttribute("selected", false);
-        target.addAttribute(EasyMock.eq("iconUrl"), EasyMock.notNull(String.class));
-        target.addAttribute("semanticZoomLevel", 0);
-        target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
-        
-        
-        target.endTag("group");
-        
-    }
-
     private void mockedDefaultToprData(PaintTarget target)
             throws PaintException {
         mockInitialSetup(target);
@@ -255,21 +237,6 @@ public class TopologyComponentTest {
         
     }
 
-    private void mockGroup(PaintTarget target) throws PaintException {
-        target.startTag("group");
-        target.addAttribute(EasyMock.eq("key"), EasyMock.notNull(String.class));
-        target.addAttribute("x", 0);
-        target.addAttribute("y", 0);
-        target.addAttribute("selected", false);
-        target.addAttribute(EasyMock.eq("iconUrl"), EasyMock.notNull(String.class));
-        target.addAttribute("semanticZoomLevel", 0);
-        target.addAttribute(EasyMock.eq("label"), EasyMock.notNull(String.class));
-        target.addAttribute(eq("tooltipText"), EasyMock.notNull(String.class));
-        
-        
-        target.endTag("group");
-    }
-    
     private void mockInitialSetup(PaintTarget target) throws PaintException {
     	mockGraphAttrs(target, 0, true);
     }
@@ -336,13 +303,6 @@ public class TopologyComponentTest {
         target.addAttribute(EasyMock.eq("tooltipText"), EasyMock.notNull(String.class));
         
         target.endTag("vertex");
-    }
-    
-    private void mockVertexParent(PaintTarget target) throws PaintException {
-    	target.startTag("vertexParent");
-        target.addAttribute(EasyMock.eq("key"), EasyMock.notNull(String.class));
-        target.addAttribute(EasyMock.eq("parentKey"), EasyMock.notNull(String.class));
-    	target.endTag("vertexParent");
     }
     
     private void mockVertexWithKey(PaintTarget target, String key) throws PaintException {
