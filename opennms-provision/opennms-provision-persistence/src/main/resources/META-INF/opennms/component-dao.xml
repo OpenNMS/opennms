@@ -29,4 +29,23 @@
     <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
   </bean>
 
+  <bean id="fastDeployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository">
+    <qualifier value="fastDeployed" />
+    <property name="requisitionPath" value="${importer.requisition.dir}" />
+    <property name="foreignSourcePath" value="${importer.foreign-source.dir}" />
+    <property name="updateDateStamps" value="false" />
+  </bean>
+
+  <bean id="fastPendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository">
+    <qualifier value="fastPending" />
+    <property name="requisitionPath" value="${importer.requisition.dir}/pending" />
+    <property name="foreignSourcePath" value="${importer.foreign-source.dir}/pending" />
+  </bean>
+
+  <bean id="fastFusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
+    <qualifier value="fastFused" />
+    <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
+    <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
+  </bean>
+
 </beans>
